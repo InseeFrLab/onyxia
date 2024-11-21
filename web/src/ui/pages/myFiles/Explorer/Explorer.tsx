@@ -3,7 +3,7 @@ import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems/ExplorerItems";
+import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems";
 import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
@@ -37,6 +37,13 @@ import { ExplorerUploadModal } from "./ExplorerUploadModal";
 import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import {
+    ListExplorerItems,
+    type ListExplorerItemsProps
+} from "./ListExplorer/ListExplorerItems";
+import type { Item } from "../shared/types";
+import { ViewMode } from "../shared/types";
+import { isDirectory } from "../shared/tools";
 
 export type ExplorerProps = {
     /**
@@ -46,17 +53,23 @@ export type ExplorerProps = {
     className?: string;
     doShowHidden: boolean;
 
+    viewMode: ViewMode;
+    onViewModeChange: (params: { viewMode: ViewMode }) => void;
     directoryPath: string;
     isNavigating: boolean;
     commandLogsEntries: CommandBarProps.Entry[] | undefined;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
-    files: string[];
-    directories: string[];
-    directoriesBeingCreated: string[];
-    filesBeingCreated: string[];
+    items: Item[];
     onNavigate: (params: { directoryPath: string }) => void;
+    changePolicy: (params: {
+        policy: Item["policy"];
+        basename: string;
+        kind: Item["kind"];
+    }) => void;
     onRefresh: () => void;
-    onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
+    onDeleteItem: (params: { item: Item }) => void;
+    onDeleteItems: (params: { items: Item[] }) => void;
+
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
@@ -76,41 +89,30 @@ export const Explorer = memo((props: ExplorerProps) => {
         onNavigate,
         onRefresh,
         onDeleteItem,
+        onDeleteItems,
         onCreateDirectory,
         onCopyPath,
+        changePolicy,
+        onOpenFile,
         scrollableDivRef,
         onFileSelected,
         filesBeingUploaded,
-        pathMinDepth
+        pathMinDepth,
+        onViewModeChange,
+        viewMode
     } = props;
 
-    const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
-        () =>
-            (
-                [
-                    props.files,
-                    props.directories,
-                    props.directoriesBeingCreated,
-                    props.filesBeingCreated
-                ] as const
-            ).map(
-                doShowHidden
-                    ? id
-                    : arr => arr.filter(basename => !basename.startsWith("."))
-            ),
-        [
-            props.files,
-            props.directories,
-            props.directoriesBeingCreated,
-            props.filesBeingCreated,
-            doShowHidden
-        ]
+    const [items] = useMemo(
+        () => [
+            props.items.filter(doShowHidden ? id : obj => !obj.basename.startsWith("."))
+        ],
+        [props.items, doShowHidden]
     );
 
     const { t } = useTranslation({ Explorer });
 
     const [selectedItemKind, setSelectedItemKind] = useState<
-        "file" | "directory" | "none"
+        "file" | "directory" | "multiple" | "none"
     >("none");
 
     const onSelectedItemKindValueChange = useConstCallback(
@@ -121,7 +123,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onBreadcrumbNavigate = useConstCallback(
         ({ upCount }: Param0<BreadcrumbProps["onNavigate"]>) => {
             onNavigate({
-                "directoryPath": pathJoin(directoryPath, ...new Array(upCount).fill(".."))
+                directoryPath: pathJoin(directoryPath, ...new Array(upCount).fill(".."))
             });
         }
     );
@@ -129,13 +131,22 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onItemsNavigate = useConstCallback(
         ({ basename }: Param0<ItemsProps["onNavigate"]>) =>
             onNavigate({
-                "directoryPath": pathJoin(directoryPath, basename)
+                directoryPath: pathJoin(directoryPath, basename)
+            })
+    );
+
+    const onItemsPolicyChange = useConstCallback(
+        ({ basename, policy, kind }: Param0<ItemsProps["onPolicyChange"]>) =>
+            changePolicy({
+                basename,
+                policy,
+                kind
             })
     );
 
     const onItemsOpenFile = useConstCallback(
         ({ basename }: Param0<ItemsProps["onOpenFile"]>) => {
-            props.onOpenFile({ basename });
+            onOpenFile({ basename });
         }
     );
 
@@ -146,20 +157,20 @@ export const Explorer = memo((props: ExplorerProps) => {
     const itemsOnCopyPath = useConstCallback(
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
             evtBreadcrumbAction.post({
-                "action": "DISPLAY COPY FEEDBACK",
+                action: "DISPLAY COPY FEEDBACK",
                 basename
             });
 
-            onCopyPath({ "path": pathJoin(directoryPath, basename) });
+            onCopyPath({ path: pathJoin(directoryPath, basename) });
         }
     );
 
     const onGoBack = useConstCallback(() => {
-        onNavigate({ "directoryPath": pathJoin(directoryPath, "..") });
+        onNavigate({ directoryPath: pathJoin(directoryPath, "..") });
     });
 
     const { evtItemsAction } = useConst(() => ({
-        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
+        evtItemsAction: Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
     }));
 
     const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
@@ -175,8 +186,10 @@ export const Explorer = memo((props: ExplorerProps) => {
                 break;
             case "create directory":
                 setCreateS3DirectoryDialogState({
-                    directories,
-                    "resolveBasename": basename => onCreateDirectory({ basename })
+                    directories: items
+                        .filter(isDirectory)
+                        .map(({ basename }) => basename),
+                    resolveBasename: basename => onCreateDirectory({ basename })
                 });
                 break;
 
@@ -210,8 +223,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const [deletionDialogState, setDeletionDialogState] = useState<
         | {
-              kind: "file" | "directory";
-              basename: string;
+              kind: "file" | "directory" | "multiple";
               resolveDoProceedToDeletion: (doProceedToDeletion: boolean) => void;
           }
         | undefined
@@ -242,14 +254,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const itemsOnDeleteItem = useConstCallback(
-        async ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
+        async ({ item }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
             if (doShowDeletionDialogNextTime) {
                 const dDoProceedToDeletion = new Deferred();
 
                 setDeletionDialogState({
-                    kind,
-                    basename,
-                    "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve
+                    kind: item.kind,
+                    resolveDoProceedToDeletion: dDoProceedToDeletion.resolve
                 });
 
                 const doProceedToDeletion = await dDoProceedToDeletion.pr;
@@ -261,7 +272,34 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             }
 
-            onDeleteItem({ kind, basename });
+            onDeleteItem({ item });
+        }
+    );
+
+    const itemsOnDeleteItems = useConstCallback(
+        async (
+            { items }: Parameters<ListExplorerItemsProps["onDeleteItems"]>[0],
+            onDeleteConfirmed?: () => void
+        ) => {
+            if (doShowDeletionDialogNextTime) {
+                const dDoProceedToDeletion = new Deferred();
+
+                setDeletionDialogState({
+                    kind: items.length === 1 ? items[0].kind : "multiple",
+                    resolveDoProceedToDeletion: dDoProceedToDeletion.resolve
+                });
+
+                const doProceedToDeletion = await dDoProceedToDeletion.pr;
+
+                setDeletionDialogState(undefined);
+
+                if (!doProceedToDeletion) {
+                    return;
+                }
+            }
+
+            onDeleteItems({ items });
+            onDeleteConfirmed?.();
         }
     );
 
@@ -279,8 +317,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                 <div ref={buttonBarRef}>
                     <ExplorerButtonBar
                         selectedItemKind={selectedItemKind}
-                        //isFileOpen={props.isFileOpen}
                         callback={buttonBarCallback}
+                        onViewModeChange={onViewModeChange}
+                        viewMode={viewMode}
                     />
                 </div>
                 {commandLogsEntries !== undefined && (
@@ -290,6 +329,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                         maxHeight={commandBarMaxHeight}
                     />
                 )}
+
                 {(() => {
                     const title = (() => {
                         let split = directoryPath.split("/");
@@ -326,7 +366,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     );
                 })()}
-
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
                         minDepth={pathMinDepth}
@@ -347,25 +386,51 @@ export const Explorer = memo((props: ExplorerProps) => {
                     ref={scrollableDivRef}
                     className={cx(
                         css({
-                            "flex": 1,
-                            "paddingRight": theme.spacing(2),
-                            "overflow": "auto"
+                            flex: 1,
+                            paddingRight: theme.spacing(2),
+                            overflow: "auto"
                         })
                     )}
                 >
-                    <ExplorerItems
-                        isNavigating={isNavigating}
-                        files={files}
-                        directories={directories}
-                        directoriesBeingCreated={directoriesBeingCreated}
-                        filesBeingCreated={filesBeingCreated}
-                        onNavigate={onItemsNavigate}
-                        onOpenFile={onItemsOpenFile}
-                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                        onCopyPath={itemsOnCopyPath}
-                        onDeleteItem={itemsOnDeleteItem}
-                        evtAction={evtItemsAction}
-                    />
+                    {(() => {
+                        switch (viewMode) {
+                            case "block":
+                                return (
+                                    <ExplorerItems
+                                        isNavigating={isNavigating}
+                                        items={items}
+                                        onNavigate={onItemsNavigate}
+                                        onOpenFile={onItemsOpenFile}
+                                        onSelectedItemKindValueChange={
+                                            onSelectedItemKindValueChange
+                                        }
+                                        onPolicyChange={onItemsPolicyChange}
+                                        onCopyPath={itemsOnCopyPath}
+                                        onDeleteItem={itemsOnDeleteItem}
+                                        evtAction={evtItemsAction}
+                                    />
+                                );
+                            case "list": {
+                                return (
+                                    <ListExplorerItems
+                                        isNavigating={isNavigating}
+                                        items={items}
+                                        onNavigate={onItemsNavigate}
+                                        onOpenFile={onItemsOpenFile}
+                                        onSelectedItemKindValueChange={
+                                            onSelectedItemKindValueChange
+                                        }
+                                        onPolicyChange={onItemsPolicyChange}
+                                        onCopyPath={itemsOnCopyPath}
+                                        onDeleteItems={itemsOnDeleteItems}
+                                        evtAction={evtItemsAction}
+                                    />
+                                );
+                            }
+                            default:
+                                return null;
+                        }
+                    })()}
                 </div>
             </div>
             <CreateS3DirectoryDialog
@@ -378,10 +443,14 @@ export const Explorer = memo((props: ExplorerProps) => {
                         deletionDialogState === undefined
                             ? ""
                             : t(deletionDialogState.kind);
+                    const isPlural =
+                        deletionDialogState === undefined
+                            ? false
+                            : deletionDialogState.kind === "multiple";
 
                     return {
-                        "title": t("deletion dialog title", { deleteWhat }),
-                        "body": t("deletion dialog body", { deleteWhat })
+                        title: t("deletion dialog title", { deleteWhat, isPlural }),
+                        body: t("deletion dialog body", { deleteWhat, isPlural })
                     };
                 })()}
                 isOpen={deletionDialogState !== undefined}
@@ -420,11 +489,12 @@ const { i18n } = declareComponentKeys<
     | { K: "untitled what"; P: { what: string } }
     | "directory"
     | "file"
+    | "multiple"
     | "secret"
     | "cancel"
     | "delete"
-    | { K: "deletion dialog title"; P: { deleteWhat: string } }
-    | { K: "deletion dialog body"; P: { deleteWhat: string } }
+    | { K: "deletion dialog title"; P: { deleteWhat: string; isPlural: boolean } }
+    | { K: "deletion dialog body"; P: { deleteWhat: string; isPlural: boolean } }
     | "do not display again"
     | "already a directory with this name"
     | "can't be empty"
@@ -439,32 +509,32 @@ const useStyles = tss
     }>()
     .withName({ Explorer })
     .create(({ theme, commandBarTop }) => ({
-        "root": {
-            "position": "relative",
-            "display": "flex",
-            "flexDirection": "column"
+        root: {
+            position: "relative",
+            display: "flex",
+            flexDirection: "column"
         },
-        "commandBar": {
-            "position": "absolute",
-            "right": 0,
-            "width": "40%",
-            "top": commandBarTop,
-            "zIndex": 1,
-            "opacity": commandBarTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear"
+        commandBar: {
+            position: "absolute",
+            right: 0,
+            width: "40%",
+            top: commandBarTop,
+            zIndex: 1,
+            opacity: commandBarTop === 0 ? 0 : 1,
+            transition: "opacity 750ms linear"
         },
-        "breadcrumpWrapper": {
-            "marginTop": theme.spacing(3),
-            "marginBottom": theme.spacing(4),
-            "display": "flex",
-            "alignItems": "center"
+        breadcrumpWrapper: {
+            marginTop: theme.spacing(3),
+            marginBottom: theme.spacing(4),
+            display: "flex",
+            alignItems: "center"
         },
-        "circularProgress": {
-            "marginLeft": theme.spacing(2)
+        circularProgress: {
+            marginLeft: theme.spacing(2)
         },
-        "fileOrDirectoryIcon": {
-            "height": "unset",
-            "width": "100%"
+        fileOrDirectoryIcon: {
+            height: "unset",
+            width: "100%"
         }
     }));
 
@@ -559,33 +629,33 @@ const { CreateS3DirectoryDialog } = (() => {
             text => {
                 if (text === "") {
                     return {
-                        "isValidValue": false,
-                        "message": t("can't be empty")
+                        isValidValue: false,
+                        message: t("can't be empty")
                     };
                 }
 
                 if (directories.includes(text)) {
                     return {
-                        "isValidValue": false,
-                        "message": t("already a directory with this name")
+                        isValidValue: false,
+                        message: t("already a directory with this name")
                     };
                 }
 
                 return {
-                    "isValidValue": true
+                    isValidValue: true
                 };
             }
         );
 
         const [{ resolve }, setResolve] = useState<{ resolve: (() => void) | null }>({
-            "resolve": null
+            resolve: null
         });
 
         const onValueBeingTypedChange = useConstCallback<
             TextFieldProps["onValueBeingTypedChange"]
         >(({ value, isValidValue }) =>
             setResolve({
-                "resolve": isValidValue
+                resolve: isValidValue
                     ? () => {
                           resolveBasename(value);
                           onClose();
@@ -601,12 +671,12 @@ const { CreateS3DirectoryDialog } = (() => {
         const suggestedBasename = useMemo(
             () =>
                 generateUniqDefaultName({
-                    "names": directories,
-                    "buildName": buildNameFactory({
-                        "defaultName": t("untitled what", {
-                            "what": t("directory")
+                    names: directories,
+                    buildName: buildNameFactory({
+                        defaultName: t("untitled what", {
+                            what: t("directory")
                         }),
-                        "separator": "_"
+                        separator: "_"
                     })
                 }),
             [directories, t]
@@ -671,9 +741,9 @@ const { CreateS3DirectoryDialog } = (() => {
     });
 
     const useStyles = tss.withName({ CreateS3DirectoryDialog }).create(({ theme }) => ({
-        "textField": {
-            "width": 250,
-            "margin": theme.spacing(5)
+        textField: {
+            width: 250,
+            margin: theme.spacing(5)
         }
     }));
 

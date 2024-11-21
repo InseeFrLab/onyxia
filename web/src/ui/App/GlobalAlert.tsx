@@ -4,7 +4,7 @@ import { symToStr } from "tsafe/symToStr";
 import { useResolveLocalizedString } from "ui/i18n";
 import { Alert } from "onyxia-ui/Alert";
 import { simpleHash } from "ui/tools/simpleHash";
-import { Markdown } from "ui/shared/Markdown";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { type LocalizedString } from "ui/i18n";
 
 type Props = {
@@ -21,7 +21,7 @@ export const GlobalAlert = memo(
         const { className, severity = "info", message } = props;
 
         const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
-            "labelWhenMismatchingLanguage": true
+            labelWhenMismatchingLanguage: true
         });
 
         const localStorageKey = useMemo(() => {
@@ -60,26 +60,13 @@ export const GlobalAlert = memo(
                     pullTrigger();
                 }}
             >
-                {(() => {
-                    const { str, langAttrValue } =
-                        resolveLocalizedStringDetailed(message);
-
-                    const markdownNode = (
-                        <Markdown
-                            className={css({
-                                "&>p": { ...theme.spacing.topBottom("margin", 2) }
-                            })}
-                        >
-                            {str}
-                        </Markdown>
-                    );
-
-                    return langAttrValue === undefined ? (
-                        markdownNode
-                    ) : (
-                        <div lang={langAttrValue}>{markdownNode}</div>
-                    );
-                })()}
+                <LocalizedMarkdown
+                    className={css({
+                        "&>p": { ...theme.spacing.topBottom("margin", 2) }
+                    })}
+                >
+                    {message}
+                </LocalizedMarkdown>
             </Alert>
         );
     })

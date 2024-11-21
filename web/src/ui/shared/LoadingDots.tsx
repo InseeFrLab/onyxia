@@ -19,17 +19,17 @@ export function LoadingDots(props: LoadingDotsProps) {
 }
 
 const useStyles = tss.withName({ LoadingDots }).create(({ theme }) => ({
-    "root": {
-        "display": "inline-flex"
+    root: {
+        display: "inline-flex"
     },
-    "dot": {
-        "display": "block",
-        "width": 5,
-        "height": 5,
-        "backgroundColor": "transparent",
-        "borderRadius": "50%",
-        "margin": theme.spacing(1),
-        "animation": `${keyframes`
+    dot: {
+        display: "block",
+        width: 5,
+        height: 5,
+        backgroundColor: "transparent",
+        borderRadius: "50%",
+        margin: theme.spacing(1),
+        animation: `${keyframes`
                 0% { background-color: ${theme.colors.useCases.typography.textFocus}; }
                 50%, 100% { background-color: transparent; }
             `} 1s infinite linear alternate`,

@@ -4,7 +4,7 @@ import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
 
 export const thunks = {
-    "setActive":
+    setActive:
         (params: { countdownStartsAtSecondsLeft: number }) =>
         (...args) => {
             const { countdownStartsAtSecondsLeft } = params;
@@ -29,7 +29,7 @@ export const thunks = {
 
                     dispatch(
                         actions.secondsLeftSet({
-                            "secondsLeft": newSecondsLeft
+                            secondsLeft: newSecondsLeft
                         })
                     );
                 });

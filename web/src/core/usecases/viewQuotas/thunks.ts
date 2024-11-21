@@ -5,7 +5,7 @@ import { privateSelectors } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
 
 export const thunks = {
-    "setActive":
+    setActive:
         () =>
         (...args) => {
             const [dispatch, getState, { evtAction }] = args;
@@ -76,7 +76,7 @@ export const thunks = {
 
             return { setInactive };
         },
-    "update":
+    update:
         () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
@@ -96,16 +96,17 @@ export const thunks = {
             dispatch(
                 actions.updateCompleted({
                     quotas,
-                    "projectId":
-                        projectManagement.selectors.currentProject(getState()).id,
-                    "quotaWarningThresholdPercent":
+                    projectId:
+                        projectManagement.protectedSelectors.currentProject(getState())
+                            .id,
+                    quotaWarningThresholdPercent:
                         paramsOfBootstrapCore.quotaWarningThresholdPercent,
-                    "quotaCriticalThresholdPercent":
+                    quotaCriticalThresholdPercent:
                         paramsOfBootstrapCore.quotaCriticalThresholdPercent
                 })
             );
         },
-    "toggleIsOnlyNonNegligibleQuotas":
+    toggleIsOnlyNonNegligibleQuotas:
         () =>
         (...args) => {
             const [dispatch] = args;

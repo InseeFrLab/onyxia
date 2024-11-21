@@ -6,27 +6,45 @@ import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-const currentProjectConfigs = createSelector(state, state => state.currentProjectConfigs);
+const projectConfig = createSelector(state, state => state.currentProjectConfigs);
 
-const currentProject = createSelector(state, (state): Project => {
-    const { projects, selectedProjectId } = state;
+export const protectedSelectors = {
+    currentProject: createSelector(state, (state): Project => {
+        const { projects, selectedProjectId } = state;
 
-    const project = projects.find(({ id }) => id === selectedProjectId);
+        const project = projects.find(({ id }) => id === selectedProjectId);
 
-    assert(project !== undefined);
+        assert(project !== undefined);
 
-    return project;
-});
+        return project;
+    }),
+    projectConfig
+};
 
-const availableProjects = createSelector(state, state =>
-    state.projects.map(({ id, name }) => ({ id, name }))
-);
-
-const servicePassword = createSelector(
-    currentProjectConfigs,
-    currentProjectConfigs => currentProjectConfigs.servicePassword
-);
-
-export const protectedSelectors = { currentProjectConfigs };
-
-export const selectors = { availableProjects, currentProject, servicePassword };
+export const selectors = {
+    projectSelect: createSelector(
+        createSelector(state, state => state.projects),
+        createSelector(state, state => state.selectedProjectId),
+        (projects, selectedProjectId) => ({
+            options: projects.map(({ id, name }) => ({ value: id, label: name })),
+            selectedOptionValue: selectedProjectId
+        })
+    ),
+    servicePassword: createSelector(
+        projectConfig,
+        projectConfig => projectConfig.servicePassword
+    ),
+    groupProjectName: createSelector(
+        protectedSelectors.currentProject,
+        currentProject => {
+            if (currentProject.group == undefined) {
+                return undefined;
+            }
+            return currentProject.name;
+        }
+    ),
+    doesUserBelongToSomeGroupProject: createSelector(
+        state,
+        state => state.projects.length !== 1
+    )
+};

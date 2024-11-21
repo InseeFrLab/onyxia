@@ -20,7 +20,7 @@ import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
-import { customIcons } from "ui/theme";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
 
 export type Props = {
@@ -58,7 +58,7 @@ export default function MySecrets(props: Props) {
                 () =>
                     routes[route.name]({
                         ...route.params,
-                        "path": undefined
+                        path: undefined
                     }).replace()
             );
         },
@@ -68,13 +68,13 @@ export default function MySecrets(props: Props) {
     useEffect(() => {
         if (route.params.path === undefined) {
             routes[route.name]({
-                "path": secretExplorer.getProjectHomeOrPreviousPath()
+                path: secretExplorer.getProjectHomeOrPreviousPath()
             }).replace();
             return;
         }
 
         secretExplorer.navigate({
-            "directoryPath": route.params.path
+            directoryPath: route.params.path
         });
     }, [route.params.path]);
 
@@ -87,15 +87,15 @@ export default function MySecrets(props: Props) {
             secretsEditor.closeSecret();
         } else {
             secretsEditor.openSecret({
-                "directoryPath": route.params.path,
-                "basename": route.params.openFile
+                directoryPath: route.params.path,
+                basename: route.params.openFile
             });
         }
     }, [route.params.path, route.params.openFile]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({ "path": directoryPath }).push()
+            routes[route.name]({ path: directoryPath }).push()
     );
 
     const onRefresh = useConstCallback(() => secretExplorer.refresh());
@@ -103,7 +103,7 @@ export default function MySecrets(props: Props) {
     const onEditBasename = useConstCallback(
         ({ kind, basename, newBasename }: Param0<ExplorerProps["onEditBasename"]>) => {
             secretExplorer.rename({
-                "renamingWhat": kind,
+                renamingWhat: kind,
                 basename,
                 newBasename
             });
@@ -115,14 +115,14 @@ export default function MySecrets(props: Props) {
             switch (kind) {
                 case "directory":
                     secretExplorer.create({
-                        "createWhat": "directory",
-                        "basename": suggestedBasename
+                        createWhat: "directory",
+                        basename: suggestedBasename
                     });
                     break;
                 case "file":
                     secretExplorer.create({
-                        "createWhat": "file",
-                        "basename": suggestedBasename
+                        createWhat: "file",
+                        basename: suggestedBasename
                     });
                     break;
             }
@@ -132,13 +132,16 @@ export default function MySecrets(props: Props) {
     const onDeleteItem = useConstCallback(
         ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
             secretExplorer.delete({
-                "deleteWhat": kind,
+                deleteWhat: kind,
                 basename
             })
     );
 
-    const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/"))
+    const onCopyPath = useConstCallback(
+        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+            const [_root, ...rest] = path.split("/");
+            copyToClipboard(rest.join("/"));
+        }
     );
 
     const { classes, cx } = useStyles();
@@ -147,7 +150,7 @@ export default function MySecrets(props: Props) {
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) {
-            showSplashScreen({ "enableTransparency": true });
+            showSplashScreen({ enableTransparency: true });
         } else {
             hideSplashScreen();
         }
@@ -161,18 +164,18 @@ export default function MySecrets(props: Props) {
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef
+            behavior: "collapses on scroll",
+            scrollTopThreshold: 100,
+            scrollableElementRef: scrollableDivRef
         }),
         []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef
+            behavior: "collapses on scroll",
+            scrollTopThreshold: 50,
+            scrollableElementRef: scrollableDivRef
         }),
         []
     );
@@ -180,7 +183,7 @@ export default function MySecrets(props: Props) {
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
-        routes.mySecrets({ ...route.params, "openFile": basename }).replace();
+        routes.mySecrets({ ...route.params, openFile: basename }).replace();
     });
 
     const onCloseFile = useConstCallback<
@@ -211,7 +214,7 @@ export default function MySecrets(props: Props) {
 
     const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
         userConfigs.changeValue({
-            "key": "doDisplayMySecretsUseInServiceDialog",
+            key: "doDisplayMySecretsUseInServiceDialog",
             value
         })
     );
@@ -227,10 +230,10 @@ export default function MySecrets(props: Props) {
                 title={t("page title - my secrets")}
                 helpTitle={t("what this page is used for - my secrets")}
                 helpContent={t("help content", {
-                    "docHref": env.VAULT_DOCUMENTATION_LINK,
-                    "accountTabLink": routes.account({ "tabId": "vault" }).link
+                    docHref: env.VAULT_DOCUMENTATION_LINK,
+                    accountTabLink: routes.account({ tabId: "vault" }).link
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
             />
@@ -262,7 +265,7 @@ export default function MySecrets(props: Props) {
                 {...(() => {
                     if (secretEditorState === null) {
                         return {
-                            "isFileOpen": false as const,
+                            isFileOpen: false as const,
                             onOpenFile
                         };
                     }
@@ -271,24 +274,24 @@ export default function MySecrets(props: Props) {
 
                     if (secretWithMetadata === undefined) {
                         return {
-                            "isFileOpen": true as const,
-                            "openFileTime": undefined,
-                            "openFileBasename": secretEditorState.basename,
-                            "onCloseFile": () => {},
-                            "onRefreshOpenFile": () => {},
-                            "openFileNode": null
+                            isFileOpen: true as const,
+                            openFileTime: undefined,
+                            openFileBasename: secretEditorState.basename,
+                            onCloseFile: () => {},
+                            onRefreshOpenFile: () => {},
+                            openFileNode: null
                         };
                     }
 
                     return {
-                        "isFileOpen": true as const,
-                        "openFileTime": new Date(
+                        isFileOpen: true as const,
+                        openFileTime: new Date(
                             secretWithMetadata.metadata.created_time
                         ).getTime(),
-                        "openFileBasename": secretEditorState.basename,
+                        openFileBasename: secretEditorState.basename,
                         onCloseFile,
                         onRefreshOpenFile,
-                        "openFileNode": (
+                        openFileNode: (
                             <MySecretsEditor
                                 onCopyPath={onMySecretEditorCopyPath}
                                 isBeingUpdated={secretEditorState.isBeingUpdated}
@@ -325,14 +328,14 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MySecrets }).create({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column"
     },
-    "explorer": {
-        "overflow": "hidden",
-        "flex": 1,
-        "width": "100%"
+    explorer: {
+        overflow: "hidden",
+        flex: 1,
+        width: "100%"
     }
 });

@@ -15,7 +15,6 @@ export type State = {
     extraRestorableStates:
         | {
               selectedRowIndex: number | undefined;
-              columnWidths: Record<string, number>;
               columnVisibility: Record<string, boolean>;
           }
         | undefined;
@@ -31,15 +30,15 @@ export type State = {
 
 export const { actions, reducer } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "isQuerying": false,
-        "queryParams": undefined,
-        "extraRestorableStates": undefined,
-        "errorMessage": undefined,
-        "data": undefined
+    initialState: id<State>({
+        isQuerying: false,
+        queryParams: undefined,
+        extraRestorableStates: undefined,
+        errorMessage: undefined,
+        data: undefined
     }),
-    "reducers": {
-        "queryStarted": (
+    reducers: {
+        queryStarted: (
             state,
             {
                 payload
@@ -54,7 +53,7 @@ export const { actions, reducer } = createUsecaseActions({
             state.isQuerying = true;
             state.queryParams = queryParams;
         },
-        "extraRestorableStateSet": (
+        extraRestorableStateSet: (
             state,
             {
                 payload
@@ -63,21 +62,18 @@ export const { actions, reducer } = createUsecaseActions({
             const { extraRestorableStates } = payload;
             state.extraRestorableStates = extraRestorableStates;
         },
-        "querySucceeded": (
-            state,
-            { payload }: { payload: NonNullable<State["data"]> }
-        ) => {
+        querySucceeded: (state, { payload }: { payload: NonNullable<State["data"]> }) => {
             const { rowCount, rows, fileDownloadUrl } = payload;
             state.isQuerying = false;
             state.data = { rowCount, rows, fileDownloadUrl };
         },
-        "queryFailed": (state, { payload }: { payload: { errorMessage: string } }) => {
+        queryFailed: (state, { payload }: { payload: { errorMessage: string } }) => {
             const { errorMessage } = payload;
             state.isQuerying = false;
             state.errorMessage = errorMessage;
             state.queryParams = undefined;
         },
         /** Only for evt */
-        "restoreStateNeeded": () => {}
+        restoreStateNeeded: () => {}
     }
 });

@@ -23,8 +23,8 @@ export function CircularUsage(props: Props) {
         <div className={cx(classes.root, className)}>
             <Text typo="label 1">
                 {t("quota card title", {
-                    "what": name.replace(/^limits\./, "").replace(/^requests\./, ""),
-                    "isLimit": name.startsWith("limits")
+                    what: name.replace(/^limits\./, "").replace(/^requests\./, ""),
+                    isLimit: name.startsWith("limits")
                 })}
             </Text>
             <CircularMetric
@@ -48,7 +48,7 @@ export function CircularUsage(props: Props) {
             <div className={classes.metricsWrapper}>
                 <Text typo="label 1">{t("used")}:</Text>&nbsp;
                 <Text typo="body 1">{used}</Text>
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 <Text typo="label 1">{t("max")}:</Text>&nbsp;
                 <Text typo="body 1">{total}</Text>
             </div>
@@ -57,20 +57,20 @@ export function CircularUsage(props: Props) {
 }
 
 const useStyles = tss.withName({ CircularUsage }).create(({ theme }) => ({
-    "root": {
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "borderRadius": theme.spacing(2),
-        "padding": theme.spacing(3),
-        "boxShadow": theme.shadows[1],
+    root: {
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        borderRadius: theme.spacing(2),
+        padding: theme.spacing(3),
+        boxShadow: theme.shadows[1],
         "&:hover": {
-            "boxShadow": theme.shadows[6]
+            boxShadow: theme.shadows[6]
         }
     },
-    "circularMetric": {
+    circularMetric: {
         ...theme.spacing.topBottom("margin", 2)
     },
-    "metricsWrapper": {
-        "display": "flex"
+    metricsWrapper: {
+        display: "flex"
     }
 }));
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useMemo } from "react";
 import { env } from "env";
 import { Text } from "onyxia-ui/Text";
@@ -22,7 +23,7 @@ export function BrandHeaderSection(props: Props) {
     const { cx, classes } = useStyles({
         logoContainerWidth,
         doShowOnyxia,
-        "hasBoldText": env.HEADER_TEXT_BOLD !== undefined
+        hasBoldText: env.HEADER_TEXT_BOLD !== undefined
     });
 
     return (
@@ -63,37 +64,37 @@ const useStyles = tss
         hasBoldText: boolean;
     }>()
     .create(({ logoContainerWidth, doShowOnyxia, hasBoldText, theme }) => ({
-        "root": {
-            "textDecoration": "none",
-            "color": "unset",
-            "display": "flex",
-            "alignItems": "center"
+        root: {
+            textDecoration: "none",
+            color: "unset",
+            display: "flex",
+            alignItems: "center"
         },
-        "logoContainer": {
-            "width": logoContainerWidth,
-            "textAlign": "center",
-            "display": "flex",
-            "alignItems": "center",
-            "justifyContent": "center"
+        logoContainer: {
+            width: logoContainerWidth,
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
         },
-        "logo": {
-            "width": "60%"
+        logo: {
+            width: "60%"
         },
-        "textContainer": {
+        textContainer: {
             "& > *": {
-                "display": "inline-block"
+                display: "inline-block"
             }
         },
-        "text_onyxia": {
-            "fontWeight": 600
+        text_onyxia: {
+            fontWeight: 600
         },
-        "text_organization": {
+        text_organization: {
             ...theme.spacing.rightLeft("margin", 2),
-            ...(doShowOnyxia ? {} : { "marginLeft": 0 })
+            ...(doShowOnyxia ? {} : { marginLeft: 0 })
         },
-        "text_usecase": {
-            "fontWeight": 500,
-            "marginLeft": hasBoldText ? undefined : theme.spacing(2)
+        text_usecase: {
+            fontWeight: 500,
+            marginLeft: hasBoldText ? undefined : theme.spacing(2)
         }
     }));
 

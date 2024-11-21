@@ -2,35 +2,34 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
-    "Account": {
-        "infos": "账号信息",
-        "git": undefined,
-        "storage": "链接到储存器",
+    Account: {
+        infos: "账号信息",
+        git: undefined,
+        storage: "链接到储存器",
         "user-interface": "变换显示模式",
-        "k8sCodeSnippets": "Kubernetes",
-        "text1": "我的账号",
-        "text2": "访问我的账号信息",
-        "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
+        k8sCodeSnippets: "Kubernetes",
+        text1: "我的账号",
+        text2: "访问我的账号信息",
+        text3: "设置您的用户名, 电子邮件, 密码和访问令牌",
         "personal tokens tooltip": "服务的访问令牌",
-        "vault": "Vault"
+        vault: "Vault"
     },
-    "AccountInfoTab": {
+    AccountInfoTab: {
         "general information": "一般信息",
         "user id": "身分名 (IDEP)",
         "full name": "全名",
-        "email": "邮件地址",
+        email: "邮件地址",
         "instructions about how to change password":
             "要更改密码，只需登出，然后点击“忘记密码”链接。"
     },
-    "AccountGitTab": {
-        "gitName": "Git 用户名",
+    AccountGitTab: {
+        gitName: "Git 用户名",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
                 此命令将设置您的全局 Git 用户名，服务启动时执行：&nbsp;
@@ -39,7 +38,7 @@ export const translations: Translations<"zh-CN"> = {
                 </code>
             </>
         ),
-        "gitEmail": "Git 邮箱",
+        gitEmail: "Git 邮箱",
         "gitEmail helper text": ({ gitEmail, focusClassName }) => (
             <>
                 此命令将设置您的全局 Git 邮箱，服务启动时执行：&nbsp;
@@ -49,7 +48,7 @@ export const translations: Translations<"zh-CN"> = {
                 </code>
             </>
         ),
-        "githubPersonalAccessToken": "Git 服务平台个人访问令牌",
+        githubPersonalAccessToken: "Git 服务平台个人访问令牌",
         "githubPersonalAccessToken helper text": ({ focusClassName }) => (
             <>
                 提供此令牌后，您可以在不再次输入您的服务平台凭据的情况下，克隆和推送到您的私人
@@ -60,7 +59,7 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "AccountStorageTab": {
+    AccountStorageTab: {
         "credentials section title": "将您的数据连接到您的服务",
         "credentials section helper":
             "与 Amazon (AWS S3) 兼容的对象存储 MinIO. 此信息已自动填写.",
@@ -69,7 +68,7 @@ export const translations: Translations<"zh-CN"> = {
         "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
         "expires in": ({ howMuchTime }) => `有效期至 ${howMuchTime}`
     },
-    "AccountKubernetesTab": {
+    AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",
         "credentials section helper": "用于直接与 Kubernetes API 服务器交互的凭证。",
         "init script section title": "Shell 脚本",
@@ -88,7 +87,7 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
-    "AccountVaultTab": {
+    AccountVaultTab: {
         "credentials section title": "保险库凭证",
         "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
             <>
@@ -111,7 +110,7 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "expires in": ({ howMuchTime }) => `该令牌有效期至 ${howMuchTime}`
     },
-    "ProjectSettings": {
+    ProjectSettings: {
         "page header title": "项目设置",
         "page header help title": ({ groupProjectName }) =>
             groupProjectName === undefined
@@ -147,25 +146,25 @@ export const translations: Translations<"zh-CN"> = {
         "security-info": "安全信息",
         "s3-configs": "S3 配置"
     },
-    "ProjectSettingsS3ConfigTab": {
+    ProjectSettingsS3ConfigTab: {
         "add custom config": "添加自定义S3配置"
     },
-    "S3ConfigCard": {
+    S3ConfigCard: {
         "data source": "数据源",
-        "credentials": "凭证",
+        credentials: "凭证",
         "sts credentials": "由Onyxia代表您动态请求的令牌 (STS)",
-        "account": "账户",
+        account: "账户",
         "use in services": "在服务中使用",
         "use in services helper": `如果启用，此配置将默认用于实现S3集成的服务中。`,
         "use for onyxia explorers": "用于Onyxia探索器",
         "use for onyxia explorers helper": `如果启用，此配置将被文件浏览器和数据浏览器使用。`,
-        "edit": "编辑",
-        "delete": "删除"
+        edit: "编辑",
+        delete: "删除"
     },
-    "AddCustomS3ConfigDialog": {
+    AddCustomS3ConfigDialog: {
         "dialog title": "新的自定义 S3 配置",
         "dialog subtitle": "指定自定义服务账户或连接到另一个兼容 S3 的服务",
-        "cancel": "取消",
+        cancel: "取消",
         "save config": "保存配置",
         "update config": "更新配置",
         "is required": "此字段为必填项",
@@ -184,9 +183,11 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         "account credentials": "账户凭证",
-        "accountFriendlyName textField label": "账户友好名称",
-        "accountFriendlyName textField helper text":
-            "这只是为了帮助你识别这个账户。例如：我的个人账户",
+        "friendlyName textField label": "配置名称",
+        "friendlyName textField helper text":
+            "这只是帮助您识别此配置。例如：我的 AWS 存储桶",
+        "isAnonymous switch label": "匿名访问",
+        "isAnonymous switch helper text": "如果不需要密钥，请将其设置为开启",
         "accessKeyId textField label": "访问密钥 ID",
         "accessKeyId textField helper text": "例如：1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "秘密访问密钥",
@@ -217,7 +218,7 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "TestS3ConnectionButton": {
+    TestS3ConnectionButton: {
         "test connection": "测试连接",
         "test connection failed": ({ errorMessage }) => (
             <>
@@ -226,8 +227,8 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "AccountUserInterfaceTab": {
-        "title": "配置界面模式",
+    AccountUserInterfaceTab: {
+        title: "配置界面模式",
         "enable dark mode": "开启深色模式",
         "dark mode helper": "适用于低光环境的深色背景主题",
         "enable beta": "启用 Beta 测试模式",
@@ -244,19 +245,15 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "SettingField": {
+    SettingField: {
         "copy tooltip": "复制到剪贴板",
-        "language": "更改语言",
+        language: "更改语言",
         "service password": "默认服务密码",
         "service password helper text": ({ groupProjectName }) => (
             <>
                 这是用来保护您正在运行的服务的默认密码。 <br />
                 当您启动一个服务时，安全标签页中的密码字段将自动填充此密码。 <br />
-                点击{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
+                点击 <Icon size="extra small" icon={getIconUrlByName("Refresh")} />{" "}
                 图标将生成一个新的随机密码。
                 但是，请注意，它不会更新当前正在运行的服务的密码。 <br />
                 服务密码是Onyxia在您访问正在运行的服务之前让您复制到剪贴板的密码。 <br />
@@ -267,10 +264,10 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "not yet defined": "没有定义",
         "reset helper dialogs": "重置指令窗口",
-        "reset": "重置",
+        reset: "重置",
         "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
     },
-    "MyFiles": {
+    MyFiles: {
         "page title - my files": "我的文件",
         "what this page is used for - my files": "在此处存储您的数据.",
         "help content": ({ accountTabLink, docHref }) => (
@@ -284,13 +281,11 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "MyFilesDisabledDialog": {
-        "dialog title": "未配置S3服务器",
-        "dialog body": "此实例未配置S3服务器。但您可以手动添加一个，以启用S3文件浏览器。",
-        "cancel": "取消",
-        "go to settings": "前往设置"
+    MyFilesShareDialog: {
+        cancel: "取消",
+        "create and copy link": "创建并复制链接"
     },
-    "MySecrets": {
+    MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
             "在此处存储可作为服务中的环境变量访问的密钥.",
@@ -306,41 +301,69 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "ExplorerItem": {
-        "description": "描述"
+    ExplorerItem: {
+        description: "描述"
     },
-    "SecretsExplorerItem": {
-        "description": "描述"
+    SecretsExplorerItem: {
+        description: "描述"
     },
-    "ExplorerButtonBar": {
-        "file": "文件",
-        "delete": "删除",
+    ExplorerButtonBar: {
+        file: "文件",
+        delete: "删除",
         "upload file": "上传文件",
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",
-        "refresh": "刷新",
-        "create what": ({ what }) => `创建 ${what}`,
-        "new": "新建"
+        refresh: "刷新",
+        new: "新建",
+        share: "分享",
+        "alt list view": "显示列表",
+        "alt block view": "显示块"
     },
-    "SecretsExplorerButtonBar": {
-        "secret": "密码",
-        "rename": "重命名",
-        "delete": "删除",
+    SecretsExplorerButtonBar: {
+        secret: "密码",
+        rename: "重命名",
+        delete: "删除",
         "create secret": "新的密钥",
         "copy path": "在服务中使用",
         "create directory": "新建文件夹",
-        "refresh": "刷新",
+        refresh: "刷新",
         "create what": ({ what }) => `新 ${what}`,
-        "new": "新建"
+        new: "新建"
     },
-    "Explorer": {
-        "file": "文档",
-        "secret": "密码",
-        "cancel": "取消",
-        "delete": "删除",
+    Explorer: {
+        file: "文档",
+        secret: "密码",
+        cancel: "取消",
+        delete: "删除",
         "do not display again": "不要再显示",
         "untitled what": ({ what }) => `untitled_${what}`,
-        "directory": "目录",
+        directory: "目录",
+        multiple: "项目",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `删除${isPlural ? "这些" : "此"}${deleteWhat}？`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        您将要删除${isPlural ? "这些" : "此"}${deleteWhat}。
+        此操作可能导致与${isPlural ? "这些" : "此"}${deleteWhat}相关的数据丢失。
+        `,
+        "already a directory with this name": "已经有一个同名的文件夹",
+        "can't be empty": "不能为空",
+        create: "建立",
+        "new directory": "新建文件夹"
+    },
+    ListExplorerItems: {
+        "header name": "名称",
+        "header modified date": "修改日期",
+        "header size": "大小",
+        "header policy": "策略"
+    },
+    SecretsExplorer: {
+        file: "文档",
+        secret: "密码",
+        cancel: "取消",
+        delete: "删除",
+        "do not display again": "不要再显示",
+        "untitled what": ({ what }) => `untitled_${what}`,
+        directory: "目录",
         "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
         "deletion dialog body": ({ deleteWhat }) => `
             您即将删除 ${deleteWhat} 服务.
@@ -348,34 +371,17 @@ export const translations: Translations<"zh-CN"> = {
             `,
         "already a directory with this name": "已经有一个同名的文件夹",
         "can't be empty": "不能为空",
-        "create": "建立",
+        create: "建立",
         "new directory": "新建文件夹"
     },
-    "SecretsExplorer": {
-        "file": "文档",
-        "secret": "密码",
-        "cancel": "取消",
-        "delete": "删除",
-        "do not display again": "不要再显示",
-        "untitled what": ({ what }) => `untitled_${what}`,
-        "directory": "目录",
-        "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
-        "deletion dialog body": ({ deleteWhat }) => `
-            您即将删除 ${deleteWhat} 服务.
-            此操作将导致与此 ${deleteWhat} 服务相关的数据的潜在丢失
-            `,
-        "already a directory with this name": "已经有一个同名的文件夹",
-        "can't be empty": "不能为空",
-        "create": "建立",
-        "new directory": "新建文件夹"
-    },
-    "ExplorerItems": {
+    ExplorerItems: {
         "empty directory": "此目录为空"
     },
-    "SecretsExplorerItems": {
+
+    SecretsExplorerItems: {
         "empty directory": "此目录为空"
     },
-    "MySecretsEditor": {
+    MySecretsEditor: {
         "do not display again": "不要再显示",
         "add an entry": "添加变量",
         "environnement variable default name": "NEW_VARENV",
@@ -397,120 +403,125 @@ export const translations: Translations<"zh-CN"> = {
                                     您的键值将被作为环境变量.`,
         "use secret dialog ok": "我知道了"
     },
-    "MySecretsEditorRow": {
+    MySecretsEditorRow: {
         "key input desc": "环境变量名称",
         "value input desc": "环境变量值"
     },
-    "ExplorerUploadModalDropArea": {
+    ExplorerUploadModalDropArea: {
         "browse files": "浏览您的文件",
         "drag and drop or": "拖拽，放置或"
     },
-    "ExplorerUploadProgress": {
-        "over": "over",
-        "importing": "导入"
+    ExplorerUploadProgress: {
+        over: "over",
+        importing: "导入"
     },
-    "ExplorerUploadModal": {
+    ExplorerUploadModal: {
         "import files": "导入文件",
-        "cancel": "取消",
-        "minimize": "最小化"
+        cancel: "取消",
+        minimize: "最小化"
     },
-    "Header": {
-        "login": "登录",
-        "logout": "登出",
-        "project": "项目",
-        "region": "区域"
+    Header: {
+        login: "登录",
+        logout: "登出",
+        project: "项目",
+        region: "区域"
     },
-    "LeftBar": {
-        "reduce": "缩小",
-        "home": "我的主页",
-        "account": "我的账号",
-        "projectSettings": "项目设置",
-        "catalog": "服务目录",
-        "myServices": "我的服务",
-        "mySecrets": "我的密钥",
-        "myFiles": "我的文档",
+    LeftBar: {
+        reduce: "缩小",
+        home: "我的主页",
+        account: "我的账号",
+        projectSettings: "项目设置",
+        catalog: "服务目录",
+        myServices: "我的服务",
+        mySecrets: "我的密钥",
+        myFiles: "我的文档",
         "divider: services features": "服务功能",
         "divider: external services features": "外部服务功能",
         "divider: onyxia instance specific features": "Onyxia实例特定功能",
-        "dataExplorer": "数据浏览器",
-        "sqlOlapShell": "SQL OLAP 外壳"
+        dataExplorer: "数据浏览器",
+        sqlOlapShell: "SQL OLAP 外壳"
     },
-    "AutoLogoutCountdown": {
+    AutoLogoutCountdown: {
         "are you still there": "你还在吗？",
         "you'll soon be automatically logged out": "你将很快被自动登出。"
     },
-    "Page404": {
+    Page404: {
         "not found": "网页未找到"
     },
-    "PortraitModeUnsupported": {
-        "instructions": "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
+    PortraitModeUnsupported: {
+        instructions: "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
     },
-    "MaybeAcknowledgeConfigVolatilityDialog": {
+    MaybeAcknowledgeConfigVolatilityDialog: {
         "dialog title": "请注意，配置是易变的",
         "dialog body": `此Onyxia实例不实现用于存储配置的任何持久性机制。
             所有配置都存储在浏览器的本地存储中。这意味着，如果您清除了浏览器的本地存储
             或更换浏览器，您将丢失所有配置。`,
         "do not show next time": "下次不再显示此消息",
-        "cancel": "取消",
+        cancel: "取消",
         "I understand": "我明白了"
     },
-    "Home": {
+    Home: {
         "title authenticated": ({ userFirstname }) => `你好 ${userFirstname}!`,
-        "title": "欢迎来到 datalab",
-        "login": "登录",
+        title: "欢迎来到 datalab",
+        login: "登录",
         "new user": "您是datalab的新用户?",
-        "subtitle": "我们支持 Python 或 R，并为您提供各种数据服务和您需要的所有计算能力!",
-        "cardTitle1": "灵活的工作环境和按需分配的服务",
-        "cardTitle2": "一个为您服务的，活跃的和热情的社区",
-        "cardTitle3": "快速、灵活、在线的数据存储空间",
-        "cardText1":
+        subtitle: "我们支持 Python 或 R，并为您提供各种数据服务和您需要的所有计算能力!",
+        cardTitle1: "灵活的工作环境和按需分配的服务",
+        cardTitle2: "一个为您服务的，活跃的和热情的社区",
+        cardTitle3: "快速、灵活、在线的数据存储空间",
+        cardText1:
             "分析数据、执行分布式计算并提供大量数据服务. 保证您可以预订您需要的超大计算能力",
-        "cardText2": "充分利用我们向您提供的资源: 教程, 培训和交流群.",
-        "cardText3": "轻松访问您的个人数据以及您的项目提供给您的数据 - S3 API",
-        "cardButton1": "查阅目录",
-        "cardButton2": "加入社区",
-        "cardButton3": "查看数据"
+        cardText2: "充分利用我们向您提供的资源: 教程, 培训和交流群.",
+        cardText3: "轻松访问您的个人数据以及您的项目提供给您的数据 - S3 API",
+        cardButton1: "查阅目录",
+        cardButton2: "加入社区",
+        cardButton3: "查看数据"
     },
-    "Catalog": {
-        "header": "服务目录",
+    Catalog: {
+        header: "服务目录",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "search results": "搜索结果",
-        "search": "收索服务"
+        search: "收索服务"
     },
-    "CatalogChartCard": {
-        "launch": "启动",
+    CatalogChartCard: {
+        launch: "启动",
         "learn more": "了解更多"
     },
-    "CatalogNoSearchMatches": {
+    CatalogNoSearchMatches: {
         "no service found": "没有找到服务",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "check spelling": "检查服务名称是否拼写正确或尝试扩大您的搜索范围",
         "go back": "返回主要服务"
     },
-    "Launcher": {
-        "header text1": "服务目录",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+    Launcher: {
+        sources: ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
-                您即将部署 Helm 图表{" "}
+                Helm 图表{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
-                ， 它属于 Helm 图表仓库{" "}
+                }{" "}
+                属于 Helm 图表仓库{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 。
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         它基于 Docker 镜像{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -544,9 +555,7 @@ export const translations: Translations<"zh-CN"> = {
 
                     return {
                         href,
-                        ...(doOpensNewTab
-                            ? { "target": "_blank", "onClick": undefined }
-                            : {})
+                        ...(doOpensNewTab ? { target: "_blank", onClick: undefined } : {})
                     };
                 }}
             >{`我们设计了命令栏，目的是让您能够全面掌控您的 Kubernetes 部署。
@@ -591,7 +600,7 @@ ${
         `}</Markdown>
         )
     },
-    "AcknowledgeSharingOfConfigConfirmDialog": {
+    AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title": "请注意，配置是共享的",
         "acknowledge sharing of config confirm dialog subtitle": ({
             groupProjectName
@@ -599,11 +608,11 @@ ${
         此配置，项目 ${groupProjectName} 的每个成员都将能够启动它。`,
         "acknowledge sharing of config confirm dialog body": `尽管 Onyxia 没有自动注入任何个人信息，
         请注意不要在可恢复的配置中分享任何敏感信息。`,
-        "cancel": "取消",
+        cancel: "取消",
         "i understand, proceed": "我明白了，继续"
     },
-    "AutoLaunchDisabledDialog": {
-        "ok": "是",
+    AutoLaunchDisabledDialog: {
+        ok: "是",
         "auto launch disabled dialog title": "您想更换它吗?",
         "auto launch disabled dialog body": (
             <>
@@ -616,34 +625,49 @@ ${
             </>
         )
     },
-    "NoLongerBookmarkedDialog": {
+    FormFieldWrapper: {
+        "reset to default": "重置为默认值"
+    },
+    YamlCodeBlockFormField: {
+        "not an array": "需要是数组",
+        "not an object": "需要是对象",
+        "not valid yaml": "无效的 YAML/JSON"
+    },
+    TextFormField: {
+        "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
+        "toggle password visibility": "切换密码可见性"
+    },
+    FormFieldGroupComponent: {
+        add: "添加"
+    },
+    NumberFormField: {
+        "below minimum": ({ minimum }) => `必须大于或等于 ${minimum}`,
+        "not a number": "不是数字",
+        "not an integer": "不是整数"
+    },
+    NoLongerBookmarkedDialog: {
         "no longer bookmarked dialog title": "更改未保存",
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
-        "ok": "是"
+        ok: "是"
     },
-    "SensitiveConfigurationDialog": {
-        "cancel": "取消",
-        "sensitive configuration dialog title": "您想更换它吗?",
-        "proceed to launch": "继续启动"
-    },
-    "MyService": {
+    MyService: {
         "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`
     },
-    "PodLogsTab": {
+    PodLogsTab: {
         "not necessarily first logs": "这不一定是第一批日志，较旧的日志可能已被清除",
         "new logs are displayed in realtime": "新日志实时显示"
     },
-    "MyServiceButtonBar": {
-        "back": "返回",
+    MyServiceButtonBar: {
+        back: "返回",
         "external monitoring": "外部监控",
         "helm values": "Helm 值",
-        "reduce": "减少"
+        reduce: "减少"
     },
-    "LauncherMainCard": {
-        "card title": "创建自定义服务",
+    LauncherMainCard: {
         "friendly name": "自定义名称",
-        "launch": "启动",
-        "cancel": "取消",
+        launch: "启动",
+        "problem with": "问题：",
+        cancel: "取消",
         "copy auto launch url": "复制自动启动 URL",
         "copy auto launch url helper": ({
             chartName
@@ -666,17 +690,19 @@ ${
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 helm 图表的版本 属于{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }{" "}
@@ -693,99 +719,109 @@ ${
             </>
         )
     },
-    "LauncherConfigurationCard": {
-        "global config": "全局配置",
-        "configuration": ({ packageName }) => `${packageName} 配置`,
-        "dependency": ({ dependencyName }) => `${dependencyName} 依赖`,
-        "launch of a service": ({ dependencyName }) =>
-            `将启动一个 ${dependencyName} 服务`,
-        "mismatching pattern": ({ pattern }) => `应匹配 ${pattern}`,
-        "Invalid YAML Object": "无效的 YAML 对象",
-        "Invalid YAML Array": "无效的 YAML 数组"
-    },
-    "Footer": {
-        "contribute": "为项目做贡献",
+    Footer: {
+        contribute: "为项目做贡献",
         "terms of service": "使用条款",
         "change language": "切换语言",
         "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关
     },
-    "MyServices": {
-        "text1": "我的服务",
-        "text2": "快速启动、查看和管理您正在运行的各种服务。",
-        "text3": "建议您在每次工作会话后删除您的服务.",
+    MyServices: {
+        text1: "我的服务",
+        text2: "快速启动、查看和管理您正在运行的各种服务。",
+        text3: "建议您在每次工作会话后删除您的服务.",
         "running services": "正在运行的服务"
     },
-    "ClusterEventsDialog": {
-        "title": "事件",
-        "subtitle": (
+    ClusterEventsDialog: {
+        title: "事件",
+        subtitle: (
             <>
                 Kubernetes 命名空间的事件，这是一个来自 <code>kubectl get events</code>
                 的实时流
             </>
         )
     },
-    "MyServicesConfirmDeleteDialog": {
+    MyServicesConfirmDeleteDialog: {
         "confirm delete title": "您确定?",
         "confirm delete subtitle": "确保您的服务不包括未保存的工作。",
         "confirm delete body": "在继续之前不要忘记将您的代码推送到 GitHub 或 GitLab.",
         "confirm delete body shared services":
             "请注意，您的某些服务正在与项目的其他成员共享.",
-        "cancel": "取消",
-        "confirm": "是的, 删除"
+        cancel: "取消",
+        confirm: "是的, 删除"
     },
-    "MyServicesButtonBar": {
-        "refresh": "刷新",
-        "launch": "新的服务",
-        "trash": "删除所有",
+    MyServicesButtonBar: {
+        refresh: "刷新",
+        launch: "新的服务",
+        trash: "删除所有",
         "trash my own": "删除您的所有服务"
     },
-    "MyServicesCard": {
-        "service": "服务",
+    MyServicesCard: {
+        service: "服务",
         "running since": "开始于：",
-        "open": "打开",
-        "readme": "自述文件",
-        "shared by you": "你分享的",
+        open: "打开",
+        readme: "自述文件",
         "reminder to delete services": "请在使用后删除您的服务。",
-        "this is a shared service": "该服务在项目内共享",
-        "status": "状态",
+        status: "状态",
         "container starting": "容器启动中",
-        "failed": "失败",
+        failed: "失败",
         "suspend service tooltip": "暂停服务并释放资源",
         "resume service tooltip": "恢复服务",
-        "suspended": "已暂停",
-        "suspending": "正在暂停"
+        suspended: "已暂停",
+        suspending: "正在暂停",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                该服务由<span style={{ color: focusColor }}>{ownerUsername}</span>共享给
+                <span style={{ color: focusColor }}>{projectName}</span>项目成员。
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                该服务已共享给<span style={{ color: focusColor }}>{projectName}</span>
+                项目成员。点击停止共享。
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                只有您可以访问此服务。点击共享给
+                <span style={{ color: focusColor }}>{projectName}</span>项目成员。
+            </>
+        )
     },
-    "MyServicesRestorableConfigOptions": {
-        "edit": "编辑服务",
+    MyServicesRestorableConfigOptions: {
+        edit: "编辑服务",
         "copy link": "复制链接",
         "remove bookmark": "删除书签"
     },
-    "MyServicesRestorableConfig": {
-        "edit": "编辑服务",
-        "launch": "启动服务"
+    MyServicesRestorableConfig: {
+        edit: "编辑服务",
+        launch: "启动服务"
     },
-    "MyServicesRestorableConfigs": {
-        "saved": "已经保存",
-        "expand": "展开"
+    MyServicesRestorableConfigs: {
+        saved: "已经保存",
+        expand: "展开"
     },
-    "ReadmeDialog": {
-        "ok": "是",
-        "return": "返回"
+    ReadmeDialog: {
+        ok: "是",
+        return: "返回"
     },
-    "CopyOpenButton": {
+    CopyOpenButton: {
         "first copy the password": "点击以复制密码...",
         "open the service": "打开服务 🚀"
     },
-    "MyServicesCards": {
+    MyServicesCards: {
         "running services": "正在运行的服务"
     },
-    "NoRunningService": {
+    NoRunningService: {
         "launch one": "点击来启动此服务",
         "no services running": "You don't have any service running"
     },
-    "CircularUsage": {
-        "max": "最大",
-        "used": "已用",
+    CircularUsage: {
+        max: "最大",
+        used: "已用",
         "quota card title": ({ what, isLimit }) => {
             const whatTranslated = (() => {
                 switch (what) {
@@ -807,12 +843,12 @@ ${
             return `${whatTranslated} - ${isLimit ? "限额" : "请求"}`;
         }
     },
-    "Quotas": {
+    Quotas: {
         "show more": "显示更多",
         "resource usage quotas": "资源使用配额",
         "current resource usage is reasonable": "您当前的资源使用是合理的。"
     },
-    "DataExplorer": {
+    DataExplorer: {
         "page header title": "数据浏览器",
         "page header help title": "直接在您的浏览器中预览您的 Parquet 和 CSV 文件！",
         "page header help content": ({ demoParquetFileLink }) => (
@@ -829,20 +865,21 @@ ${
                 <MuiLink {...demoParquetFileLink}>演示文件</MuiLink>！
             </>
         ),
-        "column": "列",
-        "density": "密度",
-        "download file": "下载文件"
+        column: "列",
+        density: "密度",
+        "download file": "下载文件",
+        "resize table": "调整大小"
     },
-    "UrlInput": {
-        "load": "加载"
+    UrlInput: {
+        load: "加载"
     },
-    "CommandBar": {
-        "ok": "是"
+    CommandBar: {
+        ok: "是"
     },
-    "moment": {
+    moment: {
         "date format": ({ isSameYear }) =>
             `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
-        "past1": ({ divisorKey }) => {
+        past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "刚刚";
@@ -862,7 +899,7 @@ ${
                     return "去年";
             }
         },
-        "pastN": ({ divisorKey }) => {
+        pastN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "刚刚";
@@ -882,7 +919,7 @@ ${
                     return "# 年前";
             }
         },
-        "future1": ({ divisorKey }) => {
+        future1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "刚刚";
@@ -902,7 +939,7 @@ ${
                     return "明年";
             }
         },
-        "futureN": ({ divisorKey }) => {
+        futureN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "刚刚";
@@ -923,9 +960,25 @@ ${
             }
         }
     },
-    "CopyToClipboardIconButton": {
+    CopyToClipboardIconButton: {
         "copied to clipboard": "已复制！",
         "copy to clipboard": "复制到剪贴板"
+    },
+    CustomDataGrid: {
+        "empty directory": "此目录为空",
+        "label rows count": ({ count }) => {
+            return `已选择 ${count} 项`;
+        },
+        "label rows per page": "每页项目数"
+    },
+    CustomDataGridToolbarDensitySelector: {
+        toolbarDensity: "密度",
+        toolbarDensityStandard: "标准",
+        toolbarDensityComfortable: "舒适",
+        toolbarDensityCompact: "紧凑"
+    },
+    CustomDataGridToolbarColumnsButton: {
+        toolbarColumnsLabel: "列"
     }
     /* spell-checker: enable */
 };

@@ -4,9 +4,10 @@ import { same } from "evt/tools/inDepth/same";
 import { createUsecaseContextApi } from "clean-architecture";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { assert } from "tsafe/assert";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 export const thunks = {
-    "getIsValidSourceUrl": (params: { sourceUrl: string }) => () => {
+    getIsValidSourceUrl: (params: { sourceUrl: string }) => () => {
         const { sourceUrl } = params;
 
         {
@@ -38,7 +39,7 @@ export const thunks = {
 
         return true;
     },
-    "setQueryParamsAndExtraRestorableStates":
+    setQueryParamsAndExtraRestorableStates:
         (params: {
             queryParams: {
                 sourceUrl: string;
@@ -47,7 +48,6 @@ export const thunks = {
             };
             extraRestorableStates: {
                 selectedRowIndex: number | undefined;
-                columnWidths: Record<string, number>;
                 columnVisibility: Record<string, boolean>;
             };
         }) =>
@@ -56,10 +56,10 @@ export const thunks = {
 
             const [dispatch, getState, rootContext] = args;
 
-            const { sqlOlap, s3ClientForExplorer, oidc } = rootContext;
+            const { sqlOlap, oidc } = rootContext;
 
             // NOTE: Preload for minimizing load time when querying.
-            sqlOlap.getDb();
+            sqlOlap.getConfiguredAsyncDuckDb();
 
             if (queryParams.sourceUrl === "") {
                 if (getState()[name].queryParams !== undefined) {
@@ -96,14 +96,26 @@ export const thunks = {
 
                 if (!oidc.isUserLoggedIn) {
                     oidc.login({
-                        "doesCurrentHrefRequiresAuth": true
+                        doesCurrentHrefRequiresAuth: true
                     });
                     await new Promise(() => {});
                 }
 
-                return s3ClientForExplorer.getFileDownloadUrl({
-                    "path": s3path,
-                    "validityDurationSecond": 3600 * 6
+                const s3Client = (
+                    await dispatch(
+                        s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                    )
+                )?.s3Client;
+
+                if (s3Client === undefined) {
+                    alert("No S3 client available");
+                    await new Promise<never>(() => {});
+                    assert(false);
+                }
+
+                return s3Client.getFileDownloadUrl({
+                    path: s3path,
+                    validityDurationSecond: 3600 * 6
                 });
             })();
 
@@ -119,7 +131,7 @@ export const thunks = {
             if (typeof rowCountOrErrorMessage === "string") {
                 dispatch(
                     actions.queryFailed({
-                        "errorMessage": rowCountOrErrorMessage
+                        errorMessage: rowCountOrErrorMessage
                     })
                 );
 
@@ -131,8 +143,8 @@ export const thunks = {
             const rowsOrErrorMessage = await sqlOlap
                 .getRows({
                     sourceUrl,
-                    "rowsPerPage": queryParams.rowsPerPage + 1,
-                    "page": queryParams.page
+                    rowsPerPage: queryParams.rowsPerPage + 1,
+                    page: queryParams.page
                 })
                 .catch(error => String(error));
 
@@ -144,7 +156,7 @@ export const thunks = {
             if (typeof rowsOrErrorMessage === "string") {
                 dispatch(
                     actions.queryFailed({
-                        "errorMessage": rowsOrErrorMessage
+                        errorMessage: rowsOrErrorMessage
                     })
                 );
 
@@ -157,8 +169,8 @@ export const thunks = {
 
             dispatch(
                 actions.querySucceeded({
-                    "rows": hasMore ? rows.slice(0, -1) : rows,
-                    "rowCount":
+                    rows: hasMore ? rows.slice(0, -1) : rows,
+                    rowCount:
                         rowCount !== undefined
                             ? rowCount
                             : hasMore
@@ -173,7 +185,7 @@ export const thunks = {
 
 const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({
-        "delay": 200
+        delay: 200
     });
 
     return {

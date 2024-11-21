@@ -3,6 +3,7 @@ import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     selectedItemKind: "file" | "directory" | "none";
@@ -25,24 +26,24 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
     const buttons = useMemo(
         (): ButtonBarProps<ButtonId>["buttons"] =>
             buttonIds.map(buttonId => ({
-                "buttonId": buttonId,
-                "icon": (() => {
+                buttonId: buttonId,
+                icon: (() => {
                     switch (buttonId) {
                         case "refresh":
-                            return "cached" as const;
+                            return getIconUrlByName("Cached");
                         case "copy path":
-                            return "filterNone";
+                            return getIconUrlByName("FilterNone");
                         case "create directory":
-                            return "add";
+                            return getIconUrlByName("Add");
                         case "new":
-                            return "add";
+                            return getIconUrlByName("Add");
                         case "delete":
-                            return "delete";
+                            return getIconUrlByName("Delete");
                         case "rename":
-                            return "edit";
+                            return getIconUrlByName("Edit");
                     }
                 })(),
-                "isDisabled": (() => {
+                isDisabled: (() => {
                     switch (buttonId) {
                         case "refresh":
                             return false;
@@ -61,7 +62,7 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
                             return selectedItemKind !== "file" && !isFileOpen;
                     }
                 })(),
-                "label": buttonId === "new" ? t("create secret") : t(buttonId)
+                label: buttonId === "new" ? t("create secret") : t(buttonId)
             })),
         [isSelectedItemInEditingState, selectedItemKind, isFileOpen, t]
     );

@@ -65,17 +65,17 @@ export const AccountGitTab = memo((props: Props) => {
                             switch (key) {
                                 case "gitName":
                                     return t("gitName helper text", {
-                                        "gitName": value ?? "",
-                                        "focusClassName": classes.focus
+                                        gitName: value ?? "",
+                                        focusClassName: classes.focus
                                     });
                                 case "gitEmail":
                                     return t("gitEmail helper text", {
-                                        "gitEmail": value ?? "",
-                                        "focusClassName": classes.focus
+                                        gitEmail: value ?? "",
+                                        focusClassName: classes.focus
                                     });
                                 case "githubPersonalAccessToken":
                                     return t("githubPersonalAccessToken helper text", {
-                                        "focusClassName": classes.focus
+                                        focusClassName: classes.focus
                                     });
                             }
                         })()}
@@ -116,7 +116,7 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
-    "focus": {
-        "color": theme.colors.useCases.typography.textFocus
+    focus: {
+        color: theme.colors.useCases.typography.textFocus
     }
 }));

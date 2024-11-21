@@ -17,28 +17,16 @@ import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
-import { useEvt } from "evt/hooks";
-import { customIcons } from "ui/theme";
-import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { assert } from "tsafe/assert";
 import { env } from "env";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MyFilesMaybeDisabled(props: Props) {
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
-
-    if (!isFileExplorerEnabled) {
-        return <MyFilesDisabledDialog />;
-    }
-
-    return <MyFiles {...props} />;
-}
-
-function MyFiles(props: Props) {
+export default function MyFiles(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFiles });
@@ -49,61 +37,61 @@ function MyFiles(props: Props) {
         isNavigationOngoing,
         uploadProgress,
         currentWorkingDirectoryView,
-        pathMinDepth
+        pathMinDepth,
+        viewMode
     } = useCoreState("fileExplorer", "main");
 
     const { fileExplorer } = useCore().functions;
 
-    const { evtFileExplorer } = useCore().evts;
+    useEffect(() => {
+        const { cleanup } = fileExplorer.initialize({
+            directoryPath: route.params.path,
+            viewMode: route.params.mode
+        });
+        return cleanup;
+    }, []);
 
     useEffect(() => {
-        fileExplorer.setCurrentDirectory({ "directoryPath": route.params.path });
-    }, [route.params.path]);
+        if (currentWorkingDirectoryView === undefined) return;
 
-    useEvt(
-        ctx => {
-            evtFileExplorer.$attach(
-                data =>
-                    data.action !== "set directory path" ? null : [data.directoryPath],
-                ctx,
-                directoryPath =>
-                    routes[route.name]({
-                        ...route.params,
-                        "path": directoryPath
-                    }).replace()
-            );
-        },
-        [evtFileExplorer]
-    );
-
-    const onNavigate = useConstCallback(
-        ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({
-                ...route.params,
-                "path": directoryPath
-            }).push()
-    );
+        routes[route.name]({
+            ...route.params,
+            path: currentWorkingDirectoryView.directoryPath,
+            mode: viewMode
+        }).push();
+    }, [currentWorkingDirectoryView?.directoryPath, viewMode]);
 
     const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
 
     const onCreateDirectory = useConstCallback(
         ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
             fileExplorer.create({
-                "createWhat": "directory",
+                createWhat: "directory",
                 basename
             })
     );
 
     const onDeleteItem = useConstCallback(
-        ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
+        (params: Param0<ExplorerProps["onDeleteItem"]>) =>
             fileExplorer.delete({
-                "deleteWhat": kind,
-                basename
+                s3Object: params.item
             })
     );
 
-    const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/"))
+    const onDeleteItems = useConstCallback(
+        (params: Param0<ExplorerProps["onDeleteItems"]>) =>
+            fileExplorer.bulkDelete({
+                s3Objects: params.items
+            })
+    );
+
+    const onCopyPath = useConstCallback(
+        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+            assert(currentWorkingDirectoryView !== undefined);
+            return copyToClipboard(
+                path.split(currentWorkingDirectoryView.directoryPath.split("/")[0])[1] //get the path to object without <bucket-name>
+            );
+        }
     );
 
     const { classes, cx } = useStyles();
@@ -112,7 +100,7 @@ function MyFiles(props: Props) {
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) {
-            showSplashScreen({ "enableTransparency": true });
+            showSplashScreen({ enableTransparency: true });
         } else {
             hideSplashScreen();
         }
@@ -124,18 +112,20 @@ function MyFiles(props: Props) {
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef
+            behavior: "controlled",
+            isCollapsed: false
+            // "scrollTopThreshold": 100,
+            // "scrollableElementRef": scrollableDivRef
         }),
         []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef
+            behavior: "controlled",
+            //"scrollTopThreshold": 50,
+            //"scrollableElementRef": scrollableDivRef,
+            isCollapsed: true
         }),
         []
     );
@@ -148,7 +138,7 @@ function MyFiles(props: Props) {
 
             routes
                 .dataExplorer({
-                    "source": `s3://${path.replace(/\/*$/g, "")}/${basename}`
+                    source: `s3://${path.replace(/\/*$/g, "")}/${basename}`
                 })
                 .push();
             return;
@@ -161,9 +151,9 @@ function MyFiles(props: Props) {
         ({ files }) =>
             files.forEach(file =>
                 fileExplorer.create({
-                    "createWhat": "file",
-                    "basename": file.name,
-                    "blob": file
+                    createWhat: "file",
+                    basename: file.name,
+                    blob: file
                 })
             )
     );
@@ -179,10 +169,10 @@ function MyFiles(props: Props) {
                 title={t("page title - my files")}
                 helpTitle={t("what this page is used for - my files")}
                 helpContent={t("help content", {
-                    "docHref": env.S3_DOCUMENTATION_LINK,
-                    "accountTabLink": routes.account({ "tabId": "storage" }).link
+                    docHref: env.S3_DOCUMENTATION_LINK,
+                    accountTabLink: routes.account({ tabId: "storage" }).link
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
             />
@@ -195,20 +185,19 @@ function MyFiles(props: Props) {
                 isNavigating={isNavigationOngoing}
                 commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
-                files={currentWorkingDirectoryView.files}
-                directories={currentWorkingDirectoryView.directories}
-                directoriesBeingCreated={
-                    currentWorkingDirectoryView.directoriesBeingCreated
-                }
-                filesBeingCreated={currentWorkingDirectoryView.filesBeingCreated}
-                onNavigate={onNavigate}
+                items={currentWorkingDirectoryView.items}
+                changePolicy={fileExplorer.changePolicy}
+                onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}
+                onDeleteItems={onDeleteItems}
                 onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
                 scrollableDivRef={scrollableDivRef}
                 pathMinDepth={pathMinDepth}
                 onOpenFile={onOpenFile}
+                viewMode={viewMode}
+                onViewModeChange={fileExplorer.changeViewMode}
             />
         </div>
     );
@@ -229,14 +218,14 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MyFiles }).create({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column"
     },
-    "explorer": {
-        "overflow": "hidden",
-        "flex": 1,
-        "width": "100%"
+    explorer: {
+        overflow: "hidden",
+        flex: 1,
+        width: "100%"
     }
 });

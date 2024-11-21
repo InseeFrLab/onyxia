@@ -99,13 +99,13 @@ const filteredCharts = createSelector(
             return {
                 catalogId,
                 chartName,
-                "chartNameWithHighlights": {
-                    "charArray": chartName.normalize().split(""),
-                    "highlightedIndexes": chartNameHighlightedIndexes
+                chartNameWithHighlights: {
+                    charArray: chartName.normalize().split(""),
+                    highlightedIndexes: chartNameHighlightedIndexes
                 },
-                "chartDescriptionWithHighlights": {
-                    "charArray": description.normalize().split(""),
-                    "highlightedIndexes": chartDescriptionHighlightedIndexes
+                chartDescriptionWithHighlights: {
+                    charArray: description.normalize().split(""),
+                    highlightedIndexes: chartDescriptionHighlightedIndexes
                 },
                 projectHomepageUrl,
                 iconUrl
@@ -116,9 +116,9 @@ const filteredCharts = createSelector(
             ? chartsByCatalogId[selectedCatalogId].map(chart =>
                   chartToCardData({
                       chart,
-                      "chartNameHighlightedIndexes": [],
-                      "chartDescriptionHighlightedIndexes": [],
-                      "catalogId": selectedCatalogId
+                      chartNameHighlightedIndexes: [],
+                      chartDescriptionHighlightedIndexes: [],
+                      catalogId: selectedCatalogId
                   })
               )
             : searchResults.map(
@@ -129,7 +129,7 @@ const filteredCharts = createSelector(
                       chartDescriptionHighlightedIndexes
                   }) =>
                       chartToCardData({
-                          "chart": chartsByCatalogId[catalogId].find(
+                          chart: chartsByCatalogId[catalogId].find(
                               chart => chart.name === chartName
                           )!,
                           chartNameHighlightedIndexes,
@@ -168,10 +168,10 @@ const availableCatalogs = createSelector(
         }
 
         return catalogs
-            .filter(({ isHidden }) => !isHidden)
+            .filter(({ isProduction }) => isProduction)
             .map(({ id, name }) => ({
-                "catalogId": id,
-                "catalogName": name
+                catalogId: id,
+                catalogName: name
             }));
     }
 );
@@ -184,7 +184,7 @@ const main = createSelector(
     (isReady, selectedCatalog, filteredCharts, availableCatalogs) => {
         if (!isReady) {
             return {
-                "isReady": false as const
+                isReady: false as const
             };
         }
 
@@ -193,7 +193,7 @@ const main = createSelector(
         assert(availableCatalogs !== undefined);
 
         return {
-            "isReady": true as const,
+            isReady: true as const,
             selectedCatalog,
             filteredCharts,
             availableCatalogs

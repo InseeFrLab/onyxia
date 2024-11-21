@@ -6,8 +6,7 @@ import {
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
-import type { SqlOlap } from "core/ports/SqlOlap";
-import type { ReturnType } from "tsafe";
+import type { AsyncDuckDB } from "@duckdb/duckdb-wasm";
 
 type State = {
     isReady: boolean;
@@ -17,31 +16,31 @@ export const name = "sqlOlapShell";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "isReady": false
+    initialState: id<State>({
+        isReady: false
     }),
-    "reducers": {
-        "ready": state => {
+    reducers: {
+        ready: state => {
             state.isReady = true;
         }
     }
 });
 
 export const thunks = {
-    "initialize":
+    initialize:
         () =>
         async (...args) => {
             const [dispatch, , rootContext] = args;
 
             const { sqlOlap } = rootContext;
 
-            const db = await sqlOlap.getDb();
+            const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
             setContext(rootContext, { db });
 
             dispatch(actions.ready());
         },
-    "getDb":
+    getDb:
         () =>
         (...args) => {
             const [, getState, extraArg] = args;
@@ -60,7 +59,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const { getContext, setContext } = createUsecaseContextApi<{
-    db: ReturnType<SqlOlap["getDb"]>;
+    db: AsyncDuckDB;
 }>();
 
 export const selectors = (() => {

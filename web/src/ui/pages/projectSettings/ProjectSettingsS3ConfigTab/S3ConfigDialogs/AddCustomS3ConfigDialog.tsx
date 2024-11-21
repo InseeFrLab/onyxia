@@ -17,10 +17,12 @@ import { useCore, useCoreState } from "core";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { Text } from "onyxia-ui/Text";
 import { TestS3ConnectionButton } from "../TestS3ConnectionButton";
+import FormHelperText from "@mui/material/FormHelperText";
+import Switch from "@mui/material/Switch";
 
 export type Props = {
     evtOpen: NonPostableEvt<{
-        customConfigIndex: number | undefined;
+        s3ConfigIdToEdit: string | undefined;
     }>;
 };
 
@@ -35,8 +37,8 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
 
     useEvt(
         ctx =>
-            evtOpen.attach(ctx, ({ customConfigIndex }) =>
-                s3ConfigCreation.initialize({ customConfigIndex })
+            evtOpen.attach(ctx, ({ s3ConfigIdToEdit }) =>
+                s3ConfigCreation.initialize({ s3ConfigIdToEdit })
             ),
         [evtOpen]
     );
@@ -57,7 +59,7 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
             subtitle={t("dialog subtitle")}
             maxWidth="md"
             classes={{
-                "buttons": classes.buttons
+                buttons: classes.buttons
             }}
             fullWidth={true}
             isOpen={isReady}
@@ -78,8 +80,8 @@ AddCustomS3ConfigDialog.displayName = symToStr({
 });
 
 const useStyles = tss.withName({ AddCustomS3ConfigDialog }).create({
-    "buttons": {
-        "display": "flex"
+    buttons: {
+        display: "flex"
     }
 });
 
@@ -116,7 +118,7 @@ const Buttons = memo((props: ButtonsProps) => {
                     !isFormSubmittable ? undefined : s3ConfigCreation.testConnection
                 }
             />
-            <div className={css({ "flex": 1 })} />
+            <div className={css({ flex: 1 })} />
             <Button onClick={onCloseCancel} variant="secondary">
                 {t("cancel")}
             </Button>
@@ -151,6 +153,26 @@ const Body = memo(() => {
         <>
             <FormGroup className={classes.serverConfigFormGroup}>
                 <TextField
+                    className={css({
+                        marginBottom: theme.spacing(6)
+                    })}
+                    label={t("friendlyName textField label")}
+                    helperText={t("friendlyName textField helper text")}
+                    helperTextError={
+                        formValuesErrors.friendlyName === undefined
+                            ? undefined
+                            : t(formValuesErrors.friendlyName)
+                    }
+                    defaultValue={formValues.friendlyName}
+                    doOnlyShowErrorAfterFirstFocusLost
+                    onValueBeingTypedChange={({ value }) =>
+                        s3ConfigCreation.changeValue({
+                            key: "friendlyName",
+                            value
+                        })
+                    }
+                />
+                <TextField
                     label={t("url textField label")}
                     helperText={t("url textField helper text")}
                     helperTextError={
@@ -162,7 +184,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "url",
+                            key: "url",
                             value
                         })
                     }
@@ -179,7 +201,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "region",
+                            key: "region",
                             value
                         })
                     }
@@ -187,7 +209,7 @@ const Body = memo(() => {
                 <TextField
                     label={t("workingDirectoryPath textField label")}
                     className={css({
-                        "marginBottom": theme.spacing(4)
+                        marginBottom: theme.spacing(4)
                     })}
                     helperText={t("workingDirectoryPath textField helper text")}
                     helperTextError={
@@ -199,7 +221,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "workingDirectoryPath",
+                            key: "workingDirectoryPath",
                             value
                         })
                     }
@@ -207,8 +229,8 @@ const Body = memo(() => {
                 <FormControl
                     className={css({
                         "& code": {
-                            "fontSize": "0.9rem",
-                            "color": theme.colors.useCases.typography.textSecondary
+                            fontSize: "0.9rem",
+                            color: theme.colors.useCases.typography.textSecondary
                         }
                     })}
                 >
@@ -217,7 +239,7 @@ const Body = memo(() => {
                         typo="caption"
                         color="secondary"
                         className={css({
-                            "marginBottom": theme.spacing(2)
+                            marginBottom: theme.spacing(2)
                         })}
                     >
                         {t("url style helper text")}
@@ -227,8 +249,8 @@ const Body = memo(() => {
                         value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
                         onChange={(_, value) =>
                             s3ConfigCreation.changeValue({
-                                "key": "pathStyleAccess",
-                                "value": value === "path"
+                                key: "pathStyleAccess",
+                                value: value === "path"
                             })
                         }
                     >
@@ -236,14 +258,14 @@ const Body = memo(() => {
                             value="path"
                             control={<Radio />}
                             label={t("path style label", {
-                                "example": urlStylesExamples?.pathStyle
+                                example: urlStylesExamples?.pathStyle
                             })}
                         />
                         <FormControlLabel
                             value="virtual-hosted"
                             control={<Radio />}
                             label={t("virtual-hosted style label", {
-                                "example": urlStylesExamples?.virtualHostedStyle
+                                example: urlStylesExamples?.virtualHostedStyle
                             })}
                         />
                     </RadioGroup>
@@ -252,94 +274,103 @@ const Body = memo(() => {
             <FormGroup className={classes.accountCredentialsFormGroup}>
                 <FormLabel
                     className={css({
-                        "marginBottom": theme.spacing(3)
+                        marginBottom: theme.spacing(3)
                     })}
                 >
                     {t("account credentials")}
                 </FormLabel>
-                <TextField
+                <FormControl
                     className={css({
-                        "marginBottom": theme.spacing(6)
+                        marginBottom: theme.spacing(6)
                     })}
-                    label={t("accountFriendlyName textField label")}
-                    helperText={t("accountFriendlyName textField helper text")}
-                    helperTextError={
-                        formValuesErrors.accountFriendlyName === undefined
-                            ? undefined
-                            : t(formValuesErrors.accountFriendlyName)
-                    }
-                    defaultValue={formValues.accountFriendlyName}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "accountFriendlyName",
-                            value
-                        })
-                    }
-                />
-                <TextField
-                    className={css({
-                        "marginBottom": theme.spacing(6)
-                    })}
-                    label={t("accessKeyId textField label")}
-                    helperText={t("accessKeyId textField helper text")}
-                    helperTextError={
-                        formValuesErrors.accessKeyId === undefined
-                            ? undefined
-                            : t(formValuesErrors.accessKeyId)
-                    }
-                    defaultValue={formValues.accessKeyId ?? ""}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "accessKeyId",
-                            "value": value || undefined
-                        })
-                    }
-                />
-                <TextField
-                    className={css({
-                        "marginBottom": theme.spacing(6)
-                    })}
-                    type="sensitive"
-                    selectAllTextOnFocus
-                    label={t("secretAccessKey textField label")}
-                    helperTextError={
-                        formValuesErrors.secretAccessKey === undefined
-                            ? undefined
-                            : t(formValuesErrors.secretAccessKey)
-                    }
-                    defaultValue={formValues.secretAccessKey ?? ""}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "secretAccessKey",
-                            "value": value || undefined
-                        })
-                    }
-                />
-                <TextField
-                    className={css({
-                        "marginBottom": theme.spacing(6)
-                    })}
-                    type="sensitive"
-                    selectAllTextOnFocus
-                    label={t("sessionToken textField label")}
-                    helperText={t("sessionToken textField helper text")}
-                    helperTextError={
-                        formValuesErrors.sessionToken === undefined
-                            ? undefined
-                            : t(formValuesErrors.sessionToken)
-                    }
-                    defaultValue={formValues.sessionToken ?? ""}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "sessionToken",
-                            "value": value || undefined
-                        })
-                    }
-                />
+                    component="fieldset"
+                    variant="standard"
+                >
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={formValues.isAnonymous}
+                                    onChange={(...[, isChecked]) =>
+                                        s3ConfigCreation.changeValue({
+                                            key: "isAnonymous",
+                                            value: isChecked
+                                        })
+                                    }
+                                />
+                            }
+                            label={t("isAnonymous switch label")}
+                        />
+                    </FormGroup>
+                    <FormHelperText>{t("isAnonymous switch helper text")}</FormHelperText>
+                </FormControl>
+                {!formValues.isAnonymous && (
+                    <>
+                        <TextField
+                            className={css({
+                                marginBottom: theme.spacing(6)
+                            })}
+                            label={t("accessKeyId textField label")}
+                            helperText={t("accessKeyId textField helper text")}
+                            helperTextError={
+                                formValuesErrors.accessKeyId === undefined
+                                    ? undefined
+                                    : t(formValuesErrors.accessKeyId)
+                            }
+                            defaultValue={formValues.accessKeyId ?? ""}
+                            doOnlyShowErrorAfterFirstFocusLost
+                            onValueBeingTypedChange={({ value }) =>
+                                s3ConfigCreation.changeValue({
+                                    key: "accessKeyId",
+                                    value: value || undefined
+                                })
+                            }
+                        />
+                        <TextField
+                            className={css({
+                                marginBottom: theme.spacing(6)
+                            })}
+                            type="sensitive"
+                            selectAllTextOnFocus
+                            label={t("secretAccessKey textField label")}
+                            helperTextError={
+                                formValuesErrors.secretAccessKey === undefined
+                                    ? undefined
+                                    : t(formValuesErrors.secretAccessKey)
+                            }
+                            defaultValue={formValues.secretAccessKey ?? ""}
+                            doOnlyShowErrorAfterFirstFocusLost
+                            onValueBeingTypedChange={({ value }) =>
+                                s3ConfigCreation.changeValue({
+                                    key: "secretAccessKey",
+                                    value: value || undefined
+                                })
+                            }
+                        />
+                        <TextField
+                            className={css({
+                                marginBottom: theme.spacing(6)
+                            })}
+                            type="sensitive"
+                            selectAllTextOnFocus
+                            label={t("sessionToken textField label")}
+                            helperText={t("sessionToken textField helper text")}
+                            helperTextError={
+                                formValuesErrors.sessionToken === undefined
+                                    ? undefined
+                                    : t(formValuesErrors.sessionToken)
+                            }
+                            defaultValue={formValues.sessionToken ?? ""}
+                            doOnlyShowErrorAfterFirstFocusLost
+                            onValueBeingTypedChange={({ value }) =>
+                                s3ConfigCreation.changeValue({
+                                    key: "sessionToken",
+                                    value: value || undefined
+                                })
+                            }
+                        />
+                    </>
+                )}
             </FormGroup>
         </>
     );
@@ -348,21 +379,21 @@ const Body = memo(() => {
 const useBodyStyles = tss
     .withName(`${symToStr({ AddCustomS3ConfigDialog })}${symToStr({ Body })}`)
     .create(({ theme }) => ({
-        "serverConfigFormGroup": {
-            "display": "flex",
-            "flexDirection": "column",
-            "overflow": "visible",
-            "gap": theme.spacing(6),
-            "marginBottom": theme.spacing(4)
+        serverConfigFormGroup: {
+            display: "flex",
+            flexDirection: "column",
+            overflow: "visible",
+            gap: theme.spacing(6),
+            marginBottom: theme.spacing(4)
         },
-        "accountCredentialsFormGroup": {
-            "borderRadius": 5,
-            "padding": theme.spacing(3),
+        accountCredentialsFormGroup: {
+            borderRadius: 5,
+            padding: theme.spacing(3),
 
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "boxShadow": theme.shadows[3],
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            boxShadow: theme.shadows[3],
             "&:hover": {
-                "boxShadow": theme.shadows[6]
+                boxShadow: theme.shadows[6]
             }
         }
     }));
@@ -386,8 +417,10 @@ const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
     | "account credentials"
-    | "accountFriendlyName textField label"
-    | "accountFriendlyName textField helper text"
+    | "friendlyName textField label"
+    | "friendlyName textField helper text"
+    | "isAnonymous switch label"
+    | "isAnonymous switch helper text"
     | "accessKeyId textField label"
     | "accessKeyId textField helper text"
     | "secretAccessKey textField label"

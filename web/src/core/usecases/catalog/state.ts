@@ -40,18 +40,18 @@ export const name = "catalog";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotFetched>({
-            "stateDescription": "not fetched",
-            "isFetching": false
+            stateDescription: "not fetched",
+            isFetching: false
         })
     ),
-    "reducers": {
-        "catalogsFetching": state => {
+    reducers: {
+        catalogsFetching: state => {
             assert(state.stateDescription === "not fetched");
             state.isFetching = true;
         },
-        "catalogsFetched": (
+        catalogsFetched: (
             _state,
             {
                 payload
@@ -66,15 +66,15 @@ export const { reducer, actions } = createUsecaseActions({
             const { selectedCatalogId, catalogs, chartsByCatalogId } = payload;
 
             return id<State.Ready>({
-                "stateDescription": "ready",
+                stateDescription: "ready",
                 catalogs,
                 selectedCatalogId,
                 chartsByCatalogId,
-                "search": "",
-                "searchResults": undefined
+                search: "",
+                searchResults: undefined
             });
         },
-        "selectedCatalogChanged": (
+        selectedCatalogChanged: (
             state,
             { payload }: { payload: { selectedCatalogId: string } }
         ) => {
@@ -88,17 +88,17 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.selectedCatalogId = selectedCatalogId;
         },
-        "defaultCatalogSelected": () => {
+        defaultCatalogSelected: () => {
             /* Only for evt */
         },
-        "searchChanged": (state, { payload }: { payload: { search: string } }) => {
+        searchChanged: (state, { payload }: { payload: { search: string } }) => {
             const { search } = payload;
 
             assert(state.stateDescription === "ready");
 
             state.search = search;
         },
-        "searchResultChanged": (
+        searchResultChanged: (
             state,
             { payload }: { payload: { searchResults: State.Ready["searchResults"] } }
         ) => {

@@ -6,6 +6,7 @@ import { declareComponentKeys } from "i18nifty";
 import { assert } from "tsafe/assert";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -49,7 +50,7 @@ export const CopyOpenButton = memo((props: Props) => {
         return {
             ref1,
             ref2,
-            "largerButtonWidth": refWidth.current
+            largerButtonWidth: refWidth.current
         };
     })();
 
@@ -58,10 +59,10 @@ export const CopyOpenButton = memo((props: Props) => {
     const buttonProps = useMemo(
         () =>
             ({
-                "variant": "primary",
-                "href": isReadyToOpen ? openUrl : undefined,
-                "doOpenNewTabIfHref": true,
-                "onClick": isReadyToOpen ? onDialogClose : copyPasswordToClipBoard
+                variant: "primary",
+                href: isReadyToOpen ? openUrl : undefined,
+                doOpenNewTabIfHref: true,
+                onClick: isReadyToOpen ? onDialogClose : copyPasswordToClipBoard
             }) as const,
         [isReadyToOpen]
     );
@@ -71,7 +72,7 @@ export const CopyOpenButton = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <Button
-                startIcon="key"
+                startIcon={getIconUrlByName("Key")}
                 ref={ref2}
                 className={cx(classes.button, { [classes.collapsed]: isReadyToOpen })}
                 {...buttonProps}
@@ -95,17 +96,17 @@ const useStyles = tss
     .withParams<{ largerButtonWidth: number }>()
     .withName({ CopyOpenButton })
     .create(({ largerButtonWidth }) => ({
-        "root": {
-            "position": "relative",
-            "opacity": largerButtonWidth === 0 ? 0 : 1,
-            "transition": `opacity ease-in-out 250ms`
+        root: {
+            position: "relative",
+            opacity: largerButtonWidth === 0 ? 0 : 1,
+            transition: `opacity ease-in-out 250ms`
         },
-        "button": {
-            "minWidth": largerButtonWidth
+        button: {
+            minWidth: largerButtonWidth
         },
-        "collapsed": {
-            "position": "fixed",
-            "top": 3000
+        collapsed: {
+            position: "fixed",
+            top: 3000
         }
     }));
 

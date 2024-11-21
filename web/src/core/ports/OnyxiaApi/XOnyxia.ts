@@ -1,7 +1,10 @@
 // Documentation: https://docs.onyxia.sh/contributing/catalog-of-services
 
 import type { Language } from "./Language";
+import { id } from "tsafe/id";
+import { z } from "zod";
 import { assert, type Equals } from "tsafe/assert";
+import { type Stringifyable, zStringifyable } from "core/tools/Stringifyable";
 
 export const onyxiaReservedPropertyNameInFieldDescription = "x-onyxia";
 
@@ -15,18 +18,29 @@ export type XOnyxiaParams = {
      * "overwriteDefaultWith": "{{project.id}}-{{k8s.randomSubdomain}}.{{k8s.domain}}"
      * "overwriteDefaultWith": [ "a hardcoded value", "some other hardcoded value", "{{region.oauth2.clientId}}" ]
      * "overwriteDefaultWith": { "foo": "bar", "bar": "{{region.oauth2.clientId}}" }
-     *
      */
-    overwriteDefaultWith?:
-        | string
-        | number
-        | boolean
-        | unknown[]
-        | Record<string, unknown>;
+    overwriteDefaultWith?: string | Stringifyable[] | Record<string, Stringifyable>;
+    overwriteListEnumWith?: string | Stringifyable[];
     hidden?: boolean;
     readonly?: boolean;
-    useRegionSliderConfig?: string;
 };
+
+export const zXOnyxiaParams = (() => {
+    type TargetType = XOnyxiaParams;
+
+    const zTargetType = z.object({
+        overwriteDefaultWith: z
+            .union([z.string(), z.array(zStringifyable), z.record(zStringifyable)])
+            .optional(),
+        overwriteListEnumWith: z.union([z.string(), z.array(zStringifyable)]).optional(),
+        hidden: z.boolean().optional(),
+        readonly: z.boolean().optional()
+    });
+
+    assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+    return id<z.ZodType<TargetType>>(zTargetType);
+})();
 
 export type XOnyxiaContext = {
     user: {
@@ -36,7 +50,7 @@ export type XOnyxiaContext = {
         password: string;
         ip: string;
         darkMode: boolean;
-        lang: "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "de";
+        lang: "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "es" | "de";
         /**
          * Decoded JWT OIDC ID token of the user launching the service.
          *
@@ -66,6 +80,8 @@ export type XOnyxiaContext = {
          * }
          */
         decodedIdToken: Record<string, unknown>;
+        accessToken: string;
+        refreshToken: string;
     };
     service: {
         oneTimePassword: string;
@@ -81,32 +97,43 @@ export type XOnyxiaContext = {
         credentials_cache_duration: number;
         token: string | undefined;
     };
-    vault: {
-        VAULT_ADDR: string;
-        VAULT_TOKEN: string;
-        VAULT_MOUNT: string;
-        VAULT_TOP_DIR: string;
-    };
-    s3: {
-        AWS_ACCESS_KEY_ID: string;
-        AWS_SECRET_ACCESS_KEY: string;
-        AWS_SESSION_TOKEN: string;
-        AWS_DEFAULT_REGION: string;
-        AWS_S3_ENDPOINT: string;
-        AWS_BUCKET_NAME: string;
-        port: number;
-        pathStyleAccess: boolean;
-        /**
-         * The user is assumed to have read/write access on every
-         * object starting with this prefix on the bucket
-         **/
-        objectNamePrefix: string;
-        /**
-         * Only for making it easier for charts editors.
-         * <AWS_BUCKET_NAME>/<objectNamePrefix>
-         * */
-        workingDirectoryPath: string;
-    };
+    vault:
+        | {
+              VAULT_ADDR: string;
+              VAULT_TOKEN: string | undefined;
+              VAULT_MOUNT: string;
+              VAULT_TOP_DIR: string;
+          }
+        | undefined;
+    s3:
+        | {
+              isEnabled: true;
+              AWS_ACCESS_KEY_ID: string | undefined;
+              AWS_SECRET_ACCESS_KEY: string | undefined;
+              AWS_SESSION_TOKEN: string | undefined;
+              AWS_DEFAULT_REGION: string;
+              AWS_S3_ENDPOINT: string;
+              AWS_BUCKET_NAME: string;
+              port: number;
+              pathStyleAccess: boolean;
+              /**
+               * The user is assumed to have read/write access on every
+               * object starting with this prefix on the bucket
+               **/
+              objectNamePrefix: string;
+              /**
+               * Only for making it easier for charts editors.
+               * <AWS_BUCKET_NAME>/<objectNamePrefix>
+               * */
+              workingDirectoryPath: string;
+              /**
+               * If true the bucket's (directory) should be accessible without any credentials.
+               * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN
+               * will be empty strings.
+               */
+              isAnonymous: boolean;
+          }
+        | undefined;
     region: {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
@@ -141,6 +168,12 @@ export type XOnyxiaContext = {
                   gpu?: `${number}`;
               }
             | undefined;
+        openshiftSCC:
+            | {
+                  scc: string;
+                  enabled: boolean;
+              }
+            | undefined;
     };
     k8s: {
         domain: string;
@@ -160,6 +193,7 @@ export type XOnyxiaContext = {
     };
     proxyInjection:
         | {
+              enabled: boolean | undefined;
               httpProxyUrl: string | undefined;
               httpsProxyUrl: string | undefined;
               noProxy: string | undefined;

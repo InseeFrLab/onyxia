@@ -3,7 +3,7 @@ import { useConstCallback } from "keycloakify/tools/useConstCallback";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import type { KcContext } from "../kcContext";
+import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import Link from "@mui/material/Link";
 import { TextField } from "onyxia-ui/TextField";
@@ -21,8 +21,16 @@ export default function Login(
 ) {
     const { kcContext, i18n, doUseDefaultCss, Template, classes: classes_props } = props;
 
-    const { social, realm, url, usernameHidden, login, auth, registrationDisabled } =
-        kcContext;
+    const {
+        messagesPerField,
+        social,
+        realm,
+        url,
+        usernameHidden,
+        login,
+        auth,
+        registrationDisabled
+    } = kcContext;
 
     const { msg, msgStr } = i18n;
 
@@ -53,13 +61,13 @@ export default function Login(
             displayInfo={
                 realm.password && realm.registrationAllowed && !registrationDisabled
             }
-            displayWide={realm.password && social.providers !== undefined}
             headerNode={msg("doLogIn")}
             i18n={i18n}
+            displayMessage={!messagesPerField.existsError("username", "password")}
             infoNode={
                 <div className={classes.linkToRegisterWrapper}>
                     <Text typo="body 2" color="secondary">
-                        {msg("noAccount")!}
+                        {msg("noAccount")}
                     </Text>
                     <Link
                         href={url.registrationUrl}
@@ -72,29 +80,31 @@ export default function Login(
             }
         >
             <div className={classes.root}>
-                {realm.password && social.providers !== undefined && (
-                    <>
-                        <div>
-                            <ul className={classes.providers}>
-                                {social.providers.map(p => (
-                                    <li key={p.providerId}>
-                                        {p.displayName
-                                            .toLocaleLowerCase()
-                                            .replace(/ /g, "")
-                                            .includes("agentconnect") ? (
-                                            <AgentConnectButton url={p.loginUrl} />
-                                        ) : (
-                                            <Button href={p.loginUrl}>
-                                                {p.displayName}
-                                            </Button>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <LoginDivider className={classes.divider} i18n={i18n} />
-                    </>
-                )}
+                {realm.password &&
+                    social?.providers !== undefined &&
+                    social.providers.length !== 0 && (
+                        <>
+                            <div>
+                                <ul className={classes.providers}>
+                                    {social.providers.map(p => (
+                                        <li key={p.providerId}>
+                                            {p.displayName
+                                                .toLocaleLowerCase()
+                                                .replace(/ /g, "")
+                                                .includes("agentconnect") ? (
+                                                <AgentConnectButton url={p.loginUrl} />
+                                            ) : (
+                                                <Button href={p.loginUrl}>
+                                                    {p.displayName}
+                                                </Button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <LoginDivider className={classes.divider} i18n={i18n} />
+                        </>
+                    )}
                 <div>
                     {realm.password && (
                         <form onSubmit={onSubmit} action={url.loginAction} method="post">
@@ -104,6 +114,7 @@ export default function Login(
                                     defaultValue={login.username ?? ""}
                                     id="username"
                                     name="username"
+                                    inputProps_autoFocus
                                     inputProps_aria-label="username"
                                     inputProps_spellCheck={false}
                                     label={
@@ -167,7 +178,7 @@ export default function Login(
                                     name="credentialId"
                                     {...(auth?.selectedCredential !== undefined
                                         ? {
-                                              "value": auth.selectedCredential
+                                              value: auth.selectedCredential
                                           }
                                         : {})}
                                 />
@@ -189,46 +200,46 @@ export default function Login(
 }
 
 const useStyles = tss.withName({ Login }).create(({ theme }) => ({
-    "root": {
+    root: {
         "& .MuiTextField-root": {
-            "width": "100%",
-            "marginTop": theme.spacing(5)
+            width: "100%",
+            marginTop: theme.spacing(5)
         }
     },
-    "rememberMeForgotPasswordWrapper": {
-        "display": "flex",
-        "marginTop": theme.spacing(4)
+    rememberMeForgotPasswordWrapper: {
+        display: "flex",
+        marginTop: theme.spacing(4)
     },
-    "forgotPassword": {
-        "flex": 1,
-        "display": "flex",
-        "justifyContent": "flex-end",
-        "alignItems": "center"
+    forgotPassword: {
+        flex: 1,
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center"
     },
-    "buttonsWrapper": {
-        "marginTop": theme.spacing(4),
-        "display": "flex",
-        "justifyContent": "flex-end"
+    buttonsWrapper: {
+        marginTop: theme.spacing(4),
+        display: "flex",
+        justifyContent: "flex-end"
     },
-    "buttonSubmit": {
-        "marginLeft": theme.spacing(2)
+    buttonSubmit: {
+        marginLeft: theme.spacing(2)
     },
-    "linkToRegisterWrapper": {
-        "marginTop": theme.spacing(5),
-        "textAlign": "center",
+    linkToRegisterWrapper: {
+        marginTop: theme.spacing(5),
+        textAlign: "center",
         "& > *": {
-            "display": "inline-block"
+            display: "inline-block"
         }
     },
-    "registerLink": {
-        "paddingLeft": theme.spacing(2)
+    registerLink: {
+        paddingLeft: theme.spacing(2)
     },
-    "divider": {
+    divider: {
         ...theme.spacing.topBottom("margin", 5)
     },
-    "providers": {
-        "listStyleType": "none",
-        "padding": 0
+    providers: {
+        listStyleType: "none",
+        padding: 0
     }
 }));
 
@@ -277,15 +288,15 @@ const { AgentConnectButton } = (() => {
     }
 
     const useStyles = tss.withName({ AgentConnectButton }).create({
-        "root": {
-            "textAlign": "center"
+        root: {
+            textAlign: "center"
         },
-        "link": {
-            "display": "block"
+        link: {
+            display: "block"
         },
-        "docLink": {
-            "display": "inline-block",
-            "marginTop": 8
+        docLink: {
+            display: "inline-block",
+            marginTop: 8
         }
     });
 
@@ -319,18 +330,18 @@ const { LoginDivider } = (() => {
     }
 
     const useStyles = tss.withName({ LoginDivider }).create(({ theme }) => ({
-        "root": {
-            "display": "flex",
-            "alignItems": "center"
+        root: {
+            display: "flex",
+            alignItems: "center"
         },
-        "separator": {
-            "height": 1,
-            "backgroundColor": theme.colors.useCases.typography.textSecondary,
-            "flex": 1
+        separator: {
+            height: 1,
+            backgroundColor: theme.colors.useCases.typography.textSecondary,
+            flex: 1
         },
-        "text": {
+        text: {
             ...theme.spacing.rightLeft("margin", 2),
-            "paddingBottom": 2
+            paddingBottom: 2
         }
     }));
 

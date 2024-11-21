@@ -5,7 +5,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useClick } from "powerhooks/useClick";
-import Color from "color";
+import { alpha } from "@mui/material/styles";
 import { useTranslation } from "ui/i18n";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -72,8 +72,8 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
     );
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
-        "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
+        doubleClickDelayMs: 500,
+        callback: ({ type, extraArg: target }) => onMouseEvent({ type, target })
     });
 
     //TODO: We need a custom hook for this.
@@ -99,9 +99,9 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
     );
 
     const getIsValidValue = useConstCallback((value: string) =>
-        getIsValidBasename({ "basename": value })
-            ? ({ "isValidValue": true } as const)
-            : ({ "isValidValue": false, "message": "" } as const)
+        getIsValidBasename({ basename: value })
+            ? ({ isValidValue: true } as const)
+            : ({ isValidValue: false, message: "" } as const)
     );
 
     const [evtInputAction] = useState(() =>
@@ -115,7 +115,7 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
             return;
         }
 
-        onEditBasename({ "editedBasename": value });
+        onEditBasename({ editedBasename: value });
     });
 
     const onEscapeKeyDown = useConstCallback(() => setIsInEditingState(false));
@@ -125,9 +125,9 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
     const formattedBasename = useMemo(
         () =>
             smartTrim({
-                "text": basename,
-                "maxLength": 21,
-                "minCharAtTheEnd": 5
+                text: basename,
+                maxLength: 21,
+                minCharAtTheEnd: 5
             })
                 //NOTE: Word break with - or space but not _,
                 //see: https://stackoverflow.com/a/29541502/3731798
@@ -206,47 +206,42 @@ const useStyles = tss
     .withName({ SecretsExplorerItem })
     .withParams<Pick<SecretsExplorerItemProps, "isSelected" | "basename">>()
     .create(({ theme, isSelected, basename }) => ({
-        "root": {
-            "textAlign": "center",
-            "cursor": "pointer",
-            "width": theme.spacing(9)
+        root: {
+            textAlign: "center",
+            cursor: "pointer",
+            width: theme.spacing(9)
         },
-        "frame": {
-            "borderRadius": "5px",
-            "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
-            "display": "inline-block",
-            "padding": theme.muiTheme.spacing(2, 2)
+        frame: {
+            borderRadius: "5px",
+            backgroundColor: isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
+            display: "inline-block",
+            padding: theme.muiTheme.spacing(2, 2)
         },
-        "explorerIcon": {
-            "height": 60
+        explorerIcon: {
+            height: 60
         },
-        "text": {
+        text: {
             //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
             //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
-            "color": (() => {
-                const color = new Color(
-                    theme.colors.useCases.typography.textPrimary
-                ).rgb();
-
-                return color
-                    .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
-                    .string();
-            })(),
-            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
+            color: alpha(
+                theme.colors.useCases.typography.textPrimary,
+                isSelected ? 1.2 : 0.8
+            ),
+            wordBreak: /[_\- ]/.test(basename) ? undefined : "break-all"
         },
-        "hiddenSpan": {
-            "width": 0,
-            "overflow": "hidden",
-            "display": "inline-block"
+        hiddenSpan: {
+            width: 0,
+            overflow: "hidden",
+            display: "inline-block"
         },
-        "input": {
+        input: {
             //NOTE: So that the text does not move when editing start.
             //"marginTop": "2px",
-            "marginTop": "-1px",
+            marginTop: "-1px",
 
-            "paddingTop": 0,
+            paddingTop: 0,
             "& .MuiInput-input": {
-                "textAlign": "center"
+                textAlign: "center"
             }
         }
     }));

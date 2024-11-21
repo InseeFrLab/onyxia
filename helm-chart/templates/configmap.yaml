@@ -20,3 +20,7 @@ data:
 {{- if .Values.api.catalogs }}
   catalogs: {{ .Values.api.catalogs | toJson | quote }}
 {{- end}}
+{{- if .Values.api.schemas.enabled }}
+  external.schema.directory: {{ printf "%s%s/" .Values.api.schemas.rootPath .Values.api.schemas.subPathDefault | quote }}
+  role.schema.directory: {{ printf "%s%s/" .Values.api.schemas.rootPath .Values.api.schemas.subPathRole | quote }}
+{{- end}}

@@ -4,7 +4,7 @@ import { assert } from "tsafe/assert";
 import { name } from "./state";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
-import { computeQuotaUsageRatio } from "./utils/computeQuotaUsageRatio";
+import { computeQuotaUsageRatio } from "./decoupledLogic/computeQuotaUsageRatio";
 import { arrPartition } from "evt/tools/reducers/partition";
 
 const state = (rootState: RootState) => rootState[name];
@@ -38,7 +38,10 @@ const allQuotas = createSelector(readyState, state => {
         .map(name => {
             const { spec, usage } = quotas[name];
 
-            const ratio = computeQuotaUsageRatio({ "used": usage, "total": spec });
+            const ratio = computeQuotaUsageRatio({
+                used: usage,
+                total: spec
+            });
 
             if (ratio === undefined) {
                 return undefined;
@@ -47,11 +50,11 @@ const allQuotas = createSelector(readyState, state => {
             const usagePercentage = ratio * 100;
 
             return id<QuotaEntry>({
-                "name": name,
-                "used": `${usage}`,
-                "total": `${spec}`,
+                name: name,
+                used: `${usage}`,
+                total: `${spec}`,
                 usagePercentage,
-                "severity": (() => {
+                severity: (() => {
                     if (usagePercentage < quotaWarningThresholdPercent) {
                         return "success" as const;
                     }
@@ -124,7 +127,7 @@ const main = createSelector(
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const
+                isReady: false as const
             };
         }
 
@@ -134,7 +137,7 @@ const main = createSelector(
         assert(totalQuotasCount !== undefined);
 
         return {
-            "isReady": true as const,
+            isReady: true as const,
             quotas,
             isOngoingPodDeletion,
             isOnlyNonNegligibleQuotas,
@@ -177,9 +180,9 @@ const commandLogsEntry = createSelector(isReady, allQuotas, (isReady, quotas) =>
     const requestWord = "REQUEST";
 
     return {
-        "cmdId": Date.now(),
-        "cmd": "kubectl get quota",
-        "resp":
+        cmdId: Date.now(),
+        cmd: "kubectl get quota",
+        resp:
             limits.length + requests.length > 130
                 ? [requestWord, requests, "", "LIMIT", limits].join("\n")
                 : [

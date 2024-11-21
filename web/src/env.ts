@@ -1,13 +1,13 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,
     updateSearchBarUrl
 } from "powerhooks/tools/urlSearchParams";
-import { assert, type Equals } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, type Equals, is } from "tsafe/assert";
+import { isAmong } from "tsafe/isAmong";
+import { kcEnvNames } from "keycloak-theme/kc.gen";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
@@ -30,6 +30,15 @@ import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
+    {
+        "envName": "ONYXIA_API_URL",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+
+            return envValue;
+        }
+    },
     {
         "envName": "HEADER_LOGO",
         "isUsedInKeycloakTheme": true,
@@ -892,6 +901,21 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
+        "envName": "AUTHENTICATION_GLOBALLY_REQUIRED",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+        }
+    },
+    {
         "envName": "HEADER_HIDE_ONYXIA",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {
@@ -1150,6 +1174,57 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             assert<Equals<typeof envValue, never>>(false);
             
         }
+    },
+    {
+        "envName": "LIST_ALLOWED_EMAIL_DOMAINS",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+
+        }
+    },
+    {
+        "envName": "CONTACT_FOR_ADDING_EMAIL_DOMAIN",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName
+        }): LocalizedString | undefined => {
+            if (envValue === "") {
+                return undefined;
+            }
+
+            if (!getIsJSON5ObjectOrArray(envValue)) {
+                return envValue;
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON5.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            try {
+                zLocalizedString.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<LocalizedString>(parsedValue));
+
+            return parsedValue;
+        }
     }
 ]);
 
@@ -1180,13 +1255,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     const injectFunctions: ((url: string) => string)[] = [];
 
-    const kcContext = (() => {
-        if (kcLoginThemeContext !== undefined) {
-            return kcLoginThemeContext;
-        }
-
-        return undefined;
-    })();
+    const kcContext = window.kcContext?.themeType === "login" ? window.kcContext : undefined;
 
     //NOTE: Initially we where in CRA so we used PUBLIC_URL,
     // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
@@ -1264,7 +1333,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             import.meta.env.MODE === "production" && kcContext !== undefined;
 
         const getEnvValue = () => {
-            if (!isUsedInKeycloakTheme && kcLoginThemeContext !== undefined) {
+            if (!isUsedInKeycloakTheme && kcContext !== undefined) {
                 throw new Error(
                     `Env ${envName} not labeled as being used in keycloak theme`
                 );
@@ -1295,7 +1364,10 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 updateSearchBarUrl(newUrl);
 
                 if (isProductionKeycloak) {
-                    const kcEnvValue = (kcContext as any).properties[envName] ?? "";
+
+                    const kcEnvName= `ONYXIA_${envName}` as const;
+
+                    const kcEnvValue = isAmong(kcEnvNames, kcEnvName) ? kcContext.properties[kcEnvName] : "";
 
                     if (kcEnvValue !== "") {
                         localStorage.removeItem(localStorageKey);
@@ -1419,3 +1491,4 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     return { env, injectTransferableEnvsInQueryParams };
 }
+

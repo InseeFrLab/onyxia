@@ -7,4 +7,5 @@ node_modules/
 /build_keycloak/
 /helm-chart/
 /src/vite-env.d.ts
+*.gen.ts
 

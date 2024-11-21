@@ -1,7 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
 
 export type State = State.NotInitialized | State.Ready;
 
@@ -13,20 +12,21 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         formValues: Ready.FormValues;
-        connectionTestStatus: ConnectionTestStatus;
-        /** Provided if editing */
-        customConfigIndex: number | undefined;
+        action:
+            | { type: "update existing config"; s3ConfigId: string }
+            | { type: "create new config"; creationTime: number };
     };
 
     export namespace Ready {
         export type FormValues = {
+            friendlyName: string;
             url: string;
-            region: string;
+            region: string | undefined;
             workingDirectoryPath: string;
             pathStyleAccess: boolean;
-            accountFriendlyName: string;
-            accessKeyId: string;
-            secretAccessKey: string;
+            isAnonymous: boolean;
+            accessKeyId: string | undefined;
+            secretAccessKey: string | undefined;
             sessionToken: string | undefined;
         };
     }
@@ -43,36 +43,41 @@ export const name = "s3ConfigCreation";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotInitialized>({
-            "stateDescription": "not initialized"
+            stateDescription: "not initialized"
         })
     ),
-    "reducers": {
-        "initialized": (
+    reducers: {
+        initialized: (
             _state,
             {
                 payload
             }: {
                 payload: {
-                    customConfigIndex: number | undefined;
+                    s3ConfigIdToEdit: string | undefined;
                     initialFormValues: State.Ready["formValues"];
                 };
             }
         ) => {
-            const { customConfigIndex, initialFormValues } = payload;
+            const { s3ConfigIdToEdit, initialFormValues } = payload;
 
             return id<State.Ready>({
-                customConfigIndex,
-                "stateDescription": "ready",
-                "formValues": initialFormValues,
-                "connectionTestStatus": id<ConnectionTestStatus.NotTestedYet>({
-                    "stateDescription": "not tested yet",
-                    "isTestOngoing": false
-                })
+                stateDescription: "ready",
+                formValues: initialFormValues,
+                action:
+                    s3ConfigIdToEdit === undefined
+                        ? {
+                              type: "create new config",
+                              creationTime: Date.now()
+                          }
+                        : {
+                              type: "update existing config",
+                              s3ConfigId: s3ConfigIdToEdit
+                          }
             });
         },
-        "formValueChanged": (
+        formValueChanged: (
             state,
             {
                 payload
@@ -87,40 +92,10 @@ export const { reducer, actions } = createUsecaseActions({
             }
 
             Object.assign(state.formValues, { [payload.key]: payload.value });
-
-            state.connectionTestStatus = id<ConnectionTestStatus.NotTestedYet>({
-                "stateDescription": "not tested yet",
-                "isTestOngoing": false
-            });
         },
-        "connectionTestStarted": state => {
-            assert(state.stateDescription === "ready");
-
-            state.connectionTestStatus.isTestOngoing = true;
-        },
-        "connectionTestSucceeded": state => {
-            assert(state.stateDescription === "ready");
-
-            state.connectionTestStatus = id<ConnectionTestStatus.Success>({
-                "stateDescription": "success",
-                "isTestOngoing": false
-            });
-        },
-        "connectionTestFailed": (
-            state,
-            { payload }: { payload: { errorMessage: string } }
-        ) => {
-            assert(state.stateDescription === "ready");
-
-            state.connectionTestStatus = id<ConnectionTestStatus.Failed>({
-                "stateDescription": "failed",
-                "isTestOngoing": false,
-                "errorMessage": payload.errorMessage
-            });
-        },
-        "stateResetToNotInitialized": () =>
+        stateResetToNotInitialized: () =>
             id<State.NotInitialized>({
-                "stateDescription": "not initialized"
+                stateDescription: "not initialized"
             })
     }
 });

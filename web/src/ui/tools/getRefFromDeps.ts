@@ -19,7 +19,7 @@ export function getRefFromDepsFactory(params: { max: number }) {
         memoizedByNumberOfArgument.set(
             deps.length,
             memoize((..._deps: DependencyList) => ({}), {
-                "length": deps.length,
+                length: deps.length,
                 max
             })
         );

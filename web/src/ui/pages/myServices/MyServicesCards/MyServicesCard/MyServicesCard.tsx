@@ -1,4 +1,4 @@
-import { Fragment, useMemo, memo } from "react";
+import { useState, Fragment, useMemo, memo } from "react";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
@@ -8,19 +8,19 @@ import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
-import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { declareComponentKeys } from "i18nifty";
 import { ReadmeDialog } from "./ReadmeDialog";
 import { Evt, NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { useEvt } from "evt/hooks";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { Link } from "type-route";
 import type { Service } from "core/usecases/serviceManagement";
 import { assert, type Equals } from "tsafe/assert";
+import { TextField, TextFieldProps } from "onyxia-ui/TextField";
+import MuiLink from "@mui/material/Link";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -41,7 +41,9 @@ export type Props = {
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
     onOpenClusterEventsDialog: () => void;
-    projectServicePassword: string;
+    onRequestChangeFriendlyName: (friendlyName: string) => void;
+    onRequestChangeSharedStatus: (isShared: boolean) => void;
+    groupProjectName: string | undefined;
     service: Service;
 };
 
@@ -55,7 +57,9 @@ export const MyServicesCard = memo((props: Props) => {
         myServiceLink,
         lastClusterEvent,
         onOpenClusterEventsDialog,
-        projectServicePassword,
+        onRequestChangeFriendlyName,
+        onRequestChangeSharedStatus,
+        groupProjectName,
         service
     } = props;
 
@@ -71,7 +75,7 @@ export const MyServicesCard = memo((props: Props) => {
                 return "pending";
             case "running":
                 return getDoesHaveBeenRunningForTooLong({
-                    "startTime": service.startedAt
+                    startTime: service.startedAt
                 })
                     ? "warning"
                     : "success";
@@ -80,12 +84,12 @@ export const MyServicesCard = memo((props: Props) => {
         assert<Equals<typeof service.state, never>>(false);
     }, [service]);
 
-    const isAboveDividerALink =
+    const isServiceTitleALink =
         service.state === "running" && !service.areInteractionLocked;
 
     const { classes, cx, theme } = useStyles({
-        "hasBeenRunningForTooLong": severity === "warning",
-        isAboveDividerALink
+        hasBeenRunningForTooLong: severity === "warning",
+        isServiceTitleALink
     });
 
     const evtOpenReadmeDialog = useConst(() => Evt.create());
@@ -106,44 +110,121 @@ export const MyServicesCard = memo((props: Props) => {
         [evtAction]
     );
 
+    const [isEditingFriendlyName, setIsEditingFriendlyName] = useState(false);
+
+    const evtFriendlyNameTextFieldAction = useConst(() =>
+        Evt.create<TextFieldProps["evtAction"]>()
+    );
+
     return (
         <div className={cx(classes.root, className)}>
-            {(() => {
-                const aboveDividerChildren = (
-                    <>
-                        <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
+            <div className={classes.aboveDivider}>
+                <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
+                {isEditingFriendlyName ? (
+                    <TextField
+                        className={classes.friendlyNameTextField}
+                        inputProps_autoFocus={true}
+                        selectAllTextOnFocus={true}
+                        defaultValue={capitalize(service.friendlyName)}
+                        evtAction={evtFriendlyNameTextFieldAction}
+                        onEnterKeyDown={() =>
+                            evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                        }
+                        onSubmit={friendlyName => {
+                            setIsEditingFriendlyName(false);
+
+                            onRequestChangeFriendlyName(friendlyName);
+                        }}
+                        onEscapeKeyDown={() => {
+                            setIsEditingFriendlyName(false);
+                        }}
+                    />
+                ) : (
+                    <MuiLink {...myServiceLink}>
                         <Text className={classes.title} typo="object heading">
                             {capitalize(service.friendlyName)}
                         </Text>
-                        <div style={{ "flex": 1 }} />
-                        {service.ownership.isShared && (
-                            <Tooltip title={t("this is a shared service")}>
-                                <Icon icon={id<MuiIconComponentName>("People")} />
+                    </MuiLink>
+                )}
+                {isEditingFriendlyName ? (
+                    <IconButton
+                        icon={getIconUrlByName("Check")}
+                        onClick={() =>
+                            evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                        }
+                    />
+                ) : (
+                    <IconButton
+                        icon={getIconUrlByName("Edit")}
+                        disabled={service.areInteractionLocked}
+                        onClick={() => setIsEditingFriendlyName(true)}
+                    />
+                )}
+                <div style={{ flex: 1 }} />
+                {(() => {
+                    if (groupProjectName === undefined) {
+                        return null;
+                    }
+
+                    if (!service.ownership.isOwned) {
+                        return (
+                            <Tooltip
+                                title={t("share tooltip - belong to someone else", {
+                                    ownerUsername: service.ownership.ownerUsername,
+                                    projectName: groupProjectName,
+                                    focusColor: theme.colors.useCases.typography.textFocus
+                                })}
+                            >
+                                <Icon icon={getIconUrlByName("Diversity3")} />
                             </Tooltip>
-                        )}
+                        );
+                    }
+
+                    if (service.ownership.isShared) {
+                        return (
+                            <Tooltip
+                                title={t("share tooltip - belong to you, shared", {
+                                    projectName: groupProjectName,
+                                    focusColor: theme.colors.useCases.typography.textFocus
+                                })}
+                            >
+                                <IconButton
+                                    disabled={service.areInteractionLocked}
+                                    onClick={() => onRequestChangeSharedStatus(false)}
+                                    icon={getIconUrlByName("Diversity3")}
+                                />
+                            </Tooltip>
+                        );
+                    }
+
+                    return (
                         <Tooltip
-                            title={
-                                <Fragment key={"reminder"}>
-                                    {t("reminder to delete services")}
-                                </Fragment>
-                            }
+                            title={t("share tooltip - belong to you, not shared", {
+                                projectName: groupProjectName,
+                                focusColor: theme.colors.useCases.typography.textFocus
+                            })}
                         >
-                            <Icon
-                                icon={id<MuiIconComponentName>("ErrorOutline")}
-                                className={classes.errorOutlineIcon}
+                            <IconButton
+                                disabled={service.areInteractionLocked}
+                                onClick={() => onRequestChangeSharedStatus(true)}
+                                icon={getIconUrlByName("AdminPanelSettings")}
                             />
                         </Tooltip>
-                    </>
-                );
-
-                return isAboveDividerALink ? (
-                    <a className={classes.aboveDivider} {...myServiceLink}>
-                        {aboveDividerChildren}
-                    </a>
-                ) : (
-                    <div className={classes.aboveDivider}>{aboveDividerChildren}</div>
-                );
-            })()}
+                    );
+                })()}
+                <Tooltip
+                    title={
+                        <Fragment key={"reminder"}>
+                            {t("reminder to delete services")}
+                        </Fragment>
+                    }
+                >
+                    <Icon
+                        icon={getIconUrlByName("ErrorOutline")}
+                        className={classes.errorOutlineIcon}
+                    />
+                </Tooltip>
+            </div>
             <div className={classes.belowDivider}>
                 <div className={classes.belowDividerTop}>
                     <div>
@@ -152,16 +233,6 @@ export const MyServicesCard = memo((props: Props) => {
                         </Text>
                         <div className={classes.packageNameWrapper}>
                             <Text typo="label 1">{capitalize(service.chartName)}</Text>
-                            {service.ownership.isShared && (
-                                <Tag
-                                    className={classes.sharedTag}
-                                    text={
-                                        service.ownership.isOwned
-                                            ? t("shared by you")
-                                            : service.ownership.ownerUsername
-                                    }
-                                />
-                            )}
                         </div>
                     </div>
                     <div className={classes.timeAndStatusContainer}>
@@ -198,7 +269,7 @@ export const MyServicesCard = memo((props: Props) => {
                                     return (
                                         <MyServicesRunningTime
                                             doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                                { "startTime": service.startedAt }
+                                                { startTime: service.startedAt }
                                             )}
                                             startTime={service.startedAt}
                                         />
@@ -212,7 +283,7 @@ export const MyServicesCard = memo((props: Props) => {
                     {onRequestDelete !== undefined && (
                         <IconButton
                             disabled={service.areInteractionLocked}
-                            icon={id<MuiIconComponentName>("Delete")}
+                            icon={getIconUrlByName("Delete")}
                             onClick={onRequestDelete}
                         />
                     )}
@@ -221,7 +292,7 @@ export const MyServicesCard = memo((props: Props) => {
                             <span>
                                 <IconButton
                                     disabled={service.areInteractionLocked}
-                                    icon={id<MuiIconComponentName>("Pause")}
+                                    icon={getIconUrlByName("Pause")}
                                     onClick={event => {
                                         onRequestPauseOrResume();
                                         event.stopPropagation();
@@ -231,21 +302,18 @@ export const MyServicesCard = memo((props: Props) => {
                             </span>
                         </Tooltip>
                     )}
-
-                    <div style={{ "flex": 1 }} />
-
+                    <div style={{ flex: 1 }} />
                     {service.state === "suspended" && (
                         <Tooltip title={t("resume service tooltip")}>
                             <span>
                                 <IconButton
                                     disabled={service.areInteractionLocked}
-                                    icon={id<MuiIconComponentName>("PlayArrow")}
+                                    icon={getIconUrlByName("PlayArrow")}
                                     onClick={onRequestPauseOrResume}
                                 />
                             </span>
                         </Tooltip>
                     )}
-
                     {(service.state === "running" || service.state === "starting") &&
                         (service.openUrl !== undefined ||
                             service.postInstallInstructions !== undefined) && (
@@ -270,7 +338,7 @@ export const MyServicesCard = memo((props: Props) => {
                 evtOpen={evtOpenReadmeDialog}
                 isReady={service.state === "running"}
                 openUrl={service.openUrl}
-                projectServicePassword={projectServicePassword}
+                servicePassword={service.servicePassword}
                 postInstallInstructions={service.postInstallInstructions}
                 onRequestLogHelmGetNotes={onRequestLogHelmGetNotes}
                 lastClusterEvent={lastClusterEvent}
@@ -285,9 +353,7 @@ const { i18n } = declareComponentKeys<
     | "running since"
     | "open"
     | "readme"
-    | "shared by you"
     | "reminder to delete services"
-    | "this is a shared service"
     | "status"
     | "container starting"
     | "failed"
@@ -295,85 +361,97 @@ const { i18n } = declareComponentKeys<
     | "resume service tooltip"
     | "suspended"
     | "suspending"
+    | {
+          K: "share tooltip - belong to someone else";
+          P: { ownerUsername: string; projectName: string; focusColor: string };
+          R: JSX.Element;
+      }
+    | {
+          K: "share tooltip - belong to you, not shared";
+          P: { projectName: string; focusColor: string };
+          R: JSX.Element;
+      }
+    | {
+          K: "share tooltip - belong to you, shared";
+          P: { projectName: string; focusColor: string };
+          R: JSX.Element;
+      }
 >()({ MyServicesCard });
 export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{
         hasBeenRunningForTooLong: boolean;
-        isAboveDividerALink: boolean;
+        isServiceTitleALink: boolean;
     }>()
     .withName({ MyServicesCard })
-    .withNestedSelectors<"title">()
-    .create(({ theme, hasBeenRunningForTooLong, isAboveDividerALink, classes }) => ({
-        "root": {
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+    .create(({ theme, hasBeenRunningForTooLong, isServiceTitleALink }) => ({
+        root: {
+            borderRadius: 8,
+            boxShadow: theme.shadows[1],
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
             "&:hover": {
-                "boxShadow": theme.shadows[6]
+                boxShadow: theme.shadows[6]
             },
-            "display": "flex",
-            "flexDirection": "column"
+            display: "flex",
+            flexDirection: "column"
         },
-        "aboveDivider": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "boxSizing": "border-box",
-            "display": "flex",
-            "alignItems": "center",
-            "color": "inherit",
-            "textDecoration": "none",
-            ...(!isAboveDividerALink
-                ? undefined
-                : {
-                      [`&:hover .${classes.title}`]: {
-                          "color": theme.colors.useCases.typography.textFocus
-                      }
-                  })
+        aboveDivider: {
+            padding: theme.spacing({ topBottom: 3, rightLeft: 4 }),
+            borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+            color: "inherit",
+            textDecoration: "none"
         },
-        "title": {
-            "marginLeft": theme.spacing(3)
-        },
-        "errorOutlineIcon": !hasBeenRunningForTooLong
-            ? { "display": "none" }
-            : {
-                  "marginLeft": theme.spacing(3),
-                  "color": theme.colors.useCases.alertSeverity.warning.main
-              },
-        "belowDivider": {
-            "padding": theme.spacing(4),
-            "paddingTop": theme.spacing(3),
-            "flex": 1
-        },
-        "timeAndStatusContainer": {
-            "flex": 1,
-            "paddingLeft": theme.spacing(6)
-        },
-        "circularProgress": {
-            "color": "inherit",
-            "position": "relative",
-            "top": 3,
-            "left": theme.spacing(2)
-        },
-        "belowDividerTop": {
-            "display": "flex",
-            "marginBottom": theme.spacing(4)
-        },
-        "captions": {
-            "display": "inline-block",
-            "marginBottom": theme.spacing(2)
-        },
-        "packageNameWrapper": {
-            "& > *": {
-                "display": "inline-block"
+        title: {
+            marginLeft: theme.spacing(3),
+            "&:hover": {
+                color: isServiceTitleALink
+                    ? theme.colors.useCases.typography.textFocus
+                    : undefined
             }
         },
-        "sharedTag": {
-            "marginLeft": theme.spacing(2)
+        errorOutlineIcon: !hasBeenRunningForTooLong
+            ? { display: "none" }
+            : {
+                  marginLeft: theme.spacing(3),
+                  color: theme.colors.useCases.alertSeverity.warning.main
+              },
+        belowDivider: {
+            padding: theme.spacing(4),
+            paddingTop: theme.spacing(3),
+            flex: 1
         },
-        "belowDividerBottom": {
-            "display": "flex",
-            "alignItems": "center"
+        timeAndStatusContainer: {
+            flex: 1,
+            paddingLeft: theme.spacing(6)
+        },
+        circularProgress: {
+            color: "inherit",
+            position: "relative",
+            top: 3,
+            left: theme.spacing(2)
+        },
+        belowDividerTop: {
+            display: "flex",
+            marginBottom: theme.spacing(4)
+        },
+        captions: {
+            display: "inline-block",
+            marginBottom: theme.spacing(2)
+        },
+        packageNameWrapper: {
+            "& > *": {
+                display: "inline-block"
+            }
+        },
+        belowDividerBottom: {
+            display: "flex",
+            alignItems: "center"
+        },
+        friendlyNameTextField: {
+            marginLeft: theme.spacing(3)
         }
     }));

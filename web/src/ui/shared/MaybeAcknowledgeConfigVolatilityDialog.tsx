@@ -41,7 +41,7 @@ export const MaybeAcknowledgeConfigVolatilityDialog = memo(
                         isVaultEnabled ||
                         !doDisplayAcknowledgeConfigVolatilityDialogIfNoVault
                     ) {
-                        resolve({ "doProceed": true });
+                        resolve({ doProceed: true });
                         return;
                     }
 
@@ -56,7 +56,7 @@ export const MaybeAcknowledgeConfigVolatilityDialog = memo(
         const onCancel = () => {
             assert(openState !== undefined);
 
-            openState.resolve({ "doProceed": false });
+            openState.resolve({ doProceed: false });
 
             setOpenState(undefined);
         };
@@ -84,13 +84,13 @@ export const MaybeAcknowledgeConfigVolatilityDialog = memo(
 
                                 if (!doNotShowNextTime) {
                                     userConfigs.changeValue({
-                                        "key": "doDisplayAcknowledgeConfigVolatilityDialogIfNoVault",
-                                        "value": false
+                                        key: "doDisplayAcknowledgeConfigVolatilityDialogIfNoVault",
+                                        value: false
                                     });
                                 }
 
                                 openState.resolve({
-                                    "doProceed": true
+                                    doProceed: true
                                 });
 
                                 setOpenState(undefined);

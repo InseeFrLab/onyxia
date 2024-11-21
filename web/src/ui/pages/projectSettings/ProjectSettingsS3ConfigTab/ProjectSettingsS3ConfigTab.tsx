@@ -5,8 +5,7 @@ import { useConst } from "powerhooks/useConst";
 import { Evt, type UnpackEvt } from "evt";
 import { S3ConfigCard } from "./S3ConfigCard";
 import { Button } from "onyxia-ui/Button";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import {
     MaybeAcknowledgeConfigVolatilityDialog,
@@ -27,17 +26,17 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
         evtAddCustomS3ConfigDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = useConst(() => ({
-        "evtConfirmCustomS3ConfigDeletionDialogOpen":
+        evtConfirmCustomS3ConfigDeletionDialogOpen:
             Evt.create<
                 UnpackEvt<
                     S3ConfigDialogsProps["evtConfirmCustomS3ConfigDeletionDialogOpen"]
                 >
             >(),
-        "evtAddCustomS3ConfigDialogOpen":
+        evtAddCustomS3ConfigDialogOpen:
             Evt.create<
                 UnpackEvt<S3ConfigDialogsProps["evtAddCustomS3ConfigDialogOpen"]>
             >(),
-        "evtMaybeAcknowledgeConfigVolatilityDialogOpen":
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen:
             Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
     }));
 
@@ -55,90 +54,51 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                 <div className={classes.cardsWrapper}>
                     {s3Configs.map(s3Config => (
                         <S3ConfigCard
+                            key={s3Config.id}
                             className={classes.card}
-                            key={s3Config.customConfigIndex ?? -1}
-                            dataSource={s3Config.dataSource}
-                            region={s3Config.region}
-                            isUsedForExplorer={s3Config.isUsedForExplorer}
-                            isUsedForXOnyxia={s3Config.isUsedForXOnyxia}
-                            accountFriendlyName={s3Config.accountFriendlyName}
+                            s3Config={s3Config}
                             onDelete={(() => {
-                                const { customConfigIndex } = s3Config;
-
-                                if (customConfigIndex === undefined) {
+                                if (s3Config.origin !== "project") {
                                     return undefined;
                                 }
 
                                 return () =>
-                                    evtConfirmCustomS3ConfigDeletionDialogOpen.post({
-                                        "resolveDoProceed": doProceed => {
-                                            if (!doProceed) {
-                                                return;
-                                            }
-
-                                            s3ConfigManagement.deleteCustomS3Config({
-                                                customConfigIndex
-                                            });
-                                        }
+                                    s3ConfigManagement.deleteS3Config({
+                                        projectS3ConfigId: s3Config.id
                                     });
                             })()}
-                            onIsUsedForExplorerValueChange={(() => {
-                                if (
-                                    s3Config.accountFriendlyName === undefined &&
-                                    s3Config.isUsedForExplorer
-                                ) {
-                                    return undefined;
-                                }
-
-                                return isUsed =>
-                                    s3ConfigManagement.setConfigUsage({
-                                        "customConfigIndex": s3Config.customConfigIndex,
-                                        "usedFor": "explorer",
-                                        isUsed
-                                    });
-                            })()}
-                            onIsUsedForXOnyxiaValueChange={(() => {
-                                if (
-                                    s3Config.accountFriendlyName === undefined &&
-                                    s3Config.isUsedForXOnyxia
-                                ) {
-                                    return undefined;
-                                }
-
-                                return isUsed =>
-                                    s3ConfigManagement.setConfigUsage({
-                                        "customConfigIndex": s3Config.customConfigIndex,
-                                        "usedFor": "xOnyxia",
-                                        isUsed
-                                    });
-                            })()}
+                            onIsExplorerConfigChange={value =>
+                                s3ConfigManagement.changeIsDefault({
+                                    s3ConfigId: s3Config.id,
+                                    usecase: "explorer",
+                                    value
+                                })
+                            }
+                            onIsOnyxiaDefaultChange={value =>
+                                s3ConfigManagement.changeIsDefault({
+                                    s3ConfigId: s3Config.id,
+                                    usecase: "defaultXOnyxia",
+                                    value
+                                })
+                            }
                             onEdit={(() => {
-                                const { customConfigIndex } = s3Config;
-
-                                if (customConfigIndex === undefined) {
+                                if (s3Config.origin !== "project") {
                                     return undefined;
                                 }
 
                                 return () =>
                                     evtAddCustomS3ConfigDialogOpen.post({
-                                        customConfigIndex
+                                        s3ConfigIdToEdit: s3Config.id
                                     });
                             })()}
-                            doHideUsageSwitches={
-                                s3Config.accountFriendlyName === undefined &&
-                                s3Configs.length === 1
-                            }
-                            connectionTestStatus={s3Config.connectionTestStatus}
                             onTestConnection={(() => {
-                                const { customConfigIndex } = s3Config;
-
-                                if (customConfigIndex === undefined) {
+                                if (s3Config.origin !== "project") {
                                     return undefined;
                                 }
 
                                 return () =>
-                                    s3ConfigManagement.testConnection({
-                                        customConfigIndex
+                                    s3ConfigManagement.testS3Connection({
+                                        projectS3ConfigId: s3Config.id
                                     });
                             })()}
                         />
@@ -146,16 +106,16 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                 </div>
                 <Button
                     className={css({
-                        "float": "right",
-                        "marginRight": theme.spacing(3),
-                        "marginBottom": theme.spacing(4)
+                        float: "right",
+                        marginRight: theme.spacing(3),
+                        marginBottom: theme.spacing(4)
                     })}
-                    startIcon={id<MuiIconComponentName>("Add")}
+                    startIcon={getIconUrlByName("Add")}
                     onClick={async () => {
                         const dDoProceed = new Deferred<boolean>();
 
                         evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
-                            "resolve": ({ doProceed }) => dDoProceed.resolve(doProceed)
+                            resolve: ({ doProceed }) => dDoProceed.resolve(doProceed)
                         });
 
                         if (!(await dDoProceed.pr)) {
@@ -163,7 +123,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                         }
 
                         evtAddCustomS3ConfigDialogOpen.post({
-                            "customConfigIndex": undefined
+                            s3ConfigIdToEdit: undefined
                         });
                     }}
                 >
@@ -184,15 +144,15 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ ProjectSettingsS3ConfigTab }).create(({ theme }) => ({
-    "cardsWrapper": {
-        "display": "flex",
-        "flexWrap": "wrap",
-        "gap": theme.spacing(3),
-        "marginBottom": theme.spacing(4),
+    cardsWrapper: {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: theme.spacing(3),
+        marginBottom: theme.spacing(4),
         ...theme.spacing.rightLeft("padding", 3)
     },
-    "card": {
-        "flexBasis": `calc(50% - ${theme.spacing(3) / 2}px)`
+    card: {
+        flexBasis: `calc(50% - ${theme.spacing(3) / 2}px)`
     }
 }));
 

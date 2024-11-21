@@ -17,11 +17,9 @@ export function ProjectSelect(props: ProjectSelectProps) {
 
     const { projectManagement } = useCore().functions;
 
-    const availableProjects = useCoreState("projectManagement", "availableProjects");
+    const projectSelect = useCoreState("projectManagement", "projectSelect");
 
-    const { id: currentProjectId } = useCoreState("projectManagement", "currentProject");
-
-    if (availableProjects.length === 1) {
+    if (projectSelect.options.length === 1) {
         return null;
     }
 
@@ -30,17 +28,17 @@ export function ProjectSelect(props: ProjectSelectProps) {
             <InputLabel id={labelId}>{tProject}</InputLabel>
             <Select
                 labelId={labelId}
-                value={currentProjectId}
+                value={projectSelect.selectedOptionValue}
                 label="Project"
                 onChange={event =>
                     projectManagement.changeProject({
-                        "projectId": event.target.value
+                        projectId: event.target.value
                     })
                 }
             >
-                {availableProjects.map(({ id, name }) => (
-                    <MenuItem key={id} value={id}>
-                        {name}
+                {projectSelect.options.map(({ label, value }) => (
+                    <MenuItem key={value} value={value}>
+                        {label}
                     </MenuItem>
                 ))}
             </Select>

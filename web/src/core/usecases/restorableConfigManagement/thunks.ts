@@ -1,15 +1,11 @@
-import { formFieldsValueToObject } from "core/usecases/launcher/FormField";
-import { allEquals } from "evt/tools/reducers/allEquals";
-import { same } from "evt/tools/inDepth/same";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
-import { Chart } from "core/ports/OnyxiaApi";
 import { actions, type State } from "./state";
-import { readFriendlyName } from "./selectors";
+import { getAreSameRestorableConfig } from "./decoupledLogic/getAreSameRestorableConfig";
 
 export const protectedThunks = {
-    "initialize":
+    initialize:
         () =>
         (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
@@ -20,50 +16,22 @@ export const protectedThunks = {
                 const { catalogs, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                const chartIconUrlByChartNameAndCatalogId: State["chartIconUrlByChartNameAndCatalogId"] =
-                    {};
+                const indexedChartsIcons: State["indexedChartsIcons"] = {};
 
-                catalogs.forEach(({ id: catalogId }) => {
-                    const chartIconUrlByChartName: State["chartIconUrlByChartNameAndCatalogId"][string] =
-                        {};
-
+                catalogs.forEach(({ id: catalogId }) =>
                     chartsByCatalogId[catalogId].forEach(chart => {
-                        const defaultVersion = Chart.getDefaultVersion(chart);
+                        (indexedChartsIcons[catalogId] ??= {})[chart.name] =
+                            chart.iconUrl;
+                    })
+                );
 
-                        chartIconUrlByChartName[chart.name] = chart.versions.find(
-                            ({ version }) => version === defaultVersion
-                        )!.iconUrl;
-                    });
-
-                    chartIconUrlByChartNameAndCatalogId[catalogId] =
-                        chartIconUrlByChartName;
-                });
-
-                dispatch(actions.initialized({ chartIconUrlByChartNameAndCatalogId }));
+                dispatch(actions.initialized({ indexedChartsIcons }));
             })();
-        },
-    "getIsRestorableConfigSaved":
-        (params: {
-            restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
-        }) =>
-        (...args): boolean => {
-            const [, getState] = args;
-
-            const { restorableConfig } = params;
-
-            const { restorableConfigs } =
-                projectManagement.protectedSelectors.currentProjectConfigs(getState());
-
-            return (
-                restorableConfigs.find(restorableConfig_i =>
-                    getAreSameRestorableConfig(restorableConfig_i, restorableConfig)
-                ) !== undefined
-            );
         }
 } satisfies Thunks;
 
 export const thunks = {
-    "saveRestorableConfig":
+    saveRestorableConfig:
         (params: {
             restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
         }) =>
@@ -73,13 +41,13 @@ export const thunks = {
             const { restorableConfig } = params;
 
             const { restorableConfigs } =
-                projectManagement.protectedSelectors.currentProjectConfigs(getState());
+                projectManagement.protectedSelectors.projectConfig(getState());
 
             const restorableConfigWithSameFriendlyNameAndSameService = (() => {
                 const results = restorableConfigs.filter(
                     restorableConfig_i =>
-                        readFriendlyName(restorableConfig_i) ===
-                            readFriendlyName(restorableConfig) &&
+                        restorableConfig_i.friendlyName ===
+                            restorableConfig.friendlyName &&
                         restorableConfig_i.catalogId === restorableConfig.catalogId &&
                         restorableConfig_i.chartName === restorableConfig.chartName
                 );
@@ -116,12 +84,12 @@ export const thunks = {
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "restorableConfigs",
-                    "value": newRestorableConfigs
+                    key: "restorableConfigs",
+                    value: newRestorableConfigs
                 })
             );
         },
-    "deleteRestorableConfig":
+    deleteRestorableConfig:
         (params: {
             restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
         }) =>
@@ -131,7 +99,7 @@ export const thunks = {
             const { restorableConfig } = params;
 
             const { restorableConfigs } =
-                projectManagement.protectedSelectors.currentProjectConfigs(getState());
+                projectManagement.protectedSelectors.projectConfig(getState());
 
             const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
                 restorableConfig_i =>
@@ -149,35 +117,9 @@ export const thunks = {
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "restorableConfigs",
-                    "value": newRestorableConfigs
+                    key: "restorableConfigs",
+                    value: newRestorableConfigs
                 })
             );
         }
 } satisfies Thunks;
-
-export function getAreSameRestorableConfig(
-    restorableConfiguration1: projectManagement.ProjectConfigs.RestorableServiceConfig,
-    restorableConfiguration2: projectManagement.ProjectConfigs.RestorableServiceConfig
-): boolean {
-    return [restorableConfiguration1, restorableConfiguration2]
-        .map(
-            ({
-                catalogId,
-                chartName,
-                chartVersion,
-                formFieldsValueDifferentFromDefault,
-                ...rest
-            }) => {
-                assert<Equals<typeof rest, {}>>();
-
-                return [
-                    catalogId,
-                    chartName,
-                    chartVersion,
-                    formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-                ];
-            }
-        )
-        .reduce(...allEquals(same));
-}

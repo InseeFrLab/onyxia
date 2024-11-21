@@ -33,7 +33,7 @@ export const AutoLaunchDisabledDialog = memo((props: Props) => {
                     typo="body 2"
                     htmlComponent="div"
                     className={css({
-                        "marginTop": theme.spacing(3)
+                        marginTop: theme.spacing(3)
                     })}
                 >
                     {t("auto launch disabled dialog body")}

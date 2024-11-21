@@ -1,17 +1,16 @@
 import { Button } from "onyxia-ui/Button";
-import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
+import type { S3Config } from "core/usecases/s3ConfigManagement";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import Tooltip from "@mui/material/Tooltip";
 import { assert, type Equals } from "tsafe/assert";
 
 export type Props = {
     className?: string;
-    connectionTestStatus: ConnectionTestStatus;
+    connectionTestStatus: S3Config.FromProject["connectionTestStatus"];
     onTestConnection: (() => void) | undefined;
 };
 
@@ -26,51 +25,53 @@ export function TestS3ConnectionButton(props: Props) {
         <div className={cx(classes.root, className)}>
             <Button
                 variant="ternary"
-                onClick={onTestConnection}
-                startIcon={id<MuiIconComponentName>("SettingsEthernet")}
+                onClick={() => {
+                    assert(onTestConnection !== undefined);
+                    onTestConnection();
+                }}
+                startIcon={getIconUrlByName("SettingsEthernet")}
                 disabled={
-                    onTestConnection === undefined || connectionTestStatus.isTestOngoing
+                    onTestConnection === undefined ||
+                    connectionTestStatus.status === "test ongoing"
                 }
             >
                 {t("test connection")}
             </Button>
             {(() => {
-                if (connectionTestStatus.isTestOngoing) {
+                if (connectionTestStatus.status === "test ongoing") {
                     return <CircularProgress size={theme.spacing(4)} />;
                 }
 
-                switch (connectionTestStatus.stateDescription) {
-                    case "not tested yet":
+                switch (connectionTestStatus.status) {
+                    case "not tested":
                         return null;
-                    case "success":
+                    case "test succeeded":
                         return (
                             <Icon
                                 className={cx(
                                     classes.icon,
                                     css({
-                                        "color":
-                                            theme.colors.useCases.alertSeverity.success
-                                                .main
+                                        color: theme.colors.useCases.alertSeverity.success
+                                            .main
                                     })
                                 )}
-                                icon={id<MuiIconComponentName>("DoneOutline")}
+                                icon={getIconUrlByName("DoneOutline")}
                             />
                         );
-                    case "failed":
+                    case "test failed":
                         return (
                             <>
                                 <Tooltip
                                     title={t("test connection failed", {
-                                        "errorMessage": connectionTestStatus.errorMessage
+                                        errorMessage: connectionTestStatus.errorMessage
                                     })}
                                 >
                                     <Icon
                                         className={css({
-                                            "color":
-                                                theme.colors.useCases.alertSeverity.error
-                                                    .main
+                                            color: theme.colors.useCases.alertSeverity
+                                                .error.main
                                         })}
-                                        icon={id<MuiIconComponentName>("ErrorOutline")}
+                                        icon={getIconUrlByName("ErrorOutline")}
                                     />
                                 </Tooltip>
                             </>
@@ -83,16 +84,16 @@ export function TestS3ConnectionButton(props: Props) {
 }
 
 const useStyles = tss.withName({ TestS3ConnectionButton }).create(({ theme }) => ({
-    "root": {
-        "display": "flex",
-        "alignItems": "center",
-        "gap": theme.spacing(3)
+    root: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(3)
     },
-    "icon": {
-        "fontSize": "inherit",
+    icon: {
+        fontSize: "inherit",
         ...(() => {
             const factor = 1.6;
-            return { "width": `${factor}em`, "height": `${factor}em` };
+            return { width: `${factor}em`, height: `${factor}em` };
         })()
     }
 }));

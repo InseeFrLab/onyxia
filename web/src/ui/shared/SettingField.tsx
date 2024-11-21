@@ -21,8 +21,7 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { useLang } from "ui/i18n";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { declareComponentKeys } from "i18nifty";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { languagesPrettyPrint } from "ui/i18n";
 
 export type Props =
@@ -165,7 +164,7 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
         () => (props: { onClick(): void; disabled?: boolean }) => (
             <Tooltip title={t("copy tooltip")}>
                 <IconButton
-                    icon={id<MuiIconComponentName>("FilterNone")}
+                    icon={getIconUrlByName("FilterNone")}
                     onClick={props.onClick}
                     size="small"
                     disabled={props.disabled ?? false}
@@ -297,7 +296,7 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                 return props.helperText;
             case "service password":
                 return t("service password helper text", {
-                    "groupProjectName": props.groupProjectName
+                    groupProjectName: props.groupProjectName
                 });
             case "reset helper dialogs":
                 return t("reset helper dialogs helper text");
@@ -391,11 +390,9 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                 <div className={classes.cellActions}>
                     {isSensitiveInformation && (
                         <IconButton
-                            icon={
-                                isTextHidden
-                                    ? id<MuiIconComponentName>("Visibility")
-                                    : id<MuiIconComponentName>("VisibilityOff")
-                            }
+                            icon={getIconUrlByName(
+                                isTextHidden ? "Visibility" : "VisibilityOff"
+                            )}
                             onClick={toggleIsTextHidden}
                         />
                     )}
@@ -405,11 +402,9 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                                 return (
                                     <>
                                         <IconButton
-                                            icon={
-                                                isInEditingState
-                                                    ? id<MuiIconComponentName>("Check")
-                                                    : id<MuiIconComponentName>("Edit")
-                                            }
+                                            icon={getIconUrlByName(
+                                                isInEditingState ? "Check" : "Edit"
+                                            )}
                                             disabled={
                                                 props.isLocked ||
                                                 (isInEditingState &&
@@ -444,7 +439,7 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                                 return (
                                     <>
                                         <IconButton
-                                            icon={id<MuiIconComponentName>("Replay")}
+                                            icon={getIconUrlByName("Replay")}
                                             size="small"
                                             onClick={
                                                 props.onRequestServicePasswordRenewal
@@ -498,38 +493,38 @@ const useStyles = tss
     .withName({ SettingField })
     .withParams<{ isFlashing: boolean }>()
     .create(({ theme, isFlashing }) => ({
-        "root": {
-            "marginBottom": theme.spacing(3)
+        root: {
+            marginBottom: theme.spacing(3)
         },
-        "mainLine": {
-            "display": "flex",
+        mainLine: {
+            display: "flex",
             "& > div": {
-                "display": "flex",
-                "alignItems": "center"
+                display: "flex",
+                alignItems: "center"
             },
-            "marginBottom": theme.spacing(2)
+            marginBottom: theme.spacing(2)
         },
-        "cellTitle": {
-            "width": 360
+        cellTitle: {
+            width: 360
         },
-        "cellMiddle": {
-            "flex": 1,
-            "overflow": "hidden",
+        cellMiddle: {
+            flex: 1,
+            overflow: "hidden",
             "& .MuiTextField-root": {
-                "width": "100%",
-                "top": 2
+                width: "100%",
+                top: 2
             }
         },
-        "cellMiddleText": {
-            "overflow": "hidden",
-            "whiteSpace": "nowrap",
-            "textOverflow": "ellipsis",
-            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive
+        cellMiddleText: {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            color: !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive
         },
-        "cellActions": {
-            "marginRight": theme.spacing(2)
+        cellActions: {
+            marginRight: theme.spacing(2)
         },
-        "noText": {
-            "color": theme.colors.useCases.typography.textDisabled
+        noText: {
+            color: theme.colors.useCases.typography.textDisabled
         }
     }));

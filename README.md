@@ -5,8 +5,8 @@
     <a href="https://github.com/inseefrlab/onyxia/actions">
       <img src="https://github.com/inseefrlab/onyxia/workflows/ci/badge.svg?branch=main">
     </a>
-    <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
-      <img src="https://camo.githubusercontent.com/21134ce22db8dc96c8ffed33cbfe3912dd1a17cf81c747983fbcad9769ac6509/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
+    <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">
+      <img src="https://img.shields.io/badge/slack-550_Members-brightgreen.svg?logo=slack">
     </a>
 </p>
 
@@ -15,7 +15,7 @@
     <br>
     <b>Looking for our public instance?</b> <a href="https://datalab.sspcloud.fr">datalab.sspcloud.fr</a>
     <br>
-    <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">our Slack</a>
+    <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">our Slack</a>
     <br>
     <b>What's next? Checkout our</b> <a href="https://docs.onyxia.sh/roadmap">roadmap</a>
 </p>
@@ -46,13 +46,6 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Media
 
 <p align="center">
-    <i>OW2Con'23</i><br>
-    <a href="https://youtu.be/wBYWEwF7pK8">
-        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
-    </a>
-</p>
-
-<p align="center">
     <i>Devoxx France 2023</i><br>
     <a href="https://youtu.be/GXINfnVB21E">
         <img src="https://user-images.githubusercontent.com/6702424/234834115-28a5fc8d-4819-4f6d-abf5-9a9ba25e3749.png" width="640">
@@ -70,6 +63,13 @@ Onyxia is developed by the French National institute of statistics and economic 
     <i>Open Source Experience 2022</i><br>
     <a href="https://www.youtube.com/watch?v=QBHyAKcNmS0">
         <img src="https://user-images.githubusercontent.com/6702424/206958731-32480b6c-4fab-432f-8afa-bc7922df9857.png" width="640">
+    </a>
+</p>
+
+<p align="center">
+    <i>OW2Con'23</i><br>
+    <a href="https://youtu.be/wBYWEwF7pK8">
+        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
     </a>
 </p>
 
@@ -103,7 +103,7 @@ Onyxia is developed by the French National institute of statistics and economic 
 
 ## Contributing
 
-If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).
+If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributors-doc).
 
 📣 **Monthly Onyxia Community Calls!** 📣
 Starting November 2023, we're thrilled to introduce community calls on the last Friday of every month at 1pm Paris time. This is your chance to engage, ask questions, and stay updated on the newest Onyxia advancements. Don't forget to set a reminder! 📅🕐

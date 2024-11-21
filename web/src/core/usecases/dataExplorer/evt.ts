@@ -21,7 +21,7 @@ export const createEvt = (({ evtAction, getState }) => {
                 assert(extraRestorableStates !== undefined);
 
                 evtOut.post({
-                    "actionName": "restoreState",
+                    actionName: "restoreState",
                     queryParams,
                     extraRestorableStates
                 });

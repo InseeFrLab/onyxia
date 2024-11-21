@@ -22,12 +22,12 @@ export default function Page404(props: Props) {
 }
 
 const useStyles = tss.withName({ Page404 }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center",
-        "backgroundColor": theme.colors.useCases.surfaces.background
+    root: {
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: theme.colors.useCases.surfaces.background
     }
 }));
 

@@ -2,7 +2,7 @@ export function parseUrl(url: string) {
     const { host, protocol, pathname } = new URL(url);
     return {
         host,
-        "port": (() => {
+        port: (() => {
             const portStr = pathname.split(":")[1];
 
             if (portStr !== undefined) {

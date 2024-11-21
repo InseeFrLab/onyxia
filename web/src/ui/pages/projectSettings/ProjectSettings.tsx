@@ -9,8 +9,8 @@ import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
-import { customIcons } from "ui/theme";
 import { useCoreState } from "core";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -22,10 +22,11 @@ export default function ProjectSettings(props: Props) {
 
     const { t } = useTranslation({ ProjectSettings });
 
-    const project = useCoreState("projectManagement", "currentProject");
-    const availableProjects = useCoreState("projectManagement", "availableProjects");
-
-    const groupProjectName = project.group === undefined ? undefined : project.name;
+    const groupProjectName = useCoreState("projectManagement", "groupProjectName");
+    const doesUserBelongToSomeGroupProject = useCoreState(
+        "projectManagement",
+        "doesUserBelongToSomeGroupProject"
+    );
 
     const { classes, cx } = useStyles();
 
@@ -37,14 +38,14 @@ export default function ProjectSettings(props: Props) {
                 helpTitle={t("page header help title", { groupProjectName })}
                 helpContent={t("page header help content", {
                     groupProjectName,
-                    "doesUserBelongToSomeGroupProject": availableProjects.length !== 1
+                    doesUserBelongToSomeGroupProject
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
             />
             <Tabs
                 className={classes.tabs}
                 size="big"
-                tabs={tabIds.map(tabId => ({ "id": tabId, "title": t(tabId) }))}
+                tabs={tabIds.map(tabId => ({ id: tabId, title: t(tabId) }))}
                 activeTabId={route.params.tabId}
                 maxTabCount={5}
                 onRequestChangeActiveTab={tabId =>
@@ -91,13 +92,13 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ ProjectSettings }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto"
+    root: {
+        height: "100%",
+        overflow: "auto"
     },
-    "tabs": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1]
+    tabs: {
+        borderRadius: 8,
+        overflow: "hidden",
+        boxShadow: theme.shadows[1]
     }
 }));

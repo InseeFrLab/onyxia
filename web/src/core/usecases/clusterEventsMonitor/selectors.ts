@@ -7,15 +7,15 @@ const state = (rootState: RootState) => rootState[name];
 
 const clusterEvents = createSelector(
     state,
-    projectManagement.selectors.currentProject,
-    projectManagement.protectedSelectors.currentProjectConfigs,
-    (state, currentProject, currentProjectConfigs) =>
+    projectManagement.protectedSelectors.currentProject,
+    projectManagement.protectedSelectors.projectConfig,
+    (state, currentProject, currentProjectConfig) =>
         (state.clusterEventsByProjectId[currentProject.id] ?? []).map(clusterEvent => ({
             ...clusterEvent,
-            "isHighlighted":
+            isHighlighted:
                 clusterEvent.severity !== "info" &&
                 clusterEvent.timestamp >
-                    currentProjectConfigs.clusterNotificationCheckoutTime
+                    currentProjectConfig.clusterNotificationCheckoutTime
         }))
 );
 
@@ -32,9 +32,24 @@ const lastClusterEvent = createSelector(clusterEvents, clusterEvents => {
         return undefined;
     }
 
-    const { message, severity } = clusterEvents[clusterEvents.length - 1];
+    let i = 1;
 
-    return { message, severity };
+    while (true) {
+        const { message, severity } = clusterEvents[clusterEvents.length - i];
+
+        if (message.includes("probe failed:")) {
+            if (i === clusterEvents.length) {
+                break;
+            }
+
+            i++;
+            continue;
+        }
+
+        return { message, severity };
+    }
+
+    return undefined;
 });
 
 export const selectors = {

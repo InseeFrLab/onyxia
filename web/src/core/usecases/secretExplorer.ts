@@ -56,18 +56,18 @@ export const name = "secretExplorer";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "directoryPath": undefined,
-        "directoryItems": [],
-        "isNavigationOngoing": false,
-        "ongoingOperations": [],
-        "commandLogsEntries": []
+    initialState: id<State>({
+        directoryPath: undefined,
+        directoryItems: [],
+        isNavigationOngoing: false,
+        ongoingOperations: [],
+        commandLogsEntries: []
     }),
-    "reducers": {
-        "navigationStarted": state => {
+    reducers: {
+        navigationStarted: state => {
             state.isNavigationOngoing = true;
         },
-        "navigationCompleted": (
+        navigationCompleted: (
             state,
             {
                 payload
@@ -95,14 +95,14 @@ export const { reducer, actions } = createUsecaseActions({
                     switch (o.operation) {
                         case "rename":
                             removeIfPresent(state.directoryItems, {
-                                "kind": o.kind,
-                                "basename": o.previousBasename
+                                kind: o.kind,
+                                basename: o.previousBasename
                             });
                             break;
                         case "delete":
                             removeIfPresent(state.directoryItems, {
-                                "kind": o.kind,
-                                "basename": o.basename
+                                kind: o.kind,
+                                basename: o.basename
                             });
                             break;
                         case "create":
@@ -110,10 +110,10 @@ export const { reducer, actions } = createUsecaseActions({
                     }
                 });
         },
-        "navigationCanceled": state => {
+        navigationCanceled: state => {
             state.isNavigationOngoing = false;
         },
-        "operationStarted": (
+        operationStarted: (
             state,
             {
                 payload
@@ -144,27 +144,27 @@ export const { reducer, actions } = createUsecaseActions({
             }
 
             state.ongoingOperations.push({
-                "directoryPath": state.directoryPath,
+                directoryPath: state.directoryPath,
                 kind,
                 ...(() => {
                     switch (payload.operation) {
                         case "rename":
                             return {
-                                "operation": payload.operation,
-                                "basename": payload.newBasename,
-                                "previousBasename": basename
+                                operation: payload.operation,
+                                basename: payload.newBasename,
+                                previousBasename: basename
                             };
                         case "delete":
                         case "create":
                             return {
-                                "operation": payload.operation,
+                                operation: payload.operation,
                                 basename
                             };
                     }
                 })()
             });
         },
-        "operationCompleted": (
+        operationCompleted: (
             state,
             {
                 payload
@@ -201,13 +201,13 @@ export const { reducer, actions } = createUsecaseActions({
                 case "create":
                 case "rename":
                     state.directoryItems.push({
-                        "basename": ongoingOperation.basename,
+                        basename: ongoingOperation.basename,
                         kind
                     });
                     break;
             }
         },
-        "apiHistoryUpdated": (
+        apiHistoryUpdated: (
             state,
             { payload }: { payload: { commandLogsEntries: State["commandLogsEntries"] } }
         ) => {
@@ -237,7 +237,7 @@ export declare namespace ExplorersCreateParams {
 }
 
 const privateThunks = {
-    "lazyInitialization":
+    lazyInitialization:
         () =>
         (...args) => {
             const [dispatch, getState, extraArg] = args;
@@ -248,10 +248,10 @@ const privateThunks = {
             }
 
             const { commandLogs, loggedApi } = logApi({
-                "api": extraArg.secretsManager,
-                "commandLogger": getVaultCommandLogger({
-                    "clientType": "CLI",
-                    "engine":
+                api: extraArg.secretsManager,
+                commandLogger: getVaultCommandLogger({
+                    clientType: "CLI",
+                    engine:
                         deploymentRegionManagement.selectors.currentDeploymentRegion(
                             getState()
                         ).vault?.kvEngine ?? "onyxia-kv"
@@ -262,36 +262,36 @@ const privateThunks = {
                 dispatch(
                     actions.apiHistoryUpdated({
                         // NOTE: We spread only for the type.
-                        "commandLogsEntries": [...structuredClone(commandLogs.history)]
+                        commandLogsEntries: [...structuredClone(commandLogs.history)]
                     })
                 )
             );
 
             setContext(extraArg, {
-                "loggedSecretClient": loggedApi,
-                "loggedExtendedFsApi": createExtendedFsApi({
-                    "baseFsApi": {
-                        "list": loggedApi.list,
-                        "deleteFile": loggedApi.delete,
-                        "downloadFile": async ({ path }) =>
+                loggedSecretClient: loggedApi,
+                loggedExtendedFsApi: createExtendedFsApi({
+                    baseFsApi: {
+                        list: loggedApi.list,
+                        deleteFile: loggedApi.delete,
+                        downloadFile: async ({ path }) =>
                             (await loggedApi.get({ path })).secret,
-                        "uploadFile": ({ path, file }) =>
-                            loggedApi.put({ path, "secret": file })
+                        uploadFile: ({ path, file }) =>
+                            loggedApi.put({ path, secret: file })
                     },
-                    "keepFile": id<Secret>({
-                        "info": [
+                    keepFile: id<Secret>({
+                        info: [
                             "This is a dummy secret so that this directory is kept even if there",
                             "is no other secrets in it"
                         ].join(" ")
                     }),
-                    "keepFileBasename": ".keep"
+                    keepFileBasename: ".keep"
                 })
             });
         },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
-    "navigate":
+    navigate:
         (params: { directoryPath: string; forceReload: boolean }) =>
         async (...args) => {
             const { directoryPath, forceReload } = params;
@@ -328,16 +328,16 @@ const privateThunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": "directory",
-                    "directoryPath": pathJoin(directoryPath, ".."),
-                    "basename": pathBasename(directoryPath),
+                    kind: "directory",
+                    directoryPath: pathJoin(directoryPath, ".."),
+                    basename: pathBasename(directoryPath),
                     ctx
                 })
             );
 
             const { directories, files } = await Evt.from(
                 ctx,
-                loggedSecretClient.list({ "path": directoryPath })
+                loggedSecretClient.list({ path: directoryPath })
             ).waitFor();
 
             ctx.done();
@@ -345,17 +345,17 @@ const privateThunks = {
             dispatch(
                 actions.navigationCompleted({
                     directoryPath,
-                    "directoryItems": [
+                    directoryItems: [
                         ...directories.map(basename => ({
                             basename,
-                            "kind": "directory" as const
+                            kind: "directory" as const
                         })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const }))
+                        ...files.map(basename => ({ basename, kind: "file" as const }))
                     ]
                 })
             );
         },
-    "waitForNoOngoingOperation":
+    waitForNoOngoingOperation:
         (params: {
             kind: "file" | "directory";
             basename: string;
@@ -396,7 +396,7 @@ const privateThunks = {
 } satisfies Thunks;
 
 export const protectedThunks = {
-    "getLoggedSecretsApis":
+    getLoggedSecretsApis:
         () =>
         (...args) => {
             const [, , extraArg] = args;
@@ -405,17 +405,18 @@ export const protectedThunks = {
 
             return { loggedSecretClient, loggedExtendedFsApi };
         },
-    "getHomeDirectoryPath":
+    getHomeDirectoryPath:
         () =>
         (...args) => {
             const [, getState] = args;
 
-            return projectManagement.selectors.currentProject(getState()).vaultTopDir;
+            return projectManagement.protectedSelectors.currentProject(getState())
+                .vaultTopDir;
         }
 } satisfies Thunks;
 
 export const thunks = {
-    "getProjectHomeOrPreviousPath":
+    getProjectHomeOrPreviousPath:
         () =>
         (...args) => {
             const [dispatch, getState] = args;
@@ -440,7 +441,7 @@ export const thunks = {
 
             return homeDirectoryPath;
         },
-    "navigate":
+    navigate:
         (params: { directoryPath: string }) =>
         async (...args) => {
             const { directoryPath } = params;
@@ -452,12 +453,12 @@ export const thunks = {
             return dispatch(
                 privateThunks.navigate({
                     directoryPath,
-                    "forceReload": false
+                    forceReload: false
                 })
             );
         },
     //Not used by the UI so far but we want to later
-    "cancelNavigation":
+    cancelNavigation:
         () =>
         (...args) => {
             const [dispatch, getState] = args;
@@ -466,7 +467,7 @@ export const thunks = {
             }
             dispatch(actions.navigationCanceled());
         },
-    "refresh":
+    refresh:
         () =>
         async (...args) => {
             const [dispatch, getState] = args;
@@ -480,11 +481,11 @@ export const thunks = {
             await dispatch(
                 privateThunks.navigate({
                     directoryPath,
-                    "forceReload": true
+                    forceReload: true
                 })
             );
         },
-    "rename":
+    rename:
         (params: {
             renamingWhat: "file" | "directory";
             basename: string;
@@ -503,7 +504,7 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": renamingWhat,
+                    kind: renamingWhat,
                     directoryPath,
                     basename
                 })
@@ -511,9 +512,9 @@ export const thunks = {
 
             dispatch(
                 actions.operationStarted({
-                    "kind": renamingWhat,
+                    kind: renamingWhat,
                     basename,
-                    "operation": "rename",
+                    operation: "rename",
                     newBasename
                 })
             );
@@ -528,20 +529,20 @@ export const thunks = {
                     }
                 })()
             ]({
-                "path": pathJoin(directoryPath, basename),
+                path: pathJoin(directoryPath, basename),
                 newBasename
             });
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": renamingWhat,
-                    "basename": newBasename,
+                    kind: renamingWhat,
+                    basename: newBasename,
                     directoryPath
                 })
             );
         },
 
-    "create":
+    create:
         (params: ExplorersCreateParams) =>
         async (...args) => {
             const [dispatch, getState, extraArg] = args;
@@ -554,17 +555,17 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": params.createWhat,
+                    kind: params.createWhat,
                     directoryPath,
-                    "basename": params.basename
+                    basename: params.basename
                 })
             );
 
             dispatch(
                 actions.operationStarted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
-                    "operation": "create"
+                    kind: params.createWhat,
+                    basename: params.basename,
+                    operation: "create"
                 })
             );
 
@@ -576,7 +577,7 @@ export const thunks = {
                 case "file":
                     await context.loggedSecretClient.put({
                         path,
-                        "secret": {}
+                        secret: {}
                     });
                     break;
                 case "directory":
@@ -586,8 +587,8 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
+                    kind: params.createWhat,
+                    basename: params.basename,
                     directoryPath
                 })
             );
@@ -598,7 +599,7 @@ export const thunks = {
      * The file or directory we are deleting is present in the directory
      * currently listed.
      */
-    "delete":
+    delete:
         (params: { deleteWhat: "file" | "directory"; basename: string }) =>
         async (...args) => {
             const { deleteWhat, basename } = params;
@@ -613,7 +614,7 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": deleteWhat,
+                    kind: deleteWhat,
                     directoryPath,
                     basename
                 })
@@ -621,9 +622,9 @@ export const thunks = {
 
             dispatch(
                 actions.operationStarted({
-                    "kind": params.deleteWhat,
-                    "basename": params.basename,
-                    "operation": "delete"
+                    kind: params.deleteWhat,
+                    basename: params.basename,
+                    operation: "delete"
                 })
             );
 
@@ -644,13 +645,13 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": deleteWhat,
+                    kind: deleteWhat,
                     basename,
                     directoryPath
                 })
             );
         },
-    "getIsEnabled":
+    getIsEnabled:
         () =>
         (...args) => {
             const [, getState] = args;
@@ -736,12 +737,12 @@ export const selectors = (() => {
                         ].sort((a, b) => a.localeCompare(b));
 
                     return {
-                        "directories": select("directory"),
-                        "files": select("file"),
-                        "directoriesBeingCreated": selectOngoing("directory", "create"),
-                        "directoriesBeingRenamed": selectOngoing("directory", "rename"),
-                        "filesBeingCreated": selectOngoing("file", "create"),
-                        "filesBeingRenamed": selectOngoing("file", "rename")
+                        directories: select("directory"),
+                        files: select("file"),
+                        directoriesBeingCreated: selectOngoing("directory", "create"),
+                        directoriesBeingRenamed: selectOngoing("directory", "rename"),
+                        filesBeingCreated: selectOngoing("file", "create"),
+                        filesBeingRenamed: selectOngoing("file", "rename")
                     };
                 })()
             };
@@ -765,7 +766,7 @@ export const createEvt = (({ evtAction }) => {
             action.actionName === "projectChanged",
         () =>
             evt.post({
-                "action": "reset path"
+                action: "reset path"
             })
     );
 

@@ -3,11 +3,12 @@ import { session } from "ui/routes";
 import type { Param0 } from "tsafe";
 import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const { Markdown } = createMarkdown({
-    "getLinkProps": ({ href }) => ({
+    getLinkProps: ({ href }) => ({
         href,
-        "target": !href.startsWith("/") ? "_blank" : undefined,
-        "onClick": !href.startsWith("/")
+        target: !href.startsWith("/") ? "_blank" : undefined,
+        onClick: !href.startsWith("/")
             ? undefined
             : e => {
                   e.preventDefault();
@@ -17,12 +18,14 @@ export const { Markdown } = createMarkdown({
 });
 
 export function LocalizedMarkdown(
-    props: Omit<Param0<typeof Markdown>, "children"> & { children: LocalizedString }
+    props: Omit<Param0<typeof Markdown>, "children" | "lang"> & {
+        children: LocalizedString;
+    }
 ) {
     const { children, ...rest } = props;
 
     const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
+        labelWhenMismatchingLanguage: true
     });
 
     const { langAttrValue, str } = resolveLocalizedStringDetailed(children);

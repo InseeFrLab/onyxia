@@ -1,18 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { id } from "tsafe/id";
-import { assert } from "tsafe/assert";
-import { same } from "evt/tools/inDepth/same";
-import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
-import {
-    type JSONSchemaFormFieldDescription,
-    type JSONSchemaObject,
-    type XOnyxiaContext,
-    Chart
-} from "core/ports/OnyxiaApi";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApi";
+import { assert, type Equals } from "tsafe/assert";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -20,427 +7,443 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigsUsecase from "core/usecases/userConfigs";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
-import { typeGuard } from "tsafe/typeGuard";
 import * as secretExplorer from "../secretExplorer";
-import type { FormField } from "./FormField";
-import * as yaml from "yaml";
-import type { Equals } from "tsafe";
-import { actions, name, type State } from "./state";
+import { actions } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
+import type { StringifyableAtomic } from "core/tools/Stringifyable";
+import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
+import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
+import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
+
+type RestorableServiceConfigLike = {
+    catalogId: string;
+    chartName: string;
+    chartVersion: string | undefined;
+    friendlyName: string | undefined;
+    isShared: boolean | undefined;
+    s3ConfigId: string | undefined;
+    helmValuesPatch:
+        | {
+              path: (string | number)[];
+              value: StringifyableAtomic | undefined;
+          }[]
+        | undefined;
+};
+
+{
+    type Got = RestorableServiceConfigLike;
+    type Expected = {
+        [Key in keyof RestorableServiceConfig]: Key extends "chartName"
+            ? RestorableServiceConfig[Key]
+            : Key extends "catalogId"
+              ? RestorableServiceConfig[Key]
+              : RestorableServiceConfig[Key] | undefined;
+    };
+
+    assert<Equals<Got, Expected>>();
+}
 
 export const thunks = {
-    "initialize":
+    initialize:
         (params: {
-            catalogId: string;
-            chartName: string;
-            chartVersion: string | undefined;
-            formFieldsValueDifferentFromDefault: FormFieldValue[];
+            restorableConfig: RestorableServiceConfigLike;
+            autoLaunch: boolean;
         }) =>
         (...args): { cleanup: () => void } => {
-            const {
-                catalogId,
-                chartName,
-                chartVersion: pinnedChartVersion,
-                formFieldsValueDifferentFromDefault
-            } = params;
-
             const [dispatch, getState, rootContext] = args;
             const { onyxiaApi, evtAction } = rootContext;
 
-            assert(
-                getState()[name].stateDescription === "not initialized",
-                "the cleanup should have been called"
-            );
+            // NOTE: To check after every async operation, if true, stop everything.
+            let getIsCanceled: () => boolean;
+            // NOTE: This is for enabling the UI to cancel initialization.
+            let cleanup: () => void;
 
-            dispatch(actions.initializationStarted());
+            // NOTE: All this plumbing is to make the initialization process cancellable
+            // and to make sure that if initialize is called multiple times each new call
+            // cancels the previous ones.
+            {
+                let evtCleanupInitialize: Evt<void>;
 
-            const ctx = Evt.newCtx();
-
-            ctx.evtDoneOrAborted.attachOnce(() =>
-                dispatch(actions.resetToNotInitialized())
-            );
-
-            const cleanup = () => {
-                ctx.done();
-            };
-
-            evtAction.attachOnce(
-                event =>
-                    event.usecaseName === "projectManagement" &&
-                    event.actionName === "projectChanged",
-                ctx,
-                () => {
-                    cleanup();
-                    dispatch(thunks.initialize(params));
+                if (getIsContextSet(rootContext)) {
+                    evtCleanupInitialize = getContext(rootContext).evtCleanupInitialize;
+                    evtCleanupInitialize.post();
+                } else {
+                    evtCleanupInitialize = Evt.create();
+                    setContext(rootContext, { evtCleanupInitialize });
                 }
-            );
+
+                const ctx = Evt.newCtx();
+
+                evtCleanupInitialize.attachOnce(() => ctx.done());
+
+                ctx.evtDoneOrAborted.attachOnce(() =>
+                    dispatch(actions.resetToNotInitialized())
+                );
+
+                evtAction.attachOnce(
+                    event =>
+                        event.usecaseName === "projectManagement" &&
+                        event.actionName === "projectChanged",
+                    ctx,
+                    () => {
+                        dispatch(
+                            thunks.initialize({
+                                ...params,
+                                autoLaunch: false
+                            })
+                        );
+                    }
+                );
+
+                cleanup = () => {
+                    evtCleanupInitialize.post();
+                };
+
+                getIsCanceled = () => ctx.completionStatus !== undefined;
+            }
 
             (async () => {
+                const {
+                    restorableConfig: {
+                        catalogId,
+                        chartName,
+                        chartVersion: chartVersion_pinned,
+                        friendlyName,
+                        isShared,
+                        s3ConfigId: s3ConfigId_pinned,
+                        helmValuesPatch
+                    },
+                    autoLaunch
+                } = params;
+
                 const {
                     catalogName,
                     catalogRepositoryUrl,
                     chartIconUrl,
-                    defaultChartVersion,
+                    chartVersion_default,
                     chartVersion,
                     availableChartVersions
                 } = await dispatch(
                     privateThunks.getChartInfos({
                         catalogId,
                         chartName,
-                        pinnedChartVersion
+                        chartVersion_pinned
                     })
                 );
 
+                if (getIsCanceled()) {
+                    return;
+                }
+
                 const {
-                    nonLibraryDependencies: nonLibraryChartDependencies,
-                    sourceUrls: chartSourceUrls,
-                    getChartValuesSchemaJson
+                    helmDependencies,
+                    helmValuesSchema,
+                    helmChartSourceUrls,
+                    helmValuesYaml
                 } = await onyxiaApi.getHelmChartDetails({
                     catalogId,
                     chartName,
                     chartVersion
                 });
 
-                const xOnyxiaContext = await dispatch(privateThunks.getXOnyxiaContext());
-
-                if (ctx.completionStatus !== undefined) {
+                if (getIsCanceled()) {
                     return;
                 }
 
-                const valuesSchema = getChartValuesSchemaJson({ xOnyxiaContext });
+                const { doInjectPersonalInfos } = (() => {
+                    const project =
+                        projectManagement.protectedSelectors.currentProject(getState());
 
-                setContext(rootContext, {
-                    xOnyxiaContext,
-                    getChartValuesSchemaJson
-                });
+                    const doInjectPersonalInfos =
+                        project.group === undefined ||
+                        !rootContext.paramsOfBootstrapCore
+                            .disablePersonalInfosInjectionInGroup;
 
-                const { pathOfFormFieldsAffectedByS3ConfigChange } = (() => {
-                    const { formFields: formFields_ref } = getInitialFormFields({
-                        "valuesSchema": getChartValuesSchemaJson({
-                            xOnyxiaContext
-                        }),
-                        "formFieldsValueDifferentFromDefault": []
-                    });
-
-                    const { formFields: formFields_diff } = getInitialFormFields({
-                        "valuesSchema": getChartValuesSchemaJson({
-                            "xOnyxiaContext": {
-                                ...xOnyxiaContext,
-                                "s3": {
-                                    "AWS_ACCESS_KEY_ID":
-                                        xOnyxiaContext.s3.AWS_ACCESS_KEY_ID + "x",
-                                    "AWS_BUCKET_NAME":
-                                        xOnyxiaContext.s3.AWS_BUCKET_NAME + "x",
-                                    "AWS_SECRET_ACCESS_KEY":
-                                        xOnyxiaContext.s3.AWS_SECRET_ACCESS_KEY + "x",
-                                    "AWS_SESSION_TOKEN":
-                                        xOnyxiaContext.s3.AWS_SESSION_TOKEN + "x",
-                                    "AWS_DEFAULT_REGION":
-                                        xOnyxiaContext.s3.AWS_DEFAULT_REGION + "x",
-                                    "AWS_S3_ENDPOINT":
-                                        xOnyxiaContext.s3.AWS_S3_ENDPOINT + "x",
-                                    "port": xOnyxiaContext.s3.port + 1,
-                                    "pathStyleAccess": !xOnyxiaContext.s3.pathStyleAccess,
-                                    "objectNamePrefix":
-                                        xOnyxiaContext.s3.objectNamePrefix + "x/",
-                                    "workingDirectoryPath":
-                                        xOnyxiaContext.s3.workingDirectoryPath + "x/"
-                                }
-                            }
-                        }),
-                        "formFieldsValueDifferentFromDefault": []
-                    });
-
-                    const pathOfFormFieldsAffectedByS3ConfigChange = formFields_ref
-                        .filter(({ path, value }) => {
-                            const formField_diff = formFields_diff.find(
-                                ({ path: pathDiff }) => same(path, pathDiff)
-                            );
-
-                            assert(formField_diff !== undefined);
-
-                            return !same(value, formField_diff.value);
-                        })
-                        .map(({ path }) => ({ path }));
-
-                    return { pathOfFormFieldsAffectedByS3ConfigChange };
+                    return { doInjectPersonalInfos };
                 })();
 
-                const isRestorableConfigSaved = dispatch(
-                    restorableConfigManagement.protectedThunks.getIsRestorableConfigSaved(
-                        {
-                            "restorableConfig": {
-                                catalogId,
-                                chartName,
-                                chartVersion,
-                                formFieldsValueDifferentFromDefault
-                            }
+                const { s3ConfigId, s3ConfigId_default } = (() => {
+                    const s3Configs = s3ConfigManagement.selectors
+                        .s3Configs(getState())
+                        .filter(s3Config =>
+                            doInjectPersonalInfos ? true : s3Config.origin === "project"
+                        );
+
+                    const s3ConfigId_default = (() => {
+                        const s3Config = s3Configs.find(
+                            s3Config => s3Config.isXOnyxiaDefault
+                        );
+                        if (s3Config === undefined) {
+                            return undefined;
                         }
-                    )
-                );
 
-                const {
-                    formFields,
-                    infosAboutWhenFieldsShouldBeHidden,
-                    sensitiveConfigurations
-                } = getInitialFormFields({
-                    formFieldsValueDifferentFromDefault,
-                    valuesSchema
-                });
+                        return s3Config.id;
+                    })();
 
-                dispatch(
-                    actions.initialized({
-                        catalogId,
-                        catalogName,
-                        catalogRepositoryUrl,
-                        chartIconUrl,
-                        chartName,
-                        defaultChartVersion,
-                        chartVersion,
-                        availableChartVersions,
-                        chartSourceUrls,
-                        pathOfFormFieldsAffectedByS3ConfigChange,
-                        formFields,
-                        infosAboutWhenFieldsShouldBeHidden,
-                        valuesSchema,
-                        nonLibraryChartDependencies,
-                        formFieldsValueDifferentFromDefault,
-                        "sensitiveConfigurations": isRestorableConfigSaved
-                            ? sensitiveConfigurations
-                            : [],
-                        "k8sRandomSubdomain": xOnyxiaContext.k8s.randomSubdomain
+                    const s3ConfigId = (() => {
+                        use_pinned_s3_config: {
+                            if (s3ConfigId_pinned === undefined) {
+                                break use_pinned_s3_config;
+                            }
+                            const s3Config = s3Configs.find(
+                                s3Config => s3Config.id === s3ConfigId_pinned
+                            );
+                            if (s3Config === undefined) {
+                                break use_pinned_s3_config;
+                            }
+                            return s3Config.id;
+                        }
+
+                        return s3ConfigId_default;
+                    })();
+
+                    return { s3ConfigId, s3ConfigId_default };
+                })();
+
+                const xOnyxiaContext = await dispatch(
+                    privateThunks.getXOnyxiaContext({
+                        s3ConfigId,
+                        doInjectPersonalInfos
                     })
                 );
 
-                if (pinnedChartVersion === undefined) {
-                    dispatch(actions.defaultChartVersionSelected());
+                if (getIsCanceled()) {
+                    return;
                 }
 
-                use_custom_s3_config: {
-                    if (privateSelectors.has3sConfigBeenManuallyChanged(getState())) {
-                        break use_custom_s3_config;
+                const { helmValues: helmValues_default, isChartUsingS3 } =
+                    computeHelmValues({
+                        helmValuesSchema,
+                        xOnyxiaContext,
+                        helmValuesYaml
+                    });
+
+                const friendlyName_default = chartName;
+
+                const isShared_default = (() => {
+                    const project =
+                        projectManagement.protectedSelectors.currentProject(getState());
+
+                    if (project.group === undefined) {
+                        // NOTE: Not applicable
+                        return undefined;
                     }
 
-                    const { indexForXOnyxia } =
-                        s3ConfigManagement.protectedSelectors.projectS3Config(getState());
+                    return false;
+                })();
 
-                    if (indexForXOnyxia === undefined) {
-                        break use_custom_s3_config;
-                    }
+                dispatch(
+                    actions.initialized({
+                        readyState: {
+                            catalogId,
+                            chartName,
+                            chartVersion,
+                            chartVersion_default,
+                            xOnyxiaContext,
 
-                    dispatch(
-                        thunks.useSpecificS3Config({
-                            "type": "custom",
-                            "customS3ConfigIndex": indexForXOnyxia
-                        })
-                    );
+                            friendlyName: friendlyName ?? friendlyName_default,
+                            friendlyName_default,
+                            isShared: isShared ?? isShared_default,
+                            isShared_default,
+                            s3Config: !isChartUsingS3
+                                ? { isChartUsingS3: false }
+                                : {
+                                      isChartUsingS3: true,
+                                      s3ConfigId,
+                                      s3ConfigId_default
+                                  },
+                            helmDependencies,
+
+                            helmValuesSchema,
+                            helmValues_default,
+                            helmValuesYaml,
+
+                            chartIconUrl,
+                            catalogRepositoryUrl,
+                            catalogName,
+                            k8sRandomSubdomain: xOnyxiaContext.k8s.randomSubdomain,
+                            helmChartSourceUrls,
+                            availableChartVersions
+                        },
+                        helmValuesPatch: helmValuesPatch ?? []
+                    })
+                );
+
+                if (autoLaunch) {
+                    dispatch(thunks.launch());
                 }
             })();
 
             return { cleanup };
         },
-    "restoreAllDefault":
+    restoreAllDefault:
         () =>
         (...args) => {
             const [dispatch, getState] = args;
 
-            dispatch(actions.allDefaultRestored());
+            const restorableConfig = privateSelectors.restorableConfig(getState());
 
-            const { indexForXOnyxia } =
-                s3ConfigManagement.protectedSelectors.projectS3Config(getState());
+            assert(restorableConfig !== null);
 
             dispatch(
-                thunks.useSpecificS3Config(
-                    indexForXOnyxia === undefined
-                        ? { "type": "default" }
-                        : { "type": "custom", "customS3ConfigIndex": indexForXOnyxia }
-                )
+                thunks.initialize({
+                    restorableConfig: {
+                        catalogId: restorableConfig.catalogId,
+                        chartName: restorableConfig.chartName,
+                        chartVersion: undefined,
+                        friendlyName: undefined,
+                        helmValuesPatch: undefined,
+                        isShared: undefined,
+                        s3ConfigId: undefined
+                    },
+                    autoLaunch: false
+                })
             );
         },
-    "changeChartVersion":
+    changeChartVersion:
         (params: { chartVersion: string }) =>
         async (...args) => {
             const { chartVersion } = params;
 
             const [dispatch, getState] = args;
 
-            const rootState = getState();
+            const restorableConfig = privateSelectors.restorableConfig(getState());
 
-            const state = rootState[name];
+            assert(restorableConfig !== null);
 
-            if (state.stateDescription !== "ready") {
+            if (restorableConfig.chartVersion === chartVersion) {
+                // NOTE: No changes, skip.
                 return;
             }
-
-            if (state.chartVersion === chartVersion) {
-                return;
-            }
-
-            const formFieldsValueDifferentFromDefault =
-                privateSelectors.formFieldsValueDifferentFromDefault(rootState);
-
-            assert(formFieldsValueDifferentFromDefault !== undefined);
-
-            dispatch(actions.resetToNotInitialized());
 
             dispatch(
                 thunks.initialize({
-                    "catalogId": state.catalogId,
-                    "chartName": state.chartName,
-                    chartVersion,
-                    formFieldsValueDifferentFromDefault
+                    restorableConfig: {
+                        ...restorableConfig,
+                        chartVersion
+                    },
+                    autoLaunch: false
                 })
             );
         },
-    "changeFormFieldValue":
+    changeS3Config:
+        (params: { s3ConfigId: string }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { s3ConfigId } = params;
+
+            const restorableConfig = privateSelectors.restorableConfig(getState());
+
+            assert(restorableConfig !== null);
+
+            if (restorableConfig.s3ConfigId === s3ConfigId) {
+                // NOTE: No changes, skip.
+                return;
+            }
+
+            dispatch(
+                thunks.initialize({
+                    restorableConfig: {
+                        ...restorableConfig,
+                        s3ConfigId
+                    },
+                    autoLaunch: false
+                })
+            );
+        },
+    changeFormFieldValue:
         (params: FormFieldValue) =>
         (...args) => {
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
             const formFieldValue = params;
-            dispatch(actions.formFieldValueChanged({ formFieldValue }));
+
+            const rootForm = privateSelectors.rootForm(getState());
+
+            assert(rootForm !== null);
+
+            dispatch(actions.formFieldValueChanged({ formFieldValue, rootForm }));
         },
-    "launch":
+    changeFriendlyName:
+        (friendlyName: string) =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(actions.friendlyNameChanged({ friendlyName }));
+        },
+    addArrayItem:
+        (params: { helmValuesPath: (string | number)[] }) =>
+        (...args) => {
+            const { helmValuesPath } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.arrayItemAdded({ helmValuesPath }));
+        },
+    removeArrayItem:
+        (params: { helmValuesPath: (string | number)[]; index: number }) =>
+        (...args) => {
+            const { helmValuesPath, index } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.arrayItemRemoved({ helmValuesPath, index }));
+        },
+    changeIsShared:
+        (params: { isShared: boolean }) =>
+        (...args) => {
+            const { isShared } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.isSharedChanged({ isShared }));
+        },
+    launch:
         () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
             dispatch(actions.launchStarted());
 
-            const rootState = getState();
+            const helmReleaseName = privateSelectors.helmReleaseName(getState());
+            const helmValues = privateSelectors.helmValues(getState());
+            const restorableConfig = privateSelectors.restorableConfig(getState());
 
-            const helmReleaseName = privateSelectors.helmReleaseName(rootState);
-
-            assert(helmReleaseName !== undefined);
-
-            const state = rootState[name];
-
-            assert(state.stateDescription === "ready");
+            assert(helmReleaseName !== null);
+            assert(helmValues !== null);
+            assert(restorableConfig !== null);
 
             await onyxiaApi.helmInstall({
                 helmReleaseName,
-                "catalogId": state.catalogId,
-                "chartName": state.chartName,
-                "chartVersion": state.chartVersion,
-                "values": formFieldsValueToObject(state.formFields)
+                catalogId: restorableConfig.catalogId,
+                chartName: restorableConfig.chartName,
+                chartVersion: restorableConfig.chartVersion,
+                friendlyName: restorableConfig.friendlyName,
+                isShared: restorableConfig.isShared,
+                values: helmValues
             });
 
             dispatch(actions.launchCompleted());
-        },
-    "changeFriendlyName":
-        (friendlyName: string) =>
-        (...args) => {
-            const [dispatch] = args;
-            dispatch(
-                thunks.changeFormFieldValue({
-                    "path": onyxiaFriendlyNameFormFieldPath.split("."),
-                    "value": friendlyName
-                })
-            );
-        },
-    "changeIsShared":
-        (params: { isShared: boolean }) =>
-        (...args) => {
-            const [dispatch, getState] = args;
-
-            assert(privateSelectors.isShared(getState()) !== undefined);
-
-            dispatch(
-                thunks.changeFormFieldValue({
-                    "path": onyxiaIsSharedFormFieldPath.split("."),
-                    "value": params.isShared
-                })
-            );
-        },
-    "useSpecificS3Config":
-        (
-            params:
-                | {
-                      type: "default";
-                      customS3ConfigIndex?: never;
-                  }
-                | {
-                      type: "custom";
-                      customS3ConfigIndex: number;
-                  }
-        ) =>
-        (...args) => {
-            const { type, customS3ConfigIndex } = params;
-
-            const [dispatch, getState, rootContext] = args;
-
-            if (type === "default") {
-                dispatch(
-                    actions.s3ConfigChanged({
-                        "customS3ConfigIndex": undefined
-                    })
-                );
-
-                return;
-            }
-
-            assert(type === "custom");
-
-            const { getChartValuesSchemaJson, xOnyxiaContext } = getContext(rootContext);
-
-            const xOnyxiaContextWithCustomS3Config: XOnyxiaContext = {
-                ...xOnyxiaContext,
-                "s3": (() => {
-                    const customS3Config =
-                        s3ConfigManagement.protectedSelectors.projectS3Config(getState())
-                            .customConfigs[customS3ConfigIndex];
-
-                    assert(customS3Config !== undefined);
-
-                    const { host, port = 443 } = parseUrl(customS3Config.url);
-
-                    const { bucketName, objectName: objectNamePrefix } =
-                        bucketNameAndObjectNameFromS3Path(
-                            customS3Config.workingDirectoryPath
-                        );
-
-                    return {
-                        "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
-                        "AWS_BUCKET_NAME": bucketName,
-                        "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
-                        "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
-                        "AWS_DEFAULT_REGION": customS3Config.region,
-                        "AWS_S3_ENDPOINT": host,
-                        port,
-                        "pathStyleAccess": customS3Config.pathStyleAccess,
-                        objectNamePrefix,
-                        "workingDirectoryPath": customS3Config.workingDirectoryPath
-                    };
-                })()
-            };
-
-            const { formFields } = getInitialFormFields({
-                "valuesSchema": getChartValuesSchemaJson({
-                    "xOnyxiaContext": xOnyxiaContextWithCustomS3Config
-                }),
-                "formFieldsValueDifferentFromDefault": []
-            });
-
-            dispatch(
-                actions.s3ConfigChanged({
-                    customS3ConfigIndex,
-                    "formFieldsValue": formFields
-                })
-            );
         }
 } satisfies Thunks;
 
+const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
+    evtCleanupInitialize: Evt<void>;
+}>();
+
 const privateThunks = {
-    "getXOnyxiaContext":
-        () =>
+    getXOnyxiaContext:
+        (params: { s3ConfigId: string | undefined; doInjectPersonalInfos: boolean }) =>
         async (...args): Promise<XOnyxiaContext> => {
+            const { s3ConfigId, doInjectPersonalInfos } = params;
+
             const [
                 dispatch,
                 getState,
-                { paramsOfBootstrapCore, secretsManager, s3ClientSts, onyxiaApi }
+                { paramsOfBootstrapCore, secretsManager, onyxiaApi }
             ] = args;
 
             const user = userAuthentication.selectors.user(getState());
@@ -453,179 +456,190 @@ const privateThunks = {
             const servicePassword =
                 projectManagement.selectors.servicePassword(getState());
 
-            const project = projectManagement.selectors.currentProject(getState());
+            const project =
+                projectManagement.protectedSelectors.currentProject(getState());
 
-            const doInjectPersonalInfos =
-                project.group === undefined ||
-                !paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup;
+            const { decodedIdToken, accessToken, refreshToken } = dispatch(
+                userAuthentication.protectedThunks.getTokens()
+            );
 
             const xOnyxiaContext: XOnyxiaContext = {
-                "user": {
-                    "idep": user.username,
-                    "name": `${user.familyName} ${user.firstName}`,
-                    "email": user.email,
-                    "password": servicePassword,
-                    "ip": !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
-                    "darkMode": userConfigs.isDarkModeEnabled,
-                    "lang": paramsOfBootstrapCore.getCurrentLang(),
-                    "decodedIdToken": dispatch(
-                        userAuthentication.protectedThunks.getDecodedIdToken()
-                    )
+                user: {
+                    idep: user.username,
+                    name: `${user.familyName} ${user.firstName}`,
+                    email: user.email,
+                    password: servicePassword,
+                    ip: !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
+                    darkMode: userConfigs.isDarkModeEnabled,
+                    lang: paramsOfBootstrapCore.getCurrentLang(),
+                    decodedIdToken,
+                    accessToken,
+                    refreshToken
                 },
-                "service": {
-                    "oneTimePassword": generateRandomPassword()
+                service: {
+                    oneTimePassword: generateRandomPassword()
                 },
-                "project": {
-                    "id": project.id,
-                    "password": servicePassword,
-                    "basic": btoa(
+                project: {
+                    id: project.id,
+                    password: servicePassword,
+                    basic: btoa(
                         unescape(encodeURIComponent(`${project.id}:${servicePassword}`))
                     )
                 },
-                "git": !doInjectPersonalInfos
+                git: !doInjectPersonalInfos
                     ? {
-                          "name": "",
-                          "email": "",
-                          "credentials_cache_duration": 0,
-                          "token": undefined
+                          name: "",
+                          email: "",
+                          credentials_cache_duration: 0,
+                          token: undefined
                       }
                     : {
-                          "name": userConfigs.gitName,
-                          "email": userConfigs.gitEmail,
-                          "credentials_cache_duration":
+                          name: userConfigs.gitName,
+                          email: userConfigs.gitEmail,
+                          credentials_cache_duration:
                               userConfigs.gitCredentialCacheDuration,
-                          "token": userConfigs.githubPersonalAccessToken ?? undefined
+                          token: userConfigs.githubPersonalAccessToken ?? undefined
                       },
-                "vault": await (async () => {
+                vault: await (async () => {
                     const { vault } = region;
 
                     if (vault === undefined) {
-                        return {
-                            "VAULT_ADDR": "",
-                            "VAULT_TOKEN": "",
-                            "VAULT_MOUNT": "",
-                            "VAULT_TOP_DIR": ""
-                        };
+                        return undefined;
                     }
 
                     return {
-                        "VAULT_ADDR": vault.url,
-                        "VAULT_TOKEN": !doInjectPersonalInfos
-                            ? ""
+                        VAULT_ADDR: vault.url,
+                        VAULT_TOKEN: !doInjectPersonalInfos
+                            ? undefined
                             : (await secretsManager.getToken()).token,
-                        "VAULT_MOUNT": vault.kvEngine,
-                        "VAULT_TOP_DIR": dispatch(
+                        VAULT_MOUNT: vault.kvEngine,
+                        VAULT_TOP_DIR: dispatch(
                             secretExplorer.protectedThunks.getHomeDirectoryPath()
                         )
                     };
                 })(),
-                "s3": await (async () => {
-                    const baseS3Config =
-                        s3ConfigManagement.protectedSelectors.baseS3Config(getState());
+                s3: await (async () => {
+                    const s3Config = (() => {
+                        if (s3ConfigId === undefined) {
+                            return undefined;
+                        }
 
-                    const { host = "", port = 443 } =
-                        baseS3Config.url !== "" ? parseUrl(baseS3Config.url) : {};
+                        const s3Configs =
+                            s3ConfigManagement.selectors.s3Configs(getState());
 
-                    const { bucketName, objectName: objectNamePrefix } =
-                        bucketNameAndObjectNameFromS3Path(
-                            baseS3Config.workingDirectoryPath
+                        const s3Config = s3Configs.find(
+                            s3Config => s3Config.id === s3ConfigId
                         );
 
-                    const s3 = {
-                        "AWS_ACCESS_KEY_ID": "",
-                        "AWS_SECRET_ACCESS_KEY": "",
-                        "AWS_SESSION_TOKEN": "",
-                        "AWS_BUCKET_NAME": bucketName,
-                        "AWS_DEFAULT_REGION": baseS3Config.region,
-                        "AWS_S3_ENDPOINT": host,
+                        assert(s3Config !== undefined);
+
+                        return s3Config;
+                    })();
+
+                    if (s3Config === undefined) {
+                        return undefined;
+                    }
+
+                    const { host = "", port = 443 } =
+                        s3Config.paramsOfCreateS3Client.url !== ""
+                            ? parseUrl(s3Config.paramsOfCreateS3Client.url)
+                            : {};
+
+                    const { bucketName, objectName: objectNamePrefix } =
+                        bucketNameAndObjectNameFromS3Path(s3Config.workingDirectoryPath);
+
+                    const s3: XOnyxiaContext["s3"] = {
+                        isEnabled: true,
+                        AWS_ACCESS_KEY_ID: undefined,
+                        AWS_SECRET_ACCESS_KEY: undefined,
+                        AWS_SESSION_TOKEN: undefined,
+                        AWS_BUCKET_NAME: bucketName,
+                        AWS_DEFAULT_REGION: s3Config.region ?? "us-east-1",
+                        AWS_S3_ENDPOINT: host,
                         port,
-                        "pathStyleAccess": baseS3Config.pathStyleAccess,
+                        pathStyleAccess: s3Config.paramsOfCreateS3Client.pathStyleAccess,
                         objectNamePrefix,
-                        "workingDirectoryPath": baseS3Config.workingDirectoryPath
+                        workingDirectoryPath: s3Config.workingDirectoryPath,
+                        isAnonymous: false
                     };
 
-                    inject_tokens: {
-                        if (!doInjectPersonalInfos) {
-                            break inject_tokens;
-                        }
+                    if (s3Config.paramsOfCreateS3Client.isStsEnabled) {
+                        const s3Client = await dispatch(
+                            s3ConfigManagement.protectedThunks.getS3ClientForSpecificConfig(
+                                {
+                                    s3ConfigId: s3Config.id
+                                }
+                            )
+                        );
 
-                        if (s3ClientSts === undefined) {
-                            break inject_tokens;
-                        }
+                        const tokens = await s3Client.getToken({ doForceRenew: false });
 
-                        const tokens = await s3ClientSts
-                            .getToken({
-                                "doForceRenew": false
-                            })
-                            .catch(error => error as Error);
+                        assert(tokens !== undefined);
 
-                        if (tokens instanceof Error) {
-                            console.warn(
-                                [
-                                    "Failed to get temporary credentials for S3.",
-                                    "You will not be able to use S3.",
-                                    "Please contact support."
-                                ].join("\n")
-                            );
-                            break inject_tokens;
-                        }
-
-                        const { accessKeyId, secretAccessKey, sessionToken } = tokens;
-
-                        assert(sessionToken !== undefined);
-
-                        s3.AWS_ACCESS_KEY_ID = accessKeyId;
-                        s3.AWS_SECRET_ACCESS_KEY = secretAccessKey;
-                        s3.AWS_SESSION_TOKEN = sessionToken;
+                        s3.AWS_ACCESS_KEY_ID = tokens.accessKeyId;
+                        s3.AWS_SECRET_ACCESS_KEY = tokens.secretAccessKey;
+                        s3.AWS_SESSION_TOKEN = tokens.sessionToken;
+                    } else if (
+                        s3Config.paramsOfCreateS3Client.credentials !== undefined
+                    ) {
+                        s3.AWS_ACCESS_KEY_ID =
+                            s3Config.paramsOfCreateS3Client.credentials.accessKeyId;
+                        s3.AWS_SECRET_ACCESS_KEY =
+                            s3Config.paramsOfCreateS3Client.credentials.secretAccessKey;
+                        s3.AWS_SESSION_TOKEN =
+                            s3Config.paramsOfCreateS3Client.credentials.sessionToken;
                     }
 
                     return s3;
                 })(),
-                "region": {
-                    "defaultIpProtection": region.defaultIpProtection,
-                    "defaultNetworkPolicy": region.defaultNetworkPolicy,
-                    "allowedURIPattern": region.allowedURIPatternForUserDefinedInitScript,
-                    "kafka": region.kafka,
-                    "from": region.from,
-                    "tolerations": region.tolerations,
-                    "nodeSelector": region.nodeSelector,
-                    "startupProbe": region.startupProbe,
-                    "sliders": region.sliders,
-                    "resources": region.resources,
-                    "customValues": region.customValues ?? {}
+                region: {
+                    defaultIpProtection: region.defaultIpProtection,
+                    defaultNetworkPolicy: region.defaultNetworkPolicy,
+                    allowedURIPattern: region.allowedURIPatternForUserDefinedInitScript,
+                    kafka: region.kafka,
+                    from: region.from,
+                    tolerations: region.tolerations,
+                    nodeSelector: region.nodeSelector,
+                    startupProbe: region.startupProbe,
+                    sliders: region.sliders,
+                    resources: region.resources,
+                    customValues: region.customValues ?? {},
+                    openshiftSCC: region.openshiftSCC
                 },
-                "k8s": {
-                    "domain": region.kubernetesClusterDomain,
-                    "ingressClassName": region.ingressClassName,
-                    "ingress": region.ingress,
-                    "route": region.route,
-                    "istio": region.istio,
-                    "randomSubdomain": `${Math.floor(Math.random() * 1000000)}`,
-                    "initScriptUrl": region.initScriptUrl,
-                    "useCertManager": region.certManager?.useCertManager,
-                    "certManagerClusterIssuer":
-                        region.certManager?.certManagerClusterIssuer
+                k8s: {
+                    domain: region.kubernetesClusterDomain,
+                    ingressClassName: region.ingressClassName,
+                    ingress: region.ingress,
+                    route: region.route,
+                    istio: region.istio,
+                    randomSubdomain: `${Math.floor(Math.random() * 1000000)}`,
+                    initScriptUrl: region.initScriptUrl,
+                    useCertManager: region.certManager?.useCertManager,
+                    certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
-                "proxyInjection": region.proxyInjection,
-                "packageRepositoryInjection": region.packageRepositoryInjection,
-                "certificateAuthorityInjection": region.certificateAuthorityInjection
+                proxyInjection: region.proxyInjection,
+                packageRepositoryInjection: region.packageRepositoryInjection,
+                certificateAuthorityInjection: region.certificateAuthorityInjection
             };
 
             return xOnyxiaContext;
         },
-    "getChartInfos":
+    getChartInfos:
         (params: {
             catalogId: string;
             chartName: string;
-            pinnedChartVersion: string | undefined;
+            chartVersion_pinned: string | undefined;
         }) =>
         async (...args) => {
             const [, , { onyxiaApi }] = args;
 
-            const { catalogId, chartName, pinnedChartVersion } = params;
+            const { catalogId, chartName, chartVersion_pinned } = params;
 
-            const { catalogs, chartsByCatalogId } =
-                await onyxiaApi.getCatalogsAndCharts();
+            const [{ catalogs, chartsByCatalogId }, availableChartVersions] =
+                await Promise.all([
+                    onyxiaApi.getCatalogsAndCharts(),
+                    onyxiaApi.getChartAvailableVersions({ catalogId, chartName })
+                ] as const);
 
             const catalog = catalogs.find(({ id }) => id === catalogId);
 
@@ -637,338 +651,53 @@ const privateThunks = {
 
             assert(chart !== undefined);
 
-            const defaultChartVersion = Chart.getDefaultVersion(chart);
+            const chartVersion_default = (() => {
+                // NOTE: We assume that version are sorted from the most recent to the oldest.
+                // We do not wat to automatically select prerelease or beta version (version that contains "-"
+                // like 1.3.4-rc.0 or 1.2.3-beta.2 ).
+                const chartVersion = availableChartVersions.find(
+                    version => !version.includes("-")
+                );
+
+                if (chartVersion === undefined) {
+                    const v = availableChartVersions[0];
+                    assert(v !== undefined);
+                    return v;
+                }
+
+                return chartVersion;
+            })();
 
             const chartVersion = (() => {
-                if (pinnedChartVersion !== undefined) {
+                if (chartVersion_pinned !== undefined) {
                     if (
-                        chart.versions.find(
-                            ({ version }) => version === pinnedChartVersion
+                        availableChartVersions.find(
+                            version => version === chartVersion_pinned
                         ) === undefined
                     ) {
                         console.log(
                             [
-                                `No ${pinnedChartVersion} version found for ${chartName} in ${catalog.repositoryUrl}.`,
-                                `Falling back to default version ${defaultChartVersion}`
+                                `No ${chartVersion_pinned} version found for ${chartName} in ${catalog.repositoryUrl}.`,
+                                `Falling back to default version ${chartVersion_default}`
                             ].join("\n")
                         );
 
-                        return defaultChartVersion;
+                        return chartVersion_default;
                     }
 
-                    return pinnedChartVersion;
+                    return chartVersion_pinned;
                 }
 
-                return defaultChartVersion;
+                return chartVersion_default;
             })();
 
             return {
-                "catalogName": catalog.name,
-                "catalogRepositoryUrl": catalog.repositoryUrl,
-                "chartIconUrl": chart.versions.find(
-                    ({ version }) => version === chartVersion
-                )!.iconUrl,
-                defaultChartVersion,
+                catalogName: catalog.name,
+                catalogRepositoryUrl: catalog.repositoryUrl,
+                chartIconUrl: chart.iconUrl,
+                chartVersion_default,
                 chartVersion,
-                "availableChartVersions": chart.versions.map(({ version }) => version)
+                availableChartVersions
             };
         }
 } satisfies Thunks;
-
-const { getContext, setContext } = createUsecaseContextApi<{
-    xOnyxiaContext: XOnyxiaContext;
-    getChartValuesSchemaJson: (params: {
-        xOnyxiaContext: XOnyxiaContext;
-    }) => JSONSchemaObject;
-}>();
-
-function getInitialFormFields(params: {
-    formFieldsValueDifferentFromDefault: FormFieldValue[];
-    valuesSchema: JSONSchemaObject;
-}): {
-    formFields: FormField[];
-    infosAboutWhenFieldsShouldBeHidden: {
-        path: string[];
-        isHidden: boolean | FormFieldValue;
-    }[];
-    sensitiveConfigurations: FormFieldValue[];
-} {
-    const { formFieldsValueDifferentFromDefault, valuesSchema } = params;
-
-    const formFields: State.Ready["formFields"] = [];
-    const infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"] =
-        [];
-
-    const sensitiveConfigurations: FormFieldValue[] = [];
-
-    (function callee(params: {
-        jsonSchemaObject: JSONSchemaObject;
-        currentPath: string[];
-    }): void {
-        const {
-            jsonSchemaObject: { properties },
-            currentPath
-        } = params;
-
-        Object.entries(properties).forEach(
-            ([key, jsonSchemaObjectOrFormFieldDescription]) => {
-                const newCurrentPath = [...currentPath, key];
-                if (
-                    jsonSchemaObjectOrFormFieldDescription.type === "object" &&
-                    "properties" in jsonSchemaObjectOrFormFieldDescription
-                ) {
-                    const jsonSchemaObject = jsonSchemaObjectOrFormFieldDescription;
-
-                    callee({
-                        "currentPath": newCurrentPath,
-                        jsonSchemaObject
-                    });
-                    return;
-                }
-
-                const jsonSchemaFormFieldDescription =
-                    jsonSchemaObjectOrFormFieldDescription;
-
-                formFields.push(
-                    (() => {
-                        const common = {
-                            "path": newCurrentPath,
-                            "title":
-                                jsonSchemaFormFieldDescription.title ??
-                                newCurrentPath.slice(-1)[0],
-                            "description": jsonSchemaFormFieldDescription.description,
-                            "isReadonly":
-                                jsonSchemaFormFieldDescription["x-onyxia"]?.readonly ??
-                                false
-                        };
-
-                        if (
-                            "render" in jsonSchemaFormFieldDescription &&
-                            ["slider", "textArea", "password", "list"].find(
-                                render => render === jsonSchemaFormFieldDescription.render
-                            ) === undefined
-                        ) {
-                            console.warn(
-                                `${common.path.join("/")} has render: "${
-                                    jsonSchemaFormFieldDescription.render
-                                }" and it's not supported`
-                            );
-                        }
-
-                        if (
-                            "render" in jsonSchemaFormFieldDescription &&
-                            jsonSchemaFormFieldDescription.render === "slider"
-                        ) {
-                            const value = jsonSchemaFormFieldDescription.default!;
-
-                            if ("sliderExtremity" in jsonSchemaFormFieldDescription) {
-                                const scopCommon = {
-                                    ...common,
-                                    "type": "slider",
-                                    "sliderVariation": "range"
-                                } as const;
-
-                                switch (jsonSchemaFormFieldDescription.sliderExtremity) {
-                                    case "down":
-                                        return id<FormField.Slider.Range.Down>({
-                                            ...scopCommon,
-                                            "sliderExtremitySemantic":
-                                                jsonSchemaFormFieldDescription.sliderExtremitySemantic,
-                                            "sliderRangeId":
-                                                jsonSchemaFormFieldDescription.sliderRangeId,
-                                            "sliderExtremity": "down",
-                                            "sliderMin":
-                                                jsonSchemaFormFieldDescription.sliderMin,
-                                            "sliderUnit":
-                                                jsonSchemaFormFieldDescription.sliderUnit,
-                                            "sliderStep":
-                                                jsonSchemaFormFieldDescription.sliderStep,
-                                            value
-                                        });
-                                    case "up":
-                                        return id<FormField.Slider.Range.Up>({
-                                            ...scopCommon,
-                                            "sliderExtremitySemantic":
-                                                jsonSchemaFormFieldDescription.sliderExtremitySemantic,
-                                            "sliderRangeId":
-                                                jsonSchemaFormFieldDescription.sliderRangeId,
-                                            "sliderExtremity": "up",
-                                            "sliderMax":
-                                                jsonSchemaFormFieldDescription.sliderMax,
-                                            value
-                                        });
-                                }
-                            }
-
-                            return id<FormField.Slider.Simple>({
-                                ...common,
-                                "type": "slider",
-                                "sliderVariation": "simple",
-                                "sliderMin": jsonSchemaFormFieldDescription.sliderMin,
-                                "sliderUnit": jsonSchemaFormFieldDescription.sliderUnit,
-                                "sliderStep": jsonSchemaFormFieldDescription.sliderStep,
-                                "sliderMax": jsonSchemaFormFieldDescription.sliderMax,
-                                value
-                            });
-                        }
-
-                        if (jsonSchemaFormFieldDescription.type === "boolean") {
-                            return id<FormField.Boolean>({
-                                ...common,
-                                "value": jsonSchemaFormFieldDescription.default,
-                                "type": "boolean"
-                            });
-                        }
-
-                        if (
-                            jsonSchemaFormFieldDescription.type === "object" ||
-                            jsonSchemaFormFieldDescription.type === "array"
-                        ) {
-                            const value = {
-                                "type": "yaml" as const,
-                                "yamlStr": yaml.stringify(
-                                    jsonSchemaFormFieldDescription.default
-                                )
-                            };
-
-                            switch (jsonSchemaFormFieldDescription.type) {
-                                case "array":
-                                    return id<FormField.Array>({
-                                        ...common,
-                                        value,
-                                        "defaultValue": value,
-                                        "type": jsonSchemaFormFieldDescription.type
-                                    });
-                                case "object":
-                                    return id<FormField.Object>({
-                                        ...common,
-                                        value,
-                                        "defaultValue": value,
-                                        "type": jsonSchemaFormFieldDescription.type
-                                    });
-                            }
-
-                            assert<
-                                Equals<
-                                    (typeof jsonSchemaFormFieldDescription)["type"],
-                                    never
-                                >
-                            >();
-                        }
-
-                        if (
-                            typeGuard<JSONSchemaFormFieldDescription.Integer>(
-                                jsonSchemaFormFieldDescription,
-                                jsonSchemaFormFieldDescription.type === "integer" ||
-                                    jsonSchemaFormFieldDescription.type === "number"
-                            )
-                        ) {
-                            return id<FormField.Integer>({
-                                ...common,
-                                "value": jsonSchemaFormFieldDescription.default,
-                                "minimum": jsonSchemaFormFieldDescription.minimum,
-                                "type": "integer"
-                            });
-                        }
-
-                        if (
-                            "render" in jsonSchemaFormFieldDescription &&
-                            jsonSchemaFormFieldDescription.render === "list"
-                        ) {
-                            return id<FormField.Enum>({
-                                ...common,
-                                "value": jsonSchemaFormFieldDescription.default,
-                                "enum": jsonSchemaFormFieldDescription.listEnum,
-                                "type": "enum"
-                            });
-                        }
-
-                        if ("enum" in jsonSchemaFormFieldDescription) {
-                            return id<FormField.Enum>({
-                                ...common,
-                                "value": jsonSchemaFormFieldDescription.default,
-                                "enum": jsonSchemaFormFieldDescription.enum,
-                                "type": "enum"
-                            });
-                        }
-
-                        security_warning: {
-                            const { pattern } =
-                                jsonSchemaFormFieldDescription["x-security"] ?? {};
-
-                            if (pattern === undefined) {
-                                break security_warning;
-                            }
-
-                            const value = formFieldsValueDifferentFromDefault.find(
-                                ({ path }) => same(path, common.path)
-                            )?.value;
-
-                            if (value === undefined) {
-                                break security_warning;
-                            }
-
-                            if (new RegExp(pattern).test(`${value}`)) {
-                                break security_warning;
-                            }
-
-                            sensitiveConfigurations.push({
-                                "path": common.path,
-                                value
-                            });
-                        }
-
-                        return id<FormField.Text>({
-                            ...common,
-                            "pattern": jsonSchemaFormFieldDescription.pattern,
-                            "value": jsonSchemaFormFieldDescription.default,
-                            "type":
-                                jsonSchemaFormFieldDescription.render === "password"
-                                    ? "password"
-                                    : "text",
-                            "defaultValue": jsonSchemaFormFieldDescription.default,
-                            "doRenderAsTextArea":
-                                jsonSchemaFormFieldDescription.render === "textArea"
-                        });
-                    })()
-                );
-
-                infosAboutWhenFieldsShouldBeHidden.push({
-                    "path": newCurrentPath,
-                    "isHidden": (() => {
-                        const { hidden } = jsonSchemaFormFieldDescription;
-
-                        if (hidden === undefined) {
-                            const hidden =
-                                jsonSchemaFormFieldDescription["x-onyxia"]?.hidden;
-
-                            if (hidden !== undefined) {
-                                return hidden;
-                            }
-
-                            return false;
-                        }
-
-                        if (typeof hidden === "boolean") {
-                            return hidden;
-                        }
-
-                        return {
-                            "path": hidden.path.split("/"),
-                            "value": hidden.value
-                        };
-                    })()
-                });
-            }
-        );
-    })({
-        "currentPath": [],
-        "jsonSchemaObject": valuesSchema
-    });
-
-    return {
-        formFields,
-        infosAboutWhenFieldsShouldBeHidden,
-        sensitiveConfigurations
-    };
-}

@@ -27,17 +27,17 @@ export const name = "vaultCredentials";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotRefreshed>({
-            "stateDescription": "not refreshed",
-            "isRefreshing": false
+            stateDescription: "not refreshed",
+            isRefreshing: false
         })
     ),
-    "reducers": {
-        "refreshStarted": state => {
+    reducers: {
+        refreshStarted: state => {
             state.isRefreshing = true;
         },
-        "refreshed": (
+        refreshed: (
             _state,
             {
                 payload
@@ -51,8 +51,8 @@ export const { reducer, actions } = createUsecaseActions({
             const { expirationTime, token } = payload;
 
             return id<State.Ready>({
-                "isRefreshing": false,
-                "stateDescription": "ready",
+                isRefreshing: false,
+                stateDescription: "ready",
                 expirationTime,
                 token
             });
@@ -64,7 +64,7 @@ export const thunks = {
     /** Can, and must be called before the slice is refreshed,
      * tels if the feature is available.
      */
-    "isAvailable":
+    isAvailable:
         () =>
         (...args): boolean => {
             const [, getState] = args;
@@ -75,7 +75,7 @@ export const thunks = {
             return region.vault !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
-    "refresh":
+    refresh:
         (params: { doForceRenewToken: boolean }) =>
         async (...args) => {
             const { doForceRenewToken } = params;
@@ -89,7 +89,7 @@ export const thunks = {
             dispatch(actions.refreshStarted());
 
             const { token, expirationTime } = await secretsManager.getToken({
-                "doForceRefresh": doForceRenewToken
+                doForceRefresh: doForceRenewToken
             });
 
             dispatch(

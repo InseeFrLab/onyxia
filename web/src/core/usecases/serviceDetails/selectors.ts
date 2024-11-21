@@ -126,7 +126,7 @@ const main = createSelector(
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const,
+                isReady: false as const,
                 helmReleaseName
             };
         }
@@ -137,7 +137,7 @@ const main = createSelector(
         assert(commandLogsEntries !== undefined);
 
         return {
-            "isReady": true,
+            isReady: true,
             helmReleaseFriendlyName,
             podNames,
             selectedPodName,

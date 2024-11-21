@@ -1,7 +1,7 @@
 import { createRouter, defineRoute, createGroup, type Route } from "type-route";
 
 export const routeDefs = {
-    "sqlOlapShell": defineRoute("/sql-olap-shell")
+    sqlOlapShell: defineRoute("/sql-olap-shell")
 };
 
 export const routeGroup = createGroup(Object.values(createRouter(routeDefs).routes));

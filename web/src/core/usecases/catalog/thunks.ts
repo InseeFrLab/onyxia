@@ -2,15 +2,15 @@ import type { Thunks } from "core/bootstrap";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "clean-architecture";
 import { actions, name, type State } from "./state";
-import { assert } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, is } from "tsafe/assert";
 import memoize from "memoizee";
 import FlexSearch from "flexsearch";
 import { getMatchPositions } from "core/tools/highlightMatches";
-import { Chart } from "core/ports/OnyxiaApi";
+import * as projectManagement from "core/usecases/projectManagement";
+import * as userAuthentication from "core/usecases/userAuthentication";
 
 export const thunks = {
-    "changeSelectedCatalogId":
+    changeSelectedCatalogId:
         (params: { catalogId: string | undefined }) =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
@@ -29,7 +29,7 @@ export const thunks = {
 
                 dispatch(
                     actions.selectedCatalogChanged({
-                        "selectedCatalogId": params.catalogId
+                        selectedCatalogId: params.catalogId
                     })
                 );
 
@@ -42,40 +42,52 @@ export const thunks = {
 
             dispatch(actions.catalogsFetching());
 
-            const { catalogs, chartsByCatalogId } =
-                await onyxiaApi.getCatalogsAndCharts();
+            const { catalogs, chartsByCatalogId } = await (async () => {
+                const isInGroupProject =
+                    !userAuthentication.selectors.authenticationState(getState())
+                        .isUserLoggedIn
+                        ? false
+                        : projectManagement.protectedSelectors.currentProject(getState())
+                              .group !== undefined;
+
+                const { catalogs: catalogs_all, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
+
+                const catalogs = catalogs_all.filter(({ visibility }) => {
+                    switch (visibility) {
+                        case "always":
+                            return true;
+                        case "only in groups projects":
+                            return isInGroupProject;
+                        case "ony in personal projects":
+                            return !isInGroupProject;
+                    }
+                });
+
+                return { catalogs, chartsByCatalogId };
+            })();
 
             const selectedCatalogId =
-                params.catalogId ?? catalogs.filter(({ isHidden }) => !isHidden)[0].id;
+                params.catalogId !== undefined &&
+                catalogs.some(({ id }) => id === params.catalogId)
+                    ? params.catalogId
+                    : catalogs.filter(({ isProduction }) => isProduction)[0].id;
 
             dispatch(
                 actions.catalogsFetched({
                     catalogs,
-                    "chartsByCatalogId": (() => {
+                    chartsByCatalogId: (() => {
                         const out: State.Ready["chartsByCatalogId"] = {};
 
                         Object.keys(chartsByCatalogId).forEach(
                             catalogId =>
                                 (out[catalogId] = chartsByCatalogId[catalogId].map(
-                                    chart => {
-                                        const defaultVersion =
-                                            Chart.getDefaultVersion(chart);
-
-                                        const {
-                                            description = "",
-                                            iconUrl,
-                                            projectHomepageUrl
-                                        } = chart.versions.find(
-                                            ({ version }) => version === defaultVersion
-                                        )!;
-
-                                        return {
-                                            "name": chart.name,
-                                            description,
-                                            iconUrl,
-                                            projectHomepageUrl
-                                        };
-                                    }
+                                    chart => ({
+                                        name: chart.name,
+                                        description: chart.description ?? "",
+                                        iconUrl: chart.iconUrl,
+                                        projectHomepageUrl: chart.projectHomepageUrl
+                                    })
                                 ))
                         );
 
@@ -85,11 +97,14 @@ export const thunks = {
                 })
             );
 
-            if (params.catalogId === undefined) {
+            if (
+                params.catalogId === undefined ||
+                params.catalogId !== selectedCatalogId
+            ) {
                 dispatch(actions.defaultCatalogSelected());
             }
         },
-    "setSearch":
+    setSearch:
         (params: { search: string }) =>
         async (...args) => {
             const { search } = params;
@@ -112,7 +127,7 @@ export const thunks = {
             dispatch(actions.searchChanged({ search }));
 
             if (search === "") {
-                dispatch(actions.searchResultChanged({ "searchResults": undefined }));
+                dispatch(actions.searchResultChanged({ searchResults: undefined }));
                 return;
             }
 
@@ -124,14 +139,14 @@ export const thunks = {
 
             dispatch(
                 actions.searchResultChanged({
-                    "searchResults": await flexSearch({ search })
+                    searchResults: await flexSearch({ search })
                 })
             );
         }
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => {
-    const { waitForDebounce } = waitForDebounceFactory({ "delay": 200 });
+    const { waitForDebounce } = waitForDebounceFactory({ delay: 200 });
 
     const getFlexSearch = memoize(
         (
@@ -142,29 +157,29 @@ const { getContext } = createUsecaseContextApi(() => {
                 catalogIdChartName: `${string}/${string}`;
                 chartNameAndDescription: `${string} ${string}`;
             }>({
-                "document": {
-                    "id": "catalogIdChartName",
-                    "field": ["chartNameAndDescription"]
+                document: {
+                    id: "catalogIdChartName",
+                    field: ["chartNameAndDescription"]
                 },
-                "cache": 100,
-                "tokenize": "full",
-                "context": {
-                    "resolution": 9,
-                    "depth": 2,
-                    "bidirectional": true
+                cache: 100,
+                tokenize: "full",
+                context: {
+                    resolution: 9,
+                    depth: 2,
+                    bidirectional: true
                 }
             });
 
             Object.entries(chartsByCatalogId)
                 .filter(
                     ([catalogId]) =>
-                        !catalogs.find(({ id }) => id === catalogId)!.isHidden
+                        catalogs.find(({ id }) => id === catalogId)!.isProduction
                 )
                 .forEach(([catalogId, charts]) =>
                     charts.forEach(chart =>
                         index.add({
-                            "catalogIdChartName": `${catalogId}/${chart.name}`,
-                            "chartNameAndDescription": `${chart.name} ${chart.description}`
+                            catalogIdChartName: `${catalogId}/${chart.name}`,
+                            chartNameAndDescription: `${chart.name} ${chart.description}`
                         })
                     )
                 );
@@ -175,9 +190,9 @@ const { getContext } = createUsecaseContextApi(() => {
                 const { search } = params;
 
                 const flexSearchResults = await index.searchAsync(search, {
-                    "bool": "or",
-                    "suggest": true,
-                    "enrich": true
+                    bool: "or",
+                    suggest: true,
+                    enrich: true
                 });
 
                 if (flexSearchResults.length === 0) {
@@ -195,13 +210,13 @@ const { getContext } = createUsecaseContextApi(() => {
                         return {
                             catalogId,
                             chartName,
-                            "chartNameHighlightedIndexes": getMatchPositions({
+                            chartNameHighlightedIndexes: getMatchPositions({
                                 search,
-                                "text": chartName
+                                text: chartName
                             }),
-                            "chartDescriptionHighlightedIndexes": getMatchPositions({
+                            chartDescriptionHighlightedIndexes: getMatchPositions({
                                 search,
-                                "text": chartsByCatalogId[catalogId].find(
+                                text: chartsByCatalogId[catalogId].find(
                                     chart => chart.name === chartName
                                 )!.description
                             })
@@ -212,11 +227,11 @@ const { getContext } = createUsecaseContextApi(() => {
 
             return { flexSearch };
         },
-        { "max": 1 }
+        { max: 1 }
     );
 
     return {
-        "waitForSearchDebounce": waitForDebounce,
+        waitForSearchDebounce: waitForDebounce,
         getFlexSearch
     };
 });

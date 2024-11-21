@@ -15,8 +15,7 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, useCore } from "core";
 import { useFromNow } from "ui/shared/useMoment";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -44,7 +43,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
         shellScript
     } = useCoreState("k8sCodeSnippets", "main");
 
-    const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ dateTime: expirationTime ?? 0 });
 
     useEffect(() => {
         k8sCodeSnippets.refresh();
@@ -60,7 +59,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
         assert(shellScript !== undefined);
         saveAs(
             new Blob([shellScript], {
-                "type": "text/plain;charset=utf-8"
+                type: "text/plain;charset=utf-8"
             }),
             "config.sh"
         );
@@ -78,12 +77,10 @@ export const AccountKubernetesTab = memo((props: Props) => {
                     <>
                         {t("credentials section helper")}
                         &nbsp;
-                        <strong>
-                            {t("expires in", { "howMuchTime": fromNowText })}{" "}
-                        </strong>
+                        <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
-                            icon={id<MuiIconComponentName>("Refresh")}
+                            icon={getIconUrlByName("Refresh")}
                             onClick={() => k8sCodeSnippets.refresh()}
                             disabled={isRefreshing}
                         />
@@ -124,8 +121,8 @@ export const AccountKubernetesTab = memo((props: Props) => {
                         key={key}
                         title={key}
                         text={smartTrim({
-                            "maxLength": 50,
-                            "minCharAtTheEnd": 20,
+                            maxLength: 50,
+                            minCharAtTheEnd: 20,
                             text
                         })}
                         onRequestCopy={onFieldRequestCopyFactory(text)}
@@ -139,13 +136,13 @@ export const AccountKubernetesTab = memo((props: Props) => {
             <SettingSectionHeader
                 title={t("init script section title")}
                 helperText={t("init script section helper", {
-                    "installKubectlUrl": "https://kubernetes.io/docs/tasks/tools/"
+                    installKubectlUrl: "https://kubernetes.io/docs/tasks/tools/"
                 })}
             />
             <div className={classes.codeBlockHeaderWrapper}>
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 <IconButton
-                    icon={id<MuiIconComponentName>("GetApp")}
+                    icon={getIconUrlByName("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />
@@ -154,8 +151,8 @@ export const AccountKubernetesTab = memo((props: Props) => {
                 {/* This component depends on a heavy third party library, we don't want to include it in the main bundle */}
                 <CodeBlock
                     initScript={{
-                        "scriptCode": shellScript,
-                        "programmingLanguage": "shell"
+                        scriptCode: shellScript,
+                        programmingLanguage: "shell"
                     }}
                     isDarkModeEnabled={theme.isDarkModeEnabled}
                 />
@@ -178,11 +175,11 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountKubernetesTab }).create(({ theme }) => ({
-    "divider": {
+    divider: {
         ...theme.spacing.topBottom("margin", 4)
     },
-    "codeBlockHeaderWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+    codeBlockHeaderWrapper: {
+        display: "flex",
+        marginBottom: theme.spacing(3)
     }
 }));

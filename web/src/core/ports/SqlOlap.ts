@@ -1,7 +1,7 @@
 import type { AsyncDuckDB } from "@duckdb/duckdb-wasm";
 
 export type SqlOlap = {
-    getDb: () => Promise<AsyncDuckDB>;
+    getConfiguredAsyncDuckDb: () => Promise<AsyncDuckDB>;
     getRowCount: (sourceUrl: string) => Promise<number | undefined>;
     getRows: (params: {
         sourceUrl: string;

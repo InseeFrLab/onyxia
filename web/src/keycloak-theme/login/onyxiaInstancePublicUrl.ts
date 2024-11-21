@@ -10,8 +10,8 @@ export function getOnyxiaInstancePublicUrl() {
     }
 
     const result = retrieveParamFromUrl({
-        "name": onyxiaInstancePublicUrlKey,
-        "url": window.location.href
+        name: onyxiaInstancePublicUrlKey,
+        url: window.location.href
     });
 
     if (!result.wasPresent) {

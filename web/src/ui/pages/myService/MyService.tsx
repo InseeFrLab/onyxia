@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import type { PageRoute } from "./route";
-import { customIcons } from "ui/theme";
+import { customIcons } from "lazy-icons";
 import { routes } from "ui/routes";
 import { MyServiceButtonBar } from "./MyServiceButtonBar";
 import { Tabs } from "onyxia-ui/Tabs";
@@ -28,7 +28,7 @@ export default function MyService(props: Props) {
 
     useEffect(() => {
         const { setInactive } = serviceDetails.setActive({
-            "helmReleaseName": route.params.helmReleaseName
+            helmReleaseName: route.params.helmReleaseName
         });
 
         return () => setInactive();
@@ -78,12 +78,12 @@ export default function MyService(props: Props) {
                 <PageHeader
                     mainIcon={customIcons.servicesSvgUrl}
                     title={t("page title", {
-                        "helmReleaseFriendlyName":
+                        helmReleaseFriendlyName:
                             helmReleaseFriendlyName ?? route.params.helmReleaseName
                     })}
                     helpCollapseParams={{
-                        "behavior": "controlled",
-                        "isCollapsed": true
+                        behavior: "controlled",
+                        isCollapsed: true
                     }}
                     helpTitle={""}
                     helpContent=""
@@ -110,9 +110,9 @@ export default function MyService(props: Props) {
                         {isCommandBarEnabled && (
                             <CommandBar
                                 classes={{
-                                    "root": classes.commandBar,
-                                    "rootWhenExpended": classes.commandBarWhenExpanded,
-                                    "expandIconButton": classes.commandBarExpendIconButton
+                                    root: classes.commandBar,
+                                    rootWhenExpended: classes.commandBarWhenExpanded,
+                                    expandIconButton: classes.commandBarExpendIconButton
                                 }}
                                 entries={commandLogsEntries}
                                 maxHeight={contentWrapperHeight - theme.spacing(4)}
@@ -127,11 +127,11 @@ export default function MyService(props: Props) {
                         <Tabs
                             className={classes.tabs}
                             classes={{
-                                "content": classes.tabsContent
+                                content: classes.tabsContent
                             }}
                             tabs={podNames.map(podName => ({
-                                "id": podName,
-                                "title": `Pod: ${podName}`
+                                id: podName,
+                                title: `Pod: ${podName}`
                             }))}
                             activeTabId={selectedPodName}
                             maxTabCount={3}
@@ -165,53 +165,53 @@ const useStyles = tss
     .withNestedSelectors<"commandBarExpendIconButton">()
     .withParams<{ isCommandBarEnabled: boolean }>()
     .create(({ theme, isCommandBarEnabled, classes }) => ({
-        "root": {
-            "height": "100%",
-            "paddingRight": theme.spacing(2),
-            "overflow": "hidden",
-            "display": "flex",
-            "flexDirection": "column"
+        root: {
+            height: "100%",
+            paddingRight: theme.spacing(2),
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column"
         },
-        "headerWrapper": {
-            "position": "relative"
+        headerWrapper: {
+            position: "relative"
         },
-        "contentWrapper": {
-            "position": "relative",
-            "paddingTop": (isCommandBarEnabled ? 40 : 0) + theme.spacing(2),
-            "flex": 1,
-            "overflow": "hidden"
+        contentWrapper: {
+            position: "relative",
+            paddingTop: (isCommandBarEnabled ? 40 : 0) + theme.spacing(2),
+            flex: 1,
+            overflow: "hidden"
         },
-        "commandBar": {
-            "position": "absolute",
-            "right": 0,
-            "top": 0,
-            "zIndex": 2,
-            "transition": "opacity 750ms linear",
-            "width": "min(100%, 600px)"
+        commandBar: {
+            position: "absolute",
+            right: 0,
+            top: 0,
+            zIndex: 2,
+            transition: "opacity 750ms linear",
+            width: "min(100%, 600px)"
         },
-        "commandBarWhenExpanded": {
-            "width": "min(100%, 1100px)",
+        commandBarWhenExpanded: {
+            width: "min(100%, 1100px)",
             [`& .${classes.commandBarExpendIconButton}`]: {
-                "visibility": "unset"
+                visibility: "unset"
             }
         },
-        "commandBarExpendIconButton": {
-            "visibility": "hidden"
+        commandBarExpendIconButton: {
+            visibility: "hidden"
         },
-        "circularProgressWrapper": {
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": "center",
-            "height": theme.typography.rootFontSizePx * 20
+        circularProgressWrapper: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: theme.typography.rootFontSizePx * 20
         },
-        "tabs": {
-            "height": "100%",
-            "overflow": "hidden",
-            "display": "flex",
-            "flexDirection": "column"
+        tabs: {
+            height: "100%",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column"
         },
-        "tabsContent": {
-            "flex": 1,
-            "overflow": "hidden"
+        tabsContent: {
+            flex: 1,
+            overflow: "hidden"
         }
     }));

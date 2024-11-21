@@ -31,7 +31,7 @@ export function RegionSelect(props: Props) {
 
             deploymentRegionManagement.changeDeploymentRegion({
                 deploymentRegionId,
-                "reload": () => {
+                reload: () => {
                     window.location.reload();
                     assert(false, "never");
                 }
@@ -41,7 +41,7 @@ export function RegionSelect(props: Props) {
 
     const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
         onDeploymentRegionChange({
-            "deploymentRegionId": event.target.value
+            deploymentRegionId: event.target.value
         });
     });
 

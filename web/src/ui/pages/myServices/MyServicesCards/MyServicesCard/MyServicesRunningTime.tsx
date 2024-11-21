@@ -3,8 +3,7 @@ import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { useFromNow } from "ui/shared/useMoment";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -16,20 +15,16 @@ export const MyServicesRunningTime = memo((props: Props) => {
     const { className, startTime, doesHaveBeenRunningForTooLong } = props;
 
     const { classes, cx } = useStyles({
-        "isOvertime": doesHaveBeenRunningForTooLong
+        isOvertime: doesHaveBeenRunningForTooLong
     });
 
     const { fromNowText } = useFromNow({
-        "dateTime": startTime
+        dateTime: startTime
     });
 
     return (
         <Text typo="label 1" className={cx(classes.root, className)}>
-            <Icon
-                icon={id<MuiIconComponentName>("AccessTime")}
-                className={classes.icon}
-            />{" "}
-            &nbsp;
+            <Icon icon={getIconUrlByName("AccessTime")} className={classes.icon} /> &nbsp;
             {fromNowText}
         </Text>
     );
@@ -44,11 +39,11 @@ const useStyles = tss
             : undefined;
 
         return {
-            "root": {
+            root: {
                 color,
-                "display": "flex",
-                "alignItems": "center"
+                display: "flex",
+                alignItems: "center"
             },
-            "icon": { color }
+            icon: { color }
         };
     });

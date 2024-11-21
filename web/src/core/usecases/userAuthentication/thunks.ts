@@ -3,7 +3,7 @@ import type { Thunks } from "core/bootstrap";
 import { actions } from "./state";
 
 export const thunks = {
-    "login":
+    login:
         (params: { doesCurrentHrefRequiresAuth: boolean }) =>
         (...args): Promise<never> => {
             const { doesCurrentHrefRequiresAuth } = params;
@@ -14,7 +14,7 @@ export const thunks = {
 
             return oidc.login({ doesCurrentHrefRequiresAuth });
         },
-    "logout":
+    logout:
         (params: { redirectTo: "home" | "current page" }) =>
         (...args): Promise<never> => {
             const { redirectTo } = params;
@@ -28,7 +28,7 @@ export const thunks = {
 } satisfies Thunks;
 
 export const protectedThunks = {
-    "initialize":
+    initialize:
         () =>
         async (...args) => {
             const [dispatch, , rootContext] = args;
@@ -37,24 +37,24 @@ export const protectedThunks = {
             dispatch(
                 actions.initialized(
                     !oidc.isUserLoggedIn
-                        ? { "isUserLoggedIn": false }
+                        ? { isUserLoggedIn: false }
                         : {
-                              "isUserLoggedIn": true,
-                              "user": (await onyxiaApi.getUserAndProjects()).user,
-                              "decodedIdToken": oidc.getTokens().decodedIdToken
+                              isUserLoggedIn: true,
+                              user: (await onyxiaApi.getUserAndProjects()).user,
+                              decodedIdToken: oidc.getTokens().decodedIdToken
                           }
                 )
             );
         },
-    "getDecodedIdToken":
+    getTokens:
         () =>
         (...args) => {
             const [, , { oidc }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            const { decodedIdToken } = oidc.getTokens();
+            const { decodedIdToken, accessToken, refreshToken } = oidc.getTokens();
 
-            return decodedIdToken;
+            return { decodedIdToken, accessToken, refreshToken };
         }
 } satisfies Thunks;

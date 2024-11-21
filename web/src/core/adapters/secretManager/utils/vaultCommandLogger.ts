@@ -11,12 +11,12 @@ export function getVaultCommandLogger(params: {
     switch (clientType) {
         case "CLI":
             return {
-                "initialHistory": [],
-                "methods": {
-                    "list": {
-                        "buildCmd": (...[{ path }]) =>
+                initialHistory: [],
+                methods: {
+                    list: {
+                        buildCmd: (...[{ path }]) =>
                             `vault kv list ${pathJoin(engine, path)}`,
-                        "fmtResult": ({ result: { directories, files } }) =>
+                        fmtResult: ({ result: { directories, files } }) =>
                             [
                                 "Keys",
                                 "----",
@@ -26,10 +26,10 @@ export function getVaultCommandLogger(params: {
                                 ]
                             ].join("\n")
                     },
-                    "get": {
-                        "buildCmd": (...[{ path }]) =>
+                    get: {
+                        buildCmd: (...[{ path }]) =>
                             `vault kv get ${pathJoin(engine, path)}`,
-                        "fmtResult": ({ result: secretWithMetadata }) => {
+                        fmtResult: ({ result: secretWithMetadata }) => {
                             const n =
                                 Math.max(
                                     ...Object.keys(secretWithMetadata.secret).map(
@@ -51,8 +51,8 @@ export function getVaultCommandLogger(params: {
                             ].join("\n");
                         }
                     },
-                    "put": {
-                        "buildCmd": (...[{ path, secret }]) =>
+                    put: {
+                        buildCmd: (...[{ path, secret }]) =>
                             [
                                 `vault kv put ${pathJoin(engine, path)}`,
                                 ...Object.entries(secret).map(
@@ -75,25 +75,25 @@ export function getVaultCommandLogger(params: {
                                         }`
                                 )
                             ].join(" \\\n"),
-                        "fmtResult": ({ inputs: [{ path }] }) =>
+                        fmtResult: ({ inputs: [{ path }] }) =>
                             `Success! Data written to: ${pathJoin(engine, path)}`
                     },
-                    "delete": {
-                        "buildCmd": (...[{ path }]) =>
+                    delete: {
+                        buildCmd: (...[{ path }]) =>
                             `vault kv delete ${pathJoin(engine, path)}`,
-                        "fmtResult": ({ inputs: [{ path }] }) =>
+                        fmtResult: ({ inputs: [{ path }] }) =>
                             `Success! Data deleted (if it existed) at: ${pathJoin(
                                 engine,
                                 path
                             )}`
                     },
-                    "getToken": {
-                        "buildCmd": () =>
+                    getToken: {
+                        buildCmd: () =>
                             [
                                 `# We generate a token`,
                                 `# See https://www.vaultproject.io/docs/auth/jwt`
                             ].join("\n"),
-                        "fmtResult": ({ result: vaultToken }) =>
+                        fmtResult: ({ result: vaultToken }) =>
                             `The token we got is ${vaultToken}`
                     }
                 }

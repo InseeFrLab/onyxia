@@ -11,16 +11,16 @@ import { id } from "tsafe/id";
 import { tabIds, type TabId } from "./tabIds";
 
 export const routeDefs = {
-    "projectSettings": defineRoute(
+    projectSettings: defineRoute(
         {
-            "tabId": param.path.optional
+            tabId: param.path.optional
                 .ofType(
                     id<ValueSerializer<TabId>>({
-                        "parse": raw =>
+                        parse: raw =>
                             !id<readonly string[]>(tabIds).includes(raw)
                                 ? noMatch
                                 : (raw as TabId),
-                        "stringify": value => value
+                        stringify: value => value
                     })
                 )
                 .default(tabIds[0])

@@ -22,12 +22,13 @@ jobs:
         with: 
           action_name: checkout
           sub_directory: web
-      - uses: actions/setup-node@v3.8.1
-      - uses: bahmutov/npm-install@v1.8.35
+      - uses: actions/setup-node@v4.1.0
+      - uses: bahmutov/npm-install@v1.10.4
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+      - run: yarn test
       - run: yarn build
-      - run: npx keycloakify
+      - run: npx keycloakify build
 
   test_helm-chart:
     runs-on: ubuntu-latest
@@ -36,9 +37,7 @@ jobs:
         with: 
           action_name: checkout
           sub_directory: helm-chart
-      - uses: azure/setup-helm@v3.5
-        with:
-          token: ${{github.token}}
+      - uses: azure/setup-helm@v4.2.0
       - run: helm lint .
   
   prepare_release:
@@ -82,7 +81,7 @@ jobs:
           push: true
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
-          platforms: linux/amd64,linux/arm64
+          platforms: "${{ needs.prepare_release.outputs.new_chart_version != '' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}"
   
   release:
     runs-on: ubuntu-latest
@@ -94,21 +93,19 @@ jobs:
           action_name: checkout
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
-      - uses: actions/setup-node@v3.8.1
-      - uses: bahmutov/npm-install@v1.8.35
+      - uses: actions/setup-node@v4.1.0
+      - uses: bahmutov/npm-install@v1.10.4
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
-      - run: rm -r public/material-icons
-      - run: yarn build
-      - run: npx keycloakify
+      - run: yarn build-keycloak-theme
         env:
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
-      - run: mv dist_keycloak/target/retrocompat-*.jar keycloak-theme.jar
-      - uses: yogeshlonkar/wait-for-jobs@v0.1.8
+      - uses: yogeshlonkar/wait-for-jobs@v0.4.6
         with:
           ignore-skipped: true
           jobs: publish_web_docker_image
-          ttl: 15
+          ttl: 40
+          no-max-ttl: true
       - uses: InseeFrLab/onyxia@gh-actions
         with: 
           action_name: release_helm_chart
@@ -127,7 +124,7 @@ jobs:
           target_commitish: ${{needs.prepare_release.outputs.target_commit}}
           generate_release_notes: true
           files: |
-            keycloak-theme.jar
+            dist_keycloak/*.jar
             onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
         env:
           # NOTE: We can't use github.token because it would not trigger the dispatch workflow.

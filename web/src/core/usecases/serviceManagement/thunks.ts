@@ -6,12 +6,12 @@ import { assert } from "tsafe/assert";
 import { Evt, type Ctx } from "evt";
 import { name, actions } from "./state";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
-import { formatHelmLsResp } from "./utils/formatHelmCommands";
+import { formatHelmLsResp } from "./decoupledLogic/formatHelmCommands";
 import * as viewQuotas from "core/usecases/viewQuotas";
 import { protectedSelectors } from "./selectors";
 
 export const thunks = {
-    "setActive":
+    setActive:
         () =>
         (...args) => {
             const [dispatch, getState, { evtAction }] = args;
@@ -93,9 +93,7 @@ export const thunks = {
                                 return;
                             }
 
-                            dispatch(
-                                privateThunks.update({ "doLogInCommandBar": false })
-                            );
+                            dispatch(privateThunks.update({ doLogInCommandBar: false }));
 
                             if (ctxInner.completionStatus) {
                                 return;
@@ -114,14 +112,14 @@ export const thunks = {
 
             return { setInactive };
         },
-    "update":
+    update:
         () =>
         async (...args) => {
             const [dispatch] = args;
 
-            await dispatch(privateThunks.update({ "doLogInCommandBar": true }));
+            await dispatch(privateThunks.update({ doLogInCommandBar: true }));
         },
-    "deleteService":
+    deleteService:
         (params: { helmReleaseName: string }) =>
         async (...args) => {
             const { helmReleaseName } = params;
@@ -131,7 +129,7 @@ export const thunks = {
             dispatch(
                 actions.helmReleaseLocked({
                     helmReleaseName,
-                    "reason": "delete"
+                    reason: "delete"
                 })
             );
 
@@ -143,14 +141,14 @@ export const thunks = {
 
             await dispatch(thunks.update());
         },
-    "deleteAllServices":
+    deleteAllServices:
         () =>
         async (...args) => {
             const [dispatch, getState] = args;
 
             const services = protectedSelectors.services(getState());
 
-            if (services === undefined) {
+            if (services === null) {
                 return;
             }
 
@@ -168,7 +166,7 @@ export const thunks = {
                 })
             );
         },
-    "suspendOrResumeService":
+    suspendOrResumeService:
         (params: { helmReleaseName: string }) =>
         async (...args) => {
             const { helmReleaseName } = params;
@@ -178,7 +176,7 @@ export const thunks = {
             dispatch(
                 actions.helmReleaseLocked({
                     helmReleaseName,
-                    "reason": "suspend"
+                    reason: "suspend"
                 })
             );
 
@@ -194,14 +192,14 @@ export const thunks = {
 
             await onyxiaApi.helmUpgradeGlobalSuspend({
                 helmReleaseName,
-                "value": !helmRelease.isSuspended
+                value: !helmRelease.isSuspended
             });
 
             await dispatch(thunks.update());
 
             dispatch(actions.helmReleaseUnlocked({ helmReleaseName }));
         },
-    "logHelmGetNotes":
+    logHelmGetNotes:
         (params: { helmReleaseName: string }) =>
         (...args) => {
             const { helmReleaseName } = params;
@@ -225,18 +223,76 @@ export const thunks = {
 
             dispatch(
                 actions.commandLogsEntryAdded({
-                    "commandLogsEntry": {
-                        "cmdId": Date.now(),
-                        "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
-                        "resp": postInstallInstructions
+                    commandLogsEntry: {
+                        cmdId: Date.now(),
+                        cmd: `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
+                        resp: postInstallInstructions
                     }
                 })
             );
+        },
+    changeServiceFriendlyName:
+        (params: { helmReleaseName: string; friendlyName: string }) =>
+        async (...args) => {
+            const { helmReleaseName, friendlyName } = params;
+
+            const [dispatch, getState, { onyxiaApi }] = args;
+
+            {
+                const services = protectedSelectors.services(getState());
+
+                assert(services !== null);
+
+                const service = services.find(
+                    service => service.helmReleaseName === helmReleaseName
+                );
+
+                assert(service !== undefined);
+
+                if (service.friendlyName === friendlyName) {
+                    return;
+                }
+            }
+
+            dispatch(
+                actions.changeServiceFriendlyNameStarted({
+                    helmReleaseName,
+                    friendlyName
+                })
+            );
+
+            await onyxiaApi.changeHelmReleaseFriendlyName({
+                helmReleaseName,
+                friendlyName
+            });
+
+            dispatch(actions.changeServiceFriendlyNameCompleted({ helmReleaseName }));
+        },
+    changeServiceSharedStatus:
+        (params: { helmReleaseName: string; isShared: boolean }) =>
+        async (...args) => {
+            const { helmReleaseName, isShared } = params;
+
+            const [dispatch, , { onyxiaApi }] = args;
+
+            dispatch(
+                actions.changeServiceSharedStatusStarted({
+                    helmReleaseName,
+                    isShared
+                })
+            );
+
+            await onyxiaApi.changeHelmReleaseSharedStatus({
+                helmReleaseName,
+                isShared
+            });
+
+            dispatch(actions.changeServiceSharedStatusCompleted({ helmReleaseName }));
         }
 } satisfies Thunks;
 
 const privateThunks = {
-    "getLoggedOnyxiaApi":
+    getLoggedOnyxiaApi:
         () =>
         (...args): OnyxiaApi => {
             const [dispatch, getState, rootContext] = args;
@@ -254,18 +310,18 @@ const privateThunks = {
 
             context.loggedOnyxiaApi = {
                 ...onyxiaApi,
-                "listHelmReleases": async () => {
+                listHelmReleases: async () => {
                     const { namespace } =
-                        projectManagement.selectors.currentProject(getState());
+                        projectManagement.protectedSelectors.currentProject(getState());
 
                     const cmdId = Date.now();
 
                     dispatch(
                         actions.commandLogsEntryAdded({
-                            "commandLogsEntry": {
+                            commandLogsEntry: {
                                 cmdId,
-                                "cmd": `helm list --namespace ${namespace}`,
-                                "resp": undefined
+                                cmd: `helm list --namespace ${namespace}`,
+                                resp: undefined
                             }
                         })
                     );
@@ -275,8 +331,8 @@ const privateThunks = {
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
-                            "resp": formatHelmLsResp({
-                                "lines": helmReleases.map(
+                            resp: formatHelmLsResp({
+                                lines: helmReleases.map(
                                     ({
                                         helmReleaseName,
                                         startedAt,
@@ -286,12 +342,12 @@ const privateThunks = {
                                         appVersion,
                                         status
                                     }) => ({
-                                        "name": helmReleaseName,
+                                        name: helmReleaseName,
                                         namespace,
                                         revision,
-                                        "updatedTime": startedAt,
-                                        "status": status,
-                                        "chart": `${chartName}-${chartVersion}`,
+                                        updatedTime: startedAt,
+                                        status: status,
+                                        chart: `${chartName}-${chartVersion}`,
                                         appVersion
                                     })
                                 )
@@ -301,18 +357,19 @@ const privateThunks = {
 
                     return helmReleases;
                 },
-                "helmUninstall": async ({ helmReleaseName }) => {
+                helmUninstall: async ({ helmReleaseName }) => {
                     const cmdId = Date.now();
 
                     dispatch(
                         actions.commandLogsEntryAdded({
-                            "commandLogsEntry": {
+                            commandLogsEntry: {
                                 cmdId,
-                                "cmd": `helm uninstall ${helmReleaseName} --namespace ${
-                                    projectManagement.selectors.currentProject(getState())
-                                        .namespace
+                                cmd: `helm uninstall ${helmReleaseName} --namespace ${
+                                    projectManagement.protectedSelectors.currentProject(
+                                        getState()
+                                    ).namespace
                                 }`,
-                                "resp": undefined
+                                resp: undefined
                             }
                         })
                     );
@@ -322,7 +379,7 @@ const privateThunks = {
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
-                            "resp": `release "${helmReleaseName}" uninstalled`
+                            resp: `release "${helmReleaseName}" uninstalled`
                         })
                     );
                 }
@@ -330,7 +387,7 @@ const privateThunks = {
 
             return dispatch(privateThunks.getLoggedOnyxiaApi());
         },
-    "update":
+    update:
         (params: { doLogInCommandBar: boolean }) =>
         async (...args) => {
             const { doLogInCommandBar } = params;
@@ -351,38 +408,28 @@ const privateThunks = {
                 ? dispatch(privateThunks.getLoggedOnyxiaApi())
                 : rootContext.onyxiaApi;
 
-            //NOTE: We do not have the catalog id nor the chart id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
-                const { catalogs, chartsByCatalogId } =
-                    await onyxiaApi.getCatalogsAndCharts();
+                const { chartsByCatalogId } = await onyxiaApi.getCatalogsAndCharts();
 
                 function getLogoUrl(params: {
+                    catalogId: string;
                     chartName: string;
-                    chartVersion: string;
                 }): string | undefined {
-                    const { chartName, chartVersion } = params;
+                    const { catalogId, chartName } = params;
 
-                    catalog: for (const { id: catalogId } of catalogs) {
-                        for (const chart of chartsByCatalogId[catalogId]) {
-                            if (chart.name === chartName) {
-                                const iconUrl = chart.versions.find(
-                                    ({ version }) => version === chartVersion
-                                )?.iconUrl;
+                    const catalogCharts = chartsByCatalogId[catalogId];
 
-                                if (iconUrl === undefined) {
-                                    const { iconUrl } = chart.versions[0] ?? {};
-                                    if (iconUrl !== undefined) {
-                                        return iconUrl;
-                                    }
-
-                                    continue catalog;
-                                }
-
-                                return iconUrl;
-                            }
-                        }
+                    if (catalogCharts === undefined) {
+                        return undefined;
                     }
-                    return undefined;
+
+                    const chart = catalogCharts.find(chart => chart.name === chartName);
+
+                    if (chart === undefined) {
+                        return undefined;
+                    }
+
+                    return chart.iconUrl;
                 }
 
                 return { getLogoUrl };
@@ -391,7 +438,7 @@ const privateThunks = {
             const helmReleases = await onyxiaApi.listHelmReleases();
 
             const { namespace: kubernetesNamespace } =
-                projectManagement.selectors.currentProject(getState());
+                projectManagement.protectedSelectors.currentProject(getState());
 
             const {
                 user: { username }
@@ -401,12 +448,12 @@ const privateThunks = {
                 actions.updateCompleted({
                     kubernetesNamespace,
                     helmReleases,
-                    "logoUrlByReleaseName": Object.fromEntries(
+                    logoUrlByReleaseName: Object.fromEntries(
                         helmReleases.map(helmRelease => [
                             helmRelease.helmReleaseName,
                             getLogoUrl({
-                                "chartName": helmRelease.chartName,
-                                "chartVersion": helmRelease.chartVersion
+                                catalogId: helmRelease.catalogId,
+                                chartName: helmRelease.chartName
                             })
                         ])
                     ),
@@ -417,5 +464,5 @@ const privateThunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
-    "loggedOnyxiaApi": id<OnyxiaApi | undefined>(undefined)
+    loggedOnyxiaApi: id<OnyxiaApi | undefined>(undefined)
 }));

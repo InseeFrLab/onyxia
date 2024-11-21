@@ -9,10 +9,9 @@ import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
 import { useCore, useCoreState } from "core";
 import { assert, type Equals } from "tsafe/assert";
-import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { customIcons, getIconUrl, getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -24,6 +23,7 @@ export const LeftBar = memo((props: Props) => {
     const { secretExplorer } = useCore().functions;
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const route = useRoute();
 
@@ -43,85 +43,91 @@ export const LeftBar = memo((props: Props) => {
                     ...(env.DISABLE_HOMEPAGE
                         ? ({} as never)
                         : {
-                              "home": {
-                                  "icon": customIcons.homeSvgUrl,
-                                  "label": t("home"),
-                                  "link": routes.home().link
+                              home: {
+                                  icon: customIcons.homeSvgUrl,
+                                  label: t("home"),
+                                  link: routes.home().link
                               } as const
                           }),
-                    "account": {
-                        "icon": customIcons.accountSvgUrl,
-                        "label": t("account"),
-                        "link": routes.account().link
+                    account: {
+                        icon: customIcons.accountSvgUrl,
+                        label: t("account"),
+                        link: routes.account().link
                     },
-                    "projectSettings": {
-                        "icon": id<MuiIconComponentName>("DisplaySettings"),
-                        "label": t("projectSettings"),
-                        "link": routes.projectSettings().link,
-                        "belowDivider": t("divider: services features")
+                    projectSettings: {
+                        icon: getIconUrlByName("DisplaySettings"),
+                        label: t("projectSettings"),
+                        link: routes.projectSettings().link,
+                        belowDivider: t("divider: services features")
                     },
-                    "catalog": {
-                        "icon": customIcons.catalogSvgUrl,
-                        "label": t("catalog"),
-                        "link": routes.catalog().link
+                    catalog: {
+                        icon: customIcons.catalogSvgUrl,
+                        label: t("catalog"),
+                        link: routes.catalog().link
                     },
-                    "myServices": {
-                        "icon": customIcons.servicesSvgUrl,
-                        "label": t("myServices"),
-                        "link": routes.myServices().link,
-                        "belowDivider": t("divider: external services features")
+                    myServices: {
+                        icon: customIcons.servicesSvgUrl,
+                        label: t("myServices"),
+                        link: routes.myServices().link,
+                        belowDivider: t("divider: external services features")
                     },
                     ...(!secretExplorer.getIsEnabled()
                         ? ({} as never)
                         : {
-                              "mySecrets": {
-                                  "icon": customIcons.secretsSvgUrl,
-                                  "label": t("mySecrets"),
-                                  "link": routes.mySecrets().link
+                              mySecrets: {
+                                  icon: customIcons.secretsSvgUrl,
+                                  label: t("mySecrets"),
+                                  link: routes.mySecrets().link
                               } as const
                           }),
-                    "myFiles": {
-                        "icon": customIcons.filesSvgUrl,
-                        "label": t("myFiles"),
-                        "link": routes.myFiles().link
-                    },
+                    ...(!isFileExplorerEnabled
+                        ? ({} as never)
+                        : {
+                              myFiles: {
+                                  icon: customIcons.filesSvgUrl,
+                                  label: t("myFiles"),
+                                  link: routes.myFiles().link
+                              } as const,
+                              dataExplorer: {
+                                  icon: getIconUrlByName("DocumentScanner"),
+                                  label: t("dataExplorer"),
+                                  link: routes.dataExplorer().link,
+                                  belowDivider:
+                                      env.LEFTBAR_LINKS.length === 0
+                                          ? true
+                                          : t(
+                                                "divider: onyxia instance specific features"
+                                            )
+                              } as const
+                          }),
                     ...(!isDevModeEnabled
                         ? ({} as never)
                         : {
-                              "sqlOlapShell": {
-                                  "icon": "Terminal",
-                                  "label": t("sqlOlapShell"),
-                                  "link": routes.sqlOlapShell().link
+                              sqlOlapShell: {
+                                  icon: getIconUrlByName("Terminal"),
+                                  label: t("sqlOlapShell"),
+                                  link: routes.sqlOlapShell().link
                               } as const
                           }),
-                    "dataExplorer": {
-                        "icon": id<MuiIconComponentName>("DocumentScanner"),
-                        "label": t("dataExplorer"),
-                        "link": routes.dataExplorer().link,
-                        "belowDivider":
-                            env.LEFTBAR_LINKS.length === 0
-                                ? true
-                                : t("divider: onyxia instance specific features")
-                    } as const,
                     ...Object.fromEntries(
                         env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
-                            "link": urlToLink(url),
+                            link: urlToLink(url),
                             ...rest
                         }))
                             .map(({ icon, startIcon, ...rest }) => ({
                                 ...rest,
-                                "icon": icon ?? startIcon
+                                icon: getIconUrl(icon) ?? getIconUrl(startIcon)
                             }))
                             .map(({ link, icon, label }, i) => [
                                 `extraItem${i}`,
                                 id<LeftBarProps.Item>({
-                                    "icon":
+                                    icon:
                                         (assert(
                                             icon !== undefined,
                                             "We should have validated that when parsing the env"
                                         ),
                                         icon),
-                                    "label": (
+                                    label: (
                                         <LocalizedMarkdown inline>
                                             {label}
                                         </LocalizedMarkdown>

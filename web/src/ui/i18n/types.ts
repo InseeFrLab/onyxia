@@ -17,7 +17,6 @@ export type ComponentKey =
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
     | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
     | import("ui/pages/myFiles/MyFiles").I18n
-    | import("ui/pages/myFiles/MyFilesDisabledDialog").I18n
     | import("ui/pages/myFiles/Explorer/Explorer").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerButtonBar").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerItems").I18n
@@ -25,6 +24,8 @@ export type ComponentKey =
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
+    | import("ui/pages/myFiles/Explorer/ListExplorer/ListExplorerItems").I18n
+    | import("ui/pages/myFiles/NewComponents/MyFilesShareDialog").I18n
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n
@@ -51,11 +52,14 @@ export type ComponentKey =
     | import("ui/pages/catalog/CatalogNoSearchMatches").I18n
     | import("ui/pages/launcher/Launcher").I18n
     | import("ui/pages/launcher/LauncherMainCard").I18n
-    | import("ui/pages/launcher/LauncherConfigurationCard").I18n
     | import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n
-    | import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/shared/FormFieldWrapper").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/YamlCodeBlockFormField").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/TextFormField").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/NumberFormField").I18n
+    | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/FormFieldGroupComponent").I18n
     | import("ui/pages/myService/MyService").I18n
     | import("ui/pages/myService/PodLogsTab").I18n
     | import("ui/pages/myService/MyServiceButtonBar").I18n
@@ -77,7 +81,10 @@ export type ComponentKey =
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
     | import("ui/shared/useMoment").I18n
-    | import("ui/shared/CopyToClipboardIconButton").I18n;
+    | import("ui/shared/CopyToClipboardIconButton").I18n
+    | import("ui/shared/Datagrid/CustomDataGrid").I18n
+    | import("ui/shared/Datagrid/CustomDataGridToolbarDensitySelector").I18n
+    | import("ui/shared/Datagrid/CustomDataGridToolbarColumnsButton").I18n;
 
 export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,

@@ -1,45 +1,33 @@
 import { Text } from "onyxia-ui/Text";
 import Switch from "@mui/material/Switch";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
-import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
 import { TestS3ConnectionButton } from "./TestS3ConnectionButton";
 import { Icon } from "onyxia-ui/Icon";
 import Tooltip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import type { S3Config } from "core/usecases/s3ConfigManagement";
+import { assert } from "tsafe/assert";
 
 type Props = {
     className?: string;
-    dataSource: string;
-    region: string;
-    accountFriendlyName: string | undefined;
-    isUsedForExplorer: boolean;
-    isUsedForXOnyxia: boolean;
+    s3Config: S3Config;
     onDelete: (() => void) | undefined;
-    onIsUsedForExplorerValueChange: ((isUsed: boolean) => void) | undefined;
-    onIsUsedForXOnyxiaValueChange: ((isUsed: boolean) => void) | undefined;
+    onIsExplorerConfigChange: (value: boolean) => void;
+    onIsOnyxiaDefaultChange: (value: boolean) => void;
     onEdit: (() => void) | undefined;
-    doHideUsageSwitches: boolean;
-    connectionTestStatus: ConnectionTestStatus | undefined;
     onTestConnection: (() => void) | undefined;
 };
 
 export function S3ConfigCard(props: Props) {
     const {
         className,
-        dataSource,
-        region,
-        accountFriendlyName,
-        isUsedForExplorer,
-        isUsedForXOnyxia,
+        s3Config,
         onDelete,
-        onIsUsedForExplorerValueChange,
-        onIsUsedForXOnyxiaValueChange,
-        doHideUsageSwitches,
+        onIsExplorerConfigChange,
+        onIsOnyxiaDefaultChange,
         onEdit,
-        connectionTestStatus,
         onTestConnection
     } = props;
 
@@ -55,93 +43,86 @@ export function S3ConfigCard(props: Props) {
                 <Text typo="body 1">
                     <code
                         className={css({
-                            "fontSize": "0.9rem"
+                            fontSize: "0.9rem"
                         })}
                     >
-                        {dataSource}
+                        {s3Config.dataSource}
                     </code>
-                    {region === "" ? null : <>&nbsp;-&nbsp;{region}</>}
+                    {s3Config.region === "" ? null : <>&nbsp;-&nbsp;{s3Config.region}</>}
                 </Text>
             </div>
             <div className={classes.line}>
-                {accountFriendlyName === undefined ? (
-                    <>
-                        <Text typo="label 1">{t("credentials")}:</Text>
-                        &nbsp; &nbsp;
-                        <Text typo="body 1">{t("sts credentials")}</Text>
-                    </>
-                ) : (
-                    <>
-                        <Text typo="label 1">{t("account")}:</Text>
-                        &nbsp; &nbsp;
-                        <Text typo="body 1">{accountFriendlyName}</Text>
-                    </>
-                )}
+                {(() => {
+                    switch (s3Config.origin) {
+                        case "deploymentRegion":
+                            return (
+                                <>
+                                    <Text typo="label 1">{t("credentials")}:</Text>
+                                    &nbsp; &nbsp;
+                                    <Text typo="body 1">{t("sts credentials")}</Text>
+                                </>
+                            );
+                        case "project":
+                            return (
+                                <>
+                                    <Text typo="label 1">{t("account")}:</Text>
+                                    &nbsp; &nbsp;
+                                    <Text typo="body 1">{s3Config.friendlyName}</Text>
+                                </>
+                            );
+                    }
+                })()}
             </div>
-            {!doHideUsageSwitches && (
-                <>
-                    <div className={classes.line}>
-                        <Text typo="label 1">{t("use in services")}</Text>
-                        <Tooltip title={t("use in services helper")}>
-                            <Icon
-                                className={classes.helpIcon}
-                                icon={id<MuiIconComponentName>("Help")}
-                            />
-                        </Tooltip>
-                        &nbsp;
-                        <Switch
-                            checked={isUsedForXOnyxia}
-                            disabled={onIsUsedForXOnyxiaValueChange === undefined}
-                            onChange={event =>
-                                onIsUsedForXOnyxiaValueChange?.(event.target.checked)
-                            }
-                            inputProps={{ "aria-label": "controlled" }}
-                        />
-                    </div>
-                    <div className={classes.line}>
-                        <Text typo="label 1">{t("use for onyxia explorers")}</Text>
-                        <Tooltip title={t("use for onyxia explorers helper")}>
-                            <Icon
-                                className={classes.helpIcon}
-                                icon={id<MuiIconComponentName>("Help")}
-                            />
-                        </Tooltip>
-                        &nbsp;
-                        <Switch
-                            checked={isUsedForExplorer}
-                            disabled={onIsUsedForExplorerValueChange === undefined}
-                            onChange={event =>
-                                onIsUsedForExplorerValueChange?.(event.target.checked)
-                            }
-                            inputProps={{ "aria-label": "controlled" }}
-                        />
-                    </div>
-                </>
-            )}
+            <div className={classes.line}>
+                <Text typo="label 1">{t("use in services")}</Text>
+                <Tooltip title={t("use in services helper")}>
+                    <Icon className={classes.helpIcon} icon={getIconUrlByName("Help")} />
+                </Tooltip>
+                &nbsp;
+                <Switch
+                    checked={s3Config.isXOnyxiaDefault}
+                    onChange={event => onIsOnyxiaDefaultChange(event.target.checked)}
+                    inputProps={{ "aria-label": "controlled" }}
+                />
+            </div>
+            <div className={classes.line}>
+                <Text typo="label 1">{t("use for onyxia explorers")}</Text>
+                <Tooltip title={t("use for onyxia explorers helper")}>
+                    <Icon className={classes.helpIcon} icon={getIconUrlByName("Help")} />
+                </Tooltip>
+                &nbsp;
+                <Switch
+                    checked={s3Config.isExplorerConfig}
+                    onChange={event => onIsExplorerConfigChange(event.target.checked)}
+                    inputProps={{ "aria-label": "controlled" }}
+                />
+            </div>
             <div
                 className={css({
-                    "marginTop": theme.spacing(4),
-                    "display": "flex"
+                    marginTop: theme.spacing(4),
+                    display: "flex"
                 })}
             >
-                {connectionTestStatus !== undefined && (
-                    <TestS3ConnectionButton
-                        className={css({})}
-                        connectionTestStatus={connectionTestStatus}
-                        onTestConnection={onTestConnection}
-                    />
-                )}
-                <div className={css({ "flex": 1 })} />
+                {s3Config.origin === "project" &&
+                    (assert(onTestConnection !== undefined),
+                    (
+                        <TestS3ConnectionButton
+                            className={css({})}
+                            connectionTestStatus={s3Config.connectionTestStatus}
+                            onTestConnection={onTestConnection}
+                        />
+                    ))}
+                <div className={css({ flex: 1 })} />
                 <div
                     className={css({
-                        "display": "flex",
-                        "gap": theme.spacing(2)
+                        display: "flex",
+                        gap: theme.spacing(2)
                     })}
                 >
                     {onEdit !== undefined && (
                         <Button
                             variant="secondary"
-                            startIcon={id<MuiIconComponentName>("Edit")}
+                            startIcon={getIconUrlByName("Edit")}
                             onClick={() => onEdit()}
                         >
                             {t("edit")}
@@ -150,7 +131,7 @@ export function S3ConfigCard(props: Props) {
                     {onDelete !== undefined && (
                         <Button
                             variant="secondary"
-                            startIcon={id<MuiIconComponentName>("Delete")}
+                            startIcon={getIconUrlByName("Delete")}
                             onClick={() => onDelete()}
                         >
                             {t("delete")}
@@ -163,26 +144,26 @@ export function S3ConfigCard(props: Props) {
 }
 
 const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
-    "root": {
-        "padding": theme.spacing(3),
-        "borderRadius": theme.spacing(2),
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "boxShadow": theme.shadows[3],
+    root: {
+        padding: theme.spacing(3),
+        borderRadius: theme.spacing(2),
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        boxShadow: theme.shadows[3],
         "&:hover": {
-            "boxShadow": theme.shadows[6]
+            boxShadow: theme.shadows[6]
         }
     },
-    "line": {
-        "marginBottom": theme.spacing(3),
-        "display": "flex",
-        "alignItems": "center"
+    line: {
+        marginBottom: theme.spacing(3),
+        display: "flex",
+        alignItems: "center"
     },
-    "helpIcon": {
-        "marginLeft": theme.spacing(2),
-        "fontSize": "inherit",
+    helpIcon: {
+        marginLeft: theme.spacing(2),
+        fontSize: "inherit",
         ...(() => {
             const factor = 1.1;
-            return { "width": `${factor}em`, "height": `${factor}em` };
+            return { width: `${factor}em`, height: `${factor}em` };
         })()
     }
 }));

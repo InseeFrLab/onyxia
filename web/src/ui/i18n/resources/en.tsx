@@ -2,36 +2,34 @@ import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import type { Translations } from "../types";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"en"> = {
-    "Account": {
-        "infos": "Account infos",
-        "git": "Git",
-        "storage": "Connect to storage",
-        "k8sCodeSnippets": "Kubernetes",
+    Account: {
+        infos: "Account infos",
+        git: "Git",
+        storage: "Connect to storage",
+        k8sCodeSnippets: "Kubernetes",
         "user-interface": "Interface preferences",
-        "text1": "My account",
-        "text2": "Access your different account information.",
-        "text3":
-            "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
+        text1: "My account",
+        text2: "Access your different account information.",
+        text3: "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
         "personal tokens tooltip":
             "Password that are generated for you and that have a given validity period",
-        "vault": "Vault"
+        vault: "Vault"
     },
-    "AccountInfoTab": {
+    AccountInfoTab: {
         "general information": "General information",
         "user id": "User id (IDEP)",
         "full name": "Full name",
-        "email": "Email address",
+        email: "Email address",
         "instructions about how to change password":
             'To change your password, simply logout, and click on the "forgot password" link.'
     },
-    "AccountGitTab": {
-        "gitName": "Username for Git",
+    AccountGitTab: {
+        gitName: "Username for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
                 This command will set your global Git username, executed at service
@@ -41,7 +39,7 @@ export const translations: Translations<"en"> = {
                 </code>
             </>
         ),
-        "gitEmail": "Email for Git",
+        gitEmail: "Email for Git",
         "gitEmail helper text": ({ gitEmail, focusClassName }) => (
             <>
                 This command will set your global Git email, executed at service
@@ -52,7 +50,7 @@ export const translations: Translations<"en"> = {
                 </code>
             </>
         ),
-        "githubPersonalAccessToken": "Git Forge Personal Access Token",
+        githubPersonalAccessToken: "Git Forge Personal Access Token",
         "githubPersonalAccessToken helper text": ({ focusClassName }) => (
             <>
                 By providing this token, you can clone and push to your private GitHub or
@@ -64,7 +62,7 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "AccountStorageTab": {
+    AccountStorageTab: {
         "credentials section title": "Connect your data to your services",
         "credentials section helper":
             "Amazon-compatible MinIO object storage (AWS S3). This information is already filled in automatically.",
@@ -75,7 +73,7 @@ export const translations: Translations<"en"> = {
             "Download or copy the init script in the programming language of your choice.",
         "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
     },
-    "AccountKubernetesTab": {
+    AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",
         "credentials section helper":
             "Credentials to interact directly with the Kubernetes API server.",
@@ -97,7 +95,7 @@ export const translations: Translations<"en"> = {
         "expires in": ({ howMuchTime }) =>
             `Theses credentials are valid for the next ${howMuchTime}`
     },
-    "AccountVaultTab": {
+    AccountVaultTab: {
         "credentials section title": "Vault credentials",
         "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
             <>
@@ -119,7 +117,7 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
     },
-    "ProjectSettings": {
+    ProjectSettings: {
         "page header title": "Project Settings",
         "page header help title": ({ groupProjectName }) =>
             groupProjectName === undefined
@@ -157,28 +155,28 @@ export const translations: Translations<"en"> = {
         "security-info": "Security Information",
         "s3-configs": "S3 Configurations"
     },
-    "ProjectSettingsS3ConfigTab": {
+    ProjectSettingsS3ConfigTab: {
         "add custom config": "Add a custom S3 configuration"
     },
-    "S3ConfigCard": {
+    S3ConfigCard: {
         "data source": "Data source",
-        "credentials": "Credentials",
+        credentials: "Credentials",
         "sts credentials": "Tokens dynamically requested on your behalf by Onyxia (STS)",
-        "account": "Account",
+        account: "Account",
         "use in services": "Use in services",
         "use in services helper": `If enabled, this configuration will be used by
             default in your services that implement an S3 integration.`,
         "use for onyxia explorers": "Use for Onyxia explorers",
         "use for onyxia explorers helper": `If enabled this configuration will be used
             by the file explorer and the data explorer.`,
-        "edit": "Edit",
-        "delete": "Delete"
+        edit: "Edit",
+        delete: "Delete"
     },
-    "AddCustomS3ConfigDialog": {
+    AddCustomS3ConfigDialog: {
         "dialog title": "New custom S3 configuration",
         "dialog subtitle":
             "Specify a custom service account or connect to another S3 compatible service",
-        "cancel": "Cancel",
+        cancel: "Cancel",
         "save config": "Save configuration",
         "update config": "Update configuration",
         "is required": "This field is required",
@@ -198,9 +196,11 @@ export const translations: Translations<"en"> = {
             </>
         ),
         "account credentials": "Account credentials",
-        "accountFriendlyName textField label": "Account friendly name",
-        "accountFriendlyName textField helper text":
-            "This is just to help you identify this account. Example: My personal account",
+        "friendlyName textField label": "Configuration Name",
+        "friendlyName textField helper text":
+            "This is just to help you identify this configuration. Example: My AWS bucket",
+        "isAnonymous switch label": "Anonymous access",
+        "isAnonymous switch helper text": "Set to ON if no secret access key is required",
         "accessKeyId textField label": "Access key ID",
         "accessKeyId textField helper text": "Example: 1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "Secret access key",
@@ -231,7 +231,7 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "TestS3ConnectionButton": {
+    TestS3ConnectionButton: {
         "test connection": "Test connection",
         "test connection failed": ({ errorMessage }) => (
             <>
@@ -240,8 +240,8 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "AccountUserInterfaceTab": {
-        "title": "Interface preferences",
+    AccountUserInterfaceTab: {
+        title: "Interface preferences",
         "enable dark mode": "Enable dark mode",
         "dark mode helper": "Low light interface theme with dark colored background.",
         "enable beta": "Enable beta-test mode",
@@ -253,16 +253,16 @@ export const translations: Translations<"en"> = {
             <>
                 The{" "}
                 <MuiLink href={imgUrl} target="_blank">
-                    the command bar
+                    command bar
                 </MuiLink>{" "}
                 gives you insight on the commands ran on your behalf when you interact
                 with the UI.
             </>
         )
     },
-    "SettingField": {
+    SettingField: {
         "copy tooltip": "Copy in clipboard",
-        "language": "Change language",
+        language: "Change language",
         "service password": "Default service password",
         "service password helper text": ({ groupProjectName }) => (
             <>
@@ -270,12 +270,9 @@ export const translations: Translations<"en"> = {
                 When you launch a service, the security tab's password field is pre-filled
                 with this password. <br />
                 Clicking on the{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                icon will generate a new random password. However, be aware that it will
-                not update the password for services that are currently running. <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> icon will
+                generate a new random password. However, be aware that it will not update
+                the password for services that are currently running. <br />
                 The service password is what Onyxia makes you to copy to your clipboard
                 before accessing a running service. <br />
                 {groupProjectName !== undefined && (
@@ -288,11 +285,11 @@ export const translations: Translations<"en"> = {
         ),
         "not yet defined": "Not yet defined",
         "reset helper dialogs": "Reset instructions windows",
-        "reset": "Reset",
+        reset: "Reset",
         "reset helper dialogs helper text":
             "Reset message windows that have been requested not to be shown again"
     },
-    "MyFiles": {
+    MyFiles: {
         "page title - my files": "My Files",
         "what this page is used for - my files": "Here you can browse your S3 Buckets.",
         "help content": ({ accountTabLink, docHref }) => (
@@ -306,14 +303,11 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "MyFilesDisabledDialog": {
-        "dialog title": "No S3 server configured",
-        "dialog body":
-            "There's no S3 server configured for this instance. But you can add one manually for enabling the S3 file explorer.",
-        "cancel": "Cancel",
-        "go to settings": "Go to settings"
+    MyFilesShareDialog: {
+        cancel: "Cancel",
+        "create and copy link": "Create and copy link"
     },
-    "MySecrets": {
+    MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
             "Here can be defined variables that will be accessible in your services under the form of environnement variables.",
@@ -329,49 +323,52 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "SecretsExplorerItem": {
-        "description": "description"
+    SecretsExplorerItem: {
+        description: "description"
     },
-    "ExplorerItem": {
-        "description": "description"
+    ExplorerItem: {
+        description: "description"
     },
-    "SecretsExplorerButtonBar": {
-        "secret": "secret",
-        "rename": "rename",
-        "delete": "delete",
+    SecretsExplorerButtonBar: {
+        secret: "secret",
+        rename: "rename",
+        delete: "delete",
         "create secret": "Create secret",
         "copy path": "Use in a service",
         "create directory": "Create directory",
-        "refresh": "refresh",
+        refresh: "refresh",
         "create what": ({ what }) => `Create ${what}`,
-        "new": "New"
+        new: "New"
     },
-    "ExplorerButtonBar": {
-        "file": "file",
-        "delete": "delete",
+    ExplorerButtonBar: {
+        file: "file",
+        delete: "delete",
         "upload file": "Upload file",
         "copy path": "Copy S3 object name",
         "create directory": "Create directory",
-        "refresh": "refresh",
-        "create what": ({ what }) => `Create ${what}`,
-        "new": "New"
+        refresh: "refresh",
+        new: "New",
+        share: "Share",
+        "alt list view": "Show list",
+        "alt block view": "Show block"
     },
-    "ExplorerItems": {
+    ExplorerItems: {
         "empty directory": "This directory is empty"
     },
-    "SecretsExplorerItems": {
+
+    SecretsExplorerItems: {
         "empty directory": "This directory is empty"
     },
-    "SecretsExplorer": {
-        "file": "file",
-        "secret": "secret",
-        "create": "create",
-        "cancel": "cancel",
-        "delete": "delete",
+    SecretsExplorer: {
+        file: "file",
+        secret: "secret",
+        create: "create",
+        cancel: "cancel",
+        delete: "delete",
         "do not display again": "Don't display again",
 
         "untitled what": ({ what }) => `untitled_${what}`,
-        "directory": "folder",
+        directory: "folder",
         "deletion dialog title": ({ deleteWhat }) => `Delete a ${deleteWhat} ?`,
         "deletion dialog body": ({
             deleteWhat
@@ -382,27 +379,28 @@ export const translations: Translations<"en"> = {
         "can't be empty": "Can't be empty",
         "new directory": "New directory"
     },
-    "Explorer": {
-        "file": "file",
-        "secret": "secret",
-        "create": "create",
-        "cancel": "cancel",
-        "delete": "delete",
+    Explorer: {
+        file: "file",
+        secret: "secret",
+        create: "create",
+        cancel: "cancel",
+        delete: "delete",
         "do not display again": "Don't display again",
-
         "untitled what": ({ what }) => `untitled_${what}`,
-        "directory": "folder",
-        "deletion dialog title": ({ deleteWhat }) => `Delete a ${deleteWhat} ?`,
-        "deletion dialog body": ({
-            deleteWhat
-        }) => `You are about to delete ${deleteWhat}.
-            This action can't be reverted.`,
+        directory: "folder",
+        multiple: "items",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Delete ${isPlural ? "these" : "this"} ${deleteWhat}?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        You are about to delete ${isPlural ? "these" : "this"} ${deleteWhat}.
+        This action may result in the loss of data associated with ${isPlural ? "these" : "this"} ${deleteWhat}.
+        `,
         "already a directory with this name":
             "There is already a directory with this name",
         "can't be empty": "Can't be empty",
         "new directory": "New directory"
     },
-    "MySecretsEditor": {
+    MySecretsEditor: {
         "do not display again": "Don't display again",
         "add an entry": "Add a new variable",
         "environnement variable default name": "NEW_VAR",
@@ -426,131 +424,141 @@ export const translations: Translations<"en"> = {
             `,
         "use secret dialog ok": "Got it"
     },
-    "MySecretsEditorRow": {
+    MySecretsEditorRow: {
         "key input desc": "Environnement variable name",
         "value input desc": "Environnement variable value"
     },
-    "ExplorerUploadModalDropArea": {
+    ExplorerUploadModalDropArea: {
         "browse files": "browse files",
         "drag and drop or": "Drag and drop or"
     },
-    "ExplorerUploadProgress": {
-        "over": "over",
-        "importing": "Importing"
+    ExplorerUploadProgress: {
+        over: "over",
+        importing: "Importing"
     },
-    "ExplorerUploadModal": {
+    ExplorerUploadModal: {
         "import files": "Import files",
-        "cancel": "Cancel",
-        "minimize": "Minimize"
+        cancel: "Cancel",
+        minimize: "Minimize"
     },
-
-    "Header": {
-        "login": "Login",
-        "logout": "Logout",
-        "project": "Project",
-        "region": "Region"
+    ListExplorerItems: {
+        "header name": "Name",
+        "header modified date": "Modified",
+        "header size": "Size",
+        "header policy": "Policy"
     },
-    "LeftBar": {
-        "reduce": "Reduce",
-        "home": "Home",
-        "account": "My account",
-        "projectSettings": "Project settings",
-        "catalog": "Service catalog",
-        "myServices": "My Services",
-        "mySecrets": "My Secrets",
-        "myFiles": "My Files",
+    Header: {
+        login: "Login",
+        logout: "Logout",
+        project: "Project",
+        region: "Region"
+    },
+    LeftBar: {
+        reduce: "Reduce",
+        home: "Home",
+        account: "My account",
+        projectSettings: "Project settings",
+        catalog: "Service catalog",
+        myServices: "My Services",
+        mySecrets: "My Secrets",
+        myFiles: "My Files",
         "divider: services features": "Services features",
         "divider: external services features": "External services features",
         "divider: onyxia instance specific features": "Onyxia instance specific features",
-        "dataExplorer": "Data Explorer",
-        "sqlOlapShell": "SQL Olap Shell"
+        dataExplorer: "Data Explorer",
+        sqlOlapShell: "SQL Olap Shell"
     },
-    "AutoLogoutCountdown": {
+    AutoLogoutCountdown: {
         "are you still there": "Are you still there?",
         "you'll soon be automatically logged out":
             "You'll soon be automatically logged out."
     },
-    "Page404": {
+    Page404: {
         "not found": "Page not found"
     },
-    "PortraitModeUnsupported": {
-        "instructions":
+    PortraitModeUnsupported: {
+        instructions:
             "To use this app on your phone please enable the rotation sensor and turn your phone."
     },
-    "MaybeAcknowledgeConfigVolatilityDialog": {
+    MaybeAcknowledgeConfigVolatilityDialog: {
         "dialog title": "Be aware, configurations are volatile",
         "dialog body": `This Onyxia instance does not implement any persistence mechanism for storing configurations. 
             All configurations are stored in the browser's local storage. This means that if you clear your browser's local 
             storage or change your browser, you will lose all your configurations.`,
         "do not show next time": "Don't show this message again",
-        "cancel": "Cancel",
+        cancel: "Cancel",
         "I understand": "I understand"
     },
-    "Home": {
+    Home: {
         "title authenticated": ({ userFirstname }) => `Welcome ${userFirstname}!`,
-        "title": "Welcome to the Onyxia datalab",
+        title: "Welcome to the Onyxia datalab",
         "new user": "New to the datalab?",
-        "login": "Login",
-        "subtitle": "Work with Python or R, enjoy all the computing power you need!",
-        "cardTitle1": "An ergonomic environment and on-demand services",
-        "cardTitle2": "An active and enthusiastic community at your service",
-        "cardTitle3": "Fast, flexible and online data storage",
-        "cardText1":
+        login: "Login",
+        subtitle: "Work with Python or R, enjoy all the computing power you need!",
+        cardTitle1: "An ergonomic environment and on-demand services",
+        cardTitle2: "An active and enthusiastic community at your service",
+        cardTitle3: "Fast, flexible and online data storage",
+        cardText1:
             "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
-        "cardText2":
+        cardText2:
             "Use and share the resources available to you: tutorials, training and exchange channels.",
-        "cardText3":
+        cardText3:
             "To easily access your data and those made available to you from your programs - S3 API implementation",
-        "cardButton1": "Consult the catalog",
-        "cardButton2": "Join the community",
-        "cardButton3": "Consult the data"
+        cardButton1: "Consult the catalog",
+        cardButton2: "Join the community",
+        cardButton3: "Consult the data"
     },
-    "Catalog": {
-        "header": "Service catalog",
+    Catalog: {
+        header: "Service catalog",
         "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
         "search results": "Search result",
-        "search": "Search"
+        search: "Search"
     },
-    "CatalogChartCard": {
-        "launch": "Launch",
+    CatalogChartCard: {
+        launch: "Launch",
         "learn more": "Learn more"
     },
-    "CatalogNoSearchMatches": {
+    CatalogNoSearchMatches: {
         "no service found": "No service found",
         "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
         "check spelling": "Please check your spelling or try widening your search.",
         "go back": "Back to main services"
     },
-    "Launcher": {
-        "header text1": "Service Catalog",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+    Launcher: {
+        sources: ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
-                You are about to deploy the{" "}
+                The Helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                Helm chart that belong to the{" "}
+                belongs to the Helm chart repository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
-                }{" "}
-                Helm chart repository.
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                }
+                .
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        It is based on the{" "}
+                        It is based on the Docker image{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
                             </MuiLink>
-                        }{" "}
-                        Docker image.
+                        }
+                        .
                     </>
                 )}
             </>
@@ -578,9 +586,7 @@ export const translations: Translations<"en"> = {
 
                     return {
                         href,
-                        ...(doOpensNewTab
-                            ? { "target": "_blank", "onClick": undefined }
-                            : {})
+                        ...(doOpensNewTab ? { target: "_blank", onClick: undefined } : {})
                     };
                 }}
             >{`We've designed the command bar to empower you to take control over your Kubernetes deployments. 
@@ -625,7 +631,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         `}</Markdown>
         )
     },
-    "AcknowledgeSharingOfConfigConfirmDialog": {
+    AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":
             "Be aware, configurations are shared",
         "acknowledge sharing of config confirm dialog subtitle": ({
@@ -634,10 +640,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         this configuration every member of the project ${groupProjectName} will be able to launch it.`,
         "acknowledge sharing of config confirm dialog body": `Although no personal information have been automatically injected 
         by Onyxia, be aware not to share any sensitive information shared restorable configuration.`,
-        "cancel": "Cancel",
+        cancel: "Cancel",
         "i understand, proceed": "I understand, proceed"
     },
-    "AutoLaunchDisabledDialog": {
+    AutoLaunchDisabledDialog: {
         "auto launch disabled dialog title":
             "Auto launch feature disabled on this Onyxia instance",
         "auto launch disabled dialog body": (
@@ -650,39 +656,54 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 If you have any doubt, please contact your administrator.
             </>
         ),
-        "ok": "Ok"
+        ok: "Ok"
     },
-    "NoLongerBookmarkedDialog": {
+    NoLongerBookmarkedDialog: {
         "no longer bookmarked dialog title": "Your changes wont be saved",
         "no longer bookmarked dialog body":
             "Click on the bookmark icon again to update your saved configuration",
-        "ok": "Ok"
+        ok: "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "sensitive configuration dialog title": "Launching this service may be dangerous",
-        "cancel": "Annuler",
-        "proceed to launch": "Proceed to launch"
+    FormFieldWrapper: {
+        "reset to default": "Reset to default"
     },
-    "MyService": {
+    YamlCodeBlockFormField: {
+        "not an array": "An array is expected",
+        "not an object": "An object is expected",
+        "not valid yaml": "Invalid YAML/JSON"
+    },
+    TextFormField: {
+        "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
+        "toggle password visibility": "Toggle password visibility"
+    },
+    FormFieldGroupComponent: {
+        add: "Add"
+    },
+    NumberFormField: {
+        "below minimum": ({ minimum }) => `Must be greater than or equal to ${minimum}`,
+        "not a number": "Not a number",
+        "not an integer": "Not an integer"
+    },
+    MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`
     },
-    "PodLogsTab": {
+    PodLogsTab: {
         "not necessarily first logs":
             "This is not necessarily the first logs, older logs might have been flushed",
         "new logs are displayed in realtime": "New logs are displayed in realtime"
     },
-    "MyServiceButtonBar": {
-        "back": "Back",
+    MyServiceButtonBar: {
+        back: "Back",
         "external monitoring": "External monitoring",
         "helm values": "Helm Values",
-        "reduce": "Reduce"
+        reduce: "Reduce"
     },
-    "LauncherMainCard": {
-        "card title": "Create your personal services",
+    LauncherMainCard: {
         "friendly name": "Friendly name",
-        "launch": "Launch",
-        "cancel": "Cancel",
+        launch: "Launch",
+        "problem with": "Problem with:",
+        cancel: "Cancel",
         "copy auto launch url": "Copy auto launch URL",
         "copy auto launch url helper": ({
             chartName
@@ -706,19 +727,21 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version of the{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 Helm chart that belongs to the{" "}
                 {
                     <>
-                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        <MaybeLink
+                            href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                        >
                             {helmRepositoryName}
                         </MaybeLink>{" "}
                         Helm chart repository.
@@ -736,101 +759,113 @@ Feel free to explore and take charge of your Kubernetes deployments!
             </>
         )
     },
-    "LauncherConfigurationCard": {
-        "global config": "Global configuration",
-        "configuration": ({ packageName }) => `${packageName} configurations`,
-        "dependency": ({ dependencyName }) => `${dependencyName} dependency`,
-        "launch of a service": ({ dependencyName }) =>
-            `A ${dependencyName} service will be launched`,
-        "mismatching pattern": ({ pattern }) => `Should match ${pattern}`,
-        "Invalid YAML Object": "Invalid YAML Object",
-        "Invalid YAML Array": "Invalid YAML Array"
-    },
-    "Footer": {
-        "contribute": "Contribute",
+    Footer: {
+        contribute: "Contribute",
         "terms of service": "Terms of service",
         "change language": "Change language",
         "dark mode switch": "Dark mode switch"
     },
-    "MyServices": {
-        "text1": "My Services",
-        "text2": "Access your running services",
-        "text3":
-            "Services are supposed to be shut down as soon as you stop using them actively.",
+    MyServices: {
+        text1: "My Services",
+        text2: "Access your running services",
+        text3: "Services are supposed to be shut down as soon as you stop using them actively.",
         "running services": "Running services"
     },
-    "ClusterEventsDialog": {
-        "title": "Events",
-        "subtitle": (
+    ClusterEventsDialog: {
+        title: "Events",
+        subtitle: (
             <>
                 Kubernetes namespace's events, it's a real-time feed of{" "}
                 <code>kubectl get events</code>
             </>
         )
     },
-    "MyServicesConfirmDeleteDialog": {
+    MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Are you sure?",
         "confirm delete subtitle": "Make sure your service are ready to be deleted",
         "confirm delete body shared services":
             "Be mindful that some of your services are shared with the other project member.",
         "confirm delete body":
             "Don't forget to push your code on GitHub or GitLab before terminating your services",
-        "cancel": "cancel",
-        "confirm": "Yes, delete"
+        cancel: "cancel",
+        confirm: "Yes, delete"
     },
-    "MyServicesButtonBar": {
-        "refresh": "Refresh",
-        "launch": "New service",
-        "trash": "Delete all",
+    MyServicesButtonBar: {
+        refresh: "Refresh",
+        launch: "New service",
+        trash: "Delete all",
         "trash my own": "Delete all my services"
     },
-    "MyServicesCard": {
-        "service": "Service",
+    MyServicesCard: {
+        service: "Service",
         "running since": "Started: ",
-        "open": "Open",
-        "readme": "readme",
-        "shared by you": "Shared by you",
+        open: "Open",
+        readme: "readme",
         "reminder to delete services": "Remember to delete your services.",
-        "this is a shared service": "This service is shared among project's member",
-        "status": "Status",
+        status: "Status",
         "container starting": "Container starting",
-        "failed": "Failed",
+        failed: "Failed",
         "suspend service tooltip": "Suspend the service and release resources",
         "resume service tooltip": "Resume the service",
-        "suspended": "Suspended",
-        "suspending": "Suspending"
+        suspended: "Suspended",
+        suspending: "Suspending",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                This service is shared among{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>'s project members
+                by <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                This service is shared among{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>'s project
+                members. Click to stop sharing.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Only you can access this service. Click to share it with{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>'s project
+                members.
+            </>
+        )
     },
-    "MyServicesRestorableConfigOptions": {
-        "edit": "Edit",
+    MyServicesRestorableConfigOptions: {
+        edit: "Edit",
         "copy link": "Copy URL link",
         "remove bookmark": "Delete"
     },
-    "MyServicesRestorableConfig": {
-        "edit": "Edit",
-        "launch": "Launch"
+    MyServicesRestorableConfig: {
+        edit: "Edit",
+        launch: "Launch"
     },
-    "MyServicesRestorableConfigs": {
-        "saved": "Saved",
-        "expand": "Expand"
+    MyServicesRestorableConfigs: {
+        saved: "Saved",
+        expand: "Expand"
     },
-    "ReadmeDialog": {
-        "ok": "ok",
-        "return": "Return"
+    ReadmeDialog: {
+        ok: "ok",
+        return: "Return"
     },
-    "CopyOpenButton": {
+    CopyOpenButton: {
         "first copy the password": "Click to copy the password...",
         "open the service": "Open the service 🚀"
     },
-    "MyServicesCards": {
+    MyServicesCards: {
         "running services": "Running services"
     },
-    "NoRunningService": {
+    NoRunningService: {
         "launch one": "Click here to launch one",
         "no services running": "You don't have any service running"
     },
-    "CircularUsage": {
-        "max": "Max",
-        "used": "Used",
+    CircularUsage: {
+        max: "Max",
+        used: "Used",
         "quota card title": ({ what, isLimit }) => {
             const whatTranslated = (() => {
                 switch (what) {
@@ -852,13 +887,13 @@ Feel free to explore and take charge of your Kubernetes deployments!
             return `${whatTranslated} - ${isLimit ? "Limit" : "Requested"}`;
         }
     },
-    "Quotas": {
+    Quotas: {
         "show more": "Show more",
         "resource usage quotas": "Resource usage quotas",
         "current resource usage is reasonable":
             "Your current resource usage is reasonable."
     },
-    "DataExplorer": {
+    DataExplorer: {
         "page header title": "Data Explorer",
         "page header help title":
             "Preview your Parquet and CSV files right from your browser!",
@@ -877,20 +912,21 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 <MuiLink {...demoParquetFileLink}>demo file</MuiLink>!
             </>
         ),
-        "column": "column",
-        "density": "density",
-        "download file": "Download file"
+        column: "column",
+        density: "density",
+        "download file": "Download file",
+        "resize table": "Resize"
     },
-    "UrlInput": {
-        "load": "Load"
+    UrlInput: {
+        load: "Load"
     },
-    "CommandBar": {
-        "ok": "Ok"
+    CommandBar: {
+        ok: "Ok"
     },
-    "moment": {
+    moment: {
         "date format": ({ isSameYear }) =>
             `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
-        "past1": ({ divisorKey }) => {
+        past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "just now";
@@ -910,7 +946,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
                     return "last year";
             }
         },
-        "pastN": ({ divisorKey }) => {
+        pastN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "just now";
@@ -930,7 +966,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
                     return "# years ago";
             }
         },
-        "future1": ({ divisorKey }) => {
+        future1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "just now";
@@ -950,7 +986,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
                     return "in a year";
             }
         },
-        "futureN": ({ divisorKey }) => {
+        futureN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "just now";
@@ -971,8 +1007,25 @@ Feel free to explore and take charge of your Kubernetes deployments!
             }
         }
     },
-    "CopyToClipboardIconButton": {
+    CopyToClipboardIconButton: {
         "copied to clipboard": "Copied!",
         "copy to clipboard": "Copy to clipboard"
+    },
+    CustomDataGrid: {
+        "empty directory": "This directory is empty",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "s" : "";
+            return `${count} item${plural} selected`;
+        },
+        "label rows per page": "Items per page"
+    },
+    CustomDataGridToolbarDensitySelector: {
+        toolbarDensity: "Density",
+        toolbarDensityStandard: "Standard",
+        toolbarDensityComfortable: "Comfortable",
+        toolbarDensityCompact: "Compact"
+    },
+    CustomDataGridToolbarColumnsButton: {
+        toolbarColumnsLabel: "Columns"
     }
 };

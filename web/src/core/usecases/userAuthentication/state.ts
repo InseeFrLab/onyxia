@@ -22,10 +22,10 @@ namespace State {
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<State>({
-        "debugMessage": "Not initialized yet"
+    initialState: createObjectThatThrowsIfAccessed<State>({
+        debugMessage: "Not initialized yet"
     }),
-    "reducers": {
-        "initialized": (_, { payload }: { payload: State }) => payload
+    reducers: {
+        initialized: (_, { payload }: { payload: State }) => payload
     }
 });

@@ -4,8 +4,7 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { declareComponentKeys } from "i18nifty";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -22,7 +21,7 @@ export const PortraitModeUnsupported = memo((props: Props) => {
         <div className={cx(classes.root, className)}>
             <div className={classes.wrapper}>
                 <Icon
-                    icon={id<MuiIconComponentName>("ScreenRotation")}
+                    icon={getIconUrlByName("ScreenRotation")}
                     className={classes.icon}
                 />
                 <Text typo="body 1" className={classes.instructions}>
@@ -34,20 +33,20 @@ export const PortraitModeUnsupported = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) => ({
-    "root": {
-        "height": "100vh",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center"
+    root: {
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
     },
-    "icon": {
-        "fontSize": 5 * theme.typography.rootFontSizePx
+    icon: {
+        fontSize: 5 * theme.typography.rootFontSizePx
     },
-    "wrapper": {
-        "textAlign": "center"
+    wrapper: {
+        textAlign: "center"
     },
-    "instructions": {
-        "marginTop": theme.spacing(3)
+    instructions: {
+        marginTop: theme.spacing(3)
     }
 }));
 

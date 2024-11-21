@@ -4,11 +4,12 @@ export type HelmRelease = {
     urls: string[];
     startedAt: number;
     postInstallInstructions: string | undefined;
-    isShared: boolean;
+    isShared: boolean | undefined;
     values: Record<string, string>;
     ownerUsername: string;
     appVersion: string;
     revision: string;
+    catalogId: string;
     chartName: string;
     chartVersion: string;
     areAllTasksReady: boolean;

@@ -6,7 +6,7 @@ import { protectedSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
 
 export const thunks = {
-    "setActive":
+    setActive:
         (params: { helmReleaseName: string }) =>
         (...args) => {
             const { helmReleaseName } = params;
@@ -35,7 +35,7 @@ export const thunks = {
 
             return { setInactive };
         },
-    "changeSelectedPod":
+    changeSelectedPod:
         (params: { podName: string }) =>
         (...args) => {
             const { podName } = params;
@@ -44,7 +44,7 @@ export const thunks = {
 
             dispatch(actions.selectedPodChanged({ podName }));
         },
-    "toggleHelmValues":
+    toggleHelmValues:
         () =>
         (...args) => {
             const [dispatch, getState] = args;
@@ -68,11 +68,11 @@ export const thunks = {
 
             dispatch(
                 actions.helmGetValueShown({
-                    "cmdResp": formattedHelmValues
+                    cmdResp: formattedHelmValues
                 })
             );
         },
-    "collapseCommandBar":
+    collapseCommandBar:
         () =>
         (...args) => {
             const [dispatch] = args;
@@ -82,7 +82,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const privateThunks = {
-    "update":
+    update:
         (params: { helmReleaseName: string }) =>
         async (...args) => {
             const { helmReleaseName } = params;
@@ -111,15 +111,15 @@ const privateThunks = {
             }
 
             const { namespace: kubernetesNamespace } =
-                projectManagement.selectors.currentProject(getState());
+                projectManagement.protectedSelectors.currentProject(getState());
 
             dispatch(
                 actions.updateCompleted({
-                    "helmReleaseFriendlyName":
+                    helmReleaseFriendlyName:
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
-                    "podNames": helmRelease.podNames,
-                    "helmValues": helmRelease.values,
-                    "monitoringUrl": (() => {
+                    podNames: helmRelease.podNames,
+                    helmValues: helmRelease.values,
+                    monitoringUrl: (() => {
                         const { helmReleaseName } = params;
 
                         const region =

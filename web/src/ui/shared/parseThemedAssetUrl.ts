@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { assert, type Equals } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, type Equals, is } from "tsafe/assert";
 import type { ThemedAssetUrl } from "onyxia-ui";
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
@@ -11,15 +10,15 @@ const zUrl = z.string().superRefine((data, ctx) => {
         ensureUrlIsSafe(data);
     } catch (error) {
         ctx.addIssue({
-            "code": z.ZodIssueCode.custom,
-            "message": String(error)
+            code: z.ZodIssueCode.custom,
+            message: String(error)
         });
     }
 
     if (!/\.(svg)|(png)|(jpg)|(jpeg)|(webp)|(ico)$/i.test(data.split("?")[0])) {
         ctx.addIssue({
-            "code": z.ZodIssueCode.custom,
-            "message": `Your ThemedAssetUrl should point to an image file. Got: ${data}`
+            code: z.ZodIssueCode.custom,
+            message: `Your ThemedAssetUrl should point to an image file. Got: ${data}`
         });
     }
 });
@@ -27,8 +26,8 @@ const zUrl = z.string().superRefine((data, ctx) => {
 export const zAssetVariantUrl = z.union([
     zUrl,
     z.object({
-        "light": zUrl,
-        "dark": zUrl
+        light: zUrl,
+        dark: zUrl
     })
 ]);
 

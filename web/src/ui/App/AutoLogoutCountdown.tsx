@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useCore, useCoreState } from "core";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import Color from "color";
+import { alpha } from "@mui/material/styles";
 import { CircularMetric } from "ui/shared/CircularMetric";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
@@ -54,28 +54,24 @@ export function AutoLogoutCountdown(props: Props) {
 }
 
 const useStyles = tss.withName({ AutoLogoutCountdown }).create(({ theme }) => ({
-    "root": {
-        "position": "absolute",
-        "zIndex": 3,
-        "height": "100%",
-        "width": "100%",
-        "top": 0,
-        "left": 0,
-        "backgroundColor": (() => {
-            const color = new Color(theme.colors.useCases.surfaces.background).rgb();
-
-            return color.alpha(0.6).string();
-        })(),
-        "backdropFilter": "blur(10px)",
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center"
+    root: {
+        position: "absolute",
+        zIndex: 3,
+        height: "100%",
+        width: "100%",
+        top: 0,
+        left: 0,
+        backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.6),
+        backdropFilter: "blur(10px)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
-    "circularMetric": {
-        "marginBottom": theme.spacing(4)
+    circularMetric: {
+        marginBottom: theme.spacing(4)
     },
-    "textWrapper": {
-        "textAlign": "center"
+    textWrapper: {
+        textAlign: "center"
     }
 }));
 

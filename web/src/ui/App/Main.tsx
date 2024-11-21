@@ -33,7 +33,7 @@ export const Main = memo((props: Props) => {
                         if (page.routeGroup.has(route)) {
                             if (page.getDoRequireUserLoggedIn(route) && !isUserLoggedIn) {
                                 userAuthentication.login({
-                                    "doesCurrentHrefRequiresAuth": true
+                                    doesCurrentHrefRequiresAuth: true
                                 });
                                 return (
                                     <div className={classes.loginRedirect}>
@@ -71,8 +71,8 @@ function SuspenseFallback() {
 }
 
 const useStyles = tss.create({
-    "page": {
-        "animation": `${keyframes`
+    page: {
+        animation: `${keyframes`
             0% {
                 opacity: 0;
             }
@@ -81,10 +81,10 @@ const useStyles = tss.create({
             }
             `} 400ms`
     },
-    "loginRedirect": {
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "height": "100%"
+    loginRedirect: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%"
     }
 });

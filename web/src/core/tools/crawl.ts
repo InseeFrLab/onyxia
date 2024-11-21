@@ -37,7 +37,7 @@ export function crawlFactory(params: {
         await crawlRec({ directoryPath, filePaths });
 
         return {
-            "filePaths": filePaths.map(filePath => pathRelative(directoryPath, filePath))
+            filePaths: filePaths.map(filePath => pathRelative(directoryPath, filePath))
         };
     }
 

@@ -12,7 +12,7 @@ export const createEvt = (({ evtAction }) => {
             action.usecaseName === "projectManagement" &&
             action.actionName === "projectChanged",
         () => {
-            evtOut.post({ "actionName": "redirect away" });
+            evtOut.post({ actionName: "redirect away" });
         }
     );
 
@@ -21,7 +21,7 @@ export const createEvt = (({ evtAction }) => {
             action.usecaseName === name &&
             action.actionName === "notifyHelmReleaseNoLongerExists",
         () => {
-            evtOut.post({ "actionName": "redirect away" });
+            evtOut.post({ actionName: "redirect away" });
         }
     );
 

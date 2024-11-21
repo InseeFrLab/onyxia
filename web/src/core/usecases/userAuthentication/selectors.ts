@@ -15,13 +15,13 @@ const user = createSelector(state, state => {
 const authenticationState = createSelector(state, state => {
     if (!state.isUserLoggedIn) {
         return {
-            "isUserLoggedIn": false as const
+            isUserLoggedIn: false as const
         };
     }
 
     return {
-        "isUserLoggedIn": true as const,
-        "user": state.user
+        isUserLoggedIn: true as const,
+        user: state.user
     };
 });
 

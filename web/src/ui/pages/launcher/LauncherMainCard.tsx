@@ -1,4 +1,4 @@
-import { useId, useState, memo } from "react";
+import { useId, useState, memo, Fragment, type JSX } from "react";
 import { tss } from "tss";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { useTranslation } from "ui/i18n";
@@ -21,16 +21,22 @@ import MenuItem from "@mui/material/MenuItem";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import type { Link } from "type-route";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { same } from "evt/tools/inDepth/same";
-import type { SourceUrls } from "core/usecases/launcher/selectors";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+type SourceUrls = {
+    helmChartSourceUrl?: string;
+    helmChartRepositorySourceUrl?: string;
+};
 
 export type Props = {
     className?: string;
     chartName: string;
+    chartSourceLinksNode: JSX.Element;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
     willOverwriteExistingConfigOnSave: boolean;
@@ -40,7 +46,10 @@ export type Props = {
     availableChartVersions: string[];
     onChartVersionChange: (chartVersion: string) => void;
     catalogName: LocalizedString;
-    sourceUrls: Pick<SourceUrls, "helmChartSourceUrl" | "helmChartRepositorySourceUrl">;
+    labeledHelmChartSourceUrls: Pick<
+        SourceUrls,
+        "helmChartSourceUrl" | "helmChartRepositorySourceUrl"
+    >;
 
     myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
@@ -55,8 +64,6 @@ export type Props = {
           }
         | undefined;
 
-    isLaunchable: boolean;
-
     onRequestLaunch: () => void;
     onRequestCancel: () => void;
 
@@ -69,41 +76,26 @@ export type Props = {
     s3ConfigsSelect:
         | {
               projectS3ConfigLink: Link;
-              selectedOption:
-                  | {
-                        type: "sts";
-                    }
-                  | {
-                        type: "custom";
-                        customS3ConfigIndex: number;
-                    }
-                  | {
-                        type: "manual form input";
-                    };
+              selectedOption: string | undefined;
               options: {
-                  customConfigIndex: number | undefined;
-                  dataSource: string;
-                  accountFriendlyName: string | undefined;
+                  optionValue: string;
+                  label: {
+                      dataSource: string;
+                      friendlyName: string | undefined;
+                  };
               }[];
-              onSelectedS3ConfigChange: (
-                  params:
-                      | {
-                            type: "default";
-                            customS3ConfigIndex?: never;
-                        }
-                      | {
-                            type: "custom";
-                            customS3ConfigIndex: number;
-                        }
-              ) => void;
+              onSelectedS3ConfigChange: (params: { s3ConfigId: string }) => void;
           }
         | undefined;
+
+    erroredFormFields: (string | number)[][];
 };
 
 export const LauncherMainCard = memo((props: Props) => {
     const {
         className,
         chartName,
+        chartSourceLinksNode,
         chartIconUrl,
         isBookmarked,
         willOverwriteExistingConfigOnSave,
@@ -112,12 +104,11 @@ export const LauncherMainCard = memo((props: Props) => {
         availableChartVersions,
         onChartVersionChange,
         catalogName,
-        sourceUrls,
+        labeledHelmChartSourceUrls,
 
         myServicesSavedConfigsExtendedLink,
         friendlyName,
         isSharedWrap,
-        isLaunchable,
         onRequestToggleBookmark,
         onFriendlyNameChange,
         onRequestLaunch,
@@ -125,7 +116,8 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestCopyLaunchUrl,
         onRequestRestoreAllDefault,
 
-        s3ConfigsSelect
+        s3ConfigsSelect,
+        erroredFormFields
     } = props;
 
     const { classes, cx } = useStyles();
@@ -137,7 +129,7 @@ export const LauncherMainCard = memo((props: Props) => {
     >(({ value }) => onFriendlyNameChange(value));
 
     const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
+        labelWhenMismatchingLanguage: true
     });
 
     const chartVersionInputLabelId = `chart-version-input-label-${useId()}`;
@@ -157,91 +149,92 @@ export const LauncherMainCard = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
-                <Text typo="object heading" className={classes.cardTitle}>
-                    {t("card title")}
-                </Text>
-                <div style={{ "flex": 1 }} />
+                <div className={classes.aboveDividerFirstLine}>
+                    <div className={classes.logoAndTitleWrapper}>
+                        {chartIconUrl !== undefined && (
+                            <RoundLogo url={chartIconUrl} size="large" />
+                        )}
+                        <Text typo="object heading" className={classes.title}>
+                            {capitalize(chartName)}
+                        </Text>
+                    </div>
 
-                {onRequestRestoreAllDefault !== undefined && (
-                    <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
-                        {t("restore all default")}
-                    </Button>
-                )}
-                {onRequestCopyLaunchUrl !== undefined && (
-                    <Tooltip
-                        title={
-                            isCopyFeedbackOn ? (
-                                <>
-                                    <Icon
-                                        icon={id<MuiIconComponentName>("Check")}
-                                        size="extra small"
-                                        className={classes.copyCheckmark}
-                                    />
-                                    &nbsp;
-                                    {t("copied to clipboard")}
-                                </>
-                            ) : (
-                                t("copy auto launch url helper", { chartName })
-                            )
-                        }
-                    >
-                        <Button
-                            className={classes.copyAutoLaunchButton}
-                            startIcon={id<MuiIconComponentName>("Link")}
-                            onClick={() => {
-                                onRequestCopyLaunchUrl();
-                                triggerCopyFeedback();
-                            }}
-                            variant="ternary"
-                        >
-                            {t("copy auto launch url")}
-                        </Button>
-                    </Tooltip>
-                )}
-                <Tooltip
-                    title={t("bookmark button tooltip", {
-                        myServicesSavedConfigsExtendedLink
-                    })}
-                >
-                    {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
-                        <IconButton
-                            icon={
-                                isBookmarked
-                                    ? id<MuiIconComponentName>("Delete")
-                                    : id<MuiIconComponentName>("Save")
-                            }
-                            onClick={onRequestToggleBookmark}
-                        />
-                    ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
-                        <Button
-                            className={classes.saveButton}
-                            variant="ternary"
-                            startIcon="save"
-                            onClick={onRequestToggleBookmark}
-                        >
-                            {t("save changes")}
-                        </Button>
-                    ) : (
-                        <Button
-                            className={classes.saveButton}
-                            variant="ternary"
-                            startIcon={isBookmarked ? "delete" : "save"}
-                            onClick={onRequestToggleBookmark}
-                        >
-                            {t("bookmark button", { isBookmarked })}
+                    <div style={{ flex: 1 }} />
+
+                    {onRequestRestoreAllDefault !== undefined && (
+                        <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
+                            {t("restore all default")}
                         </Button>
                     )}
-                </Tooltip>
+                    {onRequestCopyLaunchUrl !== undefined && (
+                        <Tooltip
+                            title={
+                                isCopyFeedbackOn ? (
+                                    <>
+                                        <Icon
+                                            icon={getIconUrlByName("Check")}
+                                            size="extra small"
+                                            className={classes.copyCheckmark}
+                                        />
+                                        &nbsp;
+                                        {t("copied to clipboard")}
+                                    </>
+                                ) : (
+                                    t("copy auto launch url helper", { chartName })
+                                )
+                            }
+                        >
+                            <Button
+                                className={classes.copyAutoLaunchButton}
+                                startIcon={getIconUrlByName("Link")}
+                                onClick={() => {
+                                    onRequestCopyLaunchUrl();
+                                    triggerCopyFeedback();
+                                }}
+                                variant="ternary"
+                            >
+                                {t("copy auto launch url")}
+                            </Button>
+                        </Tooltip>
+                    )}
+                    <Tooltip
+                        title={t("bookmark button tooltip", {
+                            myServicesSavedConfigsExtendedLink
+                        })}
+                    >
+                        {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
+                            <IconButton
+                                icon={isBookmarked ? DeleteIcon : SaveIcon}
+                                onClick={onRequestToggleBookmark}
+                            />
+                        ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
+                            <Button
+                                className={classes.saveButton}
+                                variant="ternary"
+                                startIcon={getIconUrlByName("Save")}
+                                onClick={onRequestToggleBookmark}
+                            >
+                                {t("save changes")}
+                            </Button>
+                        ) : (
+                            <Button
+                                className={classes.saveButton}
+                                variant="ternary"
+                                startIcon={getIconUrlByName(
+                                    isBookmarked ? "Delete" : "Save"
+                                )}
+                                onClick={onRequestToggleBookmark}
+                            >
+                                {t("bookmark button", { isBookmarked })}
+                            </Button>
+                        )}
+                    </Tooltip>
+                </div>
+                <Text typo="caption" color="secondary">
+                    {chartSourceLinksNode}
+                </Text>
             </div>
             <div className={classes.belowDivider}>
-                <div className={classes.logoAndTitleWrapper}>
-                    {chartIconUrl !== undefined && (
-                        <RoundLogo url={chartIconUrl} size="large" />
-                    )}
-                    <Text typo="object heading" className={classes.title}>
-                        {capitalize(chartName)}
-                    </Text>
-                </div>
                 <div className={classes.textFieldAndButtonWrapper}>
                     <TextField
                         label={t("friendly name")}
@@ -258,15 +251,15 @@ export const LauncherMainCard = memo((props: Props) => {
                             {t("version select label")}&nbsp;
                             <Tooltip
                                 title={t("version select helper text", {
-                                    "helmCharName": chartName,
-                                    "helmRepositoryName":
+                                    helmCharName: chartName,
+                                    helmRepositoryName:
                                         resolveLocalizedString(catalogName),
-                                    sourceUrls
+                                    labeledHelmChartSourceUrls
                                 })}
                             >
                                 <Icon
                                     className={classes.versionSelectHelpIcon}
-                                    icon={id<MuiIconComponentName>("Help")}
+                                    icon={getIconUrlByName("Help")}
                                     size="small"
                                 />
                             </Tooltip>
@@ -297,72 +290,39 @@ export const LauncherMainCard = memo((props: Props) => {
                                 {t("s3 configuration")}&nbsp;
                                 <Tooltip
                                     title={t("s3 configuration - explain", {
-                                        "projectS3ConfigLink":
+                                        projectS3ConfigLink:
                                             s3ConfigsSelect.projectS3ConfigLink
                                     })}
                                 >
                                     <Icon
                                         className={classes.versionSelectHelpIcon}
-                                        icon={id<MuiIconComponentName>("Help")}
+                                        icon={getIconUrlByName("Help")}
                                         size="small"
                                     />
                                 </Tooltip>
                             </InputLabel>
                             <Select
                                 labelId={s3ConfigInputLabelId}
-                                value={(() => {
-                                    switch (s3ConfigsSelect.selectedOption.type) {
-                                        case "custom":
-                                            return `${s3ConfigsSelect.selectedOption.customS3ConfigIndex}`;
-                                        case "sts":
-                                            return "sts";
-                                        case "manual form input":
-                                            return "manual form input";
-                                    }
-                                })()}
+                                value={s3ConfigsSelect.selectedOption ?? ""}
                                 onChange={event => {
                                     const { value } = event.target;
                                     assert(typeof value === "string");
-
-                                    if (value === "sts") {
-                                        s3ConfigsSelect.onSelectedS3ConfigChange({
-                                            "type": "default"
-                                        });
-                                        return;
-                                    }
-
-                                    const customS3ConfigIndex = parseInt(value);
-
                                     s3ConfigsSelect.onSelectedS3ConfigChange({
-                                        "type": "custom",
-                                        customS3ConfigIndex
+                                        s3ConfigId: value
                                     });
                                 }}
                             >
-                                {s3ConfigsSelect.selectedOption.type ===
-                                    "manual form input" && (
-                                    <MenuItem disabled value="manual form input">
-                                        &nbsp;
+                                <MenuItem value={""} disabled>
+                                    {" "}
+                                </MenuItem>
+                                {s3ConfigsSelect.options.map(({ label, optionValue }) => (
+                                    <MenuItem key={optionValue} value={optionValue}>
+                                        {label.friendlyName !== undefined
+                                            ? `${label.friendlyName} - `
+                                            : ""}
+                                        {label.dataSource}
                                     </MenuItem>
-                                )}
-
-                                {s3ConfigsSelect.options.map(
-                                    ({
-                                        accountFriendlyName,
-                                        customConfigIndex,
-                                        dataSource
-                                    }) => (
-                                        <MenuItem
-                                            key={customConfigIndex ?? "_"}
-                                            value={`${customConfigIndex ?? "sts"}`}
-                                        >
-                                            {accountFriendlyName !== undefined
-                                                ? `${accountFriendlyName} - `
-                                                : ""}
-                                            {dataSource}
-                                        </MenuItem>
-                                    )
-                                )}
+                                ))}
                             </Select>
                         </FormControl>
                     )}
@@ -377,7 +337,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                         checked={isSharedWrap.isShared}
                                         onChange={event =>
                                             isSharedWrap.onIsSharedValueChange({
-                                                "isShared": event.target.checked
+                                                isShared: event.target.checked
                                             })
                                         }
                                     />
@@ -394,30 +354,105 @@ export const LauncherMainCard = memo((props: Props) => {
                         </FormControl>
                     )}
 
-                    <div style={{ "flex": 1 }} />
+                    <div style={{ flex: 1 }} />
                     <Button variant="secondary" onClick={onRequestCancel}>
                         {t("cancel")}
                     </Button>
-                    <Button
-                        variant="primary"
-                        onClick={onRequestLaunch}
+
+                    <LaunchButton
                         className={classes.launchButton}
-                        disabled={!isLaunchable}
-                    >
-                        {t("launch")}
-                    </Button>
+                        tLaunch={t("launch")}
+                        tProblemWithTheFollowingValues={t("problem with")}
+                        onRequestLaunch={onRequestLaunch}
+                        erroredFormFields={erroredFormFields}
+                    />
                 </div>
             </div>
         </div>
     );
 }, same);
 
+function LaunchButton(props: {
+    className?: string;
+    tLaunch: string;
+    tProblemWithTheFollowingValues: string;
+    onRequestLaunch: () => void;
+    erroredFormFields: (string | number)[][];
+}) {
+    const {
+        className,
+        tLaunch,
+        tProblemWithTheFollowingValues,
+        onRequestLaunch,
+        erroredFormFields
+    } = props;
+
+    const renderButton = (params: { isDisabled: boolean }) => {
+        const { isDisabled } = params;
+
+        return (
+            <Button
+                variant="primary"
+                onClick={onRequestLaunch}
+                className={className}
+                disabled={isDisabled}
+            >
+                {tLaunch}
+            </Button>
+        );
+    };
+
+    if (erroredFormFields.length === 0) {
+        return renderButton({ isDisabled: false });
+    }
+
+    return (
+        <Tooltip
+            title={
+                <>
+                    <Text typo="body 1">
+                        {tProblemWithTheFollowingValues}
+                        <br />
+                        {erroredFormFields.map((helmValuesPath, i) => (
+                            <Fragment key={i}>
+                                <span>
+                                    {helmValuesPath.reduce<string>((prev, curr) => {
+                                        switch (typeof curr) {
+                                            case "string":
+                                                if (prev === "") {
+                                                    return curr;
+                                                }
+                                                return `${prev}.${curr}`;
+                                            case "number":
+                                                return `${prev}[${curr}]`;
+                                        }
+                                        assert<Equals<typeof curr, never>>();
+                                    }, "")}
+                                </span>
+                                {i < erroredFormFields.length - 1 && (
+                                    <>
+                                        ,<br />
+                                    </>
+                                )}
+                            </Fragment>
+                        ))}
+                    </Text>
+                </>
+            }
+        >
+            <span style={{ display: "inline-block" }}>
+                {renderButton({ isDisabled: true })}
+            </span>
+        </Tooltip>
+    );
+}
+
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 
 const { i18n } = declareComponentKeys<
-    | "card title"
     | "cancel"
     | "launch"
+    | "problem with"
     | "friendly name"
     | "copy auto launch url"
     | {
@@ -444,7 +479,7 @@ const { i18n } = declareComponentKeys<
           P: {
               helmCharName: string;
               helmRepositoryName: JSX.Element;
-              sourceUrls: Props["sourceUrls"];
+              labeledHelmChartSourceUrls: Props["labeledHelmChartSourceUrls"];
           };
           R: JSX.Element;
       }
@@ -460,69 +495,66 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
-    "root": {
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[7],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        borderRadius: 8,
+        boxShadow: theme.shadows[7],
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        display: "flex",
+        flexDirection: "column"
     },
-    "aboveDivider": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "boxSizing": "border-box",
-        "display": "flex"
+    aboveDivider: {
+        padding: theme.spacing({ topBottom: 3, rightLeft: 4 }),
+        borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        boxSizing: "border-box"
     },
-    "cardTitle": {
-        "display": "flex",
-        "alignItems": "center"
+    aboveDividerFirstLine: {
+        display: "flex",
+        marginBottom: theme.spacing(3)
     },
-    "belowDivider": {
-        "padding": theme.spacing(4),
-        "paddingLeft": theme.spacing(5),
-        "paddingTop": theme.spacing(3),
-        "flex": 1
+    belowDivider: {
+        padding: theme.spacing(4),
+        paddingLeft: theme.spacing(5),
+        flex: 1
     },
-    "logoAndTitleWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+    logoAndTitleWrapper: {
+        display: "flex"
     },
-    "title": {
-        "display": "flex",
-        "alignItems": "center",
-        "marginLeft": theme.spacing(3)
+    title: {
+        display: "flex",
+        alignItems: "center",
+        marginLeft: theme.spacing(3)
     },
-    "textFieldAndButtonWrapper": {
-        "display": "flex",
-        "alignItems": "center"
+    textFieldAndButtonWrapper: {
+        display: "flex",
+        alignItems: "center"
     },
-    "versionSelectWrapper": {
-        "minWidth": 200,
-        "marginLeft": theme.spacing(4)
+    versionSelectWrapper: {
+        minWidth: 200,
+        marginLeft: theme.spacing(4)
     },
-    "versionSelectHelpIcon": {
-        "position": "relative",
-        "top": 2
+    versionSelectHelpIcon: {
+        position: "relative",
+        top: 2
     },
-    "isSharedWrapper": {
-        "marginLeft": theme.spacing(4)
+    isSharedWrapper: {
+        marginLeft: theme.spacing(4)
     },
-    "isSharedCheckbox": {
-        "padding": theme.spacing(2)
+    isSharedCheckbox: {
+        padding: theme.spacing(2)
     },
-    "isSharedFormHelperText": {
-        "marginLeft": 0
+    isSharedFormHelperText: {
+        marginLeft: 0
     },
-    "launchButton": {
-        "marginLeft": theme.spacing(2)
+    launchButton: {
+        marginLeft: theme.spacing(2)
     },
-    "copyCheckmark": {
-        "color": theme.colors.useCases.alertSeverity.success.main
+    copyCheckmark: {
+        color: theme.colors.useCases.alertSeverity.success.main
     },
-    "copyAutoLaunchButton": {
-        "marginLeft": theme.spacing(2)
+    copyAutoLaunchButton: {
+        marginLeft: theme.spacing(2)
     },
-    "saveButton": {
-        "marginLeft": theme.spacing(2)
+    saveButton: {
+        marginLeft: theme.spacing(2)
     }
 }));

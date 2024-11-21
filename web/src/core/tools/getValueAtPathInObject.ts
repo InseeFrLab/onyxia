@@ -1,13 +1,13 @@
 /** NOTE: It returns undefined if the path is not found */
 export function getValueAtPathInObject<T>(params: {
-    path: string[];
-    obj: Record<string, unknown>;
+    path: (string | number)[];
+    obj: any;
 }): T | undefined {
     return getValueAtPathInObjectRec(params);
 }
 
 function getValueAtPathInObjectRec<T>(params: {
-    path: string[];
+    path: (string | number)[];
     obj: any;
 }): T | undefined {
     const { path, obj } = params;
@@ -25,7 +25,7 @@ function getValueAtPathInObjectRec<T>(params: {
     const newObj = obj[key];
 
     return getValueAtPathInObjectRec({
-        "path": newPath,
-        "obj": newObj
+        path: newPath,
+        obj: newObj
     });
 }

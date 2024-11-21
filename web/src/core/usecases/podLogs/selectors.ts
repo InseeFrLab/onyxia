@@ -70,7 +70,7 @@ const main = createSelector(
     (isReady, podName, paginatedLogs) => {
         if (!isReady) {
             return {
-                "isReady": false as const
+                isReady: false as const
             };
         }
 
@@ -78,7 +78,7 @@ const main = createSelector(
         assert(podName !== undefined);
 
         return {
-            "isReady": true,
+            isReady: true,
             podName,
             paginatedLogs
         };

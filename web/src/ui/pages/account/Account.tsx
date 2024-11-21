@@ -16,7 +16,7 @@ import { declareComponentKeys } from "i18nifty";
 import { useCore } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
-import { customIcons } from "ui/theme";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -44,7 +44,7 @@ export default function Account(props: Props) {
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
-                .map(id => ({ id, "title": t(id) })),
+                .map(id => ({ id, title: t(id) })),
         [t]
     );
 
@@ -61,7 +61,7 @@ export default function Account(props: Props) {
                 title={t("text1")}
                 helpTitle={t("text2")}
                 helpContent={t("text3")}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
             />
             <Tabs
                 className={classes.tabs}
@@ -101,13 +101,13 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ Account }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto"
+    root: {
+        height: "100%",
+        overflow: "auto"
     },
-    "tabs": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1]
+    tabs: {
+        borderRadius: 8,
+        overflow: "hidden",
+        boxShadow: theme.shadows[1]
     }
 }));

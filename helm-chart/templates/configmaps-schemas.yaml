@@ -1,0 +1,26 @@
+{{- if .Values.api.schemas.enabled }}
+{{- $fullname := include "onyxia.fullname" . -}}
+{{- range .Values.api.schemas.files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-{{ printf "%s %s" .relativePath "default" | sha256sum | trunc 8 }}
+data:
+  {{ .relativePath | base }}: |-
+{{ .content | indent 4 }}
+---
+{{- end }}
+{{- range .Values.api.schemas.roles }}
+{{- $role := .roleName -}}
+{{- range .files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}
+data:
+  {{ .relativePath | base }}: |-
+{{ .content | indent 4 }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

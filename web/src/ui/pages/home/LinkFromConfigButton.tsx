@@ -2,6 +2,7 @@ import { Button, type ButtonProps } from "onyxia-ui/Button";
 import { urlToLink } from "ui/routes";
 import type { LinkFromConfig } from "ui/shared/LinkFromConfig";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
+import { getIconUrl } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -22,8 +23,8 @@ export function LinkFromConfigButton(props: Props) {
             href={link.href}
             doOpenNewTabIfHref={link.target === "_blank"}
             onClick={link.onClick}
-            startIcon={icon ?? startIcon}
-            endIcon={endIcon}
+            startIcon={getIconUrl(icon) ?? getIconUrl(startIcon)}
+            endIcon={getIconUrl(endIcon)}
             variant={variant}
         >
             <LocalizedMarkdown inline>{label}</LocalizedMarkdown>

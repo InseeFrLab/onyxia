@@ -1,10 +1,10 @@
 import { createRouter, defineRoute, param, createGroup, type Route } from "type-route";
 
 export const routeDefs = {
-    "myServices": defineRoute(
+    myServices: defineRoute(
         {
-            "isSavedConfigsExtended": param.query.optional.boolean.default(false),
-            "autoOpenHelmReleaseName": param.query.optional.string
+            isSavedConfigsExtended: param.query.optional.boolean.default(false),
+            autoOpenHelmReleaseName: param.query.optional.string
         },
         () => `/my-services`
     )

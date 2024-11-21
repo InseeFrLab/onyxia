@@ -37,3 +37,5 @@ package-lock.json
 .idea/
 .env.local.yaml
 /src/pluginSystem.js
+
+*storybook.log

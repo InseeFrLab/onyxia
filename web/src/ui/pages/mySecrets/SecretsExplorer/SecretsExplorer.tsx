@@ -169,7 +169,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
     const onBreadcrumbNavigate = useConstCallback(
         ({ upCount }: Param0<BreadcrumbProps["onNavigate"]>) => {
             onNavigate({
-                "directoryPath": pathJoin(
+                directoryPath: pathJoin(
                     directoryPath,
                     ...new Array(upCount - (props.isFileOpen ? 1 : 0)).fill("..")
                 )
@@ -180,7 +180,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
     const onItemsNavigate = useConstCallback(
         ({ basename }: Param0<ItemsProps["onNavigate"]>) =>
             onNavigate({
-                "directoryPath": pathJoin(directoryPath, basename)
+                directoryPath: pathJoin(directoryPath, basename)
             })
     );
 
@@ -199,11 +199,11 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
     const itemsOnCopyPath = useConstCallback(
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
             evtBreadcrumbAction.post({
-                "action": "DISPLAY COPY FEEDBACK",
+                action: "DISPLAY COPY FEEDBACK",
                 basename
             });
 
-            onCopyPath({ "path": pathJoin(directoryPath, basename) });
+            onCopyPath({ path: pathJoin(directoryPath, basename) });
         }
     );
 
@@ -211,12 +211,12 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
         if (props.isFileOpen) {
             props.onCloseFile();
         } else {
-            onNavigate({ "directoryPath": pathJoin(directoryPath, "..") });
+            onNavigate({ directoryPath: pathJoin(directoryPath, "..") });
         }
     });
 
     const { evtItemsAction } = useConst(() => ({
-        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
+        evtItemsAction: Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
     }));
 
     const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
@@ -236,10 +236,10 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                 break;
             case "copy path":
                 if (props.isFileOpen) {
-                    evtBreadcrumbAction.post({ "action": "DISPLAY COPY FEEDBACK" });
+                    evtBreadcrumbAction.post({ action: "DISPLAY COPY FEEDBACK" });
 
                     onCopyPath({
-                        "path": pathJoin(directoryPath, props.openFileBasename)
+                        path: pathJoin(directoryPath, props.openFileBasename)
                     });
                 } else {
                     evtItemsAction.post("COPY SELECTED ITEM PATH");
@@ -247,28 +247,28 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                 break;
             case "create directory":
                 onNewItem({
-                    "kind": "directory",
-                    "suggestedBasename": generateUniqDefaultName({
-                        "names": directories,
-                        "buildName": buildNameFactory({
-                            "defaultName": t("untitled what", {
-                                "what": t("directory")
+                    kind: "directory",
+                    suggestedBasename: generateUniqDefaultName({
+                        names: directories,
+                        buildName: buildNameFactory({
+                            defaultName: t("untitled what", {
+                                what: t("directory")
                             }),
-                            "separator": "_"
+                            separator: "_"
                         })
                     })
                 });
                 break;
             case "new":
                 onNewItem({
-                    "kind": "file" as const,
-                    "suggestedBasename": generateUniqDefaultName({
-                        "names": files,
-                        "buildName": buildNameFactory({
-                            "defaultName": t("untitled what", {
-                                "what": t("secret")
+                    kind: "file" as const,
+                    suggestedBasename: generateUniqDefaultName({
+                        names: files,
+                        buildName: buildNameFactory({
+                            defaultName: t("untitled what", {
+                                what: t("secret")
                             }),
-                            "separator": "_"
+                            separator: "_"
                         })
                     })
                 });
@@ -293,7 +293,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
     const { classes, cx, css, theme } = useStyles({
         ...props,
         commandBarTop,
-        "isOpenFileNodeNull": !props.isFileOpen ? true : props.openFileNode === null
+        isOpenFileNodeNull: !props.isFileOpen ? true : props.openFileNode === null
     });
 
     const { formattedDate } = (function useClosure() {
@@ -304,7 +304,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
           undefined ? (
             <>&nbsp;</>
         ) : (
-            getFormattedDate({ "time": props.openFileTime })
+            getFormattedDate({ time: props.openFileTime })
         );
 
         return { formattedDate };
@@ -354,7 +354,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                 setDeletionDialogState({
                     kind,
                     basename,
-                    "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve
+                    resolveDoProceedToDeletion: dDoProceedToDeletion.resolve
                 });
 
                 const doProceedToDeletion = await dDoProceedToDeletion.pr;
@@ -451,9 +451,9 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                     ref={scrollableDivRef}
                     className={cx(
                         css({
-                            "flex": 1,
-                            "paddingRight": theme.spacing(2),
-                            "overflow": "auto"
+                            flex: 1,
+                            paddingRight: theme.spacing(2),
+                            overflow: "auto"
                         })
                     )}
                 >
@@ -503,8 +503,8 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                               );
 
                     return {
-                        "title": t("deletion dialog title", { deleteWhat }),
-                        "body": t("deletion dialog body", { deleteWhat })
+                        title: t("deletion dialog title", { deleteWhat }),
+                        body: t("deletion dialog body", { deleteWhat })
                     };
                 })()}
                 isOpen={deletionDialogState !== undefined}
@@ -556,40 +556,40 @@ const useStyles = tss
     }>()
     .withName({ SecretsExplorer })
     .create(({ theme, commandBarTop, isOpenFileNodeNull }) => ({
-        "root": {
-            "position": "relative",
-            "display": "flex",
-            "flexDirection": "column"
+        root: {
+            position: "relative",
+            display: "flex",
+            flexDirection: "column"
         },
-        "commandBar": {
-            "position": "absolute",
-            "right": 0,
-            "width": "40%",
-            "top": commandBarTop,
-            "zIndex": 1,
-            "opacity": commandBarTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear"
+        commandBar: {
+            position: "absolute",
+            right: 0,
+            width: "40%",
+            top: commandBarTop,
+            zIndex: 1,
+            opacity: commandBarTop === 0 ? 0 : 1,
+            transition: "opacity 750ms linear"
         },
-        "openFile": (() => {
+        openFile: (() => {
             const opacity = isOpenFileNodeNull ? 0 : 1;
 
             return {
                 opacity,
-                "transition": opacity === 0 ? undefined : "opacity 500ms linear"
+                transition: opacity === 0 ? undefined : "opacity 500ms linear"
             };
         })(),
-        "breadcrumpWrapper": {
-            "marginTop": theme.spacing(3),
-            "marginBottom": theme.spacing(4),
-            "display": "flex",
-            "alignItems": "center"
+        breadcrumpWrapper: {
+            marginTop: theme.spacing(3),
+            marginBottom: theme.spacing(4),
+            display: "flex",
+            alignItems: "center"
         },
-        "circularProgress": {
-            "marginLeft": theme.spacing(2)
+        circularProgress: {
+            marginLeft: theme.spacing(2)
         },
-        "fileOrDirectoryIcon": {
-            "height": "unset",
-            "width": "100%"
+        fileOrDirectoryIcon: {
+            height: "unset",
+            width: "100%"
         }
     }));
 
@@ -684,33 +684,33 @@ const { CreateS3DirectoryDialog } = (() => {
             text => {
                 if (text === "") {
                     return {
-                        "isValidValue": false,
-                        "message": t("can't be empty")
+                        isValidValue: false,
+                        message: t("can't be empty")
                     };
                 }
 
                 if (directories.includes(text)) {
                     return {
-                        "isValidValue": false,
-                        "message": t("already a directory with this name")
+                        isValidValue: false,
+                        message: t("already a directory with this name")
                     };
                 }
 
                 return {
-                    "isValidValue": true
+                    isValidValue: true
                 };
             }
         );
 
         const [{ resolve }, setResolve] = useState<{ resolve: (() => void) | null }>({
-            "resolve": null
+            resolve: null
         });
 
         const onValueBeingTypedChange = useConstCallback<
             TextFieldProps["onValueBeingTypedChange"]
         >(({ value, isValidValue }) =>
             setResolve({
-                "resolve": isValidValue
+                resolve: isValidValue
                     ? () => {
                           resolveBasename(value);
                           onClose();
@@ -726,12 +726,12 @@ const { CreateS3DirectoryDialog } = (() => {
         const suggestedBasename = useMemo(
             () =>
                 generateUniqDefaultName({
-                    "names": directories,
-                    "buildName": buildNameFactory({
-                        "defaultName": t("untitled what", {
-                            "what": t("directory")
+                    names: directories,
+                    buildName: buildNameFactory({
+                        defaultName: t("untitled what", {
+                            what: t("directory")
                         }),
-                        "separator": "_"
+                        separator: "_"
                     })
                 }),
             [directories, t]
@@ -796,9 +796,9 @@ const { CreateS3DirectoryDialog } = (() => {
     });
 
     const useStyles = tss.withName({ CreateS3DirectoryDialog }).create(({ theme }) => ({
-        "textField": {
-            "width": 250,
-            "margin": theme.spacing(5)
+        textField: {
+            width: 250,
+            margin: theme.spacing(5)
         }
     }));
 

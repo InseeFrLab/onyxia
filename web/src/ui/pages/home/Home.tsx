@@ -34,7 +34,7 @@ export default function Home(props: Props) {
 
     const { classes, cx } = useStyles({
         backgroundUrl,
-        "hasLogo": env.HOMEPAGE_LOGO !== undefined
+        hasLogo: env.HOMEPAGE_LOGO !== undefined
     });
 
     const { isUserLoggedIn, user } = useCoreState(
@@ -136,33 +136,33 @@ export default function Home(props: Props) {
         if (env.HOMEPAGE_CARDS === undefined) {
             return id<CardProps["card"][]>([
                 {
-                    "pictogram": `${env.PUBLIC_URL}/pictograms/service.svg?v=2`,
-                    "title": t("cardTitle1"),
-                    "description": t("cardText1"),
-                    "button": {
-                        "label": t("cardButton1"),
-                        "url": routes.catalog().link.href
+                    pictogram: `${env.PUBLIC_URL}/pictograms/service.svg?v=2`,
+                    title: t("cardTitle1"),
+                    description: t("cardText1"),
+                    button: {
+                        label: t("cardButton1"),
+                        url: routes.catalog().link.href
                     }
                 },
                 {
-                    "pictogram": `${env.PUBLIC_URL}/pictograms/community.svg?v=2`,
-                    "title": t("cardTitle2"),
-                    "description": t("cardText2"),
-                    "button": {
-                        "label": t("cardButton2"),
-                        "url": "https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
+                    pictogram: `${env.PUBLIC_URL}/pictograms/community.svg?v=2`,
+                    title: t("cardTitle2"),
+                    description: t("cardText2"),
+                    button: {
+                        label: t("cardButton2"),
+                        url: "https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                     }
                 },
                 ...(!isFileExplorerEnabled
                     ? []
                     : [
                           {
-                              "pictogram": `${env.PUBLIC_URL}/pictograms/storage.svg?v=2`,
-                              "title": t("cardTitle3"),
-                              "description": t("cardText3"),
-                              "button": {
-                                  "label": t("cardButton3"),
-                                  "url": routes.myFiles().link.href
+                              pictogram: `${env.PUBLIC_URL}/pictograms/storage.svg?v=2`,
+                              title: t("cardTitle3"),
+                              description: t("cardText3"),
+                              button: {
+                                  label: t("cardButton3"),
+                                  url: routes.myFiles().link.href
                               }
                           }
                       ])
@@ -225,56 +225,56 @@ const useStyles = tss
     .withName({ Home })
     .withParams<{ backgroundUrl: string | undefined; hasLogo: boolean }>()
     .create(({ theme, backgroundUrl, hasLogo }) => ({
-        "root": {
-            "height": "100%",
-            "overflow": "auto",
-            "backgroundColor": "transparent",
-            "display": "flex",
-            "flexDirection": "column"
+        root: {
+            height: "100%",
+            overflow: "auto",
+            backgroundColor: "transparent",
+            display: "flex",
+            flexDirection: "column"
         },
-        "hero": {
-            "flex": 1,
-            "position": "relative",
+        hero: {
+            flex: 1,
+            position: "relative",
             ...(backgroundUrl === undefined
                 ? undefined
                 : {
-                      "backgroundImage": `url(${backgroundUrl})`,
-                      "backgroundPosition": "100% 0%",
-                      "backgroundRepeat": "no-repeat",
-                      "backgroundSize": "80%"
+                      backgroundImage: `url(${backgroundUrl})`,
+                      backgroundPosition: "100% 0%",
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "80%"
                   }),
-            "overflow": "hidden"
+            overflow: "hidden"
         },
-        "mainAsset": {
-            "position": "absolute",
-            "width": `${41 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
-            "right": `calc(-1 * (${env.HOMEPAGE_MAIN_ASSET_X_OFFSET}))`,
-            "top": env.HOMEPAGE_MAIN_ASSET_Y_OFFSET
+        mainAsset: {
+            position: "absolute",
+            width: `${41 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
+            right: `calc(-1 * (${env.HOMEPAGE_MAIN_ASSET_X_OFFSET}))`,
+            top: env.HOMEPAGE_MAIN_ASSET_Y_OFFSET
         },
-        "heroTextWrapper": {
-            "paddingLeft": theme.spacing(3),
-            "paddingTop": hasLogo ? theme.spacing(3) : theme.spacing(7),
-            "maxWidth": "42%",
+        heroTextWrapper: {
+            paddingLeft: theme.spacing(3),
+            paddingTop: hasLogo ? theme.spacing(3) : theme.spacing(7),
+            maxWidth: "42%",
             "& > *": {
-                "marginBottom": theme.spacing(4)
+                marginBottom: theme.spacing(4)
             }
         },
-        "heroSubtitle": {
-            "marginBottom": theme.spacing(5)
+        heroSubtitle: {
+            marginBottom: theme.spacing(5)
         },
-        "cardsWrapper": {
-            "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
-            "display": "flex",
+        cardsWrapper: {
+            borderTop: `1px solid ${theme.colors.useCases.typography.textPrimary}`,
+            display: "flex",
             ...theme.spacing.topBottom("padding", 4),
             "& > *": {
-                "flex": 1
+                flex: 1
             },
             "& > *:not(:last-child)": {
-                "marginRight": theme.spacing(3)
+                marginRight: theme.spacing(3)
             }
         },
-        "logo": {
-            "width": 100
+        logo: {
+            width: 100
         }
     }));
 
@@ -292,26 +292,26 @@ const Card = memo((props: CardProps) => {
         <OnyxiaUiCard
             className={cx(
                 css({
-                    "display": "flex",
-                    "flexDirection": "column",
-                    "padding": theme.spacing(4)
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: theme.spacing(4)
                 }),
                 className
             )}
         >
-            <div className={css({ "display": "flex" })}>
+            <div className={css({ display: "flex" })}>
                 <ThemedImage
                     url={card.pictogram}
                     className={css({
-                        "width": 120,
-                        "height": 120
+                        width: 120,
+                        height: 120
                     })}
                 />
                 <div
                     className={css({
-                        "flex": 1,
-                        "display": "flex",
-                        "alignItems": "center",
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
                         ...theme.spacing.rightLeft("padding", 4)
                     })}
                 >
@@ -322,24 +322,24 @@ const Card = memo((props: CardProps) => {
             </div>
             <div
                 className={css({
-                    "flex": 1,
-                    "display": "flex",
-                    "flexDirection": "column",
-                    "paddingTop": theme.spacing(3)
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    paddingTop: theme.spacing(3)
                 })}
             >
-                <div className={css({ "flex": 1 })}>
+                <div className={css({ flex: 1 })}>
                     <Text typo="body 1">
                         {<LocalizedMarkdown inline>{card.description}</LocalizedMarkdown>}
                     </Text>
                 </div>
                 <div
                     className={css({
-                        "marginTop": theme.spacing(5),
-                        "display": "flex"
+                        marginTop: theme.spacing(5),
+                        display: "flex"
                     })}
                 >
-                    <div style={{ "flex": 1 }} />
+                    <div style={{ flex: 1 }} />
                     <LinkFromConfigButton
                         linkFromConfig={card.button}
                         variant="secondary"

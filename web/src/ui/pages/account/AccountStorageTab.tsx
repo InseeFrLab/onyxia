@@ -22,8 +22,7 @@ import type { Equals } from "tsafe";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { capitalize } from "tsafe/capitalize";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -55,21 +54,22 @@ export const AccountStorageTab = memo((props: Props) => {
     const { s3CodeSnippets } = useCore().functions;
 
     useEffect(() => {
-        s3CodeSnippets.refresh({ "doForceRenewToken": false });
+        s3CodeSnippets.refresh({ doForceRenewToken: false });
     }, []);
 
-    const isReady = useCoreState("s3CodeSnippets", "isReady");
-    const credentials = useCoreState("s3CodeSnippets", "credentials");
-    const expirationTime = useCoreState("s3CodeSnippets", "expirationTime");
-    const initScript = useCoreState("s3CodeSnippets", "initScript");
-    const selectedTechnology = useCoreState("s3CodeSnippets", "selectedTechnology");
-    const isRefreshing = useCoreState("s3CodeSnippets", "isRefreshing");
+    const {
+        isReady,
+        isRefreshing,
+        credentials,
+        expirationTime,
+        initScript,
+        selectedTechnology
+    } = useCoreState("s3CodeSnippets", "main");
 
-    const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
-
+    const { fromNowText } = useFromNow({ dateTime: expirationTime ?? 0 });
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
         s3CodeSnippets.changeTechnology({
-            "technology": e.target.value as Technology
+            technology: e.target.value as Technology
         })
     );
 
@@ -78,28 +78,22 @@ export const AccountStorageTab = memo((props: Props) => {
     );
 
     const onGetAppIconButtonClick = useConstCallback(() => {
-        assert(initScript !== undefined);
+        assert(isReady);
         saveAs(
             new Blob([initScript.scriptCode], {
-                "type": "text/plain;charset=utf-8"
+                type: "text/plain;charset=utf-8"
             }),
             initScript.fileBasename
         );
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        s3CodeSnippets.refresh({ "doForceRenewToken": true })
+        s3CodeSnippets.refresh({ doForceRenewToken: true })
     );
 
     if (!isReady) {
         return <CircularProgress />;
     }
-
-    assert(credentials !== undefined);
-    assert(expirationTime !== undefined);
-    assert(initScript !== undefined);
-    assert(selectedTechnology !== undefined);
-    assert(isRefreshing !== undefined);
 
     return (
         <div className={className}>
@@ -109,12 +103,10 @@ export const AccountStorageTab = memo((props: Props) => {
                     <>
                         {t("credentials section helper")}
                         &nbsp;
-                        <strong>
-                            {t("expires in", { "howMuchTime": fromNowText })}{" "}
-                        </strong>
+                        <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
-                            icon={id<MuiIconComponentName>("Refresh")}
+                            icon={getIconUrlByName("Refresh")}
                             onClick={onRefreshIconButtonClick}
                             disabled={isRefreshing}
                         />
@@ -137,9 +129,9 @@ export const AccountStorageTab = memo((props: Props) => {
                         key.replace(/^AWS_/, "").replace(/_/g, " ").toLowerCase()
                     )}
                     text={smartTrim({
-                        "maxLength": 50,
-                        "minCharAtTheEnd": 20,
-                        "text": credentials[key]
+                        maxLength: 50,
+                        minCharAtTheEnd: 20,
+                        text: credentials[key]
                     })}
                     helperText={
                         <>
@@ -172,9 +164,9 @@ export const AccountStorageTab = memo((props: Props) => {
                         ))}
                     </Select>
                 </FormControl>
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 <IconButton
-                    icon={id<MuiIconComponentName>("GetApp")}
+                    icon={getIconUrlByName("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />
@@ -201,14 +193,14 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountStorageTab }).create(({ theme }) => ({
-    "divider": {
+    divider: {
         ...theme.spacing.topBottom("margin", 4)
     },
-    "envVar": {
-        "color": theme.colors.useCases.typography.textFocus
+    envVar: {
+        color: theme.colors.useCases.typography.textFocus
     },
-    "codeBlockHeaderWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+    codeBlockHeaderWrapper: {
+        display: "flex",
+        marginBottom: theme.spacing(3)
     }
 }));

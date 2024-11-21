@@ -17,8 +17,7 @@ import type { Parameters } from "tsafe";
 import { useDomRect } from "powerhooks/useDomRect";
 import type { Param0 } from "tsafe";
 import { declareComponentKeys } from "i18nifty";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     isLocked: boolean;
@@ -157,13 +156,13 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const getIsValidValue_key = useConstCallback(
         (value: Parameters<NonNullable<TextFieldProps["getIsValidValue"]>>[0]) => {
-            const result = getIsValidAndAvailableKey({ "key": value });
+            const result = getIsValidAndAvailableKey({ key: value });
 
             return result.isValidAndAvailableKey
-                ? ({ "isValidValue": true } as const)
+                ? ({ isValidValue: true } as const)
                 : ({
-                      "isValidValue": false,
-                      "message": result.message
+                      isValidValue: false,
+                      message: result.message
                   } as const);
         }
     );
@@ -180,9 +179,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         typo="body 1"
                         className={cx(
                             css({
-                                "textOverflow": "ellipsis",
-                                "overflow": "hidden",
-                                "whiteSpace": "nowrap"
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                                whiteSpace: "nowrap"
                             }),
                             className
                         )}
@@ -207,7 +206,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     className={cx(
                         classes.dollarSign,
                         css({
-                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+                            padding: theme.spacing({ topBottom: 3, rightLeft: 2 })
                         })
                     )}
                 >
@@ -219,7 +218,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     <Text
                         typo="body 1"
                         className={css({
-                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+                            padding: theme.spacing({ topBottom: 3, rightLeft: 2 })
                         })}
                     >
                         {key}
@@ -245,7 +244,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     css(
                         [width * 0.36].map(width => ({
                             width,
-                            "maxWidth": width
+                            maxWidth: width
                         }))[0]
                     )
                 )}
@@ -266,12 +265,12 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 )}
             </TableCell>
             <TableCell align="right">
-                <div className={css({ "display": "flex" })}>
+                <div className={css({ display: "flex" })}>
                     <IconButton
                         icon={
                             isInEditingState
-                                ? id<MuiIconComponentName>("Check")
-                                : id<MuiIconComponentName>("Edit")
+                                ? getIconUrlByName("Check")
+                                : getIconUrlByName("Edit")
                         }
                         disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                         onClick={
@@ -281,15 +280,15 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     />
                     <IconButton
                         disabled={isLocked}
-                        icon={id<MuiIconComponentName>("Delete")}
+                        icon={getIconUrlByName("Delete")}
                         onClick={onDelete}
                         size="small"
                     />
                     <IconButton
                         icon={
                             isTextHidden
-                                ? id<MuiIconComponentName>("Visibility")
-                                : id<MuiIconComponentName>("VisibilityOff")
+                                ? getIconUrlByName("Visibility")
+                                : getIconUrlByName("VisibilityOff")
                         }
                         onClick={() => setIsTextHidden(!isTextHidden)}
                     />
@@ -308,26 +307,26 @@ const useStyles = tss
     .withParams<Props & { isInEditingState: boolean }>()
     .withName({ MySecretsEditorRow })
     .create(({ theme, isInEditingState, isDarker }) => ({
-        "root": {
-            "backgroundColor": isDarker
+        root: {
+            backgroundColor: isDarker
                 ? theme.colors.useCases.surfaces.background
                 : "transparent",
             "& .MuiTextField-root": {
-                "width": "100%"
+                width: "100%"
             }
         },
-        "dollarSign": {
-            "color": isInEditingState
+        dollarSign: {
+            color: isInEditingState
                 ? theme.colors.useCases.typography.textDisabled
                 : theme.colors.useCases.typography.textFocus
         },
-        "valueAndResolvedValue": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+        valueAndResolvedValue: {
+            padding: theme.spacing({ topBottom: 3, rightLeft: 2 })
             //"wordBreak": "break-all"
         },
-        "keyAndValueTableCells": {
-            "padding": isInEditingState
-                ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
+        keyAndValueTableCells: {
+            padding: isInEditingState
+                ? theme.spacing({ topBottom: 0, rightLeft: 3 })
                 : undefined
         }
     }));

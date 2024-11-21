@@ -25,7 +25,6 @@ import {
     type Props as MyServicesConfirmDeleteDialogProps
 } from "./MyServicesConfirmDeleteDialog";
 import { Deferred } from "evt/tools/Deferred";
-import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
 import { assert, type Equals } from "tsafe/assert";
 import { ClusterEventsDialog } from "./ClusterEventsDialog";
@@ -34,6 +33,7 @@ import {
     type ClusterEventsSnackbarProps
 } from "./ClusterEventsSnackbar";
 import { useEvt } from "evt/hooks";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -49,18 +49,18 @@ export default function MyServices(props: Props) {
     /* prettier-ignore */
     const { serviceManagement, restorableConfigManagement, k8sCodeSnippets, clusterEventsMonitor } = useCore().functions;
     /* prettier-ignore */
-    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
+    const { restorableConfigs, chartIconUrlByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
     const {
         isUpdating,
         services,
         isThereOwnedSharedServices,
         commandLogsEntries,
         isThereNonOwnedServices,
-        isThereDeletableServices
+        isThereDeletableServices,
+        groupProjectName
     } = useCoreState("serviceManagement", "main");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
-    const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
 
@@ -87,7 +87,7 @@ export default function MyServices(props: Props) {
 
                 evtConfirmDeleteDialogOpen.post({
                     isThereOwnedSharedServices,
-                    "resolveDoProceed": dDoProceed.resolve
+                    resolveDoProceed: dDoProceed.resolve
                 });
 
                 if (!(await dDoProceed.pr)) {
@@ -126,7 +126,7 @@ export default function MyServices(props: Props) {
 
     const {
         domRect: { height: bellowHeaderHeight }
-    } = useDomRect({ "ref": belowHeaderRef });
+    } = useDomRect({ ref: belowHeaderRef });
 
     const { classes, cx } = useStyles({
         isSavedConfigsExtended,
@@ -138,7 +138,7 @@ export default function MyServices(props: Props) {
     const onRequestToggleIsShortVariant = useConstCallback(() =>
         routes
             .myServices({
-                "isSavedConfigsExtended": !isSavedConfigsExtended ? true : undefined
+                isSavedConfigsExtended: !isSavedConfigsExtended ? true : undefined
             })
             .push()
     );
@@ -147,37 +147,49 @@ export default function MyServices(props: Props) {
         MyServicesRestorableConfigsProps["onRequestDelete"]
     >(({ restorableConfigIndex }) => {
         restorableConfigManagement.deleteRestorableConfig({
-            "restorableConfig": restorableConfigs[restorableConfigIndex]
+            restorableConfig: restorableConfigs[restorableConfigIndex]
         });
     });
 
     const restorableConfigEntires = useMemo(
         (): MyServicesRestorableConfigsProps["entries"] =>
             restorableConfigs.map((restorableConfig, restorableConfigIndex) => {
-                const buildLink = (autoLaunch: boolean) =>
-                    routes.launcher({
-                        "catalogId": restorableConfig.catalogId,
-                        "chartName": restorableConfig.chartName,
-                        "version": restorableConfig.chartVersion,
-                        "formFieldsValueDifferentFromDefault":
-                            restorableConfig.formFieldsValueDifferentFromDefault,
-                        "autoLaunch": autoLaunch ? true : undefined
-                    }).link;
+                const buildLink = (autoLaunch: boolean) => {
+                    const {
+                        catalogId,
+                        chartName,
+                        chartVersion,
+                        friendlyName,
+                        isShared,
+                        s3ConfigId,
+                        helmValuesPatch,
+                        ...rest
+                    } = restorableConfig;
 
-                const { chartIconUrl, friendlyName } =
-                    chartIconAndFriendlyNameByRestorableConfigIndex[
-                        restorableConfigIndex
-                    ];
+                    assert<Equals<typeof rest, {}>>(true);
+
+                    return routes.launcher({
+                        catalogId,
+                        chartName,
+                        name: friendlyName,
+                        shared: isShared,
+                        version: restorableConfig.chartVersion,
+                        s3: s3ConfigId,
+                        helmValuesPatch,
+                        autoLaunch: autoLaunch ? true : undefined
+                    }).link;
+                };
 
                 return {
                     restorableConfigIndex,
-                    chartIconUrl,
-                    friendlyName,
-                    "launchLink": buildLink(true),
-                    "editLink": buildLink(false)
+                    chartIconUrl:
+                        chartIconUrlByRestorableConfigIndex[restorableConfigIndex],
+                    friendlyName: restorableConfig.friendlyName,
+                    launchLink: buildLink(true),
+                    editLink: buildLink(false)
                 };
             }),
-        [restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex]
+        [restorableConfigs, chartIconUrlByRestorableConfigIndex]
     );
 
     const getMyServiceLink = useConstCallback<MyServicesCardsProps["getMyServiceLink"]>(
@@ -206,13 +218,13 @@ export default function MyServices(props: Props) {
         routes
             .myServices({
                 ...route.params,
-                "autoOpenHelmReleaseName": undefined
+                autoOpenHelmReleaseName: undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
-            "action": "open readme dialog",
-            "helmReleaseName": service.helmReleaseName
+            action: "open readme dialog",
+            helmReleaseName: service.helmReleaseName
         });
     }, [route.params.autoOpenHelmReleaseName, services]);
 
@@ -228,7 +240,7 @@ export default function MyServices(props: Props) {
 
             evtConfirmDeleteDialogOpen.post({
                 isThereOwnedSharedServices,
-                "resolveDoProceed": dDoProceed.resolve
+                resolveDoProceed: dDoProceed.resolve
             });
 
             if (!(await dDoProceed.pr)) {
@@ -242,7 +254,25 @@ export default function MyServices(props: Props) {
     const onRequestPauseOrResume = useConstCallback<
         MyServicesCardsProps["onRequestPauseOrResume"]
     >(async ({ helmReleaseName }) =>
-        serviceManagement.suspendOrResumeService({ "helmReleaseName": helmReleaseName })
+        serviceManagement.suspendOrResumeService({ helmReleaseName: helmReleaseName })
+    );
+
+    const onRequestChangeFriendlyName = useConstCallback<
+        MyServicesCardsProps["onRequestChangeFriendlyName"]
+    >(({ helmReleaseName, friendlyName }) =>
+        serviceManagement.changeServiceFriendlyName({
+            helmReleaseName,
+            friendlyName
+        })
+    );
+
+    const onRequestChangeSharedStatus = useConstCallback<
+        MyServicesCardsProps["onRequestChangeSharedStatus"]
+    >(({ helmReleaseName, isShared }) =>
+        serviceManagement.changeServiceSharedStatus({
+            helmReleaseName,
+            isShared
+        })
     );
 
     const onOpenClusterEventsDialog = useConstCallback(() => {
@@ -263,7 +293,7 @@ export default function MyServices(props: Props) {
                 ctx,
                 ({ message, severity }) => {
                     evtClusterEventsSnackbarAction.post({
-                        "action": "show notification",
+                        action: "show notification",
                         message,
                         severity
                     });
@@ -281,7 +311,7 @@ export default function MyServices(props: Props) {
                     title={t("text1")}
                     helpTitle={t("text2")}
                     helpContent={t("text3")}
-                    helpIcon="sentimentSatisfied"
+                    helpIcon={getIconUrlByName("SentimentSatisfied")}
                 />
                 <div className={classes.belowHeader} ref={belowHeaderRef}>
                     <div ref={buttonBarRef}>
@@ -295,21 +325,21 @@ export default function MyServices(props: Props) {
                     {isCommandBarEnabled && (
                         <CommandBar
                             classes={{
-                                "root": classes.commandBar,
-                                "rootWhenExpended": classes.commandBarWhenExpended
+                                root: classes.commandBar,
+                                rootWhenExpended: classes.commandBarWhenExpended
                             }}
                             entries={commandLogsEntries}
                             maxHeight={commandBarMaxHeight}
                             helpDialog={{
-                                "body": tCatalogLauncher("api logs help body", {
-                                    "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                                body: tCatalogLauncher("api logs help body", {
+                                    k8CredentialsHref: !k8sCodeSnippets.getIsAvailable()
                                         ? undefined
                                         : routes.account({
-                                              "tabId": "k8sCodeSnippets"
+                                              tabId: "k8sCodeSnippets"
                                           }).href,
-                                    "myServicesHref": routes.myServices().href,
-                                    "interfacePreferenceHref": routes.account({
-                                        "tabId": "user-interface"
+                                    myServicesHref: routes.myServices().href,
+                                    interfacePreferenceHref: routes.account({
+                                        tabId: "user-interface"
                                     }).href
                                 })
                             }}
@@ -329,10 +359,16 @@ export default function MyServices(props: Props) {
                                     onRequestLogHelmGetNotes={
                                         serviceManagement.logHelmGetNotes
                                     }
+                                    onRequestChangeFriendlyName={
+                                        onRequestChangeFriendlyName
+                                    }
                                     evtAction={evtMyServiceCardsAction}
-                                    projectServicePassword={servicePassword}
                                     lastClusterEvent={lastClusterEvent}
                                     onOpenClusterEventsDialog={onOpenClusterEventsDialog}
+                                    onRequestChangeSharedStatus={
+                                        onRequestChangeSharedStatus
+                                    }
+                                    groupProjectName={groupProjectName}
                                 />
                             )}
                             <div className={classes.rightPanel}>
@@ -405,52 +441,52 @@ const useStyles = tss
         isSavedConfigsExtended: boolean;
     }>()
     .create(({ theme, isCommandBarEnabled, isSavedConfigsExtended, commandBarTop }) => ({
-        "root": {
-            "height": "100%",
-            "display": "flex",
-            "flexDirection": "column"
+        root: {
+            height: "100%",
+            display: "flex",
+            flexDirection: "column"
         },
-        "belowHeader": {
-            "position": "relative",
-            "flex": 1,
-            "display": "flex",
-            "flexDirection": "column",
-            "overflow": "hidden"
+        belowHeader: {
+            position: "relative",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
         },
-        "cardsAndSavedConfigs": {
-            "overflow": "hidden",
-            "flex": 1,
-            "display": "flex"
+        cardsAndSavedConfigs: {
+            overflow: "hidden",
+            flex: 1,
+            display: "flex"
         },
         ...(() => {
             const ratio = 0.6;
 
             return {
-                "cards": {
-                    "flex": ratio,
-                    "marginRight": theme.spacing(5)
+                cards: {
+                    flex: ratio,
+                    marginRight: theme.spacing(5)
                 },
-                "rightPanel": {
-                    "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                    "paddingRight": "2%",
+                rightPanel: {
+                    flex: isSavedConfigsExtended ? 1 : 1 - ratio,
+                    paddingRight: "2%",
                     //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
-                    "marginTop": isCommandBarEnabled ? 40 : undefined,
-                    "height": `calc(100% - ${commandBarTop}px)`,
-                    "overflow": "auto"
+                    marginTop: isCommandBarEnabled ? 40 : undefined,
+                    height: `calc(100% - ${commandBarTop}px)`,
+                    overflow: "auto"
                 }
             };
         })(),
-        "commandBar": {
-            "position": "absolute",
-            "right": 0,
-            "top": commandBarTop,
-            "zIndex": 1,
-            "opacity": commandBarTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear",
-            "width": "min(100%, 900px)"
+        commandBar: {
+            position: "absolute",
+            right: 0,
+            top: commandBarTop,
+            zIndex: 1,
+            opacity: commandBarTop === 0 ? 0 : 1,
+            transition: "opacity 750ms linear",
+            width: "min(100%, 900px)"
         },
-        "commandBarWhenExpended": {
-            "width": "min(100%, 1350px)",
-            "transition": "width 70ms linear"
+        commandBarWhenExpended: {
+            width: "min(100%, 1350px)",
+            transition: "width 70ms linear"
         }
     }));

@@ -11,8 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 const actions = ["edit", "copy link", "delete"] as const;
 
@@ -56,10 +55,7 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 data-ga-event-category="header"
                 data-ga-event-action="language"
             >
-                <Icon
-                    icon={id<MuiIconComponentName>("MoreVert")}
-                    className={classes.icon}
-                />
+                <Icon icon={getIconUrlByName("MoreVert")} className={classes.icon} />
             </MuiButton>
             <Menu
                 id={menuId}
@@ -81,11 +77,11 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                                 icon={(() => {
                                     switch (action) {
                                         case "edit":
-                                            return id<MuiIconComponentName>("Edit");
+                                            return getIconUrlByName("Edit");
                                         case "copy link":
-                                            return id<MuiIconComponentName>("Link");
+                                            return getIconUrlByName("Link");
                                         case "delete":
-                                            return id<MuiIconComponentName>("Delete");
+                                            return getIconUrlByName("Delete");
                                     }
                                 })()}
                             />
@@ -122,27 +118,27 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withName({ MyServicesRestorableConfigOptions })
     .create(({ theme }) => ({
-        "icon": {
-            "color": theme.colors.useCases.typography.textPrimary
+        icon: {
+            color: theme.colors.useCases.typography.textPrimary
         },
-        "menu": {
+        menu: {
             "& .Mui-selected": {
-                "backgroundColor": theme.colors.useCases.surfaces.surface1
+                backgroundColor: theme.colors.useCases.surfaces.surface1
             },
             "& .MuiPaper-root": {
-                "backgroundColor": theme.colors.useCases.surfaces.background
+                backgroundColor: theme.colors.useCases.surfaces.background
             },
             "& a": {
-                "color": theme.colors.useCases.typography.textPrimary
+                color: theme.colors.useCases.typography.textPrimary
             }
         },
-        "menuTypo": {
-            "display": "flex",
-            "alignItems": "center"
+        menuTypo: {
+            display: "flex",
+            alignItems: "center"
         },
-        "button": {
-            "minWidth": "unset",
-            "marginLeft": theme.spacing(1)
+        button: {
+            minWidth: "unset",
+            marginLeft: theme.spacing(1)
         }
     }));
 

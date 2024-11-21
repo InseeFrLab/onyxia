@@ -1,19 +1,25 @@
 import { env } from "env";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, type Equals, is } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
-import { typeGuard } from "tsafe/typeGuard";
 
 export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const { fontFamily, dirUrl } = env.FONT;
 
-    {
+    skip_if_already_done: {
         const metaTag = document.querySelector(`meta[name='onyxia-font']`);
 
-        assert(typeGuard<HTMLMetaElement>(metaTag, metaTag !== null));
-
-        if (metaTag.content === fontFamily) {
-            return;
+        if (metaTag === null) {
+            break skip_if_already_done;
         }
+
+        assert(is<HTMLMetaElement>(metaTag));
+
+        if (metaTag.content !== fontFamily) {
+            break skip_if_already_done;
+        }
+
+        // NOTE: We already have the correct font face.
+        return;
     }
 
     const styleElement = document.createElement("style");
@@ -21,14 +27,14 @@ export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const fontFaceRules = ([400, 500, 600, 700] as const)
         .map(weight => ({
             weight,
-            "normalFontFileBasename": env.FONT[weight],
-            "italicFontFileBasename": env.FONT[`${weight}-italic`]
+            normalFontFileBasename: env.FONT[weight],
+            italicFontFileBasename: env.FONT[`${weight}-italic`]
         }))
         .map(({ weight, normalFontFileBasename, italicFontFileBasename }) =>
             (["normal", "italic"] as const)
                 .map(fontStyle => ({
                     fontStyle,
-                    "fontFileBasename": (() => {
+                    fontFileBasename: (() => {
                         switch (fontStyle) {
                             case "normal":
                                 return normalFontFileBasename;
@@ -50,7 +56,7 @@ export function injectCustomFontFaceIfNotAlreadyDone(): void {
                 .map(({ fontFileBasename, ...rest }) => ({
                     fontFileBasename,
                     ...rest,
-                    "format": fontFileBasename.split(".").pop()
+                    format: fontFileBasename.split(".").pop()
                 }))
                 .map(({ fontStyle, fontFileBasename, format }) =>
                     [

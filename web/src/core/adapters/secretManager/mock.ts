@@ -22,7 +22,7 @@ export function createSecretManager(): SecretsManager {
         );
 
     return {
-        "list": async params => {
+        list: async params => {
             const path = formatPath(params.path);
 
             assert(!(path in record), `${path} is a secret not a directory`);
@@ -39,11 +39,11 @@ export function createSecretManager(): SecretsManager {
             await sleep();
 
             return {
-                "directories": directories.map(path => path.split("/")[0]),
+                directories: directories.map(path => path.split("/")[0]),
                 files
             };
         },
-        "get": async params => {
+        get: async params => {
             const path = formatPath(params.path);
 
             assert(path in record, `no secret at path ${path}`);
@@ -52,18 +52,18 @@ export function createSecretManager(): SecretsManager {
 
             return record[path]!;
         },
-        "put": async params => {
+        put: async params => {
             const { secret } = params;
 
             const path = formatPath(params.path);
 
             record[path] = {
                 secret,
-                "metadata": {
-                    "created_time": new Date().toISOString(),
-                    "deletion_time": "",
-                    "destroyed": false,
-                    "version": !(path in record) ? 0 : record[path]!.metadata.version + 1
+                metadata: {
+                    created_time: new Date().toISOString(),
+                    deletion_time: "",
+                    destroyed: false,
+                    version: !(path in record) ? 0 : record[path]!.metadata.version + 1
                 }
             };
 
@@ -71,7 +71,7 @@ export function createSecretManager(): SecretsManager {
 
             await sleep();
         },
-        "delete": async params => {
+        delete: async params => {
             const path = formatPath(params.path);
 
             delete record[path];
@@ -80,11 +80,11 @@ export function createSecretManager(): SecretsManager {
 
             await sleep();
         },
-        "getToken": () =>
+        getToken: () =>
             Promise.resolve({
-                "expirationTime": Infinity,
-                "token": "",
-                "acquisitionTime": Date.now()
+                expirationTime: Infinity,
+                token: "",
+                acquisitionTime: Date.now()
             })
     };
 }

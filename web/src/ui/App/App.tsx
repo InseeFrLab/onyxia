@@ -11,7 +11,6 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang, I18nFetchingSuspense } from "ui/i18n";
 import {
     OnyxiaUi,
-    ScreenScalerOutOfRangeFallbackProvider,
     loadThemedFavicon,
     injectCustomFontFaceIfNotAlreadyDone
 } from "ui/theme";
@@ -29,9 +28,9 @@ loadThemedFavicon();
 injectCustomFontFaceIfNotAlreadyDone();
 
 const { CoreProvider } = createCoreProvider({
-    "apiUrl": import.meta.env.ONYXIA_API_URL,
-    "getCurrentLang": () => evtLang.state,
-    "transformUrlBeforeRedirectToLogin": url =>
+    apiUrl: env.ONYXIA_API_URL,
+    getCurrentLang: () => evtLang.state,
+    transformUrlBeforeRedirectToLogin: url =>
         [url]
             .map(injectTransferableEnvsInQueryParams)
             .map(injectGlobalStatesInSearchParams)
@@ -39,25 +38,38 @@ const { CoreProvider } = createCoreProvider({
                 url =>
                     addParamToUrl({
                         url,
-                        "name": onyxiaInstancePublicUrlKey,
-                        "value": `${window.location.origin}${env.PUBLIC_URL}`
+                        name: onyxiaInstancePublicUrlKey,
+                        value: `${window.location.origin}${env.PUBLIC_URL}`
                     }).newUrl
             )
             .map(
                 url =>
                     addParamToUrl({
                         url,
-                        "name": "ui_locales",
-                        "value": evtLang.state
+                        name: "ui_locales",
+                        value: evtLang.state
                     }).newUrl
             )[0],
-    "disablePersonalInfosInjectionInGroup": env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
-    "isCommandBarEnabledByDefault": !env.DISABLE_COMMAND_BAR,
-    "quotaWarningThresholdPercent": env.QUOTA_WARNING_THRESHOLD * 100,
-    "quotaCriticalThresholdPercent": env.QUOTA_CRITICAL_THRESHOLD * 100
+    disablePersonalInfosInjectionInGroup: env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
+    isCommandBarEnabledByDefault: !env.DISABLE_COMMAND_BAR,
+    quotaWarningThresholdPercent: env.QUOTA_WARNING_THRESHOLD * 100,
+    quotaCriticalThresholdPercent: env.QUOTA_CRITICAL_THRESHOLD * 100,
+    isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED
 });
 
-export default function App() {
+type Props = {
+    className?: string;
+    ScreenScalerOutOfRangeFallbackProvider?: (props: {
+        fallback: JSX.Element;
+        children: JSX.Element;
+    }) => JSX.Element;
+};
+
+export default function App(props: Props) {
+    const {
+        className,
+        ScreenScalerOutOfRangeFallbackProvider = ({ children }) => <>{children}</>
+    } = props;
     return (
         <RouteProvider>
             <I18nFetchingSuspense>
@@ -66,7 +78,7 @@ export default function App() {
                         fallback={<ScreenScalerOutOfRangeFallback />}
                     >
                         <CoreProvider>
-                            <ContextualizedApp />
+                            <ContextualizedApp className={className} />
                         </CoreProvider>
                     </ScreenScalerOutOfRangeFallbackProvider>
                 </OnyxiaUi>
@@ -85,19 +97,21 @@ function ScreenScalerOutOfRangeFallback() {
     return <PortraitModeUnsupported />;
 }
 
-function ContextualizedApp() {
+function ContextualizedApp(props: { className?: string }) {
+    const { className } = props;
+
     useSyncDarkModeWithValueInProfile();
 
     const {
         ref: globalAlertRef,
         domRect: { height: globalAlertHeight }
     } = useDomRect();
-    const { classes } = useStyles({ globalAlertHeight });
+    const { cx, classes } = useStyles({ globalAlertHeight });
     const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     return (
         <>
-            <div className={classes.root}>
+            <div className={cx(classes.root, className)}>
                 {env.GLOBAL_ALERT !== undefined && (
                     <GlobalAlert
                         ref={globalAlertRef}
@@ -127,47 +141,47 @@ const useStyles = tss
         const rootRightLeftMargin = theme.spacing(4);
 
         return {
-            "root": {
-                "height": "100%",
-                "display": "flex",
-                "flexDirection": "column",
-                "backgroundColor": theme.colors.useCases.surfaces.background,
-                "margin": `0 ${rootRightLeftMargin}px`,
-                "position": "relative"
+            root: {
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: theme.colors.useCases.surfaces.background,
+                margin: `0 ${rootRightLeftMargin}px`,
+                position: "relative"
             },
-            "globalAlert": {
-                "position": "absolute",
-                "width": theme.windowInnerWidth,
-                "left": -rootRightLeftMargin
+            globalAlert: {
+                position: "absolute",
+                width: theme.windowInnerWidth,
+                left: -rootRightLeftMargin
             },
-            "header": {
-                "marginTop":
+            header: {
+                marginTop:
                     globalAlertHeight === 0 ? 0 : globalAlertHeight + theme.spacing(2),
-                "paddingBottom": 0 //For the LeftBar shadow
+                paddingBottom: 0 //For the LeftBar shadow
             },
-            "betweenHeaderAndFooter": {
-                "flex": 1,
-                "overflow": "hidden",
-                "display": "flex",
-                "paddingTop": theme.spacing(2.3), //For the LeftBar shadow
-                "paddingBottom": footerHeight
+            betweenHeaderAndFooter: {
+                flex: 1,
+                overflow: "hidden",
+                display: "flex",
+                paddingTop: theme.spacing(2.3), //For the LeftBar shadow
+                paddingBottom: footerHeight
             },
-            "footer": {
-                "height": footerHeight,
-                "position": "absolute",
-                "bottom": 0,
-                "width": "100%",
-                "background": "transparent"
+            footer: {
+                height: footerHeight,
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                background: "transparent"
             },
-            "leftBar": {
-                "height": "100%"
+            leftBar: {
+                height: "100%"
             },
-            "main": {
-                "height": "100%",
-                "flex": 1,
+            main: {
+                height: "100%",
+                flex: 1,
                 //TODO: See if scroll delegation works if we put auto here instead of "hidden"
-                "paddingLeft": theme.spacing(4),
-                "overflow": "hidden"
+                paddingLeft: theme.spacing(4),
+                overflow: "hidden"
             }
         };
     });
@@ -195,18 +209,13 @@ function useSyncDarkModeWithValueInProfile() {
     }, []);
 
     useEffectOnValueChange(() => {
-        //TODO: Remove after vivatech
-        if (env.DARK_MODE !== undefined) {
-            return;
-        }
-
         if (!isUserLoggedIn) {
             return;
         }
 
         userConfigs.changeValue({
-            "key": "isDarkModeEnabled",
-            "value": isDarkModeEnabled
+            key: "isDarkModeEnabled",
+            value: isDarkModeEnabled
         });
     }, [isDarkModeEnabled]);
 }
