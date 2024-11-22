@@ -1,10 +1,9 @@
 import "minimal-polyfills/Object.fromEntries";
 import { memo } from "react";
-import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
+import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "oNyxia-ui/LeftBar";
 import { useTranslation } from "ui/i18n";
 import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
 import { useRoute, routes, urlToLink } from "ui/routes";
-import { id } from "tsafe/id";
 import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
 import { useCore, useCoreState } from "core";
@@ -39,104 +38,104 @@ export const LeftBar = memo((props: Props) => {
                 defaultIsPanelOpen={true}
                 collapsedWidth={logoContainerWidth}
                 reduceText={t("reduce")}
-                items={{
-                    ...(env.DISABLE_HOMEPAGE
-                        ? ({} as never)
-                        : {
-                              home: {
-                                  icon: customIcons.homeSvgUrl,
-                                  label: t("home"),
-                                  link: routes.home().link
-                              } as const
-                          }),
-                    account: {
+                items={[
+                    {
+                        itemId: "home",
+                        icon: customIcons.homeSvgUrl,
+                        label: t("home"),
+                        link: routes.home().link,
+                        availability: env.DISABLE_HOMEPAGE ? "not visible" : "available"
+                    },
+                    {
+                        itemId: "account",
                         icon: customIcons.accountSvgUrl,
                         label: t("account"),
                         link: routes.account().link
                     },
-                    projectSettings: {
+                    {
+                        itemId: "projectSettings",
                         icon: getIconUrlByName("DisplaySettings"),
                         label: t("projectSettings"),
-                        link: routes.projectSettings().link,
-                        belowDivider: t("divider: services features")
+                        link: routes.projectSettings().link
                     },
-                    catalog: {
+                    {
+                        groupId: "services",
+                        label: t("divider: services features")
+                    },
+                    {
+                        itemId: "catalog",
                         icon: customIcons.catalogSvgUrl,
                         label: t("catalog"),
                         link: routes.catalog().link
                     },
-                    myServices: {
+                    {
+                        itemId: "myServices",
                         icon: customIcons.servicesSvgUrl,
                         label: t("myServices"),
-                        link: routes.myServices().link,
-                        belowDivider: t("divider: external services features")
+                        link: routes.myServices().link
                     },
-                    ...(!secretExplorer.getIsEnabled()
-                        ? ({} as never)
-                        : {
-                              mySecrets: {
-                                  icon: customIcons.secretsSvgUrl,
-                                  label: t("mySecrets"),
-                                  link: routes.mySecrets().link
-                              } as const
-                          }),
-                    ...(!isFileExplorerEnabled
-                        ? ({} as never)
-                        : {
-                              myFiles: {
-                                  icon: customIcons.filesSvgUrl,
-                                  label: t("myFiles"),
-                                  link: routes.myFiles().link
-                              } as const,
-                              dataExplorer: {
-                                  icon: getIconUrlByName("DocumentScanner"),
-                                  label: t("dataExplorer"),
-                                  link: routes.dataExplorer().link,
-                                  belowDivider:
-                                      env.LEFTBAR_LINKS.length === 0
-                                          ? true
-                                          : t(
-                                                "divider: onyxia instance specific features"
-                                            )
-                              } as const
-                          }),
-                    ...(!isDevModeEnabled
-                        ? ({} as never)
-                        : {
-                              sqlOlapShell: {
-                                  icon: getIconUrlByName("Terminal"),
-                                  label: t("sqlOlapShell"),
-                                  link: routes.sqlOlapShell().link
-                              } as const
-                          }),
-                    ...Object.fromEntries(
-                        env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
-                            link: urlToLink(url),
-                            ...rest
+                    {
+                        groupId: "external-services",
+                        label: t("divider: external services features")
+                    },
+                    {
+                        itemId: "mySecrets",
+                        icon: customIcons.secretsSvgUrl,
+                        label: t("mySecrets"),
+                        link: routes.mySecrets().link,
+                        availability: secretExplorer.getIsEnabled()
+                            ? "available"
+                            : "not visible"
+                    },
+                    {
+                        itemId: "myFiles",
+                        icon: customIcons.filesSvgUrl,
+                        label: t("myFiles"),
+                        link: routes.myFiles().link,
+                        availability: isFileExplorerEnabled ? "available" : "not visible"
+                    },
+                    {
+                        itemId: "dataExplorer",
+                        icon: getIconUrlByName("DocumentScanner"),
+                        label: t("dataExplorer"),
+                        link: routes.dataExplorer().link,
+                        availability: isFileExplorerEnabled ? "available" : "not visible"
+                    },
+                    {
+                        itemId: "sqlOlapShell",
+                        icon: getIconUrlByName("Terminal"),
+                        label: t("sqlOlapShell"),
+                        link: routes.sqlOlapShell().link,
+                        availability: isDevModeEnabled ? "available" : "not visible"
+                    },
+                    {
+                        groupId: "custom-leftbar-links",
+                        label: t("divider: onyxia instance specific features")
+                    },
+                    ...env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
+                        link: urlToLink(url),
+                        ...rest
+                    }))
+                        .map(({ icon, startIcon, ...rest }) => ({
+                            ...rest,
+                            icon: getIconUrl(icon) ?? getIconUrl(startIcon)
                         }))
-                            .map(({ icon, startIcon, ...rest }) => ({
-                                ...rest,
-                                icon: getIconUrl(icon) ?? getIconUrl(startIcon)
-                            }))
-                            .map(({ link, icon, label }, i) => [
-                                `extraItem${i}`,
-                                id<LeftBarProps.Item>({
-                                    icon:
-                                        (assert(
-                                            icon !== undefined,
-                                            "We should have validated that when parsing the env"
-                                        ),
-                                        icon),
-                                    label: (
-                                        <LocalizedMarkdown inline>
-                                            {label}
-                                        </LocalizedMarkdown>
+                        .map(
+                            ({ link, icon, label }, i): LeftBarProps.Item => ({
+                                itemId: `custom-leftbar-item-${i}`,
+                                icon:
+                                    (assert(
+                                        icon !== undefined,
+                                        "We should have validated that when parsing the env"
                                     ),
-                                    link
-                                })
-                            ])
-                    )
-                }}
+                                    icon),
+                                label: (
+                                    <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
+                                ),
+                                link
+                            })
+                        )
+                ]}
                 currentItemId={(() => {
                     switch (route.name) {
                         case "home":

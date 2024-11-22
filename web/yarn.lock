@@ -5451,10 +5451,10 @@ onetime@^7.0.0:
   dependencies:
     mimic-function "^5.0.0"
 
-onyxia-ui@^6.1.2:
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.1.2.tgz#7e535d8f81e51f93287dfb09f14b79f532ebf013"
-  integrity sha512-ItOrB5POlmKe+J/lRahHZiffFB4VPZKuNsVB/gf6Gn2GMDQtD76p2h/k042gXbDLhQPYJqagox1OF36j2I1gZA==
+onyxia-ui@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.2.1.tgz#427397fc19ca94a23eb2b4c19bb92cb4a1228fed"
+  integrity sha512-EmF2PvLTFvPSnqXJp4BxtOOdHOGWI9JxDF56I1F7jEEg/BHy/vBaZZQvOTpvHxvjpxZeuq2Xh/yaQIXkzarvIg==
   dependencies:
     "@mui/icons-material" "^6.1.7"
     "@types/memoizee" "^0.4.11"
