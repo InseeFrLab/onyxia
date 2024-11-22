@@ -498,6 +498,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             />
 
+            {/* @ts-expect-error */}
             <ShareDialog
                 onClose={onShareDialogClose}
                 isOpen={shareState !== undefined}
