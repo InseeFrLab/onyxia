@@ -16,27 +16,44 @@ export const Public: Story = {
     args: {
         isOpen: true,
         onClose: action("onClose"),
-        isRequestingUrl: false,
-        onRequestUrl: (params: { expirationTime: number }) =>
-            action(`onRequestUrl ${params.expirationTime}`),
+        isPublic: true,
         file: {
             kind: "file",
+            policy: "public",
             basename: "photo.png",
             size: 2048000, // en bytes
             lastModified: new Date("2023-09-15"),
-            policy: "public",
             isBeingDeleted: false,
             isPolicyChanging: false,
             isBeingCreated: false
         },
-        url: "https://minio.lab.sspcloud.fr/onyxia-datalab/public/photo.png",
-        validityDurationSecondOptions: [3600, 7200, 10800]
+        url: "https://minio.lab.sspcloud.fr/onyxia-datalab/public/photo.png"
     }
 };
 
-export const Private: Story = {
-    render: args => {
-        const [url, setUrl] = useState<string | undefined>(args.url);
+export const Private = {
+    args: {
+        isOpen: true,
+        isPublic: false,
+        onClose: action("onClose"),
+        file: {
+            policy: "private",
+            kind: "file",
+            basename: "photo.png",
+            size: 2048000, // in bytes
+            lastModified: new Date("2023-09-15"),
+            isBeingDeleted: false,
+            isPolicyChanging: false,
+            isBeingCreated: false
+        },
+        url: undefined,
+        isRequestingUrl: false,
+        validityDurationSecondOptions: [3600, 7200, 10800],
+        validityDurationSecond: 3600,
+        onRequestUrl: action("onRequestUrl")
+    },
+    render: () => {
+        const [url, setUrl] = useState<string | undefined>(undefined);
         const [isRequestingUrl, setIsRequestingUrl] = useState(false);
 
         const handleRequestUrl = (params: { expirationTime: number }) => {
@@ -53,33 +70,27 @@ export const Private: Story = {
 
         return (
             <ShareDialog
-                {...args}
+                isOpen={true}
+                isPublic={false}
+                onClose={() => {
+                    action("onClose")();
+                }}
+                file={{
+                    policy: "private",
+                    kind: "file",
+                    basename: "photo.png",
+                    size: 2048000, // in bytes
+                    lastModified: new Date("2023-09-15"),
+                    isBeingDeleted: false,
+                    isPolicyChanging: false,
+                    isBeingCreated: false
+                }}
                 url={url}
                 isRequestingUrl={isRequestingUrl}
                 onRequestUrl={handleRequestUrl}
+                validityDurationSecondOptions={[3600, 7200, 10800]}
+                validityDurationSecond={3600}
             />
         );
-    },
-    args: {
-        isOpen: true,
-        onClose: action("onClose"),
-        isRequestingUrl: false,
-        file: {
-            kind: "file",
-            basename: "photo.png",
-            size: 2048000, // in bytes
-            lastModified: new Date("2023-09-15"),
-            policy: "private",
-            isBeingDeleted: false,
-            isPolicyChanging: false,
-            isBeingCreated: false
-        },
-        url: undefined,
-        validityDurationSecondOptions: [3600, 7200, 10800],
-        onRequestUrl: (params: { expirationTime: number }) => {
-            action(
-                `onRequestUrl triggered with expirationTime: ${params.expirationTime}`
-            )();
-        }
     }
-};
+} satisfies Story;

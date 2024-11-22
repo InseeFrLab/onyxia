@@ -321,27 +321,20 @@ export const translations: Translations<"fr"> = {
         title: "Partager vos données",
         close: "Fermer",
         "create and copy link": "Créer et copier le lien",
-        "paragraph current policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return `Votre fichier est public, toute personne ayant le lien peut télécharger votre fichier.`;
-                case "private":
-                    return "Votre fichier est actuellement privé.";
-            }
-        },
-        "paragraph change policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return `Pour restreindre son accès, changez le statut de diffusion de
-                        votre fichier.`;
-                case "private":
-                    return `Pour partager et donner accès à votre fichier, changez le statut de diffusion ou créez un lien d’accès temporaire.`;
-            }
-        },
-        "hint link access": params =>
-            params.policy === "private"
-                ? `Ce lien donnera un accès à vos données pendant ${params.expiration}.`
-                : "Votre lien est disponible tant que le fichier est publique",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Votre fichier est public, toute personne ayant le lien peut télécharger votre fichier."
+                : "Votre fichier est actuellement privé.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "Pour restreindre son accès, changez le statut de diffusion de votre fichier."
+                : "Pour partager et donner accès à votre fichier, changez le statut de diffusion ou créez un lien d’accès temporaire.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Votre lien est disponible tant que le fichier est public."
+                : `Ce lien donnera un accès à vos données pendant ${expiration}.`,
         "label input link": "Lien d'accès"
     },
     MySecrets: {

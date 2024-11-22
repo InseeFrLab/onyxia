@@ -315,26 +315,20 @@ export const translations: Translations<"fi"> = {
         title: "Jaa tietosi",
         close: "Sulje",
         "create and copy link": "Luo ja kopioi linkki",
-        "paragraph current policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return "Tiedostosi on julkinen, kuka tahansa linkin omistava voi ladata sen.";
-                case "private":
-                    return "Tiedostosi on tällä hetkellä yksityinen.";
-            }
-        },
-        "paragraph change policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return "Rajoittaaksesi pääsyä muuta tiedostosi jakamisen tilaa.";
-                case "private":
-                    return "Jaa tiedosto ja anna pääsy muuttamalla jakamisen tilaa tai luomalla väliaikainen linkki.";
-            }
-        },
-        "hint link access": params =>
-            params.policy === "private"
-                ? `Tämä linkki antaa pääsyn tietoihisi ${params.expiration} ajaksi.`
-                : "Linkkisi on käytettävissä niin kauan kuin tiedosto on julkinen",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Tiedostosi on julkinen, kuka tahansa linkin omistava voi ladata sen."
+                : "Tiedostosi on tällä hetkellä yksityinen.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "Rajoittaaksesi pääsyä muuta tiedostosi jakamisen tilaa."
+                : "Jaa tiedosto ja anna pääsy muuttamalla jakamisen tilaa tai luomalla väliaikainen linkki.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Linkkisi on käytettävissä niin kauan kuin tiedosto on julkinen."
+                : `Tämä linkki antaa pääsyn tietoihisi ${expiration} ajaksi.`,
         "label input link": "Pääsylinkki"
     },
     MySecrets: {

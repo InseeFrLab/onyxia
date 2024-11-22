@@ -318,26 +318,19 @@ export const translations: Translations<"de"> = {
         title: "Ihre Daten teilen",
         close: "Schließen",
         "create and copy link": "Link erstellen und kopieren",
-        "paragraph current policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return "Ihre Datei ist öffentlich, jeder mit dem Link kann sie herunterladen.";
-                case "private":
-                    return "Ihre Datei ist derzeit privat.";
-            }
-        },
-        "paragraph change policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return "Um den Zugriff einzuschränken, ändern Sie den Freigabestatus Ihrer Datei.";
-                case "private":
-                    return "Um Ihre Datei freizugeben und Zugriff zu gewähren, ändern Sie den Freigabestatus oder erstellen Sie einen temporären Zugriffslink.";
-            }
-        },
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Ihre Datei ist öffentlich, jeder mit dem Link kann sie herunterladen."
+                : "Ihre Datei ist derzeit privat.",
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "Um den Zugriff einzuschränken, ändern Sie den Freigabestatus Ihrer Datei."
+                : "Um Ihre Datei freizugeben und Zugriff zu gewähren, ändern Sie den Freigabestatus oder erstellen Sie einen temporären Zugriffslink.",
+
         "hint link access": params =>
-            params.policy === "private"
-                ? `Dieser Link gewährt für ${params.expiration} Zugriff auf Ihre Daten.`
-                : "Ihr Link ist verfügbar, solange die Datei öffentlich ist",
+            params.isPublic
+                ? "Ihr Link ist verfügbar, solange die Datei öffentlich ist"
+                : `Dieser Link gewährt für ${params.expiration} Zugriff auf Ihre Daten.`,
         "label input link": "Zugriffslink"
     },
     MySecrets: {

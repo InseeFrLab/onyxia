@@ -314,26 +314,20 @@ export const translations: Translations<"no"> = {
         title: "Del dataene dine",
         close: "Lukk",
         "create and copy link": "Opprett og kopier lenke",
-        "paragraph current policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return "Filen din er offentlig, alle med lenken kan laste den ned.";
-                case "private":
-                    return "Filen din er for øyeblikket privat.";
-            }
-        },
-        "paragraph change policy": ({ policy }) => {
-            switch (policy) {
-                case "public":
-                    return "For å begrense tilgangen, endre delingsstatusen til filen din.";
-                case "private":
-                    return "For å dele og gi tilgang til filen din, endre delingsstatusen eller opprett en midlertidig tilgangslenke.";
-            }
-        },
-        "hint link access": params =>
-            params.policy === "private"
-                ? `Denne lenken gir tilgang til dataene dine i ${params.expiration}.`
-                : "Lenken din er tilgjengelig så lenge filen er offentlig",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Filen din er offentlig, alle med lenken kan laste den ned."
+                : "Filen din er for øyeblikket privat.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "For å begrense tilgangen, endre delingsstatusen til filen din."
+                : "For å dele og gi tilgang til filen din, endre delingsstatusen eller opprett en midlertidig tilgangslenke.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Lenken din er tilgjengelig så lenge filen er offentlig."
+                : `Denne lenken gir tilgang til dataene dine i ${expiration}.`,
         "label input link": "Tilgangslenke"
     },
     MySecrets: {

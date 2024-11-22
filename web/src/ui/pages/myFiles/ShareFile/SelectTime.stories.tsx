@@ -3,7 +3,7 @@ import { SelectTime } from "./SelectTime";
 import { useState } from "react";
 
 const meta: Meta<typeof SelectTime> = {
-    title: "Pages/MyFiles/NewComponents/SelectTime",
+    title: "Pages/MyFiles/ShareFile/SelectTime",
     component: SelectTime
 };
 
