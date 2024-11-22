@@ -18,6 +18,7 @@ export type ShareDialogProps = ShareDialogProps.Close | ShareDialogProps.Open;
 export namespace ShareDialogProps {
     type Common = {
         onClose: () => void;
+        onRequestUrl: (params: { expirationTime: number }) => void;
     };
 
     export type Close = Common & {
@@ -38,7 +39,6 @@ export namespace ShareDialogProps {
             isRequestingUrl: boolean;
             validityDurationSecondOptions: number[];
             validityDurationSecond: number;
-            onRequestUrl: (params: { expirationTime: number }) => void;
         };
 
         export type PublicFileProps = {
@@ -84,11 +84,11 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
     );
 });
 
-const ShareDialogBody = memo((props: ShareDialogProps.BodyProps) => {
+const ShareDialogBody = memo((props: ShareDialogProps.Open) => {
     const { t } = useTranslation({ ShareDialog });
     const { classes } = useStyles();
 
-    const { isPublic, url } = props;
+    const { isPublic, url, onRequestUrl } = props;
 
     const [valueExpirationTime, setValueExpirationTime] = useState<number | undefined>(
         isPrivateFileProps(props) ? props.validityDurationSecond : undefined
@@ -117,7 +117,7 @@ const ShareDialogBody = memo((props: ShareDialogProps.BodyProps) => {
                                       startIcon={getIconUrlByName("Language")}
                                       variant="ternary"
                                       onClick={() =>
-                                          props.onRequestUrl({
+                                          onRequestUrl({
                                               expirationTime: valueExpirationTime
                                           })
                                       }

@@ -306,7 +306,7 @@ const main = createSelector(
         viewMode,
         shareView
     ) => {
-        if (directoryPath === null) {
+        if (directoryPath === undefined) {
             return {
                 isCurrentWorkingDirectoryLoaded: false as const,
                 isNavigationOngoing,

@@ -44,7 +44,7 @@ import {
 import type { Item } from "../shared/types";
 import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
-import { ShareDialog } from "../ShareFile/ShareDialog";
+import { ShareDialog, ShareDialogProps } from "../ShareFile/ShareDialog";
 import { ShareView } from "core/usecases/fileExplorer";
 
 export type ExplorerProps = {
@@ -71,7 +71,9 @@ export type ExplorerProps = {
     onRefresh: () => void;
     onDeleteItem: (params: { item: Item }) => void;
     onDeleteItems: (params: { items: Item[] }) => void;
-    onShareFile: (params: { fileBasename: string }) => void;
+    onShareFileOpen: (params: { fileBasename: string }) => void;
+    onShareFileClose: () => void;
+    requestSignedUrl: (params: { expirationTime: number }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
@@ -102,8 +104,10 @@ export const Explorer = memo((props: ExplorerProps) => {
         pathMinDepth,
         onViewModeChange,
         viewMode,
-        onShareFile,
-        shareState
+        onShareFileOpen,
+        onShareFileClose,
+        shareState,
+        requestSignedUrl
     } = props;
 
     const [items] = useMemo(
@@ -315,17 +319,19 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
     const onDragOver = useConstCallback(() => setIsUploadModalOpen(true));
 
-    const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
-
     const onShareDialogOpen = useConstCallback(
         async ({ fileBasename }: Param0<ItemsProps["onShare"]>) => {
-            setIsShareModalOpen(true);
-            onShareFile({ fileBasename });
+            onShareFileOpen({ fileBasename });
         }
     );
 
-    const onShareDialogClose = useConstCallback(() => setIsShareModalOpen(false));
+    const onShareDialogClose = useConstCallback(() => onShareFileClose());
 
+    const onRequestSignedUrl = useConstCallback(
+        async ({ expirationTime }: Param0<ShareDialogProps["onRequestUrl"]>) => {
+            requestSignedUrl({ expirationTime });
+        }
+    );
     return (
         <>
             <div
@@ -492,12 +498,12 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             />
 
-            {/* <ShareDialog
+            <ShareDialog
                 onClose={onShareDialogClose}
-                isOpen={isShareModalOpen}
-                file={}
-                validityDurationSecond={shareState?.}
-            /> */}
+                isOpen={shareState !== undefined}
+                onRequestUrl={onRequestSignedUrl}
+                {...shareState}
+            />
 
             <ExplorerUploadModal
                 isOpen={isUploadModalOpen}
