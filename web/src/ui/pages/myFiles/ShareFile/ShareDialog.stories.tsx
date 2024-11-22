@@ -14,6 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Public: Story = {
     args: {
+        onRequestUrl: action("onRequestUrl"),
         isOpen: true,
         onClose: action("onClose"),
         isPublic: true,
@@ -33,6 +34,7 @@ export const Public: Story = {
 
 export const Private = {
     args: {
+        onRequestUrl: action("onRequestUrl"),
         isOpen: true,
         isPublic: false,
         onClose: action("onClose"),
@@ -49,8 +51,7 @@ export const Private = {
         url: undefined,
         isRequestingUrl: false,
         validityDurationSecondOptions: [3600, 7200, 10800],
-        validityDurationSecond: 3600,
-        onRequestUrl: action("onRequestUrl")
+        validityDurationSecond: 3600
     },
     render: () => {
         const [url, setUrl] = useState<string | undefined>(undefined);
