@@ -1,6 +1,6 @@
 import "minimal-polyfills/Object.fromEntries";
 import { memo } from "react";
-import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "oNyxia-ui/LeftBar";
+import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
 import { useTranslation } from "ui/i18n";
 import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
 import { useRoute, routes, urlToLink } from "ui/routes";
