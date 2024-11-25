@@ -199,10 +199,13 @@ export default function MyFiles(props: Props) {
                 onOpenFile={onOpenFile}
                 viewMode={viewMode}
                 onViewModeChange={fileExplorer.changeViewMode}
+                shareView={shareView}
                 onShareFileOpen={fileExplorer.openShare}
                 onShareFileClose={fileExplorer.closeShare}
-                requestSignedUrl={fileExplorer.requestShareSignedUrl}
-                shareState={shareView}
+                onShareRequestSignedUrl={fileExplorer.requestShareSignedUrl}
+                onChangeShareSelectedValidityDuration={
+                    fileExplorer.changeShareSelectedValidityDuration
+                }
             />
         </div>
     );

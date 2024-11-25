@@ -2,39 +2,28 @@ import { useId } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import { tss } from "tss";
-import { assert } from "tsafe/assert";
 
 type Props = {
     className?: string;
     validityDurationSecondOptions: number[];
-    expirationValue: number;
-    onExpirationValueChange: (
-        value: Props["validityDurationSecondOptions"][number]
-    ) => void;
+    validityDurationSecond: number;
+    onChangeShareSelectedValidityDuration: (props: {
+        validityDurationSecond: number;
+    }) => void;
 };
 
 export function SelectTime(props: Props) {
     const {
         className,
         validityDurationSecondOptions,
-        expirationValue,
-        onExpirationValueChange
+        onChangeShareSelectedValidityDuration,
+        validityDurationSecond
     } = props;
 
     const labelId = useId();
     const { classes, cx } = useStyles();
-
-    const handleChange = (event: SelectChangeEvent<number>) => {
-        const newValue = event.target.value;
-
-        assert(
-            typeof newValue === "number" &&
-                validityDurationSecondOptions.includes(newValue)
-        );
-        onExpirationValueChange(newValue);
-    };
 
     return (
         <FormControl
@@ -42,14 +31,23 @@ export function SelectTime(props: Props) {
             className={cx(classes.timeSelectWrapper, className)}
         >
             <InputLabel id={labelId}>Durée de validité</InputLabel>
-            <Select<number>
+            <Select
                 labelId={labelId}
-                value={expirationValue}
-                onChange={handleChange}
+                value={`${validityDurationSecond}`}
+                onChange={event => {
+                    const valueStr = event.target.value;
+
+                    onChangeShareSelectedValidityDuration({
+                        validityDurationSecond: parseFloat(valueStr)
+                    });
+                }}
                 label="Project"
             >
                 {validityDurationSecondOptions.map(validityDurationSecond => (
-                    <MenuItem key={validityDurationSecond} value={validityDurationSecond}>
+                    <MenuItem
+                        key={validityDurationSecond}
+                        value={`${validityDurationSecond}`}
+                    >
                         {/*  TODO : better format and translation */}
                         {validityDurationSecond} secondes
                     </MenuItem>

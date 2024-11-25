@@ -350,6 +350,6 @@ const isFileExplorerEnabled = (rootState: RootState) => {
 
 const directoryPath = createSelector(state, state => state.directoryPath);
 
-export const protectedSelectors = { workingDirectoryPath, directoryPath };
+export const protectedSelectors = { workingDirectoryPath, directoryPath, shareView };
 
 export const selectors = { main, isFileExplorerEnabled };

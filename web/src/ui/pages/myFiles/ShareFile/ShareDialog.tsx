@@ -1,75 +1,50 @@
 import { declareComponentKeys } from "i18nifty";
 import { Button } from "onyxia-ui/Button";
 import { Dialog } from "onyxia-ui/Dialog";
-import { memo, useState } from "react";
+import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { DirectoryOrFileDetailed } from "../shared/DirectoryOrFileDetailed";
 import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { SelectTime } from "./SelectTime";
-import { FileItem } from "../shared/types";
 import TextField from "@mui/material/TextField";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
-import { assert } from "tsafe/assert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import type { ShareView } from "core/usecases/fileExplorer";
 
-export type ShareDialogProps = ShareDialogProps.Close | ShareDialogProps.Open;
-export namespace ShareDialogProps {
-    type Common = {
-        onClose: () => void;
-        onRequestUrl: (params: { expirationTime: number }) => void;
-    };
+export type Props = {
+    shareView: ShareView | undefined;
+    onClose: () => void;
+    onRequestUrl: () => void;
+    onChangeShareSelectedValidityDuration: (params: {
+        validityDurationSecond: number;
+    }) => void;
+};
 
-    export type Close = Common & {
-        isOpen: false;
-    };
+export const ShareDialog = memo((props: Props) => {
+    const { shareView, onClose, onRequestUrl, onChangeShareSelectedValidityDuration } =
+        props;
 
-    export type Open = Common & {
-        isOpen: true;
-        file: FileItem;
-    } & BodyProps;
-
-    export type BodyProps = BodyProps.PrivateFileProps | BodyProps.PublicFileProps;
-
-    export namespace BodyProps {
-        export type PrivateFileProps = {
-            isPublic: false; // Clé discriminante
-            url: string | undefined;
-            isRequestingUrl: boolean;
-            validityDurationSecondOptions: number[];
-            validityDurationSecond: number;
-        };
-
-        export type PublicFileProps = {
-            isPublic: true; // Clé discriminante
-            url: string;
-        };
-    }
-}
-
-export const ShareDialog = memo((props: ShareDialogProps) => {
-    const { isOpen, onClose } = props;
     const { t } = useTranslation({ ShareDialog });
-
-    const { classes } = useStyles();
 
     return (
         <Dialog
-            isOpen={isOpen}
+            isOpen={shareView !== undefined}
             onClose={onClose}
-            body={isDialogOpen(props) ? <ShareDialogBody {...props} /> : null}
-            title={t("title")}
-            subtitle={
-                isOpen && (
-                    <DirectoryOrFileDetailed
-                        name={props.file.basename}
-                        kind={props.file.kind}
-                        isPublic={props.isPublic}
-                        className={classes.directoryDetails}
+            body={
+                shareView !== undefined ? (
+                    <Body
+                        shareView={shareView}
+                        onRequestUrl={onRequestUrl}
+                        onChangeShareSelectedValidityDuration={
+                            onChangeShareSelectedValidityDuration
+                        }
                     />
-                )
+                ) : null
             }
+            title={t("title")}
+            subtitle={shareView !== undefined ? <Subtitle shareView={shareView} /> : null}
             buttons={
                 <Button
                     autoFocus
@@ -84,115 +59,190 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
     );
 });
 
-const ShareDialogBody = memo((props: ShareDialogProps.Open) => {
-    const { t } = useTranslation({ ShareDialog });
-    const { classes } = useStyles();
+const Body = memo(
+    (props: {
+        shareView: ShareView;
+        onRequestUrl: Props["onRequestUrl"];
+        onChangeShareSelectedValidityDuration: Props["onChangeShareSelectedValidityDuration"];
+    }) => {
+        const { shareView, onRequestUrl, onChangeShareSelectedValidityDuration } = props;
 
-    const { isPublic, url, onRequestUrl } = props;
+        const { css, theme } = useStyles();
 
-    const [valueExpirationTime, setValueExpirationTime] = useState<number | undefined>(
-        isPrivateFileProps(props) ? props.validityDurationSecond : undefined
-    );
+        const rootClassName = css({
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(6),
+            marginBottom: theme.spacing(6)
+        });
+
+        return shareView.isPublic ? (
+            <BodyPublic className={rootClassName} shareView={shareView} />
+        ) : (
+            <BodyPrivate
+                className={rootClassName}
+                shareView={shareView}
+                onRequestUrl={onRequestUrl}
+                onChangeShareSelectedValidityDuration={
+                    onChangeShareSelectedValidityDuration
+                }
+            />
+        );
+    }
+);
+
+const BodyPublic = memo(
+    (props: { className?: string; shareView: ShareView.PublicFile }) => {
+        const { className, shareView } = props;
+
+        const { t } = useTranslation({ ShareDialog });
+
+        return (
+            <div className={className}>
+                <Text typo="label 1">
+                    {t("paragraph current policy", { isPublic: true })}
+                </Text>
+
+                <Text typo="body 1">
+                    {t("paragraph change policy", { isPublic: true })}
+                </Text>
+
+                <TextField
+                    label={t("label input link")}
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <CopyToClipboardIconButton textToCopy={shareView.url} />
+                            )
+                        }
+                    }}
+                    helperText={t("hint link access", {
+                        isPublic: true,
+                        expiration: undefined // TODO improve
+                    })}
+                    variant="standard"
+                    value={shareView.url}
+                />
+            </div>
+        );
+    }
+);
+
+const BodyPrivate = memo(
+    (props: {
+        className?: string;
+        shareView: ShareView.PrivateFile;
+        onRequestUrl: () => void;
+        onChangeShareSelectedValidityDuration: (params: {
+            validityDurationSecond: number;
+        }) => void;
+    }) => {
+        const {
+            className,
+            shareView,
+            onRequestUrl,
+            onChangeShareSelectedValidityDuration
+        } = props;
+
+        const { t } = useTranslation({ ShareDialog });
+
+        const { css } = useStyles();
+
+        return (
+            <div className={className}>
+                <Text typo="label 1">
+                    {t("paragraph current policy", { isPublic: false })}
+                </Text>
+
+                <Text typo="body 1">
+                    {t("paragraph change policy", { isPublic: false })}
+                </Text>
+
+                {shareView.url === undefined ? (
+                    <div
+                        className={css({
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between"
+                        })}
+                    >
+                        <SelectTime
+                            validityDurationSecond={shareView.validityDurationSecond}
+                            validityDurationSecondOptions={
+                                shareView.validityDurationSecondOptions
+                            }
+                            onChangeShareSelectedValidityDuration={
+                                onChangeShareSelectedValidityDuration
+                            }
+                        />
+                        <div
+                            className={css({
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center"
+                            })}
+                        >
+                            <Button
+                                startIcon={getIconUrlByName("Language")}
+                                variant="ternary"
+                                onClick={onRequestUrl}
+                                disabled={shareView.isSignedUrlBeingRequested}
+                            >
+                                {t("create and copy link")}
+                            </Button>
+                            {shareView.isSignedUrlBeingRequested && (
+                                <CircularProgress
+                                    className={css({
+                                        position: "absolute"
+                                    })}
+                                />
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <TextField
+                        label={t("label input link")}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <CopyToClipboardIconButton
+                                        textToCopy={shareView.url}
+                                    />
+                                )
+                            }
+                        }}
+                        helperText={t("hint link access", {
+                            isPublic: false,
+                            expiration: undefined // TODO improve
+                        })}
+                        variant="standard"
+                        value={shareView.url}
+                    />
+                )}
+            </div>
+        );
+    }
+);
+
+const Subtitle = memo((props: { shareView: ShareView }) => {
+    const { shareView } = props;
+
+    const { css, theme } = useStyles();
 
     return (
-        <div className={classes.body}>
-            <Text typo="label 1">{t("paragraph current policy", { isPublic })}</Text>
-
-            <Text typo="body 1">{t("paragraph change policy", { isPublic })}</Text>
-
-            {isPrivateFileProps(props) && url === undefined
-                ? (() => {
-                      assert(valueExpirationTime !== undefined); // Assure TypeScript que valueExpirationTime est défini ici
-                      return (
-                          <div className={classes.createLink}>
-                              <SelectTime
-                                  expirationValue={valueExpirationTime}
-                                  validityDurationSecondOptions={
-                                      props.validityDurationSecondOptions
-                                  }
-                                  onExpirationValueChange={setValueExpirationTime}
-                              />
-                              <div className={classes.createLinkButton}>
-                                  <Button
-                                      startIcon={getIconUrlByName("Language")}
-                                      variant="ternary"
-                                      onClick={() =>
-                                          onRequestUrl({
-                                              expirationTime: valueExpirationTime
-                                          })
-                                      }
-                                      disabled={props.isRequestingUrl}
-                                  >
-                                      {t("create and copy link")}
-                                  </Button>
-                                  {props.isRequestingUrl && (
-                                      <CircularProgress
-                                          className={classes.createLinkProgress}
-                                      />
-                                  )}
-                              </div>
-                          </div>
-                      );
-                  })()
-                : (() => {
-                      assert(url !== undefined); // Assure TypeScript que url est défini ici
-                      return (
-                          <TextField
-                              label={t("label input link")}
-                              slotProps={{
-                                  input: {
-                                      endAdornment: (
-                                          <CopyToClipboardIconButton textToCopy={url} />
-                                      )
-                                  }
-                              }}
-                              helperText={t("hint link access", {
-                                  isPublic,
-                                  expiration: undefined // TODO improve
-                              })}
-                              variant="standard"
-                              value={url}
-                          />
-                      );
-                  })()}
-        </div>
+        <DirectoryOrFileDetailed
+            className={css({
+                padding: theme.spacing(4)
+            })}
+            name={shareView.file.basename}
+            kind="file"
+            isPublic={shareView.isPublic}
+        />
     );
 });
 
-function isDialogOpen(props: ShareDialogProps): props is ShareDialogProps.Open {
-    return props.isOpen;
-}
+const useStyles = tss.withName({ ShareDialog }).create({});
 
-function isPrivateFileProps(
-    props: ShareDialogProps.BodyProps
-): props is ShareDialogProps.BodyProps.PrivateFileProps {
-    return !props.isPublic;
-}
-
-const useStyles = tss.withName({ ShareDialog }).create(({ theme }) => ({
-    body: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(6),
-        marginBottom: theme.spacing(6)
-    },
-    directoryDetails: {
-        padding: theme.spacing(4)
-    },
-    createLink: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between"
-    },
-    createLinkProgress: {
-        position: "absolute"
-    },
-    createLinkButton: {
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center"
-    }
-}));
 const { i18n } = declareComponentKeys<
     | "title"
     | "close"

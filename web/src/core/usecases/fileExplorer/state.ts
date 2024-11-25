@@ -368,14 +368,28 @@ export const { reducer, actions } = createUsecaseActions({
         shareClosed: state => {
             state.share = undefined;
         },
-        requestSignedUrlStarted: (
+        shareSelectedValidityDurationChanged: (
             state,
-            { payload }: { payload: { expirationTime: number } }
+            {
+                payload
+            }: {
+                payload: {
+                    validityDurationSecond: number;
+                };
+            }
         ) => {
-            const { expirationTime } = payload;
+            const { validityDurationSecond } = payload;
+
+            assert(state.share !== undefined);
+            assert(state.share.validityDurationSecondOptions !== undefined);
+            assert(
+                state.share.validityDurationSecondOptions.includes(validityDurationSecond)
+            );
+            state.share.validityDurationSecond = validityDurationSecond;
+        },
+        requestSignedUrlStarted: state => {
             assert(state.share !== undefined);
             state.share.isSignedUrlBeingRequested = true;
-            state.share.validityDurationSecond = expirationTime;
         },
         requestSignedUrlCompleted: (
             state,

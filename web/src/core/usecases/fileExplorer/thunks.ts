@@ -809,24 +809,34 @@ export const thunks = {
 
             dispatch(actions.shareClosed());
         },
+    changeShareSelectedValidityDuration:
+        (params: { validityDurationSecond: number }) =>
+        (...args) => {
+            const { validityDurationSecond } = params;
+
+            const [dispatch] = args;
+
+            dispatch(
+                actions.shareSelectedValidityDurationChanged({ validityDurationSecond })
+            );
+        },
     requestShareSignedUrl:
-        (params: { expirationTime: number }) =>
+        () =>
         async (...args) => {
-            const { expirationTime } = params;
             const [dispatch, getState] = args;
-            const state = getState()[name];
 
-            {
-                assert(state.share !== undefined);
-                assert(state.share.url === undefined);
-            }
+            const shareView = protectedSelectors.shareView(getState());
 
-            dispatch(actions.requestSignedUrlStarted({ expirationTime }));
+            assert(shareView !== null);
+            assert(shareView !== undefined);
+            assert(!shareView.isPublic);
+
+            dispatch(actions.requestSignedUrlStarted());
 
             const url = await dispatch(
                 thunks.getFileDownloadUrl({
-                    basename: state.share.fileBasename,
-                    validityDurationSecond: expirationTime
+                    basename: shareView.file.basename,
+                    validityDurationSecond: shareView.validityDurationSecond
                 })
             );
 
