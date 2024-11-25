@@ -1,27 +1,8 @@
 import { useMemo, useEffect, useReducer } from "react";
-import { useLang, getTranslation, evtLang } from "ui/i18n";
+import { useLang, getTranslation } from "ui/i18n";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
-
-export function getFormattedDate(params: { time: number }): string {
-    const { time } = params;
-
-    const date = new Date(time);
-    const lang = evtLang.state;
-
-    const isSameYear = date.getFullYear() === new Date().getFullYear();
-
-    const formattedDate = new Intl.DateTimeFormat(lang, {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: isSameYear ? undefined : "numeric",
-        hour: "numeric",
-        minute: "numeric"
-    }).format(date);
-
-    return formattedDate;
-}
+import { getFormattedDate } from "./getFormattedDate";
 
 export function useFormattedDate(params: { time: number }): string {
     const { time } = params;
@@ -29,7 +10,7 @@ export function useFormattedDate(params: { time: number }): string {
     // NOTE: So that we get a refresh when the lang is changed.
     const { lang } = useLang();
 
-    return useMemo(() => getFormattedDate({ time }), [time, lang]);
+    return useMemo(() => getFormattedDate({ time, lang }), [time, lang]);
 }
 
 export const { fromNow } = (() => {

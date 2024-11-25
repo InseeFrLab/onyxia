@@ -14,7 +14,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, useCore } from "core";
-import { useFromNow } from "ui/shared/useFormattedDate";
+import { useFromNow } from "ui/shared/formattedDate";
 import type { Link } from "type-route";
 import { routes } from "ui/routes";
 import { capitalize } from "tsafe/capitalize";

@@ -4,7 +4,7 @@ import { useEvt } from "evt/hooks";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { useCoreState, useCore } from "core";
-import { fromNow } from "ui/shared/useFormattedDate";
+import { fromNow } from "ui/shared/formattedDate";
 import { tss } from "tss";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
 import { assert } from "tsafe/assert";
