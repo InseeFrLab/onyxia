@@ -1098,7 +1098,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        envName: "RUNNING_TIME_THRESHOLD",
+        envName: "RUNNING_TIME_THRESHOLD_HOURS",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(envValue !== "", "Should have default in .env");

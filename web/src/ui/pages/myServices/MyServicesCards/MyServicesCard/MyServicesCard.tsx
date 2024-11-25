@@ -23,12 +23,12 @@ import { TextField, TextFieldProps } from "onyxia-ui/TextField";
 import MuiLink from "@mui/material/Link";
 import { env } from "env";
 
-const runningTimeThreshold = env.RUNNING_TIME_THRESHOLD;
+const THRESHOLD_MS = 1000 * 60 * 60 * env.RUNNING_TIME_THRESHOLD_HOURS;
 
 function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolean {
     const { startTime } = params;
 
-    return Date.now() - startTime > runningTimeThreshold;
+    return Date.now() - startTime > THRESHOLD_MS;
 }
 
 export type Props = {
