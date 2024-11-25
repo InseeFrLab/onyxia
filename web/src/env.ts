@@ -31,18 +31,18 @@ import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
-        "envName": "ONYXIA_API_URL",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "ONYXIA_API_URL",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
 
             return envValue;
         }
     },
     {
-        "envName": "HEADER_LOGO",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
+        envName: "HEADER_LOGO",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue, envName }): ThemedAssetUrl => {
             assert(envValue !== "", "Should have default in .env");
 
             let parsedValue: ThemedAssetUrl;
@@ -57,9 +57,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "PALETTE_OVERRIDE",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({
+        envName: "PALETTE_OVERRIDE",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): DeepPartial<PaletteBase> => {
@@ -89,9 +89,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "SPLASHSCREEN_LOGO",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "SPLASHSCREEN_LOGO",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName,
             env: env_
@@ -114,9 +114,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "SPLASHSCREEN_LOGO_SCALE_FACTOR",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "SPLASHSCREEN_LOGO_SCALE_FACTOR",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(envValue !== "Should have default in .env");
 
             const parsedValue = Number(envValue);
@@ -128,9 +128,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     },
 
     {
-        "envName": "HEADER_TEXT_BOLD",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "HEADER_TEXT_BOLD",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             if (envValue === "") {
                 return undefined;
             }
@@ -138,17 +138,17 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HEADER_TEXT_FOCUS",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "HEADER_TEXT_FOCUS",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
             return envValue;
         }
     },
     {
-        "envName": "TAB_TITLE",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "TAB_TITLE",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
 
             function sanitizeTitle(title: string) {
@@ -159,7 +159,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                         ({
                             "<": "&lt;",
                             ">": "&gt;"
-                        }[char]!)
+                        })[char]!
                 );
             }
 
@@ -167,9 +167,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "TERMS_OF_SERVICES",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({
+        envName: "TERMS_OF_SERVICES",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): Partial<Record<Language, string>> | string | undefined => {
@@ -222,9 +222,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "FAVICON",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({
+        envName: "FAVICON",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName,
             env: env_
@@ -247,9 +247,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "FONT",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "FONT",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(envValue !== "Should have default in .env");
 
             let parsedValue: unknown;
@@ -274,8 +274,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             };
 
             const zParsedValue = z.object({
-                "fontFamily": z.string(),
-                "dirUrl": z.string(),
+                fontFamily: z.string(),
+                dirUrl: z.string(),
                 "400": z.string(),
                 "400-italic": z.string().optional(),
                 "500": z.string().optional(),
@@ -319,9 +319,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "LEFTBAR_LINKS",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): LinkFromConfig[] => {
+        envName: "LEFTBAR_LINKS",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }): LinkFromConfig[] => {
             if (envValue === "") {
                 return [];
             }
@@ -340,8 +340,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 zLinkFromConfig.superRefine((data, ctx) => {
                     if (data.endIcon !== undefined) {
                         ctx.addIssue({
-                            "code": z.ZodIssueCode.custom,
-                            "message": `You can specify endIcons in ${envName}, see: ${JSON.stringify(
+                            code: z.ZodIssueCode.custom,
+                            message: `You can specify endIcons in ${envName}, see: ${JSON.stringify(
                                 data
                             )}`
                         });
@@ -349,10 +349,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
                     if (data.startIcon === undefined && data.icon === undefined) {
                         ctx.addIssue({
-                            "code": z.ZodIssueCode.custom,
-                            "message": `You must chose an icon for ${JSON.stringify(
-                                data
-                            )}`
+                            code: z.ZodIssueCode.custom,
+                            message: `You must chose an icon for ${JSON.stringify(data)}`
                         });
                     }
                 })
@@ -362,7 +360,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 type Got = ReturnType<(typeof zParsedValue)["parse"]>;
                 type Expected = ParsedValue;
 
-                // NOTE: Here the assert<Equals<>> type assertion is too strict so we 
+                // NOTE: Here the assert<Equals<>> type assertion is too strict so we
                 // test double inclusion // to ensure that the types are the same.
                 assert<Got extends Expected ? true : false>();
                 assert<Expected extends Got ? true : false>();
@@ -381,9 +379,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HEADER_LINKS",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "HEADER_LINKS",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             if (envValue === "") {
                 return [];
             }
@@ -402,8 +400,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 zLinkFromConfig.superRefine((data, ctx) => {
                     if (data.endIcon !== undefined) {
                         ctx.addIssue({
-                            "code": z.ZodIssueCode.custom,
-                            "message": `You can specify endIcons in ${envName}, see: ${JSON.stringify(
+                            code: z.ZodIssueCode.custom,
+                            message: `You can specify endIcons in ${envName}, see: ${JSON.stringify(
                                 data
                             )}`
                         });
@@ -411,10 +409,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
                     if (data.startIcon === undefined && data.icon === undefined) {
                         ctx.addIssue({
-                            "code": z.ZodIssueCode.custom,
-                            "message": `You must chose an icon for ${JSON.stringify(
-                                data
-                            )}`
+                            code: z.ZodIssueCode.custom,
+                            message: `You must chose an icon for ${JSON.stringify(data)}`
                         });
                     }
                 })
@@ -441,9 +437,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "DISABLE_HOMEPAGE",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "DISABLE_HOMEPAGE",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -455,9 +451,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_LOGO",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_LOGO",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName,
             env: env_
@@ -484,9 +480,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_MAIN_ASSET",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_MAIN_ASSET",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): ThemedAssetUrl | undefined => {
@@ -510,9 +506,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_MAIN_ASSET_X_OFFSET",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "HOMEPAGE_MAIN_ASSET_X_OFFSET",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(envValue !== "", "Should have default in .env");
 
             try {
@@ -523,9 +519,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_MAIN_ASSET_Y_OFFSET",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "HOMEPAGE_MAIN_ASSET_Y_OFFSET",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(envValue !== "Should have default in .env");
 
             try {
@@ -536,9 +532,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(envValue !== "", "Should have default in .env");
 
             const parsedValue = Number(envValue);
@@ -549,9 +545,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_HERO_TEXT",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_HERO_TEXT",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): LocalizedString | undefined => {
@@ -584,9 +580,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_HERO_TEXT_AUTHENTICATED",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_HERO_TEXT_AUTHENTICATED",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName,
             env: env_
@@ -637,9 +633,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_BELOW_HERO_TEXT",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_BELOW_HERO_TEXT",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): LocalizedString | undefined => {
@@ -672,9 +668,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_BELOW_HERO_TEXT_AUTHENTICATED",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_BELOW_HERO_TEXT_AUTHENTICATED",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName,
             env: env_
@@ -725,9 +721,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_CALL_TO_ACTION_BUTTON",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_CALL_TO_ACTION_BUTTON",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): LinkFromConfig | undefined | null => {
@@ -764,9 +760,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({
+        envName: "HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName,
             env: env_
@@ -806,9 +802,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_CARDS",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "HOMEPAGE_CARDS",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             if (envValue === "") {
                 return undefined;
             }
@@ -830,10 +826,10 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
             const zParsedValue = z.array(
                 z.object({
-                    "pictogram": zAssetVariantUrl,
-                    "title": zLocalizedString,
-                    "description": zLocalizedString,
-                    "button": zLinkFromConfig
+                    pictogram: zAssetVariantUrl,
+                    title: zLocalizedString,
+                    description: zLocalizedString,
+                    button: zLinkFromConfig
                 })
             );
 
@@ -858,9 +854,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "BACKGROUND_ASSET",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({
+        envName: "BACKGROUND_ASSET",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): ThemedAssetUrl | undefined => {
@@ -870,8 +866,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
             if (envValue === "") {
                 return {
-                    "dark": onyxiaNeumorphismDarkModeUrl,
-                    "light": onyxiaNeumorphismLightModeUrl
+                    dark: onyxiaNeumorphismDarkModeUrl,
+                    light: onyxiaNeumorphismLightModeUrl
                 };
             }
 
@@ -887,9 +883,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "DISABLE_AUTO_LAUNCH",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "DISABLE_AUTO_LAUNCH",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -901,10 +897,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "AUTHENTICATION_GLOBALLY_REQUIRED",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-
+        envName: "AUTHENTICATION_GLOBALLY_REQUIRED",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -916,9 +911,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HEADER_HIDE_ONYXIA",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "HEADER_HIDE_ONYXIA",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -930,9 +925,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "GLOBAL_ALERT",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "GLOBAL_ALERT",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             if (envValue === "") {
                 return undefined;
             }
@@ -944,8 +939,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
             if (!getIsJSON5ObjectOrArray(envValue)) {
                 return id<ParsedValue>({
-                    "severity": "info" as const,
-                    "message": envValue
+                    severity: "info" as const,
+                    message: envValue
                 });
             }
 
@@ -972,14 +967,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 assert(is<LocalizedString>(parsedValue));
 
                 return id<ParsedValue>({
-                    "severity": "info" as const,
-                    "message": parsedValue
+                    severity: "info" as const,
+                    message: parsedValue
                 });
             }
 
             const zParsedValue = z.object({
-                "severity": z.enum(["error", "warning", "info", "success"]),
-                "message": zLocalizedString
+                severity: z.enum(["error", "warning", "info", "success"]),
+                message: zLocalizedString
             });
 
             {
@@ -1003,9 +998,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -1017,9 +1012,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "DISABLE_COMMAND_BAR",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        envName: "DISABLE_COMMAND_BAR",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -1031,9 +1026,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "ENABLED_LANGUAGES",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }): readonly Language[] => {
+        envName: "ENABLED_LANGUAGES",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }): readonly Language[] => {
             try {
                 if (envValue === "") {
                     return languages;
@@ -1062,72 +1057,71 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "ONYXIA_VERSION",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) =>
+        envName: "ONYXIA_VERSION",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) =>
             envValue === "" ? undefined : envValue
     },
     {
-        "envName": "ONYXIA_VERSION_URL",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) =>
+        envName: "ONYXIA_VERSION_URL",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) =>
             envValue === "" ? undefined : envValue
     },
     {
-        "envName": "SAMPLE_DATASET_URL",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "SAMPLE_DATASET_URL",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
             return envValue;
         }
     },
     {
-        "envName": "QUOTA_WARNING_THRESHOLD",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-
-            const n= Number.parseFloat(envValue.trim().replace(/%$/, ""));
+        envName: "QUOTA_WARNING_THRESHOLD",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            const n = Number.parseFloat(envValue.trim().replace(/%$/, ""));
 
             if (isNaN(n)) {
-                throw new Error(`${envName} is not well formatted it should be "75%" or "75" or "0.75"`);
+                throw new Error(
+                    `${envName} is not well formatted it should be "75%" or "75" or "0.75"`
+                );
             }
 
-            if (n <= 1 ){
+            if (n <= 1) {
                 return n;
             }
 
             assert(n <= 100, `${envName} ${envValue} is not a valid percentage`);
 
             return n / 100;
-
         }
     },
     {
-        "envName": "QUOTA_CRITICAL_THRESHOLD",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-
-            const n= Number.parseFloat(envValue.trim().replace(/%$/, ""));
+        envName: "QUOTA_CRITICAL_THRESHOLD",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            const n = Number.parseFloat(envValue.trim().replace(/%$/, ""));
 
             if (isNaN(n)) {
-                throw new Error(`${envName} is not well formatted it should be "95%" or "95" or "0.95"`);
+                throw new Error(
+                    `${envName} is not well formatted it should be "95%" or "95" or "0.95"`
+                );
             }
 
-            if (n <= 1 ){
+            if (n <= 1) {
                 return n;
             }
 
             assert(n <= 100, `${envName} ${envValue} is not a valid percentage`);
 
             return n / 100;
-
         }
     },
     {
-        "envName": "SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-
+        envName: "SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -1136,50 +1130,49 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             );
 
             return envValue === "true";
-
         }
     },
     {
-        "envName": "S3_DOCUMENTATION_LINK",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "S3_DOCUMENTATION_LINK",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
             return envValue;
         }
     },
     {
-        "envName": "VAULT_DOCUMENTATION_LINK",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        envName: "VAULT_DOCUMENTATION_LINK",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
             return envValue;
         }
     },
     {
-        "envName": "DARK_MODE",
-        "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName })=> {
-
+        envName: "DARK_MODE",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             assert(
                 envValue === "" || envValue === "true" || envValue === "false",
                 `${envName} should either be "true" or "false" or "" (not defined)}`
             );
 
-            switch(envValue){
-                case "true": return true;
-                case "false": return false;
-                case "": return undefined;
+            switch (envValue) {
+                case "true":
+                    return true;
+                case "false":
+                    return false;
+                case "":
+                    return undefined;
             }
 
             assert<Equals<typeof envValue, never>>(false);
-            
         }
     },
     {
-        "envName": "LIST_ALLOWED_EMAIL_DOMAINS",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-
+        envName: "LIST_ALLOWED_EMAIL_DOMAINS",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
@@ -1188,13 +1181,12 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             );
 
             return envValue === "true";
-
         }
     },
     {
-        "envName": "CONTACT_FOR_ADDING_EMAIL_DOMAIN",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({
+        envName: "CONTACT_FOR_ADDING_EMAIL_DOMAIN",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
             envValue,
             envName
         }): LocalizedString | undefined => {
@@ -1228,7 +1220,10 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     }
 ]);
 
-type EnvName = Exclude<keyof ImportMetaEnv, "MODE" | "DEV" | "PROD" | "BASE_URL" | "PUBLIC_URL">;
+type EnvName = Exclude<
+    keyof ImportMetaEnv,
+    "MODE" | "DEV" | "PROD" | "BASE_URL" | "PUBLIC_URL"
+>;
 
 type Entry<N extends EnvName> = {
     envName: N;
@@ -1250,12 +1245,12 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
     } & { PUBLIC_URL: string };
     injectTransferableEnvsInQueryParams: (url: string) => string;
 } {
-
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
 
     const injectFunctions: ((url: string) => string)[] = [];
 
-    const kcContext = window.kcContext?.themeType === "login" ? window.kcContext : undefined;
+    const kcContext =
+        window.kcContext?.themeType === "login" ? window.kcContext : undefined;
 
     //NOTE: Initially we where in CRA so we used PUBLIC_URL,
     // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
@@ -1266,12 +1261,12 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         const BASE_URL = import.meta.env.BASE_URL;
 
         return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
-    })()
+    })();
 
     const env: any = new Proxy(
         {},
         {
-            "get": (...[, envName]) => {
+            get: (...[, envName]) => {
                 assert(typeof envName === "string");
 
                 if (envName === "PUBLIC_URL") {
@@ -1351,8 +1346,8 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 }
 
                 const result = retrieveParamFromUrl({
-                    "url": window.location.href,
-                    "name": envName
+                    url: window.location.href,
+                    name: envName
                 });
 
                 if (!result.wasPresent) {
@@ -1364,10 +1359,11 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 updateSearchBarUrl(newUrl);
 
                 if (isProductionKeycloak) {
+                    const kcEnvName = `ONYXIA_${envName}` as const;
 
-                    const kcEnvName= `ONYXIA_${envName}` as const;
-
-                    const kcEnvValue = isAmong(kcEnvNames, kcEnvName) ? kcContext.properties[kcEnvName] : "";
+                    const kcEnvValue = isAmong(kcEnvNames, kcEnvName)
+                        ? kcContext.properties[kcEnvName]
+                        : "";
 
                     if (kcEnvValue !== "") {
                         localStorage.removeItem(localStorageKey);
@@ -1409,10 +1405,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         };
 
         const replacePUBLIC_URL = (envValue: string) =>
-            envValue.replace(
-                /%PUBLIC_URL%/g,
-                PUBLIC_URL
-            );
+            envValue.replace(/%PUBLIC_URL%/g, PUBLIC_URL);
 
         if (isUsedInKeycloakTheme) {
             const envValue = getEnvValue();
@@ -1422,8 +1415,8 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     url =>
                         addParamToUrl({
                             url,
-                            "name": envName,
-                            "value": envValue.replace(
+                            name: envName,
+                            value: envValue.replace(
                                 /%PUBLIC_URL%\/custom-resources/g,
                                 `${window.location.origin}${PUBLIC_URL}/custom-resources`
                             )
@@ -1432,14 +1425,14 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             }
 
             parsedValueOrGetterByEnvName[envName] = validateAndParseOrGetDefault({
-                "envValue": replacePUBLIC_URL(envValue),
+                envValue: replacePUBLIC_URL(envValue),
                 envName,
                 env
             });
         } else {
             parsedValueOrGetterByEnvName[envName] = memoize(() =>
                 validateAndParseOrGetDefault({
-                    "envValue": replacePUBLIC_URL(getEnvValue()),
+                    envValue: replacePUBLIC_URL(getEnvValue()),
                     envName,
                     env
                 })
@@ -1491,4 +1484,3 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     return { env, injectTransferableEnvsInQueryParams };
 }
-
