@@ -58,8 +58,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         case "create directory":
                             return false;
                         case "delete":
+                            return selectedItemKind === "none";
                         case "share":
-                            return selectedItemKind !== "file";
                         case "copy path":
                             return selectedItemKind !== "file";
                     }
