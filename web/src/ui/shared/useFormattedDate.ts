@@ -52,7 +52,7 @@ export const { fromNow } = (() => {
         const YEAR = 365 * DAY;
 
         function getUnits(): Unit[] {
-            const { t } = getTranslation("formatedDate");
+            const { t } = getTranslation("formattedDate");
 
             return divisorKeys.map(divisorKey => ({
                 divisor: (() => {
@@ -177,5 +177,5 @@ const { i18n } = declareComponentKeys<
           K: "futureN";
           P: { divisorKey: DivisorKey };
       }
->()("formatedDate");
+>()("formattedDate");
 export type I18n = typeof i18n;

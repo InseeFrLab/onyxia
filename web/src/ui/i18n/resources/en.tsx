@@ -923,7 +923,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
     CommandBar: {
         ok: "Ok"
     },
-    formatedDate: {
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

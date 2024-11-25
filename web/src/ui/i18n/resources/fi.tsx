@@ -929,7 +929,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     CommandBar: {
         ok: "ok"
     },
-    formatedDate: {
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

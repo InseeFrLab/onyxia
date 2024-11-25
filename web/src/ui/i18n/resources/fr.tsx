@@ -947,7 +947,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     CommandBar: {
         ok: "ok"
     },
-    formatedDate: {
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

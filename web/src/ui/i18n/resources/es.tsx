@@ -937,7 +937,7 @@ export const translations: Translations<"en"> = {
     CommandBar: {
         ok: "Aceptar"
     },
-    formatedDate: {
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

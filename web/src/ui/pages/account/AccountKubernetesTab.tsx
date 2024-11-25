@@ -14,7 +14,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, useCore } from "core";
-import { useFromNow } from "ui/tools/useFormatedDate";
+import { useFromNow } from "ui/shared/useFormattedDate";
 import { getIconUrlByName } from "lazy-icons";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));

@@ -943,7 +943,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     CommandBar: {
         ok: "Ok"
     },
-    formatedDate: {
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

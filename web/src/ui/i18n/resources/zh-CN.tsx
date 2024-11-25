@@ -876,7 +876,7 @@ ${
     CommandBar: {
         ok: "是"
     },
-    formatedDate: {
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
