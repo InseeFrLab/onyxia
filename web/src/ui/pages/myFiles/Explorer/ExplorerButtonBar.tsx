@@ -138,8 +138,8 @@ const buttonIds = [
     "new",
     "create directory",
     "delete",
-    "copy path",
-    "share"
+    "share",
+    "copy path"
 ] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
