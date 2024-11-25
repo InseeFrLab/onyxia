@@ -937,9 +937,7 @@ export const translations: Translations<"en"> = {
     CommandBar: {
         ok: "Aceptar"
     },
-    moment: {
-        "date format": ({ isSameYear }) =>
-            `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+    formatedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

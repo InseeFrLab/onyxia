@@ -1,5 +1,4 @@
 import { useMemo, useEffect, useReducer } from "react";
-import moment from "moment";
 import { useLang, getTranslation, evtLang } from "ui/i18n";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
@@ -8,13 +7,20 @@ export function getFormattedDate(params: { time: number }): string {
     const { time } = params;
 
     const date = new Date(time);
+    const lang = evtLang.state;
 
     const isSameYear = date.getFullYear() === new Date().getFullYear();
 
-    const lang = evtLang.state;
-    const { t } = getTranslation("moment");
+    const formattedDate = new Intl.DateTimeFormat(lang, {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: isSameYear ? undefined : "numeric",
+        hour: "numeric",
+        minute: "numeric"
+    }).format(date);
 
-    return moment(date).locale(lang).format(t("date format", { isSameYear }));
+    return formattedDate;
 }
 
 export function useFormattedDate(params: { time: number }): string {
@@ -24,24 +30,6 @@ export function useFormattedDate(params: { time: number }): string {
     const { lang } = useLang();
 
     return useMemo(() => getFormattedDate({ time }), [time, lang]);
-}
-
-export function useValidUntil(params: { millisecondsLeft: number }): string {
-    const { millisecondsLeft } = params;
-
-    const { lang } = useLang();
-
-    const validUntil = useMemo(
-        () =>
-            moment()
-                .locale(lang)
-                .add(millisecondsLeft, "milliseconds")
-                .calendar()
-                .toLowerCase(),
-        [lang, millisecondsLeft]
-    );
-
-    return validUntil;
 }
 
 export const { fromNow } = (() => {
@@ -64,7 +52,7 @@ export const { fromNow } = (() => {
         const YEAR = 365 * DAY;
 
         function getUnits(): Unit[] {
-            const { t } = getTranslation("moment");
+            const { t } = getTranslation("formatedDate");
 
             return divisorKeys.map(divisorKey => ({
                 divisor: (() => {
@@ -174,10 +162,6 @@ type DivisorKey = (typeof divisorKeys)[number];
 
 const { i18n } = declareComponentKeys<
     | {
-          K: "date format";
-          P: { isSameYear: boolean };
-      }
-    | {
           K: "past1";
           P: { divisorKey: DivisorKey };
       }
@@ -193,5 +177,5 @@ const { i18n } = declareComponentKeys<
           K: "futureN";
           P: { divisorKey: DivisorKey };
       }
->()("moment");
+>()("formatedDate");
 export type I18n = typeof i18n;

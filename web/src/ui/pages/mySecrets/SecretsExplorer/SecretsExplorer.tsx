@@ -26,7 +26,7 @@ import { SecretsExplorerButtonBar } from "./SecretsExplorerButtonBar";
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
 import { ExplorerIcon } from "./ExplorerIcon";
-import { getFormattedDate } from "ui/shared/useMoment";
+import { getFormattedDate } from "ui/tools/useFormatedDate";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
