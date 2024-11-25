@@ -26,7 +26,7 @@ import { SecretsExplorerButtonBar } from "./SecretsExplorerButtonBar";
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
 import { ExplorerIcon } from "./ExplorerIcon";
-import { getFormattedDate } from "ui/shared/useMoment";
+import { getFormattedDate } from "ui/shared/formattedDate";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
@@ -297,14 +297,13 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
     });
 
     const { formattedDate } = (function useClosure() {
-        // NOTE: For enforcing refresh if lang is changed
-        useLang();
+        const { lang } = useLang();
 
         const formattedDate = !props.isFileOpen ? undefined : props.openFileTime ===
           undefined ? (
             <>&nbsp;</>
         ) : (
-            getFormattedDate({ time: props.openFileTime })
+            getFormattedDate({ time: props.openFileTime, lang })
         );
 
         return { formattedDate };

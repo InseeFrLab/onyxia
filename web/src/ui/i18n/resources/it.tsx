@@ -938,9 +938,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     CommandBar: {
         ok: "ok"
     },
-    moment: {
-        "date format": ({ isSameYear }) =>
-            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

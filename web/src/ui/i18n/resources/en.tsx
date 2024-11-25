@@ -923,9 +923,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
     CommandBar: {
         ok: "Ok"
     },
-    moment: {
-        "date format": ({ isSameYear }) =>
-            `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

@@ -934,9 +934,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     CommandBar: {
         ok: "ok"
     },
-    moment: {
-        "date format": ({ isSameYear }) =>
-            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+    formattedDate: {
         past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":

@@ -2,7 +2,7 @@ import { memo } from "react";
 import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
-import { useFromNow } from "ui/shared/useMoment";
+import { useFromNow } from "ui/shared/formattedDate";
 import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {

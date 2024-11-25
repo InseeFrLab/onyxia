@@ -80,7 +80,7 @@ export type ComponentKey =
     | import("ui/pages/dataExplorer/DataExplorer").I18n
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
-    | import("ui/shared/useMoment").I18n
+    | import("ui/shared/formattedDate/useFormattedDate").I18n
     | import("ui/shared/CopyToClipboardIconButton").I18n
     | import("ui/shared/Datagrid/CustomDataGrid").I18n
     | import("ui/shared/Datagrid/CustomDataGridToolbarDensitySelector").I18n
