@@ -21,8 +21,9 @@ import type { Service } from "core/usecases/serviceManagement";
 import { assert, type Equals } from "tsafe/assert";
 import { TextField, TextFieldProps } from "onyxia-ui/TextField";
 import MuiLink from "@mui/material/Link";
+import { env } from "env";
 
-const runningTimeThreshold = 7 * 24 * 3600 * 1000;
+const runningTimeThreshold = env.RUNNING_TIME_THRESHOLD;
 
 function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolean {
     const { startTime } = params;

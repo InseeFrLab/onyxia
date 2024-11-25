@@ -117,7 +117,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         envName: "SPLASHSCREEN_LOGO_SCALE_FACTOR",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue, envName }) => {
-            assert(envValue !== "Should have default in .env");
+            assert(envValue !== "", "Should have default in .env");
 
             const parsedValue = Number(envValue);
 
@@ -1095,6 +1095,19 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             assert(n <= 100, `${envName} ${envValue} is not a valid percentage`);
 
             return n / 100;
+        }
+    },
+    {
+        envName: "RUNNING_TIME_THRESHOLD",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            assert(envValue !== "", "Should have default in .env");
+
+            const parsedValue = Number(envValue);
+
+            assert(!isNaN(parsedValue), `${envName} is not a number`);
+
+            return parsedValue;
         }
     },
     {
