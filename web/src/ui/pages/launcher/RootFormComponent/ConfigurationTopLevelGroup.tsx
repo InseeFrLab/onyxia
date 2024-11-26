@@ -50,7 +50,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
                       {
                           helmValuesPath: ["Global"],
                           description: "configuration that applies to all charts",
-                          title: undefined,
                           canAdd: false,
                           canRemove: false,
                           nodes: global
@@ -62,7 +61,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
                       {
                           helmValuesPath: ["Miscellaneous"],
                           // TODO: i18n
-                          title: undefined,
                           description: "Top level configuration values",
                           canAdd: false,
                           canRemove: false,
@@ -74,7 +72,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
                     return {
                         helmValuesPath: [node.title],
                         description: node.description,
-                        title: node.title,
                         canAdd: false,
                         canRemove: false,
                         nodes: [
@@ -95,7 +92,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
                 return {
                     helmValuesPath: node.helmValuesPath,
                     description: node.description,
-                    title: node.title,
                     canAdd: node.canAdd,
                     canRemove: node.canRemove,
                     nodes: node.nodes
@@ -109,12 +105,11 @@ export function ConfigurationTopLevelGroup(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             {accordionEntries.map(
-                ({ helmValuesPath, description, title, canAdd, canRemove, nodes }) => (
+                ({ helmValuesPath, description, canAdd, canRemove, nodes }) => (
                     <Accordion
                         key={JSON.stringify(helmValuesPath)}
                         helmValuesPath={helmValuesPath}
                         description={description}
-                        title={title}
                         canAdd={canAdd}
                         canRemove={canRemove}
                         nodes={nodes}

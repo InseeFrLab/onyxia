@@ -35,7 +35,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             type: "group",
             helmValuesPath: [],
             description: undefined,
-            title: undefined,
             nodes: [
                 {
                     type: "field",
@@ -88,7 +87,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             type: "group",
             helmValuesPath: [],
             description: undefined,
-            title: undefined,
             nodes: [
                 {
                     type: "field",
@@ -119,7 +117,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 properties: {
                     persistence: {
                         description: "Configuration for persistence",
-                        title: "Persistence",
                         type: "object",
                         properties: {
                             enabled: {
@@ -158,13 +155,11 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             type: "group",
             helmValuesPath: [],
             description: undefined,
-            title: undefined,
             nodes: [
                 {
                     type: "group",
                     helmValuesPath: ["persistence"],
                     description: "Configuration for persistence",
-                    title: "Persistence",
                     nodes: [
                         {
                             type: "field",
@@ -196,7 +191,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 properties: {
                     persistence: {
                         description: "Configuration for persistence",
-                        title: "Persistence",
                         type: "object",
                         properties: {
                             enabled: {
@@ -234,13 +228,11 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             type: "group",
             helmValuesPath: [],
             description: undefined,
-            title: undefined,
             nodes: [
                 {
                     type: "group",
                     helmValuesPath: ["persistence"],
                     description: "Configuration for persistence",
-                    title: "Persistence",
                     nodes: [
                         {
                             type: "field",
@@ -297,7 +289,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             type: "group",
             helmValuesPath: [],
             description: undefined,
-            title: undefined,
             nodes: [
                 {
                     type: "field",
@@ -315,13 +306,11 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     type: "group",
                     helmValuesPath: ["b"],
                     description: undefined,
-                    title: undefined,
                     nodes: [
                         {
                             type: "group",
                             helmValuesPath: ["b", 0],
                             description: undefined,
-                            title: undefined,
                             nodes: [
                                 {
                                     type: "field",

@@ -22,7 +22,6 @@ type Props = {
     className?: string;
     helmValuesPath: (string | number)[];
     description: string | undefined;
-    title: string | undefined;
     nodes: (FormFieldGroup | FormField)[];
     canAdd: boolean;
     canRemove: boolean;
@@ -34,7 +33,6 @@ export function Accordion(props: Props) {
         className,
         helmValuesPath,
         description,
-        title,
         nodes,
         canAdd,
         canRemove,
@@ -136,10 +134,6 @@ export function Accordion(props: Props) {
             >
                 <Text typo="label 1" componentProps={{ lang: "und" }}>
                     {(() => {
-                        if (title !== undefined) {
-                            return title;
-                        }
-
                         const lastSegment = helmValuesPath[helmValuesPath.length - 1];
 
                         assert(typeof lastSegment === "string");

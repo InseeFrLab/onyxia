@@ -18,7 +18,7 @@ export type FormFieldGroup = {
     type: "group";
     helmValuesPath: (string | number)[];
     description: string | undefined;
-    title: string | undefined;
+
     nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;

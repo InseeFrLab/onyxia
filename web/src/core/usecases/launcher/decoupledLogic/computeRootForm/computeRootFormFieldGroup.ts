@@ -358,7 +358,6 @@ function computeRootFormFieldGroup_rec(params: {
                 type: "group",
                 helmValuesPath,
                 description: helmValuesSchema.description,
-                title: helmValuesSchema.title ?? undefined,
                 nodes: Object.entries(helmValuesSchema.properties)
                     .map(([segment, helmValuesSchema_child]) =>
                         computeRootFormFieldGroup_rec({
@@ -389,7 +388,6 @@ function computeRootFormFieldGroup_rec(params: {
                 type: "group",
                 helmValuesPath,
                 description: helmValuesSchema.description,
-                title: undefined,
                 nodes: values
                     .map((...[, index]) =>
                         computeRootFormFieldGroup_rec({
