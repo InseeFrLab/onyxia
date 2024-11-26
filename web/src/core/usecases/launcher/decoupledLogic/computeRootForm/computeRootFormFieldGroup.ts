@@ -127,31 +127,31 @@ function computeRootFormFieldGroup_rec(params: {
         return undefined;
     }
 
-    const getTitle = () => {
-        assert(helmValuesPath.length !== 0);
+    const title = (() => {
+        const { title } = helmValuesSchema;
+
+        if (title !== undefined) {
+            return title;
+        }
 
         const lastSegment = helmValuesPath[helmValuesPath.length - 1];
 
-        let title =
-            helmValuesSchema.title ??
-            (() => {
-                if (typeof lastSegment === "number") {
-                    assert(helmValuesPath.length !== 1);
-
-                    const secondToLastSegment = helmValuesPath[helmValuesPath.length - 2];
-
-                    return `${secondToLastSegment}`;
-                }
-
-                return lastSegment;
-            })();
-
-        if (typeof lastSegment === "number") {
-            title = `${title} ${lastSegment}`;
+        if (lastSegment === undefined) {
+            return "<root>";
         }
 
-        return title;
-    };
+        if (typeof lastSegment === "string") {
+            return lastSegment;
+        }
+
+        const secondToLastSegment = helmValuesPath[helmValuesPath.length - 2];
+
+        if (secondToLastSegment === undefined) {
+            return `item ${lastSegment}`;
+        }
+
+        return `${secondToLastSegment} ${lastSegment}`;
+    })();
 
     const isReadonly =
         (helmValuesSchema["x-onyxia"]?.readonly ?? false) ||
@@ -189,7 +189,7 @@ function computeRootFormFieldGroup_rec(params: {
         return id<FormField.YamlCodeBlock>({
             type: "field",
             isReadonly,
-            title: getTitle(),
+            title,
             fieldType: "yaml code block",
             helmValuesPath,
             description: helmValuesSchema.description,
@@ -216,7 +216,7 @@ function computeRootFormFieldGroup_rec(params: {
 
         return id<FormField.Select>({
             type: "field",
-            title: getTitle(),
+            title,
             isReadonly,
             fieldType: "select",
             helmValuesPath,
@@ -257,7 +257,7 @@ function computeRootFormFieldGroup_rec(params: {
 
         return id<FormField.Slider>({
             type: "field",
-            title: getTitle(),
+            title,
             isReadonly,
             fieldType: "slider",
             helmValuesPath,
@@ -340,7 +340,7 @@ function computeRootFormFieldGroup_rec(params: {
                     ...(() => {
                         switch (sliderExtremity) {
                             case "down":
-                                return { sliderExtremity: "down", title: getTitle() };
+                                return { sliderExtremity: "down", title };
                             case "up":
                                 return { sliderExtremity: "up" };
                         }
@@ -357,6 +357,7 @@ function computeRootFormFieldGroup_rec(params: {
             return id<FormFieldGroup>({
                 type: "group",
                 helmValuesPath,
+                title,
                 description: helmValuesSchema.description,
                 nodes: Object.entries(helmValuesSchema.properties)
                     .map(([segment, helmValuesSchema_child]) =>
@@ -387,6 +388,7 @@ function computeRootFormFieldGroup_rec(params: {
             return id<FormFieldGroup>({
                 type: "group",
                 helmValuesPath,
+                title,
                 description: helmValuesSchema.description,
                 nodes: values
                     .map((...[, index]) =>
@@ -405,7 +407,7 @@ function computeRootFormFieldGroup_rec(params: {
         case "boolean":
             return id<FormField.Checkbox>({
                 type: "field",
-                title: getTitle(),
+                title,
                 isReadonly,
                 fieldType: "checkbox",
                 helmValuesPath,
@@ -421,7 +423,7 @@ function computeRootFormFieldGroup_rec(params: {
         case "string":
             return id<FormField.TextField>({
                 type: "field",
-                title: getTitle(),
+                title,
                 isReadonly,
                 fieldType: "text field",
                 helmValuesPath,
@@ -441,7 +443,7 @@ function computeRootFormFieldGroup_rec(params: {
         case "number":
             return id<FormField.NumberField>({
                 type: "field",
-                title: getTitle(),
+                title,
                 isReadonly,
                 fieldType: "number field",
                 helmValuesPath,

@@ -66,6 +66,7 @@ describe(symToStr({ computeRootForm }), () => {
                 {
                     type: "group",
                     helmValuesPath: ["services"],
+                    title: "services",
                     description: undefined,
                     nodes: [
                         {
@@ -207,6 +208,7 @@ describe(symToStr({ computeRootForm }), () => {
                 {
                     type: "group",
                     helmValuesPath: ["services"],
+                    title: "services",
                     description: undefined,
                     nodes: [
                         {

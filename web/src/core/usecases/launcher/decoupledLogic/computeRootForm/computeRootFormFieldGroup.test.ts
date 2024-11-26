@@ -34,6 +34,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         const expected: FormFieldGroup = {
             type: "group",
             helmValuesPath: [],
+            title: "<root>",
             description: undefined,
             nodes: [
                 {
@@ -86,6 +87,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         const expected: FormFieldGroup = {
             type: "group",
             helmValuesPath: [],
+            title: "<root>",
             description: undefined,
             nodes: [
                 {
@@ -154,11 +156,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         const expected: FormFieldGroup = {
             type: "group",
             helmValuesPath: [],
+            title: "<root>",
             description: undefined,
             nodes: [
                 {
                     type: "group",
                     helmValuesPath: ["persistence"],
+                    title: "persistence",
                     description: "Configuration for persistence",
                     nodes: [
                         {
@@ -191,6 +195,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 properties: {
                     persistence: {
                         description: "Configuration for persistence",
+                        title: "persistence!",
                         type: "object",
                         properties: {
                             enabled: {
@@ -227,11 +232,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         const expected: FormFieldGroup = {
             type: "group",
             helmValuesPath: [],
+            title: "<root>",
             description: undefined,
             nodes: [
                 {
                     type: "group",
                     helmValuesPath: ["persistence"],
+                    title: "persistence!",
                     description: "Configuration for persistence",
                     nodes: [
                         {
@@ -288,6 +295,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         const expected: FormFieldGroup = {
             type: "group",
             helmValuesPath: [],
+            title: "<root>",
             description: undefined,
             nodes: [
                 {
@@ -305,11 +313,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 {
                     type: "group",
                     helmValuesPath: ["b"],
+                    title: "b",
                     description: undefined,
                     nodes: [
                         {
                             type: "group",
                             helmValuesPath: ["b", 0],
+                            title: "b 0",
                             description: undefined,
                             nodes: [
                                 {

@@ -4,9 +4,10 @@ import type {
     FormFieldGroup,
     FormField
 } from "core/usecases/launcher/decoupledLogic/formTypes";
-import { Accordion } from "./Accordion";
+import { Accordion, type Props as PropsOfAccordion } from "./Accordion";
 import type { FormCallbacks } from "./FormCallbacks";
 import { id } from "tsafe/id";
+import { createObjectThatThrowsIfAccessed } from "clean-architecture/createObjectThatThrowsIfAccessed";
 
 type Props = {
     className?: string;
@@ -43,34 +44,42 @@ export function ConfigurationTopLevelGroup(props: Props) {
             return { main_formFields, main_formFieldGroups };
         })();
 
-        const accordionEntries = [
+        type AccordionEntry = Omit<PropsOfAccordion, "callbacks">;
+
+        const accordionEntries: AccordionEntry[] = [
             ...(global.length === 0
                 ? []
                 : [
-                      {
-                          helmValuesPath: ["Global"],
+                      id<AccordionEntry>({
+                          helmValuesPath:
+                              createObjectThatThrowsIfAccessed<(string | number)[]>(),
+                          title: "global",
                           description: "configuration that applies to all charts",
                           canAdd: false,
                           canRemove: false,
                           nodes: global
-                      }
+                      })
                   ]),
             ...(main_formFields.length === 0
                 ? []
                 : [
-                      {
-                          helmValuesPath: ["Miscellaneous"],
+                      id<AccordionEntry>({
+                          helmValuesPath:
+                              createObjectThatThrowsIfAccessed<(string | number)[]>(),
                           // TODO: i18n
+                          title: "miscellaneous",
                           description: "Top level configuration values",
                           canAdd: false,
                           canRemove: false,
                           nodes: main_formFields
-                      }
+                      })
                   ]),
             ...main_formFieldGroups.map(node => {
                 if (node.type === "field") {
-                    return {
-                        helmValuesPath: [node.title],
+                    return id<AccordionEntry>({
+                        helmValuesPath:
+                            createObjectThatThrowsIfAccessed<(string | number)[]>(),
+                        title: node.title,
                         description: node.description,
                         canAdd: false,
                         canRemove: false,
@@ -86,16 +95,17 @@ export function ConfigurationTopLevelGroup(props: Props) {
                                 value: node.value
                             })
                         ]
-                    };
+                    });
                 }
 
-                return {
+                return id<AccordionEntry>({
                     helmValuesPath: node.helmValuesPath,
+                    title: node.title,
                     description: node.description,
                     canAdd: node.canAdd,
                     canRemove: node.canRemove,
                     nodes: node.nodes
-                };
+                });
             })
         ];
 
@@ -105,10 +115,11 @@ export function ConfigurationTopLevelGroup(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             {accordionEntries.map(
-                ({ helmValuesPath, description, canAdd, canRemove, nodes }) => (
+                ({ helmValuesPath, title, description, canAdd, canRemove, nodes }) => (
                     <Accordion
                         key={JSON.stringify(helmValuesPath)}
                         helmValuesPath={helmValuesPath}
+                        title={title}
                         description={description}
                         canAdd={canAdd}
                         canRemove={canRemove}

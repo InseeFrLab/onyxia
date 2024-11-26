@@ -147,18 +147,7 @@ export function FormFieldGroupComponent(props: Props) {
                         <FormFieldGroupComponentWrapper
                             key={key}
                             className={classes.group}
-                            title={(() => {
-                                const { helmValuesPath } = node;
-
-                                const lastSegment =
-                                    helmValuesPath[helmValuesPath.length - 1];
-
-                                if (typeof lastSegment === "number") {
-                                    return undefined;
-                                }
-
-                                return lastSegment;
-                            })()}
+                            title={node.title}
                             onRemove={onRemove_child}
                             description={node.description}
                         >

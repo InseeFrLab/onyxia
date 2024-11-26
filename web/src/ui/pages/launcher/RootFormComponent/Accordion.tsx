@@ -12,15 +12,15 @@ import { Text } from "onyxia-ui/Text";
 import { FormFieldGroupComponent } from "./FormFieldGroupComponent";
 import type { FormCallbacks } from "./FormCallbacks";
 import { capitalize } from "tsafe/capitalize";
-import { assert } from "tsafe/assert";
 import { getScrollableParent } from "powerhooks/getScrollableParent";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import { getIconUrlByName } from "lazy-icons";
 
-type Props = {
+export type Props = {
     className?: string;
     helmValuesPath: (string | number)[];
+    title: string;
     description: string | undefined;
     nodes: (FormFieldGroup | FormField)[];
     canAdd: boolean;
@@ -32,6 +32,7 @@ export function Accordion(props: Props) {
     const {
         className,
         helmValuesPath,
+        title,
         description,
         nodes,
         canAdd,
@@ -133,13 +134,7 @@ export function Accordion(props: Props) {
                 aria-controls={contentId}
             >
                 <Text typo="label 1" componentProps={{ lang: "und" }}>
-                    {(() => {
-                        const lastSegment = helmValuesPath[helmValuesPath.length - 1];
-
-                        assert(typeof lastSegment === "string");
-
-                        return capitalize(lastSegment);
-                    })()}
+                    {capitalize(title)}
                 </Text>
                 <Text typo="caption" color="secondary" componentProps={{ lang: "und" }}>
                     {description}

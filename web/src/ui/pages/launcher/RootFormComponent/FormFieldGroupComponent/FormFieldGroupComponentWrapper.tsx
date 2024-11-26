@@ -28,7 +28,7 @@ export function FormFieldGroupComponentWrapper(props: {
                     </Text>
                     {description !== undefined && (
                         <Text typo="caption" componentProps={{ lang: "und" }}>
-                            {description}
+                            {capitalize(description)}
                         </Text>
                     )}
                 </div>
