@@ -7,7 +7,7 @@
     width: 100% !important;
 }
 
-/* Hide Project Settings */
-nav div a[ href="/project-settings"] {
+/* Hide Project Settings, divider, My Files, Data Explorer */
+nav div hr:nth-of-type(3), nav div a[ href="/project-settings"], nav div a[ href="/my-files"], nav div a[ href="/data-explorer"] {
     display: none;
 }
