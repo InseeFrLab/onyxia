@@ -335,6 +335,9 @@ export const translations: Translations<"en"> = {
                 : `Este enlace otorgará acceso a tus datos durante ${expiration}.`,
         "label input link": "Enlace de acceso"
     },
+    SelectTime: {
+        "validity duration label": "Duración de validez"
+    },
     MySecrets: {
         "page title - my secrets": "Mis Secretos",
         "what this page is used for - my secrets":
@@ -1032,6 +1035,42 @@ export const translations: Translations<"en"> = {
                     return "en # meses";
                 case "year":
                     return "en # años";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 segundo";
+                case "minute":
+                    return "1 minuto";
+                case "hour":
+                    return "1 hora";
+                case "day":
+                    return "1 día";
+                case "week":
+                    return "1 semana";
+                case "month":
+                    return "1 mes";
+                case "year":
+                    return "1 año";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# segundos";
+                case "minute":
+                    return "# minutos";
+                case "hour":
+                    return "# horas";
+                case "day":
+                    return "# días";
+                case "week":
+                    return "# semanas";
+                case "month":
+                    return "# meses";
+                case "year":
+                    return "# años";
             }
         }
     },

@@ -332,6 +332,9 @@ export const translations: Translations<"it"> = {
                 : `Questo link garantirà l'accesso ai tuoi dati per ${expiration}.`,
         "label input link": "Link di accesso"
     },
+    SelectTime: {
+        "validity duration label": "Durata di validità"
+    },
     MySecrets: {
         "page title - my secrets": "I miei segreti",
         "what this page is used for - my secrets":
@@ -1033,6 +1036,42 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                     return "tra # mesi";
                 case "year":
                     return "tra # anni";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 secondo";
+                case "minute":
+                    return "1 minuto";
+                case "hour":
+                    return "1 ora";
+                case "day":
+                    return "1 giorno";
+                case "week":
+                    return "1 settimana";
+                case "month":
+                    return "1 mese";
+                case "year":
+                    return "1 anno";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# secondi";
+                case "minute":
+                    return "# minuti";
+                case "hour":
+                    return "# ore";
+                case "day":
+                    return "# giorni";
+                case "week":
+                    return "# settimane";
+                case "month":
+                    return "# mesi";
+                case "year":
+                    return "# anni";
             }
         }
     },

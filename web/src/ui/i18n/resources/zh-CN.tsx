@@ -301,6 +301,9 @@ export const translations: Translations<"zh-CN"> = {
                 : `此链接将在 ${expiration} 内提供对您的数据的访问权限。`,
         "label input link": "访问链接"
     },
+    SelectTime: {
+        "validity duration label": "有效期"
+    },
     MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
@@ -971,6 +974,42 @@ ${
                     return "# 个月后";
                 case "year":
                     return "# 年后";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1秒";
+                case "minute":
+                    return "1分钟";
+                case "hour":
+                    return "1小时";
+                case "day":
+                    return "1天";
+                case "week":
+                    return "1周";
+                case "month":
+                    return "1个月";
+                case "year":
+                    return "1年";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "#秒";
+                case "minute":
+                    return "#分钟";
+                case "hour":
+                    return "#小时";
+                case "day":
+                    return "#天";
+                case "week":
+                    return "#周";
+                case "month":
+                    return "#个月";
+                case "year":
+                    return "#年";
             }
         }
     },

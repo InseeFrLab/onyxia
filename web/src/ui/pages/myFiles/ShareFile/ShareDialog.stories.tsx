@@ -14,83 +14,87 @@ type Story = StoryObj<typeof meta>;
 
 export const Public: Story = {
     args: {
-        onRequestUrl: action("onRequestUrl"),
-        isOpen: true,
-        onClose: action("onClose"),
-        isPublic: true,
-        file: {
-            kind: "file",
-            policy: "public",
-            basename: "photo.png",
-            size: 2048000, // en bytes
-            lastModified: new Date("2023-09-15"),
-            isBeingDeleted: false,
-            isPolicyChanging: false,
-            isBeingCreated: false
+        shareView: {
+            isPublic: true,
+            file: {
+                kind: "file",
+                policy: "public",
+                basename: "photo.png",
+                size: 2048000, // in bytes
+                lastModified: new Date("2023-09-15")
+            },
+            url: "https://minio.lab.sspcloud.fr/onyxia-datalab/public/photo.png"
         },
-        url: "https://minio.lab.sspcloud.fr/onyxia-datalab/public/photo.png"
+        onClose: action("onClose"),
+        onRequestUrl: action("onRequestUrl"),
+        onChangeShareSelectedValidityDuration: action(
+            "onChangeShareSelectedValidityDuration"
+        )
     }
 };
 
-export const Private = {
+export const Private: Story = {
     args: {
-        onRequestUrl: action("onRequestUrl"),
-        isOpen: true,
-        isPublic: false,
-        onClose: action("onClose"),
-        file: {
-            policy: "private",
-            kind: "file",
-            basename: "photo.png",
-            size: 2048000, // in bytes
-            lastModified: new Date("2023-09-15"),
-            isBeingDeleted: false,
-            isPolicyChanging: false,
-            isBeingCreated: false
+        shareView: {
+            isPublic: false,
+            file: {
+                kind: "file",
+                policy: "private",
+                basename: "photo.png",
+                size: 2048000,
+                lastModified: new Date("2023-09-15")
+            },
+            url: undefined,
+            validityDurationSecondOptions: [3600, 7200, 10800],
+            validityDurationSecond: 3600,
+            isSignedUrlBeingRequested: false
         },
-        url: undefined,
-        isRequestingUrl: false,
-        validityDurationSecondOptions: [3600, 7200, 10800],
-        validityDurationSecond: 3600
+        onClose: action("onClose"),
+        onRequestUrl: action("onRequestUrl"),
+        onChangeShareSelectedValidityDuration: action(
+            "onChangeShareSelectedValidityDuration"
+        )
     },
     render: () => {
         const [url, setUrl] = useState<string | undefined>(undefined);
         const [isRequestingUrl, setIsRequestingUrl] = useState(false);
+        const [validityDurationSecond, setValidityDurationSecond] = useState(3600);
 
-        const handleRequestUrl = (params: { expirationTime: number }) => {
-            action(`onRequestUrl ${params.expirationTime}`)();
-            setIsRequestingUrl(true); // Simulate loading
+        const handleRequestUrl = () => {
+            action("onRequestUrl")();
+            setIsRequestingUrl(true);
 
             setTimeout(() => {
-                // Generate a dynamic URL after a 2-second delay
-                const generatedUrl = `https://example.com/file/photo.png?expires=${params.expirationTime}`;
+                const generatedUrl = `https://example.com/file/photo.png?expires=${validityDurationSecond}`;
                 setUrl(generatedUrl);
-                setIsRequestingUrl(false); // Stop loading
+                setIsRequestingUrl(false);
             }, 2000);
         };
 
         return (
             <ShareDialog
-                isOpen={true}
-                isPublic={false}
-                onClose={() => {
-                    action("onClose")();
+                shareView={{
+                    isPublic: false,
+                    file: {
+                        kind: "file",
+                        policy: "private",
+                        basename: "photo.png",
+                        size: 2048000,
+                        lastModified: new Date("2023-09-15")
+                    },
+                    url: url,
+                    validityDurationSecondOptions: [3600, 7200, 10800],
+                    validityDurationSecond: validityDurationSecond,
+                    isSignedUrlBeingRequested: isRequestingUrl
                 }}
-                file={{
-                    policy: "private",
-                    kind: "file",
-                    basename: "photo.png",
-                    size: 2048000, // in bytes
-                    lastModified: new Date("2023-09-15"),
-                    isBeingDeleted: false,
-                    isPolicyChanging: false,
-                    isBeingCreated: false
-                }}
-                url={url}
-                isRequestingUrl={isRequestingUrl}
+                onClose={action("onClose")}
                 onRequestUrl={handleRequestUrl}
-                validityDurationSecondOptions={[3600, 7200, 10800]}
-                validityDurationSecond={3600}
+                onChangeShareSelectedValidityDuration={({ validityDurationSecond }) => {
+                    action("onChangeShareSelectedValidityDuration")({
+                        validityDurationSecond
+                    });
+                    setValidityDurationSecond(validityDurationSecond);
+                }}
             />
         );
     }

@@ -334,6 +334,9 @@ export const translations: Translations<"nl"> = {
                 : `Deze link geeft toegang tot je gegevens gedurende ${expiration}.`,
         "label input link": "Toegangslink"
     },
+    SelectTime: {
+        "validity duration label": "Geldigheidsduur"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -1035,6 +1038,42 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     return "over # maanden";
                 case "year":
                     return "over # jaar";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 seconde";
+                case "minute":
+                    return "1 minuut";
+                case "hour":
+                    return "1 uur";
+                case "day":
+                    return "1 dag";
+                case "week":
+                    return "1 week";
+                case "month":
+                    return "1 maand";
+                case "year":
+                    return "1 jaar";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# seconden";
+                case "minute":
+                    return "# minuten";
+                case "hour":
+                    return "# uren";
+                case "day":
+                    return "# dagen";
+                case "week":
+                    return "# weken";
+                case "month":
+                    return "# maanden";
+                case "year":
+                    return "# jaren";
             }
         }
     },

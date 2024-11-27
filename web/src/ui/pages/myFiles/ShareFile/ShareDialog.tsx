@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { ShareView } from "core/usecases/fileExplorer";
+import { formatDuration } from "ui/shared/formattedDate";
 
 export type Props = {
     shareView: ShareView | undefined;
@@ -118,7 +119,7 @@ const BodyPublic = memo(
                     }}
                     helperText={t("hint link access", {
                         isPublic: true,
-                        expiration: undefined // TODO improve
+                        expiration: undefined
                     })}
                     variant="standard"
                     value={shareView.url}
@@ -213,7 +214,9 @@ const BodyPrivate = memo(
                         }}
                         helperText={t("hint link access", {
                             isPublic: false,
-                            expiration: undefined // TODO improve
+                            expiration: formatDuration({
+                                durationSeconds: shareView.validityDurationSecond
+                            })
                         })}
                         variant="standard"
                         value={shareView.url}

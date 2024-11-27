@@ -15,9 +15,6 @@ export type Props = {
     selectedItemKind: "file" | "directory" | "multiple" | "none";
     viewMode: ViewMode;
     onViewModeChange: (params: { viewMode: ViewMode }) => void;
-    //TODO: Restore when we have fileViewer usecase
-    //isFileOpen: boolean;
-
     callback: (buttonId: ButtonId) => void;
 };
 

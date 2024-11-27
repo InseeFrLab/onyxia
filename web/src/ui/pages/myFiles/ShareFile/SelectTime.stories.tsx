@@ -13,25 +13,26 @@ type Story = StoryObj<typeof SelectTime>;
 
 export const Default: Story = {
     render: args => {
-        const [expirationValue, setExpirationValue] = useState(
-            args.validityDurationSecondOptions[0]
+        const [expirationValue, setExpirationValue] = useState<number>(
+            args.validityDurationSecond
         );
 
-        const handleExpirationValueChange = (newValue: number) => {
-            console.log("Expiration value changed to:", newValue);
-            setExpirationValue(newValue);
+        const handleExpirationValueChange = (props: {
+            validityDurationSecond: number;
+        }) => {
+            const { validityDurationSecond } = props;
+            setExpirationValue(validityDurationSecond);
         };
 
         return (
             <SelectTime
                 {...args}
-                expirationValue={expirationValue}
-                onExpirationValueChange={handleExpirationValueChange}
+                validityDurationSecond={expirationValue}
+                onChangeShareSelectedValidityDuration={handleExpirationValueChange}
             />
         );
     },
     args: {
-        className: "",
         validityDurationSecondOptions: [3600, 7200, 10800] // Example options: 1h, 2h, 3h
     }
 };

@@ -4,6 +4,9 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { tss } from "tss";
+import { declareComponentKeys } from "i18nifty";
+import { useTranslation } from "ui/i18n";
+import { formatDuration } from "ui/shared/formattedDate";
 
 type Props = {
     className?: string;
@@ -25,12 +28,13 @@ export function SelectTime(props: Props) {
     const labelId = useId();
     const { classes, cx } = useStyles();
 
+    const { t } = useTranslation({ SelectTime });
     return (
         <FormControl
             variant="standard"
             className={cx(classes.timeSelectWrapper, className)}
         >
-            <InputLabel id={labelId}>Durée de validité</InputLabel>
+            <InputLabel id={labelId}>{t("validity duration label")}</InputLabel>
             <Select
                 labelId={labelId}
                 value={`${validityDurationSecond}`}
@@ -41,15 +45,13 @@ export function SelectTime(props: Props) {
                         validityDurationSecond: parseFloat(valueStr)
                     });
                 }}
-                label="Project"
             >
                 {validityDurationSecondOptions.map(validityDurationSecond => (
                     <MenuItem
                         key={validityDurationSecond}
                         value={`${validityDurationSecond}`}
                     >
-                        {/*  TODO : better format and translation */}
-                        {validityDurationSecond} secondes
+                        {formatDuration({ durationSeconds: validityDurationSecond })}
                     </MenuItem>
                 ))}
             </Select>
@@ -61,3 +63,8 @@ const useStyles = tss.withName({ MyFilesShareSelectTime: SelectTime }).create(()
         minWidth: 200
     }
 }));
+
+const { i18n } = declareComponentKeys<"validity duration label">()({
+    SelectTime
+});
+export type I18n = typeof i18n;

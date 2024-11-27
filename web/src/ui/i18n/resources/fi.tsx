@@ -331,6 +331,9 @@ export const translations: Translations<"fi"> = {
                 : `Tämä linkki antaa pääsyn tietoihisi ${expiration} ajaksi.`,
         "label input link": "Pääsylinkki"
     },
+    SelectTime: {
+        "validity duration label": "Voimassaoloaika"
+    },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
@@ -1024,6 +1027,42 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                     return "# kuukauden kuluttua";
                 case "year":
                     return "# vuoden kuluttua";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 sekunti";
+                case "minute":
+                    return "1 minuutti";
+                case "hour":
+                    return "1 tunti";
+                case "day":
+                    return "1 päivä";
+                case "week":
+                    return "1 viikko";
+                case "month":
+                    return "1 kuukausi";
+                case "year":
+                    return "1 vuosi";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# sekuntia";
+                case "minute":
+                    return "# minuuttia";
+                case "hour":
+                    return "# tuntia";
+                case "day":
+                    return "# päivää";
+                case "week":
+                    return "# viikkoa";
+                case "month":
+                    return "# kuukautta";
+                case "year":
+                    return "# vuotta";
             }
         }
     },

@@ -333,6 +333,9 @@ export const translations: Translations<"de"> = {
                 : `Dieser Link gewährt für ${params.expiration} Zugriff auf Ihre Daten.`,
         "label input link": "Zugriffslink"
     },
+    SelectTime: {
+        "validity duration label": "Gültigkeitsdauer"
+    },
     MySecrets: {
         "page title - my secrets": "Meine Geheimnisse",
         "what this page is used for - my secrets":
@@ -1037,6 +1040,42 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                     return "in # Monaten";
                 case "year":
                     return "in # Jahren";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 Sekunde";
+                case "minute":
+                    return "1 Minute";
+                case "hour":
+                    return "1 Stunde";
+                case "day":
+                    return "1 Tag";
+                case "week":
+                    return "1 Woche";
+                case "month":
+                    return "1 Monat";
+                case "year":
+                    return "1 Jahr";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# Sekunden";
+                case "minute":
+                    return "# Minuten";
+                case "hour":
+                    return "# Stunden";
+                case "day":
+                    return "# Tage";
+                case "week":
+                    return "# Wochen";
+                case "month":
+                    return "# Monate";
+                case "year":
+                    return "# Jahre";
             }
         }
     },

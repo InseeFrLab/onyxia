@@ -323,6 +323,9 @@ export const translations: Translations<"en"> = {
                 : `This link will grant access to your data for ${expiration}.`,
         "label input link": "Access link"
     },
+    SelectTime: {
+        "validity duration label": "Validity duration"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -1018,6 +1021,42 @@ Feel free to explore and take charge of your Kubernetes deployments!
                     return "in # months";
                 case "year":
                     return "in # years";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 second";
+                case "minute":
+                    return "1 minute";
+                case "hour":
+                    return "1 hour";
+                case "day":
+                    return "1 day";
+                case "week":
+                    return "1 week";
+                case "month":
+                    return "1 month";
+                case "year":
+                    return "1 year";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# seconds";
+                case "minute":
+                    return "# minutes";
+                case "hour":
+                    return "# hours";
+                case "day":
+                    return "# days";
+                case "week":
+                    return "# weeks";
+                case "month":
+                    return "# months";
+                case "year":
+                    return "# years";
             }
         }
     },
