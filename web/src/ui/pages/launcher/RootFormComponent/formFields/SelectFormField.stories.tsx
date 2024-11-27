@@ -41,6 +41,7 @@ function StoryWrapper(params: Params) {
                     setSelectedOptionIndex(newSelectedOptionIndex);
                 }}
                 onRemove={undefined}
+                isHidden={false}
             />
             <Divider />
             <p>selectedOptionIndex: </p>

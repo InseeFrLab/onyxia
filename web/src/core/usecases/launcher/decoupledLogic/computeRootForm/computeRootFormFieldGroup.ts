@@ -9,7 +9,6 @@ import {
     type XOnyxiaParams
 } from "core/ports/OnyxiaApi/XOnyxia";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
-import { exclude } from "tsafe/exclude";
 import { same } from "evt/tools/inDepth/same";
 import { isAmong } from "tsafe/isAmong";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
@@ -74,7 +73,6 @@ export function computeRootFormFieldGroup(params: {
         helmValuesPath: []
     });
 
-    assert(formFieldGroup !== undefined);
     assert(formFieldGroup.type === "group");
 
     return formFieldGroup;
@@ -85,47 +83,51 @@ function computeRootFormFieldGroup_rec(params: {
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
     helmValuesPath: (string | number)[];
-}): FormFieldGroup | FormField | undefined {
+}): FormFieldGroup | FormField {
     const { helmValuesSchema, helmValues, xOnyxiaContext, helmValuesPath } = params;
 
-    root_hidden: {
-        const { hidden } = helmValuesSchema;
+    const isHidden: boolean = (() => {
+        root_hidden: {
+            const { hidden } = helmValuesSchema;
 
-        if (hidden === undefined) {
-            break root_hidden;
+            if (hidden === undefined) {
+                break root_hidden;
+            }
+
+            if (hidden === false) {
+                break root_hidden;
+            }
+
+            if (hidden === true) {
+                return true;
+            }
+
+            const { value, path, isPathRelative = false } = hidden;
+
+            const splittedPath = path.split("/");
+
+            const helmValuesPath_target = isPathRelative
+                ? [...helmValuesPath.slice(0, -1), ...splittedPath]
+                : splittedPath;
+
+            const value_target = getValueAtPathInObject<Stringifyable>({
+                obj: helmValues,
+                path: helmValuesPath_target
+            });
+
+            if (!same(value, value_target)) {
+                break root_hidden;
+            }
+
+            return true;
         }
 
-        if (hidden === false) {
-            break root_hidden;
+        if (helmValuesSchema["x-onyxia"]?.hidden === true) {
+            return true;
         }
 
-        if (hidden === true) {
-            return undefined;
-        }
-
-        const { value, path, isPathRelative = false } = hidden;
-
-        const splittedPath = path.split("/");
-
-        const helmValuesPath_target = isPathRelative
-            ? [...helmValuesPath.slice(0, -1), ...splittedPath]
-            : splittedPath;
-
-        const value_target = getValueAtPathInObject<Stringifyable>({
-            obj: helmValues,
-            path: helmValuesPath_target
-        });
-
-        if (!same(value, value_target)) {
-            break root_hidden;
-        }
-
-        return undefined;
-    }
-
-    if (helmValuesSchema["x-onyxia"]?.hidden === true) {
-        return undefined;
-    }
+        return false;
+    })();
 
     const title = (() => {
         const { title } = helmValuesSchema;
@@ -200,7 +202,8 @@ function computeRootFormFieldGroup_rec(params: {
                 assert(value instanceof Object);
 
                 return value;
-            })()
+            })(),
+            isHidden
         });
     }
 
@@ -232,7 +235,8 @@ function computeRootFormFieldGroup_rec(params: {
                 assert(selectedOptionIndex !== -1);
 
                 return selectedOptionIndex;
-            })()
+            })(),
+            isHidden
         });
     }
 
@@ -290,7 +294,8 @@ function computeRootFormFieldGroup_rec(params: {
                 }
 
                 assert(false);
-            })()
+            })(),
+            isHidden
         });
     }
 
@@ -337,6 +342,7 @@ function computeRootFormFieldGroup_rec(params: {
                     })(),
                     helmValuesPath,
                     description: helmValuesSchema.description,
+                    isHidden,
                     ...(() => {
                         switch (sliderExtremity) {
                             case "down":
@@ -359,18 +365,18 @@ function computeRootFormFieldGroup_rec(params: {
                 helmValuesPath,
                 title,
                 description: helmValuesSchema.description,
-                nodes: Object.entries(helmValuesSchema.properties)
-                    .map(([segment, helmValuesSchema_child]) =>
+                nodes: Object.entries(helmValuesSchema.properties).map(
+                    ([segment, helmValuesSchema_child]) =>
                         computeRootFormFieldGroup_rec({
                             helmValues,
                             helmValuesPath: [...helmValuesPath, segment],
                             xOnyxiaContext,
                             helmValuesSchema: helmValuesSchema_child
                         })
-                    )
-                    .filter(exclude(undefined)),
+                ),
                 canAdd: false,
-                canRemove: false
+                canRemove: false,
+                isHidden
             });
         case "array": {
             const itemSchema = helmValuesSchema.items;
@@ -390,18 +396,17 @@ function computeRootFormFieldGroup_rec(params: {
                 helmValuesPath,
                 title,
                 description: helmValuesSchema.description,
-                nodes: values
-                    .map((...[, index]) =>
-                        computeRootFormFieldGroup_rec({
-                            helmValues,
-                            helmValuesPath: [...helmValuesPath, index],
-                            xOnyxiaContext,
-                            helmValuesSchema: itemSchema
-                        })
-                    )
-                    .filter(exclude(undefined)),
+                nodes: values.map((...[, index]) =>
+                    computeRootFormFieldGroup_rec({
+                        helmValues,
+                        helmValuesPath: [...helmValuesPath, index],
+                        xOnyxiaContext,
+                        helmValuesSchema: itemSchema
+                    })
+                ),
                 canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
-                canRemove: values.length > (helmValuesSchema.minItems ?? 0)
+                canRemove: values.length > (helmValuesSchema.minItems ?? 0),
+                isHidden
             });
         }
         case "boolean":
@@ -418,7 +423,8 @@ function computeRootFormFieldGroup_rec(params: {
                     assert(typeof value === "boolean");
 
                     return value;
-                })()
+                })(),
+                isHidden
             });
         case "string":
             return id<FormField.TextField>({
@@ -437,7 +443,8 @@ function computeRootFormFieldGroup_rec(params: {
                     assert(typeof value === "string");
 
                     return value;
-                })()
+                })(),
+                isHidden
             });
         case "integer":
         case "number":
@@ -456,9 +463,10 @@ function computeRootFormFieldGroup_rec(params: {
                     return value;
                 })(),
                 isInteger: helmValuesSchemaType === "integer",
-                minimum: helmValuesSchema.minimum
+                minimum: helmValuesSchema.minimum,
+                isHidden
             });
     }
 
-    assert<Equals<typeof helmValuesSchemaType, never>>(false);
+    assert<Equals<typeof helmValuesSchemaType, never>>;
 }

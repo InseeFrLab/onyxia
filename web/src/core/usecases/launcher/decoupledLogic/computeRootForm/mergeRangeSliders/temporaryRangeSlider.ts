@@ -12,6 +12,7 @@ export type TemporaryRangeSliderPayload = {
     helmValue: string | number;
     helmValuesPath: (string | number)[];
     description: string | undefined;
+    isHidden: boolean;
 } & (
     | {
           sliderExtremity: "down";
@@ -71,6 +72,7 @@ export function createTemporaryRangeSlider(params: {
             max: NaN
         },
         unit: prefix + JSON.stringify(payload),
-        step: NaN
+        step: NaN,
+        isHidden: false
     };
 }
