@@ -122,7 +122,7 @@ const useStyles = tss
             color: theme.colors.useCases.alertSeverity.error.main
         },
         resetToDefaultButton: {
-            opacity: isResetToDefaultButtonVisible ? 1 : 0
+            visibility: isResetToDefaultButtonVisible ? "visible" : "hidden"
         }
     }));
 
