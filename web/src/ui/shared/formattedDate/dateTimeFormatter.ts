@@ -129,8 +129,6 @@ export const { formatDuration } = (() => {
                             return MONTH;
                         case "year":
                             return YEAR;
-                        default:
-                            throw new Error(`Unhandled divisorKey: ${divisorKey}`);
                     }
                 })(),
                 max: (() => {
@@ -149,8 +147,6 @@ export const { formatDuration } = (() => {
                             return YEAR;
                         case "year":
                             return Infinity;
-                        default:
-                            throw new Error(`Unhandled divisorKey: ${divisorKey}`);
                     }
                 })(),
                 singular: t("singular", { divisorKey }),
