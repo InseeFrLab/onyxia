@@ -1,5 +1,7 @@
 import { getTranslation } from "ui/i18n";
-import { durationDivisorKeys, fromNowDivisorKeys } from "./type";
+import { fromNowDivisorKeys } from "./type";
+import { formatDuration as coreFormatDuration } from "core/tools/timeFormat/formatDuration";
+import { TIME_UNITS } from "core/tools/timeFormat/constants";
 import { assert } from "tsafe/assert";
 
 export const { fromNow } = (() => {
@@ -13,14 +15,6 @@ export const { fromNow } = (() => {
             futureN: string;
         };
 
-        const SECOND = 1000;
-        const MINUTE = 60 * SECOND;
-        const HOUR = 60 * MINUTE;
-        const DAY = 24 * HOUR;
-        const WEEK = 7 * DAY;
-        const MONTH = 30 * DAY;
-        const YEAR = 365 * DAY;
-
         function getFromNowUnits(): FromNowUnit[] {
             const { t } = getTranslation("formattedDate");
 
@@ -30,37 +24,37 @@ export const { fromNow } = (() => {
                         case "now":
                             return 1;
                         case "second":
-                            return SECOND;
+                            return TIME_UNITS.SECOND;
                         case "minute":
-                            return MINUTE;
+                            return TIME_UNITS.MINUTE;
                         case "hour":
-                            return HOUR;
+                            return TIME_UNITS.HOUR;
                         case "day":
-                            return DAY;
+                            return TIME_UNITS.DAY;
                         case "week":
-                            return WEEK;
+                            return TIME_UNITS.WEEK;
                         case "month":
-                            return MONTH;
+                            return TIME_UNITS.MONTH;
                         case "year":
-                            return YEAR;
+                            return TIME_UNITS.YEAR;
                     }
                 })(),
                 max: (() => {
                     switch (divisorKey) {
                         case "now":
-                            return 4 * SECOND;
+                            return 4 * TIME_UNITS.SECOND;
                         case "second":
-                            return MINUTE;
+                            return TIME_UNITS.MINUTE;
                         case "minute":
-                            return HOUR;
+                            return TIME_UNITS.HOUR;
                         case "hour":
-                            return DAY;
+                            return TIME_UNITS.DAY;
                         case "day":
-                            return WEEK;
+                            return TIME_UNITS.WEEK;
                         case "week":
-                            return MONTH;
+                            return TIME_UNITS.MONTH;
                         case "month":
-                            return YEAR;
+                            return TIME_UNITS.YEAR;
                         case "year":
                             return Infinity;
                     }
@@ -93,81 +87,8 @@ export const { fromNow } = (() => {
     return { fromNow };
 })();
 
-export const { formatDuration } = (() => {
-    const { getDurationUnits } = (() => {
-        type DurationUnit = {
-            max: number;
-            divisor: number;
-            singular: string;
-            plural: string;
-        };
-        const SECOND = 1000;
-        const MINUTE = 60 * SECOND;
-        const HOUR = 60 * MINUTE;
-        const DAY = 24 * HOUR;
-        const WEEK = 7 * DAY;
-        const MONTH = 30 * DAY;
-        const YEAR = 365 * DAY;
-
-        function getDurationUnits(): DurationUnit[] {
-            const { t } = getTranslation("formattedDate");
-
-            return durationDivisorKeys.map(divisorKey => ({
-                divisor: (() => {
-                    switch (divisorKey) {
-                        case "second":
-                            return SECOND;
-                        case "minute":
-                            return MINUTE;
-                        case "hour":
-                            return HOUR;
-                        case "day":
-                            return DAY;
-                        case "week":
-                            return WEEK;
-                        case "month":
-                            return MONTH;
-                        case "year":
-                            return YEAR;
-                    }
-                })(),
-                max: (() => {
-                    switch (divisorKey) {
-                        case "second":
-                            return MINUTE;
-                        case "minute":
-                            return HOUR;
-                        case "hour":
-                            return 3 * DAY;
-                        case "day":
-                            return WEEK + DAY;
-                        case "week":
-                            return MONTH;
-                        case "month":
-                            return YEAR;
-                        case "year":
-                            return Infinity;
-                    }
-                })(),
-                singular: t("singular", { divisorKey }),
-                plural: t("plural", { divisorKey })
-            }));
-        }
-
-        return { getDurationUnits };
-    })();
-
-    function formatDuration(params: { durationSeconds: number }): string {
-        const { durationSeconds } = params;
-
-        for (const unit of getDurationUnits()) {
-            if (durationSeconds * 1000 < unit.max) {
-                const x = Math.round(durationSeconds / (unit.divisor / 1000));
-                return x === 1 ? unit.singular : unit.plural.replace("#", `${x}`);
-            }
-        }
-        assert(false);
-    }
-
-    return { formatDuration };
-})();
+export const formatDuration = (params: { durationSeconds: number }) => {
+    const { t } = getTranslation("formattedDate");
+    const { durationSeconds } = params;
+    return coreFormatDuration({ durationSeconds, t });
+};

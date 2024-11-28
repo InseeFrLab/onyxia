@@ -7,6 +7,10 @@ import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { S3Object } from "core/ports/S3Client";
+import {
+    formatDuration,
+    englishDurationFormatter
+} from "core/tools/timeFormat/formatDuration";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -708,10 +712,14 @@ export const thunks = {
 
             const cmdId = Date.now();
 
+            const prettyDurationValue = formatDuration({
+                durationSeconds: validityDurationSecond,
+                t: englishDurationFormatter
+            });
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: `mc share download --expire ${validityDurationSecond}s ${pathJoin("s3", path)}`
+                    cmd: `mc share download --expire ${prettyDurationValue} ${pathJoin("s3", path)}`
                 })
             );
 
@@ -732,8 +740,7 @@ export const thunks = {
                     cmdId,
                     resp: [
                         `URL: ${downloadUrl.split("?")[0]}`,
-                        // TODO: Pretty print
-                        `Expire: ${validityDurationSecond} seconds`,
+                        `Expire: ${prettyDurationValue}`,
                         `Share: ${downloadUrl}`
                     ].join("\n")
                 })

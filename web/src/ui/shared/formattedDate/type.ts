@@ -11,6 +11,11 @@ export const durationDivisorKeys = [
 ] as const;
 export type DurationDivisorKey = (typeof durationDivisorKeys)[number];
 
+export type DurationTranslationFunction = (
+    key: "singular" | "plural",
+    params: { divisorKey: DurationDivisorKey }
+) => string;
+
 export const fromNowDivisorKeys = [...durationDivisorKeys, "now"] as const;
 export type FromNowDivisorKey = (typeof fromNowDivisorKeys)[number];
 
