@@ -54,7 +54,7 @@
         "compare-versions": "^6.1.1",
         "evt": "^2.5.8",
         "file-saver": "^2.0.5",
-        "flexsearch": "0.7.21",
+        "flexsearch": "0.7.43",
         "i18nifty": "^3.2.3",
         "json5": "2.2.3",
         "keycloakify": "^11.3.29",
