@@ -48,6 +48,7 @@ function StoryWrapper(params: Params) {
                 }}
                 onRemove={hasOnRemove ? () => onRemoveAction() : undefined}
                 onErrorChange={onErrorChangeAction}
+                isHidden={false}
             />
             <Divider />
             <p>Value: </p>

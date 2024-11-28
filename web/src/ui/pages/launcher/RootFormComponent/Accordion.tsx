@@ -26,6 +26,7 @@ export type Props = {
     canAdd: boolean;
     canRemove: boolean;
     callbacks: FormCallbacks;
+    isHidden: boolean;
 };
 
 export function Accordion(props: Props) {
@@ -37,10 +38,11 @@ export function Accordion(props: Props) {
         nodes,
         canAdd,
         canRemove,
-        callbacks
+        callbacks,
+        isHidden
     } = props;
 
-    const { classes, cx } = useStyles();
+    const { classes, cx } = useStyles({ isHidden });
 
     const contentId = useId();
 
@@ -148,6 +150,7 @@ export function Accordion(props: Props) {
                     canAdd={canAdd}
                     canRemove={canRemove}
                     callbacks={callbacks}
+                    isHidden={false}
                 />
             </MuiAccordionDetails>
         </MuiAccordion>
@@ -157,8 +160,10 @@ export function Accordion(props: Props) {
 const useStyles = tss
     .withName({ Accordion })
     .withNestedSelectors<"summary" | "summaryExpanded">()
-    .create(({ theme, classes }) => ({
+    .withParams<{ isHidden: boolean }>()
+    .create(({ theme, isHidden, classes }) => ({
         root: {
+            display: isHidden ? "none" : undefined,
             backgroundColor: theme.colors.useCases.surfaces.surface1
         },
         summaryExpanded: {},

@@ -628,6 +628,11 @@ ${
     FormFieldWrapper: {
         "reset to default": "重置为默认值"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "杂项",
+        "Configuration that applies to all charts": "适用于所有图表的配置",
+        "Top level configuration values": "顶级配置值"
+    },
     YamlCodeBlockFormField: {
         "not an array": "需要是数组",
         "not an object": "需要是对象",

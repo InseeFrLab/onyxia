@@ -47,7 +47,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     helmValuesPath: ["a"],
                     doRenderAsTextArea: false,
                     isSensitive: false,
-                    value: "foo"
+                    value: "foo",
+                    isHidden: false
                 },
                 {
                     type: "field",
@@ -57,11 +58,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     fieldType: "select",
                     helmValuesPath: ["b"],
                     options: [1, 2, 3],
-                    selectedOptionIndex: 1
+                    selectedOptionIndex: 1,
+                    isHidden: false
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isHidden: false
         };
 
         expect(got).toStrictEqual(expected);
@@ -100,11 +103,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     helmValuesPath: ["a"],
                     doRenderAsTextArea: false,
                     isSensitive: false,
-                    value: "foo"
+                    value: "foo",
+                    isHidden: false
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isHidden: false
         };
 
         expect(got).toStrictEqual(expected);
@@ -172,15 +177,32 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                             fieldType: "checkbox",
                             helmValuesPath: ["persistence", "enabled"],
                             description: "Create a persistent volume",
-                            value: false
+                            value: false,
+                            isHidden: false
+                        },
+                        {
+                            type: "field",
+                            title: "Persistent volume size",
+                            isReadonly: false,
+                            fieldType: "slider",
+                            helmValuesPath: ["persistence", "size"],
+                            description: "Size of the persistent volume",
+                            min: 1,
+                            max: 100,
+                            unit: "Gi",
+                            step: 1,
+                            value: 10,
+                            isHidden: true
                         }
                     ],
                     canAdd: false,
-                    canRemove: false
+                    canRemove: false,
+                    isHidden: false
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isHidden: false
         };
 
         expect(got).toStrictEqual(expected);
@@ -248,15 +270,32 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                             fieldType: "checkbox",
                             helmValuesPath: ["persistence", "enabled"],
                             description: "Create a persistent volume",
-                            value: false
+                            value: false,
+                            isHidden: false
+                        },
+                        {
+                            type: "field",
+                            title: "Persistent volume size",
+                            isReadonly: false,
+                            fieldType: "slider",
+                            helmValuesPath: ["persistence", "size"],
+                            description: "Size of the persistent volume",
+                            min: 1,
+                            max: 100,
+                            unit: "Gi",
+                            step: 1,
+                            value: 10,
+                            isHidden: true
                         }
                     ],
                     canAdd: false,
-                    canRemove: false
+                    canRemove: false,
+                    isHidden: false
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isHidden: false
         };
 
         expect(got).toStrictEqual(expected);
@@ -308,7 +347,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of a"
+                    value: "value of a",
+                    isHidden: false
                 },
                 {
                     type: "group",
@@ -332,7 +372,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                                     doRenderAsTextArea: false,
                                     isSensitive: false,
                                     pattern: undefined,
-                                    value: "value of foo"
+                                    value: "value of foo",
+                                    isHidden: false
                                 },
                                 {
                                     type: "field",
@@ -343,19 +384,23 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                                     description: undefined,
                                     value: 42,
                                     isInteger: false,
-                                    minimum: undefined
+                                    minimum: undefined,
+                                    isHidden: false
                                 }
                             ],
                             canAdd: false,
-                            canRemove: false
+                            canRemove: false,
+                            isHidden: false
                         }
                     ],
                     canAdd: true,
-                    canRemove: false
+                    canRemove: false,
+                    isHidden: false
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isHidden: false
         };
 
         expect(got).toStrictEqual(expected);

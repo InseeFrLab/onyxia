@@ -46,6 +46,7 @@ function StoryWrapper() {
                 }}
                 onRemove={undefined}
                 onErrorChange={onErrorChangeAction}
+                isHidden={false}
             />
             <br />
             <br />

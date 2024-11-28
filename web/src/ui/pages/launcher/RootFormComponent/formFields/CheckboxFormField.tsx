@@ -12,11 +12,20 @@ type Props = {
     onRemove: (() => void) | undefined;
     value: boolean;
     onChange: (newValue: boolean) => void;
+    isHidden: boolean;
 };
 
 export const CheckboxFormField = memo((props: Props) => {
-    const { className, title, description, isReadonly, onRemove, value, onChange } =
-        props;
+    const {
+        className,
+        title,
+        description,
+        isReadonly,
+        onRemove,
+        value,
+        onChange,
+        isHidden
+    } = props;
 
     const { serializedValue, setSerializedValue, resetToDefault } = useFormField<
         boolean,
@@ -45,6 +54,7 @@ export const CheckboxFormField = memo((props: Props) => {
             onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={onRemove}
+            isHidden={isHidden}
         >
             <div className={classes.switchWrapper}>
                 <Switch

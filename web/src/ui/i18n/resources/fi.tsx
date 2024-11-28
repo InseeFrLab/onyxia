@@ -667,6 +667,12 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     FormFieldWrapper: {
         "reset to default": "Palauta oletusarvoon"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "Sekalaista",
+        "Configuration that applies to all charts":
+            "Konfiguraatio, joka koskee kaikkia kaavioita",
+        "Top level configuration values": "Ylimmän tason konfiguraatioväriarvot"
+    },
     YamlCodeBlockFormField: {
         "not an array": "Taulukkoa odotetaan",
         "not an object": "Oliota odotetaan",

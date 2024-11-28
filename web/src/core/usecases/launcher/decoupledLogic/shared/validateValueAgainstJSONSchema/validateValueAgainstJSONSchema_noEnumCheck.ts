@@ -314,8 +314,8 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             return { isValid: true };
         }
 
-        let isreasonableApproximation = false;
-        let valueOrreasonableApproximation: Stringifyable[] = [];
+        let isReasonableApproximation = false;
+        let valueOrReasonableApproximation: Stringifyable[] = [];
 
         for (const value_i of value) {
             const validationResult = validateValueAgainstJSONSchema({
@@ -325,7 +325,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             });
 
             if (validationResult.isValid) {
-                valueOrreasonableApproximation.push(value_i);
+                valueOrReasonableApproximation.push(value_i);
                 continue;
             }
 
@@ -333,15 +333,15 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 return { isValid: false, reasonableApproximation: undefined };
             }
 
-            isreasonableApproximation = true;
+            isReasonableApproximation = true;
 
-            valueOrreasonableApproximation.push(validationResult.reasonableApproximation);
+            valueOrReasonableApproximation.push(validationResult.reasonableApproximation);
         }
 
-        return isreasonableApproximation
+        return isReasonableApproximation
             ? {
                   isValid: false,
-                  reasonableApproximation: valueOrreasonableApproximation
+                  reasonableApproximation: valueOrReasonableApproximation
               }
             : { isValid: true };
     }
@@ -355,18 +355,30 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             return { isValid: true };
         }
 
-        let isreasonableApproximation = false;
-        const valueOrreasonableApproximation: Record<string, Stringifyable> = {};
+        if (
+            Object.keys(value).length !== Object.keys(helmValuesSchema.properties).length
+        ) {
+            return { isValid: false, reasonableApproximation: undefined };
+        }
+
+        let isReasonableApproximation = false;
+        const valueOrReasonableApproximation: Record<string, Stringifyable> = {};
 
         for (const [key, value_i] of Object.entries(value)) {
+            const helmValuesSchema_i = helmValuesSchema.properties[key];
+
+            if (helmValuesSchema_i === undefined) {
+                return { isValid: false, reasonableApproximation: undefined };
+            }
+
             const validationResult = validateValueAgainstJSONSchema({
-                helmValuesSchema: helmValuesSchema.properties[key],
+                helmValuesSchema: helmValuesSchema_i,
                 value: value_i,
                 xOnyxiaContext
             });
 
             if (validationResult.isValid) {
-                valueOrreasonableApproximation[key] = value_i;
+                valueOrReasonableApproximation[key] = value_i;
                 continue;
             }
 
@@ -374,16 +386,16 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 return { isValid: false, reasonableApproximation: undefined };
             }
 
-            isreasonableApproximation = true;
+            isReasonableApproximation = true;
 
-            valueOrreasonableApproximation[key] =
+            valueOrReasonableApproximation[key] =
                 validationResult.reasonableApproximation;
         }
 
-        return isreasonableApproximation
+        return isReasonableApproximation
             ? {
                   isValid: false,
-                  reasonableApproximation: valueOrreasonableApproximation
+                  reasonableApproximation: valueOrReasonableApproximation
               }
             : { isValid: true };
     }

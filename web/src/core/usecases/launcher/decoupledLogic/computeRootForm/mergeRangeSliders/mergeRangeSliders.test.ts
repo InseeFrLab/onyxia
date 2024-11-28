@@ -32,7 +32,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         helmValuesPath: ["resources", "requests", "cpu"],
                                         description: "The amount of cpu guaranteed",
                                         sliderExtremity: "down",
-                                        title: "CPU"
+                                        title: "CPU",
+                                        isHidden: false
                                     }
                                 })
                             ],
@@ -54,7 +55,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         helmValue: "30000m",
                                         helmValuesPath: ["resources", "limits", "cpu"],
                                         description: "The maximum amount of cpu",
-                                        sliderExtremity: "up"
+                                        sliderExtremity: "up",
+                                        isHidden: false
                                     }
                                 })
                             ],
@@ -100,7 +102,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 min: 50,
                                 max: 40000,
                                 description: "The maximum amount of cpu"
-                            }
+                            },
+                            isHidden: false
                         })
                     ],
                     canAdd: false
@@ -136,7 +139,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         helmValuesPath: ["resources", "requests", "cpu"],
                                         description: "The amount of cpu guaranteed",
                                         sliderExtremity: "down",
-                                        title: "CPU"
+                                        title: "CPU",
+                                        isHidden: false
                                     }
                                 }),
                                 createTemporaryRangeSlider({
@@ -156,7 +160,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         ],
                                         description: "The amount of memory guaranteed",
                                         sliderExtremity: "down",
-                                        title: "memory"
+                                        title: "memory",
+                                        isHidden: false
                                     }
                                 })
                             ],
@@ -178,7 +183,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         helmValue: "30000m",
                                         helmValuesPath: ["resources", "limits", "cpu"],
                                         description: "The maximum amount of cpu",
-                                        sliderExtremity: "up"
+                                        sliderExtremity: "up",
+                                        isHidden: false
                                     }
                                 }),
                                 createTemporaryRangeSlider({
@@ -193,7 +199,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         helmValue: "50Gi",
                                         helmValuesPath: ["resources", "limits", "memory"],
                                         description: "The maximum amount of memory",
-                                        sliderExtremity: "up"
+                                        sliderExtremity: "up",
+                                        isHidden: false
                                     }
                                 })
                             ],
@@ -239,7 +246,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 min: 50,
                                 max: 40000,
                                 description: "The maximum amount of cpu"
-                            }
+                            },
+                            isHidden: false
                         }),
                         id<FormField.RangeSlider>({
                             type: "field",
@@ -264,7 +272,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 min: 1,
                                 max: 200,
                                 description: "The maximum amount of memory"
-                            }
+                            },
+                            isHidden: false
                         })
                     ],
                     canAdd: false

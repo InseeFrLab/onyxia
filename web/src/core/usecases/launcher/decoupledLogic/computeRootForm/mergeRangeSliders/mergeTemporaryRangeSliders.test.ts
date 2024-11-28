@@ -29,7 +29,8 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
                 min: 50,
                 max: 40000,
                 description: "The maximum amount of cpu"
-            }
+            },
+            isHidden: false
         };
 
         const got = mergeTemporaryRangeSliders({
@@ -46,7 +47,8 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
                     helmValuesPath: ["resources", "requests", "cpu"],
                     description: "The amount of cpu guaranteed",
                     sliderExtremity: "down",
-                    title: "CPU"
+                    title: "CPU",
+                    isHidden: false
                 }
             }),
             temporaryRangeSlider_higherBound: createTemporaryRangeSlider({
@@ -61,7 +63,8 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
                     helmValue: "30000m",
                     helmValuesPath: ["resources", "limits", "cpu"],
                     description: "The maximum amount of cpu",
-                    sliderExtremity: "up"
+                    sliderExtremity: "up",
+                    isHidden: false
                 }
             })
         });

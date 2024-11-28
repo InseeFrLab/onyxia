@@ -679,6 +679,12 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     FormFieldWrapper: {
         "reset to default": "Zurücksetzen auf Standardwert"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "Verschiedenes",
+        "Configuration that applies to all charts":
+            "Konfiguration, die für alle Diagramme gilt",
+        "Top level configuration values": "Konfigurationswerte auf oberster Ebene"
+    },
     YamlCodeBlockFormField: {
         "not an array": "Ein Array wird erwartet",
         "not an object": "Ein Objekt wird erwartet",

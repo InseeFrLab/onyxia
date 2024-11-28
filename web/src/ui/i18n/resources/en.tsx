@@ -667,6 +667,12 @@ Feel free to explore and take charge of your Kubernetes deployments!
     FormFieldWrapper: {
         "reset to default": "Reset to default"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "Miscellaneous",
+        "Configuration that applies to all charts":
+            "Configuration that applies to all charts",
+        "Top level configuration values": "Top level configuration values"
+    },
     YamlCodeBlockFormField: {
         "not an array": "An array is expected",
         "not an object": "An object is expected",

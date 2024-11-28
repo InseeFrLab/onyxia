@@ -680,6 +680,12 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     FormFieldWrapper: {
         "reset to default": "Réinitialiser à la valeur par défaut"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "Sekalaista",
+        "Configuration that applies to all charts":
+            "Konfiguraatio, joka koskee kaikkia kaavioita",
+        "Top level configuration values": "Ylimmän tason konfiguraatioväriarvot"
+    },
     YamlCodeBlockFormField: {
         "not an array": "Un tableau est attendu",
         "not an object": "Un objet est attendu",

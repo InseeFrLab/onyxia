@@ -38,6 +38,7 @@ function StoryWrapper(params: Params) {
                     setValue(newValue);
                 }}
                 onRemove={undefined}
+                isHidden={false}
             />
             <Divider />
             <p>Value: </p>
