@@ -61,7 +61,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                           canAdd: false,
                           canRemove: false,
                           nodes: global,
-                          isHidden: false
+                          isHidden: global.every(node => node.isHidden)
                       })
                   ]),
             ...(main_formFields.length === 0
@@ -76,7 +76,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                           canAdd: false,
                           canRemove: false,
                           nodes: main_formFields,
-                          isHidden: false
+                          isHidden: main_formFields.every(node => node.isHidden)
                       })
                   ]),
             ...main_formFieldGroups.map(node => {
@@ -98,7 +98,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                                 isReadonly: node.isReadonly,
                                 title: "",
                                 value: node.value,
-                                isHidden: false
+                                isHidden: node.isHidden
                             })
                         ],
                         isHidden: node.isHidden

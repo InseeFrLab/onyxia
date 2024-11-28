@@ -358,26 +358,30 @@ function computeRootFormFieldGroup_rec(params: {
     }
 
     switch (helmValuesSchemaType) {
-        case "object":
+        case "object": {
             assert(helmValuesSchema.properties !== undefined);
+
+            const nodes = Object.entries(helmValuesSchema.properties).map(
+                ([segment, helmValuesSchema_child]) =>
+                    computeRootFormFieldGroup_rec({
+                        helmValues,
+                        helmValuesPath: [...helmValuesPath, segment],
+                        xOnyxiaContext,
+                        helmValuesSchema: helmValuesSchema_child
+                    })
+            );
+
             return id<FormFieldGroup>({
                 type: "group",
                 helmValuesPath,
                 title,
                 description: helmValuesSchema.description,
-                nodes: Object.entries(helmValuesSchema.properties).map(
-                    ([segment, helmValuesSchema_child]) =>
-                        computeRootFormFieldGroup_rec({
-                            helmValues,
-                            helmValuesPath: [...helmValuesPath, segment],
-                            xOnyxiaContext,
-                            helmValuesSchema: helmValuesSchema_child
-                        })
-                ),
+                nodes,
                 canAdd: false,
                 canRemove: false,
-                isHidden
+                isHidden: isHidden || nodes.every(node => node.isHidden)
             });
+        }
         case "array": {
             const itemSchema = helmValuesSchema.items;
 
@@ -391,22 +395,24 @@ function computeRootFormFieldGroup_rec(params: {
             assert(values !== undefined);
             assert(values instanceof Array);
 
+            const nodes = values.map((...[, index]) =>
+                computeRootFormFieldGroup_rec({
+                    helmValues,
+                    helmValuesPath: [...helmValuesPath, index],
+                    xOnyxiaContext,
+                    helmValuesSchema: itemSchema
+                })
+            );
+
             return id<FormFieldGroup>({
                 type: "group",
                 helmValuesPath,
                 title,
                 description: helmValuesSchema.description,
-                nodes: values.map((...[, index]) =>
-                    computeRootFormFieldGroup_rec({
-                        helmValues,
-                        helmValuesPath: [...helmValuesPath, index],
-                        xOnyxiaContext,
-                        helmValuesSchema: itemSchema
-                    })
-                ),
+                nodes,
                 canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
                 canRemove: values.length > (helmValuesSchema.minItems ?? 0),
-                isHidden
+                isHidden: isHidden || nodes.every(node => node.isHidden)
             });
         }
         case "boolean":
