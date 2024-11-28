@@ -7,7 +7,10 @@ import type {
 import { Accordion, type Props as PropsOfAccordion } from "./Accordion";
 import type { FormCallbacks } from "./FormCallbacks";
 import { id } from "tsafe/id";
-import { createObjectThatThrowsIfAccessed } from "clean-architecture/createObjectThatThrowsIfAccessed";
+import {
+    createObjectThatThrowsIfAccessed,
+    isObjectThatThrowIfAccessed
+} from "clean-architecture/createObjectThatThrowsIfAccessed";
 
 type Props = {
     className?: string;
@@ -130,7 +133,13 @@ export function ConfigurationTopLevelGroup(props: Props) {
                     isHidden
                 }) => (
                     <Accordion
-                        key={JSON.stringify(helmValuesPath)}
+                        key={(() => {
+                            if (isObjectThatThrowIfAccessed(helmValuesPath)) {
+                                return title;
+                            }
+
+                            return JSON.stringify(helmValuesPath);
+                        })()}
                         helmValuesPath={helmValuesPath}
                         title={title}
                         description={description}
