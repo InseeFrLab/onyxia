@@ -674,6 +674,12 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     FormFieldWrapper: {
         "reset to default": "Ripristina il valore predefinito"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "Varie",
+        "Configuration that applies to all charts":
+            "Configurazione che si applica a tutti i grafici",
+        "Top level configuration values": "Valori di configurazione di livello superiore"
+    },
     YamlCodeBlockFormField: {
         "not an array": "È previsto un array",
         "not an object": "È previsto un oggetto",

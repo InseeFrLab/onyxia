@@ -675,6 +675,12 @@ export const translations: Translations<"en"> = {
     FormFieldWrapper: {
         "reset to default": "Restablecer a los valores predeterminados"
     },
+    ConfigurationTopLevelGroup: {
+        miscellaneous: "Varios",
+        "Configuration that applies to all charts":
+            "Configuración que se aplica a todos los gráficos",
+        "Top level configuration values": "Valores de configuración de nivel superior"
+    },
     YamlCodeBlockFormField: {
         "not an array": "Se espera un arreglo",
         "not an object": "Se espera un objeto",

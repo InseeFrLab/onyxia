@@ -11,6 +11,7 @@ import {
     createObjectThatThrowsIfAccessed,
     isObjectThatThrowIfAccessed
 } from "clean-architecture/createObjectThatThrowsIfAccessed";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -23,6 +24,8 @@ export function ConfigurationTopLevelGroup(props: Props) {
     const { className, main, global, callbacks } = props;
 
     const { cx, classes } = useStyles();
+
+    const { t } = useTranslation({ ConfigurationTopLevelGroup });
 
     const { accordionEntries } = useMemo(() => {
         const { main_formFieldGroups, main_formFields } = (() => {
@@ -57,7 +60,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                           helmValuesPath:
                               createObjectThatThrowsIfAccessed<(string | number)[]>(),
                           title: "global",
-                          description: "configuration that applies to all charts",
+                          description: t("Configuration that applies to all charts"),
                           canAdd: false,
                           canRemove: false,
                           nodes: global,
@@ -70,9 +73,8 @@ export function ConfigurationTopLevelGroup(props: Props) {
                       id<AccordionEntry>({
                           helmValuesPath:
                               createObjectThatThrowsIfAccessed<(string | number)[]>(),
-                          // TODO: i18n
-                          title: "miscellaneous",
-                          description: "Top level configuration values",
+                          title: t("miscellaneous"),
+                          description: t("Top level configuration values"),
                           canAdd: false,
                           canRemove: false,
                           nodes: main_formFields,
@@ -118,7 +120,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
         ];
 
         return { accordionEntries };
-    }, [main]);
+    }, [main, t]);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -162,3 +164,11 @@ const useStyles = tss.withName({ ConfigurationTopLevelGroup }).create(({ theme }
         overflow: "hidden"
     }
 }));
+
+const { i18n } = declareComponentKeys<
+    | "miscellaneous"
+    | "Configuration that applies to all charts"
+    | "Top level configuration values"
+>()({ ConfigurationTopLevelGroup });
+
+export type I18n = typeof i18n;
