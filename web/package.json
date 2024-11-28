@@ -60,7 +60,7 @@
         "keycloakify": "^11.3.29",
         "memoizee": "^0.4.17",
         "minimal-polyfills": "^2.2.3",
-        "mui-icons-material-lazy": "^1.0.3",
+        "mui-icons-material-lazy": "^1.0.4",
         "oidc-spa": "^5.6.1",
         "onyxia-ui": "^6.2.1",
         "pathe": "^1.1.2",
