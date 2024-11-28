@@ -355,12 +355,24 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             return { isValid: true };
         }
 
+        if (
+            Object.keys(value).length !== Object.keys(helmValuesSchema.properties).length
+        ) {
+            return { isValid: false, reasonableApproximation: undefined };
+        }
+
         let isreasonableApproximation = false;
         const valueOrreasonableApproximation: Record<string, Stringifyable> = {};
 
         for (const [key, value_i] of Object.entries(value)) {
+            const helmValuesSchema_i = helmValuesSchema.properties[key];
+
+            if (helmValuesSchema_i === undefined) {
+                return { isValid: false, reasonableApproximation: undefined };
+            }
+
             const validationResult = validateValueAgainstJSONSchema({
-                helmValuesSchema: helmValuesSchema.properties[key],
+                helmValuesSchema: helmValuesSchema_i,
                 value: value_i,
                 xOnyxiaContext
             });
