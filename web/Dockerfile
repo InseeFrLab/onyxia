@@ -21,7 +21,7 @@ RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp
 USER 101
 
 # Generating /entrypoint.sh  
-# Be mindfull that the entrypoint is generated a build time but the 
+# Be mindful that the entrypoint is generated a build time but the 
 # bash code is executed at container startup.
 RUN echo $'#!/bin/sh                                                                                           \n\
 if [ -n "$CUSTOM_RESOURCES" ]; then                                                                            \n\
