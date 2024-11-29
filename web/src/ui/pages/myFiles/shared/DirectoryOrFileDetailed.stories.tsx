@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import { DirectoryOrFileDetailed } from "./DirectoryOrFileDetailed";
 
 const meta = {
-    title: "Pages/MyFiles/NewComponents/DirectoryOrFileDetailed",
+    title: "Pages/MyFiles/shared/DirectoryOrFileDetailed",
     component: DirectoryOrFileDetailed
 } satisfies Meta<typeof DirectoryOrFileDetailed>;
 

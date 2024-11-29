@@ -44,8 +44,9 @@ export type ListExplorerItemsProps = {
 
     onDeleteItems: (params: { items: Item[] }, onDeleteConfirmed?: () => void) => void;
     onCopyPath: (params: { basename: string }) => void;
+    onShare: (params: { fileBasename: string }) => void;
     evtAction: NonPostableEvt<
-        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" //TODO: Delete, legacy from secret explorer
+        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
     >;
 };
 
@@ -69,7 +70,8 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
         onDeleteItems,
         onOpenFile,
         onPolicyChange,
-        onSelectedItemKindValueChange
+        onSelectedItemKindValueChange,
+        onShare
     } = props;
 
     const apiRef = useGridApiRef();
@@ -257,6 +259,14 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                             basename: selectedItems[0].basename
                         });
                         break;
+                    case "SHARE SELECTED FILE":
+                        assert(
+                            selectedItems.length === 1 && selectedItems[0].kind === "file"
+                        );
+                        onShare({
+                            fileBasename: selectedItems[0].basename
+                        });
+                        return;
                 }
             }),
         [evtAction, onDeleteItems, onCopyPath]

@@ -314,9 +314,28 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "Annuleren",
-        "create and copy link": "Creare e copiare il link"
+    ShareDialog: {
+        title: "Deel je gegevens",
+        close: "Sluiten",
+        "create and copy link": "Link maken en kopiëren",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Je bestand is openbaar, iedereen met de link kan het downloaden."
+                : "Je bestand is momenteel privé.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "Om toegang te beperken, verander de deelstatus van je bestand."
+                : "Om toegang te geven tot je bestand, verander de deelstatus of maak een tijdelijke toegangslink.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Je link is beschikbaar zolang het bestand openbaar is."
+                : `Deze link geeft toegang tot je gegevens gedurende ${expiration}.`,
+        "label input link": "Toegangslink"
+    },
+    SelectTime: {
+        "validity duration label": "Geldigheidsduur"
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",
@@ -1025,6 +1044,42 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     return "over # maanden";
                 case "year":
                     return "over # jaar";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 seconde";
+                case "minute":
+                    return "1 minuut";
+                case "hour":
+                    return "1 uur";
+                case "day":
+                    return "1 dag";
+                case "week":
+                    return "1 week";
+                case "month":
+                    return "1 maand";
+                case "year":
+                    return "1 jaar";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# seconden";
+                case "minute":
+                    return "# minuten";
+                case "hour":
+                    return "# uren";
+                case "day":
+                    return "# dagen";
+                case "week":
+                    return "# weken";
+                case "month":
+                    return "# maanden";
+                case "year":
+                    return "# jaren";
             }
         }
     },

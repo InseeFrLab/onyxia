@@ -303,9 +303,28 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "Cancel",
-        "create and copy link": "Create and copy link"
+    ShareDialog: {
+        title: "Share your data",
+        close: "Close",
+        "create and copy link": "Create and copy link",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Your file is public, anyone with the link can download it."
+                : "Your file is currently private.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "To restrict its access, change your file's sharing status."
+                : "To share and provide access to your file, change the sharing status or create a temporary access link.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Your link is available as long as the file is public."
+                : `This link will grant access to your data for ${expiration}.`,
+        "label input link": "Access link"
+    },
+    SelectTime: {
+        "validity duration label": "Validity duration"
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",
@@ -1008,6 +1027,42 @@ Feel free to explore and take charge of your Kubernetes deployments!
                     return "in # months";
                 case "year":
                     return "in # years";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 second";
+                case "minute":
+                    return "1 minute";
+                case "hour":
+                    return "1 hour";
+                case "day":
+                    return "1 day";
+                case "week":
+                    return "1 week";
+                case "month":
+                    return "1 month";
+                case "year":
+                    return "1 year";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# seconds";
+                case "minute":
+                    return "# minutes";
+                case "hour":
+                    return "# hours";
+                case "day":
+                    return "# days";
+                case "week":
+                    return "# weeks";
+                case "month":
+                    return "# months";
+                case "year":
+                    return "# years";
             }
         }
     },

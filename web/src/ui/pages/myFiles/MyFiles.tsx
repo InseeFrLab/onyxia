@@ -38,7 +38,8 @@ export default function MyFiles(props: Props) {
         uploadProgress,
         currentWorkingDirectoryView,
         pathMinDepth,
-        viewMode
+        viewMode,
+        shareView
     } = useCoreState("fileExplorer", "main");
 
     const { fileExplorer } = useCore().functions;
@@ -198,6 +199,13 @@ export default function MyFiles(props: Props) {
                 onOpenFile={onOpenFile}
                 viewMode={viewMode}
                 onViewModeChange={fileExplorer.changeViewMode}
+                shareView={shareView}
+                onShareFileOpen={fileExplorer.openShare}
+                onShareFileClose={fileExplorer.closeShare}
+                onShareRequestSignedUrl={fileExplorer.requestShareSignedUrl}
+                onChangeShareSelectedValidityDuration={
+                    fileExplorer.changeShareSelectedValidityDuration
+                }
             />
         </div>
     );

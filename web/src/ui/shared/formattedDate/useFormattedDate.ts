@@ -1,8 +1,7 @@
 import { useMemo, useEffect, useReducer } from "react";
-import { useLang, getTranslation } from "ui/i18n";
-import { assert } from "tsafe/assert";
-import { declareComponentKeys } from "i18nifty";
+import { useLang } from "ui/i18n";
 import { getFormattedDate } from "./getFormattedDate";
+import { fromNow } from "./dateTimeFormatter";
 
 export function useFormattedDate(params: { time: number }): string {
     const { time } = params;
@@ -12,98 +11,6 @@ export function useFormattedDate(params: { time: number }): string {
 
     return useMemo(() => getFormattedDate({ time, lang }), [time, lang]);
 }
-
-export const { fromNow } = (() => {
-    const { getUnits } = (() => {
-        type Unit = {
-            max: number;
-            divisor: number;
-            past1: string;
-            pastN: string;
-            future1: string;
-            futureN: string;
-        };
-
-        const SECOND = 1000;
-        const MINUTE = 60 * SECOND;
-        const HOUR = 60 * MINUTE;
-        const DAY = 24 * HOUR;
-        const WEEK = 7 * DAY;
-        const MONTH = 30 * DAY;
-        const YEAR = 365 * DAY;
-
-        function getUnits(): Unit[] {
-            const { t } = getTranslation("formattedDate");
-
-            return divisorKeys.map(divisorKey => ({
-                divisor: (() => {
-                    switch (divisorKey) {
-                        case "now":
-                            return 1;
-                        case "second":
-                            return SECOND;
-                        case "minute":
-                            return MINUTE;
-                        case "hour":
-                            return HOUR;
-                        case "day":
-                            return DAY;
-                        case "week":
-                            return WEEK;
-                        case "month":
-                            return MONTH;
-                        case "year":
-                            return YEAR;
-                    }
-                })(),
-                max: (() => {
-                    switch (divisorKey) {
-                        case "now":
-                            return 4 * SECOND;
-                        case "second":
-                            return MINUTE;
-                        case "minute":
-                            return HOUR;
-                        case "hour":
-                            return DAY;
-                        case "day":
-                            return WEEK;
-                        case "week":
-                            return MONTH;
-                        case "month":
-                            return YEAR;
-                        case "year":
-                            return Infinity;
-                    }
-                })(),
-                past1: t("past1", { divisorKey }),
-                pastN: t("pastN", { divisorKey }),
-                future1: t("future1", { divisorKey }),
-                futureN: t("futureN", { divisorKey })
-            }));
-        }
-
-        return { getUnits };
-    })();
-
-    function fromNow(params: { dateTime: number }): string {
-        const { dateTime } = params;
-
-        const diff = Date.now() - dateTime;
-        const diffAbs = Math.abs(diff);
-        for (const unit of getUnits()) {
-            if (diffAbs < unit.max) {
-                const isFuture = diff < 0;
-                const x = Math.round(Math.abs(diff) / unit.divisor);
-                if (x <= 1) return isFuture ? unit.future1 : unit.past1;
-                return (isFuture ? unit.futureN : unit.pastN).replace("#", `${x}`);
-            }
-        }
-        assert(false);
-    }
-
-    return { fromNow };
-})();
 
 export function useFromNow(params: { dateTime: number }) {
     const { dateTime } = params;
@@ -128,35 +35,3 @@ export function useFromNow(params: { dateTime: number }) {
 
     return { fromNowText };
 }
-
-const divisorKeys = [
-    "now",
-    "second",
-    "minute",
-    "hour",
-    "day",
-    "week",
-    "month",
-    "year"
-] as const;
-type DivisorKey = (typeof divisorKeys)[number];
-
-const { i18n } = declareComponentKeys<
-    | {
-          K: "past1";
-          P: { divisorKey: DivisorKey };
-      }
-    | {
-          K: "pastN";
-          P: { divisorKey: DivisorKey };
-      }
-    | {
-          K: "future1";
-          P: { divisorKey: DivisorKey };
-      }
-    | {
-          K: "futureN";
-          P: { divisorKey: DivisorKey };
-      }
->()("formattedDate");
-export type I18n = typeof i18n;

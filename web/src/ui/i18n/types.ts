@@ -25,7 +25,8 @@ export type ComponentKey =
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
     | import("ui/pages/myFiles/Explorer/ListExplorer/ListExplorerItems").I18n
-    | import("ui/pages/myFiles/NewComponents/MyFilesShareDialog").I18n
+    | import("ui/pages/myFiles/ShareFile/ShareDialog").I18n
+    | import("ui/pages/myFiles/ShareFile/SelectTime").I18n
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n
@@ -81,7 +82,7 @@ export type ComponentKey =
     | import("ui/pages/dataExplorer/DataExplorer").I18n
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
-    | import("ui/shared/formattedDate/useFormattedDate").I18n
+    | import("ui/shared/formattedDate/type").I18n
     | import("ui/shared/CopyToClipboardIconButton").I18n
     | import("ui/shared/Datagrid/CustomDataGrid").I18n
     | import("ui/shared/Datagrid/CustomDataGridToolbarDensitySelector").I18n

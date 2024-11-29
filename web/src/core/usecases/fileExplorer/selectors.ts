@@ -6,6 +6,7 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
+import type { S3Object } from "core/ports/S3Client";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -97,9 +98,9 @@ const currentWorkingDirectoryView = createSelector(
         objects,
         ongoingOperations,
         s3FilesBeingUploaded
-    ): CurrentWorkingDirectoryView | undefined => {
+    ): CurrentWorkingDirectoryView | null => {
         if (directoryPath === undefined) {
-            return undefined;
+            return null;
         }
         const items = objects
             .map((object): CurrentWorkingDirectoryView.Item => {
@@ -187,6 +188,87 @@ const currentWorkingDirectoryView = createSelector(
     }
 );
 
+export type ShareView = ShareView.PublicFile | ShareView.PrivateFile;
+
+export namespace ShareView {
+    export type Common = {
+        file: S3Object.File;
+    };
+
+    export type PublicFile = Common & {
+        isPublic: true;
+        url: string;
+    };
+
+    export type PrivateFile = Common & {
+        isPublic: false;
+        validityDurationSecond: number;
+        validityDurationSecondOptions: number[];
+        url: string | undefined;
+        isSignedUrlBeingRequested: boolean;
+    };
+}
+
+const shareView = createSelector(
+    createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.objects),
+    createSelector(state, state => state.share),
+    (directoryPath, objects, share): ShareView | undefined | null => {
+        if (directoryPath === undefined) {
+            return null;
+        }
+
+        if (share === undefined) {
+            return undefined;
+        }
+
+        const common: ShareView.Common = {
+            file: (() => {
+                const file = objects.find(
+                    obj => obj.basename === share.fileBasename && obj.kind === "file"
+                );
+
+                assert(file !== undefined);
+                assert(file.kind === "file");
+
+                return file;
+            })()
+        };
+
+        const isPublic = share.isSignedUrlBeingRequested === undefined;
+
+        if (isPublic) {
+            assert(share.url !== undefined);
+
+            return id<ShareView.PublicFile>({
+                ...common,
+                isPublic: true,
+                url: share.url
+            });
+        }
+
+        const {
+            url,
+            isSignedUrlBeingRequested,
+            validityDurationSecond,
+            validityDurationSecondOptions
+        } = share;
+
+        assert(isSignedUrlBeingRequested !== undefined);
+        assert(validityDurationSecond !== undefined);
+        assert(validityDurationSecondOptions !== undefined);
+
+        return id<ShareView.PrivateFile>({
+            ...common,
+            isPublic: false,
+            isSignedUrlBeingRequested,
+            url,
+            validityDurationSecond,
+            validityDurationSecondOptions
+        });
+    }
+);
+
 const isNavigationOngoing = createSelector(state, state => state.isNavigationOngoing);
 
 const workingDirectoryPath = createSelector(
@@ -206,21 +288,25 @@ const pathMinDepth = createSelector(workingDirectoryPath, workingDirectoryPath =
 });
 
 const main = createSelector(
+    createSelector(state, state => state.directoryPath),
     uploadProgress,
     commandLogsEntries,
     currentWorkingDirectoryView,
     isNavigationOngoing,
     pathMinDepth,
     createSelector(state, state => state.viewMode),
+    shareView,
     (
+        directoryPath,
         uploadProgress,
         commandLogsEntries,
         currentWorkingDirectoryView,
         isNavigationOngoing,
         pathMinDepth,
-        viewMode
+        viewMode,
+        shareView
     ) => {
-        if (currentWorkingDirectoryView === undefined) {
+        if (directoryPath === undefined) {
             return {
                 isCurrentWorkingDirectoryLoaded: false as const,
                 isNavigationOngoing,
@@ -231,6 +317,9 @@ const main = createSelector(
             };
         }
 
+        assert(currentWorkingDirectoryView !== null);
+        assert(shareView !== null);
+
         return {
             isCurrentWorkingDirectoryLoaded: true as const,
             isNavigationOngoing,
@@ -238,7 +327,8 @@ const main = createSelector(
             commandLogsEntries,
             pathMinDepth,
             currentWorkingDirectoryView,
-            viewMode
+            viewMode,
+            shareView
         };
     }
 );
@@ -260,6 +350,6 @@ const isFileExplorerEnabled = (rootState: RootState) => {
 
 const directoryPath = createSelector(state, state => state.directoryPath);
 
-export const protectedSelectors = { workingDirectoryPath, directoryPath };
+export const protectedSelectors = { workingDirectoryPath, directoryPath, shareView };
 
 export const selectors = { main, isFileExplorerEnabled };

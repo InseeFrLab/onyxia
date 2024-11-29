@@ -311,9 +311,28 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "Peruuta",
-        "create and copy link": "Luo ja kopioi linkki"
+    ShareDialog: {
+        title: "Jaa tietosi",
+        close: "Sulje",
+        "create and copy link": "Luo ja kopioi linkki",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Tiedostosi on julkinen, kuka tahansa linkin omistava voi ladata sen."
+                : "Tiedostosi on tällä hetkellä yksityinen.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "Rajoittaaksesi pääsyä muuta tiedostosi jakamisen tilaa."
+                : "Jaa tiedosto ja anna pääsy muuttamalla jakamisen tilaa tai luomalla väliaikainen linkki.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Linkkisi on käytettävissä niin kauan kuin tiedosto on julkinen."
+                : `Tämä linkki antaa pääsyn tietoihisi ${expiration} ajaksi.`,
+        "label input link": "Pääsylinkki"
+    },
+    SelectTime: {
+        "validity duration label": "Voimassaoloaika"
     },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
@@ -1014,6 +1033,42 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                     return "# kuukauden kuluttua";
                 case "year":
                     return "# vuoden kuluttua";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 sekunti";
+                case "minute":
+                    return "1 minuutti";
+                case "hour":
+                    return "1 tunti";
+                case "day":
+                    return "1 päivä";
+                case "week":
+                    return "1 viikko";
+                case "month":
+                    return "1 kuukausi";
+                case "year":
+                    return "1 vuosi";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# sekuntia";
+                case "minute":
+                    return "# minuuttia";
+                case "hour":
+                    return "# tuntia";
+                case "day":
+                    return "# päivää";
+                case "week":
+                    return "# viikkoa";
+                case "month":
+                    return "# kuukautta";
+                case "year":
+                    return "# vuotta";
             }
         }
     },

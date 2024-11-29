@@ -7,6 +7,10 @@ import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { S3Object } from "core/ports/S3Client";
+import {
+    formatDuration,
+    englishDurationFormatter
+} from "core/tools/timeFormat/formatDuration";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -692,9 +696,9 @@ export const thunks = {
             );
         },
     getFileDownloadUrl:
-        (params: { basename: string }) =>
+        (params: { basename: string; validityDurationSecond?: number }) =>
         async (...args): Promise<string> => {
-            const { basename } = params;
+            const { basename, validityDurationSecond = 3_600 } = params;
 
             const [dispatch, getState] = args;
 
@@ -708,10 +712,14 @@ export const thunks = {
 
             const cmdId = Date.now();
 
+            const prettyDurationValue = formatDuration({
+                durationSeconds: validityDurationSecond,
+                t: englishDurationFormatter
+            });
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: `mc share download --expire 1h ${pathJoin("s3", path)}`
+                    cmd: `mc share download --expire ${prettyDurationValue} ${pathJoin("s3", path)}`
                 })
             );
 
@@ -724,7 +732,7 @@ export const thunks = {
 
             const downloadUrl = await s3Client.getFileDownloadUrl({
                 path,
-                validityDurationSecond: 3600
+                validityDurationSecond
             });
 
             dispatch(
@@ -732,12 +740,113 @@ export const thunks = {
                     cmdId,
                     resp: [
                         `URL: ${downloadUrl.split("?")[0]}`,
-                        `Expire: 0 days 1 hours 0 minutes 0 seconds`,
+                        `Expire: ${prettyDurationValue}`,
                         `Share: ${downloadUrl}`
                     ].join("\n")
                 })
             );
 
             return downloadUrl;
+        },
+    openShare:
+        (params: { fileBasename: string }) =>
+        async (...args) => {
+            const { fileBasename } = params;
+
+            const [dispatch, getState] = args;
+
+            const { directoryPath, objects } = getState()[name];
+
+            assert(directoryPath !== undefined);
+
+            const { s3Client, s3Config } = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r;
+            });
+
+            const currentObj = objects.find(
+                o => o.basename === fileBasename && o.kind === "file"
+            );
+
+            assert(currentObj !== undefined);
+
+            if (currentObj.policy === "public") {
+                dispatch(
+                    actions.shareOpened({
+                        fileBasename,
+                        url: `${s3Config.paramsOfCreateS3Client.url}/${pathJoin(directoryPath, fileBasename)}`,
+                        validityDurationSecondOptions: undefined
+                    })
+                );
+                return;
+            }
+
+            const tokens = await s3Client.getToken({ doForceRenew: false });
+
+            assert(tokens !== undefined);
+
+            const { expirationTime = Infinity } = tokens;
+
+            const validityDurationSecondOptions = [
+                3_600,
+                12 * 3_600,
+                24 * 3_600,
+                48 * 3_600,
+                7 * 24 * 3_600
+            ].filter(validityDuration => validityDuration < expirationTime - Date.now());
+
+            dispatch(
+                actions.shareOpened({
+                    fileBasename,
+                    url: undefined,
+                    validityDurationSecondOptions
+                })
+            );
+        },
+    closeShare:
+        () =>
+        (...args) => {
+            const [dispatch, getState] = args;
+
+            if (getState()[name].share === undefined) {
+                return;
+            }
+
+            dispatch(actions.shareClosed());
+        },
+    changeShareSelectedValidityDuration:
+        (params: { validityDurationSecond: number }) =>
+        (...args) => {
+            const { validityDurationSecond } = params;
+
+            const [dispatch] = args;
+
+            dispatch(
+                actions.shareSelectedValidityDurationChanged({ validityDurationSecond })
+            );
+        },
+    requestShareSignedUrl:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const shareView = protectedSelectors.shareView(getState());
+
+            assert(shareView !== null);
+            assert(shareView !== undefined);
+            assert(!shareView.isPublic);
+
+            dispatch(actions.requestSignedUrlStarted());
+
+            const url = await dispatch(
+                thunks.getFileDownloadUrl({
+                    basename: shareView.file.basename,
+                    validityDurationSecond: shareView.validityDurationSecond
+                })
+            );
+
+            dispatch(actions.requestSignedUrlCompleted({ url }));
         }
 } satisfies Thunks;

@@ -310,9 +310,28 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "Avbryt",
-        "create and copy link": "Opprett og kopier lenke"
+    ShareDialog: {
+        title: "Del dataene dine",
+        close: "Lukk",
+        "create and copy link": "Opprett og kopier lenke",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Filen din er offentlig, alle med lenken kan laste den ned."
+                : "Filen din er for øyeblikket privat.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "For å begrense tilgangen, endre delingsstatusen til filen din."
+                : "For å dele og gi tilgang til filen din, endre delingsstatusen eller opprett en midlertidig tilgangslenke.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Lenken din er tilgjengelig så lenge filen er offentlig."
+                : `Denne lenken gir tilgang til dataene dine i ${expiration}.`,
+        "label input link": "Tilgangslenke"
+    },
+    SelectTime: {
+        "validity duration label": "Gyldighetsperiode"
     },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
@@ -1019,6 +1038,42 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                     return "om # måneder";
                 case "year":
                     return "om # år";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 sekund";
+                case "minute":
+                    return "1 minutt";
+                case "hour":
+                    return "1 time";
+                case "day":
+                    return "1 dag";
+                case "week":
+                    return "1 uke";
+                case "month":
+                    return "1 måned";
+                case "year":
+                    return "1 år";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# sekunder";
+                case "minute":
+                    return "# minutter";
+                case "hour":
+                    return "# timer";
+                case "day":
+                    return "# dager";
+                case "week":
+                    return "# uker";
+                case "month":
+                    return "# måneder";
+                case "year":
+                    return "# år";
             }
         }
     },

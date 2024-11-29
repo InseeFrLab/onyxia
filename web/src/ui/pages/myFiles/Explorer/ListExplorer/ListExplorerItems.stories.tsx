@@ -73,6 +73,9 @@ export const Default: Story = {
         onPolicyChange: action("Policy change"),
         onCopyPath: action("Copy path"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
-        evtAction: Evt.create<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">()
+        evtAction: Evt.create<
+            "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+        >(),
+        onShare: action("Share file")
     }
 };

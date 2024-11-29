@@ -315,9 +315,28 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "Cancelar",
-        "create and copy link": "Crear y copiar enlace"
+    ShareDialog: {
+        title: "Compartir tus datos",
+        close: "Cerrar",
+        "create and copy link": "Crear y copiar enlace",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "Tu archivo es público, cualquier persona con el enlace puede descargarlo."
+                : "Tu archivo está actualmente privado.",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "Para restringir su acceso, cambia el estado de difusión de tu archivo."
+                : "Para compartir y dar acceso a tu archivo, cambia el estado de difusión o crea un enlace de acceso temporal.",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "Tu enlace está disponible mientras el archivo sea público."
+                : `Este enlace otorgará acceso a tus datos durante ${expiration}.`,
+        "label input link": "Enlace de acceso"
+    },
+    SelectTime: {
+        "validity duration label": "Duración de validez"
     },
     MySecrets: {
         "page title - my secrets": "Mis Secretos",
@@ -1022,6 +1041,42 @@ export const translations: Translations<"en"> = {
                     return "en # meses";
                 case "year":
                     return "en # años";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1 segundo";
+                case "minute":
+                    return "1 minuto";
+                case "hour":
+                    return "1 hora";
+                case "day":
+                    return "1 día";
+                case "week":
+                    return "1 semana";
+                case "month":
+                    return "1 mes";
+                case "year":
+                    return "1 año";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "# segundos";
+                case "minute":
+                    return "# minutos";
+                case "hour":
+                    return "# horas";
+                case "day":
+                    return "# días";
+                case "week":
+                    return "# semanas";
+                case "month":
+                    return "# meses";
+                case "year":
+                    return "# años";
             }
         }
     },

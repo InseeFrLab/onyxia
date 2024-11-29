@@ -281,9 +281,28 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "取消",
-        "create and copy link": "创建并复制链接"
+    ShareDialog: {
+        title: "分享您的数据",
+        close: "关闭",
+        "create and copy link": "创建并复制链接",
+        "paragraph current policy": ({ isPublic }) =>
+            isPublic
+                ? "您的文件是公开的，任何拥有链接的人都可以下载。"
+                : "您的文件当前是私密的。",
+
+        "paragraph change policy": ({ isPublic }) =>
+            isPublic
+                ? "要限制访问，请更改文件的共享状态。"
+                : "要分享并提供对文件的访问，请更改共享状态或创建一个临时访问链接。",
+
+        "hint link access": ({ isPublic, expiration }) =>
+            isPublic
+                ? "只要文件是公开的，您的链接就可用。"
+                : `此链接将在 ${expiration} 内提供对您的数据的访问权限。`,
+        "label input link": "访问链接"
+    },
+    SelectTime: {
+        "validity duration label": "有效期"
     },
     MySecrets: {
         "page title - my secrets": "我的密钥",
@@ -960,6 +979,42 @@ ${
                     return "# 个月后";
                 case "year":
                     return "# 年后";
+            }
+        },
+        singular: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "1秒";
+                case "minute":
+                    return "1分钟";
+                case "hour":
+                    return "1小时";
+                case "day":
+                    return "1天";
+                case "week":
+                    return "1周";
+                case "month":
+                    return "1个月";
+                case "year":
+                    return "1年";
+            }
+        },
+        plural: ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "second":
+                    return "#秒";
+                case "minute":
+                    return "#分钟";
+                case "hour":
+                    return "#小时";
+                case "day":
+                    return "#天";
+                case "week":
+                    return "#周";
+                case "month":
+                    return "#个月";
+                case "year":
+                    return "#年";
             }
         }
     },

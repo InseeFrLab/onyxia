@@ -15,9 +15,6 @@ export type Props = {
     selectedItemKind: "file" | "directory" | "multiple" | "none";
     viewMode: ViewMode;
     onViewModeChange: (params: { viewMode: ViewMode }) => void;
-    //TODO: Restore when we have fileViewer usecase
-    //isFileOpen: boolean;
-
     callback: (buttonId: ButtonId) => void;
 };
 
@@ -56,11 +53,10 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return false;
                         case "new":
                         case "create directory":
-                            //return isFileOpen;
                             return false;
                         case "delete":
-                        case "share":
                             return selectedItemKind === "none";
+                        case "share":
                         case "copy path":
                             return selectedItemKind !== "file";
                     }
@@ -139,8 +135,8 @@ const buttonIds = [
     "new",
     "create directory",
     "delete",
-    "copy path",
-    "share"
+    "share",
+    "copy path"
 ] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
