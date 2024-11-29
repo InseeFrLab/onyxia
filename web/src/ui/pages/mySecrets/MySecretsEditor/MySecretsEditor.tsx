@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { tss } from "tss";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";

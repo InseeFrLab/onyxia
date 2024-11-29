@@ -135,8 +135,9 @@ export const { reducer, actions } = createUsecaseActions({
             state.directoryPath = directoryPath;
             state.objects = objects;
             state.isNavigationOngoing = false;
-            bucketPolicy && (state.bucketPolicy = bucketPolicy);
-
+            if (bucketPolicy) {
+                state.bucketPolicy = bucketPolicy;
+            }
             // Properly restore state when navigating back to
             // a directory with ongoing operations.
             state.ongoingOperations

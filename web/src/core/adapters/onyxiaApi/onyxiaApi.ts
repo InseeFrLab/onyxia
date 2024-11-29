@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import "minimal-polyfills/Object.fromEntries";
 import {
     type OnyxiaApi,

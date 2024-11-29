@@ -166,6 +166,7 @@ export default function MyServices(props: Props) {
                         ...rest
                     } = restorableConfig;
 
+                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
                     assert<Equals<typeof rest, {}>>(true);
 
                     return routes.launcher({

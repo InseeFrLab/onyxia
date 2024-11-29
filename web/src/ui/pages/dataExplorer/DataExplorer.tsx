@@ -63,9 +63,11 @@ export default function DataExplorer(props: Props) {
                 ctx,
                 ({ queryParams, extraRestorableStates }) => {
                     const { sourceUrl, rowsPerPage, page, ...rest1 } = queryParams;
+                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
                     assert<Equals<typeof rest1, {}>>();
                     const { selectedRowIndex, columnVisibility, ...rest2 } =
                         extraRestorableStates;
+                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
                     assert<Equals<typeof rest2, {}>>();
 
                     routes[route.name]({
