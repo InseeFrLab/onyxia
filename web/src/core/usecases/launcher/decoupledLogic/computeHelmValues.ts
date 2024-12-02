@@ -133,6 +133,13 @@ export function computeHelmValues_rec(params: {
             break use_x_onyxia_overwriteDefaultWith;
         }
 
+        if (
+            helmValuesSchema.type === "object" &&
+            helmValuesSchema.properties !== undefined
+        ) {
+            break use_x_onyxia_overwriteDefaultWith;
+        }
+
         const resolvedValue = resolveXOnyxiaValueReference({
             expression: overwriteDefaultWith,
             xOnyxiaContext
@@ -162,6 +169,13 @@ export function computeHelmValues_rec(params: {
         const defaultValue = helmValuesSchema.default;
 
         if (defaultValue === undefined) {
+            break use_default;
+        }
+
+        if (
+            helmValuesSchema.type === "object" &&
+            helmValuesSchema.properties !== undefined
+        ) {
             break use_default;
         }
 
