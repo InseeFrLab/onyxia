@@ -18,7 +18,6 @@ type Props = {
     value: number;
     onChange: (newValue: number) => void;
     onErrorChange: (params: { hasError: boolean }) => void;
-    isHidden: boolean;
 };
 
 export const NumberFormField = memo((props: Props) => {
@@ -32,8 +31,7 @@ export const NumberFormField = memo((props: Props) => {
         onRemove,
         value,
         onChange,
-        onErrorChange,
-        isHidden
+        onErrorChange
     } = props;
 
     const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
@@ -116,7 +114,6 @@ export const NumberFormField = memo((props: Props) => {
             onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={onRemove}
-            isHidden={isHidden}
         >
             <Input
                 id={inputId}

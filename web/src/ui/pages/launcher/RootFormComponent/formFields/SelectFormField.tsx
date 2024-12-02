@@ -15,7 +15,6 @@ type Props = {
     onRemove: (() => void) | undefined;
     selectedOptionIndex: number;
     onSelectedOptionIndexChange: (selectedOptionIndex: number) => void;
-    isHidden: boolean;
 };
 
 export const SelectFormField = memo((props: Props) => {
@@ -27,8 +26,7 @@ export const SelectFormField = memo((props: Props) => {
         options,
         onRemove,
         selectedOptionIndex,
-        onSelectedOptionIndexChange,
-        isHidden
+        onSelectedOptionIndexChange
     } = props;
 
     const { serializedValue, setSerializedValue, resetToDefault } = useFormField<
@@ -58,7 +56,6 @@ export const SelectFormField = memo((props: Props) => {
             onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={onRemove}
-            isHidden={isHidden}
         >
             <Select
                 className={classes.select}

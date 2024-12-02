@@ -23,7 +23,6 @@ export type FormFieldGroup = {
     nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
-    isHidden: boolean;
 };
 
 export type FormField =
@@ -39,7 +38,6 @@ export namespace FormField {
     type Common = {
         type: "field";
         title: string;
-        isHidden: boolean;
     };
 
     export type Checkbox = Common & {

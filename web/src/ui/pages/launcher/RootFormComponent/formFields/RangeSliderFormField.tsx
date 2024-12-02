@@ -13,7 +13,6 @@ export type Props = {
     lowEndRange: Props.RangeEnd;
     highEndRange: Props.RangeEnd;
     onChange: (params: { lowEndRangeValue: number; highEndRangeValue: number }) => void;
-    isHidden: boolean;
 };
 
 export namespace Props {
@@ -28,16 +27,7 @@ export namespace Props {
 }
 
 export const RangeSliderFormField = memo((props: Props) => {
-    const {
-        className,
-        title,
-        unit,
-        step,
-        lowEndRange,
-        highEndRange,
-        onChange,
-        isHidden
-    } = props;
+    const { className, title, unit, step, lowEndRange, highEndRange, onChange } = props;
 
     const serialize = ([lowEndRangeValue, highEndRangeValue]: [number, number]) =>
         JSON.stringify([lowEndRangeValue, highEndRangeValue]);
@@ -80,7 +70,6 @@ export const RangeSliderFormField = memo((props: Props) => {
             onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={undefined}
-            isHidden={isHidden}
         >
             <RangeSlider
                 inputId={inputId}

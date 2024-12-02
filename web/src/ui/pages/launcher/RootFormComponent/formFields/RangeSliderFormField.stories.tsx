@@ -66,7 +66,6 @@ function StoryWrapper(params: Params) {
                     const { lowEndRangeValue, highEndRangeValue } = params;
                     setLowEndRangeValue([lowEndRangeValue, highEndRangeValue]);
                 }}
-                isHidden={false}
             />
             <Divider />
             <p>Value: </p>

@@ -25,12 +25,10 @@ export type Props = {
     canAdd: boolean;
     canRemove: boolean;
     callbacks: FormCallbacks;
-    isHidden: boolean;
 };
 
 export function FormFieldGroupComponent(props: Props) {
-    const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath, isHidden } =
-        props;
+    const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath } = props;
 
     const { onRemove, onAdd, onChange, onFieldErrorChange } = callbacks;
 
@@ -126,7 +124,7 @@ export function FormFieldGroupComponent(props: Props) {
             })
     );
 
-    const { cx, classes } = useStyles({ isHidden });
+    const { cx, classes } = useStyles();
 
     const { t } = useTranslation({ FormFieldGroupComponent });
 
@@ -159,7 +157,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 canAdd={node.canAdd}
                                 canRemove={node.canRemove}
                                 helmValuesPath={node.helmValuesPath}
-                                isHidden={node.isHidden}
                             />
                         </FormFieldGroupComponentWrapper>
                     );
@@ -178,7 +175,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 onChange={getOnChange_checkbox(
                                     JSON.stringify(node.helmValuesPath)
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                     case "yaml code block": {
@@ -196,7 +192,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 onErrorChange={getOnFieldErrorChange_child(
                                     helmValuesPathStr
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                     }
@@ -216,7 +211,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 onErrorChange={getOnFieldErrorChange_child(
                                     helmValuesPathStr
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                     }
@@ -233,7 +227,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 onSelectedOptionIndexChange={getOnChange_select(
                                     JSON.stringify(node.helmValuesPath)
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                     case "text field": {
@@ -254,7 +247,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 onErrorChange={getOnFieldErrorChange_child(
                                     helmValuesPathStr
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                     }
@@ -275,7 +267,6 @@ export function FormFieldGroupComponent(props: Props) {
                                 onChange={getOnChange_slider(
                                     JSON.stringify(node.helmValuesPath)
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                     case "range slider":
@@ -306,7 +297,6 @@ export function FormFieldGroupComponent(props: Props) {
                                     JSON.stringify(node.lowEndRange.helmValuesPath),
                                     JSON.stringify(node.highEndRange.helmValuesPath)
                                 )}
-                                isHidden={node.isHidden}
                             />
                         );
                 }
@@ -327,33 +317,28 @@ export function FormFieldGroupComponent(props: Props) {
 const { i18n } = declareComponentKeys<"add">()({ FormFieldGroupComponent });
 export type I18n = typeof i18n;
 
-const useStyles = tss
-    .withName({ FormFieldGroupComponent })
-    .withParams<{ isHidden: boolean }>()
-    .create(({ theme, isHidden }) => {
-        const gap = theme.spacing(6);
+const useStyles = tss.withName({ FormFieldGroupComponent }).create(({ theme }) => {
+    const gap = theme.spacing(6);
 
-        return {
-            root: isHidden
-                ? { display: "none" }
-                : {
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap,
-                      alignItems: "baseline"
-                  },
-            group: {
-                flex: "0 0 100%"
-            },
-            field_text: {
-                flex: "0 0 300px"
-            },
-            field_yamlCodeBlock: {
-                flex: "0 0 100%"
-            },
-            field_slider: {
-                flex: `0 0 calc(50% - ${gap / 2}px)`,
-                boxSizing: "border-box"
-            }
-        };
-    });
+    return {
+        root: {
+            display: "flex",
+            flexWrap: "wrap",
+            gap,
+            alignItems: "baseline"
+        },
+        group: {
+            flex: "0 0 100%"
+        },
+        field_text: {
+            flex: "0 0 300px"
+        },
+        field_yamlCodeBlock: {
+            flex: "0 0 100%"
+        },
+        field_slider: {
+            flex: `0 0 calc(50% - ${gap / 2}px)`,
+            boxSizing: "border-box"
+        }
+    };
+});

@@ -16,7 +16,6 @@ type Props = {
     error: JSX.Element | string | undefined;
     inputId: string | undefined;
     onRemove: (() => void) | undefined;
-    isHidden: boolean;
     children: ReactNode;
 };
 
@@ -29,20 +28,18 @@ export function FormFieldWrapper(props: Props) {
         error,
         inputId,
         onRemove,
-        isHidden,
         children
     } = props;
 
-    const { cx, classes } = useStyles({
+    const { classes } = useStyles({
         isErrored: error !== undefined,
-        isResetToDefaultButtonVisible: onResetToDefault !== undefined,
-        isHidden
+        isResetToDefaultButtonVisible: onResetToDefault !== undefined
     });
 
     const { t } = useTranslation({ FormFieldWrapper });
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={className}>
             <div className={classes.header}>
                 {onRemove !== undefined && (
                     <IconButton
@@ -96,12 +93,8 @@ const useStyles = tss
     .withParams<{
         isErrored: boolean;
         isResetToDefaultButtonVisible: boolean;
-        isHidden: boolean;
     }>()
-    .create(({ theme, isErrored, isResetToDefaultButtonVisible, isHidden }) => ({
-        root: {
-            display: isHidden ? "none" : undefined
-        },
+    .create(({ theme, isErrored, isResetToDefaultButtonVisible }) => ({
         title: {
             color: !isErrored ? undefined : theme.colors.useCases.alertSeverity.error.main
         },

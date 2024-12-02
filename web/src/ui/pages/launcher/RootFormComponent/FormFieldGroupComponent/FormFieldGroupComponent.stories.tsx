@@ -36,8 +36,7 @@ export const Default: Story = {
                 doRenderAsTextArea: false,
                 isSensitive: false,
                 pattern: undefined,
-                value: "value 1",
-                isHidden: false
+                value: "value 1"
             }),
             id<FormField.TextField>({
                 type: "field",
@@ -49,8 +48,7 @@ export const Default: Story = {
                 doRenderAsTextArea: false,
                 isSensitive: false,
                 pattern: undefined,
-                value: "value 2",
-                isHidden: false
+                value: "value 2"
             })
         ],
         callbacks: {
@@ -58,7 +56,6 @@ export const Default: Story = {
             onAdd,
             onRemove,
             onFieldErrorChange
-        },
-        isHidden: false
+        }
     }
 };

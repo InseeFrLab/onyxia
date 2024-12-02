@@ -18,7 +18,6 @@ type Props = {
     onRemove: (() => void) | undefined;
     value: number;
     onChange: (newValue: number) => void;
-    isHidden: boolean;
 };
 
 export const SliderFormField = memo((props: Props) => {
@@ -33,8 +32,7 @@ export const SliderFormField = memo((props: Props) => {
         step,
         onRemove,
         value,
-        onChange,
-        isHidden
+        onChange
     } = props;
 
     const { serializedValue, setSerializedValue, resetToDefault } = useFormField<
@@ -64,7 +62,6 @@ export const SliderFormField = memo((props: Props) => {
             onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={onRemove}
-            isHidden={isHidden}
         >
             <div>
                 <div className={classes.valueWrapper}>

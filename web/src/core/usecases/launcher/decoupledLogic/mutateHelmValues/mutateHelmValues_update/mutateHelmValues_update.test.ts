@@ -42,8 +42,7 @@ describe(symToStr({ mutateHelmValues_update }), () => {
                         isReadonly: THROW_IF_ACCESSED,
                         description: THROW_IF_ACCESSED,
                         selectedOptionIndex: THROW_IF_ACCESSED,
-                        title: THROW_IF_ACCESSED,
-                        isHidden: THROW_IF_ACCESSED
+                        title: THROW_IF_ACCESSED
                     })
                 ],
                 dependencies: {},
@@ -80,8 +79,7 @@ describe(symToStr({ mutateHelmValues_update }), () => {
                         min: THROW_IF_ACCESSED,
                         max: THROW_IF_ACCESSED,
                         step: THROW_IF_ACCESSED,
-                        value: THROW_IF_ACCESSED,
-                        isHidden: THROW_IF_ACCESSED
+                        value: THROW_IF_ACCESSED
                     })
                 ],
                 dependencies: {},
@@ -162,12 +160,10 @@ describe(symToStr({ mutateHelmValues_update }), () => {
                                             }
                                         ),
                                     step: THROW_IF_ACCESSED,
-                                    title: THROW_IF_ACCESSED,
-                                    isHidden: THROW_IF_ACCESSED
+                                    title: THROW_IF_ACCESSED
                                 }
                             )
-                        ],
-                        isHidden: THROW_IF_ACCESSED
+                        ]
                     })
                 ],
                 dependencies: {},

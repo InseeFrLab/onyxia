@@ -63,8 +63,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                           description: t("Configuration that applies to all charts"),
                           canAdd: false,
                           canRemove: false,
-                          nodes: global,
-                          isHidden: global.every(node => node.isHidden)
+                          nodes: global
                       })
                   ]),
             ...(main_formFields.length === 0
@@ -77,8 +76,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                           description: t("Top level configuration values"),
                           canAdd: false,
                           canRemove: false,
-                          nodes: main_formFields,
-                          isHidden: main_formFields.every(node => node.isHidden)
+                          nodes: main_formFields
                       })
                   ]),
             ...main_formFieldGroups.map(node => {
@@ -99,11 +97,9 @@ export function ConfigurationTopLevelGroup(props: Props) {
                                 helmValuesPath: node.helmValuesPath,
                                 isReadonly: node.isReadonly,
                                 title: "",
-                                value: node.value,
-                                isHidden: node.isHidden
+                                value: node.value
                             })
-                        ],
-                        isHidden: node.isHidden
+                        ]
                     });
                 }
 
@@ -113,8 +109,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                     description: node.description,
                     canAdd: node.canAdd,
                     canRemove: node.canRemove,
-                    nodes: node.nodes,
-                    isHidden: node.isHidden
+                    nodes: node.nodes
                 });
             })
         ];
@@ -125,15 +120,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             {accordionEntries.map(
-                ({
-                    helmValuesPath,
-                    title,
-                    description,
-                    canAdd,
-                    canRemove,
-                    nodes,
-                    isHidden
-                }) => (
+                ({ helmValuesPath, title, description, canAdd, canRemove, nodes }) => (
                     <Accordion
                         key={(() => {
                             if (isObjectThatThrowIfAccessed(helmValuesPath)) {
@@ -149,7 +136,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
                         canRemove={canRemove}
                         nodes={nodes}
                         callbacks={callbacks}
-                        isHidden={isHidden}
                     />
                 )
             )}

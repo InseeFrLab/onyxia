@@ -130,7 +130,6 @@ export function mergeTemporaryRangeSliders(params: {
                 lowEndRange,
                 highEndRange
             };
-        })(),
-        isHidden: payload_lowEnd.isHidden || payload_highEnd.isHidden
+        })()
     };
 }

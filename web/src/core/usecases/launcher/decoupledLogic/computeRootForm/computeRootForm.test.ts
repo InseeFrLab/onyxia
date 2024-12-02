@@ -79,13 +79,11 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "foo",
-                            isHidden: false
+                            value: "foo"
                         }
                     ],
                     canAdd: false,
-                    canRemove: false,
-                    isHidden: false
+                    canRemove: false
                 }
             ],
             disabledDependencies: [],
@@ -99,8 +97,7 @@ describe(symToStr({ computeRootForm }), () => {
                     description: undefined,
                     value: 2,
                     isInteger: false,
-                    minimum: undefined,
-                    isHidden: false
+                    minimum: undefined
                 }
             ],
             dependencies: {
@@ -113,8 +110,7 @@ describe(symToStr({ computeRootForm }), () => {
                             fieldType: "checkbox",
                             helmValuesPath: ["postgresql", "enabled"],
                             description: undefined,
-                            value: true,
-                            isHidden: false
+                            value: true
                         }
                     ],
                     global: [
@@ -128,8 +124,7 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "admin",
-                            isHidden: false
+                            value: "admin"
                         },
                         {
                             type: "field",
@@ -141,8 +136,7 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "xxx",
-                            isHidden: false
+                            value: "xxx"
                         }
                     ]
                 }
@@ -227,13 +221,11 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "value of services.a",
-                            isHidden: false
+                            value: "value of services.a"
                         }
                     ],
                     canAdd: false,
-                    canRemove: false,
-                    isHidden: false
+                    canRemove: false
                 },
                 {
                     type: "field",
@@ -245,8 +237,7 @@ describe(symToStr({ computeRootForm }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of foo.b",
-                    isHidden: false
+                    value: "value of foo.b"
                 }
             ],
             disabledDependencies: [],
@@ -260,8 +251,7 @@ describe(symToStr({ computeRootForm }), () => {
                     description: undefined,
                     value: 2,
                     isInteger: false,
-                    minimum: undefined,
-                    isHidden: false
+                    minimum: undefined
                 },
                 {
                     type: "field",
@@ -273,8 +263,7 @@ describe(symToStr({ computeRootForm }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of global.foo.username",
-                    isHidden: false
+                    value: "value of global.foo.username"
                 },
                 {
                     type: "field",
@@ -286,8 +275,7 @@ describe(symToStr({ computeRootForm }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of global.foo.password",
-                    isHidden: false
+                    value: "value of global.foo.password"
                 }
             ],
             dependencies: {}

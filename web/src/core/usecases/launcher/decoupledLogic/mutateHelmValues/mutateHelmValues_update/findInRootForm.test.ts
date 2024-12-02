@@ -21,13 +21,11 @@ const rootForm: RootForm = {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "foo",
-                    isHidden: false
+                    value: "foo"
                 }
             ],
             canAdd: false,
-            canRemove: false,
-            isHidden: false
+            canRemove: false
         },
         {
             type: "group",
@@ -58,13 +56,11 @@ const rootForm: RootForm = {
                     },
                     step: undefined,
                     unit: "Mi",
-                    title: "cpu",
-                    isHidden: false
+                    title: "cpu"
                 }
             ],
             canAdd: false,
-            canRemove: false,
-            isHidden: false
+            canRemove: false
         }
     ],
     disabledDependencies: [],
@@ -78,8 +74,7 @@ const rootForm: RootForm = {
             description: undefined,
             value: 2,
             isInteger: false,
-            minimum: undefined,
-            isHidden: false
+            minimum: undefined
         }
     ],
     dependencies: {
@@ -92,8 +87,7 @@ const rootForm: RootForm = {
                     fieldType: "checkbox",
                     helmValuesPath: ["postgresql", "enabled"],
                     description: undefined,
-                    value: true,
-                    isHidden: false
+                    value: true
                 }
             ],
             global: [
@@ -107,8 +101,7 @@ const rootForm: RootForm = {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "admin",
-                    isHidden: false
+                    value: "admin"
                 },
                 {
                     type: "field",
@@ -120,8 +113,7 @@ const rootForm: RootForm = {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "xxx",
-                    isHidden: false
+                    value: "xxx"
                 }
             ]
         }
@@ -145,8 +137,7 @@ describe(symToStr({ findInRootForm }), () => {
             doRenderAsTextArea: false,
             isSensitive: false,
             pattern: undefined,
-            value: "foo",
-            isHidden: false
+            value: "foo"
         });
     });
 
@@ -163,8 +154,7 @@ describe(symToStr({ findInRootForm }), () => {
             fieldType: "checkbox",
             helmValuesPath: ["postgresql", "enabled"],
             description: undefined,
-            value: true,
-            isHidden: false
+            value: true
         });
     });
 });
@@ -200,8 +190,7 @@ describe(symToStr({ findInRootForm_rangeSlider }), () => {
             },
             step: undefined,
             unit: "Mi",
-            title: "cpu",
-            isHidden: false
+            title: "cpu"
         });
     });
 });

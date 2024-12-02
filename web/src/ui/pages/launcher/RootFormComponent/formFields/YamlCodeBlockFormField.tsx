@@ -17,7 +17,6 @@ type Props = {
     value: Record<string, Stringifyable> | Stringifyable[];
     onChange: (newValue: Record<string, Stringifyable> | Stringifyable[]) => void;
     onErrorChange: (params: { hasError: boolean }) => void;
-    isHidden: boolean;
 };
 
 const DEFAULT_HEIGHT = 300;
@@ -31,8 +30,7 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
         onRemove,
         value,
         onChange,
-        onErrorChange,
-        isHidden
+        onErrorChange
     } = props;
 
     const { t } = useTranslation({ YamlCodeBlockFormField });
@@ -101,7 +99,6 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={onRemove}
-            isHidden={isHidden}
         >
             <CodeEditor
                 fallback={
