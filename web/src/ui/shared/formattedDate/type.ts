@@ -1,22 +1,8 @@
 import { declareComponentKeys } from "i18nifty";
+import { DURATION_DIVISOR_KEYS } from "core/tools/timeFormat/constants";
+import type { DurationDivisorKey } from "core/tools/timeFormat/type";
 
-export const durationDivisorKeys = [
-    "second",
-    "minute",
-    "hour",
-    "day",
-    "week",
-    "month",
-    "year"
-] as const;
-export type DurationDivisorKey = (typeof durationDivisorKeys)[number];
-
-export type DurationTranslationFunction = (
-    key: "singular" | "plural",
-    params: { divisorKey: DurationDivisorKey }
-) => string;
-
-export const fromNowDivisorKeys = [...durationDivisorKeys, "now"] as const;
+export const fromNowDivisorKeys = [...DURATION_DIVISOR_KEYS, "now"] as const;
 export type FromNowDivisorKey = (typeof fromNowDivisorKeys)[number];
 
 const { i18n } = declareComponentKeys<

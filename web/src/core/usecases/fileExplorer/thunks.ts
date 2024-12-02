@@ -7,10 +7,7 @@ import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { S3Object } from "core/ports/S3Client";
-import {
-    formatDuration,
-    englishDurationFormatter
-} from "core/tools/timeFormat/formatDuration";
+import { formatDuration } from "core/tools/timeFormat/formatDuration";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -714,7 +711,7 @@ export const thunks = {
 
             const prettyDurationValue = formatDuration({
                 durationSeconds: validityDurationSecond,
-                t: englishDurationFormatter
+                t: undefined
             });
             dispatch(
                 actions.commandLogIssued({
