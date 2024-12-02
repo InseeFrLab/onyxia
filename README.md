@@ -46,58 +46,58 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Media
 
 <p align="center">
+    <i>PyData Paris 2024</i><br>
+    <a href="https://youtu.be/UFbOBz-Aw1I?si=P8IZ40SnP9aAn-NJ&t=472">
+        <img src="https://github.com/user-attachments/assets/4bfc1e54-b9f0-4974-a7bb-4149f2522ca9" width="420">
+    </a>
+</p>
+
+<p align="center">
     <i>Devoxx France 2023</i><br>
     <a href="https://youtu.be/GXINfnVB21E">
-        <img src="https://user-images.githubusercontent.com/6702424/234834115-28a5fc8d-4819-4f6d-abf5-9a9ba25e3749.png" width="640">
+        <img src="https://user-images.githubusercontent.com/6702424/234834115-28a5fc8d-4819-4f6d-abf5-9a9ba25e3749.png" width="420">
     </a>
 </p>
 
 <p align="center">
     <i>KCD France 2023</i><br>
     <a href="https://youtu.be/sOOVg4I19BI">
-        <img src="https://user-images.githubusercontent.com/6702424/231315763-1a56522d-42a4-4872-ae9b-3f8d3028e09c.png" width="640">
+        <img src="https://user-images.githubusercontent.com/6702424/231315763-1a56522d-42a4-4872-ae9b-3f8d3028e09c.png" width="420">
     </a>
 </p>
 
 <p align="center">
     <i>Open Source Experience 2022</i><br>
     <a href="https://www.youtube.com/watch?v=QBHyAKcNmS0">
-        <img src="https://user-images.githubusercontent.com/6702424/206958731-32480b6c-4fab-432f-8afa-bc7922df9857.png" width="640">
+        <img src="https://user-images.githubusercontent.com/6702424/206958731-32480b6c-4fab-432f-8afa-bc7922df9857.png" width="420">
     </a>
 </p>
 
 <p align="center">
     <i>OW2Con'23</i><br>
     <a href="https://youtu.be/wBYWEwF7pK8">
-        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
+        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="420">
     </a>
 </p>
 
 <p align="center">
     <i>Energy Data Hack</i><br>
     <a href="https://www.youtube.com/watch?v=1G0J950sWso">
-        <img src="https://user-images.githubusercontent.com/6702424/170261575-e5c2345e-4de2-4878-ac06-f362b7affd2a.png">
-    </a>
-</p>
-
-<p align="center">
-    <i>OpenLAB - <a href="https://speakerdeck.com/etalabia/openlab-onyxia-06122021?slide=6">Download slides</a></i><br>
-    <a href="https://bbb-dinum-scalelite.visio.education.fr/playback/presentation/2.3/9be5b08deee82b1ba557f360214500580cfbda51-1638792324069">
-        <img src="https://user-images.githubusercontent.com/6702424/147028499-cab9868d-1cee-439d-a777-59f5c2169b3a.png">
+        <img src="https://user-images.githubusercontent.com/6702424/170261575-e5c2345e-4de2-4878-ac06-f362b7affd2a.png" width="420">
     </a>
 </p>
 
 <p align="center">
     <i>Article d'acteurs publics</i><br>
     <a href="https://www.acteurspublics.fr/articles/une-boite-a-outils-en-ligne-pour-booster-lexploitation-des-donnees-dans-ladministration">
-        <img src="https://user-images.githubusercontent.com/6702424/147030430-afec9c32-372d-4118-85ee-4c773f16d12c.png">
+        <img src="https://user-images.githubusercontent.com/6702424/147030430-afec9c32-372d-4118-85ee-4c773f16d12c.png" width="420">
     </a>
 </p>
 
 <p align="center">
     <i>Les Entrepreuneurs d'intérêt général - <a href="https://eig.etalab.gouv.fr">Découvrir le programme</a> </i><br>
     <a href="https://youtu.be/ukMHBAXwzRg">
-        <img src="https://user-images.githubusercontent.com/6702424/137893928-e341f3fe-13cf-44e6-9332-7ade8653c7f8.png">
+        <img src="https://user-images.githubusercontent.com/6702424/137893928-e341f3fe-13cf-44e6-9332-7ade8653c7f8.png" width="420">
     </a>
 </p>
 
