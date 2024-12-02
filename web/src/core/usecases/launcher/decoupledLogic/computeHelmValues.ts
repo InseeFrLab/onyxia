@@ -126,17 +126,39 @@ export function computeHelmValues_rec(params: {
         return constValue;
     }
 
+    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
+
+    schema_is_object_with_known_properties: {
+        if (helmValuesSchemaType !== "object") {
+            break schema_is_object_with_known_properties;
+        }
+
+        const { properties } = helmValuesSchema;
+
+        if (properties === undefined) {
+            break schema_is_object_with_known_properties;
+        }
+
+        return Object.fromEntries(
+            Object.entries(properties).map(([propertyName, propertySchema]) => [
+                propertyName,
+                computeHelmValues_rec({
+                    helmValuesSchema: propertySchema,
+                    helmValuesYaml_parsed:
+                        helmValuesYaml_parsed instanceof Object &&
+                        !(helmValuesYaml_parsed instanceof Array)
+                            ? helmValuesYaml_parsed[propertyName]
+                            : undefined,
+                    xOnyxiaContext
+                })
+            ])
+        );
+    }
+
     use_x_onyxia_overwriteDefaultWith: {
         const { overwriteDefaultWith } = helmValuesSchema["x-onyxia"] ?? {};
 
         if (overwriteDefaultWith === undefined) {
-            break use_x_onyxia_overwriteDefaultWith;
-        }
-
-        if (
-            helmValuesSchema.type === "object" &&
-            helmValuesSchema.properties !== undefined
-        ) {
             break use_x_onyxia_overwriteDefaultWith;
         }
 
@@ -172,13 +194,6 @@ export function computeHelmValues_rec(params: {
             break use_default;
         }
 
-        if (
-            helmValuesSchema.type === "object" &&
-            helmValuesSchema.properties !== undefined
-        ) {
-            break use_default;
-        }
-
         const { isValid } = validateValueAgainstJSONSchema({
             helmValuesSchema,
             xOnyxiaContext,
@@ -190,35 +205,6 @@ export function computeHelmValues_rec(params: {
         }
 
         return defaultValue;
-    }
-
-    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
-
-    schema_is_object_with_known_properties: {
-        if (helmValuesSchemaType !== "object") {
-            break schema_is_object_with_known_properties;
-        }
-
-        const { properties } = helmValuesSchema;
-
-        if (properties === undefined) {
-            break schema_is_object_with_known_properties;
-        }
-
-        return Object.fromEntries(
-            Object.entries(properties).map(([propertyName, propertySchema]) => [
-                propertyName,
-                computeHelmValues_rec({
-                    helmValuesSchema: propertySchema,
-                    helmValuesYaml_parsed:
-                        helmValuesYaml_parsed instanceof Object &&
-                        !(helmValuesYaml_parsed instanceof Array)
-                            ? helmValuesYaml_parsed[propertyName]
-                            : undefined,
-                    xOnyxiaContext
-                })
-            ])
-        );
     }
 
     use_values_yaml: {
