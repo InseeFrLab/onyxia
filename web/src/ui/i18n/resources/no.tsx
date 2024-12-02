@@ -310,6 +310,13 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
+    MyFilesDisabledDialog: {
+        "dialog title": "Ingen S3-server konfigurert",
+        "dialog body":
+            "Det er ingen S3-server konfigurert for denne instansen. Men du kan legge til en manuelt for å aktivere S3-filutforskeren.",
+        cancel: "Avbryt",
+        "go to settings": "Gå til innstillinger"
+    },
     ShareDialog: {
         title: "Del dataene dine",
         close: "Lukk",

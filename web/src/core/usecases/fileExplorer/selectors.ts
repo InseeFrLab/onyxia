@@ -3,6 +3,7 @@ import { type State, name } from "./state";
 import { createSelector } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
@@ -338,7 +339,10 @@ const isFileExplorerEnabled = (rootState: RootState) => {
         userAuthentication.selectors.authenticationState(rootState);
 
     if (!isUserLoggedIn) {
-        return true;
+        const { s3Configs } =
+            deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
+
+        return s3Configs.some(s3Config => s3Config.sts.url !== undefined);
     } else {
         return (
             s3ConfigManagement.selectors

@@ -315,6 +315,13 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
+    MyFilesDisabledDialog: {
+        "dialog title": "No hay servidor S3 configurado",
+        "dialog body":
+            "No hay ningún servidor S3 configurado para esta instancia. Pero puedes agregar uno manualmente para habilitar el explorador de archivos S3.",
+        cancel: "Cancelar",
+        "go to settings": "Ir a configuración"
+    },
     ShareDialog: {
         title: "Compartir tus datos",
         close: "Cerrar",

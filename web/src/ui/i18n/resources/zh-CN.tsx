@@ -281,6 +281,12 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
+    MyFilesDisabledDialog: {
+        "dialog title": "未配置S3服务器",
+        "dialog body": "此实例未配置S3服务器。但您可以手动添加一个，以启用S3文件浏览器。",
+        cancel: "取消",
+        "go to settings": "前往设置"
+    },
     ShareDialog: {
         title: "分享您的数据",
         close: "关闭",

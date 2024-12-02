@@ -20,13 +20,22 @@ import type { PageRoute } from "./route";
 import { assert } from "tsafe/assert";
 import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
+import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MyFiles(props: Props) {
+export default function MyFilesMaybeDisabled(props: Props) {
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
+    if (!isFileExplorerEnabled) {
+        return <MyFilesDisabledDialog />;
+    }
+    return <MyFiles {...props} />;
+}
+
+function MyFiles(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFiles });
