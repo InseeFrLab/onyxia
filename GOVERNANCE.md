@@ -43,6 +43,7 @@ By separating these components into distinct repositories, Onyxia ensures a clea
 | Joseph Garrone | Insee     |  [@garonnej](https://github.com/garronej) |
 | Olivier Levitt | Insee     |  [@olevitt](https://github.com/olevitt) |
 | Romain Lesur | Insee     |  [@rlesur](https://github.com/rlesur) |
+| Trygve Falch | Statistics Norway     |  [@trygu](https://github.com/trygu) |
 
 ## Repository Maintainers
 

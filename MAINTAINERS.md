@@ -8,7 +8,8 @@ This document lists the maintainers of the Onyxia project. The maintainers are r
 | ---------------- | ----------------- | ------------- | -------------- |
 | Joseph Garrone   | @garronej         | Insee         | Lead Maintainer |
 | Dylan Decrulle   | @ddecrulle        | Insee         | Co-maintainer  |
-| Levitt Olivier   | @olevitt          | Insee         | Co-maintainer  |
+| Olivier Levitt   | @olevitt          | Insee         | Co-maintainer  |
+| John Kasper Svergja  | @johnksv          | Statistics Norway         | Co-maintainer  |
 
 ## Emeritus Maintainers
 
