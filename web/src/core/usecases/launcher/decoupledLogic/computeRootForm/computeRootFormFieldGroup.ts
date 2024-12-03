@@ -56,6 +56,7 @@ export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type XOnyxiaContextLike = {};
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
@@ -474,5 +475,5 @@ function computeRootFormFieldGroup_rec(params: {
             });
     }
 
-    assert<Equals<typeof helmValuesSchemaType, never>>;
+    assert<Equals<typeof helmValuesSchemaType, never>>();
 }

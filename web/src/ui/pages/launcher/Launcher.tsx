@@ -142,6 +142,7 @@ export default function Launcher(props: Props) {
             ...rest
         } = restorableConfig;
 
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         assert<Equals<typeof rest, {}>>();
 
         routes[route.name]({

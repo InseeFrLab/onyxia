@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import "minimal-polyfills/Object.fromEntries";
 import {
     type OnyxiaApi,
@@ -10,7 +9,7 @@ import {
     type Project,
     zJSONSchema
 } from "core/ports/OnyxiaApi";
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";
 import { assert, is } from "tsafe/assert";
@@ -68,13 +67,15 @@ export function createOnyxiaApi(params: {
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ baseURL: url, timeout: 120_000 });
 
-        axiosInstance.interceptors.request.use(config => ({
-            ...config,
-            headers: {
-                ...config?.headers,
-                ...getHeaders()
-            }
-        }));
+        axiosInstance.interceptors.request.use(config => {
+            const headers = AxiosHeaders.from(config.headers);
+            headers.set(getHeaders());
+
+            return {
+                ...config,
+                headers
+            };
+        });
 
         return { axiosInstance };
     })();

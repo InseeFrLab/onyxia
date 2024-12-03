@@ -5,6 +5,7 @@ import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type XOnyxiaContextLike = {};
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();

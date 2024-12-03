@@ -245,7 +245,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
             }
 
             switch (type) {
-                case "down":
+                case "down": {
                     const keyProp = getKeyProp({ kind, basename });
 
                     if (target === "text" && selectedItemKeyProp === keyProp) {
@@ -259,6 +259,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                     setSelectedItemKeyProp(keyProp);
 
                     break;
+                }
 
                 case "double":
                     switch (kind) {

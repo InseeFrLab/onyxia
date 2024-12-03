@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
 import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 

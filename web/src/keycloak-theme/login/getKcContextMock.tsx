@@ -35,7 +35,6 @@ export const { getKcContextMock } = createGetKcContextMock({
                             pattern: {
                                 pattern: "^[a-z0-9]+$",
                                 "ignore.empty.value": true,
-                                // eslint-disable-next-line no-template-curly-in-string
                                 "error-message": "${lowerCaseAlphanumericalCharsOnly}"
                             }
                         },

@@ -107,7 +107,7 @@ namespace v1 {
     }
 }
 
-assert<Equals<v1.ProjectConfigs, ProjectConfigs>>;
+assert<Equals<v1.ProjectConfigs, ProjectConfigs>>();
 
 export async function v0ToV1(params: {
     projectVaultTopDirPath_reserved: string;
@@ -184,7 +184,7 @@ export async function v0ToV1(params: {
 
                                             (function callee(
                                                 path: (string | number)[],
-                                                o: Object
+                                                o: object
                                             ) {
                                                 Object.entries(o).forEach(
                                                     ([segment, value]) => {
