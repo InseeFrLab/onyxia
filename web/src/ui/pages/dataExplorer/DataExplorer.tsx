@@ -13,10 +13,11 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
 import { env } from "env";
-import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
+import { autosizeOptions, CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { exclude } from "tsafe/exclude";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
+import { useGridApiRef } from "@mui/x-data-grid";
 
 export type Props = {
     route: PageRoute;
@@ -28,6 +29,8 @@ export default function DataExplorer(props: Props) {
 
     const { dataExplorer } = useCore().functions;
     const { t } = useTranslation({ DataExplorer });
+
+    const apiRef = useGridApiRef();
 
     useEffect(() => {
         dataExplorer.initialize({
@@ -57,6 +60,12 @@ export default function DataExplorer(props: Props) {
         errorMessage,
         isQuerying
     } = useCoreState("dataExplorer", "main");
+
+    useEffect(() => {
+        if (columns) {
+            apiRef.current.autosizeColumns(autosizeOptions);
+        }
+    }, [columns]);
 
     useEffect(() => {
         if (queryParams === undefined) {
@@ -151,6 +160,7 @@ export default function DataExplorer(props: Props) {
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
+                                apiRef={apiRef}
                                 shouldAddCopyToClipboardInCell
                                 classes={{
                                     panelWrapper: cx(
