@@ -54,15 +54,6 @@ export const { actions, reducer } = createUsecaseActions({
             state.isQuerying = true;
             state.queryParams = queryParams;
         },
-        paginationSet: (
-            state,
-            { payload }: { payload: { rowsPerPage: number; page: number } }
-        ) => {
-            const { rowsPerPage, page } = payload;
-            assert(state.queryParams !== undefined);
-            state.queryParams.rowsPerPage = rowsPerPage;
-            state.queryParams.page = page;
-        },
         extraRestorableStateSet: (
             state,
             {
@@ -119,7 +110,10 @@ export const { actions, reducer } = createUsecaseActions({
             state.errorMessage = errorMessage;
             state.queryParams = undefined;
         },
-        /** Only for evt */
-        restoreStateNeeded: () => {}
+        restoreState: state => {
+            state.queryParams = undefined;
+            state.extraRestorableStates = undefined;
+            state.data = undefined;
+        }
     }
 });
