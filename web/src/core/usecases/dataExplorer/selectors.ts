@@ -39,7 +39,7 @@ const columns = createSelector(
 );
 
 const main = createSelector(state, columns, (state, columns) => {
-    const { isQuerying, queryParams, errorMessage, data } = state;
+    const { isQuerying, queryParams, errorMessage, data, extraRestorableStates } = state;
 
     if (errorMessage !== undefined) {
         return { isQuerying, errorMessage: errorMessage };
@@ -51,6 +51,7 @@ const main = createSelector(state, columns, (state, columns) => {
 
     assert(columns !== undefined);
     assert(queryParams !== undefined);
+    assert(extraRestorableStates !== undefined);
 
     const { rowsPerPage, page } = queryParams;
 
@@ -61,6 +62,8 @@ const main = createSelector(state, columns, (state, columns) => {
             ...row
         })),
         rowCount: data.rowCount,
+        queryParams,
+        extraRestorableStates,
         fileDownloadUrl: data.fileDownloadUrl,
         columns
     };

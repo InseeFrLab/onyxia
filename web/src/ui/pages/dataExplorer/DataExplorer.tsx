@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { tss } from "tss";
-import type { PageRoute } from "./route";
+import { DEFAULT_QUERY_PARAMS, type PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
@@ -30,19 +30,29 @@ export default function DataExplorer(props: Props) {
     const { dataExplorer } = useCore().functions;
     const { t } = useTranslation({ DataExplorer });
 
+    // useEffect(() => {
+    //     dataExplorer.setQueryParamsAndExtraRestorableStates({
+    //         queryParams: {
+    //             sourceUrl: route.params.source ?? "",
+    //             rowsPerPage: route.params.rowsPerPage,
+    //             page: route.params.page
+    //         },
+    //         extraRestorableStates: {
+    //             selectedRowIndex: route.params.selectedRow,
+    //             columnVisibility: route.params.columnVisibility
+    //         }
+    //     });
+    // }, [route]);
+
     useEffect(() => {
-        dataExplorer.setQueryParamsAndExtraRestorableStates({
-            queryParams: {
-                sourceUrl: route.params.source ?? "",
-                rowsPerPage: route.params.rowsPerPage,
-                page: route.params.page
-            },
-            extraRestorableStates: {
-                selectedRowIndex: route.params.selectedRow,
-                columnVisibility: route.params.columnVisibility
-            }
+        dataExplorer.initialize({
+            sourceUrl: route.params.source ?? "",
+            rowsPerPage: route.params.rowsPerPage,
+            page: route.params.page,
+            selectedRowIndex: route.params.selectedRow,
+            columnVisibility: route.params.columnVisibility
         });
-    }, [route]);
+    }, [route.params.source]);
 
     const { evtDataExplorer } = useCore().evts;
 
@@ -84,10 +94,30 @@ export default function DataExplorer(props: Props) {
         [evtDataExplorer]
     );
 
-    const { rows, columns, rowCount, errorMessage, isQuerying } = useCoreState(
-        "dataExplorer",
-        "main"
-    );
+    const {
+        queryParams,
+        extraRestorableStates,
+        rows,
+        columns,
+        rowCount,
+        errorMessage,
+        isQuerying
+    } = useCoreState("dataExplorer", "main");
+
+    useEffect(() => {
+        if (queryParams === undefined) {
+            return;
+        }
+
+        routes[route.name]({
+            ...route.params,
+            source: queryParams.sourceUrl,
+            page: queryParams.page,
+            rowsPerPage: queryParams.rowsPerPage,
+            selectedRow: extraRestorableStates.selectedRowIndex,
+            columnVisibility: extraRestorableStates.columnVisibility
+        }).replace();
+    }, [queryParams, extraRestorableStates]);
 
     const { classes, cx } = useStyles();
 
@@ -130,11 +160,16 @@ export default function DataExplorer(props: Props) {
                     })
                 }
                 onUrlChange={value => {
-                    routes[route.name]({
-                        source: value
-                    }).replace();
+                    dataExplorer.updateDataSource({
+                        queryParams: {
+                            sourceUrl: value,
+                            rowsPerPage: DEFAULT_QUERY_PARAMS.rowsPerPage,
+                            page: DEFAULT_QUERY_PARAMS.page
+                        },
+                        shouldVerifyUrl: false
+                    });
                 }}
-                url={route.params.source ?? ""}
+                url={queryParams?.sourceUrl ?? DEFAULT_QUERY_PARAMS.source}
             />
             <div className={classes.mainArea}>
                 {(() => {
@@ -157,6 +192,7 @@ export default function DataExplorer(props: Props) {
                             </div>
                         );
                     }
+
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
@@ -171,12 +207,13 @@ export default function DataExplorer(props: Props) {
                                 }}
                                 slots={{ toolbar: SlotsDataGridToolbar }}
                                 disableVirtualization={!isVirtualizationEnabled}
-                                columnVisibilityModel={route.params.columnVisibility}
+                                columnVisibilityModel={
+                                    extraRestorableStates.columnVisibility
+                                }
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
-                                    routes[route.name]({
-                                        ...route.params,
+                                    dataExplorer.updateColumnVisibility({
                                         columnVisibility: columnVisibilityModel
-                                    }).replace()
+                                    })
                                 }
                                 onRowSelectionModelChange={rowSelectionModel => {
                                     const selectedRowIndex = rowSelectionModel[0];
@@ -204,22 +241,21 @@ export default function DataExplorer(props: Props) {
                                     const pageSizeOptions = [25, 50, 100];
 
                                     assert(
-                                        pageSizeOptions.includes(route.params.rowsPerPage)
+                                        pageSizeOptions.includes(queryParams.rowsPerPage)
                                     );
 
                                     return pageSizeOptions;
                                 })()}
                                 paginationModel={{
-                                    page: route.params.page - 1,
-                                    pageSize: route.params.rowsPerPage
+                                    page: queryParams.page - 1,
+                                    pageSize: queryParams.rowsPerPage
                                 }}
-                                onPaginationModelChange={({ page, pageSize }) =>
-                                    routes[route.name]({
-                                        ...route.params,
-                                        rowsPerPage: pageSize,
-                                        page: page + 1
-                                    }).replace()
-                                }
+                                onPaginationModelChange={({ page, pageSize }) => {
+                                    dataExplorer.updatePaginationModel({
+                                        page: page + 1,
+                                        rowsPerPage: pageSize
+                                    });
+                                }}
                             />
                         </div>
                     );

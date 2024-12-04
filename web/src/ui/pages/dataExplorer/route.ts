@@ -2,12 +2,21 @@ import { createRouter, defineRoute, param, createGroup, type Route } from "type-
 import { id } from "tsafe/id";
 import type { ValueSerializer } from "type-route";
 
+export const DEFAULT_QUERY_PARAMS = {
+    source: "",
+    rowsPerPage: 25,
+    page: 1,
+    selectedRow: undefined,
+    columnVisibility: {}
+};
 export const routeDefs = {
     dataExplorer: defineRoute(
         {
             source: param.query.optional.string,
-            rowsPerPage: param.query.optional.number.default(25),
-            page: param.query.optional.number.default(1),
+            rowsPerPage: param.query.optional.number.default(
+                DEFAULT_QUERY_PARAMS.rowsPerPage
+            ),
+            page: param.query.optional.number.default(DEFAULT_QUERY_PARAMS.page),
             selectedRow: param.query.optional.number,
             columnVisibility: param.query.optional
                 .ofType(
@@ -16,7 +25,7 @@ export const routeDefs = {
                         stringify: value => JSON.stringify(value)
                     })
                 )
-                .default({})
+                .default(DEFAULT_QUERY_PARAMS.columnVisibility)
         },
         () => `/data-explorer`
     )
