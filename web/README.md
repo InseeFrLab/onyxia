@@ -17,5 +17,5 @@ This repository contains the source code for the Docker image [inseefrlab/onyxia
 
 ## Project Structure
 
--   **UI Layer:** This project utilizes React, but solely as a UI library. The React-specific code is isolated to [src/ui](./src/ui).
--   **Core Logic:** The bulk of the application's functionality resides in [src/core](./src/core). Importantly, the core logic is entirely agnostic to React.
+- **UI Layer:** This project utilizes React, but solely as a UI library. The React-specific code is isolated to [src/ui](./src/ui).
+- **Core Logic:** The bulk of the application's functionality resides in [src/core](./src/core). Importantly, the core logic is entirely agnostic to React.

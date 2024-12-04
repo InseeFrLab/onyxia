@@ -313,7 +313,9 @@ export const translations: Translations<"fr"> = {
                     notre documentation
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurer les clients MinIO</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configurer les clients MinIO
+                </MuiLink>.
             </>
         )
     },
@@ -359,7 +361,9 @@ export const translations: Translations<"fr"> = {
                     notre documentation
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurer votre Vault CLI local</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configurer votre Vault CLI local
+                </MuiLink>.
             </>
         )
     },
@@ -965,7 +969,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 spécifique du fichier en copiant l'URL de la barre d'adresse.
                 <br />
                 Vous ne savez pas par où commencer ? Essayez ce{" "}
-                <MuiLink {...demoParquetFileLink}>fichier de démonstration</MuiLink> !
+                <MuiLink {...demoParquetFileLink}>
+                    fichier de démonstration
+                </MuiLink> !
             </>
         ),
         column: "colonne",

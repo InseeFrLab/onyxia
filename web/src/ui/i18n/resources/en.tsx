@@ -299,7 +299,9 @@ export const translations: Translations<"en"> = {
                     our documentation
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configure the minio clients</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configure the minio clients
+                </MuiLink>.
             </>
         )
     },
@@ -345,7 +347,9 @@ export const translations: Translations<"en"> = {
                     our documentation
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configure your local Vault CLI</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configure your local Vault CLI
+                </MuiLink>.
             </>
         )
     },

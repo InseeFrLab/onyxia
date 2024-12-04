@@ -311,7 +311,9 @@ export const translations: Translations<"en"> = {
                     nuestra documentación
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configura los clientes de minio</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configura los clientes de minio
+                </MuiLink>.
             </>
         )
     },
@@ -357,7 +359,9 @@ export const translations: Translations<"en"> = {
                     nuestra documentación
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configura tu Vault CLI local</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configura tu Vault CLI local
+                </MuiLink>.
             </>
         )
     },
@@ -955,7 +959,9 @@ export const translations: Translations<"en"> = {
                 específica del archivo copiando la URL de la barra de direcciones.
                 <br />
                 ¿No estás seguro por dónde empezar? ¡Prueba este{" "}
-                <MuiLink {...demoParquetFileLink}>archivo de demostración</MuiLink>!
+                <MuiLink {...demoParquetFileLink}>
+                    archivo de demostración
+                </MuiLink>!
             </>
         ),
         column: "columna",

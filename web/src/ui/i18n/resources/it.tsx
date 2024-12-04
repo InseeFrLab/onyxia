@@ -308,7 +308,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare i client MinIO</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Configurare i client MinIO
+                </MuiLink>.
             </>
         )
     },

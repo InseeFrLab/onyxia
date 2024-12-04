@@ -817,7 +817,9 @@ ${
         "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
             <>
                 只有您可以访问此服务。点击共享给
-                <span style={{ color: focusColor }}>{projectName}</span>项目成员。
+                <span style={{ color: focusColor }}>
+                    {projectName}
+                </span>项目成员。
             </>
         )
     },
@@ -892,7 +894,9 @@ ${
                 URL，分享文件的永久链接，甚至是文件中某个特定行的链接。
                 <br />
                 不知道从哪里开始？尝试这个{" "}
-                <MuiLink {...demoParquetFileLink}>演示文件</MuiLink>！
+                <MuiLink {...demoParquetFileLink}>
+                    演示文件
+                </MuiLink>！
             </>
         ),
         column: "列",

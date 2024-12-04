@@ -353,7 +353,9 @@ export const translations: Translations<"fi"> = {
                     dokumentaatiomme
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Määritä paikallinen Vault CLI</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Määritä paikallinen Vault CLI
+                </MuiLink>.
             </>
         )
     },

@@ -15,12 +15,12 @@ Le SSP Cloud s’adresse aux agents du système statistique public ainsi qu'aux 
 
 Le SSP Cloud permet :
 
--   l'orchestration de formations de _data science_
--   l'accès à des services de _data science_
--   le stockage sécurisé de données
--   la gestion de secrets, tels que des clés de chiffrement
--   l'accès à un service de gestion de code
--   l'orchestration de flux de traitement de données
+- l'orchestration de formations de _data science_
+- l'accès à des services de _data science_
+- le stockage sécurisé de données
+- la gestion de secrets, tels que des clés de chiffrement
+- l'accès à un service de gestion de code
+- l'orchestration de flux de traitement de données
 
 Un compte utilisateur permet également de se connecter à la plateforme de services de la communauté Mutualisation Inter-ministérielle Logiciels Libres (<https://groupes.mim-libre.fr/>).
 
@@ -49,8 +49,8 @@ Internet. L'utilisation d'un ordinateur est recommandée. L’utilisation des se
 
 La communauté d'utilisateurs est accessible sur :
 
--   Tchap, salon [SSP Cloud](https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr)
--   Rocket Chat du MIM Libre, salon [SSP Cloud](https://chat.mim-libre.fr/channel/sspcloud)
+- Tchap, salon [SSP Cloud](https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr)
+- Rocket Chat du MIM Libre, salon [SSP Cloud](https://chat.mim-libre.fr/channel/sspcloud)
 
 ## Limites d’utilisation du Service
 
@@ -135,8 +135,8 @@ ses prénom, nom et adresse mail (obligatoire) ;
 
 de façon libre :
 
--   photo (cf. gitlab)
--   ...
+- photo (cf. gitlab)
+- ...
 
 ### Données de trace
 
@@ -152,11 +152,11 @@ l'objet d'une revue périodique de la part des administrateurs à des fins de co
 Ces cookies n’ont pour objet que de permettre le fonctionnement du service et
 de faciliter son usage par les utilisateurs selon les contraintes chaque typologie.
 
--   Cookie de session : obligatoire , il permet d'identifier la session de
-    l'utilisateur. Le cookie est détruit à la fin de la session.
+- Cookie de session : obligatoire , il permet d'identifier la session de
+  l'utilisateur. Le cookie est détruit à la fin de la session.
 
--   Cookie de réauthentification : optionnel, il permet de ré-authentifier
-    l'utilisateur connecté pendant la durée du cookie (un an maximum)
+- Cookie de réauthentification : optionnel, il permet de ré-authentifier
+  l'utilisateur connecté pendant la durée du cookie (un an maximum)
 
 ## Modification et évolution du Service
 

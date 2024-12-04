@@ -356,7 +356,9 @@ export const translations: Translations<"nl"> = {
                     onze documentatie
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Uw lokale Vault CLI instellen</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Uw lokale Vault CLI instellen
+                </MuiLink>.
             </>
         )
     },
