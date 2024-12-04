@@ -181,6 +181,9 @@ export const thunks = {
     getIsValidSourceUrl: (params: { sourceUrl: string }) => () => {
         const { sourceUrl } = params;
 
+        if (sourceUrl == "") {
+            return true;
+        }
         {
             let pathname: string;
 
@@ -224,6 +227,12 @@ export const thunks = {
 
             const [dispatch, getState, rootContext] = args;
 
+            if (queryParams.sourceUrl === "") {
+                if (getState()[name].queryParams !== undefined) {
+                    dispatch(actions.restoreState());
+                }
+                return;
+            }
             if (getState()[name].isQuerying) {
                 dispatch(actions.queryCanceled());
             }

@@ -6,7 +6,6 @@ import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert, type Equals } from "tsafe/assert";
-import { useEvt } from "evt/hooks";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { getIconUrlByName } from "lazy-icons";
@@ -30,20 +29,6 @@ export default function DataExplorer(props: Props) {
     const { dataExplorer } = useCore().functions;
     const { t } = useTranslation({ DataExplorer });
 
-    // useEffect(() => {
-    //     dataExplorer.setQueryParamsAndExtraRestorableStates({
-    //         queryParams: {
-    //             sourceUrl: route.params.source ?? "",
-    //             rowsPerPage: route.params.rowsPerPage,
-    //             page: route.params.page
-    //         },
-    //         extraRestorableStates: {
-    //             selectedRowIndex: route.params.selectedRow,
-    //             columnVisibility: route.params.columnVisibility
-    //         }
-    //     });
-    // }, [route]);
-
     useEffect(() => {
         dataExplorer.initialize({
             sourceUrl: route.params.source ?? "",
@@ -54,8 +39,6 @@ export default function DataExplorer(props: Props) {
         });
     }, [route.params.source]);
 
-    const { evtDataExplorer } = useCore().evts;
-
     const [isVirtualizationEnabled, setIsVirtualizationEnabled] = useState(true);
 
     useOnOpenBrowserSearch(() => {
@@ -64,35 +47,6 @@ export default function DataExplorer(props: Props) {
         );
         setIsVirtualizationEnabled(false);
     });
-
-    useEvt(
-        ctx => {
-            evtDataExplorer.$attach(
-                eventData =>
-                    eventData.actionName === "restoreState" ? [eventData] : null,
-                ctx,
-                ({ queryParams, extraRestorableStates }) => {
-                    const { sourceUrl, rowsPerPage, page, ...rest1 } = queryParams;
-                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-                    assert<Equals<typeof rest1, {}>>();
-                    const { selectedRowIndex, columnVisibility, ...rest2 } =
-                        extraRestorableStates;
-                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-                    assert<Equals<typeof rest2, {}>>();
-
-                    routes[route.name]({
-                        ...route.params,
-                        page,
-                        rowsPerPage,
-                        source: sourceUrl,
-                        selectedRow: selectedRowIndex,
-                        columnVisibility
-                    }).replace();
-                }
-            );
-        },
-        [evtDataExplorer]
-    );
 
     const {
         queryParams,
@@ -106,6 +60,7 @@ export default function DataExplorer(props: Props) {
 
     useEffect(() => {
         if (queryParams === undefined) {
+            routes[route.name]().replace();
             return;
         }
 
@@ -223,13 +178,10 @@ export default function DataExplorer(props: Props) {
                                             selectedRowIndex === undefined
                                     );
 
-                                    routes[route.name]({
-                                        ...route.params,
-                                        selectedRow: selectedRowIndex
-                                    }).replace();
+                                    dataExplorer.updateRowSelected({ selectedRowIndex });
                                 }}
                                 rowSelectionModel={[
-                                    route.params.selectedRow ?? undefined
+                                    extraRestorableStates.selectedRowIndex ?? undefined
                                 ].filter(exclude(undefined))}
                                 rows={rows}
                                 columns={columns}
