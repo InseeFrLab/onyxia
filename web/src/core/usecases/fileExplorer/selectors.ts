@@ -342,7 +342,7 @@ const isFileExplorerEnabled = (rootState: RootState) => {
         const { s3Configs } =
             deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
 
-        return s3Configs.some(s3Config => s3Config.sts.url !== undefined);
+        return s3Configs.length !== 0;
     } else {
         return (
             s3ConfigManagement.selectors
