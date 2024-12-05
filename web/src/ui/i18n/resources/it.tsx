@@ -356,8 +356,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },
@@ -967,7 +968,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "resize table": "Ridimensiona"
     },
     UrlInput: {
-        load: "Carica"
+        load: "Carica",
+        reset: "Svuotare"
     },
     CommandBar: {
         ok: "ok"

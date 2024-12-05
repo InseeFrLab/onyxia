@@ -961,7 +961,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "resize table": "Endre størrelse"
     },
     UrlInput: {
-        load: "Last"
+        load: "Last",
+        reset: "Tøm"
     },
     CommandBar: {
         ok: "ok"

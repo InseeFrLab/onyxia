@@ -25,6 +25,7 @@ export type State = {
               rows: any[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
+              //   fileType: "parquet" | "csv" | "json";
           }
         | undefined;
 };
