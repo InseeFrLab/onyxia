@@ -7,6 +7,46 @@ import { assert } from "tsafe/assert";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 const privateThunks = {
+    getFileDonwloadUrl:
+        (params: { sourceUrl: string }) =>
+        async (...args) => {
+            const [dispatch, , { oidc }] = args;
+
+            const { sourceUrl } = params;
+
+            const fileDownloadUrl = await (async () => {
+                if (sourceUrl.startsWith("https://")) {
+                    return sourceUrl;
+                }
+
+                const s3path = sourceUrl.replace(/^s3:\/\//, "/");
+                assert(s3path !== sourceUrl, "Unsupported protocol");
+
+                if (!oidc.isUserLoggedIn) {
+                    oidc.login({ doesCurrentHrefRequiresAuth: true });
+                    await new Promise(() => {});
+                }
+
+                const s3Client = (
+                    await dispatch(
+                        s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                    )
+                )?.s3Client;
+
+                if (s3Client === undefined) {
+                    alert("No S3 client available");
+                    await new Promise<never>(() => {});
+                    assert(false);
+                }
+
+                return s3Client.getFileDownloadUrl({
+                    path: s3path,
+                    validityDurationSecond: 3600 * 6
+                });
+            })();
+
+            return fileDownloadUrl;
+        },
     performQuery:
         (params: {
             queryParams: {
@@ -28,7 +68,7 @@ const privateThunks = {
 
             dispatch(actions.queryStarted({ queryParams }));
 
-            const { sqlOlap, oidc } = rootContext;
+            const { sqlOlap } = rootContext;
 
             const getIsActive = () => same(getState()[name].queryParams, queryParams);
 
@@ -49,36 +89,11 @@ const privateThunks = {
                     };
                 }
 
-                const fileDownloadUrl = await (async () => {
-                    if (sourceUrl.startsWith("https://")) {
-                        return sourceUrl;
-                    }
-
-                    const s3path = sourceUrl.replace(/^s3:\/\//, "/");
-                    assert(s3path !== sourceUrl, "Unsupported protocol");
-
-                    if (!oidc.isUserLoggedIn) {
-                        oidc.login({ doesCurrentHrefRequiresAuth: true });
-                        await new Promise(() => {});
-                    }
-
-                    const s3Client = (
-                        await dispatch(
-                            s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-                        )
-                    )?.s3Client;
-
-                    if (s3Client === undefined) {
-                        alert("No S3 client available");
-                        await new Promise<never>(() => {});
-                        assert(false);
-                    }
-
-                    return s3Client.getFileDownloadUrl({
-                        path: s3path,
-                        validityDurationSecond: 3600 * 6
-                    });
-                })();
+                const fileDownloadUrl = await dispatch(
+                    privateThunks.getFileDonwloadUrl({
+                        sourceUrl
+                    })
+                );
 
                 const rowCountOrErrorMessage = await sqlOlap
                     .getRowCount(sourceUrl)
@@ -132,6 +147,49 @@ const privateThunks = {
                     fileDownloadUrl
                 })
             );
+        },
+    detectFileType:
+        (params: { sourceUrl: string }) =>
+        async (...args) => {
+            const { sourceUrl } = params;
+            const [dispatch] = args;
+
+            const extension = (() => {
+                const validExtensions = ["parquet", "csv", "json"] as const;
+                type ValidExtension = (typeof validExtensions)[number];
+
+                const isValidExtension = (ext: string): ext is ValidExtension =>
+                    validExtensions.includes(ext as ValidExtension);
+
+                let pathname: string;
+
+                try {
+                    pathname = new URL(sourceUrl).pathname;
+                } catch {
+                    return undefined;
+                }
+                const match = pathname.match(/\.(\w+)$/);
+
+                if (match === null) {
+                    return undefined;
+                }
+
+                const [, extension] = match;
+
+                return isValidExtension(extension) ? extension : undefined;
+            })();
+
+            if (extension) {
+                return extension;
+            }
+
+            const contentType = await (async () => {
+                const fileDownloadUrl = await dispatch(
+                    privateThunks.getFileDonwloadUrl({
+                        sourceUrl
+                    })
+                );
+            })();
         }
 } satisfies Thunks;
 
