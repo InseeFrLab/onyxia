@@ -970,7 +970,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "resize table": "Ridimensiona"
     },
     UrlInput: {
-        load: "Carica"
+        load: "Carica",
+        reset: "Svuotare"
     },
     CommandBar: {
         ok: "ok"

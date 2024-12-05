@@ -907,7 +907,8 @@ ${
         "resize table": "调整大小"
     },
     UrlInput: {
-        load: "加载"
+        load: "加载",
+        reset: "清空"
     },
     CommandBar: {
         ok: "是"

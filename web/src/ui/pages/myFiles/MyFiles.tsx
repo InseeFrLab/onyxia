@@ -141,6 +141,7 @@ function MyFiles(props: Props) {
     );
 
     const onOpenFile = useConstCallback<ExplorerProps["onOpenFile"]>(({ basename }) => {
+        //TODO use dataExplorer thunk
         if (basename.endsWith(".parquet") || basename.endsWith(".csv")) {
             const { path } = route.params;
 

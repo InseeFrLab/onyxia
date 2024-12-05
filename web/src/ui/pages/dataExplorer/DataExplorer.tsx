@@ -5,7 +5,7 @@ import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { getIconUrlByName } from "lazy-icons";
@@ -198,7 +198,7 @@ export default function DataExplorer(props: Props) {
                                 disableColumnMenu
                                 loading={isQuerying}
                                 paginationMode="server"
-                                rowCount={rowCount ?? 999999999}
+                                rowCount={rowCount}
                                 pageSizeOptions={(() => {
                                     const pageSizeOptions = [25, 50, 100];
 

@@ -971,7 +971,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "resize table": "Formaat wijzigen"
     },
     UrlInput: {
-        load: "Laden"
+        load: "Laden",
+        reset: "Leegmaken"
     },
     CommandBar: {
         ok: "ok"

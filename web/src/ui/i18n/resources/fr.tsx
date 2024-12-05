@@ -982,7 +982,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "resize table": "Redimensionner"
     },
     UrlInput: {
-        load: "Charger"
+        load: "Charger",
+        reset: "Vider"
     },
     CommandBar: {
         ok: "ok"

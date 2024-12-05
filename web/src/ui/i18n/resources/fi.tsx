@@ -960,7 +960,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "resize table": "Muuta taulukon kokoa"
     },
     UrlInput: {
-        load: "Lataa"
+        load: "Lataa",
+        reset: "Tyhjennä"
     },
     CommandBar: {
         ok: "ok"
