@@ -145,6 +145,10 @@ export async function bootstrapCore(
         }),
         sqlOlap: createDuckDbSqlOlap({
             getS3Config: async () => {
+                if (!oidc.isUserLoggedIn) {
+                    return undefined;
+                }
+
                 const result = await dispatch(
                     usecases.s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
                 );
