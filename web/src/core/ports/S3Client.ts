@@ -61,7 +61,7 @@ export type S3Client = {
         validityDurationSecond: number;
     }) => Promise<string>;
 
-    headObject: (params: { path: string }) => Promise<{
+    getFileMetadata: (params: { path: string }) => Promise<{
         contentType: string | undefined;
         metadata: Record<string, string> | undefined;
     }>;

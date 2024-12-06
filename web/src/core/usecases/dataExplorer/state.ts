@@ -1,5 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
-import { assert } from "tsafe";
+import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 
 export const name = "dataExplorer";

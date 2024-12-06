@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { tss } from "tss";
-import { DEFAULT_QUERY_PARAMS, type PageRoute } from "./route";
+import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
@@ -34,7 +34,7 @@ export default function DataExplorer(props: Props) {
 
     useEffect(() => {
         dataExplorer.initialize({
-            sourceUrl: route.params.source ?? "",
+            sourceUrl: route.params.source,
             rowsPerPage: route.params.rowsPerPage,
             page: route.params.page,
             selectedRowIndex: route.params.selectedRow,
@@ -124,16 +124,14 @@ export default function DataExplorer(props: Props) {
                     })
                 }
                 onUrlChange={value => {
-                    dataExplorer.updateDataSource({
-                        queryParams: {
-                            sourceUrl: value,
-                            rowsPerPage: DEFAULT_QUERY_PARAMS.rowsPerPage,
-                            page: DEFAULT_QUERY_PARAMS.page
-                        },
-                        shouldVerifyUrl: false
-                    });
+                    dataExplorer.updateDataSource({ sourceUrl: value });
                 }}
-                url={queryParams?.sourceUrl ?? DEFAULT_QUERY_PARAMS.source}
+                // NOTE: So that we show the URL in the search bar while it's being queried
+                url={
+                    queryParams === undefined
+                        ? (route.params.source ?? "")
+                        : queryParams.sourceUrl
+                }
             />
             <div className={classes.mainArea}>
                 {(() => {
