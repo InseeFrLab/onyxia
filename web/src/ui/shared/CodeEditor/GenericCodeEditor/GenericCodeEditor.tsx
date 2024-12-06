@@ -3,7 +3,7 @@ import { createTheme } from "@uiw/codemirror-themes";
 import { tags } from "@lezer/highlight";
 
 import { useMemo } from "react";
-import { alpha } from "@mui/system";
+import { alpha } from "@mui/material/styles";
 import { tss } from "../tss";
 
 export type Props = {
