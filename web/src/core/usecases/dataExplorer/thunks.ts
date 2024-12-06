@@ -148,41 +148,40 @@ const privateThunks = {
                 })
             );
         },
-    detectFileType:
-        (params: { sourceUrl: string }) =>
-        async (...args) => {
-            const { sourceUrl } = params;
-            const [dispatch] = args;
+    detectFileType: (params: { sourceUrl: string }) => async () => {
+        const { sourceUrl } = params;
+        //const [dispatch] = args;
 
-            const extension = (() => {
-                const validExtensions = ["parquet", "csv", "json"] as const;
-                type ValidExtension = (typeof validExtensions)[number];
+        const extension = (() => {
+            const validExtensions = ["parquet", "csv", "json"] as const;
+            type ValidExtension = (typeof validExtensions)[number];
 
-                const isValidExtension = (ext: string): ext is ValidExtension =>
-                    validExtensions.includes(ext as ValidExtension);
+            const isValidExtension = (ext: string): ext is ValidExtension =>
+                validExtensions.includes(ext as ValidExtension);
 
-                let pathname: string;
+            let pathname: string;
 
-                try {
-                    pathname = new URL(sourceUrl).pathname;
-                } catch {
-                    return undefined;
-                }
-                const match = pathname.match(/\.(\w+)$/);
+            try {
+                pathname = new URL(sourceUrl).pathname;
+            } catch {
+                return undefined;
+            }
+            const match = pathname.match(/\.(\w+)$/);
 
-                if (match === null) {
-                    return undefined;
-                }
-
-                const [, extension] = match;
-
-                return isValidExtension(extension) ? extension : undefined;
-            })();
-
-            if (extension) {
-                return extension;
+            if (match === null) {
+                return undefined;
             }
 
+            const [, extension] = match;
+
+            return isValidExtension(extension) ? extension : undefined;
+        })();
+
+        if (extension) {
+            return extension;
+        }
+
+        /*
             const contentType = await (async () => {
                 const fileDownloadUrl = await dispatch(
                     privateThunks.getFileDonwloadUrl({
@@ -190,28 +189,80 @@ const privateThunks = {
                     })
                 );
             })();
+            */
+    },
+    updateDataSource:
+        (params: {
+            queryParams: {
+                sourceUrl: string;
+                rowsPerPage: number | undefined;
+                page: number | undefined;
+            };
+            shouldVerifyUrl: boolean;
+        }) =>
+        async (...args) => {
+            const {
+                queryParams: { sourceUrl, rowsPerPage = 25, page = 1 },
+                shouldVerifyUrl
+            } = params;
+
+            const [dispatch, getState, rootContext] = args;
+
+            if (sourceUrl === "") {
+                if (getState()[name].queryParams !== undefined) {
+                    dispatch(actions.restoreState());
+                }
+                return;
+            }
+            if (getState()[name].isQuerying) {
+                dispatch(actions.queryCanceled());
+            }
+
+            if (getState()[name].queryParams?.sourceUrl === sourceUrl) {
+                return;
+            }
+
+            const { waitForDebounce } = getContext(rootContext);
+
+            await waitForDebounce();
+
+            dispatch(
+                privateThunks.performQuery({
+                    queryParams: {
+                        sourceUrl,
+                        rowsPerPage,
+                        page
+                    },
+                    shouldVerifyUrl
+                })
+            );
         }
 } satisfies Thunks;
 
 export const thunks = {
     initialize:
         (params: {
-            sourceUrl: string;
-            rowsPerPage: number;
-            page: number;
+            sourceUrl: string | undefined;
+            rowsPerPage: number | undefined;
+            page: number | undefined;
             selectedRowIndex: number | undefined;
-            columnVisibility: Record<string, boolean>;
+            columnVisibility: Record<string, boolean> | undefined;
         }) =>
         async (...args) => {
-            const { sourceUrl, columnVisibility, page, rowsPerPage, selectedRowIndex } =
-                params;
+            const {
+                sourceUrl,
+                columnVisibility = {},
+                page,
+                rowsPerPage,
+                selectedRowIndex
+            } = params;
             const [dispatch, getState, rootContext] = args;
 
             const { sqlOlap } = rootContext;
 
             sqlOlap.getConfiguredAsyncDuckDb();
 
-            if (sourceUrl === "") {
+            if (sourceUrl === undefined) {
                 return;
             }
 
@@ -230,7 +281,7 @@ export const thunks = {
             await waitForDebounce();
 
             await dispatch(
-                thunks.updateDataSource({
+                privateThunks.updateDataSource({
                     queryParams: { sourceUrl, rowsPerPage, page },
                     shouldVerifyUrl: true
                 })
@@ -272,40 +323,22 @@ export const thunks = {
         return true;
     },
     updateDataSource:
-        (params: {
-            queryParams: {
-                sourceUrl: string;
-                rowsPerPage: number;
-                page: number;
-            };
-            shouldVerifyUrl: boolean;
-        }) =>
+        (params: { sourceUrl: string }) =>
         async (...args) => {
-            const { queryParams, shouldVerifyUrl } = params;
+            const { sourceUrl } = params;
 
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch] = args;
 
-            if (queryParams.sourceUrl === "") {
-                if (getState()[name].queryParams !== undefined) {
-                    dispatch(actions.restoreState());
-                }
-                return;
-            }
-            if (getState()[name].isQuerying) {
-                dispatch(actions.queryCanceled());
-            }
-
-            const { sourceUrl } = queryParams;
-
-            if (getState()[name].queryParams?.sourceUrl === sourceUrl) {
-                return;
-            }
-
-            const { waitForDebounce } = getContext(rootContext);
-
-            await waitForDebounce();
-
-            dispatch(privateThunks.performQuery({ queryParams, shouldVerifyUrl }));
+            await dispatch(
+                privateThunks.updateDataSource({
+                    queryParams: {
+                        sourceUrl,
+                        rowsPerPage: undefined,
+                        page: undefined
+                    },
+                    shouldVerifyUrl: false
+                })
+            );
         },
     updatePaginationModel:
         (params: { rowsPerPage: number; page: number }) =>
