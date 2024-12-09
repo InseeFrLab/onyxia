@@ -4747,10 +4747,10 @@ jsonify@^0.0.1:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.1.tgz#2aa3111dae3d34a0f151c63f3a45d995d9420978"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-keycloakify@^11.4.3:
-  version "11.4.3"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.4.3.tgz#c2610f404449ba5bc8f6ca3a0fd0ddb27278e0f3"
-  integrity sha512-dOP4t8I5w+1jcYeBPHdEeUaDutZKIlaulu/tp00trP+1AQGlDrv5z0kcAQCGOs4r0x66/GIu3kEpmhGnmwOOAw==
+keycloakify@^11.4.5:
+  version "11.4.5"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.4.5.tgz#8205e2f3953cd35235c7685e08cdf77d2bc46a70"
+  integrity sha512-uT4f3xTQDgA4Or/hDXFNU2PahKz474QhII6SUb8ZiEYP+VP5g+Tw09v+pLPlCc4KDOpLXCWVbXmuLOATR4CVFw==
   dependencies:
     tsafe "^1.8.5"
 
@@ -6342,6 +6342,15 @@ tss-react@^4.9.13:
   version "4.9.13"
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.13.tgz#e6ac0bfea3977e58b5ef5a261cd0b035e6bd8254"
   integrity sha512-Gu19qqPH8/SAyKVIgDE5qHygirEDnNIQcXhiEc+l4Q9T7C1sfvUnbVWs+yBpmN26/wyk4FTOupjYS2wq4vH0yA==
+  dependencies:
+    "@emotion/cache" "*"
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
+
+tss-react@^4.9.14:
+  version "4.9.14"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.14.tgz#0b606b7a08fe80670c8c7d09f2c24421422a2300"
+  integrity sha512-nAj4RCQk3ADzrmtxmTcmN1B9EKxPMIxuCfJ3ll964CksndJ2/ZImF6rAMo2Kud5yE3ENXHpPIBHCyuMtgptMvw==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
