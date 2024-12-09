@@ -1,8 +1,15 @@
 import type { SqlOlap } from "core/ports/SqlOlap";
+
 import duckdbBrowserMvpWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url";
 import duckdbMvpWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
-import duckdbEhWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
+
 import duckdbBrowserEhWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url";
+import duckdbEhWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
+
+import duckdbBrowserCoiWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-coi.worker.js?url";
+import duckdbBrowserCoiPThreadWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-coi.pthread.worker.js?url";
+import duckdbCoiWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-coi.wasm?url";
+
 import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 import { same } from "evt/tools/inDepth/same";
@@ -28,10 +35,27 @@ export const createDuckDbSqlOlap = (params: {
 
     const sqlOlap: SqlOlap = {
         getConfiguredAsyncDuckDb: (() => {
+            let hasCustomExtensionRepositoryBeenSetup = false;
             let currentS3Config: ReturnType<typeof getS3Config> = undefined;
 
             return async () => {
                 const db = await getAsyncDuckDb();
+
+                let conn:
+                    | import("@duckdb/duckdb-wasm").AsyncDuckDBConnection
+                    | undefined = undefined;
+
+                setup_custom_extension_repository: {
+                    if (hasCustomExtensionRepositoryBeenSetup) {
+                        break setup_custom_extension_repository;
+                    }
+
+                    conn = await db.connect();
+
+                    await conn.query(
+                        `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`
+                    );
+                }
 
                 setup_s3: {
                     const s3Config = await getS3Config();
@@ -52,7 +76,9 @@ export const createDuckDbSqlOlap = (params: {
                         credentials
                     } = s3Config;
 
-                    const conn = await db.connect();
+                    if (conn === undefined) {
+                        conn = await db.connect();
+                    }
 
                     await conn.query(
                         [
@@ -72,9 +98,9 @@ export const createDuckDbSqlOlap = (params: {
                                   ])
                         ].join("\n")
                     );
-
-                    await conn.close();
                 }
+
+                await conn?.close();
 
                 return db;
             };
@@ -142,6 +168,7 @@ export const createDuckDbSqlOlap = (params: {
 const getAsyncDuckDb = memoize(
     async () => {
         const duckdb = await import("@duckdb/duckdb-wasm");
+
         const bundle = await duckdb.selectBundle({
             mvp: {
                 mainModule: duckdbMvpWasmUrl,
@@ -150,6 +177,11 @@ const getAsyncDuckDb = memoize(
             eh: {
                 mainModule: duckdbEhWasmUrl,
                 mainWorker: duckdbBrowserEhWorkerJsUrl
+            },
+            coi: {
+                mainModule: duckdbCoiWasmUrl,
+                mainWorker: duckdbBrowserCoiWorkerJsUrl,
+                pthreadWorker: duckdbBrowserCoiPThreadWorkerJsUrl
             }
         });
 
@@ -159,7 +191,12 @@ const getAsyncDuckDb = memoize(
             new duckdb.ConsoleLogger(),
             new Worker(bundle.mainWorker)
         );
-        await db.instantiate(bundle.mainModule);
+
+        await db.instantiate(bundle.mainModule, bundle.pthreadWorker, progress =>
+            console.log(
+                `Loading DuckDB: ${~~((progress.bytesLoaded / progress.bytesTotal) * 100)}%`
+            )
+        );
 
         return db;
     },

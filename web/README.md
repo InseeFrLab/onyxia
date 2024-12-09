@@ -19,3 +19,12 @@ This repository contains the source code for the Docker image [inseefrlab/onyxia
 
 - **UI Layer:** This project utilizes React, but solely as a UI library. The React-specific code is isolated to [src/ui](./src/ui).
 - **Core Logic:** The bulk of the application's functionality resides in [src/core](./src/core). Importantly, the core logic is entirely agnostic to React.
+
+## Run the Docker image locally
+
+```bash
+docker build -t inseefrlab/onyxia-web:main .
+docker run -it -p 8083:8080 --env ONYXIA_API_URL='https://datalab.sspcloud.fr/api' inseefrlab/onyxia-web:main
+```
+
+Navigate to http://localhost:8083 in your browser.

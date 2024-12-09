@@ -933,7 +933,7 @@
     style-mod "^4.1.0"
     w3c-keyname "^2.2.4"
 
-"@duckdb/duckdb-wasm-shell@^1.29.0":
+"@duckdb/duckdb-wasm-shell@1.29.0":
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm-shell/-/duckdb-wasm-shell-1.29.0.tgz#238c6f6b1569d8f355cfa7bc4eb17d2f130ace2d"
   integrity sha512-qfpeb7fFzFKMFrU36InfW7KQrsIW6f9/2rAwnrVKizW5Y5yCal/82muL07c9buMb+KRhoUQHe/CL9TurfvKUwA==
@@ -944,7 +944,7 @@
     xterm-addon-web-links "^0.9.0"
     xterm-addon-webgl "^0.16.0"
 
-"@duckdb/duckdb-wasm@^1.29.0":
+"@duckdb/duckdb-wasm@1.29.0", "@duckdb/duckdb-wasm@^1.29.0":
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm/-/duckdb-wasm-1.29.0.tgz#59540ee66decdf3d2df580f2ea98dcf0c630c8cb"
   integrity sha512-8Zq7vafQuIz9gklC/9375KE38UlkaS2n8+yvG+/JK7irm3DjwYNJHL4xfplIj0bSHFIg6we5XhWYFqtE/vO3+Q==
