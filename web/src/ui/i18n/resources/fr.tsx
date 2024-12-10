@@ -711,10 +711,10 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "reset to default": "Réinitialiser à la valeur par défaut"
     },
     ConfigurationTopLevelGroup: {
-        miscellaneous: "Sekalaista",
+        miscellaneous: "Divers",
         "Configuration that applies to all charts":
-            "Konfiguraatio, joka koskee kaikkia kaavioita",
-        "Top level configuration values": "Ylimmän tason konfiguraatioväriarvot"
+            "Configurations qui s'appliquent à tous les charts",
+        "Top level configuration values": "Configuration racine"
     },
     YamlCodeBlockFormField: {
         "not an array": "Un tableau est attendu",
