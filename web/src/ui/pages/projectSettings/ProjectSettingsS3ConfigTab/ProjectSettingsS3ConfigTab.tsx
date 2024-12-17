@@ -41,7 +41,10 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
     }));
 
     const s3Configs = useCoreState("s3ConfigManagement", "s3Configs");
-
+    const canInjectPersonalInfos = useCoreState(
+        "projectManagement",
+        "canInjectPersonalInfos"
+    );
     const { s3ConfigManagement } = useCore().functions;
 
     const { classes, css, theme } = useStyles();
@@ -101,6 +104,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                                         projectS3ConfigId: s3Config.id
                                     });
                             })()}
+                            canInjectPersonalInfos={canInjectPersonalInfos}
                         />
                     ))}
                 </div>

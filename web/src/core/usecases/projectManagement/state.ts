@@ -6,7 +6,7 @@ import {
 import type { ProjectConfigs } from "./decoupledLogic/ProjectConfigs";
 
 type State = {
-    projects: Project[];
+    projects: (Project & { doInjectPersonalInfos: boolean })[];
     selectedProjectId: string;
     currentProjectConfigs: ProjectConfigs;
 };

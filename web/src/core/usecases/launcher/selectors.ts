@@ -119,13 +119,14 @@ const chartVersion = createSelector(readyState, state => {
 const s3ConfigSelect = createSelector(
     s3ConfigManagement.selectors.s3Configs,
     isReady,
+    projectManagement.selectors.canInjectPersonalInfos,
     createSelector(readyState, state => {
         if (state === null) {
             return null;
         }
         return state.s3Config;
     }),
-    (s3Configs, isReady, s3Config) => {
+    (s3Configs, isReady, canInjectPersonalInfos, s3Config) => {
         if (!isReady) {
             return null;
         }
@@ -137,13 +138,17 @@ const s3ConfigSelect = createSelector(
             return undefined;
         }
 
+        const availableConfigs = s3Configs.filter(
+            config => canInjectPersonalInfos || config.origin !== "deploymentRegion"
+        );
+
         // We don't display the s3 config selector if there is no config or only one
         if (s3Configs.length <= 1) {
             return undefined;
         }
 
         return {
-            options: s3Configs.map(s3Config => ({
+            options: availableConfigs.map(s3Config => ({
                 optionValue: s3Config.id,
                 label: {
                     dataSource: s3Config.dataSource,

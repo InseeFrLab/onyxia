@@ -153,17 +153,8 @@ export const thunks = {
                     return;
                 }
 
-                const { doInjectPersonalInfos } = (() => {
-                    const project =
-                        projectManagement.protectedSelectors.currentProject(getState());
-
-                    const doInjectPersonalInfos =
-                        project.group === undefined ||
-                        !rootContext.paramsOfBootstrapCore
-                            .disablePersonalInfosInjectionInGroup;
-
-                    return { doInjectPersonalInfos };
-                })();
+                const doInjectPersonalInfos =
+                    projectManagement.selectors.canInjectPersonalInfos(getState());
 
                 const { s3ConfigId, s3ConfigId_default } = (() => {
                     const s3Configs = s3ConfigManagement.selectors

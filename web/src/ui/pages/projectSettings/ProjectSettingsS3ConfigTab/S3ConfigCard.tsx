@@ -18,6 +18,7 @@ type Props = {
     onIsOnyxiaDefaultChange: (value: boolean) => void;
     onEdit: (() => void) | undefined;
     onTestConnection: (() => void) | undefined;
+    canInjectPersonalInfos: boolean;
 };
 
 export function S3ConfigCard(props: Props) {
@@ -28,7 +29,8 @@ export function S3ConfigCard(props: Props) {
         onIsExplorerConfigChange,
         onIsOnyxiaDefaultChange,
         onEdit,
-        onTestConnection
+        onTestConnection,
+        canInjectPersonalInfos
     } = props;
 
     const { classes, cx, css, theme } = useStyles();
@@ -80,7 +82,16 @@ export function S3ConfigCard(props: Props) {
                 </Tooltip>
                 &nbsp;
                 <Switch
-                    checked={s3Config.isXOnyxiaDefault}
+                    disabled={
+                        canInjectPersonalInfos
+                            ? false
+                            : s3Config.origin === "deploymentRegion"
+                    }
+                    checked={
+                        canInjectPersonalInfos || s3Config.origin !== "deploymentRegion"
+                            ? s3Config.isXOnyxiaDefault
+                            : false
+                    }
                     onChange={event => onIsOnyxiaDefaultChange(event.target.checked)}
                     inputProps={{ "aria-label": "controlled" }}
                 />
