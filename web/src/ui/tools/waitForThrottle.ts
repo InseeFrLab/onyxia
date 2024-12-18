@@ -1,6 +1,7 @@
 import { Deferred } from "evt/tools/Deferred";
 import { createStatefulObservable } from "powerhooks/tools/StatefulObservable";
 
+// TODO: Rename, this is a debounce!
 export function createWaitForThrottle(params: { delay: number }) {
     const { delay } = params;
 
