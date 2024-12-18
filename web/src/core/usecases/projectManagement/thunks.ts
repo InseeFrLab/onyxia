@@ -22,7 +22,11 @@ export const thunks = {
     changeProject:
         (params: { projectId: string }) =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi, secretsManager }] = args;
+            const [
+                dispatch,
+                getState,
+                { onyxiaApi, secretsManager, paramsOfBootstrapCore }
+            ] = args;
 
             const { projectId } = params;
 
@@ -167,9 +171,16 @@ export const thunks = {
                 }
             }
 
+            const projectWithInjectedPersonalInfos = projects.map(project => ({
+                ...project,
+                doInjectPersonalInfos:
+                    project.group === undefined ||
+                    !paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup
+            }));
+
             dispatch(
                 actions.projectChanged({
-                    projects,
+                    projects: projectWithInjectedPersonalInfos,
                     selectedProjectId: projectId,
                     currentProjectConfigs: projectConfigs
                 })

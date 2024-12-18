@@ -1,5 +1,4 @@
 import type { State as RootState } from "core/bootstrap";
-import type { Project } from "core/ports/OnyxiaApi";
 import { name } from "./state";
 import { createSelector } from "clean-architecture";
 import { assert } from "tsafe/assert";
@@ -9,7 +8,7 @@ const state = (rootState: RootState) => rootState[name];
 const projectConfig = createSelector(state, state => state.currentProjectConfigs);
 
 export const protectedSelectors = {
-    currentProject: createSelector(state, (state): Project => {
+    currentProject: createSelector(state, state => {
         const { projects, selectedProjectId } = state;
 
         const project = projects.find(({ id }) => id === selectedProjectId);
@@ -46,5 +45,11 @@ export const selectors = {
     doesUserBelongToSomeGroupProject: createSelector(
         state,
         state => state.projects.length !== 1
+    ),
+    canInjectPersonalInfos: createSelector(
+        protectedSelectors.currentProject,
+        currentProject => {
+            return currentProject.doInjectPersonalInfos;
+        }
     )
 };
