@@ -62,6 +62,7 @@ export type ExplorerProps = {
     commandLogsEntries: CommandBarProps.Entry[] | undefined;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
     items: Item[];
+    isBucketPolicyFeatureEnabled: boolean;
     onNavigate: (params: { directoryPath: string }) => void;
     changePolicy: (params: {
         policy: Item["policy"];
@@ -108,7 +109,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         pathMinDepth,
         onViewModeChange,
         viewMode,
-
+        isBucketPolicyFeatureEnabled,
         shareView,
         onShareFileOpen,
         onShareFileClose,
@@ -433,6 +434,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onDeleteItem={itemsOnDeleteItem}
                                         onShare={onShareDialogOpen}
                                         evtAction={evtExplorerItemsAction}
+                                        isBucketPolicyFeatureEnabled={
+                                            isBucketPolicyFeatureEnabled
+                                        }
                                     />
                                 );
                             case "list":
@@ -450,6 +454,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onDeleteItems={itemsOnDeleteItems}
                                         onShare={onShareDialogOpen}
                                         evtAction={evtExplorerItemsAction}
+                                        isBucketPolicyFeatureEnabled={
+                                            isBucketPolicyFeatureEnabled
+                                        }
                                     />
                                 );
                         }

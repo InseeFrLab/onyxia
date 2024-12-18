@@ -331,27 +331,26 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const bucketPolicyAndAllowedPrefix = await (async () => {
-                const { GetBucketPolicyCommand } = await import("@aws-sdk/client-s3");
-
-                let sendResp: import("@aws-sdk/client-s3").GetBucketPolicyCommandOutput;
+            const resolveBucketPolicy = async () => {
+                const { GetBucketPolicyCommand, S3ServiceException } = await import(
+                    "@aws-sdk/client-s3"
+                );
 
                 try {
-                    sendResp = await awsS3Client.send(
-                        new GetBucketPolicyCommand({
-                            Bucket: bucketName
-                        })
+                    const sendResp = await awsS3Client.send(
+                        new GetBucketPolicyCommand({ Bucket: bucketName })
                     );
-                } catch {
-                    console.log("The error is ok, there is no bucket policy");
-                    return undefined;
-                }
 
-                if (sendResp.Policy === undefined) {
-                    return undefined;
-                }
+                    // If the response does not have a policy, return a valid structure
+                    if (!sendResp.Policy) {
+                        console.info("Bucket policy is not defined, but it's okay.");
+                        return {
+                            isBucketPolicyAvailable: true,
+                            bucketPolicy: undefined,
+                            allowedPrefix: []
+                        };
+                    }
 
-                try {
                     // Validate and parse the policy
                     const parsedPolicy = s3BucketPolicySchema.parse(
                         JSON.parse(sendResp.Policy)
@@ -373,17 +372,54 @@ export function createS3Client(
                             resource.replace(`arn:aws:s3:::${bucketName}/`, "")
                         );
 
-                    return { bucketPolicy: parsedPolicy, allowedPrefix };
-                } catch (e) {
-                    console.warn("The best effort attempt failed to parse the policy", e);
-                    return undefined;
-                }
-            })();
+                    return {
+                        isBucketPolicyAvailable: true,
+                        bucketPolicy: parsedPolicy,
+                        allowedPrefix
+                    };
+                } catch (error: unknown) {
+                    if (error instanceof S3ServiceException) {
+                        switch (error.$metadata?.httpStatusCode) {
+                            case 404:
+                                console.info(
+                                    "Bucket policy does not exist (404), it's ok."
+                                );
+                                return {
+                                    isBucketPolicyAvailable: true,
+                                    bucketPolicy: undefined,
+                                    allowedPrefix: []
+                                };
+                            case 403:
+                                console.info("Access denied to bucket policy (403).");
+                                return {
+                                    isBucketPolicyAvailable: false,
+                                    bucketPolicy: undefined,
+                                    allowedPrefix: []
+                                };
+                            default:
+                                console.error("An S3 error occurred:", error.message);
+                                return {
+                                    isBucketPolicyAvailable: false,
+                                    bucketPolicy: undefined,
+                                    allowedPrefix: []
+                                };
+                        }
+                    }
 
-            const { allowedPrefix, bucketPolicy } = bucketPolicyAndAllowedPrefix ?? {
-                allowedPrefix: [],
-                bucketPolicy: undefined
+                    console.error(
+                        "An unexpected error occurred when fetching bucket policy",
+                        error
+                    );
+                    return {
+                        isBucketPolicyAvailable: false,
+                        bucketPolicy: undefined,
+                        allowedPrefix: []
+                    };
+                }
             };
+
+            const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
+                await resolveBucketPolicy();
 
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
@@ -439,7 +475,11 @@ export function createS3Client(
                 }
             );
 
-            return { objects: [...directories, ...files], bucketPolicy };
+            return {
+                objects: [...directories, ...files],
+                bucketPolicy,
+                isBucketPolicyAvailable
+            };
         },
         setPathAccessPolicy: async ({ currentBucketPolicy, policy, path }) => {
             const { getAwsS3Client } = await prApi;

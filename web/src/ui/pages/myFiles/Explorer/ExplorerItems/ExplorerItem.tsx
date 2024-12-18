@@ -27,7 +27,7 @@ export type ExplorerItemProps = {
 
     /** File size in bytes */
     size: number | undefined;
-
+    isBucketPolicyFeatureEnabled: boolean;
     policy: Item["policy"];
     onPolicyChange: () => void;
     onDoubleClick: () => void;
@@ -45,7 +45,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         onDoubleClick,
         onPolicyChange,
         onClick,
-        isPolicyChanging
+        isPolicyChanging,
+        isBucketPolicyFeatureEnabled
     } = props;
 
     const prettySize = size ? fileSizePrettyPrint({ bytes: size }) : null;
@@ -96,12 +97,14 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     })()}
                     hasShadow={true}
                 />
-                <PolicySwitch
-                    policy={policy}
-                    className={classes.policyIcon}
-                    changePolicy={onPolicyChange}
-                    isPolicyChanging={isPolicyChanging}
-                />
+                {isBucketPolicyFeatureEnabled && (
+                    <PolicySwitch
+                        policy={policy}
+                        className={classes.policyIcon}
+                        changePolicy={onPolicyChange}
+                        isPolicyChanging={isPolicyChanging}
+                    />
+                )}
             </div>
 
             <div className={classes.textContainer}>

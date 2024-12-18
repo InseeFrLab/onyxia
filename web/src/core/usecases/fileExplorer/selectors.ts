@@ -55,6 +55,7 @@ const commandLogsEntries = createSelector(
 export type CurrentWorkingDirectoryView = {
     directoryPath: string;
     items: CurrentWorkingDirectoryView.Item[];
+    isBucketPolicyFeatureEnabled: boolean;
 };
 
 export namespace CurrentWorkingDirectoryView {
@@ -93,12 +94,13 @@ const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.objects),
     createSelector(state, state => state.ongoingOperations),
     createSelector(state, state => state.s3FilesBeingUploaded),
-
+    createSelector(state, state => state.isBucketPolicyAvailable),
     (
         directoryPath,
         objects,
         ongoingOperations,
-        s3FilesBeingUploaded
+        s3FilesBeingUploaded,
+        isBucketPolicyAvailable
     ): CurrentWorkingDirectoryView | null => {
         if (directoryPath === undefined) {
             return null;
@@ -184,7 +186,8 @@ const currentWorkingDirectoryView = createSelector(
 
         return {
             directoryPath,
-            items
+            items,
+            isBucketPolicyFeatureEnabled: isBucketPolicyAvailable
         };
     }
 );
