@@ -1,4 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
+import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 
 export const name = "dataExplorer";
@@ -24,6 +25,7 @@ export type State = {
               rows: any[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
+              //   fileType: "parquet" | "csv" | "json";
           }
         | undefined;
 };
@@ -62,10 +64,46 @@ export const { actions, reducer } = createUsecaseActions({
             const { extraRestorableStates } = payload;
             state.extraRestorableStates = extraRestorableStates;
         },
+        selectedRowIndexSet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    selectedRowIndex: NonNullable<
+                        State["extraRestorableStates"]
+                    >["selectedRowIndex"];
+                };
+            }
+        ) => {
+            const { selectedRowIndex } = payload;
+            assert(state.extraRestorableStates !== undefined);
+            state.extraRestorableStates.selectedRowIndex = selectedRowIndex;
+        },
+        columnVisibilitySet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    columnVisibility: NonNullable<
+                        State["extraRestorableStates"]
+                    >["columnVisibility"];
+                };
+            }
+        ) => {
+            const { columnVisibility } = payload;
+            assert(state.extraRestorableStates !== undefined);
+            state.extraRestorableStates.columnVisibility = columnVisibility;
+        },
         querySucceeded: (state, { payload }: { payload: NonNullable<State["data"]> }) => {
             const { rowCount, rows, fileDownloadUrl } = payload;
             state.isQuerying = false;
             state.data = { rowCount, rows, fileDownloadUrl };
+        },
+        queryCanceled: state => {
+            state.isQuerying = false;
+            state.queryParams = undefined;
         },
         queryFailed: (state, { payload }: { payload: { errorMessage: string } }) => {
             const { errorMessage } = payload;
@@ -73,7 +111,10 @@ export const { actions, reducer } = createUsecaseActions({
             state.errorMessage = errorMessage;
             state.queryParams = undefined;
         },
-        /** Only for evt */
-        restoreStateNeeded: () => {}
+        restoreState: state => {
+            state.queryParams = undefined;
+            state.extraRestorableStates = undefined;
+            state.data = undefined;
+        }
     }
 });

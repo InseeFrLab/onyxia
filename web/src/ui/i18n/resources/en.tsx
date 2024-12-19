@@ -954,7 +954,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "resize table": "Resize"
     },
     UrlInput: {
-        load: "Load"
+        load: "Load",
+        reset: "Reset"
     },
     CommandBar: {
         ok: "Ok"
