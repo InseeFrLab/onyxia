@@ -71,7 +71,7 @@ export const translations: Translations<"no"> = {
             "For å få tilgang til lagringen din utenfor datalabtjenestene",
         "init script section helper":
             "Last ned eller kopier initialiseringskriptet i programingsspråket du foretrekker.",
-        "expires in": ({ howMuchTime }) => `Utløper om ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Utløper om {howMuchTime}</>
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
@@ -93,8 +93,9 @@ export const translations: Translations<"no"> = {
                 <code>kubectl get pods</code> eller <code>helm list</code>
             </>
         ),
-        "expires in": ({ howMuchTime }) =>
-            `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => (
+            <>Disse legitimasjonene er gyldige for de neste {howMuchTime}</>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",
@@ -117,7 +118,7 @@ export const translations: Translations<"no"> = {
                 </MuiLink>
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Token går ut om ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Token går ut om {howMuchTime}</>
     },
     ProjectSettings: {
         "page header title": "Prosjektinnstillinger",

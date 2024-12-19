@@ -35,7 +35,7 @@ export const AccountVaultTab = memo((props: Props) => {
 
     const uiState = useCoreState("vaultCredentials", "main");
 
-    const { fromNowText } = useFromNow({ dateTime: uiState?.expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ dateTime: uiState?.expirationTime });
 
     useEffect(() => {
         vaultCredentials.refresh({ doForceRenewToken: false });
@@ -140,7 +140,7 @@ const { i18n } = declareComponentKeys<
       }
     | "init script section title"
     | { K: "init script section helper"; P: { vaultCliDocLink: string }; R: JSX.Element }
-    | { K: "expires in"; P: { howMuchTime: string } }
+    | { K: "expires in"; P: { howMuchTime: JSX.Element }; R: JSX.Element }
 >()({ AccountVaultTab });
 export type I18n = typeof i18n;
 

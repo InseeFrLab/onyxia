@@ -66,7 +66,7 @@ export const AccountStorageTab = memo((props: Props) => {
         selectedTechnology
     } = useCoreState("s3CodeSnippets", "main");
 
-    const { fromNowText } = useFromNow({ dateTime: expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ dateTime: expirationTime });
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
         s3CodeSnippets.changeTechnology({
             technology: e.target.value as Technology
@@ -188,7 +188,7 @@ const { i18n } = declareComponentKeys<
     | "accessible as env"
     | "init script section title"
     | "init script section helper"
-    | { K: "expires in"; P: { howMuchTime: string } }
+    | { K: "expires in"; P: { howMuchTime: JSX.Element }; R: JSX.Element }
 >()({ AccountStorageTab });
 export type I18n = typeof i18n;
 
