@@ -70,7 +70,7 @@ export const translations: Translations<"nl"> = {
         "init script section title":
             "Om toegang te krijgen tot opslag buiten de diensten van het datalab",
         "init script section helper": `Download of kopieer het initialisatiescript in de programmeertaal van uw keuze.`,
-        "expires in": ({ howMuchTime }) => `Vervalt binnen ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Vervalt binnen {howMuchTime}</>
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",
@@ -92,8 +92,9 @@ export const translations: Translations<"nl"> = {
                 <code>kubectl get pods</code> of <code>helm list</code> uit te voeren
             </>
         ),
-        "expires in": ({ howMuchTime }) =>
-            `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => (
+            <>Deze inloggegevens zijn geldig voor de komende {howMuchTime}</>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",
@@ -116,7 +117,7 @@ export const translations: Translations<"nl"> = {
                 in te stellen.
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Het token vervalt in ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Het token vervalt in {howMuchTime}</>
     },
     ProjectSettings: {
         "page header title": "Projectinstellingen",

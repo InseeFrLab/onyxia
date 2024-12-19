@@ -71,7 +71,7 @@ export const translations: Translations<"it"> = {
         "init script section title":
             "Per accedere allo storage al di fuori dei servizi del datalab",
         "init script section helper": `Scarica o copia lo script di inizializzazione nel linguaggio di programmazione di tua scelta.`,
-        "expires in": ({ howMuchTime }) => `Scade in ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Scade in {howMuchTime}</>
     },
     AccountKubernetesTab: {
         "credentials section title": "Connetti al cluster Kubernetes",
@@ -92,8 +92,9 @@ export const translations: Translations<"it"> = {
                 <code>kubectl get pods</code> o <code>helm list</code>
             </>
         ),
-        "expires in": ({ howMuchTime }) =>
-            `Queste credenziali sono valide per i prossimi ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => (
+            <>Queste credenziali sono valide per i prossimi {howMuchTime}</>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",
@@ -116,7 +117,7 @@ export const translations: Translations<"it"> = {
                 locale.
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Il token scade in ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Il token scade in {howMuchTime}</>
     },
     ProjectSettings: {
         "page header title": "Impostazioni del Progetto",
@@ -356,8 +357,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

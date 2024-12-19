@@ -73,7 +73,7 @@ export const translations: Translations<"fr"> = {
             "Pour accéder au stockage en dehors des services du datalab",
         "init script section helper":
             "Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.",
-        "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Expire dans {howMuchTime}</>
     },
     AccountKubernetesTab: {
         "credentials section title": "Connection au cluster Kubernetes",
@@ -95,8 +95,9 @@ export const translations: Translations<"fr"> = {
                 <code>kubectl get pods</code> ou <code>helm list</code>
             </>
         ),
-        "expires in": ({ howMuchTime }) =>
-            `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
+        "expires in": ({ howMuchTime }) => (
+            <>Ces identifiants sont valables pour les {howMuchTime} prochaines</>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Identifiants Vault",
@@ -120,7 +121,7 @@ export const translations: Translations<"fr"> = {
                 local.
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Le token expire dans ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>Le token expire dans {howMuchTime}</>
     },
     ProjectSettings: {
         "page header title": "Paramètres du projet",

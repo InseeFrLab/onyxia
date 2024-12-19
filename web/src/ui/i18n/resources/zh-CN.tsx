@@ -66,7 +66,7 @@ export const translations: Translations<"zh-CN"> = {
         "accessible as env": "可在您的服务中作为环境变量被访问",
         "init script section title": "访问datalab服务之外的存储器",
         "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
-        "expires in": ({ howMuchTime }) => `有效期至 ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>有效期至 {howMuchTime}</>
     },
     AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",
@@ -85,7 +85,7 @@ export const translations: Translations<"zh-CN"> = {
                 <code>kubectl get pods</code> 或 <code>helm list</code>
             </>
         ),
-        "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
+        "expires in": ({ howMuchTime }) => <>这些凭证在接下来的 {howMuchTime} 内有效</>
     },
     AccountVaultTab: {
         "credentials section title": "保险库凭证",
@@ -108,7 +108,7 @@ export const translations: Translations<"zh-CN"> = {
                 的 <code>ENV</code> 变量。
             </>
         ),
-        "expires in": ({ howMuchTime }) => `该令牌有效期至 ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => <>该令牌有效期至 {howMuchTime}</>
     },
     ProjectSettings: {
         "page header title": "项目设置",

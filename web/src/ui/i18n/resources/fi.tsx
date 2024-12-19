@@ -72,7 +72,7 @@ export const translations: Translations<"fi"> = {
             "Pääsy tallennustilaan datalab-palveluiden ulkopuolelta",
         "init script section helper":
             "Lataa tai kopioi alustan tukemat aloituskomenskriptit valitsemallasi ohjelmointikielellä.",
-        "expires in": ({ howMuchTime }) => `Vanhenee ${howMuchTime} kuluttua`
+        "expires in": ({ howMuchTime }) => <>Vanhenee {howMuchTime} kuluttua</>
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
@@ -93,8 +93,9 @@ export const translations: Translations<"fi"> = {
                 <code>kubectl get pods</code> tai <code>helm list</code>
             </>
         ),
-        "expires in": ({ howMuchTime }) =>
-            `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => (
+            <>Nämä käyttöoikeudet ovat voimassa seuraavat {howMuchTime}</>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault-todennustiedot",
@@ -116,7 +117,7 @@ export const translations: Translations<"fi"> = {
                 </MuiLink>
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
+        "expires in": ({ howMuchTime }) => <>Pääte vanhenee {howMuchTime} kuluttua</>
     },
     ProjectSettings: {
         "page header title": "Projektiasetukset",

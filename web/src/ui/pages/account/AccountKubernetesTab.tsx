@@ -43,7 +43,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
         shellScript
     } = useCoreState("k8sCodeSnippets", "main");
 
-    const { fromNowText } = useFromNow({ dateTime: expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ dateTime: expirationTime });
 
     useEffect(() => {
         k8sCodeSnippets.refresh();
@@ -170,7 +170,7 @@ const { i18n } = declareComponentKeys<
           P: { installKubectlUrl: string };
           R: JSX.Element;
       }
-    | { K: "expires in"; P: { howMuchTime: string } }
+    | { K: "expires in"; P: { howMuchTime: JSX.Element }; R: JSX.Element }
 >()({ AccountKubernetesTab });
 export type I18n = typeof i18n;
 
