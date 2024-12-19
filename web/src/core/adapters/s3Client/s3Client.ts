@@ -341,7 +341,6 @@ export function createS3Client(
                         new GetBucketPolicyCommand({ Bucket: bucketName })
                     );
 
-                    // If the response does not have a policy, return a valid structure
                     if (!sendResp.Policy) {
                         console.info("Bucket policy is not defined, but it's okay.");
                         return {
