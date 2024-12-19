@@ -30,6 +30,7 @@ export type State = {
         resp: string | undefined;
     }[];
     bucketPolicy: S3BucketPolicy;
+    isBucketPolicyAvailable: boolean;
     share:
         | {
               fileBasename: string;
@@ -57,6 +58,7 @@ export const { reducer, actions } = createUsecaseActions({
             Version: "2012-10-17",
             Statement: []
         },
+        isBucketPolicyAvailable: true,
         share: undefined
     }),
     reducers: {
@@ -127,10 +129,12 @@ export const { reducer, actions } = createUsecaseActions({
                     directoryPath: string;
                     objects: S3Object[];
                     bucketPolicy: S3BucketPolicy | undefined;
+                    isBucketPolicyAvailable: boolean;
                 };
             }
         ) => {
-            const { directoryPath, objects, bucketPolicy } = payload;
+            const { directoryPath, objects, bucketPolicy, isBucketPolicyAvailable } =
+                payload;
 
             state.directoryPath = directoryPath;
             state.objects = objects;
@@ -138,6 +142,7 @@ export const { reducer, actions } = createUsecaseActions({
             if (bucketPolicy) {
                 state.bucketPolicy = bucketPolicy;
             }
+            state.isBucketPolicyAvailable = isBucketPolicyAvailable;
             // Properly restore state when navigating back to
             // a directory with ongoing operations.
             state.ongoingOperations

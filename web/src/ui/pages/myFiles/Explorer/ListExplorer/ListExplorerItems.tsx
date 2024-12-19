@@ -29,7 +29,7 @@ export type ListExplorerItemsProps = {
     isNavigating: boolean;
 
     items: Item[];
-
+    isBucketPolicyFeatureEnabled: boolean;
     onNavigate: (params: { basename: string }) => void;
     onOpenFile: (params: { basename: string }) => void;
     /** Assert initial value is none */
@@ -64,14 +64,15 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
         className,
         isNavigating,
         items,
+        isBucketPolicyFeatureEnabled,
         onNavigate,
-        evtAction,
         onCopyPath,
         onDeleteItems,
         onOpenFile,
         onPolicyChange,
         onSelectedItemKindValueChange,
-        onShare
+        onShare,
+        evtAction
     } = props;
 
     const apiRef = useGridApiRef();
@@ -313,6 +314,9 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                 initialState={{
                     pagination: {
                         paginationModel: { pageSize: 25, page: 0 }
+                    },
+                    columns: {
+                        columnVisibilityModel: { policy: isBucketPolicyFeatureEnabled }
                     }
                 }}
                 isRowSelectable={(params: GridRowParams<Item>) =>

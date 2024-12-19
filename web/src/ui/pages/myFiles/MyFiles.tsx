@@ -196,6 +196,9 @@ function MyFiles(props: Props) {
                 commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
                 items={currentWorkingDirectoryView.items}
+                isBucketPolicyFeatureEnabled={
+                    currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
+                }
                 changePolicy={fileExplorer.changePolicy}
                 onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}

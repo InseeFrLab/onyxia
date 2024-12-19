@@ -14,6 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 export const FileSelected: Story = {
     args: {
+        isBucketPolicyFeatureEnabled: true,
         kind: "file",
         basename: "example-file.txt",
         size: 100000000,
@@ -31,6 +32,7 @@ export const FileSelected: Story = {
 export const DirectoryUnselected: Story = {
     args: {
         kind: "directory",
+        isBucketPolicyFeatureEnabled: true,
         basename: "example-directory",
         size: undefined,
         policy: "public",

@@ -33,9 +33,11 @@ export type S3Client = {
     /**
      *  In charge of creating bucket if doesn't exist.
      */
-    listObjects: (params: {
-        path: string;
-    }) => Promise<{ objects: S3Object[]; bucketPolicy: S3BucketPolicy | undefined }>;
+    listObjects: (params: { path: string }) => Promise<{
+        objects: S3Object[];
+        bucketPolicy: S3BucketPolicy | undefined;
+        isBucketPolicyAvailable: boolean;
+    }>;
 
     setPathAccessPolicy: (params: {
         path: string;
