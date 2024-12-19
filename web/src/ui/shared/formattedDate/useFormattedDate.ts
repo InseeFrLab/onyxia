@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useReducer } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useLang } from "ui/i18n";
 import { getFormattedDate } from "./getFormattedDate";
 import { fromNow } from "./dateTimeFormatter";
@@ -15,23 +15,27 @@ export function useFormattedDate(params: { time: number }): string {
 export function useFromNow(params: { dateTime: number }) {
     const { dateTime } = params;
 
-    const [trigger, forceUpdate] = useReducer(n => n + 1, 0);
-
-    useEffect(() => {
-        const timer = setInterval(() => forceUpdate(), 1000);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, []);
-
     const { lang } = useLang();
 
-    const fromNowText = useMemo(
-        () => fromNow({ dateTime }),
+    const [fromNowText, setFromNowText] = useState(() => fromNow({ dateTime }));
 
-        [lang, trigger, dateTime]
-    );
+    useEffect(() => {
+        const updateText = () => {
+            const newText = fromNow({ dateTime });
+
+            if (fromNowText !== newText) {
+                setFromNowText(newText);
+            }
+        };
+
+        updateText();
+
+        const timer = setInterval(updateText, 1000);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, [dateTime, lang]);
 
     return { fromNowText };
 }
