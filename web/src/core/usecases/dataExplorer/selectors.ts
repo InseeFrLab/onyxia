@@ -10,7 +10,7 @@ const columns = createSelector(
     createSelector(
         createSelector(state, state => state.data),
         data => {
-            if (data === undefined) {
+            if (data.state !== "loaded") {
                 return undefined;
             }
 
@@ -39,31 +39,42 @@ const columns = createSelector(
 );
 
 const main = createSelector(state, columns, (state, columns) => {
-    const { isQuerying, queryParams, errorMessage, data } = state;
+    const { isQuerying, queryParams, errorMessage, data, extraRestorableStates } = state;
 
     if (errorMessage !== undefined) {
-        return { isQuerying, errorMessage: errorMessage };
+        return { isQuerying, errorMessage: errorMessage, queryParams };
     }
 
-    if (data === undefined) {
-        return { isQuerying, rows: undefined };
+    switch (data.state) {
+        case "empty":
+            return {
+                isQuerying,
+                rows: undefined
+            };
+        case "unknownFileType":
+            return { isQuerying, queryParams, shouldAskFileType: true };
+        case "loaded": {
+            assert(columns !== undefined);
+            assert(queryParams !== undefined);
+            assert(queryParams.rowsPerPage !== undefined);
+            assert(queryParams.page !== undefined);
+            assert(extraRestorableStates !== undefined);
+
+            const { rowsPerPage, page } = queryParams;
+            return {
+                isQuerying,
+                rows: data.rows.map((row, i) => ({
+                    id: i + rowsPerPage * (page - 1),
+                    ...row
+                })),
+                rowCount: data.rowCount,
+                queryParams,
+                extraRestorableStates,
+                fileDownloadUrl: data.fileDownloadUrl,
+                columns
+            };
+        }
     }
-
-    assert(columns !== undefined);
-    assert(queryParams !== undefined);
-
-    const { rowsPerPage, page } = queryParams;
-
-    return {
-        isQuerying,
-        rows: data.rows.map((row, i) => ({
-            id: i + rowsPerPage * (page - 1),
-            ...row
-        })),
-        rowCount: data.rowCount,
-        fileDownloadUrl: data.fileDownloadUrl,
-        columns
-    };
 });
 
 export const selectors = { main };

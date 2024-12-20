@@ -1,4 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
+import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 
 export const name = "dataExplorer";
@@ -8,8 +9,8 @@ export type State = {
     queryParams:
         | {
               sourceUrl: string;
-              rowsPerPage: number;
-              page: number;
+              rowsPerPage: number | undefined;
+              page: number | undefined;
           }
         | undefined;
     extraRestorableStates:
@@ -21,11 +22,14 @@ export type State = {
     errorMessage: string | undefined;
     data:
         | {
+              state: "loaded";
               rows: any[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
+              fileType: "parquet" | "csv" | "json";
           }
-        | undefined;
+        | { state: "unknownFileType"; fileType: undefined; fileDownloadUrl: string }
+        | { state: "empty" };
 };
 
 export const { actions, reducer } = createUsecaseActions({
@@ -35,9 +39,50 @@ export const { actions, reducer } = createUsecaseActions({
         queryParams: undefined,
         extraRestorableStates: undefined,
         errorMessage: undefined,
-        data: undefined
+        data: { state: "empty" }
     }),
     reducers: {
+        extraRestorableStateSet: (
+            state,
+            {
+                payload
+            }: { payload: { extraRestorableStates: State["extraRestorableStates"] } }
+        ) => {
+            const { extraRestorableStates } = payload;
+            state.extraRestorableStates = extraRestorableStates;
+        },
+        selectedRowIndexSet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    selectedRowIndex: NonNullable<
+                        State["extraRestorableStates"]
+                    >["selectedRowIndex"];
+                };
+            }
+        ) => {
+            const { selectedRowIndex } = payload;
+            assert(state.extraRestorableStates !== undefined);
+            state.extraRestorableStates.selectedRowIndex = selectedRowIndex;
+        },
+        columnVisibilitySet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    columnVisibility: NonNullable<
+                        State["extraRestorableStates"]
+                    >["columnVisibility"];
+                };
+            }
+        ) => {
+            const { columnVisibility } = payload;
+            assert(state.extraRestorableStates !== undefined);
+            state.extraRestorableStates.columnVisibility = columnVisibility;
+        },
         queryStarted: (
             state,
             {
@@ -53,27 +98,59 @@ export const { actions, reducer } = createUsecaseActions({
             state.isQuerying = true;
             state.queryParams = queryParams;
         },
-        extraRestorableStateSet: (
+        querySucceeded: (
             state,
             {
                 payload
-            }: { payload: { extraRestorableStates: State["extraRestorableStates"] } }
+            }: {
+                payload: {
+                    rows: any[];
+                    rowCount: number | undefined;
+                    fileDownloadUrl: string;
+                    fileType: "parquet" | "csv" | "json";
+                };
+            }
         ) => {
-            const { extraRestorableStates } = payload;
-            state.extraRestorableStates = extraRestorableStates;
-        },
-        querySucceeded: (state, { payload }: { payload: NonNullable<State["data"]> }) => {
-            const { rowCount, rows, fileDownloadUrl } = payload;
+            const { rowCount, rows, fileDownloadUrl, fileType } = payload;
             state.isQuerying = false;
-            state.data = { rowCount, rows, fileDownloadUrl };
+            state.data = { state: "loaded", rowCount, rows, fileDownloadUrl, fileType };
+            state.extraRestorableStates = {
+                selectedRowIndex: undefined,
+                columnVisibility: {}
+            };
+        },
+        //Rename this, i want to end query because not able to  auto detect fileType
+        terminateQueryDueToUnknownFileType: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    fileDownloadUrl: string;
+                };
+            }
+        ) => {
+            const { fileDownloadUrl } = payload;
+            state.isQuerying = false;
+            state.data = {
+                state: "unknownFileType",
+                fileDownloadUrl,
+                fileType: undefined
+            };
+        },
+        queryCanceled: state => {
+            state.isQuerying = false;
+            state.queryParams = undefined;
         },
         queryFailed: (state, { payload }: { payload: { errorMessage: string } }) => {
             const { errorMessage } = payload;
             state.isQuerying = false;
             state.errorMessage = errorMessage;
-            state.queryParams = undefined;
         },
-        /** Only for evt */
-        restoreStateNeeded: () => {}
+        restoreState: state => {
+            state.queryParams = undefined;
+            state.extraRestorableStates = undefined;
+            state.data = { state: "empty" };
+        }
     }
 });

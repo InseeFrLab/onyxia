@@ -969,7 +969,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "resize table": undefined
     },
     UrlInput: {
-        load: "Laden"
+        load: "Laden",
+        reset: "Leeren"
     },
     CommandBar: {
         ok: "Ok"
