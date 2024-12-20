@@ -83,7 +83,11 @@ const privateThunks = {
                             fileDownloadUrl: data.fileDownloadUrl
                         };
                     }
-                    return dispatch(privateThunks.detectFileType({ sourceUrl }));
+                    const toto = await dispatch(
+                        privateThunks.detectFileType({ sourceUrl })
+                    );
+                    console.log(toto);
+                    return toto;
                 })();
 
             if (fileType === undefined) {
@@ -202,57 +206,97 @@ const privateThunks = {
                 privateThunks.getFileDonwloadUrl({ sourceUrl })
             );
 
-            const contentType = await (async () => {
-                try {
-                    const response = await fetch(fileDownloadUrl, { method: "HEAD" });
+            try {
+                const response = await fetch(fileDownloadUrl, {
+                    method: "GET",
+                    headers: { Range: "bytes=0-15" } // Fetch the first 16 bytes
+                });
 
-                    if (!response.ok) {
+                if (!response.ok) {
+                    return { fileType: undefined, fileDownloadUrl };
+                }
+
+                const contentType = response.headers.get("Content-Type");
+
+                const filTypeExtractdByContentType = (() => {
+                    if (!contentType) {
                         return undefined;
                     }
 
-                    return response.headers.get("Content-Type") ?? undefined;
-                } catch (error) {
-                    return undefined;
+                    const contentTypeToExtension = [
+                        {
+                            keyword: "application/parquet" as const,
+                            extension: "parquet" as const
+                        },
+                        {
+                            keyword: "application/x-parquet" as const,
+                            extension: "parquet" as const
+                        },
+                        { keyword: "text/csv" as const, extension: "csv" as const },
+                        {
+                            keyword: "application/csv" as const,
+                            extension: "csv" as const
+                        },
+                        {
+                            keyword: "application/json" as const,
+                            extension: "json" as const
+                        },
+                        { keyword: "text/json" as const, extension: "json" as const }
+                    ];
+
+                    const match = contentTypeToExtension.find(
+                        ({ keyword }) => contentType === keyword
+                    );
+                    return match ? match.extension : undefined;
+                })();
+
+                if (filTypeExtractdByContentType !== undefined) {
+                    return { fileType: filTypeExtractdByContentType, fileDownloadUrl };
                 }
-            })();
 
-            const contentTypeToExtension = [
-                {
-                    keyword: "application/parquet" as const,
-                    extension: "parquet" as const
-                },
-                {
-                    keyword: "application/x-parquet" as const,
-                    extension: "parquet" as const
-                },
-                { keyword: "text/csv" as const, extension: "csv" as const },
-                { keyword: "application/csv" as const, extension: "csv" as const },
-                { keyword: "application/json" as const, extension: "json" as const },
-                { keyword: "text/json" as const, extension: "json" as const }
-            ];
+                const fileSignatures = [
+                    {
+                        condition: (bytes: Uint8Array) =>
+                            bytes[0] === 80 &&
+                            bytes[1] === 65 &&
+                            bytes[2] === 82 &&
+                            bytes[3] === 49, // "PAR1"
+                        extension: "parquet" as const
+                    },
+                    {
+                        condition: (bytes: Uint8Array) => [91, 123].includes(bytes[0]), // "[" or "{"
+                        extension: "json" as const // JSON
+                    },
+                    {
+                        condition: (bytes: Uint8Array) => {
+                            const fileContent = new TextDecoder().decode(bytes);
+                            return (
+                                fileContent.includes(",") ||
+                                fileContent.includes("\n") ||
+                                fileContent.includes(";")
+                            ); // CSV heuristic
+                        },
+                        extension: "csv" as const
+                    }
+                ];
 
-            const getExtensionFromContentType = (
-                contentType?: string
-            ): ValidFileType | undefined => {
-                if (!contentType) {
-                    return undefined;
+                const arrayBuffer = await response.arrayBuffer();
+                const bytes = new Uint8Array(arrayBuffer);
+
+                const match = fileSignatures.find(({ condition }) => condition(bytes));
+
+                if (match) {
+                    return { fileType: match.extension, fileDownloadUrl };
                 }
+            } catch (error) {
+                console.error("Failed to fetch file for type detection:", error);
+                //TODO: reject an error
+                return { fileType: undefined, fileDownloadUrl };
+            }
 
-                const match = contentTypeToExtension.find(
-                    ({ keyword }) => contentType === keyword
-                );
-                return match ? match.extension : undefined;
-            };
-
-            return {
-                fileType: getExtensionFromContentType(contentType),
-                fileDownloadUrl
-            };
+            //Ask user to manualy specify the file type
+            return { fileType: undefined, fileDownloadUrl };
         },
-    /*
-    getParquetMetadata: (params: { sourceUrl: string }) => async () => {},
-
-   */
     updateDataSource:
         (params: {
             queryParams: {

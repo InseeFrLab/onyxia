@@ -42,40 +42,39 @@ const main = createSelector(state, columns, (state, columns) => {
     const { isQuerying, queryParams, errorMessage, data, extraRestorableStates } = state;
 
     if (errorMessage !== undefined) {
-        return { isQuerying, errorMessage: errorMessage };
+        return { isQuerying, errorMessage: errorMessage, queryParams };
     }
 
-    if (data.state === "empty") {
-        return {
-            isQuerying,
-            rows: undefined
-        };
+    switch (data.state) {
+        case "empty":
+            return {
+                isQuerying,
+                rows: undefined
+            };
+        case "unknownFileType":
+            return { isQuerying, queryParams, shouldAskFileType: true };
+        case "loaded": {
+            assert(columns !== undefined);
+            assert(queryParams !== undefined);
+            assert(queryParams.rowsPerPage !== undefined);
+            assert(queryParams.page !== undefined);
+            assert(extraRestorableStates !== undefined);
+
+            const { rowsPerPage, page } = queryParams;
+            return {
+                isQuerying,
+                rows: data.rows.map((row, i) => ({
+                    id: i + rowsPerPage * (page - 1),
+                    ...row
+                })),
+                rowCount: data.rowCount,
+                queryParams,
+                extraRestorableStates,
+                fileDownloadUrl: data.fileDownloadUrl,
+                columns
+            };
+        }
     }
-
-    if (data.state === "unknownFileType") {
-        return { isQuerying, queryParams, shouldAskFileType: true };
-    }
-
-    assert(columns !== undefined);
-    assert(queryParams !== undefined);
-    assert(queryParams.rowsPerPage !== undefined);
-    assert(queryParams.page !== undefined);
-    assert(extraRestorableStates !== undefined);
-
-    const { rowsPerPage, page } = queryParams;
-
-    return {
-        isQuerying,
-        rows: data.rows.map((row, i) => ({
-            id: i + rowsPerPage * (page - 1),
-            ...row
-        })),
-        rowCount: data.rowCount,
-        queryParams,
-        extraRestorableStates,
-        fileDownloadUrl: data.fileDownloadUrl,
-        columns
-    };
 });
 
 export const selectors = { main };
