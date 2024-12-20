@@ -42,21 +42,6 @@ export const { actions, reducer } = createUsecaseActions({
         data: { state: "empty" }
     }),
     reducers: {
-        queryStarted: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    queryParams: NonNullable<State["queryParams"]>;
-                };
-            }
-        ) => {
-            const { queryParams } = payload;
-            state.errorMessage = undefined;
-            state.isQuerying = true;
-            state.queryParams = queryParams;
-        },
         extraRestorableStateSet: (
             state,
             {
@@ -98,7 +83,21 @@ export const { actions, reducer } = createUsecaseActions({
             assert(state.extraRestorableStates !== undefined);
             state.extraRestorableStates.columnVisibility = columnVisibility;
         },
-
+        queryStarted: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    queryParams: NonNullable<State["queryParams"]>;
+                };
+            }
+        ) => {
+            const { queryParams } = payload;
+            state.errorMessage = undefined;
+            state.isQuerying = true;
+            state.queryParams = queryParams;
+        },
         querySucceeded: (
             state,
             {
@@ -115,6 +114,10 @@ export const { actions, reducer } = createUsecaseActions({
             const { rowCount, rows, fileDownloadUrl, fileType } = payload;
             state.isQuerying = false;
             state.data = { state: "loaded", rowCount, rows, fileDownloadUrl, fileType };
+            state.extraRestorableStates = {
+                selectedRowIndex: undefined,
+                columnVisibility: {}
+            };
         },
         //Rename this, i want to end query because not able to  auto detect fileType
         terminateQueryDueToUnknownFileType: (
@@ -143,7 +146,6 @@ export const { actions, reducer } = createUsecaseActions({
             const { errorMessage } = payload;
             state.isQuerying = false;
             state.errorMessage = errorMessage;
-            state.queryParams = undefined;
         },
         restoreState: state => {
             state.queryParams = undefined;

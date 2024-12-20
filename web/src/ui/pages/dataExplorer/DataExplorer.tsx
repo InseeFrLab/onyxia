@@ -136,6 +136,7 @@ export default function DataExplorer(props: Props) {
             <div className={classes.mainArea}>
                 {(() => {
                     if (errorMessage !== undefined) {
+                        console.log(queryParams);
                         return (
                             <Alert className={classes.errorAlert} severity="error">
                                 {errorMessage}
