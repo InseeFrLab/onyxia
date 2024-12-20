@@ -10,7 +10,7 @@ const columns = createSelector(
     createSelector(
         createSelector(state, state => state.data),
         data => {
-            if (data === undefined) {
+            if (data.state !== "loaded") {
                 return undefined;
             }
 
@@ -45,12 +45,21 @@ const main = createSelector(state, columns, (state, columns) => {
         return { isQuerying, errorMessage: errorMessage };
     }
 
-    if (data === undefined) {
-        return { isQuerying, rows: undefined };
+    if (data.state === "empty") {
+        return {
+            isQuerying,
+            rows: undefined
+        };
+    }
+
+    if (data.state === "unknownFileType") {
+        return { isQuerying, queryParams, shouldAskFileType: true };
     }
 
     assert(columns !== undefined);
     assert(queryParams !== undefined);
+    assert(queryParams.rowsPerPage !== undefined);
+    assert(queryParams.page !== undefined);
     assert(extraRestorableStates !== undefined);
 
     const { rowsPerPage, page } = queryParams;

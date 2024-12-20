@@ -58,7 +58,8 @@ export default function DataExplorer(props: Props) {
         columns,
         rowCount,
         errorMessage,
-        isQuerying
+        isQuerying,
+        shouldAskFileType
     } = useCoreState("dataExplorer", "main");
 
     useEffect(() => {
@@ -73,18 +74,22 @@ export default function DataExplorer(props: Props) {
             return;
         }
 
+        const { selectedRowIndex: selectedRow, columnVisibility } =
+            extraRestorableStates || {};
+
         routes[route.name]({
             ...route.params,
             source: queryParams.sourceUrl,
             page: queryParams.page,
             rowsPerPage: queryParams.rowsPerPage,
-            selectedRow: extraRestorableStates.selectedRowIndex,
-            columnVisibility: extraRestorableStates.columnVisibility
+            selectedRow,
+            columnVisibility
         }).replace();
     }, [queryParams, extraRestorableStates]);
 
     const { classes, cx } = useStyles();
 
+    console.log("core props", { rows, queryParams, errorMessage, shouldAskFileType });
     // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
     const { childrenClassName: dataGridPanelWrapperRefClassName } =
         useApplyClassNameToParent({
@@ -118,11 +123,6 @@ export default function DataExplorer(props: Props) {
             />
             <UrlInput
                 className={classes.urlInput}
-                getIsValidUrl={url =>
-                    dataExplorer.getIsValidSourceUrl({
-                        sourceUrl: url
-                    })
-                }
                 onUrlChange={value => {
                     dataExplorer.updateDataSource({ sourceUrl: value });
                 }}
@@ -154,6 +154,9 @@ export default function DataExplorer(props: Props) {
                             </div>
                         );
                     }
+
+                    assert(queryParams.page !== undefined);
+                    assert(queryParams.rowsPerPage !== undefined);
 
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>

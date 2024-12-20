@@ -9,8 +9,8 @@ export type State = {
     queryParams:
         | {
               sourceUrl: string;
-              rowsPerPage: number;
-              page: number;
+              rowsPerPage: number | undefined;
+              page: number | undefined;
           }
         | undefined;
     extraRestorableStates:
@@ -22,12 +22,14 @@ export type State = {
     errorMessage: string | undefined;
     data:
         | {
+              state: "loaded";
               rows: any[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
-              //   fileType: "parquet" | "csv" | "json";
+              fileType: "parquet" | "csv" | "json";
           }
-        | undefined;
+        | { state: "unknownFileType"; fileType: undefined; fileDownloadUrl: string }
+        | { state: "empty" };
 };
 
 export const { actions, reducer } = createUsecaseActions({
@@ -37,7 +39,7 @@ export const { actions, reducer } = createUsecaseActions({
         queryParams: undefined,
         extraRestorableStates: undefined,
         errorMessage: undefined,
-        data: undefined
+        data: { state: "empty" }
     }),
     reducers: {
         queryStarted: (
@@ -96,10 +98,42 @@ export const { actions, reducer } = createUsecaseActions({
             assert(state.extraRestorableStates !== undefined);
             state.extraRestorableStates.columnVisibility = columnVisibility;
         },
-        querySucceeded: (state, { payload }: { payload: NonNullable<State["data"]> }) => {
-            const { rowCount, rows, fileDownloadUrl } = payload;
+
+        querySucceeded: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    rows: any[];
+                    rowCount: number | undefined;
+                    fileDownloadUrl: string;
+                    fileType: "parquet" | "csv" | "json";
+                };
+            }
+        ) => {
+            const { rowCount, rows, fileDownloadUrl, fileType } = payload;
             state.isQuerying = false;
-            state.data = { rowCount, rows, fileDownloadUrl };
+            state.data = { state: "loaded", rowCount, rows, fileDownloadUrl, fileType };
+        },
+        //Rename this, i want to end query because not able to  auto detect fileType
+        terminateQueryDueToUnknownFileType: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    fileDownloadUrl: string;
+                };
+            }
+        ) => {
+            const { fileDownloadUrl } = payload;
+            state.isQuerying = false;
+            state.data = {
+                state: "unknownFileType",
+                fileDownloadUrl,
+                fileType: undefined
+            };
         },
         queryCanceled: state => {
             state.isQuerying = false;
@@ -114,7 +148,7 @@ export const { actions, reducer } = createUsecaseActions({
         restoreState: state => {
             state.queryParams = undefined;
             state.extraRestorableStates = undefined;
-            state.data = undefined;
+            state.data = { state: "empty" };
         }
     }
 });

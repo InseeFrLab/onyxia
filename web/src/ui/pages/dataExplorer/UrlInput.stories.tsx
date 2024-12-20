@@ -14,7 +14,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         url: "https://example.com",
-        onUrlChange: action("URL changed"),
-        getIsValidUrl: (url: string) => url.startsWith("https://")
+        onUrlChange: action("URL changed")
     }
 };

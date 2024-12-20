@@ -54,10 +54,9 @@ const privateThunks = {
                 rowsPerPage: number;
                 page: number;
             };
-            shouldVerifyUrl: boolean;
         }) =>
         async (...args) => {
-            const { queryParams, shouldVerifyUrl } = params;
+            const { queryParams } = params;
             const [dispatch, getState, rootContext] = args;
 
             const coreQueryParams = getState()[name].queryParams;
@@ -74,32 +73,47 @@ const privateThunks = {
 
             dispatch(actions.queryStarted({ queryParams }));
 
-            if (shouldVerifyUrl && !thunks.getIsValidSourceUrl({ sourceUrl })()) {
-                dispatch(actions.queryFailed({ errorMessage: "Invalid sourceUrl" }));
+            const data = getState()[name].data;
+
+            const { fileType, fileDownloadUrl: fileDownloadUrlOrUndefined } =
+                await (async () => {
+                    if (!isSourceUrlChanged && data.state !== "empty") {
+                        return {
+                            fileType: data.fileType,
+                            fileDownloadUrl: data.fileDownloadUrl
+                        };
+                    }
+                    return dispatch(privateThunks.detectFileType({ sourceUrl }));
+                })();
+
+            if (fileType === undefined) {
+                dispatch(
+                    actions.terminateQueryDueToUnknownFileType({
+                        fileDownloadUrl: fileDownloadUrlOrUndefined
+                    })
+                );
                 return;
             }
 
-            const { fileDownloadUrl, rowCountOrErrorMessage } = await (async () => {
-                if (!isSourceUrlChanged) {
-                    const data = getState()[name].data;
-                    assert(data !== undefined);
-                    return {
-                        fileDownloadUrl: data.fileDownloadUrl,
-                        rowCountOrErrorMessage: data.rowCount
-                    };
-                }
-
-                const fileDownloadUrl = await dispatch(
+            const fileDownloadUrl =
+                fileDownloadUrlOrUndefined ??
+                (await dispatch(
                     privateThunks.getFileDonwloadUrl({
                         sourceUrl
                     })
-                );
+                ));
+
+            const rowCountOrErrorMessage = await (async () => {
+                if (!isSourceUrlChanged) {
+                    assert(data.state === "loaded");
+                    return data.rowCount;
+                }
 
                 const rowCountOrErrorMessage = await sqlOlap
                     .getRowCount(sourceUrl)
                     .catch(error => String(error));
 
-                return { fileDownloadUrl, rowCountOrErrorMessage };
+                return rowCountOrErrorMessage;
             })();
 
             if (typeof rowCountOrErrorMessage === "string") {
@@ -144,53 +158,101 @@ const privateThunks = {
                               ? undefined
                               : queryParams.rowsPerPage * (queryParams.page - 1) +
                                 rows.length,
-                    fileDownloadUrl
+                    fileDownloadUrl,
+                    fileType
                 })
             );
         },
-    detectFileType: (params: { sourceUrl: string }) => async () => {
-        const { sourceUrl } = params;
-        //const [dispatch] = args;
+    detectFileType:
+        (params: { sourceUrl: string }) =>
+        async (...args) => {
+            const { sourceUrl } = params;
+            const [dispatch] = args;
 
-        const extension = (() => {
-            const validExtensions = ["parquet", "csv", "json"] as const;
-            type ValidExtension = (typeof validExtensions)[number];
+            const validFileType = ["parquet", "csv", "json"] as const;
+            type ValidFileType = (typeof validFileType)[number];
 
-            const isValidExtension = (ext: string): ext is ValidExtension =>
-                validExtensions.includes(ext as ValidExtension);
+            const isValidFileType = (ext: string): ext is ValidFileType =>
+                validFileType.includes(ext as ValidFileType);
 
-            let pathname: string;
+            const extension = (() => {
+                let pathname: string;
 
-            try {
-                pathname = new URL(sourceUrl).pathname;
-            } catch {
-                return undefined;
-            }
-            const match = pathname.match(/\.(\w+)$/);
+                try {
+                    pathname = new URL(sourceUrl).pathname;
+                } catch {
+                    return undefined;
+                }
+                const match = pathname.match(/\.(\w+)$/);
 
-            if (match === null) {
-                return undefined;
-            }
+                if (match === null) {
+                    return undefined;
+                }
 
-            const [, extension] = match;
+                const [, extension] = match;
 
-            return isValidExtension(extension) ? extension : undefined;
-        })();
-
-        if (extension) {
-            return extension;
-        }
-
-        /*
-            const contentType = await (async () => {
-                const fileDownloadUrl = await dispatch(
-                    privateThunks.getFileDonwloadUrl({
-                        sourceUrl
-                    })
-                );
+                return isValidFileType(extension) ? extension : undefined;
             })();
-            */
-    },
+
+            if (extension) {
+                return { fileType: extension, fileDownloadUrl: undefined };
+            }
+
+            const fileDownloadUrl = await dispatch(
+                privateThunks.getFileDonwloadUrl({ sourceUrl })
+            );
+
+            const contentType = await (async () => {
+                try {
+                    const response = await fetch(fileDownloadUrl, { method: "HEAD" });
+
+                    if (!response.ok) {
+                        return undefined;
+                    }
+
+                    return response.headers.get("Content-Type") ?? undefined;
+                } catch (error) {
+                    return undefined;
+                }
+            })();
+
+            const contentTypeToExtension = [
+                {
+                    keyword: "application/parquet" as const,
+                    extension: "parquet" as const
+                },
+                {
+                    keyword: "application/x-parquet" as const,
+                    extension: "parquet" as const
+                },
+                { keyword: "text/csv" as const, extension: "csv" as const },
+                { keyword: "application/csv" as const, extension: "csv" as const },
+                { keyword: "application/json" as const, extension: "json" as const },
+                { keyword: "text/json" as const, extension: "json" as const }
+            ];
+
+            const getExtensionFromContentType = (
+                contentType?: string
+            ): ValidFileType | undefined => {
+                if (!contentType) {
+                    return undefined;
+                }
+
+                const match = contentTypeToExtension.find(
+                    ({ keyword }) => contentType === keyword
+                );
+                return match ? match.extension : undefined;
+            };
+
+            return {
+                fileType: getExtensionFromContentType(contentType),
+                fileDownloadUrl
+            };
+        },
+    /*
+    getParquetMetadata: (params: { sourceUrl: string }) => async () => {},
+
+   */
     updateDataSource:
         (params: {
             queryParams: {
@@ -198,12 +260,10 @@ const privateThunks = {
                 rowsPerPage: number | undefined;
                 page: number | undefined;
             };
-            shouldVerifyUrl: boolean;
         }) =>
         async (...args) => {
             const {
-                queryParams: { sourceUrl, rowsPerPage = 25, page = 1 },
-                shouldVerifyUrl
+                queryParams: { sourceUrl, rowsPerPage = 25, page = 1 }
             } = params;
 
             const [dispatch, getState, rootContext] = args;
@@ -232,8 +292,7 @@ const privateThunks = {
                         sourceUrl,
                         rowsPerPage,
                         page
-                    },
-                    shouldVerifyUrl
+                    }
                 })
             );
         }
@@ -282,11 +341,11 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.updateDataSource({
-                    queryParams: { sourceUrl, rowsPerPage, page },
-                    shouldVerifyUrl: true
+                    queryParams: { sourceUrl, rowsPerPage, page }
                 })
             );
         },
+    /*
     getIsValidSourceUrl: (params: { sourceUrl: string }) => () => {
         const { sourceUrl } = params;
 
@@ -322,6 +381,7 @@ export const thunks = {
 
         return true;
     },
+    */
     updateDataSource:
         (params: { sourceUrl: string }) =>
         async (...args) => {
@@ -335,8 +395,7 @@ export const thunks = {
                         sourceUrl,
                         rowsPerPage: undefined,
                         page: undefined
-                    },
-                    shouldVerifyUrl: false
+                    }
                 })
             );
         },
@@ -350,8 +409,7 @@ export const thunks = {
 
             dispatch(
                 privateThunks.performQuery({
-                    queryParams: { ...stateQueryParams, page, rowsPerPage },
-                    shouldVerifyUrl: false
+                    queryParams: { ...stateQueryParams, page, rowsPerPage }
                 })
             );
         },
