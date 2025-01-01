@@ -10,6 +10,7 @@ This document lists the maintainers of the Onyxia project. The maintainers are r
 | Dylan Decrulle   | @ddecrulle        | Insee         | Co-maintainer  |
 | Olivier Levitt   | @olevitt          | Insee         | Co-maintainer  |
 | John Kasper Svergja  | @johnksv          | Statistics Norway         | Co-maintainer  |
+| Nicolai Stølen  | @nicolst          | Statistics Norway         | Co-maintainer  |
 
 ## Emeritus Maintainers
 
