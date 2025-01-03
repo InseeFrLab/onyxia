@@ -970,7 +970,8 @@ export const translations: Translations<"en"> = {
         "resize table": "Redimensionar"
     },
     UrlInput: {
-        load: "Cargar"
+        load: "Cargar",
+        reset: "Vaciar"
     },
     CommandBar: {
         ok: "Aceptar"
