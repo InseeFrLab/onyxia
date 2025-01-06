@@ -28,8 +28,8 @@ export type State = {
               fileDownloadUrl: string;
               fileType: "parquet" | "csv" | "json";
           }
-        | { state: "unknownFileType"; fileType: undefined; fileDownloadUrl: string }
         | { state: "empty" };
+    // | { state: "unknownFileType"; fileType: undefined; fileDownloadUrl: string }
 };
 
 export const { actions, reducer } = createUsecaseActions({
@@ -120,24 +120,24 @@ export const { actions, reducer } = createUsecaseActions({
             };
         },
         //Rename this, i want to end query because not able to  auto detect fileType
-        terminateQueryDueToUnknownFileType: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    fileDownloadUrl: string;
-                };
-            }
-        ) => {
-            const { fileDownloadUrl } = payload;
-            state.isQuerying = false;
-            state.data = {
-                state: "unknownFileType",
-                fileDownloadUrl,
-                fileType: undefined
-            };
-        },
+        // terminateQueryDueToUnknownFileType: (
+        //     state,
+        //     {
+        //         payload
+        //     }: {
+        //         payload: {
+        //             fileDownloadUrl: string;
+        //         };
+        //     }
+        // ) => {
+        //     const { fileDownloadUrl } = payload;
+        //     state.isQuerying = false;
+        //     state.data = {
+        //         state: "unknownFileType",
+        //         fileDownloadUrl,
+        //         fileType: undefined
+        //     };
+        // },
         queryCanceled: state => {
             state.isQuerying = false;
             state.queryParams = undefined;
@@ -151,6 +151,7 @@ export const { actions, reducer } = createUsecaseActions({
             state.queryParams = undefined;
             state.extraRestorableStates = undefined;
             state.data = { state: "empty" };
+            state.errorMessage = undefined;
         }
     }
 });

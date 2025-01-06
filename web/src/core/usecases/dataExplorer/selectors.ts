@@ -51,8 +51,6 @@ const main = createSelector(state, columns, (state, columns) => {
                 isQuerying,
                 rows: undefined
             };
-        case "unknownFileType":
-            return { isQuerying, queryParams, shouldAskFileType: true };
         case "loaded": {
             assert(columns !== undefined);
             assert(queryParams !== undefined);

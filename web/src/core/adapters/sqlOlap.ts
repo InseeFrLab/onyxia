@@ -105,16 +105,23 @@ export const createDuckDbSqlOlap = (params: {
                 return db;
             };
         })(),
-        getRows: async ({ sourceUrl, rowsPerPage, page }) => {
+        getRows: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
             const conn = await db.connect();
 
-            const stmt = await conn.prepare(
-                `SELECT * FROM "${sourceUrl}" LIMIT ${rowsPerPage} OFFSET ${
-                    rowsPerPage * (page - 1)
-                }`
-            );
+            const sqlQuery = `SELECT * FROM ${(() => {
+                switch (fileType) {
+                    case "csv":
+                        return `read_csv('${sourceUrl}')`;
+                    case "parquet":
+                        return `read_parquet('${sourceUrl}')`;
+                    case "json":
+                        return `read_json('${sourceUrl}')`;
+                }
+            })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
+
+            const stmt = await conn.prepare(sqlQuery);
 
             const res = await stmt.query();
 
@@ -139,8 +146,8 @@ export const createDuckDbSqlOlap = (params: {
             return rows;
         },
         getRowCount: memoize(
-            async sourceUrl => {
-                if (!new URL(sourceUrl).pathname.endsWith(".parquet")) {
+            async ({ sourceUrl, fileType }) => {
+                if (fileType !== "parquet") {
                     return undefined;
                 }
 
@@ -148,15 +155,13 @@ export const createDuckDbSqlOlap = (params: {
 
                 const conn = await db.connect();
 
-                const stmt = await conn.prepare(
-                    `SELECT count(*)::INTEGER as v FROM "${sourceUrl}";`
-                );
+                const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
 
-                const res = await stmt.query();
-
-                const count: number = JSON.parse(JSON.stringify(res.toArray()))[0]["v"];
-
-                return count;
+                return conn
+                    .prepare(query)
+                    .then(stmt => stmt.query())
+                    .then(res => res.toArray()[0]["v"])
+                    .finally(() => conn.close());
             },
             { promise: true, max: 1 }
         )

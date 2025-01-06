@@ -58,8 +58,7 @@ export default function DataExplorer(props: Props) {
         columns,
         rowCount,
         errorMessage,
-        isQuerying,
-        shouldAskFileType
+        isQuerying
     } = useCoreState("dataExplorer", "main");
 
     useEffect(() => {
@@ -89,7 +88,6 @@ export default function DataExplorer(props: Props) {
 
     const { classes, cx } = useStyles();
 
-    console.log("core props", { rows, queryParams, errorMessage, shouldAskFileType });
     // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
     const { childrenClassName: dataGridPanelWrapperRefClassName } =
         useApplyClassNameToParent({
@@ -136,7 +134,6 @@ export default function DataExplorer(props: Props) {
             <div className={classes.mainArea}>
                 {(() => {
                     if (errorMessage !== undefined) {
-                        console.log(queryParams);
                         return (
                             <Alert className={classes.errorAlert} severity="error">
                                 {errorMessage}

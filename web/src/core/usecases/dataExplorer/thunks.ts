@@ -83,17 +83,20 @@ const privateThunks = {
                             fileDownloadUrl: data.fileDownloadUrl
                         };
                     }
-                    const toto = await dispatch(
-                        privateThunks.detectFileType({ sourceUrl })
-                    );
-                    console.log(toto);
-                    return toto;
+                    return dispatch(privateThunks.detectFileType({ sourceUrl }));
                 })();
 
             if (fileType === undefined) {
+                // dispatch(
+                //     actions.terminateQueryDueToUnknownFileType({
+                //         fileDownloadUrl: fileDownloadUrlOrUndefined
+                //     })
+                // );
                 dispatch(
-                    actions.terminateQueryDueToUnknownFileType({
-                        fileDownloadUrl: fileDownloadUrlOrUndefined
+                    actions.queryFailed({
+                        //TODO Improve
+                        errorMessage:
+                            "Unable to detect the file type, we support only parquet, csv and json."
                     })
                 );
                 return;
@@ -114,7 +117,7 @@ const privateThunks = {
                 }
 
                 const rowCountOrErrorMessage = await sqlOlap
-                    .getRowCount(sourceUrl)
+                    .getRowCount({ sourceUrl, fileType })
                     .catch(error => String(error));
 
                 return rowCountOrErrorMessage;
@@ -140,7 +143,8 @@ const privateThunks = {
                 .getRows({
                     sourceUrl,
                     rowsPerPage: rowsPerPage + 1,
-                    page
+                    page,
+                    fileType
                 })
                 .catch(error => String(error));
 
@@ -223,6 +227,7 @@ const privateThunks = {
                         return undefined;
                     }
 
+                    //Maybe it could be interesting to reject some content types and stop the detection
                     const contentTypeToExtension = [
                         {
                             keyword: "application/parquet" as const,
@@ -272,8 +277,9 @@ const privateThunks = {
                             const fileContent = new TextDecoder().decode(bytes);
                             return (
                                 fileContent.includes(",") ||
-                                fileContent.includes("\n") ||
-                                fileContent.includes(";")
+                                fileContent.includes("|") ||
+                                fileContent.includes(";") ||
+                                fileContent.includes("\t")
                             ); // CSV heuristic
                         },
                         extension: "csv" as const
