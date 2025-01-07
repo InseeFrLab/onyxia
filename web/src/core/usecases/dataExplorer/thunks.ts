@@ -220,6 +220,13 @@ const privateThunks = {
                     return { fileType: undefined, fileDownloadUrl };
                 }
 
+                if (response.url !== fileDownloadUrl) {
+                    //TODO Display somethig to user
+                    console.log(
+                        "The url you provided is being redirected to another url"
+                    );
+                }
+
                 const contentType = response.headers.get("Content-Type");
 
                 const filTypeExtractdByContentType = (() => {
@@ -256,7 +263,10 @@ const privateThunks = {
                 })();
 
                 if (filTypeExtractdByContentType !== undefined) {
-                    return { fileType: filTypeExtractdByContentType, fileDownloadUrl };
+                    return {
+                        fileType: filTypeExtractdByContentType,
+                        fileDownloadUrl: response.url
+                    };
                 }
 
                 const fileSignatures = [
@@ -292,7 +302,7 @@ const privateThunks = {
                 const match = fileSignatures.find(({ condition }) => condition(bytes));
 
                 if (match) {
-                    return { fileType: match.extension, fileDownloadUrl };
+                    return { fileType: match.extension, fileDownloadUrl: response.url };
                 }
             } catch (error) {
                 console.error("Failed to fetch file for type detection:", error);

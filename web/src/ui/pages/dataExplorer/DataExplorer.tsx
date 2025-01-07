@@ -18,6 +18,7 @@ import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { exclude } from "tsafe/exclude";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 import { useGridApiRef } from "@mui/x-data-grid";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 
 export type Props = {
     route: PageRoute;
@@ -67,7 +68,7 @@ export default function DataExplorer(props: Props) {
         }
     }, [columns]);
 
-    useEffect(() => {
+    useEffectOnValueChange(() => {
         if (queryParams === undefined) {
             routes[route.name]().replace();
             return;
