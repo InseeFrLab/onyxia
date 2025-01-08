@@ -6,39 +6,7 @@ import type { GridColDef } from "@mui/x-data-grid";
 
 const state = (rootState: RootState) => rootState[name];
 
-const columns = createSelector(
-    createSelector(
-        createSelector(state, state => state.data),
-        data => {
-            if (data.state !== "loaded") {
-                return undefined;
-            }
-
-            const firstRow = data.rows[0] ?? {};
-
-            const firstRowKeys = Object.keys(firstRow);
-
-            return JSON.stringify(firstRowKeys);
-        }
-    ),
-    firstRowKeys_str => {
-        if (firstRowKeys_str === undefined) {
-            return undefined;
-        }
-
-        const firstRowKeys = JSON.parse(firstRowKeys_str) as string[];
-
-        return firstRowKeys.map(
-            key =>
-                ({
-                    field: key,
-                    sortable: false
-                }) satisfies GridColDef
-        );
-    }
-);
-
-const main = createSelector(state, columns, (state, columns) => {
+const main = createSelector(state, state => {
     const { isQuerying, queryParams, errorMessage, data, extraRestorableStates } = state;
 
     if (errorMessage !== undefined) {
@@ -52,7 +20,6 @@ const main = createSelector(state, columns, (state, columns) => {
                 rows: undefined
             };
         case "loaded": {
-            assert(columns !== undefined);
             assert(queryParams !== undefined);
             assert(queryParams.rowsPerPage !== undefined);
             assert(queryParams.page !== undefined);
@@ -69,7 +36,14 @@ const main = createSelector(state, columns, (state, columns) => {
                 queryParams,
                 extraRestorableStates,
                 fileDownloadUrl: data.fileDownloadUrl,
-                columns
+                columns: data.columns.map(
+                    column =>
+                        ({
+                            field: column.name,
+                            sortable: false,
+                            type: "string"
+                        }) satisfies GridColDef
+                )
             };
         }
     }

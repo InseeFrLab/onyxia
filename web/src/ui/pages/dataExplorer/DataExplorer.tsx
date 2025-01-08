@@ -131,6 +131,11 @@ export default function DataExplorer(props: Props) {
                         ? (route.params.source ?? "")
                         : queryParams.sourceUrl
                 }
+                getIsValidUrl={url =>
+                    dataExplorer.getIsValidSourceUrl({
+                        sourceUrl: url
+                    })
+                }
             />
             <div className={classes.mainArea}>
                 {(() => {
@@ -157,6 +162,7 @@ export default function DataExplorer(props: Props) {
                     assert(queryParams.page !== undefined);
                     assert(queryParams.rowsPerPage !== undefined);
 
+                    console.log();
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid

@@ -105,6 +105,35 @@ export const createDuckDbSqlOlap = (params: {
                 return db;
             };
         })(),
+        getColumns: async ({ sourceUrl, fileType }) => {
+            const db = await sqlOlap.getConfiguredAsyncDuckDb();
+
+            const conn = await db.connect();
+
+            const sqlQuery = `DESCRIBE SELECT * FROM ${(() => {
+                switch (fileType) {
+                    case "csv":
+                        return `read_csv('${sourceUrl}')`;
+                    case "parquet":
+                        return `read_parquet('${sourceUrl}')`;
+                    case "json":
+                        return `read_json('${sourceUrl}')`;
+                }
+            })()}`;
+
+            const stmt = await conn.prepare(sqlQuery);
+
+            const res = await stmt.query();
+
+            const columns = res.toArray().map(row => {
+                return {
+                    name: row.column_name,
+                    type: row.column_type
+                };
+            });
+
+            return columns;
+        },
         getRows: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
 

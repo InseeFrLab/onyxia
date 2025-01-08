@@ -87,11 +87,6 @@ const privateThunks = {
                 })();
 
             if (fileType === undefined) {
-                // dispatch(
-                //     actions.terminateQueryDueToUnknownFileType({
-                //         fileDownloadUrl: fileDownloadUrlOrUndefined
-                //     })
-                // );
                 dispatch(
                     actions.queryFailed({
                         //TODO Improve
@@ -109,6 +104,14 @@ const privateThunks = {
                         sourceUrl
                     })
                 ));
+
+            const columns = await (async () => {
+                if (!isSourceUrlChanged) {
+                    assert(data.state === "loaded");
+                    return data.columns;
+                }
+                return sqlOlap.getColumns({ sourceUrl, fileType });
+            })();
 
             const rowCountOrErrorMessage = await (async () => {
                 if (!isSourceUrlChanged) {
@@ -159,6 +162,7 @@ const privateThunks = {
             dispatch(
                 actions.querySucceeded({
                     rows: hasMore ? rows.slice(0, -1) : rows,
+                    columns,
                     rowCount:
                         rowCount !== undefined
                             ? rowCount
@@ -220,8 +224,10 @@ const privateThunks = {
                     return { fileType: undefined, fileDownloadUrl };
                 }
 
+                //Regarder l'extension de l'url redirigé
+
                 if (response.url !== fileDownloadUrl) {
-                    //TODO Display somethig to user
+                    //TODO Display something to user
                     console.log(
                         "The url you provided is being redirected to another url"
                     );
@@ -405,35 +411,8 @@ export const thunks = {
                 })
             );
         },
-    /*
     getIsValidSourceUrl: (params: { sourceUrl: string }) => () => {
         const { sourceUrl } = params;
-
-        if (sourceUrl == "") {
-            return true;
-        }
-        {
-            let pathname: string;
-
-            try {
-                pathname = new URL(sourceUrl).pathname;
-            } catch {
-                return false;
-            }
-
-            // capture the extension of the path
-            const match = pathname.match(/\.(\w+)$/);
-
-            if (match === null) {
-                return false;
-            }
-
-            const [, extension] = match;
-
-            if (!["parquet", "csv", "json"].includes(extension)) {
-                return false;
-            }
-        }
 
         if (!sourceUrl.startsWith("s3://") && !sourceUrl.startsWith("https://")) {
             return false;
@@ -441,7 +420,6 @@ export const thunks = {
 
         return true;
     },
-    */
     updateDataSource:
         (params: { sourceUrl: string }) =>
         async (...args) => {

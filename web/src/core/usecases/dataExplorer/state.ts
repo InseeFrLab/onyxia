@@ -24,12 +24,12 @@ export type State = {
         | {
               state: "loaded";
               rows: any[];
+              columns: { name: string; type: string }[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
               fileType: "parquet" | "csv" | "json";
           }
         | { state: "empty" };
-    // | { state: "unknownFileType"; fileType: undefined; fileDownloadUrl: string }
 };
 
 export const { actions, reducer } = createUsecaseActions({
@@ -105,39 +105,28 @@ export const { actions, reducer } = createUsecaseActions({
             }: {
                 payload: {
                     rows: any[];
+                    columns: { name: string; type: string }[];
                     rowCount: number | undefined;
                     fileDownloadUrl: string;
                     fileType: "parquet" | "csv" | "json";
                 };
             }
         ) => {
-            const { rowCount, rows, fileDownloadUrl, fileType } = payload;
+            const { rowCount, rows, fileDownloadUrl, columns, fileType } = payload;
             state.isQuerying = false;
-            state.data = { state: "loaded", rowCount, rows, fileDownloadUrl, fileType };
+            state.data = {
+                state: "loaded",
+                rowCount,
+                rows,
+                columns,
+                fileDownloadUrl,
+                fileType
+            };
             state.extraRestorableStates = {
                 selectedRowIndex: undefined,
                 columnVisibility: {}
             };
         },
-        //Rename this, i want to end query because not able to  auto detect fileType
-        // terminateQueryDueToUnknownFileType: (
-        //     state,
-        //     {
-        //         payload
-        //     }: {
-        //         payload: {
-        //             fileDownloadUrl: string;
-        //         };
-        //     }
-        // ) => {
-        //     const { fileDownloadUrl } = payload;
-        //     state.isQuerying = false;
-        //     state.data = {
-        //         state: "unknownFileType",
-        //         fileDownloadUrl,
-        //         fileType: undefined
-        //     };
-        // },
         queryCanceled: state => {
             state.isQuerying = false;
             state.queryParams = undefined;

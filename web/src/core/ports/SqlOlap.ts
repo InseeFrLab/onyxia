@@ -12,4 +12,8 @@ export type SqlOlap = {
         rowsPerPage: number;
         page: number;
     }) => Promise<any[]>;
+    getColumns: (params: {
+        sourceUrl: string;
+        fileType: "parquet" | "csv" | "json";
+    }) => Promise<{ name: string; type: any }[]>;
 };

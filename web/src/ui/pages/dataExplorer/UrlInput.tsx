@@ -10,15 +10,16 @@ type Props = {
     className?: string;
     url: string;
     onUrlChange: (value: string) => void;
+    getIsValidUrl: (url: string) => boolean;
 };
 
 export function UrlInput(props: Props) {
-    const { className, url, onUrlChange } = props;
+    const { className, url, onUrlChange, getIsValidUrl } = props;
 
     const { t } = useTranslation({ UrlInput });
     const [urlBeingTyped, setUrlBeingTyped] = useState(url);
 
-    const isLoadable = urlBeingTyped !== url;
+    const isLoadable = urlBeingTyped !== url && getIsValidUrl(urlBeingTyped);
 
     const { classes, cx } = useStyles({ isLoadable });
 
