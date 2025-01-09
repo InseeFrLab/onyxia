@@ -1,0 +1,205 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "Bootstrap API",
+      "description": "API for providing Onyxia Web with the list of regions (public and private) available to the user.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://onyxia-bootstrap.example.com",
+        "description": "Bootstrap API server"
+      }
+    ],
+    "paths": {
+      "/regions": {
+        "get": {
+          "summary": "Get regions",
+          "description": "Retrieves public regions or, if a valid token is provided, also includes private regions accessible to the user. This can be done with 2 endpoints instead.",
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "description": "Bearer token (optional).",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RegionList"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized access"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "RegionList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "description": "List of regions available to the user."
+        },
+        "Region": {
+          "type": "object",
+          "description": "Details about a specific region.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier for the region."
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the region."
+            },
+            "configuration": {
+              "type": "object",
+              "description": "Configuration details specific to the region.",
+              "properties": {
+                "service": {
+                  "type": "object",
+                  "description": "still need to review all parameters of the old service",
+                  "properties": {
+                    "URL": {
+                      "type": "string"
+                    },
+                    "oidcConfiguration": {
+                      "$ref": "#/components/schemas/OidcConfiguration"
+                    }
+                  }
+                },
+                "onboarding": {
+                  "type": "object",
+                  "description": "may be moved inside service",
+                  "properties": {
+                    "URL": {
+                      "type": "string"
+                    },
+                    "oidcConfiguration": {
+                      "$ref": "#/components/schemas/OidcConfiguration"
+                    }
+                  }
+                },
+                "objectStore": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "we should think about this schema, if we allow other type of secretStore in the future",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "S3"
+                        ]
+                      },
+                      "region": {
+                        "type": "string"
+                      },
+                      "pathStyleAccess": {
+                        "type": "boolean"
+                      },
+                      "sts": {
+                        "type": "object",
+                        "properties": {
+                          "durationSeconds": {
+                            "type": "integer"
+                          },
+                          "oidcConfiguration": {
+                            "$ref": "#/components/schemas/OidcConfiguration"
+                          }
+                        }
+                      },
+                      "workingDirectory": {
+                        "type": "object",
+                        "properties": {
+                          "bucketMode": {
+                            "type": "string"
+                          },
+                          "bucketNamePrefix": {
+                            "type": "string"
+                          },
+                          "bucketNamePrefixGroup": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "URL": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "secretEngine": {
+                  "type": "object",
+                  "description": "we should think about this schema, if we allow other type of secretEngine in the future",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "vault-kv2"
+                      ]
+                    },
+                    "kvEngine": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "authPath": {
+                      "type": "string"
+                    },
+                    "URL": {
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "type": "string"
+                    },
+                    "groupPrefix": {
+                      "type": "string"
+                    },
+                    "oidcConfiguration": {
+                      "$ref": "#/components/schemas/OidcConfiguration"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "OidcConfiguration": {
+          "type": "object",
+          "properties": {
+            "clientID": {
+              "type": "string"
+            },
+            "issuerURI": {
+              "type": "string"
+            },
+            "extraQueryParams": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "securitySchemes": {
+        "openid": {
+          "type": "openIdConnect",
+          "openIdConnectUrl": "https://auth.example.com/.well-known/openid-configuration"
+        }
+      }
+    }
+  }
