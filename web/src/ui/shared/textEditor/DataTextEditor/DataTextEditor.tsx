@@ -267,7 +267,7 @@ const useStyles = tss
         },
         textEditor: {
             boxSizing: "border-box",
-            border: !isErrored
+            outline: !isErrored
                 ? undefined
                 : `1px solid ${theme.colors.useCases.alertSeverity.error.main}`
         },
@@ -275,6 +275,11 @@ const useStyles = tss
             color: theme.colors.useCases.alertSeverity.error.main,
             position: "absolute",
             bottom: theme.spacing(2),
-            right: theme.spacing(3)
+            left: theme.spacing(2),
+            padding: theme.spacing(2),
+            borderRadius: 5,
+            border: `1px solid ${theme.colors.useCases.alertSeverity.error.background}`,
+            backgroundColor: theme.colors.useCases.alertSeverity.error.background,
+            boxShadow: theme.shadows[2]
         }
     }));
