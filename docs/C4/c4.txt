@@ -1,0 +1,220 @@
+workspace {
+    name "Onyxia Data Platform"
+    description "C4 model for the Onyxia data platform with regions as standalone software systems."
+
+    model {
+        # Internal user
+        ds = person "Data Scientist" {
+            description "Uses the platform to deploy data services like Jupyter, RStudio, and databases."
+            tags "Person"
+        }
+
+        # Internal software system
+        onyxia = softwareSystem "Onyxia" {
+            description "Data platform enabling cloud-based services for data science."
+            tags "Internal System"
+
+            # Internal containers
+            onyxia_web = container "Onyxia Web" {
+                description "Web interface for user interactions and management."
+                technology "React"
+                tags "Container"
+            }
+
+            bootstrap = container "Bootstrap" {
+                description "Provides Onyxia Web with the list of public and private regions available to the user."
+                technology "Java"
+                tags "Container"
+            }
+        }
+
+        # Region as a standalone software system
+        region = softwareSystem "Region" {
+            description "Provides Onyxia Web access to a set of optional features such as service features (via Service API), data features (via Object Storage), and secrets features (via Vault)."
+            tags "Regional System"
+
+ 
+
+
+                # Components within Service API
+                onboarding = container "Onboarding" {
+                    description "Handles Kubernetes namespace creation."
+                    tags "Regional System"
+                }
+
+                core_features = container "Core Features" {
+                    description "Handles Kubernetes installation."
+                    tags "Regional System"
+                    
+                    catalog_service = component "Catalog service" {
+                        description "Handles catalog and maintain consistency between helm binaries and onyxia api"
+                        tags "Regional System"
+                    }
+                    
+                    schema_service = component "Schema service" {
+                        description "Handles schema and resolve for each user (list of roles)"
+                        tags "Regional System"
+                    }
+                    
+                    helm_service = component "Helm service" {
+                        description "Handles helm releases"
+                        tags "Regional System"
+                    }
+                    
+                    kubernetes_service = component "Kubernetes service" {
+                        description "Handles kubernetes things : health, logs, events, quota, namespace readyness"
+                        tags "Regional System"
+                    }
+                }
+
+                onboarding_privilege = container "Onboarding Privilege" {
+                    description "Manages high privilege access for Kubernetes namespace creation."
+                    tags "Privilege"
+                }
+
+                core_features_privilege = container "Core Features Privilege" {
+                    description "Manages lower privilege access for Kubernetes installation."
+                    tags "Privilege"
+                }
+
+
+     
+
+            object_storage = container "Object Storage" {
+                description "Provides storage for data files and artifacts."
+                tags "Container" "External"
+            }
+
+            vault = container "Vault" {
+                description "Stores Onyxia-related data and user-defined secrets."
+                tags "Container" "External"
+            }
+            
+            kubernetes_cluster = container "Kubernetes Cluster" {
+                description "Manages container orchestration and resource allocation."
+                tags "External"
+            }
+            
+            catalog_registry = container "Registry of catalogs" {
+                description "Manages container orchestration and resource allocation."
+                tags "External"
+            }
+        }
+
+        # External systems
+
+
+        # Relationships
+        ds -> onyxia_web "Interacts with via web interface"
+        ds -> region "Interacts directly via Cli tools or API"
+        ds -> Vault "Interacts with vault api"
+        ds -> object_storage "Interacts with via S3 API"
+        ds -> kubernetes_cluster "Interacts with Kubectl"
+        onyxia_web -> region "Provides optionnal services, data and secrets"
+        onyxia_web -> bootstrap "Receives the list of public and private regions"
+        onyxia_web -> object_storage "Provides data features via Object Storage"
+        onyxia_web -> vault "Provides secrets features via Vault"
+        onyxia_web -> core_features "Provides core-features"
+        onyxia_web -> kubernetes_service "Handle quota, logs, events, health, list of pods, controllers..."
+        onyxia_web -> helm_service "Handle releases management : create, delete, pause, resume, notes, url"
+        onyxia_web -> catalog_service "Handle catalogs and schema"
+        catalog_service -> schema_service "Get schema for catalog by users list of roles"
+        onyxia_web -> onboarding "Provides onboarding"
+        onboarding -> kubernetes_cluster "Creates Kubernetes namespaces"
+        core_features -> kubernetes_cluster "Handles Kubernetes installation"
+        core_features -> catalog_registry "Handles catalogs of charts"
+        
+
+        onboarding -> onboarding_privilege "Requires high privilege access"
+        core_features -> core_features_privilege "Requires lower privilege access"
+                
+        kubernetes_service -> core_features_privilege "Requires high privilege access"
+        helm_service -> core_features_privilege "Requires lower privilege access"
+        
+        helm_service -> kubernetes_cluster "Handles release installation and management"
+        kubernetes_service -> kubernetes_cluster "Provide many informations"
+        catalog_service -> catalog_registry "Fetch catalogs of charts"
+    }
+
+    views {
+        systemContext onyxia {
+            description "System context diagram for Onyxia."
+            include ds
+            include onyxia
+            include region
+            autoLayout lr
+        }
+
+
+        container onyxia {
+            description "Container diagram for a Region."
+            autoLayout tb
+            include ds
+            include onyxia_web
+            include bootstrap
+            include region
+        }
+        
+        container region {
+            description "Container diagram for a Region."
+            include ds
+            include onboarding
+            include core_features
+            include object_storage
+            include vault
+            include kubernetes_cluster
+            include onyxia_web
+            include onboarding_privilege
+            include core_features_privilege
+            include catalog_registry
+            autoLayout tb
+
+        }
+        
+        component core_features {
+            description "Container diagram for a Region."
+            include kubernetes_service
+            include helm_service
+            include schema_service
+            include catalog_service
+            include kubernetes_cluster
+            include onyxia_web
+            include core_features_privilege
+            include catalog_registry
+            autoLayout tb
+
+        }
+
+
+
+        styles {
+            element "Person" {
+                shape person
+                background #08427b
+                color #ffffff
+            }
+            element "Internal System" {
+                background #E5E5E5
+                color #000000
+            }
+            element "Regional System" {
+                background #FF562C
+                color #ffffff
+            }
+            
+            element "External" {
+                background #2C323F
+                color #ffffff
+            }
+            element "Container" {
+                background #E5E5E5
+                color #000000
+            }
+            element "Privilege" {
+                background #FFD700
+                color #000000
+                shape ellipse
+            }
+        }
+    }
+}
