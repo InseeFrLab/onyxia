@@ -76,19 +76,22 @@ export default function DataTextEditor(props: Props) {
         [JSON_stringify_memo(jsonSchema)]
     );
 
-    const getErrorMsgs = useConstCallback((value: Stringifyable) => {
-        if (!ajvValidateFunction(value)) {
-            const { errors } = ajvValidateFunction;
-
-            assert(!!errors);
-
-            return errors.map(error => error.message ?? "error");
+    const getErrorMsg = useConstCallback((value: Stringifyable) => {
+        if (ajvValidateFunction(value)) {
+            return undefined;
         }
+        const { errors } = ajvValidateFunction;
 
-        return [];
+        assert(!!errors);
+
+        const [error] = errors;
+
+        assert(error !== undefined);
+
+        return error.message ?? "Invalid";
     });
 
-    const [errorMsgs, setErrorMsgs] = useState<string[]>(getErrorMsgs(value));
+    const [errorMsg, setErrorMsg] = useState<string | undefined>(getErrorMsg(value));
 
     const extensions = useMemo(
         () => [
@@ -128,40 +131,38 @@ export default function DataTextEditor(props: Props) {
         try {
             newValue = YAML.parse(newValueStr);
         } catch {
-            setErrorMsgs(["Not a valid YAML string"]);
+            setErrorMsg("Not a valid YAML string");
             return;
         }
 
-        const errorMsgs = getErrorMsgs(newValue);
+        const errorMsg = getErrorMsg(newValue);
 
-        setErrorMsgs(errorMsgs);
+        setErrorMsg(errorMsg);
 
-        if (errorMsgs.length !== 0) {
-            return;
+        if (errorMsg === undefined) {
+            onChange(newValue);
         }
-
-        onChange(newValue);
     });
 
     const { classes, cx } = useStyles({
-        isErrored: errorMsgs.length !== 0
+        isErrored: errorMsg !== undefined
     });
 
     return (
-        <>
+        <div className={classes.root}>
             <TextEditor
                 {...rest}
-                className={cx(classes.root, rest.className)}
+                className={cx(classes.textEditor, rest.className)}
                 value={valueStr}
                 onChange={onChangeStr}
                 extensions={extensions}
             />
-            {errorMsgs.map((errorMsg, i) => (
-                <Text key={i} typo="body 2" className={classes.errorText}>
+            {errorMsg !== undefined && (
+                <Text typo="body 2" className={classes.errorText}>
                     {capitalize(errorMsg)}
                 </Text>
-            ))}
-        </>
+            )}
+        </div>
     );
 }
 
@@ -170,12 +171,18 @@ const useStyles = tss
     .withParams<{ isErrored: boolean }>()
     .create(({ isErrored, theme }) => ({
         root: {
+            position: "relative"
+        },
+        textEditor: {
             boxSizing: "border-box",
             border: !isErrored
                 ? undefined
                 : `1px solid ${theme.colors.useCases.alertSeverity.error.main}`
         },
         errorText: {
-            color: theme.colors.useCases.alertSeverity.error.main
+            color: theme.colors.useCases.alertSeverity.error.main,
+            position: "absolute",
+            bottom: theme.spacing(2),
+            right: theme.spacing(3)
         }
     }));
