@@ -67,15 +67,14 @@ export type Props = {
     assert<Equals<Props, Props_Expected>>;
 }
 
-function serializeValue(params: {
-    value: Stringifyable;
-    format: "YAML" | "JSON5";
-}): string {
+type Format = "YAML" | "JSON5";
+
+function serializeValue(params: { value: Stringifyable; format: Format }): string {
     const { value, format } = params;
 
     switch (format) {
         case "JSON5":
-            return JSON.stringify(value, null, 2);
+            return JSON5.stringify(value, null, 2);
         case "YAML":
             return YAML.stringify(value);
     }
@@ -93,7 +92,7 @@ export default function DataTextEditor(props: Props) {
         [JSON_stringify_memo(jsonSchema)]
     );
 
-    const [format, setFormat] = useState<"JSON5" | "YAML">("YAML");
+    const [format, setFormat] = useState<Format>("YAML");
 
     const [valueStr, setValueStr] = useState<string>(() =>
         serializeValue({
@@ -131,7 +130,7 @@ export default function DataTextEditor(props: Props) {
         setErrorMsg(getErrorMsg(value_default));
     }, [value_default]);
 
-    const onFormatChange = useConstCallback((newFormat: "JSON5" | "YAML") => {
+    const onFormatChange = useConstCallback((newFormat: Format) => {
         const value = (() => {
             switch (format) {
                 case "JSON5":
@@ -233,13 +232,12 @@ export default function DataTextEditor(props: Props) {
                 <InputLabel id="demo-simple-select-label">Format</InputLabel>
                 <Select
                     labelId="demo-simple-select-label"
-                    id="demo-simple-select"
                     value={format}
                     label="Format"
                     onChange={event => onFormatChange(event.target.value as any)}
                 >
                     <MenuItem value={"YAML"}>YAML</MenuItem>
-                    <MenuItem value={"JSON5"}>JSON</MenuItem>
+                    <MenuItem value={"JSON5"}>JSON5</MenuItem>
                 </Select>
             </FormControl>
 
