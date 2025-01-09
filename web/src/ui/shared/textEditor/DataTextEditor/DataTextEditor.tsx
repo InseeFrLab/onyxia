@@ -34,6 +34,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert, type Equals } from "tsafe/assert";
 import memoize from "memoizee";
 import { useConst } from "powerhooks/useConst";
+import Ajv from "ajv";
+import { Text } from "onyxia-ui/Text";
+import { tss } from "../tss";
+import { capitalize } from "tsafe/capitalize";
+
+const ajv = new Ajv();
 
 export type Props = {
     className?: string;
@@ -61,19 +67,28 @@ export default function DataTextEditor(props: Props) {
 
     const [valueStr, setValueStr] = useState(() => YAML.stringify(value));
 
-    const onChangeStr = useConstCallback((newValueStr: string) => {
-        setValueStr(newValueStr);
-        try {
-            const newValue = YAML.parse(newValueStr);
-            onChange(newValue);
-        } catch (error) {
-            console.error(error);
-        }
-    });
-
     const JSON_stringify_memo = useConst(() =>
         memoize((value: any) => JSON.stringify(value))
     );
+
+    const ajvValidateFunction = useMemo(
+        () => ajv.compile(jsonSchema),
+        [JSON_stringify_memo(jsonSchema)]
+    );
+
+    const getErrorMsgs = useConstCallback((value: Stringifyable) => {
+        if (!ajvValidateFunction(value)) {
+            const { errors } = ajvValidateFunction;
+
+            assert(!!errors);
+
+            return errors.map(error => error.message ?? "error");
+        }
+
+        return [];
+    });
+
+    const [errorMsgs, setErrorMsgs] = useState<string[]>(getErrorMsgs(value));
 
     const extensions = useMemo(
         () => [
@@ -97,7 +112,6 @@ export default function DataTextEditor(props: Props) {
                 ...completionKeymap,
                 ...lintKeymap
             ]),
-
             EditorView.lineWrapping,
             EditorState.tabSize.of(2),
             syntaxHighlighting(oneDarkHighlightStyle),
@@ -106,31 +120,62 @@ export default function DataTextEditor(props: Props) {
         [JSON_stringify_memo(jsonSchema)]
     );
 
+    const onChangeStr = useConstCallback((newValueStr: string) => {
+        setValueStr(newValueStr);
+
+        let newValue: Stringifyable;
+
+        try {
+            newValue = YAML.parse(newValueStr);
+        } catch {
+            setErrorMsgs(["Not a valid YAML string"]);
+            return;
+        }
+
+        const errorMsgs = getErrorMsgs(newValue);
+
+        setErrorMsgs(errorMsgs);
+
+        if (errorMsgs.length !== 0) {
+            return;
+        }
+
+        onChange(newValue);
+    });
+
+    const { classes, cx } = useStyles({
+        isErrored: errorMsgs.length !== 0
+    });
+
     return (
         <>
             <TextEditor
                 {...rest}
+                className={cx(classes.root, rest.className)}
                 value={valueStr}
                 onChange={onChangeStr}
                 extensions={extensions}
             />
-            <div>
-                <h3>Value:</h3>
-                <pre>
-                    {JSON.stringify(
-                        (() => {
-                            try {
-                                const newValue = YAML.parse(valueStr);
-                                return newValue;
-                            } catch (error) {
-                                return "NOT PARSEABLE";
-                            }
-                        })(),
-                        null,
-                        2
-                    )}
-                </pre>
-            </div>
+            {errorMsgs.map((errorMsg, i) => (
+                <Text key={i} typo="body 2" className={classes.errorText}>
+                    {capitalize(errorMsg)}
+                </Text>
+            ))}
         </>
     );
 }
+
+const useStyles = tss
+    .withName({ DataTextEditor })
+    .withParams<{ isErrored: boolean }>()
+    .create(({ isErrored, theme }) => ({
+        root: {
+            boxSizing: "border-box",
+            border: !isErrored
+                ? undefined
+                : `1px solid ${theme.colors.useCases.alertSeverity.error.main}`
+        },
+        errorText: {
+            color: theme.colors.useCases.alertSeverity.error.main
+        }
+    }));
