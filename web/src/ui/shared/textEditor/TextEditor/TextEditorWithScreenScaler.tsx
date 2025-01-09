@@ -1,6 +1,6 @@
 import { injectDomDependencies } from "@codemirror/view";
 import { performActionWithoutScreenScaler } from "screen-scaler";
-import GenericCodeEditor, { type Props } from "./GenericCodeEditor";
+import TextEditor, { type Props } from "./TextEditor";
 
 injectDomDependencies({
     getResizeObserver: () => performActionWithoutScreenScaler(() => ResizeObserver),
@@ -23,6 +23,6 @@ injectDomDependencies({
         })
 });
 
-export default function GenericCodeEditorWithScreenScaler(props: Props) {
-    return <GenericCodeEditor {...props} />;
+export default function TextEditorWithScreenScaler(props: Props) {
+    return <TextEditor {...props} />;
 }

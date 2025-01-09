@@ -24,7 +24,6 @@
         "@aws-sdk/s3-request-presigner": "^3.701.0",
         "@babel/runtime": "7.26.0",
         "@codemirror/autocomplete": "6.18.3",
-        "@codemirror/lang-yaml": "6.1.1",
         "@codemirror/language": "6.10.3",
         "@codemirror/legacy-modes": "^6.4.2",
         "@codemirror/lint": "6.8.4",

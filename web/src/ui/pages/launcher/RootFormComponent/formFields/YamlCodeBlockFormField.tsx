@@ -6,7 +6,8 @@ import { useFormField } from "./shared/useFormField";
 import YAML from "yaml";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { CodeEditor } from "ui/shared/CodeEditor";
+import { DataTextEditor } from "ui/shared/textEditor/DataTextEditor";
+import { useConst } from "powerhooks/useConst";
 
 type Props = {
     className?: string;
@@ -47,6 +48,8 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             serializedValue: YAML.stringify(value),
             onChange,
             parse: serializedValue => {
+                console.log(serializedValue);
+
                 let value: Record<string, Stringifyable> | Stringifyable[];
 
                 try {
@@ -90,6 +93,19 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
 
     const inputId = useId();
 
+    const jsonSchema = useConst(() => {
+        switch (expectedDataType) {
+            case "array":
+                return {
+                    type: "array"
+                };
+            case "object":
+                return {
+                    type: "object"
+                };
+        }
+    });
+
     return (
         <FormFieldWrapper
             className={className}
@@ -100,17 +116,17 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             inputId={inputId}
             onRemove={onRemove}
         >
-            <CodeEditor
+            <DataTextEditor
                 fallback={
                     <div className={cx(classes.suspenseFallback)}>
                         <CircularProgress />
                     </div>
                 }
                 id={inputId}
-                value={serializedValue}
-                onChange={setSerializedValue}
+                value={YAML.parse(serializedValue)}
+                onChange={newValue => setSerializedValue(YAML.stringify(newValue))}
                 defaultHeight={DEFAULT_HEIGHT}
-                language="yaml"
+                jsonSchema={jsonSchema}
             />
         </FormFieldWrapper>
     );

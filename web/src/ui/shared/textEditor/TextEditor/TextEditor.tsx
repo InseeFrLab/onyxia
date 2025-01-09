@@ -15,7 +15,7 @@ export type Props = {
     onChange: (newValue: string) => void;
 };
 
-export default function GenericCodeEditor(props: Props) {
+export default function TextEditor(props: Props) {
     const { className, id, defaultHeight, extensions, value, onChange } = props;
 
     const { cx, classes, theme } = useStyles();
@@ -78,7 +78,7 @@ export default function GenericCodeEditor(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ GenericCodeEditor }).create(({ theme }) => ({
+const useStyles = tss.withName({ TextEditor }).create(({ theme }) => ({
     root: {
         borderRadius: theme.spacing(1),
         overflow: "hidden"
