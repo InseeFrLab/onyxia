@@ -39,10 +39,11 @@ import Ajv from "ajv";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "../tss";
 import { capitalize } from "tsafe/capitalize";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import { Icon } from "onyxia-ui/Icon";
+import ErrorIcon from "@mui/icons-material/Error";
 
 const ajv = new Ajv();
 
@@ -228,10 +229,8 @@ export default function DataTextEditor(props: Props) {
 
     return (
         <div className={classes.root}>
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Format</InputLabel>
+            <FormControl className={classes.formatWrapper} variant="standard">
                 <Select
-                    labelId="demo-simple-select-label"
                     value={format}
                     label="Format"
                     onChange={event => onFormatChange(event.target.value as any)}
@@ -251,6 +250,8 @@ export default function DataTextEditor(props: Props) {
 
             {errorMsg !== undefined && (
                 <Text typo="body 2" className={classes.errorText}>
+                    <Icon icon={ErrorIcon} />
+                    &nbsp;
                     {capitalize(errorMsg)}
                 </Text>
             )}
@@ -270,6 +271,17 @@ const useStyles = tss
             outline: !isErrored
                 ? undefined
                 : `1px solid ${theme.colors.useCases.alertSeverity.error.main}`
+        },
+        formatWrapper: {
+            position: "absolute",
+            zIndex: 1,
+            top: theme.spacing(2),
+            right: theme.spacing(2),
+            borderRadius: 5,
+            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            boxShadow: theme.shadows[2],
+            padding: theme.spacing(3)
         },
         errorText: {
             color: theme.colors.useCases.alertSeverity.error.main,
