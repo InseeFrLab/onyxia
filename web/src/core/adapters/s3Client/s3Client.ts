@@ -389,30 +389,41 @@ export function createS3Client(
                     };
                 }
 
-                // Validate and parse the policy
-                const parsedPolicy = s3BucketPolicySchema.parse(
-                    JSON.parse(sendResp.Policy)
-                );
+                try {
+                    // Validate and parse the policy
+                    const parsedPolicy = s3BucketPolicySchema.parse(
+                        JSON.parse(sendResp.Policy)
+                    );
 
-                // Extract allowed prefixes based on the policy statements
-                const allowedPrefix = parsedPolicy.Statement.filter(
-                    statement =>
-                        statement.Effect === "Allow" &&
-                        (statement.Action.includes("s3:GetObject") ||
-                            statement.Action.includes("s3:*"))
-                )
-                    .flatMap(statement =>
-                        Array.isArray(statement.Resource)
-                            ? statement.Resource
-                            : [statement.Resource]
+                    // Extract allowed prefixes based on the policy statements
+                    const allowedPrefix = parsedPolicy.Statement.filter(
+                        statement =>
+                            statement.Effect === "Allow" &&
+                            (statement.Action.includes("s3:GetObject") ||
+                                statement.Action.includes("s3:*"))
                     )
-                    .map(resource => resource.replace(`arn:aws:s3:::${bucketName}/`, ""));
+                        .flatMap(statement =>
+                            Array.isArray(statement.Resource)
+                                ? statement.Resource
+                                : [statement.Resource]
+                        )
+                        .map(resource =>
+                            resource.replace(`arn:aws:s3:::${bucketName}/`, "")
+                        );
 
-                return {
-                    isBucketPolicyAvailable: true,
-                    bucketPolicy: parsedPolicy,
-                    allowedPrefix
-                };
+                    return {
+                        isBucketPolicyAvailable: true,
+                        bucketPolicy: parsedPolicy,
+                        allowedPrefix
+                    };
+                } catch (error) {
+                    console.error("Failed to parse bucket policy:", error);
+                    return {
+                        isBucketPolicyAvailable: false,
+                        bucketPolicy: undefined,
+                        allowedPrefix: []
+                    };
+                }
             };
 
             const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
