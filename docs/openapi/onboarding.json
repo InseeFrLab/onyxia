@@ -1,0 +1,78 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "onboarding-api",
+      "description": "Onboarding API is designed to remain minimal, giving each Onyxia instance the flexibility to use this service or provide its own. It also allows adding features such as quota management. By separating this API from the core functionalities, onyxia-web must handle extra logic—unlike the previous setup, where namespace creation was silently performed by the older API.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://onyxia-onboarding.example.com",
+        "description": "Generated server url"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Onboarding",
+        "description": "Onboarding related services"
+      }
+    ],
+    "paths": {
+      "/onboarding": {
+        "post": {
+          "tags": [
+            "Onboarding"
+          ],
+          "summary": "Init a namespace",
+          "description": "This endpoint reclaims creation of a namespace",
+          "operationId": "onboard",
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Forbidden"
+            }
+          },
+          "security": [
+            {
+              "auth": []
+            }
+          ]
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "OnboardingRequest": {
+          "type": "object",
+          "properties": {
+            "namespace": {
+              "type": "string"
+            }
+          },
+          "description": "Specification on which namespace to create"
+        }
+      },
+      "securitySchemes": {
+        "auth": {
+          "type": "openIdConnect",
+          "openIdConnectUrl": "https://auth.lab.sspcloud.fr/auth/realms/sspcloud/.well-known/openid-configuration"
+        }
+      }
+    }
+  }
