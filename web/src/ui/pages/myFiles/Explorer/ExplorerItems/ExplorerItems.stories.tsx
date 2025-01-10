@@ -67,6 +67,7 @@ export const Default: Story = {
     args: {
         isNavigating: false,
         items: itemsSample,
+        isBucketPolicyFeatureEnabled: true,
         onNavigate: action("Navigate to directory"),
         onOpenFile: action("Open file"),
         onDeleteItem: action("Delete item"),
@@ -84,6 +85,7 @@ export const EmptyDirectory: Story = {
     args: {
         isNavigating: false,
         items: [],
+        isBucketPolicyFeatureEnabled: true,
         onNavigate: action("Navigate to directory"),
         onOpenFile: action("Open file"),
         onDeleteItem: action("Delete item"),

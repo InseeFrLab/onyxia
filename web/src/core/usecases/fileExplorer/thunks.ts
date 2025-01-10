@@ -147,9 +147,10 @@ const privateThunks = {
                 return r.s3Client;
             });
 
-            const { objects, bucketPolicy } = await s3Client.listObjects({
-                path: directoryPath
-            });
+            const { objects, bucketPolicy, isBucketPolicyAvailable } =
+                await s3Client.listObjects({
+                    path: directoryPath
+                });
 
             if (ctx.completionStatus !== undefined) {
                 dispatch(actions.commandLogCancelled({ cmdId }));
@@ -173,7 +174,8 @@ const privateThunks = {
                 actions.navigationCompleted({
                     directoryPath,
                     objects,
-                    bucketPolicy
+                    bucketPolicy,
+                    isBucketPolicyAvailable
                 })
             );
         }
@@ -279,7 +281,12 @@ export const thunks = {
 
             const state = getState()[name];
 
-            const { directoryPath, objects } = state;
+            const { directoryPath, objects, isBucketPolicyAvailable } = state;
+
+            if (!isBucketPolicyAvailable) {
+                console.info("Bucket policy is not available");
+                return;
+            }
 
             const object = objects.find(o => o.basename === basename && o.kind === kind);
 

@@ -67,6 +67,7 @@ export const Default: Story = {
     args: {
         isNavigating: false,
         items: itemsSample,
+        isBucketPolicyFeatureEnabled: true,
         onNavigate: action("Navigate to directory"),
         onOpenFile: action("Open file"),
         onDeleteItems: action("Delete items"),

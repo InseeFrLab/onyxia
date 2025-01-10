@@ -17,6 +17,7 @@ export type ExplorerItemsProps = {
     isNavigating: boolean;
 
     items: Item[];
+    isBucketPolicyFeatureEnabled: boolean;
 
     onNavigate: (params: { basename: string }) => void;
     onOpenFile: (params: { basename: string }) => void;
@@ -43,14 +44,15 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         className,
         items,
         isNavigating,
+        isBucketPolicyFeatureEnabled,
         onNavigate,
         onOpenFile,
         onSelectedItemKindValueChange,
-        evtAction,
         onPolicyChange,
         onCopyPath,
         onDeleteItem,
-        onShare
+        onShare,
+        evtAction
     } = props;
     const isEmpty = items.length === 0;
 
@@ -158,6 +160,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                 isSelected={selectedItem.basename === basename}
                                 size={size}
                                 policy={policy}
+                                isBucketPolicyFeatureEnabled={
+                                    isBucketPolicyFeatureEnabled
+                                }
                                 onPolicyChange={handlePolicyChange(item)}
                                 onClick={handleItemClick(item)}
                                 onDoubleClick={handleItemDoubleClick(item)}
