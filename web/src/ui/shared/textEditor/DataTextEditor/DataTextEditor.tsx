@@ -133,6 +133,21 @@ export default function DataTextEditor(props: Props) {
     );
 
     useEffect(() => {
+        let value: Stringifyable | undefined;
+
+        try {
+            value = parseValue({
+                valueStr,
+                format
+            });
+        } catch {
+            value = undefined;
+        }
+
+        if (value !== undefined && same(value, value_default)) {
+            return;
+        }
+
         setValueStr(
             serializeValue({
                 value: value_default,
