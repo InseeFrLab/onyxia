@@ -20,8 +20,6 @@ type Props = {
     onErrorChange: (params: { hasError: boolean }) => void;
 };
 
-const DEFAULT_HEIGHT = 300;
-
 export const YamlCodeBlockFormField = memo((props: Props) => {
     const {
         className,
@@ -125,7 +123,6 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
                 id={inputId}
                 value={YAML.parse(serializedValue)}
                 onChange={newValue => setSerializedValue(YAML.stringify(newValue))}
-                defaultHeight={DEFAULT_HEIGHT}
                 jsonSchema={jsonSchema}
             />
         </FormFieldWrapper>
@@ -137,7 +134,7 @@ const useStyles = tss.withName({ YamlCodeBlockFormField }).create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: DEFAULT_HEIGHT
+        height: 300
     }
 });
 

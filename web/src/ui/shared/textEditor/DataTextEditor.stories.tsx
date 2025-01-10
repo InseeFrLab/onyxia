@@ -128,7 +128,6 @@ function StoryComponent(props: Props) {
         <>
             <DataTextEditor
                 id="data-text-editor"
-                defaultHeight={300}
                 value={value}
                 onChange={setValue}
                 jsonSchema={jsonSchema}

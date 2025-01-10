@@ -6,7 +6,7 @@ const JsonCodeTextEditor = lazy(() => import("./JsonCodeTextEditor"));
 export type Props = {
     className?: string;
     id: string;
-    defaultHeight: number;
+    maxHeight?: number;
     value: string;
     onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;

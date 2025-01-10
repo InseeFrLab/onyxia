@@ -17,12 +17,12 @@ export const JsonSchemaDialog = memo((props: Props) => {
             title="JSON Schema"
             isOpen={isOpen}
             onClose={onClose}
-            //fullWidth
+            fullWidth
             maxWidth="lg"
             body={
                 <CodeTextEditor
                     id="ddd"
-                    defaultHeight={300}
+                    maxHeight={300}
                     language="JSON"
                     value={jsonSchemaStr}
                     onChange={undefined}

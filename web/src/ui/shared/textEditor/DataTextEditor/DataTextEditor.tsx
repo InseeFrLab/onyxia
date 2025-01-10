@@ -53,7 +53,7 @@ const ajv = new Ajv();
 export type Props = {
     className?: string;
     id: string;
-    defaultHeight: number;
+    maxHeight?: number;
     fallback?: JSX.Element;
 
     value: Stringifyable;

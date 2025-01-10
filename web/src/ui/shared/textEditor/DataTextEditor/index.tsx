@@ -5,7 +5,7 @@ import type { Stringifyable } from "core/tools/Stringifyable";
 export type Props = {
     className?: string;
     id: string;
-    defaultHeight: number;
+    maxHeight?: number;
     fallback?: JSX.Element;
     value: Stringifyable;
     onChange: (newValue: Stringifyable) => void;
