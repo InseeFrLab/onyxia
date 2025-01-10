@@ -33,7 +33,6 @@ import YAML from "yaml";
 import JSON5 from "json5";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert, type Equals } from "tsafe/assert";
-import memoize from "memoizee";
 import { useConst } from "powerhooks/useConst";
 import Ajv from "ajv";
 import { Text } from "onyxia-ui/Text";
@@ -44,8 +43,10 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Icon } from "onyxia-ui/Icon";
 import ErrorIcon from "@mui/icons-material/Error";
-import { Button } from "onyxia-ui/Button";
 import { same } from "evt/tools/inDepth/same";
+import { JsonSchemaDialog } from "./JsonSchemaDialog";
+import { Button } from "onyxia-ui/Button";
+import DataObjectIcon from "@mui/icons-material/DataObject";
 
 const ajv = new Ajv();
 
@@ -96,14 +97,12 @@ function parseValue(params: { valueStr: string; format: Format }): Stringifyable
 export default function DataTextEditor(props: Props) {
     const { jsonSchema, value: value_default, onChange, ...rest } = props;
 
-    const JSON_stringify_memo = useConst(() =>
-        memoize((value: any) => JSON.stringify(value))
+    const jsonSchemaStr = useMemo(
+        () => JSON.stringify(jsonSchema, null, 2),
+        [jsonSchema]
     );
 
-    const ajvValidateFunction = useMemo(
-        () => ajv.compile(jsonSchema),
-        [JSON_stringify_memo(jsonSchema)]
-    );
+    const ajvValidateFunction = useMemo(() => ajv.compile(jsonSchema), [jsonSchemaStr]);
 
     const [format, setFormat] = useState<Format>("YAML");
 
@@ -199,7 +198,7 @@ export default function DataTextEditor(props: Props) {
                 }
             })()
         ],
-        [format, JSON_stringify_memo(jsonSchema)]
+        [format, jsonSchemaStr]
     );
 
     const onChangeStr = useConstCallback((newValueStr: string) => {
@@ -245,6 +244,12 @@ export default function DataTextEditor(props: Props) {
         isErrored: errorMsg !== undefined
     });
 
+    const [isJsonSchemaDialogOpen, setIsJsonSchemaDialogOpen] = useState(false);
+
+    const onJsonSchemaDialogClose = useConstCallback(() =>
+        setIsJsonSchemaDialogOpen(false)
+    );
+
     return (
         <div className={classes.root}>
             <FormControl className={classes.formatWrapper} variant="standard">
@@ -266,17 +271,29 @@ export default function DataTextEditor(props: Props) {
                 extensions={extensions}
             />
 
-            {errorMsg !== undefined && (
-                <div className={classes.errorWrapper}>
+            <div className={classes.bottomLeft}>
+                {errorMsg !== undefined && (
                     <Text typo="body 2" className={classes.errorText}>
                         <Icon icon={ErrorIcon} />
                         &nbsp;
                         {capitalize(errorMsg)}
                         &nbsp;
                     </Text>
-                    <Button variant="ternary">JSON Schema</Button>
-                </div>
-            )}
+                )}
+                <Button
+                    startIcon={DataObjectIcon}
+                    onClick={() => setIsJsonSchemaDialogOpen(true)}
+                    variant="ternary"
+                >
+                    Schema
+                </Button>
+            </div>
+
+            <JsonSchemaDialog
+                isOpen={isJsonSchemaDialogOpen}
+                onClose={onJsonSchemaDialogClose}
+                jsonSchemaStr={jsonSchemaStr}
+            />
         </div>
     );
 }
@@ -305,7 +322,7 @@ const useStyles = tss
             boxShadow: theme.shadows[2],
             padding: theme.spacing(2)
         },
-        errorWrapper: {
+        bottomLeft: {
             position: "absolute",
             bottom: theme.spacing(3),
             left: theme.spacing(3),
@@ -313,8 +330,6 @@ const useStyles = tss
             gap: theme.spacing(3)
         },
         errorText: {
-            display: "flex",
-            alignItems: "center",
             color: theme.colors.useCases.alertSeverity.error.main,
             padding: theme.spacing(2),
             borderRadius: 5,
