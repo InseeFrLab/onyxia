@@ -71,11 +71,11 @@ type s3Action = `s3:${string}`;
 
 export type S3BucketPolicy = {
     Version: "2012-10-17";
-    Statement: Array<{
+    Statement: {
         Effect: "Allow" | "Deny";
         Principal: string | { AWS: string[] };
         Action: s3Action | s3Action[];
         Resource: string[];
         Condition?: Record<string, any>;
-    }>;
+    }[];
 };

@@ -42,7 +42,8 @@ export default tseslint.config(
             "no-empty": "off",
             "@typescript-eslint/no-unused-vars": "off",
             "@typescript-eslint/ban-ts-comment": "off",
-            "@typescript-eslint/ban-types": "off"
+            "@typescript-eslint/ban-types": "off",
+            "@typescript-eslint/no-unused-expressions": "off"
         }
     },
     ...storybook.configs["flat/recommended"],
