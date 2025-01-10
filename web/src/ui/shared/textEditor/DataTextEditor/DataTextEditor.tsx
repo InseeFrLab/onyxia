@@ -44,6 +44,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Icon } from "onyxia-ui/Icon";
 import ErrorIcon from "@mui/icons-material/Error";
+import { Button } from "onyxia-ui/Button";
+import { same } from "evt/tools/inDepth/same";
 
 const ajv = new Ajv();
 
@@ -78,6 +80,16 @@ function serializeValue(params: { value: Stringifyable; format: Format }): strin
             return JSON5.stringify(value, null, 2);
         case "YAML":
             return YAML.stringify(value);
+    }
+}
+
+function parseValue(params: { valueStr: string; format: Format }): Stringifyable {
+    const { valueStr, format } = params;
+    switch (format) {
+        case "JSON5":
+            return JSON5.parse(valueStr);
+        case "YAML":
+            return YAML.parse(valueStr);
     }
 }
 
@@ -132,16 +144,20 @@ export default function DataTextEditor(props: Props) {
     }, [value_default]);
 
     const onFormatChange = useConstCallback((newFormat: Format) => {
-        const value = (() => {
-            switch (format) {
-                case "JSON5":
-                    return JSON5.parse(valueStr);
-                case "YAML":
-                    return YAML.parse(valueStr);
-            }
-        })();
+        let value: Stringifyable | undefined;
+
+        try {
+            value = parseValue({ valueStr, format });
+        } catch {
+            value = undefined;
+        }
 
         setFormat(newFormat);
+
+        if (value === undefined) {
+            return;
+        }
+
         setValueStr(serializeValue({ value, format: newFormat }));
     });
 
@@ -191,34 +207,36 @@ export default function DataTextEditor(props: Props) {
 
         let newValue: Stringifyable;
 
-        switch (format) {
-            case "JSON5":
-                {
-                    try {
-                        newValue = JSON5.parse(newValueStr);
-                    } catch {
-                        setErrorMsg("Not a valid JSON5 string");
-                        return;
-                    }
-                }
-                break;
-            case "YAML":
-                {
-                    try {
-                        newValue = YAML.parse(newValueStr);
-                    } catch {
-                        setErrorMsg("Not a valid YAML string");
-                        return;
-                    }
-                }
-                break;
+        try {
+            newValue = parseValue({ valueStr: newValueStr, format });
+        } catch {
+            setErrorMsg(`Not a valid ${format}`);
+            return;
         }
 
         const errorMsg = getErrorMsg(newValue);
 
         setErrorMsg(errorMsg);
 
-        if (errorMsg === undefined) {
+        call_onChange: {
+            if (errorMsg !== undefined) {
+                break call_onChange;
+            }
+
+            {
+                let value: Stringifyable | undefined;
+
+                try {
+                    value = parseValue({ valueStr, format });
+                } catch {
+                    value === undefined;
+                }
+
+                if (value !== undefined && same(value, newValue)) {
+                    break call_onChange;
+                }
+            }
+
             onChange(newValue);
         }
     });
@@ -249,11 +267,15 @@ export default function DataTextEditor(props: Props) {
             />
 
             {errorMsg !== undefined && (
-                <Text typo="body 2" className={classes.errorText}>
-                    <Icon icon={ErrorIcon} />
-                    &nbsp;
-                    {capitalize(errorMsg)}
-                </Text>
+                <div className={classes.errorWrapper}>
+                    <Text typo="body 2" className={classes.errorText}>
+                        <Icon icon={ErrorIcon} />
+                        &nbsp;
+                        {capitalize(errorMsg)}
+                        &nbsp;
+                    </Text>
+                    <Button variant="ternary">JSON Schema</Button>
+                </div>
             )}
         </div>
     );
@@ -281,13 +303,19 @@ const useStyles = tss
             border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             boxShadow: theme.shadows[2],
-            padding: theme.spacing(3)
+            padding: theme.spacing(2)
+        },
+        errorWrapper: {
+            position: "absolute",
+            bottom: theme.spacing(3),
+            left: theme.spacing(3),
+            display: "flex",
+            gap: theme.spacing(3)
         },
         errorText: {
+            display: "flex",
+            alignItems: "center",
             color: theme.colors.useCases.alertSeverity.error.main,
-            position: "absolute",
-            bottom: theme.spacing(2),
-            left: theme.spacing(2),
             padding: theme.spacing(2),
             borderRadius: 5,
             border: `1px solid ${theme.colors.useCases.alertSeverity.error.background}`,
