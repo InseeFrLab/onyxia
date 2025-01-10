@@ -336,47 +336,12 @@ export function createS3Client(
                     "@aws-sdk/client-s3"
                 );
 
+                let sendResp: import("@aws-sdk/client-s3").GetBucketPolicyCommandOutput;
                 try {
-                    const sendResp = await awsS3Client.send(
+                    sendResp = await awsS3Client.send(
                         new GetBucketPolicyCommand({ Bucket: bucketName })
                     );
-
-                    if (!sendResp.Policy) {
-                        console.info("Bucket policy is not defined, but it's okay.");
-                        return {
-                            isBucketPolicyAvailable: true,
-                            bucketPolicy: undefined,
-                            allowedPrefix: []
-                        };
-                    }
-
-                    // Validate and parse the policy
-                    const parsedPolicy = s3BucketPolicySchema.parse(
-                        JSON.parse(sendResp.Policy)
-                    );
-
-                    // Extract allowed prefixes based on the policy statements
-                    const allowedPrefix = parsedPolicy.Statement.filter(
-                        statement =>
-                            statement.Effect === "Allow" &&
-                            (statement.Action.includes("s3:GetObject") ||
-                                statement.Action.includes("s3:*"))
-                    )
-                        .flatMap(statement =>
-                            Array.isArray(statement.Resource)
-                                ? statement.Resource
-                                : [statement.Resource]
-                        )
-                        .map(resource =>
-                            resource.replace(`arn:aws:s3:::${bucketName}/`, "")
-                        );
-
-                    return {
-                        isBucketPolicyAvailable: true,
-                        bucketPolicy: parsedPolicy,
-                        allowedPrefix
-                    };
-                } catch (error: unknown) {
+                } catch (error) {
                     if (error instanceof S3ServiceException) {
                         switch (error.$metadata?.httpStatusCode) {
                             case 404:
@@ -415,6 +380,39 @@ export function createS3Client(
                         allowedPrefix: []
                     };
                 }
+                if (!sendResp.Policy) {
+                    console.info("Bucket policy is not defined, but it's okay.");
+                    return {
+                        isBucketPolicyAvailable: true,
+                        bucketPolicy: undefined,
+                        allowedPrefix: []
+                    };
+                }
+
+                // Validate and parse the policy
+                const parsedPolicy = s3BucketPolicySchema.parse(
+                    JSON.parse(sendResp.Policy)
+                );
+
+                // Extract allowed prefixes based on the policy statements
+                const allowedPrefix = parsedPolicy.Statement.filter(
+                    statement =>
+                        statement.Effect === "Allow" &&
+                        (statement.Action.includes("s3:GetObject") ||
+                            statement.Action.includes("s3:*"))
+                )
+                    .flatMap(statement =>
+                        Array.isArray(statement.Resource)
+                            ? statement.Resource
+                            : [statement.Resource]
+                    )
+                    .map(resource => resource.replace(`arn:aws:s3:::${bucketName}/`, ""));
+
+                return {
+                    isBucketPolicyAvailable: true,
+                    bucketPolicy: parsedPolicy,
+                    allowedPrefix
+                };
             };
 
             const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
