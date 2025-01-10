@@ -1,15 +1,16 @@
 import { assert, type Equals } from "tsafe/assert";
 import { Suspense, lazy } from "react";
 const ShellCodeTextEditor = lazy(() => import("./ShellCodeTextEditor"));
+const JsonCodeTextEditor = lazy(() => import("./JsonCodeTextEditor"));
 
 export type Props = {
     className?: string;
     id: string;
     defaultHeight: number;
     value: string;
-    onChange: (newValue: string) => void;
+    onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
-    language: "shell";
+    language: "shell" | "JSON";
 };
 
 {
@@ -28,6 +29,8 @@ export function CodeTextEditor(props: Props) {
                 switch (language) {
                     case "shell":
                         return <ShellCodeTextEditor {...rest} />;
+                    case "JSON":
+                        return <JsonCodeTextEditor {...rest} />;
                 }
             })()}
         </Suspense>

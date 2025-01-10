@@ -12,7 +12,7 @@ export type Props = {
     defaultHeight: number;
     extensions: Extension[];
     value: string;
-    onChange: (newValue: string) => void;
+    onChange: ((newValue: string) => void) | undefined;
 };
 
 export default function TextEditor(props: Props) {
@@ -74,6 +74,7 @@ export default function TextEditor(props: Props) {
             theme={codeMirrorTheme}
             height={`${defaultHeight}px`}
             extensions={extensions}
+            readOnly={onChange === undefined}
         />
     );
 }

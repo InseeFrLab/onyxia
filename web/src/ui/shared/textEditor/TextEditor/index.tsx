@@ -15,7 +15,7 @@ export type Props = {
     defaultHeight: number;
     extensions: Extension[];
     value: string;
-    onChange: (newValue: string) => void;
+    onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
 };
 
