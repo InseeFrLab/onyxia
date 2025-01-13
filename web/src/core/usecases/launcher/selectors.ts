@@ -48,16 +48,18 @@ const helmValues = createSelector(readyState, state => {
     return state.helmValues;
 });
 
+const helmValuesSchema = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+
+    return state.helmValuesSchema;
+});
+
 const rootForm = createSelector(
     isReady,
     chartName,
-    createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-
-        return state.helmValuesSchema;
-    }),
+    helmValuesSchema,
     helmValues,
     createSelector(readyState, state => {
         if (state === null) {
@@ -564,6 +566,8 @@ const main = createSelector(
     groupProjectName,
     s3ConfigSelect,
     labeledHelmChartSourceUrls,
+    helmValues,
+    helmValuesSchema,
     (
         isReady,
         friendlyName,
@@ -582,7 +586,9 @@ const main = createSelector(
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        labeledHelmChartSourceUrls
+        labeledHelmChartSourceUrls,
+        helmValues,
+        helmValuesSchema
     ) => {
         if (!isReady) {
             return {
@@ -607,6 +613,8 @@ const main = createSelector(
         assert(groupProjectName !== null);
         assert(s3ConfigSelect !== null);
         assert(labeledHelmChartSourceUrls !== null);
+        assert(helmValues !== null);
+        assert(helmValuesSchema !== null);
 
         return {
             isReady: true as const,
@@ -626,7 +634,9 @@ const main = createSelector(
             commandLogsEntries,
             groupProjectName,
             s3ConfigSelect,
-            labeledHelmChartSourceUrls
+            labeledHelmChartSourceUrls,
+            helmValues,
+            helmValuesSchema
         };
     }
 );

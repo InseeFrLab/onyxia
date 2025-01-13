@@ -27,6 +27,11 @@ import type { Param0 } from "tsafe";
 import type { FormCallbacks } from "./RootFormComponent/FormCallbacks";
 import { arrRemoveDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { same } from "evt/tools/inDepth/same";
+import { DataTextEditor } from "ui/shared/textEditor/DataTextEditor";
+import Switch from "@mui/material/Switch";
+import { Text } from "onyxia-ui/Text";
+import { useSessionState } from "ui/tools/useSessionState";
+import { z } from "zod";
 
 export type Props = {
     route: PageRoute;
@@ -80,7 +85,9 @@ export default function Launcher(props: Props) {
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        labeledHelmChartSourceUrls
+        labeledHelmChartSourceUrls,
+        helmValues,
+        helmValuesSchema
     } = useCoreState("launcher", "main");
 
     const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
@@ -330,6 +337,17 @@ export default function Launcher(props: Props) {
         }
     );
 
+    const [isDataEditorModeEnabled, setIsDataEditorModeEnabled] = useSessionState({
+        initialValue: false,
+        stateUniqueId: "isDataEditorModeEnabled",
+        zState: z.boolean()
+    });
+
+    const {
+        ref: ref_rootFormWrapper,
+        domRect: { height: height_rootFormWrapper }
+    } = useDomRect();
+
     if (!isReady) {
         return null;
     }
@@ -422,17 +440,40 @@ export default function Launcher(props: Props) {
                     }
                     erroredFormFields={erroredFormFields}
                 />
-                <div className={classes.rootFormWrapper}>
-                    <RootFormComponent
-                        className={classes.rootForm}
-                        rootForm={rootForm}
-                        callbacks={{
-                            onAdd: launcher.addArrayItem,
-                            onChange: launcher.changeFormFieldValue,
-                            onRemove,
-                            onFieldErrorChange
-                        }}
+                <div className={classes.modeSwitch}>
+                    <Text typo="label 1">Interactive Form</Text>
+                    <Switch
+                        checked={isDataEditorModeEnabled}
+                        onChange={e => setIsDataEditorModeEnabled(e.target.checked)}
                     />
+                    <Text typo="label 1">Text Editor</Text>
+                </div>
+                <div ref={ref_rootFormWrapper} className={classes.rootFormWrapper}>
+                    {isDataEditorModeEnabled ? (
+                        <DataTextEditor
+                            id="helmValuesYaml"
+                            value={helmValues}
+                            jsonSchema={helmValuesSchema}
+                            maxHeight={height_rootFormWrapper}
+                            onChange={helmValues => {
+                                assert(!(helmValues instanceof Array));
+                                assert(helmValues !== null);
+                                assert(typeof helmValues === "object");
+                                launcher.changeHelmValues({ helmValues });
+                            }}
+                        />
+                    ) : (
+                        <RootFormComponent
+                            className={classes.rootForm}
+                            rootForm={rootForm}
+                            callbacks={{
+                                onAdd: launcher.addArrayItem,
+                                onChange: launcher.changeFormFieldValue,
+                                onRemove,
+                                onFieldErrorChange
+                            }}
+                        />
+                    )}
                 </div>
             </div>
             <LauncherDialogs
@@ -504,6 +545,11 @@ const useStyles = tss
             },
             mainCard: {
                 maxWidth: MAX_WIDTH
+            },
+            modeSwitch: {
+                display: "flex",
+                alignItems: "center",
+                marginTop: theme.spacing(3)
             },
             rootFormWrapper: {
                 marginTop: theme.spacing(3),

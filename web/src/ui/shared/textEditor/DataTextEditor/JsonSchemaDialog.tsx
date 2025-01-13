@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useId } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { CodeTextEditor } from "../CodeTextEditor";
@@ -12,17 +12,18 @@ export type Props = {
 export const JsonSchemaDialog = memo((props: Props) => {
     const { isOpen, onClose, jsonSchemaStr } = props;
 
+    const id_editor = useId();
+
     return (
         <Dialog
             title="JSON Schema"
             isOpen={isOpen}
             onClose={onClose}
             fullWidth
-            maxWidth="sm"
+            maxWidth="lg"
             body={
                 <CodeTextEditor
-                    id="ddd"
-                    maxHeight={300}
+                    id={id_editor}
                     language="JSON"
                     value={jsonSchemaStr}
                     onChange={undefined}

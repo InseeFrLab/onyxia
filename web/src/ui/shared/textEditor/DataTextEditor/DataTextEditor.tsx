@@ -46,7 +46,9 @@ import { JsonSchemaDialog } from "./JsonSchemaDialog";
 import { Button } from "onyxia-ui/Button";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+    strict: false
+});
 
 export type Props = {
     className?: string;

@@ -12,7 +12,7 @@ import { actions } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
-import type { StringifyableAtomic } from "core/tools/Stringifyable";
+import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
@@ -391,6 +391,15 @@ export const thunks = {
             const [dispatch] = args;
 
             dispatch(actions.isSharedChanged({ isShared }));
+        },
+    changeHelmValues:
+        (params: { helmValues: Record<string, Stringifyable> }) =>
+        (...args) => {
+            const { helmValues } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.helmValuesChanged({ helmValues }));
         },
     launch:
         () =>

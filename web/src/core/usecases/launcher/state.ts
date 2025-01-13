@@ -131,6 +131,22 @@ export const { reducer, actions } = createUsecaseActions({
                     rootForm
                 });
             },
+            helmValuesChanged: (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        helmValues: Record<string, Stringifyable>;
+                    };
+                }
+            ) => {
+                const { helmValues } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.helmValues = helmValues;
+            },
             arrayItemAdded: (
                 state,
                 {

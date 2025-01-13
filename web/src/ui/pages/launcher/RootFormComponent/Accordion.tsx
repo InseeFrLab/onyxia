@@ -16,6 +16,9 @@ import { getScrollableParent } from "powerhooks/getScrollableParent";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import { getIconUrlByName } from "lazy-icons";
+import { useSessionState } from "ui/tools/useSessionState";
+import { z } from "zod";
+import { isObjectThatThrowIfAccessed } from "clean-architecture/createObjectThatThrowsIfAccessed";
 
 export type Props = {
     className?: string;
@@ -44,7 +47,17 @@ export function Accordion(props: Props) {
 
     const contentId = useId();
 
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSessionState({
+        initialValue: false,
+        stateUniqueId: `Accordion:${(() => {
+            if (isObjectThatThrowIfAccessed(helmValuesPath)) {
+                return title;
+            }
+
+            return JSON.stringify(helmValuesPath);
+        })()}`,
+        zState: z.boolean()
+    });
 
     const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
 

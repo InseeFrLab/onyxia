@@ -121,6 +121,17 @@ export default function TextEditor(props: Props) {
 const useStyles = tss.withName({ TextEditor }).create(({ theme }) => ({
     root: {
         borderRadius: theme.spacing(1),
-        overflow: "hidden"
+        overflow: "hidden",
+        "& .cm-tooltip-hover": {
+            borderRadius: theme.spacing(2),
+            ...theme.spacing.rightLeft("padding", 3),
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            shadow: theme.shadows[1]
+        },
+        "&&& .cm-tooltip-arrow": {
+            "&::before, &::after": {
+                borderColor: `${theme.colors.useCases.surfaces.surface2} transparent transparent transparent`
+            }
+        }
     }
 }));
