@@ -243,7 +243,7 @@ export default function DataTextEditor(props: Props) {
                 try {
                     value = parseValue({ valueStr, format });
                 } catch {
-                    value === undefined;
+                    value = undefined;
                 }
 
                 if (value !== undefined && same(value, newValue)) {
