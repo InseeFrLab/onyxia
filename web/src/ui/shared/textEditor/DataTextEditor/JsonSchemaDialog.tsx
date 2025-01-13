@@ -18,7 +18,7 @@ export const JsonSchemaDialog = memo((props: Props) => {
             isOpen={isOpen}
             onClose={onClose}
             fullWidth
-            maxWidth="lg"
+            maxWidth="sm"
             body={
                 <CodeTextEditor
                     id="ddd"
