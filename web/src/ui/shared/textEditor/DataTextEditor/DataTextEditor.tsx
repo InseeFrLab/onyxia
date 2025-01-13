@@ -2,13 +2,12 @@ import { useState, useMemo, useEffect } from "react";
 import { TextEditor } from "../TextEditor";
 import { EditorState } from "@codemirror/state";
 import {
-    //gutter,
+    gutter,
     EditorView,
     lineNumbers,
     drawSelection,
     keymap,
     highlightActiveLineGutter
-    //ViewUpdate,
 } from "@codemirror/view";
 import { lintKeymap, lintGutter } from "@codemirror/lint";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
@@ -16,7 +15,6 @@ import {
     syntaxHighlighting,
     indentOnInput,
     bracketMatching,
-    foldGutter,
     foldKeymap
 } from "@codemirror/language";
 import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
@@ -175,11 +173,14 @@ export default function DataTextEditor(props: Props) {
         setValueStr(serializeValue({ value, format: newFormat }));
     });
 
+    const { classes, cx } = useStyles({
+        isErrored: errorMsg !== undefined
+    });
+
     const extensions_base = useConst(() => [
-        //gutter({ class: "CodeMirror-lint-markers" }),
+        gutter({ class: "CodeMirror-lint-markers" }),
         bracketMatching(),
         highlightActiveLineGutter(),
-        // basicSetup,
         closeBrackets(),
         history(),
         autocompletion(),
@@ -187,7 +188,6 @@ export default function DataTextEditor(props: Props) {
         lintGutter(),
         indentOnInput(),
         drawSelection(),
-        foldGutter(),
         keymap.of([
             ...closeBracketsKeymap,
             ...defaultKeymap,
@@ -253,10 +253,6 @@ export default function DataTextEditor(props: Props) {
 
             onChange(newValue);
         }
-    });
-
-    const { classes, cx } = useStyles({
-        isErrored: errorMsg !== undefined
     });
 
     const [isJsonSchemaDialogOpen, setIsJsonSchemaDialogOpen] = useState(false);
