@@ -4961,10 +4961,10 @@ jsonify@^0.0.1:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.1.tgz#2aa3111dae3d34a0f151c63f3a45d995d9420978"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-keycloakify@^11.4.3:
-  version "11.4.3"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.4.3.tgz#c2610f404449ba5bc8f6ca3a0fd0ddb27278e0f3"
-  integrity sha512-dOP4t8I5w+1jcYeBPHdEeUaDutZKIlaulu/tp00trP+1AQGlDrv5z0kcAQCGOs4r0x66/GIu3kEpmhGnmwOOAw==
+keycloakify@^11.8.9:
+  version "11.8.9"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.9.tgz#0e603e544e37c4dafac518f506c7200103c9077a"
+  integrity sha512-puYkK+4VfkmDfcfT4XkDAEUQfoObAon2+L+8YchBCvcGFcL8c1JkF8S1lLHX9AMuFWX1FW0r7Ye7zGJIpvcz1w==
   dependencies:
     tsafe "^1.8.5"
 
@@ -6687,6 +6687,15 @@ tss-react@^4.9.13:
     "@emotion/serialize" "*"
     "@emotion/utils" "*"
 
+tss-react@^4.9.14:
+  version "4.9.14"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.14.tgz#0b606b7a08fe80670c8c7d09f2c24421422a2300"
+  integrity sha512-nAj4RCQk3ADzrmtxmTcmN1B9EKxPMIxuCfJ3ll964CksndJ2/ZImF6rAMo2Kud5yE3ENXHpPIBHCyuMtgptMvw==
+  dependencies:
+    "@emotion/cache" "*"
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
+
 tsx@^4.19.2:
   version "4.19.2"
   resolved "https://registry.yarnpkg.com/tsx/-/tsx-4.19.2.tgz#2d7814783440e0ae42354d0417d9c2989a2ae92c"
@@ -6886,10 +6895,10 @@ vfile@^6.0.0:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
 
-vite-envs@^4.4.6:
-  version "4.4.6"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.6.tgz#b86fe970848021a4d9e3a97e983d14b1dd6c97ea"
-  integrity sha512-5FZSpN+SdWTEQEw9S64RXwSaz4P7MX04gt1cZ58Z2YmQokRhhz+/47+bPIJg8a6HxFM+84WpRxsk8CAkQMCZJw==
+vite-envs@^4.4.10:
+  version "4.4.10"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.10.tgz#ded3d2669585efe09fe4f0b9960fad271435bb16"
+  integrity sha512-x2Cbud8UCIz6fO3d8e3UGot7QxXXctA6ULyzTMcn3jZkS+uedo374P/delh3lUHCnuY1Dw2MLfOcFrRzBcaFwA==
 
 vite-node@2.1.6:
   version "2.1.6"
