@@ -2,21 +2,22 @@ import CodeMirror, { type Extension } from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags } from "@lezer/highlight";
 
-import { useMemo } from "react";
-import { alpha } from "@mui/system";
+import { useMemo, useState, useEffect } from "react";
+import { alpha } from "@mui/material/styles";
 import { tss } from "../tss";
+import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     className?: string;
     id: string;
-    defaultHeight: number;
+    maxHeight?: number;
     extensions: Extension[];
     value: string;
-    onChange: (newValue: string) => void;
+    onChange: ((newValue: string) => void) | undefined;
 };
 
-export default function GenericCodeEditor(props: Props) {
-    const { className, id, defaultHeight, extensions, value, onChange } = props;
+export default function TextEditor(props: Props) {
+    const { className, id, maxHeight, extensions, value, onChange } = props;
 
     const { cx, classes, theme } = useStyles();
 
@@ -65,20 +66,59 @@ export default function GenericCodeEditor(props: Props) {
         [theme.isDarkModeEnabled]
     );
 
+    const {
+        ref,
+        domRect: { height }
+    } = useDomRect();
+
+    const [height_auto, setHeight_auto] = useState<undefined | number>(undefined);
+
+    useEffect(() => {
+        if (height_auto !== undefined) {
+            return;
+        }
+
+        if (height === 0) {
+            return;
+        }
+
+        setHeight_auto(height);
+    }, [height]);
+
     return (
         <CodeMirror
+            ref={reactCodeMirrorRef => {
+                (ref as { current: HTMLElement | null }).current =
+                    reactCodeMirrorRef?.editor ?? null;
+            }}
             className={cx(classes.root, className)}
             id={id}
             value={value}
             onChange={onChange}
             theme={codeMirrorTheme}
-            height={`${defaultHeight}px`}
+            height={
+                (() => {
+                    const height =
+                        height_auto === undefined ? undefined : height_auto + 80;
+
+                    if (
+                        maxHeight !== undefined &&
+                        height !== undefined &&
+                        height > maxHeight
+                    ) {
+                        return maxHeight;
+                    }
+
+                    return height;
+                })() + "px"
+            }
             extensions={extensions}
+            readOnly={onChange === undefined}
         />
     );
 }
 
-const useStyles = tss.withName({ GenericCodeEditor }).create(({ theme }) => ({
+const useStyles = tss.withName({ TextEditor }).create(({ theme }) => ({
     root: {
         borderRadius: theme.spacing(1),
         overflow: "hidden"
