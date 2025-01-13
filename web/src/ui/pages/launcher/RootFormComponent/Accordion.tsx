@@ -172,7 +172,9 @@ const useStyles = tss
     .withNestedSelectors<"summary" | "summaryExpanded">()
     .create(({ theme, classes }) => ({
         root: {
-            backgroundColor: theme.colors.useCases.surfaces.surface1
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            marginBottom: 2,
+            boxShadow: "unset"
         },
         summaryExpanded: {},
         summary: {
