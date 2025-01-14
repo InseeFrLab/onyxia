@@ -6,7 +6,31 @@ import type { GridColDef } from "@mui/x-data-grid";
 
 const state = (rootState: RootState) => rootState[name];
 
-const main = createSelector(state, state => {
+const columns = createSelector(
+    createSelector(state, state => state.data),
+    data => {
+        if (data === undefined || data.state !== "loaded") {
+            return undefined;
+        }
+
+        const columns = data.columns.map(
+            column =>
+                ({
+                    field: column.name,
+                    sortable: false,
+                    type: (() => {
+                        if (column.type === "bigint") return "string";
+                        if (column.type === "binary") return "string";
+                        return column.type;
+                    })()
+                }) satisfies GridColDef
+        );
+
+        return columns;
+    }
+);
+
+const main = createSelector(state, columns, (state, columns) => {
     const { isQuerying, queryParams, errorMessage, data, extraRestorableStates } = state;
 
     if (errorMessage !== undefined) {
@@ -24,6 +48,7 @@ const main = createSelector(state, state => {
             assert(queryParams.rowsPerPage !== undefined);
             assert(queryParams.page !== undefined);
             assert(extraRestorableStates !== undefined);
+            assert(columns !== undefined);
 
             const { rowsPerPage, page } = queryParams;
             return {
@@ -36,14 +61,7 @@ const main = createSelector(state, state => {
                 queryParams,
                 extraRestorableStates,
                 fileDownloadUrl: data.fileDownloadUrl,
-                columns: data.columns.map(
-                    column =>
-                        ({
-                            field: column.name,
-                            sortable: false,
-                            type: "string"
-                        }) satisfies GridColDef
-                )
+                columns
             };
         }
     }

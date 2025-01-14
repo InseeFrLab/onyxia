@@ -55,25 +55,31 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
     const modifiedColumns = useMemo(
         () =>
             shouldAddCopyToClipboardInCell
-                ? columns.map(
-                      column =>
-                          ({
-                              ...column,
-                              renderCell: ({ value, hasFocus }) => (
-                                  <>
-                                      <div style={{ width: "100%" }}>{value}</div>
-                                      <CopyToClipboardIconButton
-                                          textToCopy={value}
-                                          className={css({
-                                              visibility: hasFocus ? "visible" : "hidden", //This ensure to preserve space for the icon when cell are auto resized
-                                              right: 0
-                                          })}
-                                      />
-                                  </>
-                              ),
-                              display: "flex"
-                          }) satisfies GridColDef
-                  )
+                ? columns.map(column => {
+                      const originalRenderCell = column.renderCell;
+                      return {
+                          ...column,
+                          renderCell: params => (
+                              <>
+                                  {originalRenderCell ? (
+                                      originalRenderCell(params)
+                                  ) : (
+                                      <div>{params.value.toString()}</div>
+                                  )}
+                                  <CopyToClipboardIconButton
+                                      textToCopy={params.value}
+                                      className={css({
+                                          visibility: params.hasFocus
+                                              ? "visible"
+                                              : "hidden", // Ensure space is preserved for the icon
+                                          right: 0
+                                      })}
+                                  />
+                              </>
+                          ),
+                          display: "flex"
+                      } satisfies GridColDef;
+                  })
                 : columns,
         [columns, shouldAddCopyToClipboardInCell]
     );

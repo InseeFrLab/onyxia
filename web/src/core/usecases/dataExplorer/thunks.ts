@@ -105,14 +105,6 @@ const privateThunks = {
                     })
                 ));
 
-            const columns = await (async () => {
-                if (!isSourceUrlChanged) {
-                    assert(data.state === "loaded");
-                    return data.columns;
-                }
-                return sqlOlap.getColumns({ sourceUrl, fileType });
-            })();
-
             const rowCountOrErrorMessage = await (async () => {
                 if (!isSourceUrlChanged) {
                     assert(data.state === "loaded");
@@ -143,20 +135,23 @@ const privateThunks = {
             }
 
             const rowsOrErrorMessage = await sqlOlap
-                .getRows({
+                .getRowsAndColumns({
                     sourceUrl,
                     rowsPerPage: rowsPerPage + 1,
                     page,
                     fileType
                 })
-                .catch(error => String(error));
+                .catch(error => {
+                    console.error(error);
+                    return String(error);
+                });
 
             if (typeof rowsOrErrorMessage === "string") {
                 dispatch(actions.queryFailed({ errorMessage: rowsOrErrorMessage }));
                 return;
             }
 
-            const rows = rowsOrErrorMessage;
+            const { columns, rows } = rowsOrErrorMessage;
             const hasMore = rows.length === rowsPerPage + 1;
 
             dispatch(

@@ -1,4 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
+import type { Column } from "core/ports/SqlOlap";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 
@@ -24,7 +25,7 @@ export type State = {
         | {
               state: "loaded";
               rows: any[];
-              columns: { name: string; type: string }[];
+              columns: Column[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
               fileType: "parquet" | "csv" | "json";
@@ -105,7 +106,7 @@ export const { actions, reducer } = createUsecaseActions({
             }: {
                 payload: {
                     rows: any[];
-                    columns: { name: string; type: string }[];
+                    columns: Column[];
                     rowCount: number | undefined;
                     fileDownloadUrl: string;
                     fileType: "parquet" | "csv" | "json";

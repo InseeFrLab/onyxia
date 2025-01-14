@@ -14,6 +14,7 @@ import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 import { same } from "evt/tools/inDepth/same";
 import type { ReturnType } from "tsafe";
+import { arrowTableToRowsAndColumns } from "./utils/arrowTableToRowsAndColumns";
 
 export const createDuckDbSqlOlap = (params: {
     getS3Config: () => Promise<
@@ -105,36 +106,7 @@ export const createDuckDbSqlOlap = (params: {
                 return db;
             };
         })(),
-        getColumns: async ({ sourceUrl, fileType }) => {
-            const db = await sqlOlap.getConfiguredAsyncDuckDb();
-
-            const conn = await db.connect();
-
-            const sqlQuery = `DESCRIBE SELECT * FROM ${(() => {
-                switch (fileType) {
-                    case "csv":
-                        return `read_csv('${sourceUrl}')`;
-                    case "parquet":
-                        return `read_parquet('${sourceUrl}')`;
-                    case "json":
-                        return `read_json('${sourceUrl}')`;
-                }
-            })()}`;
-
-            const stmt = await conn.prepare(sqlQuery);
-
-            const res = await stmt.query();
-
-            const columns = res.toArray().map(row => {
-                return {
-                    name: row.column_name,
-                    type: row.column_type
-                };
-            });
-
-            return columns;
-        },
-        getRows: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
+        getRowsAndColumns: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
             const conn = await db.connect();
@@ -154,25 +126,13 @@ export const createDuckDbSqlOlap = (params: {
 
             const res = await stmt.query();
 
-            const rows = JSON.parse(
-                JSON.stringify(res.toArray(), (_key, value) => {
-                    if (typeof value === "bigint") {
-                        return value.toString();
-                    }
-
-                    if (value instanceof Uint8Array) {
-                        return Array.from(value)
-                            .map(byte => byte.toString(16).padStart(2, "0"))
-                            .join("");
-                    }
-
-                    return value;
-                })
-            );
+            const { rows, columns } = await arrowTableToRowsAndColumns({
+                table: res
+            });
 
             await conn.close();
 
-            return rows;
+            return { rows, columns };
         },
         getRowCount: memoize(
             async ({ sourceUrl, fileType }) => {
