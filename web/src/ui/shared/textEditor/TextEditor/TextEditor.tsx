@@ -55,7 +55,8 @@ export default function TextEditor(props: Props) {
                             tags.propertyName,
                             tags.macroName
                         ],
-                        color: theme.colors.useCases.typography.textSecondary
+                        //color: theme.colors.useCases.typography.textSecondary
+                        color: alpha(theme.colors.useCases.typography.textPrimary, 0.8)
                     },
                     {
                         tag: [tags.definition(tags.name), tags.separator],
