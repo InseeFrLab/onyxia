@@ -90,14 +90,18 @@ export default function TextEditor(props: Props) {
         setHeight_auto(height);
     }, [height]);
 
-    const height_actual = useMemo(() => {
-        const height = height_auto === undefined ? undefined : height_auto + 80;
+    const height_enforced = useMemo(() => {
+        if (height_auto === undefined) {
+            return undefined;
+        }
 
-        if (height_max !== undefined && height !== undefined && height > height_max) {
+        const height_enforced = height_auto + 80;
+
+        if (height_max !== undefined && height_enforced > height_max) {
             return height_max;
         }
 
-        return height;
+        return height_enforced;
     }, [height_auto, height_max]);
 
     return (
@@ -111,10 +115,10 @@ export default function TextEditor(props: Props) {
             value={value}
             onChange={onChange}
             theme={codeMirrorTheme}
-            height={`${height_actual}px`}
+            height={`${height_enforced}px`}
             extensions={extensions}
             readOnly={onChange === undefined}
-            children={height_actual === undefined ? undefined : children}
+            children={height_enforced === undefined ? undefined : children}
         />
     );
 }
