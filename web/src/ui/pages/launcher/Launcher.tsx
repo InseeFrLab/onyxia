@@ -243,13 +243,14 @@ export default function Launcher(props: Props) {
     );
 
     const {
-        ref: rootRef,
+        ref: ref_root,
         domRect: { height: rootHeight }
     } = useDomRect();
 
-    const { classes, cx } = useStyles({
-        isCommandBarEnabled: commandLogsEntries !== undefined
-    });
+    const {
+        ref: ref_dataTextEditorWrapper,
+        domRect: { height: height_dataTextEditorWrapper }
+    } = useDomRect();
 
     const { myServicesSavedConfigsExtendedLink, projectS3ConfigLink } = useConst(() => ({
         myServicesSavedConfigsExtendedLink: routes.myServices({
@@ -343,10 +344,10 @@ export default function Launcher(props: Props) {
         zState: z.boolean()
     });
 
-    const {
-        ref: ref_rootFormWrapper,
-        domRect: { height: height_rootFormWrapper }
-    } = useDomRect();
+    const { classes, cx } = useStyles({
+        isCommandBarEnabled: commandLogsEntries !== undefined,
+        isDataEditorModeEnabled
+    });
 
     if (!isReady) {
         return null;
@@ -354,7 +355,7 @@ export default function Launcher(props: Props) {
 
     return (
         <>
-            <div ref={rootRef} className={cx(classes.root, className)}>
+            <div ref={ref_root} className={cx(classes.root, className)}>
                 {commandLogsEntries !== undefined && (
                     <CommandBar
                         classes={{
@@ -448,32 +449,36 @@ export default function Launcher(props: Props) {
                     />
                     <Text typo="label 1">Text Editor</Text>
                 </div>
-                <div ref={ref_rootFormWrapper} className={classes.rootFormWrapper}>
-                    {isDataEditorModeEnabled ? (
-                        <DataTextEditor
-                            id="helmValuesYaml"
-                            value={helmValues}
-                            jsonSchema={helmValuesSchema}
-                            maxHeight={height_rootFormWrapper}
-                            onChange={helmValues => {
-                                assert(!(helmValues instanceof Array));
-                                assert(helmValues !== null);
-                                assert(typeof helmValues === "object");
-                                launcher.changeHelmValues({ helmValues });
-                            }}
-                        />
-                    ) : (
-                        <RootFormComponent
-                            className={classes.rootForm}
-                            rootForm={rootForm}
-                            callbacks={{
-                                onAdd: launcher.addArrayItem,
-                                onChange: launcher.changeFormFieldValue,
-                                onRemove,
-                                onFieldErrorChange
-                            }}
-                        />
-                    )}
+                <div className={classes.rootFormWrapper}>
+                    <RootFormComponent
+                        className={classes.rootForm}
+                        rootForm={rootForm}
+                        callbacks={{
+                            onAdd: launcher.addArrayItem,
+                            onChange: launcher.changeFormFieldValue,
+                            onRemove,
+                            onFieldErrorChange
+                        }}
+                    />
+                </div>
+
+                <div
+                    ref={ref_dataTextEditorWrapper}
+                    className={classes.dataTextEditorWrapper}
+                >
+                    <DataTextEditor
+                        className={classes.dataTextEditor}
+                        id="helmValuesYaml"
+                        value={helmValues}
+                        jsonSchema={helmValuesSchema}
+                        maxHeight={height_dataTextEditorWrapper}
+                        onChange={helmValues => {
+                            assert(!(helmValues instanceof Array));
+                            assert(helmValues !== null);
+                            assert(typeof helmValues === "object");
+                            launcher.changeHelmValues({ helmValues });
+                        }}
+                    />
                 </div>
             </div>
             <LauncherDialogs
@@ -514,9 +519,9 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss
-    .withParams<{ isCommandBarEnabled: boolean }>()
+    .withParams<{ isCommandBarEnabled: boolean; isDataEditorModeEnabled: boolean }>()
     .withName({ Launcher })
-    .create(({ theme, isCommandBarEnabled }) => {
+    .create(({ theme, isCommandBarEnabled, isDataEditorModeEnabled }) => {
         const MAX_WIDTH = 1250;
 
         return {
@@ -549,12 +554,23 @@ const useStyles = tss
             modeSwitch: {
                 display: "flex",
                 alignItems: "center",
-                marginTop: theme.spacing(3)
+                ...theme.spacing.topBottom("margin", 3)
             },
             rootFormWrapper: {
-                marginTop: theme.spacing(3),
                 flex: 1,
-                overflow: "auto"
+                overflow: "auto",
+                display: isDataEditorModeEnabled ? "none" : undefined
+            },
+            dataTextEditorWrapper: {
+                display: isDataEditorModeEnabled ? undefined : "none",
+                flex: 1,
+                overflow: "visible",
+                position: "relative"
+            },
+            dataTextEditor: {
+                position: "absolute",
+                width: "100%",
+                overflow: "visible"
             },
             rootForm: {
                 maxWidth: MAX_WIDTH

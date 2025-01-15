@@ -19,7 +19,9 @@ export type Props = {
 };
 
 export default function TextEditor(props: Props) {
-    const { className, id, maxHeight, extensions, value, onChange, children } = props;
+    const { className, id, extensions, value, onChange, children } = props;
+
+    const height_max = props.maxHeight || undefined;
 
     const { cx, classes, theme } = useStyles();
 
@@ -88,6 +90,16 @@ export default function TextEditor(props: Props) {
         setHeight_auto(height);
     }, [height]);
 
+    const height_actual = useMemo(() => {
+        const height = height_auto === undefined ? undefined : height_auto + 80;
+
+        if (height_max !== undefined && height !== undefined && height > height_max) {
+            return height_max;
+        }
+
+        return height;
+    }, [height_auto, height_max]);
+
     return (
         <CodeMirror
             ref={reactCodeMirrorRef => {
@@ -99,25 +111,10 @@ export default function TextEditor(props: Props) {
             value={value}
             onChange={onChange}
             theme={codeMirrorTheme}
-            height={
-                (() => {
-                    const height =
-                        height_auto === undefined ? undefined : height_auto + 80;
-
-                    if (
-                        maxHeight !== undefined &&
-                        height !== undefined &&
-                        height > maxHeight
-                    ) {
-                        return maxHeight;
-                    }
-
-                    return height;
-                })() + "px"
-            }
+            height={`${height_actual}px`}
             extensions={extensions}
             readOnly={onChange === undefined}
-            children={children}
+            children={height_actual === undefined ? undefined : children}
         />
     );
 }
