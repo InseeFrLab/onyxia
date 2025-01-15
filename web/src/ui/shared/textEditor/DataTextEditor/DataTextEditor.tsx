@@ -64,7 +64,7 @@ export type Props = {
 {
     type Props_Expected = Omit<
         import("../TextEditor").Props,
-        "extensions" | "value" | "onChange"
+        "extensions" | "value" | "onChange" | "children"
     > &
         Pick<Props, "value" | "onChange" | "jsonSchema">;
 
@@ -264,50 +264,51 @@ export default function DataTextEditor(props: Props) {
     );
 
     return (
-        <div className={classes.root}>
-            <FormControl className={classes.formatWrapper} variant="standard">
-                <Select
-                    value={format}
-                    label="Format"
-                    onChange={event => onFormatChange(event.target.value as any)}
-                >
-                    <MenuItem value={"YAML"}>YAML</MenuItem>
-                    <MenuItem value={"JSON5"}>JSON5</MenuItem>
-                </Select>
-            </FormControl>
+        <TextEditor
+            {...rest}
+            className={cx(classes.root, rest.className)}
+            value={valueStr}
+            onChange={onChangeStr}
+            extensions={extensions}
+            children={
+                <>
+                    <FormControl className={classes.formatWrapper} variant="standard">
+                        <Select
+                            value={format}
+                            label="Format"
+                            onChange={event => onFormatChange(event.target.value as any)}
+                        >
+                            <MenuItem value={"YAML"}>YAML</MenuItem>
+                            <MenuItem value={"JSON5"}>JSON5</MenuItem>
+                        </Select>
+                    </FormControl>
 
-            <TextEditor
-                {...rest}
-                className={cx(classes.textEditor, rest.className)}
-                value={valueStr}
-                onChange={onChangeStr}
-                extensions={extensions}
-            />
+                    <div className={classes.bottomLeft}>
+                        {errorMsg !== undefined && (
+                            <Text typo="body 2" className={classes.errorText}>
+                                <Icon icon={ErrorIcon} />
+                                &nbsp;
+                                {capitalize(errorMsg)}
+                                &nbsp;
+                            </Text>
+                        )}
+                        <Button
+                            startIcon={DataObjectIcon}
+                            onClick={() => setIsJsonSchemaDialogOpen(true)}
+                            variant="ternary"
+                        >
+                            Schema
+                        </Button>
+                    </div>
 
-            <div className={classes.bottomLeft}>
-                {errorMsg !== undefined && (
-                    <Text typo="body 2" className={classes.errorText}>
-                        <Icon icon={ErrorIcon} />
-                        &nbsp;
-                        {capitalize(errorMsg)}
-                        &nbsp;
-                    </Text>
-                )}
-                <Button
-                    startIcon={DataObjectIcon}
-                    onClick={() => setIsJsonSchemaDialogOpen(true)}
-                    variant="ternary"
-                >
-                    Schema
-                </Button>
-            </div>
-
-            <JsonSchemaDialog
-                isOpen={isJsonSchemaDialogOpen}
-                onClose={onJsonSchemaDialogClose}
-                jsonSchemaStr={jsonSchemaStr}
-            />
-        </div>
+                    <JsonSchemaDialog
+                        isOpen={isJsonSchemaDialogOpen}
+                        onClose={onJsonSchemaDialogClose}
+                        jsonSchemaStr={jsonSchemaStr}
+                    />
+                </>
+            }
+        />
     );
 }
 
@@ -316,9 +317,7 @@ const useStyles = tss
     .withParams<{ isErrored: boolean }>()
     .create(({ isErrored, theme }) => ({
         root: {
-            position: "relative"
-        },
-        textEditor: {
+            position: "relative",
             boxSizing: "border-box",
             outline: !isErrored
                 ? undefined
@@ -340,7 +339,8 @@ const useStyles = tss
             bottom: theme.spacing(3),
             left: theme.spacing(3),
             display: "flex",
-            gap: theme.spacing(3)
+            gap: theme.spacing(3),
+            zIndex: 1
         },
         errorText: {
             color: theme.colors.useCases.alertSeverity.error.main,

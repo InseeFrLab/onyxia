@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import CodeMirror, { type Extension } from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags } from "@lezer/highlight";
@@ -14,10 +15,11 @@ export type Props = {
     extensions: Extension[];
     value: string;
     onChange: ((newValue: string) => void) | undefined;
+    children?: ReactNode;
 };
 
 export default function TextEditor(props: Props) {
-    const { className, id, maxHeight, extensions, value, onChange } = props;
+    const { className, id, maxHeight, extensions, value, onChange, children } = props;
 
     const { cx, classes, theme } = useStyles();
 
@@ -115,6 +117,7 @@ export default function TextEditor(props: Props) {
             }
             extensions={extensions}
             readOnly={onChange === undefined}
+            children={children}
         />
     );
 }

@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, type ReactNode } from "react";
 import type { GLOBAL_NAME as OF_TYPE_SCREEN_SCALER_GLOBAL_NAME } from "screen-scaler";
 import type { Extension } from "@uiw/react-codemirror";
 import { assert, type Equals } from "tsafe/assert";
@@ -17,6 +17,7 @@ export type Props = {
     value: string;
     onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
+    children?: ReactNode;
 };
 
 {
