@@ -285,12 +285,14 @@ export default function DataTextEditor(props: Props) {
 
                     <div className={classes.bottomLeft}>
                         {errorMsg !== undefined && (
-                            <Text typo="body 2" className={classes.errorText}>
-                                <Icon icon={ErrorIcon} />
-                                &nbsp;
-                                {capitalize(errorMsg)}
-                                &nbsp;
-                            </Text>
+                            <div className={classes.errorTextWrapper}>
+                                <Text typo="body 2" className={classes.errorText}>
+                                    <Icon icon={ErrorIcon} />
+                                    &nbsp;
+                                    {capitalize(errorMsg)}
+                                    &nbsp;
+                                </Text>
+                            </div>
                         )}
                         <Button
                             startIcon={DataObjectIcon}
@@ -341,6 +343,10 @@ const useStyles = tss
             display: "flex",
             gap: theme.spacing(3),
             zIndex: 1
+        },
+        errorTextWrapper: {
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            borderRadius: 5
         },
         errorText: {
             color: theme.colors.useCases.alertSeverity.error.main,
