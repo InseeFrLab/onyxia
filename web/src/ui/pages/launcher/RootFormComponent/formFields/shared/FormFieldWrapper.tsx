@@ -31,8 +31,6 @@ export function FormFieldWrapper(props: Props) {
         children
     } = props;
 
-    console.log({ title, description });
-
     const { classes } = useStyles({
         isErrored: error !== undefined,
         isResetToDefaultButtonVisible: onResetToDefault !== undefined,
