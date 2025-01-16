@@ -64,10 +64,10 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
                                   {originalRenderCell ? (
                                       originalRenderCell(params)
                                   ) : (
-                                      <div>{params.value.toString()}</div>
+                                      <span>{params.formattedValue}</span>
                                   )}
                                   <CopyToClipboardIconButton
-                                      textToCopy={params.value}
+                                      textToCopy={params.formattedValue}
                                       className={css({
                                           visibility: params.hasFocus
                                               ? "visible"
@@ -115,7 +115,7 @@ const { i18n } = declareComponentKeys<
 
 export type I18n = typeof i18n;
 const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
-    columnSeparator: { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
+    columnSeparator: { "&&&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
     iconSeparator: {
         "&&": { color: theme.colors.useCases.typography.textDisabled }
     }

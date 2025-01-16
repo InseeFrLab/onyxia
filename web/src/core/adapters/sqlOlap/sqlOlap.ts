@@ -14,7 +14,7 @@ import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 import { same } from "evt/tools/inDepth/same";
 import type { ReturnType } from "tsafe";
-import { arrowTableToRowsAndColumns } from "./utils/arrowTableToRowsAndColumns";
+import { arrowTableToColumns, arrowTableToRows } from "./utils/arrowTable";
 
 export const createDuckDbSqlOlap = (params: {
     getS3Config: () => Promise<
@@ -108,7 +108,6 @@ export const createDuckDbSqlOlap = (params: {
         })(),
         getRowsAndColumns: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
-
             const conn = await db.connect();
 
             const sqlQuery = `SELECT * FROM ${(() => {
@@ -123,16 +122,38 @@ export const createDuckDbSqlOlap = (params: {
             })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
 
             const stmt = await conn.prepare(sqlQuery);
-
             const res = await stmt.query();
 
-            const { rows, columns } = await arrowTableToRowsAndColumns({
-                table: res
-            });
+            const columns = await arrowTableToColumns({ table: res });
+            const rows = arrowTableToRows({ table: res, columns });
 
             await conn.close();
 
             return { rows, columns };
+        },
+        getRows: async ({ sourceUrl, fileType, rowsPerPage, page, columns }) => {
+            const db = await sqlOlap.getConfiguredAsyncDuckDb();
+            const conn = await db.connect();
+
+            const sqlQuery = `SELECT * FROM ${(() => {
+                switch (fileType) {
+                    case "csv":
+                        return `read_csv('${sourceUrl}')`;
+                    case "parquet":
+                        return `read_parquet('${sourceUrl}')`;
+                    case "json":
+                        return `read_json('${sourceUrl}')`;
+                }
+            })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
+
+            const stmt = await conn.prepare(sqlQuery);
+            const res = await stmt.query();
+
+            const rows = arrowTableToRows({ table: res, columns });
+
+            await conn.close();
+
+            return { rows };
         },
         getRowCount: memoize(
             async ({ sourceUrl, fileType }) => {

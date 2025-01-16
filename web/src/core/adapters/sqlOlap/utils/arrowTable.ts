@@ -14,9 +14,10 @@ const getColumnType = async (type: DataType): Promise<Column["type"]> => {
             return "number";
         }
 
-        case Type.Float: {
+        case Type.Decimal:
+        case Type.Float:
             return "number";
-        }
+
         case Type.Utf8:
         case Type.LargeUtf8:
             return "string";
@@ -36,9 +37,15 @@ const getColumnType = async (type: DataType): Promise<Column["type"]> => {
         case Type.FixedSizeBinary:
             return "binary";
 
+        case Type.Duration:
+        case Type.FixedSizeList:
+        case Type.Map:
+        case Type.Union:
         case Type.Struct:
         case Type.List:
             return "string";
+
+        case Type.Interval:
         default:
             throw new Error(
                 `Unsupported Arrow DataType: ${Type[type.typeId] || "Unknown"} (${type.typeId})`
@@ -46,34 +53,46 @@ const getColumnType = async (type: DataType): Promise<Column["type"]> => {
     }
 };
 
-export const arrowTableToRowsAndColumns = async (params: { table: Table<any> }) => {
+export const arrowTableToColumns = async (params: { table: Table<any> }) => {
     const { table } = params;
 
+    const columns = await Promise.all(
+        table.schema.fields.map(async field => {
+            const columnType = await getColumnType(field.type);
+            return {
+                name: field.name,
+                type: columnType,
+                rowType: field.type.toString()
+            };
+        })
+    );
+
+    return columns;
+};
+
+export const arrowTableToRows = (params: { table: Table<any>; columns: Column[] }) => {
+    const { table, columns } = params;
+
     const rows: Record<string, any>[] = Array.from({ length: table.numRows }, () => ({}));
-    const columns: Column[] = [];
 
-    for (const field of table.schema.fields) {
-        const column = table.getChild(field.name);
-        assert(column !== null, `Column for field "${field.name}" not found.`);
+    for (const column of columns) {
+        const field = table.schema.fields.find(field => field.name === column.name);
+        assert(field !== undefined, `Field "${column.name}" not found in schema.`);
 
-        const columnType = await getColumnType(field.type);
-
-        columns.push({
-            name: field.name,
-            type: columnType
-        });
+        const vector = table.getChild(column.name);
+        assert(vector !== null, `Column vector for "${column.name}" not found.`);
 
         const transformedColumn = convertVector({
-            vector: column,
-            expectedType: columnType
+            vector,
+            expectedType: column.type
         });
 
         for (let rowIndex = 0; rowIndex < table.numRows; rowIndex++) {
-            rows[rowIndex][field.name] = transformedColumn[rowIndex];
+            rows[rowIndex][column.name] = transformedColumn[rowIndex];
         }
     }
 
-    return { rows, columns };
+    return rows;
 };
 
 const convertVector = (params: { vector: Vector<any>; expectedType: Column["type"] }) => {

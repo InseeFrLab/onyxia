@@ -133,18 +133,37 @@ const privateThunks = {
             if (!getIsActive()) {
                 return;
             }
-
-            const rowsOrErrorMessage = await sqlOlap
-                .getRowsAndColumns({
-                    sourceUrl,
-                    rowsPerPage: rowsPerPage + 1,
-                    page,
-                    fileType
-                })
-                .catch(error => {
+            const rowsOrErrorMessage = await (async () => {
+                try {
+                    return isSourceUrlChanged
+                        ? await sqlOlap.getRowsAndColumns({
+                              sourceUrl,
+                              rowsPerPage: rowsPerPage + 1,
+                              page,
+                              fileType
+                          })
+                        : await (async () => {
+                              assert(
+                                  data.state === "loaded",
+                                  "Data must be loaded to reuse columns"
+                              );
+                              const { rows } = await sqlOlap.getRows({
+                                  sourceUrl,
+                                  rowsPerPage: rowsPerPage + 1,
+                                  page,
+                                  fileType,
+                                  columns: data.columns
+                              });
+                              return {
+                                  rows,
+                                  columns: data.columns
+                              };
+                          })();
+                } catch (error) {
                     console.error(error);
                     return String(error);
-                });
+                }
+            })();
 
             if (typeof rowsOrErrorMessage === "string") {
                 dispatch(actions.queryFailed({ errorMessage: rowsOrErrorMessage }));
