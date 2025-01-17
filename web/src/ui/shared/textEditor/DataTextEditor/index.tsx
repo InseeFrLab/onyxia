@@ -9,6 +9,7 @@ export type Props = {
     fallback?: JSX.Element;
     value: Stringifyable;
     onChange: (newValue: Stringifyable) => void;
+    onErrorMsgChanged?: (errorMsg: string | undefined) => void;
     jsonSchema: Record<string, Stringifyable>;
 };
 

@@ -58,6 +58,7 @@ export type Props = {
 
     value: Stringifyable;
     onChange: (newValue: Stringifyable) => void;
+    onErrorMsgChanged?: (errorMsg: string | undefined) => void;
     jsonSchema: Record<string, Stringifyable>;
 };
 
@@ -66,7 +67,7 @@ export type Props = {
         import("../TextEditor").Props,
         "extensions" | "value" | "onChange" | "children"
     > &
-        Pick<Props, "value" | "onChange" | "jsonSchema">;
+        Pick<Props, "value" | "onChange" | "jsonSchema" | "onErrorMsgChanged">;
 
     assert<Equals<Props, Props_Expected>>;
 }
@@ -95,7 +96,13 @@ function parseValue(params: { valueStr: string; format: Format }): Stringifyable
 }
 
 export default function DataTextEditor(props: Props) {
-    const { jsonSchema, value: value_default, onChange, ...rest } = props;
+    const {
+        jsonSchema,
+        value: value_default,
+        onChange,
+        onErrorMsgChanged,
+        ...rest
+    } = props;
 
     const jsonSchemaStr = useMemo(
         () => JSON.stringify(jsonSchema, null, 2),
@@ -174,6 +181,10 @@ export default function DataTextEditor(props: Props) {
 
         setValueStr(serializeValue({ value, format: newFormat }));
     });
+
+    useEffect(() => {
+        onErrorMsgChanged?.(errorMsg);
+    }, [errorMsg]);
 
     const { classes, cx } = useStyles({
         isErrored: errorMsg !== undefined

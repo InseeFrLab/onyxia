@@ -349,6 +349,10 @@ export default function Launcher(props: Props) {
         isDataEditorModeEnabled
     });
 
+    const [dataTextEditorErrorMsg, setDataTextEditorErrorMsg] = useState<
+        string | undefined
+    >(undefined);
+
     if (!isReady) {
         return null;
     }
@@ -440,10 +444,12 @@ export default function Launcher(props: Props) {
                               }
                     }
                     erroredFormFields={erroredFormFields}
+                    dataTextEditorErrorMsg={dataTextEditorErrorMsg}
                 />
                 <div className={classes.modeSwitch}>
                     <Text typo="label 1">Interactive Form</Text>
                     <Switch
+                        disabled={dataTextEditorErrorMsg !== undefined}
                         checked={isDataEditorModeEnabled}
                         onChange={e => setIsDataEditorModeEnabled(e.target.checked)}
                     />
@@ -478,6 +484,9 @@ export default function Launcher(props: Props) {
                             assert(typeof helmValues === "object");
                             launcher.changeHelmValues({ helmValues });
                         }}
+                        onErrorMsgChanged={errorMsg =>
+                            setDataTextEditorErrorMsg(errorMsg)
+                        }
                     />
                 </div>
             </div>

@@ -89,6 +89,7 @@ export type Props = {
         | undefined;
 
     erroredFormFields: (string | number)[][];
+    dataTextEditorErrorMsg: string | undefined;
 };
 
 export const LauncherMainCard = memo((props: Props) => {
@@ -117,7 +118,8 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestRestoreAllDefault,
 
         s3ConfigsSelect,
-        erroredFormFields
+        erroredFormFields,
+        dataTextEditorErrorMsg
     } = props;
 
     const { classes, cx } = useStyles();
@@ -365,6 +367,7 @@ export const LauncherMainCard = memo((props: Props) => {
                         tProblemWithTheFollowingValues={t("problem with")}
                         onRequestLaunch={onRequestLaunch}
                         erroredFormFields={erroredFormFields}
+                        dataTextEditorErrorMsg={dataTextEditorErrorMsg}
                     />
                 </div>
             </div>
@@ -378,13 +381,15 @@ function LaunchButton(props: {
     tProblemWithTheFollowingValues: string;
     onRequestLaunch: () => void;
     erroredFormFields: (string | number)[][];
+    dataTextEditorErrorMsg: string | undefined;
 }) {
     const {
         className,
         tLaunch,
         tProblemWithTheFollowingValues,
         onRequestLaunch,
-        erroredFormFields
+        erroredFormFields,
+        dataTextEditorErrorMsg
     } = props;
 
     const renderButton = (params: { isDisabled: boolean }) => {
@@ -402,7 +407,7 @@ function LaunchButton(props: {
         );
     };
 
-    if (erroredFormFields.length === 0) {
+    if (erroredFormFields.length === 0 && dataTextEditorErrorMsg === undefined) {
         return renderButton({ isDisabled: false });
     }
 
@@ -411,31 +416,46 @@ function LaunchButton(props: {
             title={
                 <>
                     <Text typo="body 1">
-                        {tProblemWithTheFollowingValues}
-                        <br />
-                        {erroredFormFields.map((helmValuesPath, i) => (
-                            <Fragment key={i}>
-                                <span>
-                                    {helmValuesPath.reduce<string>((prev, curr) => {
-                                        switch (typeof curr) {
-                                            case "string":
-                                                if (prev === "") {
-                                                    return curr;
-                                                }
-                                                return `${prev}.${curr}`;
-                                            case "number":
-                                                return `${prev}[${curr}]`;
-                                        }
-                                        assert<Equals<typeof curr, never>>();
-                                    }, "")}
-                                </span>
-                                {i < erroredFormFields.length - 1 && (
-                                    <>
-                                        ,<br />
-                                    </>
-                                )}
-                            </Fragment>
-                        ))}
+                        {(() => {
+                            if (dataTextEditorErrorMsg !== undefined) {
+                                return dataTextEditorErrorMsg;
+                            }
+
+                            return (
+                                <>
+                                    {tProblemWithTheFollowingValues}
+                                    <br />
+                                    {erroredFormFields.map((helmValuesPath, i) => (
+                                        <Fragment key={i}>
+                                            <span>
+                                                {helmValuesPath.reduce<string>(
+                                                    (prev, curr) => {
+                                                        switch (typeof curr) {
+                                                            case "string":
+                                                                if (prev === "") {
+                                                                    return curr;
+                                                                }
+                                                                return `${prev}.${curr}`;
+                                                            case "number":
+                                                                return `${prev}[${curr}]`;
+                                                        }
+                                                        assert<
+                                                            Equals<typeof curr, never>
+                                                        >();
+                                                    },
+                                                    ""
+                                                )}
+                                            </span>
+                                            {i < erroredFormFields.length - 1 && (
+                                                <>
+                                                    ,<br />
+                                                </>
+                                            )}
+                                        </Fragment>
+                                    ))}
+                                </>
+                            );
+                        })()}
                     </Text>
                 </>
             }
