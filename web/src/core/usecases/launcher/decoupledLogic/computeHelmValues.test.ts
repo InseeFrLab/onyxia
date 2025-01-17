@@ -31,7 +31,11 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: "const" },
-            isChartUsingS3: false
+            isChartUsingS3: false,
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                const: { r: "const" }
+            }
         };
 
         expect(got).toStrictEqual(expected);
@@ -63,6 +67,10 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: "x-onyxia context" },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                default: { r: "x-onyxia context" }
+            },
             isChartUsingS3: false
         };
 
@@ -92,6 +100,10 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: "default" },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                default: { r: "default" }
+            },
             isChartUsingS3: false
         };
 
@@ -121,6 +133,19 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { gpu: "1" },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    gpu: {
+                        type: "string",
+                        default: "1",
+                        sliderMin: 1,
+                        sliderMax: 3,
+                        sliderUnit: ""
+                    }
+                },
+                required: ["gpu"]
+            },
             isChartUsingS3: false
         };
 
@@ -149,6 +174,10 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: "values.yaml" },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                default: { r: "values.yaml" }
+            },
             isChartUsingS3: false
         };
 
@@ -175,6 +204,10 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: "default" },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                default: { r: "default" }
+            },
             isChartUsingS3: false
         };
 
@@ -250,6 +283,16 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: 42 },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "number",
+                        default: 42
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: false
         };
 
@@ -283,6 +326,16 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: 42 },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "integer",
+                        default: 42
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: false
         };
 
@@ -315,6 +368,16 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: true },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "boolean",
+                        default: true
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: false
         };
 
@@ -346,6 +409,16 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: "xxx" },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "string",
+                        default: "xxx"
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: true
         };
 
@@ -372,6 +445,15 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: [] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array"
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: false
         };
 
@@ -498,6 +580,20 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: ["a", "b", "c"] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        minItems: 3,
+                        default: ["a", "b", "c"],
+                        items: {
+                            type: "string"
+                        }
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: false
         };
 
@@ -529,6 +625,20 @@ describe(symToStr({ computeHelmValues }), () => {
 
         const expected = {
             helmValues: { r: ["a", "a", "a"] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        minItems: 3,
+                        items: {
+                            type: "string",
+                            default: "a"
+                        }
+                    }
+                },
+                required: ["r"]
+            },
             isChartUsingS3: false
         };
 

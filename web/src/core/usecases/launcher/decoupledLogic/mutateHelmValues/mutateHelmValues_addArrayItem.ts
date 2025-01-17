@@ -80,7 +80,8 @@ export function mutateHelmValues_addArrayItem(params: {
                 item = computeHelmValues_rec({
                     helmValuesSchema: helmValuesSchema_target.items,
                     helmValuesYaml_parsed: undefined,
-                    xOnyxiaContext
+                    xOnyxiaContext,
+                    helmValuesSchema_forDataTextEditor: undefined
                 });
             } catch {
                 break use_default_item;
@@ -105,7 +106,8 @@ export function mutateHelmValues_addArrayItem(params: {
         const defaultArray = computeHelmValues_rec({
             helmValuesSchema: helmValuesSchema_target,
             helmValuesYaml_parsed: helmValuesYaml_parsed_target,
-            xOnyxiaContext
+            xOnyxiaContext,
+            helmValuesSchema_forDataTextEditor: undefined
         });
 
         assert(defaultArray instanceof Array);

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import CodeMirror, { type Extension } from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags } from "@lezer/highlight";
@@ -14,10 +15,13 @@ export type Props = {
     extensions: Extension[];
     value: string;
     onChange: ((newValue: string) => void) | undefined;
+    children?: ReactNode;
 };
 
 export default function TextEditor(props: Props) {
-    const { className, id, maxHeight, extensions, value, onChange } = props;
+    const { className, id, extensions, value, onChange, children } = props;
+
+    const height_max = props.maxHeight || undefined;
 
     const { cx, classes, theme } = useStyles();
 
@@ -55,7 +59,8 @@ export default function TextEditor(props: Props) {
                             tags.propertyName,
                             tags.macroName
                         ],
-                        color: theme.colors.useCases.typography.textSecondary
+                        //color: theme.colors.useCases.typography.textSecondary
+                        color: alpha(theme.colors.useCases.typography.textPrimary, 0.8)
                     },
                     {
                         tag: [tags.definition(tags.name), tags.separator],
@@ -85,6 +90,20 @@ export default function TextEditor(props: Props) {
         setHeight_auto(height);
     }, [height]);
 
+    const height_enforced = useMemo(() => {
+        if (height_auto === undefined) {
+            return undefined;
+        }
+
+        const height_enforced = height_auto + 80;
+
+        if (height_max !== undefined && height_enforced > height_max) {
+            return height_max;
+        }
+
+        return height_enforced;
+    }, [height_auto, height_max]);
+
     return (
         <CodeMirror
             ref={reactCodeMirrorRef => {
@@ -96,24 +115,10 @@ export default function TextEditor(props: Props) {
             value={value}
             onChange={onChange}
             theme={codeMirrorTheme}
-            height={
-                (() => {
-                    const height =
-                        height_auto === undefined ? undefined : height_auto + 80;
-
-                    if (
-                        maxHeight !== undefined &&
-                        height !== undefined &&
-                        height > maxHeight
-                    ) {
-                        return maxHeight;
-                    }
-
-                    return height;
-                })() + "px"
-            }
+            height={`${height_enforced}px`}
             extensions={extensions}
             readOnly={onChange === undefined}
+            children={height_enforced === undefined ? undefined : children}
         />
     );
 }
@@ -121,6 +126,17 @@ export default function TextEditor(props: Props) {
 const useStyles = tss.withName({ TextEditor }).create(({ theme }) => ({
     root: {
         borderRadius: theme.spacing(1),
-        overflow: "hidden"
+        overflow: "hidden",
+        "& .cm-tooltip-hover": {
+            borderRadius: theme.spacing(2),
+            ...theme.spacing.rightLeft("padding", 3),
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            shadow: theme.shadows[1]
+        },
+        "&&& .cm-tooltip-arrow": {
+            "&::before, &::after": {
+                borderColor: `${theme.colors.useCases.surfaces.surface2} transparent transparent transparent`
+            }
+        }
     }
 }));

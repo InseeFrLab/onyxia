@@ -131,6 +131,7 @@ function StoryComponent(props: Props) {
                 value={value}
                 onChange={setValue}
                 jsonSchema={jsonSchema}
+                onErrorMsgChanged={errorMsg => console.log({ errorMsg })}
             />
             <div>
                 <h3>Value:</h3>

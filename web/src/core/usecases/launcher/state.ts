@@ -57,6 +57,8 @@ export declare namespace State {
         helmValues: Record<string, Stringifyable>;
         helmValuesYaml: string;
 
+        helmValuesSchema_forDataTextEditor: JSONSchema;
+
         chartIconUrl: string | undefined;
         catalogRepositoryUrl: string;
         catalogName: LocalizedString;
@@ -130,6 +132,22 @@ export const { reducer, actions } = createUsecaseActions({
                     formFieldValue,
                     rootForm
                 });
+            },
+            helmValuesChanged: (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        helmValues: Record<string, Stringifyable>;
+                    };
+                }
+            ) => {
+                const { helmValues } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.helmValues = helmValues;
             },
             arrayItemAdded: (
                 state,

@@ -46,7 +46,9 @@ import { JsonSchemaDialog } from "./JsonSchemaDialog";
 import { Button } from "onyxia-ui/Button";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+    strict: false
+});
 
 export type Props = {
     className?: string;
@@ -56,15 +58,16 @@ export type Props = {
 
     value: Stringifyable;
     onChange: (newValue: Stringifyable) => void;
+    onErrorMsgChanged?: (errorMsg: string | undefined) => void;
     jsonSchema: Record<string, Stringifyable>;
 };
 
 {
     type Props_Expected = Omit<
         import("../TextEditor").Props,
-        "extensions" | "value" | "onChange"
+        "extensions" | "value" | "onChange" | "children"
     > &
-        Pick<Props, "value" | "onChange" | "jsonSchema">;
+        Pick<Props, "value" | "onChange" | "jsonSchema" | "onErrorMsgChanged">;
 
     assert<Equals<Props, Props_Expected>>;
 }
@@ -93,7 +96,13 @@ function parseValue(params: { valueStr: string; format: Format }): Stringifyable
 }
 
 export default function DataTextEditor(props: Props) {
-    const { jsonSchema, value: value_default, onChange, ...rest } = props;
+    const {
+        jsonSchema,
+        value: value_default,
+        onChange,
+        onErrorMsgChanged,
+        ...rest
+    } = props;
 
     const jsonSchemaStr = useMemo(
         () => JSON.stringify(jsonSchema, null, 2),
@@ -172,6 +181,10 @@ export default function DataTextEditor(props: Props) {
 
         setValueStr(serializeValue({ value, format: newFormat }));
     });
+
+    useEffect(() => {
+        onErrorMsgChanged?.(errorMsg);
+    }, [errorMsg]);
 
     const { classes, cx } = useStyles({
         isErrored: errorMsg !== undefined
@@ -262,50 +275,53 @@ export default function DataTextEditor(props: Props) {
     );
 
     return (
-        <div className={classes.root}>
-            <FormControl className={classes.formatWrapper} variant="standard">
-                <Select
-                    value={format}
-                    label="Format"
-                    onChange={event => onFormatChange(event.target.value as any)}
-                >
-                    <MenuItem value={"YAML"}>YAML</MenuItem>
-                    <MenuItem value={"JSON5"}>JSON5</MenuItem>
-                </Select>
-            </FormControl>
+        <TextEditor
+            {...rest}
+            className={cx(classes.root, rest.className)}
+            value={valueStr}
+            onChange={onChangeStr}
+            extensions={extensions}
+            children={
+                <>
+                    <FormControl className={classes.formatWrapper} variant="standard">
+                        <Select
+                            value={format}
+                            label="Format"
+                            onChange={event => onFormatChange(event.target.value as any)}
+                        >
+                            <MenuItem value={"YAML"}>YAML</MenuItem>
+                            <MenuItem value={"JSON5"}>JSON5</MenuItem>
+                        </Select>
+                    </FormControl>
 
-            <TextEditor
-                {...rest}
-                className={cx(classes.textEditor, rest.className)}
-                value={valueStr}
-                onChange={onChangeStr}
-                extensions={extensions}
-            />
+                    <div className={classes.bottomLeft}>
+                        {errorMsg !== undefined && (
+                            <div className={classes.errorTextWrapper}>
+                                <Text typo="body 2" className={classes.errorText}>
+                                    <Icon icon={ErrorIcon} />
+                                    &nbsp;
+                                    {capitalize(errorMsg)}
+                                    &nbsp;
+                                </Text>
+                            </div>
+                        )}
+                        <Button
+                            startIcon={DataObjectIcon}
+                            onClick={() => setIsJsonSchemaDialogOpen(true)}
+                            variant="ternary"
+                        >
+                            Schema
+                        </Button>
+                    </div>
 
-            <div className={classes.bottomLeft}>
-                {errorMsg !== undefined && (
-                    <Text typo="body 2" className={classes.errorText}>
-                        <Icon icon={ErrorIcon} />
-                        &nbsp;
-                        {capitalize(errorMsg)}
-                        &nbsp;
-                    </Text>
-                )}
-                <Button
-                    startIcon={DataObjectIcon}
-                    onClick={() => setIsJsonSchemaDialogOpen(true)}
-                    variant="ternary"
-                >
-                    Schema
-                </Button>
-            </div>
-
-            <JsonSchemaDialog
-                isOpen={isJsonSchemaDialogOpen}
-                onClose={onJsonSchemaDialogClose}
-                jsonSchemaStr={jsonSchemaStr}
-            />
-        </div>
+                    <JsonSchemaDialog
+                        isOpen={isJsonSchemaDialogOpen}
+                        onClose={onJsonSchemaDialogClose}
+                        jsonSchemaStr={jsonSchemaStr}
+                    />
+                </>
+            }
+        />
     );
 }
 
@@ -314,9 +330,7 @@ const useStyles = tss
     .withParams<{ isErrored: boolean }>()
     .create(({ isErrored, theme }) => ({
         root: {
-            position: "relative"
-        },
-        textEditor: {
+            position: "relative",
             boxSizing: "border-box",
             outline: !isErrored
                 ? undefined
@@ -338,7 +352,12 @@ const useStyles = tss
             bottom: theme.spacing(3),
             left: theme.spacing(3),
             display: "flex",
-            gap: theme.spacing(3)
+            gap: theme.spacing(3),
+            zIndex: 1
+        },
+        errorTextWrapper: {
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            borderRadius: 5
         },
         errorText: {
             color: theme.colors.useCases.alertSeverity.error.main,

@@ -564,6 +564,14 @@ const main = createSelector(
     groupProjectName,
     s3ConfigSelect,
     labeledHelmChartSourceUrls,
+    helmValues,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.helmValuesSchema_forDataTextEditor;
+    }),
     (
         isReady,
         friendlyName,
@@ -582,7 +590,9 @@ const main = createSelector(
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        labeledHelmChartSourceUrls
+        labeledHelmChartSourceUrls,
+        helmValues,
+        helmValuesSchema_forDataTextEditor
     ) => {
         if (!isReady) {
             return {
@@ -607,6 +617,8 @@ const main = createSelector(
         assert(groupProjectName !== null);
         assert(s3ConfigSelect !== null);
         assert(labeledHelmChartSourceUrls !== null);
+        assert(helmValues !== null);
+        assert(helmValuesSchema_forDataTextEditor !== null);
 
         return {
             isReady: true as const,
@@ -626,7 +638,9 @@ const main = createSelector(
             commandLogsEntries,
             groupProjectName,
             s3ConfigSelect,
-            labeledHelmChartSourceUrls
+            labeledHelmChartSourceUrls,
+            helmValues,
+            helmValuesSchema_forDataTextEditor
         };
     }
 );

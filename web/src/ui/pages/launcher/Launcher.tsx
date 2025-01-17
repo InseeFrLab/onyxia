@@ -27,6 +27,11 @@ import type { Param0 } from "tsafe";
 import type { FormCallbacks } from "./RootFormComponent/FormCallbacks";
 import { arrRemoveDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { same } from "evt/tools/inDepth/same";
+import { DataTextEditor } from "ui/shared/textEditor/DataTextEditor";
+import Switch from "@mui/material/Switch";
+import { Text } from "onyxia-ui/Text";
+import { useSessionState } from "ui/tools/useSessionState";
+import { z } from "zod";
 
 export type Props = {
     route: PageRoute;
@@ -80,7 +85,9 @@ export default function Launcher(props: Props) {
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        labeledHelmChartSourceUrls
+        labeledHelmChartSourceUrls,
+        helmValues,
+        helmValuesSchema_forDataTextEditor
     } = useCoreState("launcher", "main");
 
     const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
@@ -236,13 +243,14 @@ export default function Launcher(props: Props) {
     );
 
     const {
-        ref: rootRef,
+        ref: ref_root,
         domRect: { height: rootHeight }
     } = useDomRect();
 
-    const { classes, cx } = useStyles({
-        isCommandBarEnabled: commandLogsEntries !== undefined
-    });
+    const {
+        ref: ref_dataTextEditorWrapper,
+        domRect: { height: height_dataTextEditorWrapper }
+    } = useDomRect();
 
     const { myServicesSavedConfigsExtendedLink, projectS3ConfigLink } = useConst(() => ({
         myServicesSavedConfigsExtendedLink: routes.myServices({
@@ -330,13 +338,28 @@ export default function Launcher(props: Props) {
         }
     );
 
+    const [isDataEditorModeEnabled, setIsDataEditorModeEnabled] = useSessionState({
+        initialValue: false,
+        stateUniqueId: "isDataEditorModeEnabled",
+        zState: z.boolean()
+    });
+
+    const { classes, cx } = useStyles({
+        isCommandBarEnabled: commandLogsEntries !== undefined,
+        isDataEditorModeEnabled
+    });
+
+    const [dataTextEditorErrorMsg, setDataTextEditorErrorMsg] = useState<
+        string | undefined
+    >(undefined);
+
     if (!isReady) {
         return null;
     }
 
     return (
         <>
-            <div ref={rootRef} className={cx(classes.root, className)}>
+            <div ref={ref_root} className={cx(classes.root, className)}>
                 {commandLogsEntries !== undefined && (
                     <CommandBar
                         classes={{
@@ -421,7 +444,17 @@ export default function Launcher(props: Props) {
                               }
                     }
                     erroredFormFields={erroredFormFields}
+                    dataTextEditorErrorMsg={dataTextEditorErrorMsg}
                 />
+                <div className={classes.modeSwitch}>
+                    <Text typo="label 1">Interactive Form</Text>
+                    <Switch
+                        disabled={dataTextEditorErrorMsg !== undefined}
+                        checked={isDataEditorModeEnabled}
+                        onChange={e => setIsDataEditorModeEnabled(e.target.checked)}
+                    />
+                    <Text typo="label 1">Text Editor</Text>
+                </div>
                 <div className={classes.rootFormWrapper}>
                     <RootFormComponent
                         className={classes.rootForm}
@@ -432,6 +465,28 @@ export default function Launcher(props: Props) {
                             onRemove,
                             onFieldErrorChange
                         }}
+                    />
+                </div>
+
+                <div
+                    ref={ref_dataTextEditorWrapper}
+                    className={classes.dataTextEditorWrapper}
+                >
+                    <DataTextEditor
+                        className={classes.dataTextEditor}
+                        id="helmValuesYaml"
+                        value={helmValues}
+                        jsonSchema={helmValuesSchema_forDataTextEditor}
+                        maxHeight={height_dataTextEditorWrapper}
+                        onChange={helmValues => {
+                            assert(!(helmValues instanceof Array));
+                            assert(helmValues !== null);
+                            assert(typeof helmValues === "object");
+                            launcher.changeHelmValues({ helmValues });
+                        }}
+                        onErrorMsgChanged={errorMsg =>
+                            setDataTextEditorErrorMsg(errorMsg)
+                        }
                     />
                 </div>
             </div>
@@ -473,9 +528,9 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss
-    .withParams<{ isCommandBarEnabled: boolean }>()
+    .withParams<{ isCommandBarEnabled: boolean; isDataEditorModeEnabled: boolean }>()
     .withName({ Launcher })
-    .create(({ theme, isCommandBarEnabled }) => {
+    .create(({ theme, isCommandBarEnabled, isDataEditorModeEnabled }) => {
         const MAX_WIDTH = 1250;
 
         return {
@@ -505,10 +560,26 @@ const useStyles = tss
             mainCard: {
                 maxWidth: MAX_WIDTH
             },
+            modeSwitch: {
+                display: "flex",
+                alignItems: "center",
+                ...theme.spacing.topBottom("margin", 3)
+            },
             rootFormWrapper: {
-                marginTop: theme.spacing(3),
                 flex: 1,
-                overflow: "auto"
+                overflow: "auto",
+                display: isDataEditorModeEnabled ? "none" : undefined
+            },
+            dataTextEditorWrapper: {
+                display: isDataEditorModeEnabled ? undefined : "none",
+                flex: 1,
+                overflow: "visible",
+                position: "relative"
+            },
+            dataTextEditor: {
+                position: "absolute",
+                width: "100%",
+                overflow: "visible"
             },
             rootForm: {
                 maxWidth: MAX_WIDTH
