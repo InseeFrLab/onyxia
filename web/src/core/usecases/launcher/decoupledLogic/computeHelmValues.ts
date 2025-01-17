@@ -16,10 +16,12 @@ import {
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
     type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
 } from "./shared/validateValueAgainstJSONSchema";
+import { resolveEnum } from "./shared/resolveEnum";
 import {
     getJSONSchemaType,
     type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
 } from "./shared/getJSONSchemaType";
+import structuredClone from "@ungap/structured-clone";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: XOnyxiaParams["overwriteDefaultWith"];
@@ -35,6 +37,8 @@ export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
         default?: Stringifyable;
         const?: Stringifyable;
         properties?: Record<string, JSONSchemaLike>;
+        required?: string[];
+        enum?: Stringifyable[];
         [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
     };
 
@@ -53,14 +57,18 @@ export function computeHelmValues(params: {
     xOnyxiaContext: XOnyxiaContextLike;
 }): {
     helmValues: Record<string, Stringifyable>;
+    helmValuesSchema_forDataTextEditor: JSONSchemaLike;
     isChartUsingS3: boolean;
 } {
     const { helmValuesSchema, helmValuesYaml, xOnyxiaContext } = params;
+
+    const helmValuesSchema_forDataTextEditor = structuredClone(helmValuesSchema);
 
     let isChartUsingS3 = false;
 
     const helmValues = computeHelmValues_rec({
         helmValuesSchema,
+        helmValuesSchema_forDataTextEditor,
         helmValuesYaml_parsed: (() => {
             const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
 
@@ -92,7 +100,7 @@ export function computeHelmValues(params: {
 
     assert(helmValues instanceof Object && !(helmValues instanceof Array));
 
-    return { helmValues, isChartUsingS3 };
+    return { helmValues, isChartUsingS3, helmValuesSchema_forDataTextEditor };
 }
 
 export type XOnyxiaContextLike_computeHelmValues_rec =
@@ -105,8 +113,32 @@ export function computeHelmValues_rec(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValuesYaml_parsed: Stringifyable | undefined;
     xOnyxiaContext: XOnyxiaContextLike_computeHelmValues_rec;
+    helmValuesSchema_forDataTextEditor: JSONSchemaLike | undefined;
 }): Stringifyable {
-    const { helmValuesSchema, helmValuesYaml_parsed, xOnyxiaContext } = params;
+    const {
+        helmValuesSchema,
+        helmValuesYaml_parsed,
+        xOnyxiaContext,
+        // NOTE: This is made possibly undefined just because this function is exported
+        // and we might want to skip this functionality.
+        // In this case we set the value to a clone so we don't have to deal with the undefined case everywhere.
+        helmValuesSchema_forDataTextEditor = structuredClone(helmValuesSchema)
+    } = params;
+
+    delete helmValuesSchema_forDataTextEditor.listEnum;
+    delete helmValuesSchema_forDataTextEditor["x-onyxia"];
+    delete helmValuesSchema_forDataTextEditor.render;
+
+    {
+        const resolvedEnum = resolveEnum({
+            helmValuesSchema,
+            xOnyxiaContext
+        });
+
+        if (resolvedEnum !== undefined) {
+            helmValuesSchema_forDataTextEditor.enum = resolvedEnum;
+        }
+    }
 
     use_const: {
         const constValue = helmValuesSchema.const;
@@ -122,6 +154,8 @@ export function computeHelmValues_rec(params: {
         });
 
         assert(isValid);
+
+        delete helmValuesSchema_forDataTextEditor.default;
 
         return constValue;
     }
@@ -139,6 +173,13 @@ export function computeHelmValues_rec(params: {
             break schema_is_object_with_known_properties;
         }
 
+        const { properties: property_forDataTextEditor } =
+            helmValuesSchema_forDataTextEditor;
+
+        assert(property_forDataTextEditor !== undefined);
+
+        helmValuesSchema_forDataTextEditor.required = Object.keys(properties);
+
         return Object.fromEntries(
             Object.entries(properties).map(([propertyName, propertySchema]) => [
                 propertyName,
@@ -149,7 +190,14 @@ export function computeHelmValues_rec(params: {
                         !(helmValuesYaml_parsed instanceof Array)
                             ? helmValuesYaml_parsed[propertyName]
                             : undefined,
-                    xOnyxiaContext
+                    xOnyxiaContext,
+                    helmValuesSchema_forDataTextEditor: (() => {
+                        const out = property_forDataTextEditor[propertyName];
+
+                        assert(out !== undefined, "crash");
+
+                        return out;
+                    })()
                 })
             ])
         );
@@ -181,8 +229,14 @@ export function computeHelmValues_rec(params: {
             if (validationResult.reasonableApproximation === undefined) {
                 break use_x_onyxia_overwriteDefaultWith;
             }
+
+            helmValuesSchema_forDataTextEditor.default =
+                validationResult.reasonableApproximation;
+
             return validationResult.reasonableApproximation;
         }
+
+        helmValuesSchema_forDataTextEditor.default = resolvedValue;
 
         return resolvedValue;
     }
@@ -220,6 +274,8 @@ export function computeHelmValues_rec(params: {
 
         assert(isValid);
 
+        helmValuesSchema_forDataTextEditor.default = helmValuesYaml_parsed;
+
         return helmValuesYaml_parsed;
     }
 
@@ -244,13 +300,18 @@ export function computeHelmValues_rec(params: {
                     return undefined;
                 }
 
+                const { items: items_resolved } = helmValuesSchema_forDataTextEditor;
+
+                assert(items_resolved !== undefined);
+
                 let defaultItem;
 
                 try {
                     defaultItem = computeHelmValues_rec({
                         helmValuesSchema: items,
                         helmValuesYaml_parsed: undefined,
-                        xOnyxiaContext
+                        xOnyxiaContext,
+                        helmValuesSchema_forDataTextEditor: items_resolved
                     });
                 } catch {
                     return undefined;

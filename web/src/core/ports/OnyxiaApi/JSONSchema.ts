@@ -31,6 +31,7 @@ export type JSONSchema = {
     sliderExtremity?: "down" | "up";
     const?: Stringifyable;
     properties?: Record<string, JSONSchema>;
+    required?: string[];
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParams;
 };
 

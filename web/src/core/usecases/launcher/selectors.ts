@@ -48,18 +48,16 @@ const helmValues = createSelector(readyState, state => {
     return state.helmValues;
 });
 
-const helmValuesSchema = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.helmValuesSchema;
-});
-
 const rootForm = createSelector(
     isReady,
     chartName,
-    helmValuesSchema,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.helmValuesSchema;
+    }),
     helmValues,
     createSelector(readyState, state => {
         if (state === null) {
@@ -567,7 +565,13 @@ const main = createSelector(
     s3ConfigSelect,
     labeledHelmChartSourceUrls,
     helmValues,
-    helmValuesSchema,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.helmValuesSchema_forDataTextEditor;
+    }),
     (
         isReady,
         friendlyName,
@@ -588,7 +592,7 @@ const main = createSelector(
         s3ConfigSelect,
         labeledHelmChartSourceUrls,
         helmValues,
-        helmValuesSchema
+        helmValuesSchema_forDataTextEditor
     ) => {
         if (!isReady) {
             return {
@@ -614,7 +618,7 @@ const main = createSelector(
         assert(s3ConfigSelect !== null);
         assert(labeledHelmChartSourceUrls !== null);
         assert(helmValues !== null);
-        assert(helmValuesSchema !== null);
+        assert(helmValuesSchema_forDataTextEditor !== null);
 
         return {
             isReady: true as const,
@@ -636,7 +640,7 @@ const main = createSelector(
             s3ConfigSelect,
             labeledHelmChartSourceUrls,
             helmValues,
-            helmValuesSchema
+            helmValuesSchema_forDataTextEditor
         };
     }
 );

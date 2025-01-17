@@ -205,12 +205,15 @@ export const thunks = {
                     return;
                 }
 
-                const { helmValues: helmValues_default, isChartUsingS3 } =
-                    computeHelmValues({
-                        helmValuesSchema,
-                        xOnyxiaContext,
-                        helmValuesYaml
-                    });
+                const {
+                    helmValues: helmValues_default,
+                    helmValuesSchema_forDataTextEditor,
+                    isChartUsingS3
+                } = computeHelmValues({
+                    helmValuesSchema,
+                    xOnyxiaContext,
+                    helmValuesYaml
+                });
 
                 const friendlyName_default = chartName;
 
@@ -251,6 +254,8 @@ export const thunks = {
                             helmValuesSchema,
                             helmValues_default,
                             helmValuesYaml,
+
+                            helmValuesSchema_forDataTextEditor,
 
                             chartIconUrl,
                             catalogRepositoryUrl,

@@ -87,7 +87,7 @@ export default function Launcher(props: Props) {
         s3ConfigSelect,
         labeledHelmChartSourceUrls,
         helmValues,
-        helmValuesSchema
+        helmValuesSchema_forDataTextEditor
     } = useCoreState("launcher", "main");
 
     const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
@@ -476,7 +476,7 @@ export default function Launcher(props: Props) {
                         className={classes.dataTextEditor}
                         id="helmValuesYaml"
                         value={helmValues}
-                        jsonSchema={helmValuesSchema}
+                        jsonSchema={helmValuesSchema_forDataTextEditor}
                         maxHeight={height_dataTextEditorWrapper}
                         onChange={helmValues => {
                             assert(!(helmValues instanceof Array));
