@@ -10,7 +10,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     className?: string;
-    id: string;
+    id?: string;
     maxHeight?: number;
     extensions: Extension[];
     value: string;

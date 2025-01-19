@@ -52,7 +52,7 @@ const ajv = new Ajv({
 
 export type Props = {
     className?: string;
-    id: string;
+    id?: string;
     maxHeight?: number;
     fallback?: JSX.Element;
 

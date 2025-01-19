@@ -486,7 +486,6 @@ export default function Launcher(props: Props) {
                 >
                     <DataTextEditor
                         className={classes.dataTextEditor}
-                        id="helmValuesYaml"
                         value={helmValues}
                         jsonSchema={helmValuesSchema_forDataTextEditor}
                         maxHeight={height_dataTextEditorWrapper}

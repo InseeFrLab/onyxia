@@ -11,7 +11,7 @@ const TextEditorWithScreenScaler = lazy(() => import("./TextEditorWithScreenScal
 
 export type Props = {
     className?: string;
-    id: string;
+    id?: string;
     maxHeight?: number;
     extensions: Extension[];
     value: string;

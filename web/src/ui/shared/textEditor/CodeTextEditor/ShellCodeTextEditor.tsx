@@ -6,7 +6,7 @@ import { TextEditor } from "../TextEditor";
 
 export type Props = {
     className?: string;
-    id: string;
+    id?: string;
     maxHeight?: number;
     value: string;
     onChange: ((newValue: string) => void) | undefined;
