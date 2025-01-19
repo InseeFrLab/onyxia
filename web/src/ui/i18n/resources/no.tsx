@@ -669,7 +669,9 @@ Du kan deaktivere kommandolinjen i [\`Min konto -> Grensesnitt preferanse-fanen\
 
 Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         `}</Markdown>
-        )
+        ),
+        form: "Skjema",
+        editor: "Teksteditor"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

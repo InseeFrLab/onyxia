@@ -356,8 +356,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },
@@ -670,7 +671,9 @@ Puoi disabilitare la barra dei comandi nel tab [\`Il Mio Account -> Preferenze I
 
 Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernetes!
         `}</Markdown>
-        )
+        ),
+        form: "Modulo",
+        editor: "Editor di testo"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

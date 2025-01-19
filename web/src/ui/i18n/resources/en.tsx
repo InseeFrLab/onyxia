@@ -659,7 +659,9 @@ You can disable the command bar in the [\`My Account -> Interface preference tab
 
 Feel free to explore and take charge of your Kubernetes deployments!  
         `}</Markdown>
-        )
+        ),
+        form: "Form",
+        editor: "Text Editor"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

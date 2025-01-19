@@ -675,7 +675,9 @@ export const translations: Translations<"en"> = {
     
     ¡Siéntete libre de explorar y tomar el control de tus implementaciones de Kubernetes!
             `}</Markdown>
-        )
+        ),
+        form: "Formulario",
+        editor: "Editor de texto"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":
