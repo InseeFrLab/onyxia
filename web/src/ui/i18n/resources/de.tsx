@@ -673,7 +673,9 @@ Sie können die Befehlsleiste im [\`Mein Konto -> Benutzeroberfläche Einstellun
 
 Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kontrolle zu übernehmen!
         `}</Markdown>
-        )
+        ),
+        form: "Formular",
+        editor: "Texteditor"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

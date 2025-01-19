@@ -678,7 +678,9 @@ Vous pouvez désactiver la barre de commande dans l'onglet [\`Mon compte -> Pré
 
 N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         `}</Markdown>
-        )
+        ),
+        form: "Formulaire",
+        editor: "Éditeur de texte"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

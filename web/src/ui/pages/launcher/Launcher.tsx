@@ -28,10 +28,11 @@ import type { FormCallbacks } from "./RootFormComponent/FormCallbacks";
 import { arrRemoveDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { same } from "evt/tools/inDepth/same";
 import { DataTextEditor } from "ui/shared/textEditor/DataTextEditor";
-import Switch from "@mui/material/Switch";
-import { Text } from "onyxia-ui/Text";
 import { useSessionState } from "ui/tools/useSessionState";
 import { z } from "zod";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
 
 export type Props = {
     route: PageRoute;
@@ -446,15 +447,26 @@ export default function Launcher(props: Props) {
                     erroredFormFields={erroredFormFields}
                     dataTextEditorErrorMsg={dataTextEditorErrorMsg}
                 />
-                <div className={classes.modeSwitch}>
-                    <Text typo="label 1">Interactive Form</Text>
-                    <Switch
-                        disabled={dataTextEditorErrorMsg !== undefined}
-                        checked={isDataEditorModeEnabled}
-                        onChange={e => setIsDataEditorModeEnabled(e.target.checked)}
+                <RadioGroup
+                    className={classes.modeSwitch}
+                    value={isDataEditorModeEnabled ? "editor" : "form"}
+                    onChange={event =>
+                        setIsDataEditorModeEnabled(event.target.value === "editor")
+                    }
+                >
+                    <FormControlLabel
+                        value="form"
+                        control={
+                            <Radio disabled={dataTextEditorErrorMsg !== undefined} />
+                        }
+                        label={t("form")}
                     />
-                    <Text typo="label 1">Text Editor</Text>
-                </div>
+                    <FormControlLabel
+                        value="editor"
+                        control={<Radio />}
+                        label={t("editor")}
+                    />
+                </RadioGroup>
                 <div className={classes.rootFormWrapper}>
                     <RootFormComponent
                         className={classes.rootForm}
@@ -524,6 +536,8 @@ const { i18n } = declareComponentKeys<
           };
           R: JSX.Element;
       }
+    | "form"
+    | "editor"
 >()({ Launcher });
 export type I18n = typeof i18n;
 
@@ -562,7 +576,7 @@ const useStyles = tss
             },
             modeSwitch: {
                 display: "flex",
-                alignItems: "center",
+                flexDirection: "row",
                 ...theme.spacing.topBottom("margin", 3)
             },
             rootFormWrapper: {

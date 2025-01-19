@@ -664,7 +664,9 @@ Voit poistaa komentopalkin käytöstä [\`Oma tili -> Käyttöliittymäasetukset
 
 Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         `}</Markdown>
-        )
+        ),
+        form: "Lomake",
+        editor: "Tekstieditori"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

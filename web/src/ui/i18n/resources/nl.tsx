@@ -673,7 +673,9 @@ Je kunt de commandobalk uitschakelen in het tabblad [\`Mijn Account -> Interface
 
 Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te nemen!
         `}</Markdown>
-        )
+        ),
+        form: "Formulier",
+        editor: "Teksteditor"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":

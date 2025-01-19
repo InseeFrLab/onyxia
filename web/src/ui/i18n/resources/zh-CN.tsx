@@ -623,7 +623,9 @@ ${
 
 随意探索并掌握您的 Kubernetes 部署！
         `}</Markdown>
-        )
+        ),
+        form: "表单",
+        editor: "文本编辑器"
     },
     AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title": "请注意，配置是共享的",
