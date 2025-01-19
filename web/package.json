@@ -2,7 +2,7 @@
     "name": "onyxia-web",
     "homepage": "https://onyxia.sh",
     "type": "module",
-    "version": "4.35.7",
+    "version": "4.36.0",
     "license": "MIT",
     "scripts": {
         "postinstall": "yarn install-git-hooks && vite-envs update-types && mui-icons-material-lazy postinstall && patch-package",
