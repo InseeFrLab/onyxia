@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { json } from "@codemirror/lang-json";
 import { assert, type Equals } from "tsafe/assert";
 import { TextEditor } from "../TextEditor";
@@ -9,6 +10,7 @@ export type Props = {
     value: string;
     onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
+    children?: ReactNode;
 };
 
 {

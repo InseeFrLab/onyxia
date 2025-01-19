@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { shell } from "@codemirror/legacy-modes/mode/shell";
 import { StreamLanguage } from "@codemirror/language";
 import { assert, type Equals } from "tsafe/assert";
@@ -10,6 +11,7 @@ export type Props = {
     value: string;
     onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
+    children?: ReactNode;
 };
 
 {

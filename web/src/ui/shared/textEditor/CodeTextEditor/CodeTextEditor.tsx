@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { assert, type Equals } from "tsafe/assert";
 import { Suspense, lazy } from "react";
 const ShellCodeTextEditor = lazy(() => import("./ShellCodeTextEditor"));
@@ -10,6 +11,7 @@ export type Props = {
     value: string;
     onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
+    children?: ReactNode;
     language: "shell" | "JSON";
 };
 

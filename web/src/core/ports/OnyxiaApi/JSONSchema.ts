@@ -74,6 +74,7 @@ export const zJSONSchema = (() => {
         sliderExtremity: z.enum(["down", "up"]).optional(),
         const: zStringifyable.optional(),
         properties: z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
+        required: z.array(z.string()).optional(),
         [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParams.optional()
     });
 
