@@ -119,24 +119,27 @@ export function computeHelmValues_rec(params: {
         helmValuesSchema,
         helmValuesYaml_parsed,
         xOnyxiaContext,
-        // NOTE: This is made possibly undefined just because this function is exported
-        // and we might want to skip this functionality.
-        // In this case we set the value to a clone so we don't have to deal with the undefined case everywhere.
-        helmValuesSchema_forDataTextEditor = structuredClone(helmValuesSchema)
+        helmValuesSchema_forDataTextEditor
     } = params;
 
-    delete helmValuesSchema_forDataTextEditor.listEnum;
-    delete helmValuesSchema_forDataTextEditor["x-onyxia"];
-    delete helmValuesSchema_forDataTextEditor.render;
+    for_text_editor_only: {
+        if (helmValuesSchema_forDataTextEditor === undefined) {
+            break for_text_editor_only;
+        }
 
-    {
-        const resolvedEnum = resolveEnum({
-            helmValuesSchema,
-            xOnyxiaContext
-        });
+        delete helmValuesSchema_forDataTextEditor.listEnum;
+        delete helmValuesSchema_forDataTextEditor["x-onyxia"];
+        delete helmValuesSchema_forDataTextEditor.render;
 
-        if (resolvedEnum !== undefined) {
-            helmValuesSchema_forDataTextEditor.enum = resolvedEnum;
+        {
+            const resolvedEnum = resolveEnum({
+                helmValuesSchema,
+                xOnyxiaContext
+            });
+
+            if (resolvedEnum !== undefined) {
+                helmValuesSchema_forDataTextEditor.enum = resolvedEnum;
+            }
         }
     }
 
@@ -155,7 +158,9 @@ export function computeHelmValues_rec(params: {
 
         assert(isValid);
 
-        delete helmValuesSchema_forDataTextEditor.default;
+        if (helmValuesSchema_forDataTextEditor !== undefined) {
+            delete helmValuesSchema_forDataTextEditor.default;
+        }
 
         return constValue;
     }
@@ -173,12 +178,9 @@ export function computeHelmValues_rec(params: {
             break schema_is_object_with_known_properties;
         }
 
-        const { properties: property_forDataTextEditor } =
-            helmValuesSchema_forDataTextEditor;
-
-        assert(property_forDataTextEditor !== undefined);
-
-        helmValuesSchema_forDataTextEditor.required = Object.keys(properties);
+        if (helmValuesSchema_forDataTextEditor !== undefined) {
+            helmValuesSchema_forDataTextEditor.required = Object.keys(properties);
+        }
 
         return Object.fromEntries(
             Object.entries(properties).map(([propertyName, propertySchema]) => [
@@ -192,6 +194,15 @@ export function computeHelmValues_rec(params: {
                             : undefined,
                     xOnyxiaContext,
                     helmValuesSchema_forDataTextEditor: (() => {
+                        if (helmValuesSchema_forDataTextEditor === undefined) {
+                            return undefined;
+                        }
+
+                        const { properties: property_forDataTextEditor } =
+                            helmValuesSchema_forDataTextEditor;
+
+                        assert(property_forDataTextEditor !== undefined);
+
                         const out = property_forDataTextEditor[propertyName];
 
                         assert(out !== undefined, "crash");
@@ -230,13 +241,17 @@ export function computeHelmValues_rec(params: {
                 break use_x_onyxia_overwriteDefaultWith;
             }
 
-            helmValuesSchema_forDataTextEditor.default =
-                validationResult.reasonableApproximation;
+            if (helmValuesSchema_forDataTextEditor !== undefined) {
+                helmValuesSchema_forDataTextEditor.default =
+                    validationResult.reasonableApproximation;
+            }
 
             return validationResult.reasonableApproximation;
         }
 
-        helmValuesSchema_forDataTextEditor.default = resolvedValue;
+        if (helmValuesSchema_forDataTextEditor !== undefined) {
+            helmValuesSchema_forDataTextEditor.default = resolvedValue;
+        }
 
         return resolvedValue;
     }
@@ -274,7 +289,9 @@ export function computeHelmValues_rec(params: {
 
         assert(isValid);
 
-        helmValuesSchema_forDataTextEditor.default = helmValuesYaml_parsed;
+        if (helmValuesSchema_forDataTextEditor !== undefined) {
+            helmValuesSchema_forDataTextEditor.default = helmValuesYaml_parsed;
+        }
 
         return helmValuesYaml_parsed;
     }
@@ -300,10 +317,6 @@ export function computeHelmValues_rec(params: {
                     return undefined;
                 }
 
-                const { items: items_resolved } = helmValuesSchema_forDataTextEditor;
-
-                assert(items_resolved !== undefined);
-
                 let defaultItem;
 
                 try {
@@ -311,7 +324,18 @@ export function computeHelmValues_rec(params: {
                         helmValuesSchema: items,
                         helmValuesYaml_parsed: undefined,
                         xOnyxiaContext,
-                        helmValuesSchema_forDataTextEditor: items_resolved
+                        helmValuesSchema_forDataTextEditor: (() => {
+                            if (helmValuesSchema_forDataTextEditor === undefined) {
+                                return undefined;
+                            }
+
+                            const { items: items_resolved } =
+                                helmValuesSchema_forDataTextEditor;
+
+                            assert(items_resolved !== undefined);
+
+                            return items_resolved;
+                        })()
                     });
                 } catch {
                     return undefined;
