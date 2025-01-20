@@ -239,11 +239,9 @@ export default function DataExplorer(props: Props) {
                                 rowCount={rowCount ?? 999999999}
                                 pageSizeOptions={(() => {
                                     const pageSizeOptions = [25, 50, 100];
-
                                     assert(
                                         pageSizeOptions.includes(queryParams.rowsPerPage)
                                     );
-
                                     return pageSizeOptions;
                                 })()}
                                 paginationModel={{

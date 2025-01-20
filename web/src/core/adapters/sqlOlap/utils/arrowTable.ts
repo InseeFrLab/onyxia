@@ -37,15 +37,15 @@ const getColumnType = async (type: DataType): Promise<Column["type"]> => {
         case Type.FixedSizeBinary:
             return "binary";
 
-        case Type.Duration:
+        case Type.Duration: //Not supported in Parquet yet
         case Type.FixedSizeList:
         case Type.Map:
         case Type.Union:
         case Type.Struct:
+        case Type.Interval:
         case Type.List:
             return "string";
 
-        case Type.Interval:
         default:
             throw new Error(
                 `Unsupported Arrow DataType: ${Type[type.typeId] || "Unknown"} (${type.typeId})`
