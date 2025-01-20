@@ -7,7 +7,7 @@ import { assert } from "tsafe/assert";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 const privateThunks = {
-    getFileDonwloadUrl:
+    getFileDownloadUrl:
         (params: { sourceUrl: string }) =>
         async (...args) => {
             const [dispatch, , { oidc }] = args;
@@ -77,7 +77,7 @@ const privateThunks = {
 
             const { fileType, fileDownloadUrl: fileDownloadUrlOrUndefined } =
                 await (async () => {
-                    if (!isSourceUrlChanged && data.state !== "empty") {
+                    if (!isSourceUrlChanged && data !== undefined) {
                         return {
                             fileType: data.fileType,
                             fileDownloadUrl: data.fileDownloadUrl
@@ -100,14 +100,14 @@ const privateThunks = {
             const fileDownloadUrl =
                 fileDownloadUrlOrUndefined ??
                 (await dispatch(
-                    privateThunks.getFileDonwloadUrl({
+                    privateThunks.getFileDownloadUrl({
                         sourceUrl
                     })
                 ));
 
             const rowCountOrErrorMessage = await (async () => {
                 if (!isSourceUrlChanged) {
-                    assert(data.state === "loaded");
+                    assert(data !== undefined);
                     return data.rowCount;
                 }
 
@@ -133,44 +133,26 @@ const privateThunks = {
             if (!getIsActive()) {
                 return;
             }
-            const rowsOrErrorMessage = await (async () => {
-                try {
-                    return isSourceUrlChanged
-                        ? await sqlOlap.getRowsAndColumns({
-                              sourceUrl,
-                              rowsPerPage: rowsPerPage + 1,
-                              page,
-                              fileType
-                          })
-                        : await (async () => {
-                              assert(
-                                  data.state === "loaded",
-                                  "Data must be loaded to reuse columns"
-                              );
-                              const { rows } = await sqlOlap.getRows({
-                                  sourceUrl,
-                                  rowsPerPage: rowsPerPage + 1,
-                                  page,
-                                  fileType,
-                                  columns: data.columns
-                              });
-                              return {
-                                  rows,
-                                  columns: data.columns
-                              };
-                          })();
-                } catch (error) {
-                    console.error(error);
+            const rowsAndColumnsOrErrorMessage = await sqlOlap
+                .getRows({
+                    sourceUrl,
+                    rowsPerPage: rowsPerPage + 1,
+                    page,
+                    fileType
+                })
+                .catch(error => {
+                    console.error("Failed to fetch rows:", error);
                     return String(error);
-                }
-            })();
+                });
 
-            if (typeof rowsOrErrorMessage === "string") {
-                dispatch(actions.queryFailed({ errorMessage: rowsOrErrorMessage }));
+            if (typeof rowsAndColumnsOrErrorMessage === "string") {
+                dispatch(
+                    actions.queryFailed({ errorMessage: rowsAndColumnsOrErrorMessage })
+                );
                 return;
             }
 
-            const { columns, rows } = rowsOrErrorMessage;
+            const { columns, rows } = rowsAndColumnsOrErrorMessage;
             const hasMore = rows.length === rowsPerPage + 1;
 
             dispatch(
@@ -225,7 +207,7 @@ const privateThunks = {
             }
 
             const fileDownloadUrl = await dispatch(
-                privateThunks.getFileDonwloadUrl({ sourceUrl })
+                privateThunks.getFileDownloadUrl({ sourceUrl })
             );
 
             try {

@@ -6,19 +6,12 @@ export type SqlOlap = {
         sourceUrl: string;
         fileType: "parquet" | "csv" | "json";
     }) => Promise<number | undefined>;
-    getRowsAndColumns: (params: {
-        sourceUrl: string;
-        fileType: "parquet" | "csv" | "json";
-        rowsPerPage: number;
-        page: number;
-    }) => Promise<{ rows: unknown[]; columns: Column[] }>;
     getRows: (params: {
         sourceUrl: string;
         fileType: "parquet" | "csv" | "json";
         rowsPerPage: number;
         page: number;
-        columns: Column[];
-    }) => Promise<{ rows: unknown[] }>;
+    }) => Promise<{ rows: unknown[]; columns: Column[] }>;
 };
 
 export type Column = {

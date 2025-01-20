@@ -14,7 +14,7 @@ import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 import { same } from "evt/tools/inDepth/same";
 import type { ReturnType } from "tsafe";
-import { arrowTableToColumns, arrowTableToRows } from "./utils/arrowTable";
+import { createArrowTableApi } from "./utils/arrowTable";
 
 export const createDuckDbSqlOlap = (params: {
     getS3Config: () => Promise<
@@ -33,6 +33,8 @@ export const createDuckDbSqlOlap = (params: {
     >;
 }): SqlOlap => {
     const { getS3Config } = params;
+
+    const prArrowTableApi = createArrowTableApi();
 
     const sqlOlap: SqlOlap = {
         getConfiguredAsyncDuckDb: (() => {
@@ -106,7 +108,7 @@ export const createDuckDbSqlOlap = (params: {
                 return db;
             };
         })(),
-        getRowsAndColumns: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
+        getRows: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
             const conn = await db.connect();
 
@@ -124,57 +126,39 @@ export const createDuckDbSqlOlap = (params: {
             const stmt = await conn.prepare(sqlQuery);
             const res = await stmt.query();
 
-            const columns = await arrowTableToColumns({ table: res });
+            const { arrowTableToColumns, arrowTableToRows } = await prArrowTableApi;
+
+            const columns = arrowTableToColumns({ table: res });
             const rows = arrowTableToRows({ table: res, columns });
 
             await conn.close();
 
             return { rows, columns };
         },
-        getRows: async ({ sourceUrl, fileType, rowsPerPage, page, columns }) => {
-            const db = await sqlOlap.getConfiguredAsyncDuckDb();
-            const conn = await db.connect();
+        getRowCount: (() => {
+            const getRowCount_memo = memoize(
+                async (sourceUrl: string, fileType: "parquet" | "json" | "csv") => {
+                    if (fileType !== "parquet") {
+                        return undefined;
+                    }
 
-            const sqlQuery = `SELECT * FROM ${(() => {
-                switch (fileType) {
-                    case "csv":
-                        return `read_csv('${sourceUrl}')`;
-                    case "parquet":
-                        return `read_parquet('${sourceUrl}')`;
-                    case "json":
-                        return `read_json('${sourceUrl}')`;
-                }
-            })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
+                    const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
-            const stmt = await conn.prepare(sqlQuery);
-            const res = await stmt.query();
+                    const conn = await db.connect();
 
-            const rows = arrowTableToRows({ table: res, columns });
+                    const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
 
-            await conn.close();
+                    return conn
+                        .prepare(query)
+                        .then(stmt => stmt.query())
+                        .then(res => res.toArray()[0]["v"])
+                        .finally(() => conn.close());
+                },
+                { promise: true, max: 1 }
+            );
 
-            return { rows };
-        },
-        getRowCount: memoize(
-            async ({ sourceUrl, fileType }) => {
-                if (fileType !== "parquet") {
-                    return undefined;
-                }
-
-                const db = await sqlOlap.getConfiguredAsyncDuckDb();
-
-                const conn = await db.connect();
-
-                const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
-
-                return conn
-                    .prepare(query)
-                    .then(stmt => stmt.query())
-                    .then(res => res.toArray()[0]["v"])
-                    .finally(() => conn.close());
-            },
-            { promise: true, max: 1 }
-        )
+            return ({ sourceUrl, fileType }) => getRowCount_memo(sourceUrl, fileType);
+        })()
     };
 
     return sqlOlap;

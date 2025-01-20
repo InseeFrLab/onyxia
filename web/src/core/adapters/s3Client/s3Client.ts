@@ -647,7 +647,7 @@ export function createS3Client(
             return downloadUrl;
         },
 
-        getFileMetadata: async ({ path }) => {
+        getFileContentType: async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { getAwsS3Client } = await prApi;
@@ -661,7 +661,7 @@ export function createS3Client(
                 })
             );
 
-            return { contentType: head.ContentType, metadata: head.Metadata };
+            return head.ContentType;
         }
 
         // "getPresignedUploadUrl": async ({ path, validityDurationSecond }) => {

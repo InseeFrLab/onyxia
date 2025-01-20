@@ -61,10 +61,7 @@ export type S3Client = {
         validityDurationSecond: number;
     }) => Promise<string>;
 
-    getFileMetadata: (params: { path: string }) => Promise<{
-        contentType: string | undefined;
-        metadata: Record<string, string> | undefined;
-    }>;
+    getFileContentType: (params: { path: string }) => Promise<string | undefined>;
 
     // getPresignedUploadUrl: (params: {
     //     path: string;

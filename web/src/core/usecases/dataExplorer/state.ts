@@ -10,8 +10,8 @@ export type State = {
     queryParams:
         | {
               sourceUrl: string;
-              rowsPerPage: number | undefined;
-              page: number | undefined;
+              rowsPerPage: number;
+              page: number;
           }
         | undefined;
     extraRestorableStates:
@@ -23,14 +23,13 @@ export type State = {
     errorMessage: string | undefined;
     data:
         | {
-              state: "loaded";
               rows: any[];
               columns: Column[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
               fileType: "parquet" | "csv" | "json";
           }
-        | { state: "empty" };
+        | undefined;
 };
 
 export const { actions, reducer } = createUsecaseActions({
@@ -40,7 +39,7 @@ export const { actions, reducer } = createUsecaseActions({
         queryParams: undefined,
         extraRestorableStates: undefined,
         errorMessage: undefined,
-        data: { state: "empty" }
+        data: undefined
     }),
     reducers: {
         extraRestorableStateSet: (
@@ -116,7 +115,6 @@ export const { actions, reducer } = createUsecaseActions({
             const { rowCount, rows, fileDownloadUrl, columns, fileType } = payload;
             state.isQuerying = false;
             state.data = {
-                state: "loaded",
                 rowCount,
                 rows,
                 columns,
@@ -140,7 +138,7 @@ export const { actions, reducer } = createUsecaseActions({
         restoreState: state => {
             state.queryParams = undefined;
             state.extraRestorableStates = undefined;
-            state.data = { state: "empty" };
+            state.data = undefined;
             state.errorMessage = undefined;
         }
     }
