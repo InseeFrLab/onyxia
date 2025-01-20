@@ -28,6 +28,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       serviceAccountName: {{ include "onyxia.api.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.api.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.api.podSecurityContext | nindent 8 }}
       containers:
