@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss";
 import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
@@ -8,6 +8,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert } from "tsafe/assert";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
+import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
@@ -17,7 +18,7 @@ import { autosizeOptions, CustomDataGrid } from "ui/shared/Datagrid/CustomDataGr
 import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { exclude } from "tsafe/exclude";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
-import { useGridApiRef } from "@mui/x-data-grid";
+import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 
 export type Props = {
@@ -61,6 +62,38 @@ export default function DataExplorer(props: Props) {
         errorMessage,
         isQuerying
     } = useCoreState("dataExplorer", "main");
+
+    const modifiedColumns = useMemo(() => {
+        if (columns === undefined) return undefined;
+        return columns.map(
+            column =>
+                ({
+                    field: column.name,
+                    sortable: false,
+                    renderHeader: () => (
+                        <Text typo="body 1">
+                            {column.name}
+                            <Text
+                                typo="caption"
+                                className={classes.dataGridColumnHeaderType}
+                            >
+                                {column.rowType}
+                            </Text>
+                        </Text>
+                    ),
+                    headerAlign: "left",
+                    type: (() => {
+                        switch (column.type) {
+                            case "bigint":
+                            case "binary":
+                                return "string";
+                            default:
+                                return column.type;
+                        }
+                    })()
+                }) satisfies GridColDef
+        );
+    }, [columns]);
 
     useEffect(() => {
         if (columns) {
@@ -147,7 +180,7 @@ export default function DataExplorer(props: Props) {
                         );
                     }
 
-                    if (rows === undefined) {
+                    if (rows === undefined || modifiedColumns === undefined) {
                         if (!isQuerying) {
                             return null;
                         }
@@ -162,7 +195,6 @@ export default function DataExplorer(props: Props) {
                     assert(queryParams.page !== undefined);
                     assert(queryParams.rowsPerPage !== undefined);
 
-                    console.log();
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
@@ -200,7 +232,7 @@ export default function DataExplorer(props: Props) {
                                     extraRestorableStates.selectedRowIndex ?? undefined
                                 ].filter(exclude(undefined))}
                                 rows={rows}
-                                columns={columns}
+                                columns={modifiedColumns}
                                 disableColumnMenu
                                 loading={isQuerying}
                                 paginationMode="server"
@@ -295,6 +327,9 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
                 backgroundColor: theme.colors.palette.focus.light
             }
         }
+    },
+    dataGridColumnHeaderType: {
+        fontStyle: "italic"
     }
 }));
 

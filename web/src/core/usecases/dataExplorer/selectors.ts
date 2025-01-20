@@ -2,7 +2,6 @@ import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import { name } from "./state";
 import { assert } from "tsafe/assert";
-import type { GridColDef } from "@mui/x-data-grid";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -13,20 +12,7 @@ const columns = createSelector(
             return undefined;
         }
 
-        const columns = data.columns.map(
-            column =>
-                ({
-                    field: column.name,
-                    sortable: false,
-                    type: (() => {
-                        if (column.type === "bigint") return "string";
-                        if (column.type === "binary") return "string";
-                        return column.type;
-                    })()
-                }) satisfies GridColDef
-        );
-
-        return columns;
+        return data.columns;
     }
 );
 

@@ -46,7 +46,6 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
         () =>
             ({
                 ...props.classes,
-                columnSeparator: classes.columnSeparator,
                 iconSeparator: classes.iconSeparator
             }) satisfies Partial<GridClasses>,
         [props.classes, classes]
@@ -77,6 +76,7 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
                                   />
                               </>
                           ),
+
                           display: "flex"
                       } satisfies GridColDef;
                   })
@@ -89,7 +89,6 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
             {...propsRest}
             slots={{
                 noRowsOverlay: CustomNoRowsOverlay,
-
                 ...slots
             }}
             slotProps={{}}
@@ -115,8 +114,7 @@ const { i18n } = declareComponentKeys<
 
 export type I18n = typeof i18n;
 const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
-    columnSeparator: { "&&&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
     iconSeparator: {
-        "&&": { color: theme.colors.useCases.typography.textDisabled }
+        "&&&&": { color: theme.colors.useCases.typography.textDisabled }
     }
 }));
