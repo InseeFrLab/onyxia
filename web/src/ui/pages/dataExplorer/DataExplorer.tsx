@@ -236,7 +236,7 @@ export default function DataExplorer(props: Props) {
                                 disableColumnMenu
                                 loading={isQuerying}
                                 paginationMode="server"
-                                rowCount={rowCount}
+                                rowCount={rowCount ?? 999999999}
                                 pageSizeOptions={(() => {
                                     const pageSizeOptions = [25, 50, 100];
 
