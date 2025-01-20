@@ -125,8 +125,8 @@ const convertVector = (params: { vector: Vector<any>; expectedType: Column["type
         case "number":
             return Array.from(vector.toArray()).map(Number);
         case "bigint":
+            //return Array.from(vector.toArray()).map(value => BigInt(value as bigint)); #waiting for https://github.com/microsoft/TypeScript/issues/46395
             return Array.from(vector.toArray()).map(String);
-            return Array.from(vector.toArray()).map(value => BigInt(value as bigint));
         case "binary":
             return Array.from(vector.toArray()).map(value => {
                 if (value instanceof Uint8Array) {
