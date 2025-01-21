@@ -61,6 +61,8 @@ export type S3Client = {
         validityDurationSecond: number;
     }) => Promise<string>;
 
+    getFileContentType: (params: { path: string }) => Promise<string | undefined>;
+
     // getPresignedUploadUrl: (params: {
     //     path: string;
     //     validityDurationSecond: number;

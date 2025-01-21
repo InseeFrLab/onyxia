@@ -645,6 +645,23 @@ export function createS3Client(
             );
 
             return downloadUrl;
+        },
+
+        getFileContentType: async ({ path }) => {
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            const head = await awsS3Client.send(
+                new (await import("@aws-sdk/client-s3")).HeadObjectCommand({
+                    Bucket: bucketName,
+                    Key: objectName
+                })
+            );
+
+            return head.ContentType;
         }
 
         // "getPresignedUploadUrl": async ({ path, validityDurationSecond }) => {

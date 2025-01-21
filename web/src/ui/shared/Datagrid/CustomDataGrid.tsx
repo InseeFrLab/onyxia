@@ -1,10 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
     DataGrid,
+    GridBooleanCell,
     type GridValidRowModel,
     type GridClasses,
     type GridColDef,
-    type GridAutosizeOptions
+    type GridAutosizeOptions,
+    type GridRenderCellParams
 } from "@mui/x-data-grid";
 import { type ComponentProps, useMemo } from "react";
 import { tss } from "tss";
@@ -12,6 +14,7 @@ import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 import { CustomNoRowsOverlay } from "./CustomNoRowsOverlay";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
+import { type Css } from "tss-react";
 
 export type CustomDataGridProps<R extends GridValidRowModel = any> = ComponentProps<
     typeof DataGrid<R>
@@ -46,7 +49,6 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
         () =>
             ({
                 ...props.classes,
-                columnSeparator: classes.columnSeparator,
                 iconSeparator: classes.iconSeparator
             }) satisfies Partial<GridClasses>,
         [props.classes, classes]
@@ -55,25 +57,18 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
     const modifiedColumns = useMemo(
         () =>
             shouldAddCopyToClipboardInCell
-                ? columns.map(
-                      column =>
-                          ({
-                              ...column,
-                              renderCell: ({ value, hasFocus }) => (
-                                  <>
-                                      <div style={{ width: "100%" }}>{value}</div>
-                                      <CopyToClipboardIconButton
-                                          textToCopy={value}
-                                          className={css({
-                                              visibility: hasFocus ? "visible" : "hidden", //This ensure to preserve space for the icon when cell are auto resized
-                                              right: 0
-                                          })}
-                                      />
-                                  </>
-                              ),
-                              display: "flex"
-                          }) satisfies GridColDef
-                  )
+                ? columns.map(column => {
+                      return {
+                          ...column,
+                          renderCell: customCellRendererFactory({
+                              renderCell: column.renderCell,
+                              css,
+                              type: column.type
+                          }),
+
+                          display: "flex"
+                      } satisfies GridColDef;
+                  })
                 : columns,
         [columns, shouldAddCopyToClipboardInCell]
     );
@@ -83,7 +78,6 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
             {...propsRest}
             slots={{
                 noRowsOverlay: CustomNoRowsOverlay,
-
                 ...slots
             }}
             slotProps={{}}
@@ -101,6 +95,38 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
     );
 };
 
+function customCellRendererFactory(params: {
+    css: Css;
+    renderCell: GridColDef["renderCell"];
+    type: GridColDef["type"];
+}): (gridCellParams: GridRenderCellParams) => JSX.Element {
+    const { renderCell, css, type } = params;
+
+    return function (gridCellParams: GridRenderCellParams): JSX.Element {
+        return (
+            <>
+                {renderCell ? (
+                    renderCell(gridCellParams)
+                ) : (
+                    <span>
+                        {type === "boolean" ? (
+                            <GridBooleanCell {...gridCellParams} />
+                        ) : (
+                            gridCellParams.formattedValue
+                        )}
+                    </span>
+                )}
+                <CopyToClipboardIconButton
+                    textToCopy={gridCellParams.formattedValue}
+                    className={css({
+                        visibility: gridCellParams.hasFocus ? "visible" : "hidden", // Ensure space is preserved for the icon
+                        right: 0
+                    })}
+                />
+            </>
+        );
+    };
+}
 const { i18n } = declareComponentKeys<
     | "empty directory"
     | "label rows per page"
@@ -109,8 +135,7 @@ const { i18n } = declareComponentKeys<
 
 export type I18n = typeof i18n;
 const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
-    columnSeparator: { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
     iconSeparator: {
-        "&&": { color: theme.colors.useCases.typography.textDisabled }
+        "&&&&": { color: theme.colors.useCases.typography.textDisabled }
     }
 }));

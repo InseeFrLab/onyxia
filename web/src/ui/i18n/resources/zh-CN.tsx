@@ -904,10 +904,14 @@ ${
         column: "列",
         density: "密度",
         "download file": "下载文件",
-        "resize table": "调整大小"
+        "resize table": "调整大小",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `不支持的数据格式。支持的类型有：${supportedFileTypes.join(", ")}。`,
+        "can't fetch file": "无法获取数据文件"
     },
     UrlInput: {
-        load: "加载"
+        load: "加载",
+        reset: "清空"
     },
     CommandBar: {
         ok: "是"

@@ -1,23 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss";
 import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { assert, type Equals } from "tsafe/assert";
-import { useEvt } from "evt/hooks";
+import { assert } from "tsafe/assert";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
+import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
 import { env } from "env";
-import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
+import { autosizeOptions, CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { exclude } from "tsafe/exclude";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
+import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
+import { supportedFileTypes } from "core/usecases/dataExplorer/decoupledLogic/SupportedFileType";
 
 export type Props = {
     route: PageRoute;
@@ -30,21 +32,17 @@ export default function DataExplorer(props: Props) {
     const { dataExplorer } = useCore().functions;
     const { t } = useTranslation({ DataExplorer });
 
-    useEffect(() => {
-        dataExplorer.setQueryParamsAndExtraRestorableStates({
-            queryParams: {
-                sourceUrl: route.params.source ?? "",
-                rowsPerPage: route.params.rowsPerPage,
-                page: route.params.page
-            },
-            extraRestorableStates: {
-                selectedRowIndex: route.params.selectedRow,
-                columnVisibility: route.params.columnVisibility
-            }
-        });
-    }, [route]);
+    const apiRef = useGridApiRef();
 
-    const { evtDataExplorer } = useCore().evts;
+    useEffect(() => {
+        dataExplorer.initialize({
+            sourceUrl: route.params.source,
+            rowsPerPage: route.params.rowsPerPage,
+            page: route.params.page,
+            selectedRowIndex: route.params.selectedRow,
+            columnVisibility: route.params.columnVisibility
+        });
+    }, [route.params.source]);
 
     const [isVirtualizationEnabled, setIsVirtualizationEnabled] = useState(true);
 
@@ -55,39 +53,72 @@ export default function DataExplorer(props: Props) {
         setIsVirtualizationEnabled(false);
     });
 
-    useEvt(
-        ctx => {
-            evtDataExplorer.$attach(
-                eventData =>
-                    eventData.actionName === "restoreState" ? [eventData] : null,
-                ctx,
-                ({ queryParams, extraRestorableStates }) => {
-                    const { sourceUrl, rowsPerPage, page, ...rest1 } = queryParams;
-                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-                    assert<Equals<typeof rest1, {}>>();
-                    const { selectedRowIndex, columnVisibility, ...rest2 } =
-                        extraRestorableStates;
-                    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-                    assert<Equals<typeof rest2, {}>>();
+    const {
+        queryParams,
+        extraRestorableStates,
+        rows,
+        columns,
+        rowCount,
+        error,
+        isQuerying
+    } = useCoreState("dataExplorer", "main");
 
-                    routes[route.name]({
-                        ...route.params,
-                        page,
-                        rowsPerPage,
-                        source: sourceUrl,
-                        selectedRow: selectedRowIndex,
-                        columnVisibility
-                    }).replace();
-                }
-            );
-        },
-        [evtDataExplorer]
-    );
+    const modifiedColumns = useMemo(() => {
+        if (columns === undefined) return undefined;
+        return columns.map(
+            column =>
+                ({
+                    field: column.name,
+                    sortable: false,
+                    renderHeader: () => (
+                        <Text typo="body 1">
+                            {column.name}
+                            <Text
+                                typo="caption"
+                                className={classes.dataGridColumnHeaderType}
+                            >
+                                {column.rowType}
+                            </Text>
+                        </Text>
+                    ),
+                    headerAlign: "left",
+                    type: (() => {
+                        switch (column.type) {
+                            case "bigint":
+                            case "binary":
+                                return "string";
+                            default:
+                                return column.type;
+                        }
+                    })()
+                }) satisfies GridColDef
+        );
+    }, [columns]);
 
-    const { rows, columns, rowCount, errorMessage, isQuerying } = useCoreState(
-        "dataExplorer",
-        "main"
-    );
+    useEffect(() => {
+        if (columns) {
+            apiRef.current.autosizeColumns(autosizeOptions);
+        }
+    }, [columns]);
+
+    useEffect(() => {
+        if (queryParams === undefined) {
+            routes[route.name]().replace();
+            return;
+        }
+
+        const { selectedRowIndex: selectedRow, columnVisibility } =
+            extraRestorableStates || {};
+
+        routes[route.name]({
+            ...route.params,
+            source: queryParams.sourceUrl,
+            page: queryParams.page,
+            rowsPerPage: queryParams.rowsPerPage,
+            selectedRow,
+            columnVisibility
+        }).replace();
+    }, [queryParams, extraRestorableStates]);
 
     const { classes, cx } = useStyles();
 
@@ -124,29 +155,39 @@ export default function DataExplorer(props: Props) {
             />
             <UrlInput
                 className={classes.urlInput}
+                onUrlChange={value => {
+                    dataExplorer.updateDataSource({ sourceUrl: value });
+                }}
+                // NOTE: So that we show the URL in the search bar while it's being queried
+                url={queryParams === undefined ? "" : queryParams.sourceUrl}
                 getIsValidUrl={url =>
                     dataExplorer.getIsValidSourceUrl({
                         sourceUrl: url
                     })
                 }
-                onUrlChange={value => {
-                    routes[route.name]({
-                        source: value
-                    }).replace();
-                }}
-                url={route.params.source ?? ""}
             />
             <div className={classes.mainArea}>
                 {(() => {
-                    if (errorMessage !== undefined) {
+                    if (error !== undefined) {
                         return (
                             <Alert className={classes.errorAlert} severity="error">
-                                {errorMessage}
+                                {(() => {
+                                    if (!error.isWellKnown) {
+                                        return error.message;
+                                    }
+
+                                    switch (error.kind) {
+                                        case "unsupported file type":
+                                            return t(error.kind, { supportedFileTypes });
+                                        case "can't fetch file":
+                                            return t(error.kind);
+                                    }
+                                })()}
                             </Alert>
                         );
                     }
 
-                    if (rows === undefined) {
+                    if (rows === undefined || modifiedColumns === undefined) {
                         if (!isQuerying) {
                             return null;
                         }
@@ -157,9 +198,14 @@ export default function DataExplorer(props: Props) {
                             </div>
                         );
                     }
+
+                    assert(queryParams.page !== undefined);
+                    assert(queryParams.rowsPerPage !== undefined);
+
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
+                                apiRef={apiRef}
                                 shouldAddCopyToClipboardInCell
                                 classes={{
                                     panelWrapper: cx(
@@ -171,12 +217,13 @@ export default function DataExplorer(props: Props) {
                                 }}
                                 slots={{ toolbar: SlotsDataGridToolbar }}
                                 disableVirtualization={!isVirtualizationEnabled}
-                                columnVisibilityModel={route.params.columnVisibility}
+                                columnVisibilityModel={
+                                    extraRestorableStates.columnVisibility
+                                }
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
-                                    routes[route.name]({
-                                        ...route.params,
+                                    dataExplorer.updateColumnVisibility({
                                         columnVisibility: columnVisibilityModel
-                                    }).replace()
+                                    })
                                 }
                                 onRowSelectionModelChange={rowSelectionModel => {
                                     const selectedRowIndex = rowSelectionModel[0];
@@ -186,40 +233,34 @@ export default function DataExplorer(props: Props) {
                                             selectedRowIndex === undefined
                                     );
 
-                                    routes[route.name]({
-                                        ...route.params,
-                                        selectedRow: selectedRowIndex
-                                    }).replace();
+                                    dataExplorer.updateRowSelected({ selectedRowIndex });
                                 }}
                                 rowSelectionModel={[
-                                    route.params.selectedRow ?? undefined
+                                    extraRestorableStates.selectedRowIndex ?? undefined
                                 ].filter(exclude(undefined))}
                                 rows={rows}
-                                columns={columns}
+                                columns={modifiedColumns}
                                 disableColumnMenu
                                 loading={isQuerying}
                                 paginationMode="server"
                                 rowCount={rowCount ?? 999999999}
                                 pageSizeOptions={(() => {
                                     const pageSizeOptions = [25, 50, 100];
-
                                     assert(
-                                        pageSizeOptions.includes(route.params.rowsPerPage)
+                                        pageSizeOptions.includes(queryParams.rowsPerPage)
                                     );
-
                                     return pageSizeOptions;
                                 })()}
                                 paginationModel={{
-                                    page: route.params.page - 1,
-                                    pageSize: route.params.rowsPerPage
+                                    page: queryParams.page - 1,
+                                    pageSize: queryParams.rowsPerPage
                                 }}
-                                onPaginationModelChange={({ page, pageSize }) =>
-                                    routes[route.name]({
-                                        ...route.params,
-                                        rowsPerPage: pageSize,
-                                        page: page + 1
-                                    }).replace()
-                                }
+                                onPaginationModelChange={({ page, pageSize }) => {
+                                    dataExplorer.updatePaginationModel({
+                                        page: page + 1,
+                                        rowsPerPage: pageSize
+                                    });
+                                }}
                             />
                         </div>
                     );
@@ -291,6 +332,9 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
                 backgroundColor: theme.colors.palette.focus.light
             }
         }
+    },
+    dataGridColumnHeaderType: {
+        fontStyle: "italic"
     }
 }));
 
@@ -306,5 +350,7 @@ const { i18n } = declareComponentKeys<
     | "density"
     | "download file"
     | "resize table"
+    | { K: "unsupported file type"; P: { supportedFileTypes: readonly string[] } }
+    | "can't fetch file"
 >()({ DataExplorer });
 export type I18n = typeof i18n;

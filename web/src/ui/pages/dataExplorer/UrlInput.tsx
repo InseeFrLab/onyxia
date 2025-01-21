@@ -4,7 +4,7 @@ import { tss } from "tss";
 import { getIconUrlByName } from "lazy-icons";
 import { SearchBar } from "onyxia-ui/SearchBar";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
-import { declareComponentKeys } from "ui/i18n";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -16,9 +16,11 @@ type Props = {
 export function UrlInput(props: Props) {
     const { className, url, onUrlChange, getIsValidUrl } = props;
 
+    const { t } = useTranslation({ UrlInput });
     const [urlBeingTyped, setUrlBeingTyped] = useState(url);
 
-    const isLoadable = urlBeingTyped !== url && getIsValidUrl(urlBeingTyped);
+    const isLoadable =
+        urlBeingTyped !== url && (urlBeingTyped === "" || getIsValidUrl(urlBeingTyped));
 
     const { classes, cx } = useStyles({ isLoadable });
 
@@ -51,10 +53,14 @@ export function UrlInput(props: Props) {
             </div>
             <Button
                 className={classes.loadButton}
-                startIcon={getIconUrlByName("CloudDownload")}
+                startIcon={
+                    urlBeingTyped === ""
+                        ? getIconUrlByName("Clear")
+                        : getIconUrlByName("CloudDownload")
+                }
                 onClick={onButtonClick}
             >
-                Load
+                {urlBeingTyped === "" ? t("reset") : t("load")}
             </Button>
         </div>
     );
@@ -76,5 +82,5 @@ const useStyles = tss
         }
     }));
 
-const { i18n } = declareComponentKeys<"load">()({ UrlInput });
+const { i18n } = declareComponentKeys<"load" | "reset">()({ UrlInput });
 export type I18n = typeof i18n;
