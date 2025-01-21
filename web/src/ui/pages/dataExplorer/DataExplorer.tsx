@@ -159,11 +159,7 @@ export default function DataExplorer(props: Props) {
                     dataExplorer.updateDataSource({ sourceUrl: value });
                 }}
                 // NOTE: So that we show the URL in the search bar while it's being queried
-                url={
-                    queryParams === undefined
-                        ? (route.params.source ?? "")
-                        : queryParams.sourceUrl
-                }
+                url={queryParams === undefined ? "" : queryParams.sourceUrl}
                 getIsValidUrl={url =>
                     dataExplorer.getIsValidSourceUrl({
                         sourceUrl: url
