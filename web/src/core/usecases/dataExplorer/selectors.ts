@@ -26,7 +26,8 @@ const main = createSelector(state, columns, (state, columns) => {
     if (data === undefined) {
         return {
             isQuerying,
-            rows: undefined
+            rows: undefined,
+            queryParams
         };
     }
 
