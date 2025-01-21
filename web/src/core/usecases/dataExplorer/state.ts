@@ -21,7 +21,7 @@ export type State = {
               columnVisibility: Record<string, boolean>;
           }
         | undefined;
-    errorMessage: string | undefined;
+    error: State.Error | undefined;
     data:
         | {
               rows: any[];
@@ -33,13 +33,25 @@ export type State = {
         | undefined;
 };
 
+namespace State {
+    export type Error =
+        | {
+              isWellKnown: false;
+              message: string;
+          }
+        | {
+              isWellKnown: true;
+              kind: "unsupported file type";
+          };
+}
+
 export const { actions, reducer } = createUsecaseActions({
     name,
     initialState: id<State>({
         isQuerying: false,
         queryParams: undefined,
         extraRestorableStates: undefined,
-        errorMessage: undefined,
+        error: undefined,
         data: undefined
     }),
     reducers: {
@@ -95,7 +107,7 @@ export const { actions, reducer } = createUsecaseActions({
             }
         ) => {
             const { queryParams } = payload;
-            state.errorMessage = undefined;
+            state.error = undefined;
             state.isQuerying = true;
             state.queryParams = queryParams;
         },
@@ -131,16 +143,16 @@ export const { actions, reducer } = createUsecaseActions({
             state.isQuerying = false;
             state.queryParams = undefined;
         },
-        queryFailed: (state, { payload }: { payload: { errorMessage: string } }) => {
-            const { errorMessage } = payload;
+        queryFailed: (state, { payload }: { payload: { error: State.Error } }) => {
+            const { error } = payload;
             state.isQuerying = false;
-            state.errorMessage = errorMessage;
+            state.error = error;
         },
         restoreState: state => {
             state.queryParams = undefined;
             state.extraRestorableStates = undefined;
             state.data = undefined;
-            state.errorMessage = undefined;
+            state.error = undefined;
         }
     }
 });

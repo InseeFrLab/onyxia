@@ -979,7 +979,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         column: "colonne",
         density: "densité",
         "download file": "télécharger le fichier",
-        "resize table": "Redimensionner"
+        "resize table": "Redimensionner",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Format de données non pris en charge. Les types pris en charge sont : ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Charger",

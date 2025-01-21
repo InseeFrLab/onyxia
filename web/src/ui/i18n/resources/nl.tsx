@@ -968,7 +968,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         column: "kolom",
         density: "dichtheid",
         "download file": "bestand downloaden",
-        "resize table": "Formaat wijzigen"
+        "resize table": "Formaat wijzigen",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Niet-ondersteund gegevensformaat. Ondersteunde typen zijn: ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Laden",

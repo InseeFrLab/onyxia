@@ -967,7 +967,9 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         column: "colonna",
         density: "densità",
         "download file": "scarica file",
-        "resize table": "Ridimensiona"
+        "resize table": "Ridimensiona",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Formato dati non supportato. I tipi supportati sono: ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Carica",

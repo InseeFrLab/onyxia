@@ -968,7 +968,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         column: "Spalte",
         density: "Dichte",
         "download file": "Datei herunterladen",
-        "resize table": undefined
+        "resize table": undefined,
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Nicht unterstütztes Datenformat. Unterstützte Typen sind: ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Laden",

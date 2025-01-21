@@ -1,4 +1,4 @@
-const supportedFileTypes = ["parquet", "csv", "json"] as const;
+export const supportedFileTypes = ["parquet", "csv", "json"] as const;
 
 export type SupportedFileType = (typeof supportedFileTypes)[number];
 

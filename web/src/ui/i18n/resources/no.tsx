@@ -960,7 +960,9 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         column: "kolonne",
         density: "tetthet",
         "download file": "last ned fil",
-        "resize table": "Endre størrelse"
+        "resize table": "Endre størrelse",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Ikke støttet dataformat. Støttede typer er: ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Last",

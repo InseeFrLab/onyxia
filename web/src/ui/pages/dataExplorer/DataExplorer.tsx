@@ -19,6 +19,7 @@ import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { exclude } from "tsafe/exclude";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
+import { supportedFileTypes } from "core/usecases/dataExplorer/decoupledLogic/SupportedFileType";
 
 export type Props = {
     route: PageRoute;
@@ -58,7 +59,7 @@ export default function DataExplorer(props: Props) {
         rows,
         columns,
         rowCount,
-        errorMessage,
+        error,
         isQuerying
     } = useCoreState("dataExplorer", "main");
 
@@ -167,10 +168,19 @@ export default function DataExplorer(props: Props) {
             />
             <div className={classes.mainArea}>
                 {(() => {
-                    if (errorMessage !== undefined) {
+                    if (error !== undefined) {
                         return (
                             <Alert className={classes.errorAlert} severity="error">
-                                {errorMessage}
+                                {(() => {
+                                    if (!error.isWellKnown) {
+                                        return error.message;
+                                    }
+
+                                    switch (error.kind) {
+                                        case "unsupported file type":
+                                            return t(error.kind, { supportedFileTypes });
+                                    }
+                                })()}
                             </Alert>
                         );
                     }
@@ -338,5 +348,6 @@ const { i18n } = declareComponentKeys<
     | "density"
     | "download file"
     | "resize table"
+    | { K: "unsupported file type"; P: { supportedFileTypes: readonly string[] } }
 >()({ DataExplorer });
 export type I18n = typeof i18n;

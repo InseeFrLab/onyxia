@@ -91,9 +91,10 @@ const privateThunks = {
             if (fileType === undefined) {
                 dispatch(
                     actions.queryFailed({
-                        //TODO Improve
-                        errorMessage:
-                            "Unable to detect the file type, we support only parquet, csv and json."
+                        error: {
+                            isWellKnown: true,
+                            kind: "unsupported file type"
+                        }
                     })
                 );
                 return;
@@ -123,7 +124,10 @@ const privateThunks = {
             if (typeof rowCountOrErrorMessage === "string") {
                 dispatch(
                     actions.queryFailed({
-                        errorMessage: rowCountOrErrorMessage
+                        error: {
+                            isWellKnown: false,
+                            message: rowCountOrErrorMessage
+                        }
                     })
                 );
 
@@ -149,7 +153,12 @@ const privateThunks = {
 
             if (typeof rowsAndColumnsOrErrorMessage === "string") {
                 dispatch(
-                    actions.queryFailed({ errorMessage: rowsAndColumnsOrErrorMessage })
+                    actions.queryFailed({
+                        error: {
+                            isWellKnown: false,
+                            message: rowsAndColumnsOrErrorMessage
+                        }
+                    })
                 );
                 return;
             }

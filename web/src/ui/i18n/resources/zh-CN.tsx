@@ -904,7 +904,9 @@ ${
         column: "列",
         density: "密度",
         "download file": "下载文件",
-        "resize table": "调整大小"
+        "resize table": "调整大小",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `不支持的数据格式。支持的类型有：${supportedFileTypes.join(", ")}。`
     },
     UrlInput: {
         load: "加载",

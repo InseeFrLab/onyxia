@@ -17,10 +17,10 @@ const columns = createSelector(
 );
 
 const main = createSelector(state, columns, (state, columns) => {
-    const { isQuerying, queryParams, errorMessage, data, extraRestorableStates } = state;
+    const { isQuerying, queryParams, error, data, extraRestorableStates } = state;
 
-    if (errorMessage !== undefined) {
-        return { isQuerying, errorMessage, queryParams };
+    if (error !== undefined) {
+        return { isQuerying, error, queryParams };
     }
 
     if (data === undefined) {

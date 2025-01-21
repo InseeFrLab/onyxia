@@ -953,7 +953,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
         column: "column",
         density: "density",
         "download file": "Download file",
-        "resize table": "Resize"
+        "resize table": "Resize",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Unsupported data format. Supported types are: ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Load",

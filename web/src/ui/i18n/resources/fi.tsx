@@ -957,7 +957,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         column: "sarake",
         density: "tiheys",
         "download file": "lataa tiedosto",
-        "resize table": "Muuta taulukon kokoa"
+        "resize table": "Muuta taulukon kokoa",
+        "unsupported file type": ({ supportedFileTypes }) =>
+            `Tuettua tiedostomuotoa ei tunnistettu. Tuetut tyypit ovat: ${supportedFileTypes.join(", ")}.`
     },
     UrlInput: {
         load: "Lataa",
