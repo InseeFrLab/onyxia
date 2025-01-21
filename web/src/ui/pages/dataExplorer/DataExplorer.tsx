@@ -90,7 +90,8 @@ export default function DataExplorer(props: Props) {
                             default:
                                 return column.type;
                         }
-                    })()
+                    })(),
+                    align: ["bigint", "number"].includes(column.type) ? "right" : "left"
                 }) satisfies GridColDef
         );
     }, [columns]);

@@ -108,13 +108,13 @@ function customCellRendererFactory(params: {
                 {renderCell ? (
                     renderCell(gridCellParams)
                 ) : (
-                    <span>
+                    <>
                         {type === "boolean" ? (
                             <GridBooleanCell {...gridCellParams} />
                         ) : (
                             gridCellParams.formattedValue
                         )}
-                    </span>
+                    </>
                 )}
                 <CopyToClipboardIconButton
                     textToCopy={gridCellParams.formattedValue}
