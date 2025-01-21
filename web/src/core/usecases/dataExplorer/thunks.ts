@@ -5,6 +5,10 @@ import { createUsecaseContextApi } from "clean-architecture";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { assert } from "tsafe/assert";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import {
+    detectFileTypeFromFileDownload,
+    detectFileTypeFromSourceUrlExtension
+} from "./decoupledLogic";
 
 const privateThunks = {
     getFileDownloadUrl:
@@ -177,143 +181,23 @@ const privateThunks = {
             const { sourceUrl } = params;
             const [dispatch] = args;
 
-            const validFileType = ["parquet", "csv", "json"] as const;
-            type ValidFileType = (typeof validFileType)[number];
+            const fileTypeFromExtension = detectFileTypeFromSourceUrlExtension(sourceUrl);
 
-            const isValidFileType = (ext: string): ext is ValidFileType =>
-                validFileType.includes(ext as ValidFileType);
-
-            const extension = (() => {
-                let pathname: string;
-
-                try {
-                    pathname = new URL(sourceUrl).pathname;
-                } catch {
-                    return undefined;
-                }
-                const match = pathname.match(/\.(\w+)$/);
-
-                if (match === null) {
-                    return undefined;
-                }
-
-                const [, extension] = match;
-
-                return isValidFileType(extension) ? extension : undefined;
-            })();
-
-            if (extension) {
-                return { fileType: extension, fileDownloadUrl: undefined };
+            if (fileTypeFromExtension) {
+                return { fileType: fileTypeFromExtension, fileDownloadUrl: undefined };
             }
 
             const fileDownloadUrl = await dispatch(
                 privateThunks.getFileDownloadUrl({ sourceUrl })
             );
 
-            try {
-                const response = await fetch(fileDownloadUrl, {
-                    method: "GET",
-                    headers: { Range: "bytes=0-15" } // Fetch the first 16 bytes
-                });
+            const fileTypeAndRedirectedUrl =
+                await detectFileTypeFromFileDownload(fileDownloadUrl);
 
-                if (!response.ok) {
-                    return { fileType: undefined, fileDownloadUrl };
-                }
-
-                //Regarder l'extension de l'url redirigé
-
-                if (response.url !== fileDownloadUrl) {
-                    //TODO Display something to user
-                    console.log(
-                        "The url you provided is being redirected to another url"
-                    );
-                }
-
-                const contentType = response.headers.get("Content-Type");
-
-                const filTypeExtractdByContentType = (() => {
-                    if (!contentType) {
-                        return undefined;
-                    }
-
-                    //Maybe it could be interesting to reject some content types and stop the detection
-                    const contentTypeToExtension = [
-                        {
-                            keyword: "application/parquet" as const,
-                            extension: "parquet" as const
-                        },
-                        {
-                            keyword: "application/x-parquet" as const,
-                            extension: "parquet" as const
-                        },
-                        { keyword: "text/csv" as const, extension: "csv" as const },
-                        {
-                            keyword: "application/csv" as const,
-                            extension: "csv" as const
-                        },
-                        {
-                            keyword: "application/json" as const,
-                            extension: "json" as const
-                        },
-                        { keyword: "text/json" as const, extension: "json" as const }
-                    ];
-
-                    const match = contentTypeToExtension.find(
-                        ({ keyword }) => contentType === keyword
-                    );
-                    return match ? match.extension : undefined;
-                })();
-
-                if (filTypeExtractdByContentType !== undefined) {
-                    return {
-                        fileType: filTypeExtractdByContentType,
-                        fileDownloadUrl: response.url
-                    };
-                }
-
-                const fileSignatures = [
-                    {
-                        condition: (bytes: Uint8Array) =>
-                            bytes[0] === 80 &&
-                            bytes[1] === 65 &&
-                            bytes[2] === 82 &&
-                            bytes[3] === 49, // "PAR1"
-                        extension: "parquet" as const
-                    },
-                    {
-                        condition: (bytes: Uint8Array) => [91, 123].includes(bytes[0]), // "[" or "{"
-                        extension: "json" as const // JSON
-                    },
-                    {
-                        condition: (bytes: Uint8Array) => {
-                            const fileContent = new TextDecoder().decode(bytes);
-                            return (
-                                fileContent.includes(",") ||
-                                fileContent.includes("|") ||
-                                fileContent.includes(";") ||
-                                fileContent.includes("\t")
-                            ); // CSV heuristic
-                        },
-                        extension: "csv" as const
-                    }
-                ];
-
-                const arrayBuffer = await response.arrayBuffer();
-                const bytes = new Uint8Array(arrayBuffer);
-
-                const match = fileSignatures.find(({ condition }) => condition(bytes));
-
-                if (match) {
-                    return { fileType: match.extension, fileDownloadUrl: response.url };
-                }
-            } catch (error) {
-                console.error("Failed to fetch file for type detection:", error);
-                //TODO: reject an error
-                return { fileType: undefined, fileDownloadUrl };
-            }
-
-            //Ask user to manualy specify the file type
-            return { fileType: undefined, fileDownloadUrl };
+            return {
+                fileType: fileTypeAndRedirectedUrl.fileType,
+                fileDownloadUrl: fileTypeAndRedirectedUrl.redirectedUrl ?? fileDownloadUrl
+            };
         },
     updateDataSource:
         (params: {

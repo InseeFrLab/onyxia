@@ -19,7 +19,8 @@ export function UrlInput(props: Props) {
     const { t } = useTranslation({ UrlInput });
     const [urlBeingTyped, setUrlBeingTyped] = useState(url);
 
-    const isLoadable = urlBeingTyped !== url && getIsValidUrl(urlBeingTyped);
+    const isLoadable =
+        urlBeingTyped !== url && (urlBeingTyped === "" || getIsValidUrl(urlBeingTyped));
 
     const { classes, cx } = useStyles({ isLoadable });
 
