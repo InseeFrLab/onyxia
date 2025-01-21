@@ -424,7 +424,7 @@ export function createS3Client(
 
                 return {
                     isBucketPolicyAvailable: true,
-                    s3BucketPolicy,
+                    bucketPolicy: s3BucketPolicy,
                     allowedPrefix
                 };
             };
