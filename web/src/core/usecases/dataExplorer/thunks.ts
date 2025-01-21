@@ -5,10 +5,8 @@ import { createUsecaseContextApi } from "clean-architecture";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { assert } from "tsafe/assert";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
-import {
-    detectFileTypeFromFileDownload,
-    detectFileTypeFromSourceUrlExtension
-} from "./decoupledLogic";
+import { inferFileType } from "./decoupledLogic/inferFileType";
+import memoize from "memoizee";
 
 const privateThunks = {
     getFileDownloadUrl:
@@ -181,22 +179,47 @@ const privateThunks = {
             const { sourceUrl } = params;
             const [dispatch] = args;
 
-            const fileTypeFromExtension = detectFileTypeFromSourceUrlExtension(sourceUrl);
+            const partialFetch = memoize(
+                async () => {
+                    const fileDownloadUrl = await dispatch(
+                        privateThunks.getFileDownloadUrl({ sourceUrl })
+                    );
 
-            if (fileTypeFromExtension) {
-                return { fileType: fileTypeFromExtension, fileDownloadUrl: undefined };
-            }
+                    const response = await fetch(fileDownloadUrl, {
+                        method: "GET",
+                        headers: { Range: "bytes=0-15" } // Fetch the first 16 bytes
+                    });
 
-            const fileDownloadUrl = await dispatch(
-                privateThunks.getFileDownloadUrl({ sourceUrl })
+                    return {
+                        response,
+                        fileDownloadUrl_direct: response.url
+                    };
+                },
+                { promise: true }
             );
 
-            const fileTypeAndRedirectedUrl =
-                await detectFileTypeFromFileDownload(fileDownloadUrl);
+            const fileType = await inferFileType({
+                sourceUrl,
+                getContentType: async () => {
+                    const { response } = await partialFetch();
+                    return response.headers.get("Content-Type");
+                },
+                getFirstBytes: async () => {
+                    const { response } = await partialFetch();
+
+                    if (!response.ok) {
+                        return undefined;
+                    }
+
+                    return response.arrayBuffer();
+                }
+            });
+
+            const { fileDownloadUrl_direct } = await partialFetch();
 
             return {
-                fileType: fileTypeAndRedirectedUrl.fileType,
-                fileDownloadUrl: fileTypeAndRedirectedUrl.redirectedUrl ?? fileDownloadUrl
+                fileType,
+                fileDownloadUrl: fileDownloadUrl_direct
             };
         },
     updateDataSource:

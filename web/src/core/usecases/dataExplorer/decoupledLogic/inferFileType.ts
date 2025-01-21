@@ -1,6 +1,6 @@
-import { isValidFileType } from "./fileType";
+import { type SupportedFileType, getIsSupportedFileType } from "./SupportedFileType";
 
-export function detectFileTypeFromSourceUrlExtension(sourceUrl: string) {
+function inferFileType_fromExtension(sourceUrl: string): SupportedFileType | undefined {
     let pathname: string;
 
     try {
@@ -16,12 +16,14 @@ export function detectFileTypeFromSourceUrlExtension(sourceUrl: string) {
 
     const [, extension] = match;
 
-    return isValidFileType(extension) ? extension : undefined;
+    if (!getIsSupportedFileType(extension)) {
+        return undefined;
+    }
+
+    return extension;
 }
 
-function detectFileTypeFromContentType(contentType: string | null) {
-    if (!contentType) return undefined;
-
+function inferFileType_fromContentType(contentType: string) {
     const contentTypeToExtension = [
         {
             keyword: "application/parquet" as const,
@@ -47,7 +49,7 @@ function detectFileTypeFromContentType(contentType: string | null) {
     return match ? match.extension : undefined;
 }
 
-async function detectFileTypeFromBytes(response: Response) {
+async function inferFileType_fromBytes(firstBytes: ArrayBuffer) {
     const fileSignatures = [
         {
             condition: (bytes: Uint8Array) =>
@@ -72,39 +74,63 @@ async function detectFileTypeFromBytes(response: Response) {
         }
     ];
 
-    const arrayBuffer = await response.arrayBuffer();
-    const bytes = new Uint8Array(arrayBuffer);
+    const firstBytes_uint8Array = new Uint8Array(firstBytes);
 
-    const match = fileSignatures.find(({ condition }) => condition(bytes));
+    const match = fileSignatures.find(({ condition }) =>
+        condition(firstBytes_uint8Array)
+    );
 
     return match ? match.extension : undefined;
 }
 
-export async function detectFileTypeFromFileDownload(fileDownloadUrl: string) {
-    const response = await fetch(fileDownloadUrl, {
-        method: "GET",
-        headers: { Range: "bytes=0-15" } // Fetch the first 16 bytes
-    });
+export async function inferFileType(params: {
+    sourceUrl: string;
+    getContentType: () => Promise<string | null>;
+    getFirstBytes: () => Promise<ArrayBuffer | undefined>;
+}): Promise<SupportedFileType | undefined> {
+    const { sourceUrl, getContentType, getFirstBytes } = params;
 
-    if (!response.ok) {
-        return { fileType: undefined, redirectedUrl: undefined };
+    file_extension: {
+        const fileType = inferFileType_fromExtension(sourceUrl);
+
+        if (fileType === undefined) {
+            break file_extension;
+        }
+
+        return fileType;
     }
 
-    const redirectedUrl = response.url !== fileDownloadUrl ? response.url : undefined;
+    content_type: {
+        const contentType = await getContentType();
 
-    if (redirectedUrl) {
-        console.log(`The url you provided is being redirected to ${redirectedUrl}`);
+        if (contentType === null) {
+            break content_type;
+        }
+
+        const fileType = inferFileType_fromContentType(contentType);
+
+        if (fileType === undefined) {
+            break content_type;
+        }
+
+        return fileType;
     }
 
-    const contentType = response.headers.get("Content-Type");
+    from_bytes: {
+        const firstBytes = await getFirstBytes();
 
-    const detectedFileTypeFromContentType = detectFileTypeFromContentType(contentType);
+        if (firstBytes === undefined) {
+            break from_bytes;
+        }
 
-    if (detectedFileTypeFromContentType) {
-        return { fileType: detectedFileTypeFromContentType, redirectedUrl };
+        const fileType = await inferFileType_fromBytes(firstBytes);
+
+        if (fileType === undefined) {
+            break from_bytes;
+        }
+
+        return fileType;
     }
 
-    const detectedFileTypeFromBytes = await detectFileTypeFromBytes(response);
-
-    return { fileType: detectedFileTypeFromBytes, redirectedUrl };
+    return undefined;
 }

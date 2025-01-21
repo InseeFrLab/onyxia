@@ -2,7 +2,7 @@ import { createUsecaseActions } from "clean-architecture";
 import type { Column } from "core/ports/SqlOlap";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { type ValidFileType } from "./decoupledLogic";
+import type { SupportedFileType } from "./decoupledLogic/SupportedFileType";
 
 export const name = "dataExplorer";
 
@@ -28,7 +28,7 @@ export type State = {
               columns: Column[];
               rowCount: number | undefined;
               fileDownloadUrl: string;
-              fileType: ValidFileType;
+              fileType: SupportedFileType;
           }
         | undefined;
 };
@@ -109,7 +109,7 @@ export const { actions, reducer } = createUsecaseActions({
                     columns: Column[];
                     rowCount: number | undefined;
                     fileDownloadUrl: string;
-                    fileType: ValidFileType;
+                    fileType: SupportedFileType;
                 };
             }
         ) => {
