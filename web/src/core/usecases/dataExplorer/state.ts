@@ -41,7 +41,7 @@ namespace State {
           }
         | {
               isWellKnown: true;
-              kind: "unsupported file type";
+              kind: "unsupported file type" | "can't fetch file";
           };
 }
 

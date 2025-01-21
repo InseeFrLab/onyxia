@@ -179,6 +179,8 @@ export default function DataExplorer(props: Props) {
                                     switch (error.kind) {
                                         case "unsupported file type":
                                             return t(error.kind, { supportedFileTypes });
+                                        case "can't fetch file":
+                                            return t(error.kind);
                                     }
                                 })()}
                             </Alert>
@@ -349,5 +351,6 @@ const { i18n } = declareComponentKeys<
     | "download file"
     | "resize table"
     | { K: "unsupported file type"; P: { supportedFileTypes: readonly string[] } }
+    | "can't fetch file"
 >()({ DataExplorer });
 export type I18n = typeof i18n;

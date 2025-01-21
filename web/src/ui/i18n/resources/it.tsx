@@ -356,9 +356,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -969,7 +968,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "download file": "scarica file",
         "resize table": "Ridimensiona",
         "unsupported file type": ({ supportedFileTypes }) =>
-            `Formato dati non supportato. I tipi supportati sono: ${supportedFileTypes.join(", ")}.`
+            `Formato dati non supportato. I tipi supportati sono: ${supportedFileTypes.join(", ")}.`,
+        "can't fetch file": "Impossibile recuperare il file dei dati"
     },
     UrlInput: {
         load: "Carica",

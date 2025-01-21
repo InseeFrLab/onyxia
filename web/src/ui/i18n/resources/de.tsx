@@ -970,7 +970,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "download file": "Datei herunterladen",
         "resize table": undefined,
         "unsupported file type": ({ supportedFileTypes }) =>
-            `Nicht unterstütztes Datenformat. Unterstützte Typen sind: ${supportedFileTypes.join(", ")}.`
+            `Nicht unterstütztes Datenformat. Unterstützte Typen sind: ${supportedFileTypes.join(", ")}.`,
+        "can't fetch file": "Daten-Datei kann nicht abgerufen werden"
     },
     UrlInput: {
         load: "Laden",

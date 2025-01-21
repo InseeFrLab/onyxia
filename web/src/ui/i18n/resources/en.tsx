@@ -955,7 +955,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "download file": "Download file",
         "resize table": "Resize",
         "unsupported file type": ({ supportedFileTypes }) =>
-            `Unsupported data format. Supported types are: ${supportedFileTypes.join(", ")}.`
+            `Unsupported data format. Supported types are: ${supportedFileTypes.join(", ")}.`,
+        "can't fetch file": "Can't fetch data file"
     },
     UrlInput: {
         load: "Load",

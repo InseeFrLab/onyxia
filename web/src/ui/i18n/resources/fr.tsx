@@ -981,7 +981,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "download file": "télécharger le fichier",
         "resize table": "Redimensionner",
         "unsupported file type": ({ supportedFileTypes }) =>
-            `Format de données non pris en charge. Les types pris en charge sont : ${supportedFileTypes.join(", ")}.`
+            `Format de données non pris en charge. Les types pris en charge sont : ${supportedFileTypes.join(", ")}.`,
+        "can't fetch file": "Impossible de récupérer le fichier de données"
     },
     UrlInput: {
         load: "Charger",

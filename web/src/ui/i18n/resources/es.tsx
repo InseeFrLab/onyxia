@@ -971,7 +971,8 @@ export const translations: Translations<"en"> = {
         "download file": "Descargar archivo",
         "resize table": "Redimensionar",
         "unsupported file type": ({ supportedFileTypes }) =>
-            `Formato de datos no compatible. Los tipos compatibles son: ${supportedFileTypes.join(", ")}.`
+            `Formato de datos no compatible. Los tipos compatibles son: ${supportedFileTypes.join(", ")}.`,
+        "can't fetch file": "No se puede obtener el archivo de datos"
     },
     UrlInput: {
         load: "Cargar",

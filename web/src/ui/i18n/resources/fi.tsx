@@ -959,7 +959,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "download file": "lataa tiedosto",
         "resize table": "Muuta taulukon kokoa",
         "unsupported file type": ({ supportedFileTypes }) =>
-            `Tuettua tiedostomuotoa ei tunnistettu. Tuetut tyypit ovat: ${supportedFileTypes.join(", ")}.`
+            `Tuettua tiedostomuotoa ei tunnistettu. Tuetut tyypit ovat: ${supportedFileTypes.join(", ")}.`,
+        "can't fetch file": "Tietotiedostoa ei voida hakea"
     },
     UrlInput: {
         load: "Lataa",
