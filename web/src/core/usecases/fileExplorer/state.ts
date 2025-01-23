@@ -5,7 +5,7 @@ import { createUsecaseActions } from "clean-architecture";
 import type { WritableDraft } from "clean-architecture/immer";
 import { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 
-//All explorer path are expected to be absolute (start with /)
+//All explorer paths are expected to be absolute (start with /)
 
 export type State = {
     directoryPath: string | undefined;
@@ -80,7 +80,7 @@ export const { reducer, actions } = createUsecaseActions({
                 directoryPath,
                 basename,
                 size,
-                uploadPercent: 0
+                uploadPercent: size === 0 ? 100 : 0
             });
         },
         uploadProgressUpdated: (
