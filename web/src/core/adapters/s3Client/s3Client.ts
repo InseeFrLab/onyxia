@@ -566,6 +566,11 @@ export function createS3Client(
                     return;
                 }
 
+                if (total === 0) {
+                    onUploadProgress?.({ uploadPercent: 100 });
+                    return;
+                }
+
                 const uploadPercent = Math.floor((loaded / total) * 100);
 
                 onUploadProgress?.({ uploadPercent });

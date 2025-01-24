@@ -28,19 +28,23 @@ const uploadProgress = createSelector(state, (state): UploadProgress => {
         ({ uploadPercent }) => uploadPercent === 100
     ).length;
 
+    const totalSize = s3FilesBeingUploaded
+        .map(({ size }) => size)
+        .reduce((prev, curr) => prev + curr, 0);
+
+    const uploadedSize = s3FilesBeingUploaded
+        .map(({ size, uploadPercent }) => (size * uploadPercent) / 100)
+        .reduce((prev, curr) => prev + curr, 0);
+
+    const uploadPercent = totalSize === 0 ? 100 : (uploadedSize / totalSize) * 100;
+
     return {
         s3FilesBeingUploaded,
         overallProgress: {
             completedFileCount,
             remainingFileCount: s3FilesBeingUploaded.length - completedFileCount,
             totalFileCount: s3FilesBeingUploaded.length,
-            uploadPercent:
-                s3FilesBeingUploaded
-                    .map(({ size, uploadPercent }) => size * uploadPercent)
-                    .reduce((prev, curr) => prev + curr, 0) /
-                s3FilesBeingUploaded
-                    .map(({ size }) => size)
-                    .reduce((prev, curr) => prev + curr, 0)
+            uploadPercent
         }
     };
 });
