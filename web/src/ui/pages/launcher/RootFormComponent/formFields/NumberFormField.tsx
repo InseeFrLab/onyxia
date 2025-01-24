@@ -41,7 +41,7 @@ export const NumberFormField = memo((props: Props) => {
                 throttleDelay: 500,
                 onChange,
                 parse: serializedValue => {
-                    if (!/^[0-9.]+$/.test(serializedValue)) {
+                    if (!/^-?[0-9.]+$/.test(serializedValue)) {
                         console.log("not a number");
                         return {
                             isValid: false,
