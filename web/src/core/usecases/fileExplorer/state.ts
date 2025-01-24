@@ -80,7 +80,7 @@ export const { reducer, actions } = createUsecaseActions({
                 directoryPath,
                 basename,
                 size,
-                uploadPercent: size === 0 ? 100 : 0
+                uploadPercent: 0
             });
         },
         uploadProgressUpdated: (
