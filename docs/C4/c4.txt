@@ -40,11 +40,25 @@ workspace {
                 onboarding = container "Onboarding" {
                     description "Handles Kubernetes namespace creation."
                     tags "Regional System"
+                    
+                    # Do we still use it to update quota and metadata : last login, email etc
+                    namespace_onboarding = component "Namespace onboarding" {
+                        description "Handle namespace creation and update."
+                        tags "Regional System"
+                    }
+                    
+                    # must become optionnal and not present by default. Can we remove it totally?
+                    oidc_user_kubernetes_onboarding = component "oidc user onboarding" {
+                        description "Provide direct access to users on the cluster"
+                        tags "Regional System"
+                    }
+                    
                 }
 
                 core_features = container "Core Features" {
                     description "Handles Kubernetes installation."
                     tags "Regional System"
+                    
                     
                     catalog_service = component "Catalog service" {
                         description "Handles catalog and maintain consistency between helm binaries and onyxia api"
@@ -53,6 +67,11 @@ workspace {
                     
                     schema_service = component "Schema service" {
                         description "Handles schema and resolve for each user (list of roles)"
+                        tags "Regional System"
+                    }
+                    
+                    onyxia_service = component "Onyxia service" {
+                        description "Handles onyxia service metadata"
                         tags "Regional System"
                     }
                     
@@ -116,11 +135,16 @@ workspace {
         onyxia_web -> vault "Provides secrets features via Vault"
         onyxia_web -> core_features "Provides core-features"
         onyxia_web -> kubernetes_service "Handle quota, logs, events, health, list of pods, controllers..."
+        onyxia_web -> onyxia_service "Handle releases management : provide metadata that does not exist in helm concept"
         onyxia_web -> helm_service "Handle releases management : create, delete, pause, resume, notes, url"
         onyxia_web -> catalog_service "Handle catalogs and schema"
         catalog_service -> schema_service "Get schema for catalog by users list of roles"
         onyxia_web -> onboarding "Provides onboarding"
+        onyxia_web -> namespace_onboarding "Provides onboarding"
         onboarding -> kubernetes_cluster "Creates Kubernetes namespaces"
+        namespace_onboarding -> kubernetes_cluster "Creates Kubernetes namespaces"
+        namespace_onboarding -> oidc_user_kubernetes_onboarding "ask roles for a user"
+        oidc_user_kubernetes_onboarding -> kubernetes_cluster "Creates roles for a user"
         core_features -> kubernetes_cluster "Handles Kubernetes installation"
         core_features -> catalog_registry "Handles catalogs of charts"
         
@@ -147,7 +171,7 @@ workspace {
 
 
         container onyxia {
-            description "Container diagram for a Region."
+            description "Container diagram for Onyxia"
             autoLayout tb
             include ds
             include onyxia_web
@@ -171,9 +195,20 @@ workspace {
 
         }
         
+        component onboarding {
+            description "Container diagram for a Region."
+            include kubernetes_cluster
+            include onyxia_web
+            include namespace_onboarding
+            include oidc_user_kubernetes_onboarding
+            autoLayout tb
+
+        }
+
         component core_features {
             description "Container diagram for a Region."
             include kubernetes_service
+            include onyxia_service
             include helm_service
             include schema_service
             include catalog_service
@@ -184,7 +219,6 @@ workspace {
             autoLayout tb
 
         }
-
 
 
         styles {
