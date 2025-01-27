@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.1",
     "info": {
-      "title": "onboarding-api",
+      "title": "onboarding-api for a region",
       "description": "Onboarding API is designed to remain minimal, giving each Onyxia instance the flexibility to use this service or provide its own. It also allows adding features such as quota management. By separating this API from the core functionalities, onyxia-web must handle extra logic—unlike the previous setup, where namespace creation was silently performed by the older API. At a minimum, we need to define an endpoint in the core-features API to verify the existence of a namespace because onboarding is optionnal.",
       "version": "1.0.0"
     },
@@ -24,7 +24,7 @@
             "Onboarding"
           ],
           "summary": "Init a user or a group",
-          "description": "This endpoint manages all tasks performed when a user logs into the platform. It handles the creation or update of a namespace, along with metadata information, similar to the current API behavior like quota. We should also consider whether to maintain the behavior of creating a RoleBinding for the OIDC user. While this supports external API server calls, it is not the primary goal of Onyxia. At the very least, this behavior should not be enabled by default. However, we can retain an option to explicitly create this RoleBinding if needed.",
+          "description": "This endpoint manages all tasks performed when a user logs into the region. It handles the creation or update of a namespace, along with metadata information, similar to the current API behavior like quota. We should also consider whether to maintain the behavior of creating a RoleBinding for the OIDC user. While this supports external API server calls, it is not the primary goal of Onyxia. At the very least, this behavior should not be enabled by default. However, we can retain an option to explicitly create this RoleBinding if needed.",
           "operationId": "onboard",
           "parameters": [],
           "requestBody": {
