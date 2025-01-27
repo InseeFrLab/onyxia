@@ -2,7 +2,7 @@
     "openapi": "3.0.1",
     "info": {
       "title": "onboarding-api",
-      "description": "Onboarding API is designed to remain minimal, giving each Onyxia instance the flexibility to use this service or provide its own. It also allows adding features such as quota management. By separating this API from the core functionalities, onyxia-web must handle extra logic—unlike the previous setup, where namespace creation was silently performed by the older API.",
+      "description": "Onboarding API is designed to remain minimal, giving each Onyxia instance the flexibility to use this service or provide its own. It also allows adding features such as quota management. By separating this API from the core functionalities, onyxia-web must handle extra logic—unlike the previous setup, where namespace creation was silently performed by the older API. At a minimum, we need to define an endpoint in the core-features API to verify the existence of a namespace because onboarding is optionnal.",
       "version": "1.0.0"
     },
     "servers": [
