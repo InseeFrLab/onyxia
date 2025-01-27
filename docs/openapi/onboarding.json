@@ -24,7 +24,7 @@
             "Onboarding"
           ],
           "summary": "Init a user or a group",
-          "description": "This endpoint handle all tasks when a user logged into the platform. Create or update of a namespace with metadata information like the API today. We should also think if we keep the behaviour to create a rolebinding for the oidc user or not. This only help external apiserver call that is not the main goal of onyxia. At least it must not be the default behaviour. We can keep an option to explicitely crate this rolebinding",
+          "description": "This endpoint manages all tasks performed when a user logs into the platform. It handles the creation or update of a namespace, along with metadata information, similar to the current API behavior like quota. We should also consider whether to maintain the behavior of creating a RoleBinding for the OIDC user. While this supports external API server calls, it is not the primary goal of Onyxia. At the very least, this behavior should not be enabled by default. However, we can retain an option to explicitly create this RoleBinding if needed.",
           "operationId": "onboard",
           "parameters": [],
           "requestBody": {
