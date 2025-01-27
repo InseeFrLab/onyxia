@@ -1,12 +1,11 @@
 import { tss } from "tss";
 import { memo } from "react";
-import dataSvgUrl from "ui/assets/svg/explorer/data.svg";
-import directorySvgUrl from "ui/assets/svg/explorer/directory.svg";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
+import { fileTypeIcons, type SupportedIconsIds } from "./icons";
 
 export type Props = {
     className?: string;
-    iconId: "data" | "directory";
+    iconId: SupportedIconsIds;
     hasShadow: boolean;
 };
 
@@ -18,14 +17,7 @@ export const ExplorerIcon = memo((props: Props) => {
     return (
         <ThemedImage
             className={cx(classes.root, className)}
-            url={(() => {
-                switch (iconId) {
-                    case "data":
-                        return dataSvgUrl;
-                    case "directory":
-                        return directorySvgUrl;
-                }
-            })()}
+            url={fileTypeIcons[iconId]}
             key={iconId}
         />
     );

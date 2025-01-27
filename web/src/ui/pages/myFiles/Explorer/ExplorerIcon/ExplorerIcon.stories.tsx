@@ -23,3 +23,10 @@ export const DirectoryIconWithoutShadow: Story = {
         hasShadow: false
     }
 };
+
+export const JsonIcon: Story = {
+    args: {
+        iconId: "json",
+        hasShadow: false
+    }
+};

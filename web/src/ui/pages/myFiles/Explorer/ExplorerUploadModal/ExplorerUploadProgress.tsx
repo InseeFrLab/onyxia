@@ -4,7 +4,7 @@ import { Text } from "onyxia-ui/Text";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useTranslation } from "ui/i18n";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
-import { ExplorerIcon } from "../ExplorerIcon";
+import { ExplorerIcon } from "../ExplorerIcon/ExplorerIcon";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";

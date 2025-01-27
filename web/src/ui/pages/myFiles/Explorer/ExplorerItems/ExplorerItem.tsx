@@ -5,7 +5,7 @@ import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import Tooltip from "@mui/material/Tooltip";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
-import { ExplorerIcon } from "../ExplorerIcon";
+import { ExplorerIcon, getIconIdFromExtension } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
 import { Item } from "../../shared/types";
 import { PolicySwitch } from "../PolicySwitch";
@@ -13,7 +13,7 @@ import { PolicySwitch } from "../PolicySwitch";
 export type ExplorerItemProps = {
     className?: string;
 
-    /** Tell if we are displaying an directory or a secret */
+    /** Tell if we are displaying an directory or a file */
     kind: "file" | "directory";
 
     /** Name displayed under the folder icon*/
@@ -92,7 +92,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                             case "directory":
                                 return "directory";
                             case "file":
-                                return "data";
+                                return getIconIdFromExtension(fileType);
                         }
                     })()}
                     hasShadow={true}
