@@ -61,7 +61,7 @@
         "OnboardingRequest": {
           "type": "object",
           "properties": {
-            "namespace": {
+            "group": {
               "type": "string"
             }
           },
