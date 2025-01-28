@@ -51,6 +51,7 @@ export const fileTypeIcons = {
 
     // CSV
     csv: csvSvgUrl,
+    parquet: csvSvgUrl,
 
     //Text
     txt: textSvgUrl,
