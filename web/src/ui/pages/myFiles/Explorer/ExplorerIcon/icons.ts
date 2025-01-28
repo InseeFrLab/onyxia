@@ -31,7 +31,7 @@ import xmlSvgUrl from "ui/assets/svg/explorer/xml.svg";
 import xlsSvgUrl from "ui/assets/svg/explorer/xls.svg";
 import ymlSvgUrl from "ui/assets/svg/explorer/yml.svg";
 import zipSvgUrl from "ui/assets/svg/explorer/zip.svg";
-import RSvgUrl from "ui/assets/svg/explorer/r.svg";
+import RSvgUrl from "ui/assets/svg/explorer/R.svg";
 import faviconSvgUrl from "ui/assets/svg/explorer/favicon.svg";
 import goSvgUrl from "ui/assets/svg/explorer/go.svg";
 import textSvgUrl from "ui/assets/svg/explorer/text.svg";

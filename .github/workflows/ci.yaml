@@ -27,10 +27,6 @@ jobs:
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: yarn test
-      - name: Debug with tmate
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
       - run: yarn build
       - run: npx keycloakify build
 
