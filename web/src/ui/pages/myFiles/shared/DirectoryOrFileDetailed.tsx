@@ -1,5 +1,5 @@
 import { tss } from "tss";
-import { ExplorerIcon } from "../Explorer/ExplorerIcon";
+import { ExplorerIcon } from "../Explorer/ExplorerIcon/ExplorerIcon";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";

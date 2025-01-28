@@ -8,7 +8,7 @@ import {
     useGridApiRef
 } from "@mui/x-data-grid";
 import { memo, useEffect, useMemo, useState } from "react";
-import { ExplorerIcon } from "../ExplorerIcon";
+import { ExplorerIcon, getIconIdFromExtension } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
@@ -131,36 +131,42 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                     field: "basename",
                     headerName: t("header name"),
                     type: "string",
-                    renderCell: params => (
-                        <>
-                            <ExplorerIcon
-                                iconId={
-                                    params.row.kind === "directory" ? "directory" : "data"
-                                }
-                                hasShadow={false}
-                                className={classes.nameIcon}
-                            />
-                            <Link
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    switch (params.row.kind) {
-                                        case "directory":
-                                            return onNavigate({
-                                                basename: params.row.basename
-                                            });
+                    renderCell: params => {
+                        const fileName = params.value;
+                        const isDirectory = params.row.kind === "directory";
 
-                                        case "file":
-                                            return onOpenFile({
-                                                basename: params.row.basename
-                                            });
-                                    }
-                                }}
-                                color="inherit"
-                            >
-                                <Text typo="label 2">{params.value}</Text>
-                            </Link>
-                        </>
-                    ),
+                        const fileExtension = !isDirectory
+                            ? (fileName.split(".").pop() ?? "")
+                            : "directory";
+                        return (
+                            <>
+                                <ExplorerIcon
+                                    iconId={getIconIdFromExtension(fileExtension)}
+                                    hasShadow={false}
+                                    className={classes.nameIcon}
+                                />
+                                <Link
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        switch (params.row.kind) {
+                                            case "directory":
+                                                return onNavigate({
+                                                    basename: params.row.basename
+                                                });
+
+                                            case "file":
+                                                return onOpenFile({
+                                                    basename: params.row.basename
+                                                });
+                                        }
+                                    }}
+                                    color="inherit"
+                                >
+                                    <Text typo="label 2">{params.value}</Text>
+                                </Link>
+                            </>
+                        );
+                    },
                     cellClassName: classes.basenameCell
                 },
 

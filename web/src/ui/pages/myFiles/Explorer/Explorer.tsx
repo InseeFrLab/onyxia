@@ -24,7 +24,7 @@ import { ExplorerButtonBar } from "./ExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
-import { ExplorerIcon } from "./ExplorerIcon";
+import { ExplorerIcon } from "./ExplorerIcon/ExplorerIcon";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
