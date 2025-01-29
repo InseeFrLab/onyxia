@@ -30,10 +30,14 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                     return [queryParamKey, queryParamValue] as const;
                 })
                 .reduce(
-                    ...partition<readonly [string, string]>(([queryParamKey]) =>
-                        queryParamKey.includes(".")
+                    ...partition<readonly [string, string]>(
+                        ([queryParamKey]) =>
+                            queryParamKey.includes(".") &&
+                            !queryParamKey.startsWith("oidc-spa.")
                     )
                 );
+
+            console.log({ queryParamsEntries_helmValuesPatch, queryParamsEntries_other });
 
             const helmValuesPatch = queryParamsEntries_helmValuesPatch.map(
                 ([queryParamKey, queryParamValue]): HelmValuesPatchEntry => ({

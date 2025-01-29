@@ -197,7 +197,7 @@ export function createS3Client(
                     returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
                 });
 
-            if (oidc.authMethod !== "session storage") {
+            if (oidc.isNewBrowserSession) {
                 await clearCachedToken();
             }
 

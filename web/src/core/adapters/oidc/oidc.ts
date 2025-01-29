@@ -1,4 +1,4 @@
-import { Oidc } from "core/ports/Oidc";
+import type { Oidc } from "core/ports/Oidc";
 import { createOidc as createOidcSpa } from "oidc-spa";
 
 export async function createOidc(params: {
@@ -12,7 +12,8 @@ export async function createOidc(params: {
         issuerUri,
         clientId,
         transformUrlBeforeRedirect,
-        publicUrl: import.meta.env.BASE_URL
+        BASE_URL: import.meta.env.BASE_URL,
+        debugLogs: true
     });
 
     return oidc;

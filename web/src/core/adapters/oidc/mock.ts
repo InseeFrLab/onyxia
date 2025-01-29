@@ -8,6 +8,7 @@ export async function createOidc(params: {
 
     const oidc = await createMockOidc({
         isUserInitiallyLoggedIn,
+        homeUrl: import.meta.env.BASE_URL,
         mockedTokens: {
             decodedIdToken: {}
         }
