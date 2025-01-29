@@ -102,7 +102,7 @@ export default function Home(props: Props) {
             if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED === undefined) {
                 return (
                     <Button
-                        href="https://docs.onyxia.sh/user-guide"
+                        href="https://docs.onyxia.sh/user-doc/user-guide"
                         doOpenNewTabIfHref={true}
                     >
                         {t("new user")}
