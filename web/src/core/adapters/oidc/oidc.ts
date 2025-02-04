@@ -12,8 +12,8 @@ export async function createOidc(params: {
         issuerUri,
         clientId,
         transformUrlBeforeRedirect,
-        BASE_URL: import.meta.env.BASE_URL,
-        debugLogs: true
+        homeUrl: import.meta.env.BASE_URL,
+        debugLogs: false
     });
 
     return oidc;
