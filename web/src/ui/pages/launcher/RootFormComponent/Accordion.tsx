@@ -19,6 +19,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { useSessionState } from "ui/tools/useSessionState";
 import { z } from "zod";
 import { isObjectThatThrowIfAccessed } from "clean-architecture/createObjectThatThrowsIfAccessed";
+import { Markdown } from "ui/shared/Markdown";
 
 export type Props = {
     className?: string;
@@ -149,9 +150,17 @@ export function Accordion(props: Props) {
                 <Text typo="label 1" componentProps={{ lang: "und" }}>
                     {capitalize(title)}
                 </Text>
-                <Text typo="caption" color="secondary" componentProps={{ lang: "und" }}>
-                    {description}
-                </Text>
+                {description !== undefined && (
+                    <Text
+                        typo="caption"
+                        color="secondary"
+                        componentProps={{ lang: "und" }}
+                    >
+                        <Markdown inline={true} lang="und">
+                            {description}
+                        </Markdown>
+                    </Text>
+                )}
             </MuiAccordionSummary>
             <MuiAccordionDetails id={contentId} className={classes.details}>
                 <FormFieldGroupComponent

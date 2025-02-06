@@ -4,6 +4,7 @@ import { useFormField } from "./shared/useFormField";
 import { RangeSlider } from "onyxia-ui/RangeSlider";
 import { capitalize } from "tsafe/capitalize";
 import { same } from "evt/tools/inDepth/same";
+import { Markdown } from "ui/shared/Markdown";
 
 export type Props = {
     className?: string;
@@ -58,14 +59,25 @@ export const RangeSliderFormField = memo((props: Props) => {
         <FormFieldWrapper
             className={className}
             title={capitalize(title)}
-            description={
-                <>
-                    {lowEndRange.description}
-                    {" /"}
-                    <br />
-                    {highEndRange.description}
-                </>
-            }
+            description={(() => {
+                const hasLowEnd = lowEndRange.description !== undefined;
+                const hasHighEnd = highEndRange.description !== undefined;
+
+                const descriptionText =
+                    hasLowEnd && hasHighEnd
+                        ? `${lowEndRange.description} /  \n${highEndRange.description}`
+                        : hasLowEnd
+                          ? `${lowEndRange.description} /`
+                          : hasHighEnd
+                            ? `/ ${highEndRange.description}`
+                            : undefined;
+
+                if (descriptionText === undefined) {
+                    return undefined;
+                }
+
+                return <Markdown inline={true}>{descriptionText}</Markdown>;
+            })()}
             error={undefined}
             onResetToDefault={resetToDefault}
             inputId={inputId}

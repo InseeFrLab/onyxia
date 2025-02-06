@@ -7,6 +7,7 @@ import ToolTip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
+import { Markdown } from "ui/shared/Markdown";
 
 type Props = {
     className?: string;
@@ -68,13 +69,13 @@ export function FormFieldWrapper(props: Props) {
             </div>
             {description !== undefined && (
                 <Text typo="caption" className={classes.description}>
-                    {
-                        <span lang="und">
-                            {typeof description === "string"
-                                ? capitalize(description)
-                                : description}
-                        </span>
-                    }
+                    {typeof description === "string" ? (
+                        <Markdown inline={true} lang="und">
+                            {capitalize(description)}
+                        </Markdown>
+                    ) : (
+                        description
+                    )}
                 </Text>
             )}
             <div className={classes.childrenWrapper}>{children}</div>
