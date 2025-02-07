@@ -5,6 +5,7 @@ import { capitalize } from "tsafe/capitalize";
 import { useBackgroundColor } from "ui/tools/useBackgroundColor";
 import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export function FormFieldGroupComponentWrapper(props: {
     className?: string;
@@ -28,7 +29,9 @@ export function FormFieldGroupComponentWrapper(props: {
                     </Text>
                     {description !== undefined && (
                         <Text typo="caption" componentProps={{ lang: "und" }}>
-                            {capitalize(description)}
+                            <Markdown inline={true} lang="und">
+                                {capitalize(description)}
+                            </Markdown>
                         </Text>
                     )}
                 </div>
