@@ -94,6 +94,7 @@ function ContextualizedKcApp(props: Props) {
                             />
                         );
                     default:
+                        //setBrowserColorSchemeToLight();
                         return (
                             <DefaultPage
                                 kcContext={kcContext}
@@ -127,6 +128,22 @@ const useStyles = tss
         ({ theme, backgroundUrl, classes }) =>
             ({
                 kcHtmlClass: {
+                    ":root": {
+                        colorScheme: "light"
+                    },
+                    "& .kcLabelClass": {
+                        color: `${theme.colors.getUseCases({ isDarkModeEnabled: false }).typography.textPrimary} !important`
+                    },
+                    "& .kcFormOptionsWrapperClass": {
+                        "& span": {
+                            color: `${theme.colors.getUseCases({ isDarkModeEnabled: false }).typography.textPrimary} !important`
+                        }
+                    },
+                    /*
+                    "& .kcButtonClass:hover": {
+                        "outline": `2px solid ${theme.colors.useCases.typography.textFocus}`,
+                    },
+                    */
                     background: `${theme.colors.useCases.surfaces.background}`,
                     "& a": {
                         color: `${theme.colors.useCases.typography.textFocus}`
@@ -185,8 +202,10 @@ const useStyles = tss
                     borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
                     "&:focus": {
                         borderColor: "unset",
-                        borderBottom: `1px solid ${theme.colors.useCases.typography.textFocus}`
-                    }
+                        borderBottom: `1px solid ${theme.colors.useCases.typography.textFocus}`,
+                        outline: "none"
+                    },
+                    color: `${theme.colors.getUseCases({ isDarkModeEnabled: false }).typography.textPrimary} !important`
                 },
                 kcHeaderWrapperClass: {},
                 kcAlertClass: {
