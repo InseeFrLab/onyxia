@@ -192,8 +192,13 @@ const useStyles = tss
                     borderColor: `${theme.colors.useCases.typography.textFocus}`,
                     borderWidth: "2px",
                     borderRadius: `20px`,
-                    color: `${theme.colors.useCases.typography.textFocus}`,
-                    textTransform: "uppercase"
+                    borderStyle: "solid",
+                    color: theme.colors.useCases.typography.textFocus,
+                    textTransform: "uppercase",
+                    "&:hover:not(:active)": {
+                        backgroundColor: theme.colors.useCases.typography.textFocus,
+                        color: theme.colors.palette.light.greyVariant1
+                    }
                 },
                 kcInputClass: {
                     borderRadius: "unset",
