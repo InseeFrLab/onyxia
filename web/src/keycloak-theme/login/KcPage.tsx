@@ -131,6 +131,9 @@ const useStyles = tss
                     ":root": {
                         colorScheme: "light"
                     },
+                    "*": {
+                        color: `${theme.colors.getUseCases({ isDarkModeEnabled: false }).typography.textPrimary}`
+                    },
                     "& .kcLabelClass": {
                         color: `${theme.colors.getUseCases({ isDarkModeEnabled: false }).typography.textPrimary} !important`
                     },

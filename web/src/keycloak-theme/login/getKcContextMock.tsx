@@ -57,6 +57,12 @@ export const { getKcContextMock } = createGetKcContextMock({
             passwordPolicies: {
                 length: 12
             }
+        },
+        "login-idp-link-confirm.ftl": {
+            message: {
+                type: "error",
+                summary: "An error occurred during form submission."
+            }
         }
     }
 });

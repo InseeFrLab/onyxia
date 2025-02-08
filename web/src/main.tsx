@@ -5,13 +5,18 @@ import { assert } from "tsafe/assert";
 const App = lazy(() => import("ui/App"));
 const AppWithoutScreenScaler = lazy(() => import("ui/App/App"));
 const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPage"));
+
 /*
 import { getKcContextMock } from "keycloak-theme/login/getKcContextMock";
 
 if (import.meta.env.DEV) {
     window.kcContext = getKcContextMock({
-        pageId: "register.ftl",
+        //pageId: "login-idp-link-confirm.ftl",
+        //pageId: "login-update-password.ftl",
+        //pageId: "login-reset-password.ftl",
+        pageId: "login.ftl",
         overrides: {
+
         }
     });
 }
