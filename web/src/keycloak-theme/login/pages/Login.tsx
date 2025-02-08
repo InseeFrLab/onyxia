@@ -21,16 +21,8 @@ export default function Login(
 ) {
     const { kcContext, i18n, doUseDefaultCss, Template, classes: classes_props } = props;
 
-    const {
-        messagesPerField,
-        social,
-        realm,
-        url,
-        usernameHidden,
-        login,
-        auth,
-        registrationDisabled
-    } = kcContext;
+    const { social, realm, url, usernameHidden, login, auth, registrationDisabled } =
+        kcContext;
 
     const { msg, msgStr } = i18n;
 
@@ -63,7 +55,7 @@ export default function Login(
             }
             headerNode={msg("doLogIn")}
             i18n={i18n}
-            displayMessage={!messagesPerField.existsError("username", "password")}
+            displayMessage={true}
             infoNode={
                 <div className={classes.linkToRegisterWrapper}>
                     <Text typo="body 2" color="secondary">
