@@ -127,6 +127,7 @@ export function Accordion(props: Props) {
             ref={setRootElement}
             className={cx(classes.root, className)}
             expanded={isExpanded}
+            data-title={title}
             onChange={(...[, isExpanded]) => setIsExpanded(isExpanded)}
             slotProps={{
                 transition: {
