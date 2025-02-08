@@ -47,6 +47,10 @@ export default defineConfig({
                     default: "Onyxia"
                 }
             ],
+            kcContextExclusionsFtl: [
+                // NOTE: For custom message defined on the backend to tell users to change their password.
+                '<@addToXKeycloakifyMessagesIfMessageKey str="invalidUserMessage" />'
+            ].join("\n"),
             postBuild: async () => {
                 await fs.rm(
                     pathJoin(
