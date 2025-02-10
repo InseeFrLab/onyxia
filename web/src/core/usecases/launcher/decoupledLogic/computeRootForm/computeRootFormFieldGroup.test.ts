@@ -319,7 +319,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                         {
                             type: "group",
                             helmValuesPath: ["b", 0],
-                            title: "b 0",
+                            title: "b 1",
                             description: undefined,
                             nodes: [
                                 {

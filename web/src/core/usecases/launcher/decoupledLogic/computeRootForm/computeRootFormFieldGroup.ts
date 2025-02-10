@@ -156,10 +156,10 @@ function computeRootFormFieldGroup_rec(params: {
         const secondToLastSegment = helmValuesPath[helmValuesPath.length - 2];
 
         if (secondToLastSegment === undefined) {
-            return `item ${lastSegment}`;
+            return `item ${lastSegment + 1}`;
         }
 
-        return `${secondToLastSegment} ${lastSegment}`;
+        return `${secondToLastSegment} ${lastSegment + 1}`;
     })();
 
     const isReadonly =
