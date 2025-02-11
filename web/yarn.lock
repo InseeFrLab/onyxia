@@ -4199,6 +4199,15 @@ evt@^2.5.8:
     run-exclusive "^2.2.19"
     tsafe "^1.8.5"
 
+evt@^2.5.9:
+  version "2.5.9"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.9.tgz#cd270e50ce1e7c586bf86242c054dd958d06a5c4"
+  integrity sha512-GpjX476FSlttEGWHT8BdVMoI8wGXQGbEOtKcP4E+kggg+yJzXBZN2n4x7TS/zPBJ1DZqWI+rguZZApjjzQ0HpA==
+  dependencies:
+    minimal-polyfills "^2.2.3"
+    run-exclusive "^2.2.19"
+    tsafe "^1.8.5"
+
 execa@~8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/execa/-/execa-8.0.1.tgz#51f6a5943b580f963c3ca9c6321796db8cc39b8c"
@@ -4961,10 +4970,10 @@ jsonify@^0.0.1:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.1.tgz#2aa3111dae3d34a0f151c63f3a45d995d9420978"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-keycloakify@^11.8.13:
-  version "11.8.13"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.13.tgz#fc6c11e61fdc51eb3fa7357338fbc6c669577ef6"
-  integrity sha512-eR9Kp7CHselq4+mrK0VLVOIjSXuwXh8uT7pSA3yaoTljTBwCCu5STWjWpPrRdYseTkWcIcGXCyyTMkgDIjN2wA==
+keycloakify@^11.8.14:
+  version "11.8.14"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.14.tgz#d7f8556418c235a731349b57859671d7d56183b3"
+  integrity sha512-uoxXBGGV5it+oGA/xU7es17S5DxDmhgSCLsgbxweZ5C6Vrwx8bog+Pb8cF0r6M0ETgZdVyZZywlODtXB32iEQQ==
   dependencies:
     tsafe "^1.8.5"
 
@@ -5879,6 +5888,15 @@ powerhooks@^1.0.19:
     memoizee "^0.4.17"
     tsafe "^1.8.5"
 
+powerhooks@^1.0.20:
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.20.tgz#2a634dc26907ebfa45d5602e03bd8a6535ccec2d"
+  integrity sha512-OdKPWt6Zd3p8bu85nlGKFsrvhU0Nyg2N436ne0Z1JtkZPXj22z/9mk9Acc3jHtG2Qnr5xIkFl6ueZo/sPT9Z6A==
+  dependencies:
+    evt "^2.5.9"
+    memoizee "^0.4.17"
+    tsafe "^1.8.5"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -6687,10 +6705,10 @@ tss-react@^4.9.13:
     "@emotion/serialize" "*"
     "@emotion/utils" "*"
 
-tss-react@^4.9.14:
-  version "4.9.14"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.14.tgz#0b606b7a08fe80670c8c7d09f2c24421422a2300"
-  integrity sha512-nAj4RCQk3ADzrmtxmTcmN1B9EKxPMIxuCfJ3ll964CksndJ2/ZImF6rAMo2Kud5yE3ENXHpPIBHCyuMtgptMvw==
+tss-react@^4.9.15:
+  version "4.9.15"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.15.tgz#a26fc24889a462ab4858094bc5b33cdda36e45ab"
+  integrity sha512-rLiEmDwUtln9RKTUR/ZPYBrufF0Tq/PFggO1M7P8M3/FAcodPQ746Ug9MCEFkURKDlntN17+Oja0DMMz5yBnsQ==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
