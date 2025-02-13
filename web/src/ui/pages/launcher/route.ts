@@ -37,8 +37,6 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                     )
                 );
 
-            console.log({ queryParamsEntries_helmValuesPatch, queryParamsEntries_other });
-
             const helmValuesPatch = queryParamsEntries_helmValuesPatch.map(
                 ([queryParamKey, queryParamValue]): HelmValuesPatchEntry => ({
                     path: (() => {

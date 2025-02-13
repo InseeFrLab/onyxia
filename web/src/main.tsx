@@ -2,6 +2,13 @@
 import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { assert } from "tsafe/assert";
+import { handleOidcCallback } from "oidc-spa/oidc/handleOidcCallback";
+
+// NOTE: This is just an optimization to speedup the silent SSO.
+if (window.kcContext === undefined) {
+    handleOidcCallback();
+}
+
 const App = lazy(() => import("ui/App"));
 const AppWithoutScreenScaler = lazy(() => import("ui/App/App"));
 const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPage"));
