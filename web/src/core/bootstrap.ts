@@ -102,18 +102,19 @@ export async function bootstrapCore(
         }
     });
 
-    oidc = await (async () => {
+    initialize_oidc: {
         const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidc/mock");
 
-            return createOidc({ isUserInitiallyLoggedIn: true });
+            oidc = await createOidc({ isUserInitiallyLoggedIn: true });
+            break initialize_oidc;
         }
 
         const { createOidc } = await import("core/adapters/oidc");
 
-        return createOidc({
+        oidc = await createOidc({
             issuerUri: oidcParams.issuerUri,
             clientId: oidcParams.clientId,
             transformUrlBeforeRedirect: url => {
@@ -128,7 +129,18 @@ export async function bootstrapCore(
                 return transformedUrl;
             }
         });
-    })();
+
+        if (!oidc.isUserLoggedIn) {
+            break initialize_oidc;
+        }
+
+        const { canAccessTokenBeValidated } = await onyxiaApi.testAccessToken();
+
+        if (!canAccessTokenBeValidated) {
+            console.log("Using id_token instead of access_token");
+            oidc.isAccessTokenSubstitutedWithIdToken = true;
+        }
+    }
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
         await oidc.login({ doesCurrentHrefRequiresAuth: true });

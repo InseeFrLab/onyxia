@@ -9,7 +9,7 @@ export async function createOidcOrFallback(params: {
               clientId: string;
           }
         | undefined;
-    fallbackOidc: Oidc.LoggedIn | undefined;
+    fallbackOidc: Oidc.LoggedIn;
 }): Promise<Oidc.LoggedIn> {
     const { oidcParams, fallbackOidc } = params;
 
@@ -56,6 +56,10 @@ export async function createOidcOrFallback(params: {
             if (!oidc.isUserLoggedIn) {
                 await oidc.login({ doesCurrentHrefRequiresAuth: true });
                 assert(false);
+            }
+
+            if (fallbackOidc.isAccessTokenSubstitutedWithIdToken) {
+                oidc.isAccessTokenSubstitutedWithIdToken = true;
             }
 
             return oidc;

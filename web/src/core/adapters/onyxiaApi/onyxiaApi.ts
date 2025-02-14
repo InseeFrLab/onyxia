@@ -739,6 +739,14 @@ export function createOnyxiaApi(params: {
             },
             { promise: true }
         ),
+        testAccessToken: async () => {
+            try {
+                await onyxiaApi.getUserAndProjects();
+            } catch {
+                return { canAccessTokenBeValidated: false };
+            }
+            return { canAccessTokenBeValidated: true };
+        },
         getQuotas: async () => {
             let resp;
 

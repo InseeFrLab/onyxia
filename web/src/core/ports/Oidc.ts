@@ -22,6 +22,7 @@ export declare namespace Oidc {
         subscribeToAutoLogoutCountdown: (
             tickCallback: (params: { secondsLeft: number | undefined }) => void
         ) => { unsubscribeFromAutoLogoutCountdown: () => void };
+        isAccessTokenSubstitutedWithIdToken: boolean;
     };
 
     export type Tokens = {
