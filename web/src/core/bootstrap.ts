@@ -46,7 +46,7 @@ export async function bootstrapCore(
 
     const onyxiaApi = createOnyxiaApi({
         url: apiUrl,
-        getOidcAccessToken: () => {
+        getOidcAccessToken: async () => {
             if (oidc === undefined) {
                 return undefined;
             }
@@ -54,7 +54,7 @@ export async function bootstrapCore(
             if (!oidc.isUserLoggedIn) {
                 return undefined;
             }
-            return oidc.getTokens().accessToken;
+            return (await oidc.getTokens()).accessToken;
         },
         getCurrentRegionId: () => {
             if (!isCoreCreated) {

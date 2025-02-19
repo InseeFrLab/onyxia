@@ -137,7 +137,8 @@ export function createS3Client(
                                 "/?" +
                                     Object.entries({
                                         Action: "AssumeRoleWithWebIdentity",
-                                        WebIdentityToken: oidc.getTokens().accessToken,
+                                        WebIdentityToken: (await oidc.getTokens())
+                                            .accessToken,
                                         DurationSeconds:
                                             params.durationSeconds ?? 7 * 24 * 3600,
                                         Version: "2011-06-15",

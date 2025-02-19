@@ -137,7 +137,7 @@ export const thunks = {
 
             await kubernetesOidcClient.renewTokens();
 
-            const oidcTokens = kubernetesOidcClient.getTokens();
+            const oidcTokens = await kubernetesOidcClient.getTokens();
 
             dispatch(
                 actions.refreshed({

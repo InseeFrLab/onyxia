@@ -16,5 +16,24 @@ export async function createOidc(params: {
         debugLogs: false
     });
 
-    return oidc;
+    if (!oidc.isUserLoggedIn) {
+        return oidc;
+    }
+
+    return {
+        ...oidc,
+        getTokens: async () => {
+            wake_up_from_sleep: {
+                const tokens = oidc.getTokens();
+
+                if (Date.now() > tokens.accessTokenExpirationTime) {
+                    break wake_up_from_sleep;
+                }
+
+                await oidc.renewTokens();
+            }
+
+            return oidc.getTokens();
+        }
+    };
 }

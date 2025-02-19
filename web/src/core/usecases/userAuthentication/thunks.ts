@@ -41,19 +41,19 @@ export const protectedThunks = {
                         : {
                               isUserLoggedIn: true,
                               user: (await onyxiaApi.getUserAndProjects()).user,
-                              decodedIdToken: oidc.getTokens().decodedIdToken
+                              decodedIdToken: (await oidc.getTokens()).decodedIdToken
                           }
                 )
             );
         },
     getTokens:
         () =>
-        (...args) => {
+        async (...args) => {
             const [, , { oidc }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            const { decodedIdToken, accessToken, refreshToken } = oidc.getTokens();
+            const { decodedIdToken, accessToken, refreshToken } = await oidc.getTokens();
 
             return { decodedIdToken, accessToken, refreshToken };
         }

@@ -22,17 +22,17 @@ import { id } from "tsafe/id";
 export function createOnyxiaApi(params: {
     url: string;
     /** undefined if user not logged in */
-    getOidcAccessToken: () => string | undefined;
+    getOidcAccessToken: () => Promise<string | undefined>;
     getCurrentRegionId: () => string | undefined;
     getCurrentProjectId: () => string | undefined;
 }): OnyxiaApi {
     const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectId } = params;
 
-    const getHeaders = () => {
+    const getHeaders = async () => {
         const headers: Record<string, string> = {};
 
         add_bearer_token: {
-            const accessToken = getOidcAccessToken();
+            const accessToken = await getOidcAccessToken();
 
             if (accessToken === undefined) {
                 break add_bearer_token;
@@ -67,9 +67,9 @@ export function createOnyxiaApi(params: {
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ baseURL: url, timeout: 120_000 });
 
-        axiosInstance.interceptors.request.use(config => {
+        axiosInstance.interceptors.request.use(async config => {
             const headers = AxiosHeaders.from(config.headers);
-            headers.set(getHeaders());
+            headers.set(await getHeaders());
 
             return {
                 ...config,
@@ -789,7 +789,7 @@ export function createOnyxiaApi(params: {
             const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
 
             const response = await fetch(`${url}/my-lab/events`, {
-                headers: getHeaders()
+                headers: await getHeaders()
             })
                 // NOTE: This happens when there's no data to read.
                 .catch(() => undefined);

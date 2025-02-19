@@ -16,7 +16,7 @@ export declare namespace Oidc {
     export type LoggedIn = Common & {
         isUserLoggedIn: true;
         renewTokens(): Promise<void>;
-        getTokens: () => Tokens;
+        getTokens: () => Promise<Tokens>;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
         isNewBrowserSession: boolean;
         subscribeToAutoLogoutCountdown: (

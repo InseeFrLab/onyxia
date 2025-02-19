@@ -14,5 +14,12 @@ export async function createOidc(params: {
         }
     });
 
-    return oidc;
+    if (!oidc.isUserLoggedIn) {
+        return oidc;
+    }
+
+    return {
+        ...oidc,
+        getTokens: async () => oidc.getTokens()
+    };
 }
