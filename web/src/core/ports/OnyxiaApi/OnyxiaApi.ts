@@ -97,6 +97,4 @@ export type OnyxiaApi = {
         }) => void;
         evtUnsubscribe: NonPostableEvt<void>;
     }) => Promise<void>;
-
-    testAccessToken: () => Promise<{ canAccessTokenBeValidated: boolean }>;
 };

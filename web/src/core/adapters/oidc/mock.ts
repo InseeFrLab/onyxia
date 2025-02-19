@@ -14,9 +14,5 @@ export async function createOidc(params: {
         }
     });
 
-    if (!oidc.isUserLoggedIn) {
-        return oidc;
-    }
-
-    return { ...oidc, isAccessTokenSubstitutedWithIdToken: false };
+    return oidc;
 }

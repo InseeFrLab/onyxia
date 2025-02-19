@@ -58,10 +58,6 @@ export async function createOidcOrFallback(params: {
                 assert(false);
             }
 
-            if (fallbackOidc.isAccessTokenSubstitutedWithIdToken) {
-                oidc.isAccessTokenSubstitutedWithIdToken = true;
-            }
-
             return oidc;
         }
     }
