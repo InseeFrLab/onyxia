@@ -13,6 +13,7 @@ import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
 import { pluginSystemInitCore } from "pluginSystem";
 import { createOnyxiaApi } from "core/adapters/onyxiaApi";
+import { assert } from "tsafe/assert";
 
 type ParamsOfBootstrapCore = {
     apiUrl: string;
@@ -46,7 +47,7 @@ export async function bootstrapCore(
 
     const onyxiaApi = createOnyxiaApi({
         url: apiUrl,
-        getOidcAccessToken: () => {
+        getOidcAccessToken: async () => {
             if (oidc === undefined) {
                 return undefined;
             }
@@ -54,7 +55,7 @@ export async function bootstrapCore(
             if (!oidc.isUserLoggedIn) {
                 return undefined;
             }
-            return oidc.getTokens().accessToken;
+            return (await oidc.getTokens()).accessToken;
         },
         getCurrentRegionId: () => {
             if (!isCoreCreated) {
@@ -102,45 +103,23 @@ export async function bootstrapCore(
         }
     });
 
-    initialize_oidc: {
+    oidc = await (async () => {
         const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidc/mock");
 
-            oidc = await createOidc({ isUserInitiallyLoggedIn: true });
-            break initialize_oidc;
+            return createOidc({ isUserInitiallyLoggedIn: true });
         }
 
         const { createOidc } = await import("core/adapters/oidc");
 
-        oidc = await createOidc({
-            issuerUri: oidcParams.issuerUri,
-            clientId: oidcParams.clientId,
-            transformUrlBeforeRedirect: url => {
-                let transformedUrl = url;
-
-                if (oidcParams.serializedExtraQueryParams !== undefined) {
-                    transformedUrl += `&${oidcParams.serializedExtraQueryParams}`;
-                }
-
-                transformedUrl = transformUrlBeforeRedirectToLogin(transformedUrl);
-
-                return transformedUrl;
-            }
+        return createOidc({
+            ...oidcParams,
+            transformUrlBeforeRedirect: transformUrlBeforeRedirectToLogin,
+            autoLogin: false
         });
-
-        if (!oidc.isUserLoggedIn) {
-            break initialize_oidc;
-        }
-
-        const { canAccessTokenBeValidated } = await onyxiaApi.testAccessToken();
-
-        if (!canAccessTokenBeValidated) {
-            console.log("Using id_token instead of access_token");
-            oidc.isAccessTokenSubstitutedWithIdToken = true;
-        }
-    }
+    })();
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
@@ -221,19 +200,27 @@ export async function bootstrapCore(
             break init_secrets_manager;
         }
 
-        const [{ createSecretManager }, { createOidcOrFallback }] = await Promise.all([
-            import("core/adapters/secretManager"),
-            import("core/adapters/oidc/utils/createOidcOrFallback")
-        ]);
+        const [{ createSecretManager }, { createOidc, mergeOidcParams }, { oidcParams }] =
+            await Promise.all([
+                import("core/adapters/secretManager"),
+                import("core/adapters/oidc"),
+                onyxiaApi.getAvailableRegionsAndOidcParams()
+            ]);
+
+        assert(oidcParams !== undefined);
 
         context.secretsManager = await createSecretManager({
             kvEngine: deploymentRegion.vault.kvEngine,
             role: deploymentRegion.vault.role,
             url: deploymentRegion.vault.url,
             authPath: deploymentRegion.vault.authPath,
-            oidc: await createOidcOrFallback({
-                oidcParams: deploymentRegion.vault.oidcParams,
-                fallbackOidc: oidc
+            oidc: await createOidc({
+                ...mergeOidcParams({
+                    oidcParams,
+                    oidcParams_partial: deploymentRegion.vault.oidcParams
+                }),
+                transformUrlBeforeRedirect: transformUrlBeforeRedirectToLogin,
+                autoLogin: true
             })
         });
     }

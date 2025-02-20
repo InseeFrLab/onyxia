@@ -464,7 +464,7 @@ const privateThunks = {
             const project =
                 projectManagement.protectedSelectors.currentProject(getState());
 
-            const { decodedIdToken, accessToken, refreshToken } = dispatch(
+            const { decodedIdToken, accessToken, refreshToken } = await dispatch(
                 userAuthentication.protectedThunks.getTokens()
             );
 
