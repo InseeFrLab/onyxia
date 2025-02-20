@@ -1,3 +1,5 @@
+import type { OidcParams_Partial } from "./OidcParams";
+
 export type DeploymentRegion = {
     id: string;
     servicesMonitoringUrlPattern: string | undefined;
@@ -38,12 +40,7 @@ export type DeploymentRegion = {
               kvEngine: string;
               role: string;
               authPath: string | undefined;
-              oidcParams:
-                  | {
-                        issuerUri?: string;
-                        clientId: string;
-                    }
-                  | undefined;
+              oidcParams: OidcParams_Partial;
           }
         | undefined;
     proxyInjection:
@@ -72,12 +69,7 @@ export type DeploymentRegion = {
         | {
               url: string;
               usernamePrefix?: string;
-              oidcParams:
-                  | {
-                        issuerUri?: string;
-                        clientId: string;
-                    }
-                  | undefined;
+              oidcParams: OidcParams_Partial;
           }
         | undefined;
     sliders: Record<
@@ -125,12 +117,7 @@ export namespace DeploymentRegion {
                       roleSessionName: string;
                   }
                 | undefined;
-            oidcParams:
-                | {
-                      issuerUri?: string;
-                      clientId: string;
-                  }
-                | undefined;
+            oidcParams: OidcParams_Partial;
         };
         workingDirectory:
             | {

@@ -7,6 +7,8 @@ import {
     type User,
     type HelmRelease,
     type Project,
+    type OidcParams,
+    type OidcParams_Partial,
     zJSONSchema
 } from "core/ports/OnyxiaApi";
 import axios, { AxiosHeaders } from "axios";
@@ -123,12 +125,16 @@ export function createOnyxiaApi(params: {
                 const oidcParams =
                     data.oidcConfiguration === undefined
                         ? undefined
-                        : {
+                        : id<OidcParams>({
                               issuerUri: data.oidcConfiguration.issuerURI,
                               clientId: data.oidcConfiguration.clientID,
-                              serializedExtraQueryParams:
-                                  data.oidcConfiguration.extraQueryParams
-                          };
+                              __clientSecret:
+                                  data.oidcConfiguration
+                                      .workaroundForGoogleClientSecret || undefined,
+                              extraQueryParams_raw:
+                                  data.oidcConfiguration.extraQueryParams || undefined,
+                              scopes_raw: data.oidcConfiguration.scope || undefined
+                          });
 
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion =>
@@ -230,19 +236,9 @@ export function createOnyxiaApi(params: {
                                                     s3Config_api.sts.durationSeconds,
                                                 role: s3Config_api.sts.role,
                                                 oidcParams:
-                                                    s3Config_api.sts.oidcConfiguration ===
-                                                    undefined
-                                                        ? undefined
-                                                        : {
-                                                              issuerUri:
-                                                                  s3Config_api.sts
-                                                                      .oidcConfiguration
-                                                                      .issuerURI,
-                                                              clientId:
-                                                                  s3Config_api.sts
-                                                                      .oidcConfiguration
-                                                                      .clientID
-                                                          }
+                                                    apiTypesOidcConfigurationToOidcParams_Partial(
+                                                        s3Config_api.sts.oidcConfiguration
+                                                    )
                                             },
                                             workingDirectory:
                                                 s3Config_api.workingDirectory
@@ -282,19 +278,9 @@ export function createOnyxiaApi(params: {
                                           role: apiRegion.vault.role,
                                           authPath: apiRegion.vault.authPath,
                                           oidcParams:
-                                              apiRegion.vault.oidcConfiguration ===
-                                              undefined
-                                                  ? undefined
-                                                  : {
-                                                        issuerUri:
-                                                            apiRegion.vault
-                                                                .oidcConfiguration
-                                                                .issuerURI,
-                                                        clientId:
-                                                            apiRegion.vault
-                                                                .oidcConfiguration
-                                                                .clientID
-                                                    }
+                                              apiTypesOidcConfigurationToOidcParams_Partial(
+                                                  apiRegion.vault.oidcConfiguration
+                                              )
                                       },
                             proxyInjection:
                                 apiRegion.proxyInjection === undefined
@@ -321,16 +307,9 @@ export function createOnyxiaApi(params: {
                                 return {
                                     url: k8sPublicEndpoint.URL,
                                     oidcParams:
-                                        k8sPublicEndpoint.oidcConfiguration === undefined
-                                            ? undefined
-                                            : {
-                                                  issuerUri:
-                                                      k8sPublicEndpoint.oidcConfiguration
-                                                          .issuerURI,
-                                                  clientId:
-                                                      k8sPublicEndpoint.oidcConfiguration
-                                                          .clientID
-                                              }
+                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                            k8sPublicEndpoint.oidcConfiguration
+                                        )
                                 };
                             })(),
                             sliders:
@@ -987,3 +966,15 @@ export function createOnyxiaApi(params: {
 
 const originalOnunhandledrejection = window.onunhandledrejection;
 const originalOnerror = window.onerror;
+
+function apiTypesOidcConfigurationToOidcParams_Partial(
+    oidcConfiguration: Partial<ApiTypes.OidcConfiguration> | undefined
+): OidcParams_Partial {
+    return {
+        issuerUri: oidcConfiguration?.issuerURI || undefined,
+        clientId: oidcConfiguration?.clientID || undefined,
+        __clientSecret: oidcConfiguration?.workaroundForGoogleClientSecret || undefined,
+        extraQueryParams_raw: oidcConfiguration?.extraQueryParams || undefined,
+        scopes_raw: oidcConfiguration?.scope || undefined
+    };
+}

@@ -5,7 +5,6 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "./userAuthentication";
-import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import {
     createUsecaseActions,
     createUsecaseContextApi,
@@ -107,8 +106,6 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState, rootContext] = args;
 
-            const { oidc } = rootContext;
-
             if (getState().s3CodeSnippets.isRefreshing) {
                 return;
             }
@@ -120,16 +117,29 @@ export const thunks = {
 
             assert(region.kubernetes !== undefined);
 
-            assert(oidc.isUserLoggedIn);
-
             const context = getContext(rootContext);
 
             let { kubernetesOidcClient } = context;
 
             if (kubernetesOidcClient === undefined) {
-                kubernetesOidcClient = await createOidcOrFallback({
-                    fallbackOidc: oidc,
-                    oidcParams: region.kubernetes.oidcParams
+                const { createOidc, mergeOidcParams } = await import(
+                    "core/adapters/oidc"
+                );
+
+                const { onyxiaApi, paramsOfBootstrapCore } = rootContext;
+
+                const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+                assert(oidcParams !== undefined);
+
+                kubernetesOidcClient = await createOidc({
+                    ...mergeOidcParams({
+                        oidcParams,
+                        oidcParams_partial: region.kubernetes.oidcParams
+                    }),
+                    autoLogin: true,
+                    transformUrlBeforeRedirect:
+                        paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;

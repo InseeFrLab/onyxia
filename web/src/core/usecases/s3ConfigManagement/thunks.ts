@@ -5,7 +5,6 @@ import * as projectManagement from "core/usecases/projectManagement";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
 import { assert } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
-import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "clean-architecture";
 import { getProjectS3ConfigId } from "./decoupledLogic/projectS3ConfigId";
 import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
@@ -145,7 +144,7 @@ export const protectedThunks = {
             const { s3ConfigId } = params;
             const [, getState, rootContext] = args;
 
-            const { s3ClientByConfigId } = getContext(rootContext);
+            const { prS3ClientByConfigId } = getContext(rootContext);
 
             const s3Config = (() => {
                 const s3Configs = selectors.s3Configs(getState());
@@ -157,31 +156,43 @@ export const protectedThunks = {
             })();
 
             use_cached_s3Client: {
-                const s3Client = s3ClientByConfigId.get(s3Config.id);
+                const prS3Client = prS3ClientByConfigId.get(s3Config.id);
 
-                if (s3Client === undefined) {
+                if (prS3Client === undefined) {
                     break use_cached_s3Client;
                 }
 
-                return s3Client;
+                return prS3Client;
             }
 
-            const { createS3Client } = await import("core/adapters/s3Client");
+            const prS3Client = (async () => {
+                const { createS3Client } = await import("core/adapters/s3Client");
+                const { createOidc, mergeOidcParams } = await import(
+                    "core/adapters/oidc"
+                );
+                const { paramsOfBootstrapCore, onyxiaApi } = rootContext;
+                const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
-            const { oidc } = rootContext;
+                assert(oidcParams !== undefined);
 
-            assert(oidc.isUserLoggedIn);
+                return createS3Client(
+                    s3Config.paramsOfCreateS3Client,
+                    oidcParams_partial =>
+                        createOidc({
+                            ...mergeOidcParams({
+                                oidcParams,
+                                oidcParams_partial
+                            }),
+                            autoLogin: true,
+                            transformUrlBeforeRedirect:
+                                paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
+                        })
+                );
+            })();
 
-            const s3Client = createS3Client(s3Config.paramsOfCreateS3Client, oidcParams =>
-                createOidcOrFallback({
-                    oidcParams,
-                    fallbackOidc: oidc
-                })
-            );
+            prS3ClientByConfigId.set(s3Config.id, prS3Client);
 
-            s3ClientByConfigId.set(s3Config.id, s3Client);
-
-            return s3Client;
+            return prS3Client;
         },
     getS3ConfigAndClientForExplorer:
         () =>
@@ -243,5 +254,5 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
-    s3ClientByConfigId: new Map<string, S3Client>()
+    prS3ClientByConfigId: new Map<string, Promise<S3Client>>()
 }));

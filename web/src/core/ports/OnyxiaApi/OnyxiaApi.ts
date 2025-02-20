@@ -7,17 +7,12 @@ import type { User } from "./User";
 import { JSONSchema } from "./JSONSchema";
 import type { NonPostableEvt } from "evt";
 import type { Stringifyable } from "core/tools/Stringifyable";
+import type { OidcParams } from "./OidcParams";
 
 export type OnyxiaApi = {
     getAvailableRegionsAndOidcParams: () => Promise<{
         regions: DeploymentRegion[];
-        oidcParams:
-            | {
-                  issuerUri: string;
-                  clientId: string;
-                  serializedExtraQueryParams: string | undefined;
-              }
-            | undefined;
+        oidcParams: OidcParams | undefined;
     }>;
 
     getIp: () => Promise<string>;

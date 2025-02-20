@@ -13,6 +13,7 @@ import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
 import { pluginSystemInitCore } from "pluginSystem";
 import { createOnyxiaApi } from "core/adapters/onyxiaApi";
+import { assert } from "tsafe/assert";
 
 type ParamsOfBootstrapCore = {
     apiUrl: string;
@@ -114,19 +115,9 @@ export async function bootstrapCore(
         const { createOidc } = await import("core/adapters/oidc");
 
         return createOidc({
-            issuerUri: oidcParams.issuerUri,
-            clientId: oidcParams.clientId,
-            transformUrlBeforeRedirect: url => {
-                let transformedUrl = url;
-
-                if (oidcParams.serializedExtraQueryParams !== undefined) {
-                    transformedUrl += `&${oidcParams.serializedExtraQueryParams}`;
-                }
-
-                transformedUrl = transformUrlBeforeRedirectToLogin(transformedUrl);
-
-                return transformedUrl;
-            }
+            ...oidcParams,
+            transformUrlBeforeRedirect: transformUrlBeforeRedirectToLogin,
+            autoLogin: false
         });
     })();
 
@@ -209,19 +200,27 @@ export async function bootstrapCore(
             break init_secrets_manager;
         }
 
-        const [{ createSecretManager }, { createOidcOrFallback }] = await Promise.all([
-            import("core/adapters/secretManager"),
-            import("core/adapters/oidc/utils/createOidcOrFallback")
-        ]);
+        const [{ createSecretManager }, { createOidc, mergeOidcParams }, { oidcParams }] =
+            await Promise.all([
+                import("core/adapters/secretManager"),
+                import("core/adapters/oidc"),
+                onyxiaApi.getAvailableRegionsAndOidcParams()
+            ]);
+
+        assert(oidcParams !== undefined);
 
         context.secretsManager = await createSecretManager({
             kvEngine: deploymentRegion.vault.kvEngine,
             role: deploymentRegion.vault.role,
             url: deploymentRegion.vault.url,
             authPath: deploymentRegion.vault.authPath,
-            oidc: await createOidcOrFallback({
-                oidcParams: deploymentRegion.vault.oidcParams,
-                fallbackOidc: oidc
+            oidc: await createOidc({
+                ...mergeOidcParams({
+                    oidcParams,
+                    oidcParams_partial: deploymentRegion.vault.oidcParams
+                }),
+                transformUrlBeforeRedirect: transformUrlBeforeRedirectToLogin,
+                autoLogin: true
             })
         });
     }
