@@ -128,12 +128,13 @@ export function createOnyxiaApi(params: {
                         : id<OidcParams>({
                               issuerUri: data.oidcConfiguration.issuerURI,
                               clientId: data.oidcConfiguration.clientID,
-                              __clientSecret:
+                              clientSecret:
                                   data.oidcConfiguration
                                       .workaroundForGoogleClientSecret || undefined,
                               extraQueryParams_raw:
                                   data.oidcConfiguration.extraQueryParams || undefined,
-                              scopes_raw: data.oidcConfiguration.scope || undefined
+                              scope_spaceSeparated:
+                                  data.oidcConfiguration.scope || undefined
                           });
 
                 const regions = data.regions.map(
@@ -973,8 +974,8 @@ function apiTypesOidcConfigurationToOidcParams_Partial(
     return {
         issuerUri: oidcConfiguration?.issuerURI || undefined,
         clientId: oidcConfiguration?.clientID || undefined,
-        __clientSecret: oidcConfiguration?.workaroundForGoogleClientSecret || undefined,
+        clientSecret: oidcConfiguration?.workaroundForGoogleClientSecret || undefined,
         extraQueryParams_raw: oidcConfiguration?.extraQueryParams || undefined,
-        scopes_raw: oidcConfiguration?.scope || undefined
+        scope_spaceSeparated: oidcConfiguration?.scope || undefined
     };
 }

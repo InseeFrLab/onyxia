@@ -63,7 +63,7 @@
         "memoizee": "^0.4.17",
         "minimal-polyfills": "^2.2.3",
         "mui-icons-material-lazy": "^1.0.4",
-        "oidc-spa": "^6.1.17",
+        "oidc-spa": "^6.5.2",
         "onyxia-ui": "^6.2.3",
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.19",

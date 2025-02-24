@@ -12,8 +12,8 @@ export async function createOidc<AutoLogin extends boolean>(
     const {
         issuerUri,
         clientId,
-        scopes_raw,
-        __clientSecret,
+        scope_spaceSeparated,
+        clientSecret,
         transformUrlBeforeRedirect,
         extraQueryParams_raw,
         autoLogin
@@ -22,8 +22,8 @@ export async function createOidc<AutoLogin extends boolean>(
     const oidc = await createOidcSpa({
         issuerUri,
         clientId,
-        __clientSecret,
-        scopes: scopes_raw?.split(" "),
+        __unsafe_clientSecret: clientSecret,
+        scopes: scope_spaceSeparated?.split(" "),
         transformUrlBeforeRedirect: url => {
             url = transformUrlBeforeRedirect(url);
 
@@ -49,19 +49,7 @@ export async function createOidc<AutoLogin extends boolean>(
 
     return {
         ...oidc,
-        getTokens: async () => {
-            wake_up_from_sleep: {
-                const tokens = oidc.getTokens();
-
-                if (Date.now() < tokens.accessTokenExpirationTime) {
-                    break wake_up_from_sleep;
-                }
-
-                await oidc.renewTokens();
-            }
-
-            return oidc.getTokens();
-        }
+        getTokens: () => oidc.getTokens_next()
     };
 }
 
