@@ -479,7 +479,7 @@ const privateThunks = {
                     lang: paramsOfBootstrapCore.getCurrentLang(),
                     decodedIdToken,
                     accessToken,
-                    refreshToken
+                    refreshToken: refreshToken ?? ""
                 },
                 service: {
                     oneTimePassword: generateRandomPassword()

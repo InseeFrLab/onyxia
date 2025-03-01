@@ -17,7 +17,10 @@ import { assert } from "tsafe/assert";
 
 type ParamsOfBootstrapCore = {
     apiUrl: string;
-    transformUrlBeforeRedirectToLogin: (url: string) => string;
+    transformUrlBeforeRedirectToLogin: (params: {
+        isKeycloak: boolean;
+        authorizationUrl: string;
+    }) => string;
     getCurrentLang: () => Language;
     disablePersonalInfosInjectionInGroup: boolean;
     isCommandBarEnabledByDefault: boolean;
@@ -116,7 +119,7 @@ export async function bootstrapCore(
 
         return createOidc({
             ...oidcParams,
-            transformUrlBeforeRedirect: transformUrlBeforeRedirectToLogin,
+            transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
             autoLogin: false
         });
     })();
@@ -219,7 +222,7 @@ export async function bootstrapCore(
                     oidcParams,
                     oidcParams_partial: deploymentRegion.vault.oidcParams
                 }),
-                transformUrlBeforeRedirect: transformUrlBeforeRedirectToLogin,
+                transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
                 autoLogin: true
             })
         });

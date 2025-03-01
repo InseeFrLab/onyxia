@@ -21,19 +21,22 @@ import { assert } from "tsafe/assert";
 import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MyFilesMaybeDisabled(props: Props) {
+const MyFilesMaybeDisabled = withLoginEnforced((props: Props) => {
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
     if (!isFileExplorerEnabled) {
         return <MyFilesDisabledDialog />;
     }
     return <MyFiles {...props} />;
-}
+});
+
+export default MyFilesMaybeDisabled;
 
 function MyFiles(props: Props) {
     const { className, route } = props;

@@ -15,7 +15,7 @@ export declare namespace Oidc {
 
     export type LoggedIn = Common & {
         isUserLoggedIn: true;
-        renewTokens(): Promise<void>;
+        renewTokens: () => Promise<void>;
         getTokens: () => Promise<Tokens>;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
         isNewBrowserSession: boolean;
@@ -24,11 +24,26 @@ export declare namespace Oidc {
         ) => { unsubscribeFromAutoLogoutCountdown: () => void };
     };
 
-    export type Tokens = {
-        accessToken: string;
-        idToken: string;
-        refreshToken: string;
-        refreshTokenExpirationTime: number;
-        decodedIdToken: Record<string, unknown>;
-    };
+    export type Tokens = Tokens.WithRefreshToken | Tokens.WithoutRefreshToken;
+
+    export namespace Tokens {
+        export type Common = {
+            accessToken: string;
+            accessTokenExpirationTime: number;
+            idToken: string;
+            decodedIdToken: Record<string, unknown>;
+        };
+
+        export type WithRefreshToken = Common & {
+            hasRefreshToken: true;
+            refreshToken: string;
+            refreshTokenExpirationTime: number | undefined;
+        };
+
+        export type WithoutRefreshToken = Common & {
+            hasRefreshToken: false;
+            refreshToken?: never;
+            refreshTokenExpirationTime?: never;
+        };
+    }
 }

@@ -13,13 +13,14 @@ import { CommandBar } from "ui/shared/CommandBar";
 import { useEvt } from "evt/hooks";
 import { useDomRect } from "powerhooks/useDomRect";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MyService(props: Props) {
+const MyService = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyService });
@@ -149,7 +150,9 @@ export default function MyService(props: Props) {
             })()}
         </div>
     );
-}
+});
+
+export default MyService;
 
 const { i18n } = declareComponentKeys<{
     K: "page title";

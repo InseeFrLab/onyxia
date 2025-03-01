@@ -1,11 +1,15 @@
 import type { Oidc } from "core/ports/Oidc";
 import { createOidc as createOidcSpa } from "oidc-spa";
+import { parseKeycloakIssuerUri } from "oidc-spa/tools/parseKeycloakIssuerUri";
 import type { OidcParams, OidcParams_Partial } from "core/ports/OnyxiaApi";
 import { objectKeys } from "tsafe/objectKeys";
 
 export async function createOidc<AutoLogin extends boolean>(
     params: OidcParams & {
-        transformUrlBeforeRedirect: (url: string) => string;
+        transformUrlBeforeRedirect_ui: (params: {
+            isKeycloak: boolean;
+            authorizationUrl: string;
+        }) => string;
         autoLogin: AutoLogin;
     }
 ): Promise<AutoLogin extends true ? Oidc.LoggedIn : Oidc> {
@@ -13,8 +17,8 @@ export async function createOidc<AutoLogin extends boolean>(
         issuerUri,
         clientId,
         scope_spaceSeparated,
-        clientSecret,
-        transformUrlBeforeRedirect,
+        audience,
+        transformUrlBeforeRedirect_ui,
         extraQueryParams_raw,
         autoLogin
     } = params;
@@ -22,19 +26,38 @@ export async function createOidc<AutoLogin extends boolean>(
     const oidc = await createOidcSpa({
         issuerUri,
         clientId,
-        __unsafe_clientSecret: clientSecret,
         scopes: scope_spaceSeparated?.split(" "),
-        transformUrlBeforeRedirect: url => {
-            url = transformUrlBeforeRedirect(url);
-
-            if (extraQueryParams_raw !== undefined) {
-                url += `&${extraQueryParams_raw}`;
+        transformUrlBeforeRedirect_next: ({ authorizationUrl, isSilent }) => {
+            if (!isSilent) {
+                authorizationUrl = transformUrlBeforeRedirect_ui({
+                    isKeycloak:
+                        parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined,
+                    authorizationUrl
+                });
             }
 
-            return url;
+            if (audience !== undefined) {
+                const url_obj = new URL(authorizationUrl);
+
+                url_obj.searchParams.set("audience", audience);
+
+                authorizationUrl = url_obj.href;
+            }
+
+            if (extraQueryParams_raw !== undefined) {
+                const url_obj = new URL(authorizationUrl);
+                const extraUrlSearchParams = new URLSearchParams(extraQueryParams_raw);
+
+                for (const [key, value] of extraUrlSearchParams) {
+                    url_obj.searchParams.set(key, value);
+                }
+
+                authorizationUrl = url_obj.href;
+            }
+
+            return authorizationUrl;
         },
-        homeUrl: import.meta.env.BASE_URL,
-        debugLogs: false
+        homeUrl: import.meta.env.BASE_URL
     });
 
     if (!oidc.isUserLoggedIn) {
@@ -63,9 +86,11 @@ export function mergeOidcParams(params: {
 
     for (const key of objectKeys(oidcParams_partial)) {
         const value = oidcParams_partial[key];
-        if (value !== undefined) {
-            oidcParams_merged[key] = value;
+        if (value === undefined) {
+            continue;
         }
+        // @ts-expect-error
+        oidcParams_merged[key] = value;
     }
 
     return oidcParams_merged;

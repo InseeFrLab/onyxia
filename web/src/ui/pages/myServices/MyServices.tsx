@@ -34,13 +34,14 @@ import {
 } from "./ClusterEventsSnackbar";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MyServices(props: Props) {
+const MyServices = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyServices });
@@ -397,7 +398,9 @@ export default function MyServices(props: Props) {
             />
         </>
     );
-}
+});
+
+export default MyServices;
 
 function useCommandBarPositioning() {
     const {

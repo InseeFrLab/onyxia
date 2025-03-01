@@ -184,7 +184,7 @@ export const protectedThunks = {
                                 oidcParams_partial
                             }),
                             autoLogin: true,
-                            transformUrlBeforeRedirect:
+                            transformUrlBeforeRedirect_ui:
                                 paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
                         })
                 );

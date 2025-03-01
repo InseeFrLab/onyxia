@@ -264,6 +264,7 @@ export namespace ApiTypes {
         clientID: string;
         extraQueryParams?: string;
         scope?: string;
-        workaroundForGoogleClientSecret?: string;
+        audience?: string;
+        idleSessionLifetimeInSeconds?: number | string;
     };
 }

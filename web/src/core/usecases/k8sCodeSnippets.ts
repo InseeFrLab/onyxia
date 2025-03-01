@@ -138,7 +138,7 @@ export const thunks = {
                         oidcParams_partial: region.kubernetes.oidcParams
                     }),
                     autoLogin: true,
-                    transformUrlBeforeRedirect:
+                    transformUrlBeforeRedirect_ui:
                         paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
                 });
 
@@ -153,12 +153,14 @@ export const thunks = {
                 actions.refreshed({
                     idpIssuerUrl: kubernetesOidcClient.params.issuerUri,
                     clientId: kubernetesOidcClient.params.clientId,
-                    refreshToken: oidcTokens.refreshToken,
+                    refreshToken: oidcTokens.refreshToken ?? "",
                     idToken: oidcTokens.idToken,
                     user: `${region.kubernetes.usernamePrefix ?? ""}${
                         userAuthentication.selectors.user(getState()).username
                     }`,
-                    expirationTime: oidcTokens.refreshTokenExpirationTime
+                    expirationTime:
+                        oidcTokens.refreshTokenExpirationTime ??
+                        oidcTokens.accessTokenExpirationTime
                 })
             );
         }

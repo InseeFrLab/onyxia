@@ -11,13 +11,14 @@ import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
 import { useCoreState } from "core";
 import { getIconUrlByName, customIcons } from "lazy-icons";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function ProjectSettings(props: Props) {
+const ProjectSettings = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ ProjectSettings });
@@ -67,7 +68,9 @@ export default function ProjectSettings(props: Props) {
             </Tabs>
         </div>
     );
-}
+});
+
+export default ProjectSettings;
 
 const { i18n } = declareComponentKeys<
     | TabId

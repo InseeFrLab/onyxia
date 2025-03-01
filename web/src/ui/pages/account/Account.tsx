@@ -17,13 +17,14 @@ import { useCore } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
 import { getIconUrlByName, customIcons } from "lazy-icons";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function Account(props: Props) {
+const Account = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ Account });
@@ -91,7 +92,9 @@ export default function Account(props: Props) {
             </Tabs>
         </div>
     );
-}
+});
+
+export default Account;
 
 const { i18n } = declareComponentKeys<
     AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"

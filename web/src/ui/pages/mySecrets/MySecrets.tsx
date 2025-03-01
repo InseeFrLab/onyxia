@@ -22,13 +22,14 @@ import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MySecrets(props: Props) {
+const MySecrets = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ MySecrets });
@@ -310,7 +311,9 @@ export default function MySecrets(props: Props) {
             />
         </div>
     );
-}
+});
+
+export default MySecrets;
 
 const { i18n } = declareComponentKeys<
     | "page title - my secrets"

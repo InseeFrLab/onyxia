@@ -128,13 +128,25 @@ export function createOnyxiaApi(params: {
                         : id<OidcParams>({
                               issuerUri: data.oidcConfiguration.issuerURI,
                               clientId: data.oidcConfiguration.clientID,
-                              clientSecret:
-                                  data.oidcConfiguration
-                                      .workaroundForGoogleClientSecret || undefined,
                               extraQueryParams_raw:
                                   data.oidcConfiguration.extraQueryParams || undefined,
                               scope_spaceSeparated:
-                                  data.oidcConfiguration.scope || undefined
+                                  data.oidcConfiguration.scope || undefined,
+                              audience: data.oidcConfiguration.audience || undefined,
+                              idleSessionLifetimeInSeconds: (() => {
+                                  const value =
+                                      data.oidcConfiguration.idleSessionLifetimeInSeconds;
+
+                                  if (value === "" || value === undefined) {
+                                      return undefined;
+                                  }
+
+                                  if (typeof value === "number") {
+                                      return value;
+                                  }
+
+                                  return parseInt(value);
+                              })()
                           });
 
                 const regions = data.regions.map(
@@ -974,8 +986,21 @@ function apiTypesOidcConfigurationToOidcParams_Partial(
     return {
         issuerUri: oidcConfiguration?.issuerURI || undefined,
         clientId: oidcConfiguration?.clientID || undefined,
-        clientSecret: oidcConfiguration?.workaroundForGoogleClientSecret || undefined,
         extraQueryParams_raw: oidcConfiguration?.extraQueryParams || undefined,
-        scope_spaceSeparated: oidcConfiguration?.scope || undefined
+        scope_spaceSeparated: oidcConfiguration?.scope || undefined,
+        audience: oidcConfiguration?.audience || undefined,
+        idleSessionLifetimeInSeconds: (() => {
+            const value = oidcConfiguration?.idleSessionLifetimeInSeconds;
+
+            if (value === "" || value === undefined) {
+                return undefined;
+            }
+
+            if (typeof value === "number") {
+                return value;
+            }
+
+            return parseInt(value);
+        })()
     };
 }
