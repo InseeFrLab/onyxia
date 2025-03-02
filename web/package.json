@@ -2,7 +2,7 @@
     "name": "onyxia-web",
     "homepage": "https://onyxia.sh",
     "type": "module",
-    "version": "4.39.13",
+    "version": "4.39.14",
     "license": "MIT",
     "scripts": {
         "postinstall": "yarn install-git-hooks && vite-envs update-types && mui-icons-material-lazy postinstall && patch-package",
@@ -64,7 +64,7 @@
         "minimal-polyfills": "^2.2.3",
         "mui-icons-material-lazy": "^1.0.4",
         "oidc-spa": "^6.9.4",
-        "onyxia-ui": "^6.2.3",
+        "onyxia-ui": "^6.2.4",
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.19",
         "react": "^18.3.1",
