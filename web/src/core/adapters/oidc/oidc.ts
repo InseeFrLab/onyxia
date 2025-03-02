@@ -20,6 +20,7 @@ export async function createOidc<AutoLogin extends boolean>(
         audience,
         transformUrlBeforeRedirect_ui,
         extraQueryParams_raw,
+        idleSessionLifetimeInSeconds,
         autoLogin
     } = params;
 
@@ -57,6 +58,7 @@ export async function createOidc<AutoLogin extends boolean>(
 
             return authorizationUrl;
         },
+        idleSessionLifetimeInSeconds,
         homeUrl: import.meta.env.BASE_URL
     });
 
