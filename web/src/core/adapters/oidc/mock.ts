@@ -18,5 +18,8 @@ export async function createOidc(params: {
         return oidc;
     }
 
-    return { ...oidc, isAccessTokenSubstitutedWithIdToken: false };
+    return {
+        ...oidc,
+        getTokens: async () => oidc.getTokens()
+    };
 }

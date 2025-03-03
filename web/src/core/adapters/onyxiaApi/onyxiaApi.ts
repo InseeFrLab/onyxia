@@ -7,6 +7,8 @@ import {
     type User,
     type HelmRelease,
     type Project,
+    type OidcParams,
+    type OidcParams_Partial,
     zJSONSchema
 } from "core/ports/OnyxiaApi";
 import axios, { AxiosHeaders } from "axios";
@@ -22,17 +24,17 @@ import { id } from "tsafe/id";
 export function createOnyxiaApi(params: {
     url: string;
     /** undefined if user not logged in */
-    getOidcAccessToken: () => string | undefined;
+    getOidcAccessToken: () => Promise<string | undefined>;
     getCurrentRegionId: () => string | undefined;
     getCurrentProjectId: () => string | undefined;
 }): OnyxiaApi {
     const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectId } = params;
 
-    const getHeaders = () => {
+    const getHeaders = async () => {
         const headers: Record<string, string> = {};
 
         add_bearer_token: {
-            const accessToken = getOidcAccessToken();
+            const accessToken = await getOidcAccessToken();
 
             if (accessToken === undefined) {
                 break add_bearer_token;
@@ -67,9 +69,9 @@ export function createOnyxiaApi(params: {
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ baseURL: url, timeout: 120_000 });
 
-        axiosInstance.interceptors.request.use(config => {
+        axiosInstance.interceptors.request.use(async config => {
             const headers = AxiosHeaders.from(config.headers);
-            headers.set(getHeaders());
+            headers.set(await getHeaders());
 
             return {
                 ...config,
@@ -123,12 +125,29 @@ export function createOnyxiaApi(params: {
                 const oidcParams =
                     data.oidcConfiguration === undefined
                         ? undefined
-                        : {
+                        : id<OidcParams>({
                               issuerUri: data.oidcConfiguration.issuerURI,
                               clientId: data.oidcConfiguration.clientID,
-                              serializedExtraQueryParams:
-                                  data.oidcConfiguration.extraQueryParams
-                          };
+                              extraQueryParams_raw:
+                                  data.oidcConfiguration.extraQueryParams || undefined,
+                              scope_spaceSeparated:
+                                  data.oidcConfiguration.scope || undefined,
+                              audience: data.oidcConfiguration.audience || undefined,
+                              idleSessionLifetimeInSeconds: (() => {
+                                  const value =
+                                      data.oidcConfiguration.idleSessionLifetimeInSeconds;
+
+                                  if (value === "" || value === undefined) {
+                                      return undefined;
+                                  }
+
+                                  if (typeof value === "number") {
+                                      return value;
+                                  }
+
+                                  return parseInt(value);
+                              })()
+                          });
 
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion =>
@@ -230,19 +249,9 @@ export function createOnyxiaApi(params: {
                                                     s3Config_api.sts.durationSeconds,
                                                 role: s3Config_api.sts.role,
                                                 oidcParams:
-                                                    s3Config_api.sts.oidcConfiguration ===
-                                                    undefined
-                                                        ? undefined
-                                                        : {
-                                                              issuerUri:
-                                                                  s3Config_api.sts
-                                                                      .oidcConfiguration
-                                                                      .issuerURI,
-                                                              clientId:
-                                                                  s3Config_api.sts
-                                                                      .oidcConfiguration
-                                                                      .clientID
-                                                          }
+                                                    apiTypesOidcConfigurationToOidcParams_Partial(
+                                                        s3Config_api.sts.oidcConfiguration
+                                                    )
                                             },
                                             workingDirectory:
                                                 s3Config_api.workingDirectory
@@ -282,19 +291,9 @@ export function createOnyxiaApi(params: {
                                           role: apiRegion.vault.role,
                                           authPath: apiRegion.vault.authPath,
                                           oidcParams:
-                                              apiRegion.vault.oidcConfiguration ===
-                                              undefined
-                                                  ? undefined
-                                                  : {
-                                                        issuerUri:
-                                                            apiRegion.vault
-                                                                .oidcConfiguration
-                                                                .issuerURI,
-                                                        clientId:
-                                                            apiRegion.vault
-                                                                .oidcConfiguration
-                                                                .clientID
-                                                    }
+                                              apiTypesOidcConfigurationToOidcParams_Partial(
+                                                  apiRegion.vault.oidcConfiguration
+                                              )
                                       },
                             proxyInjection:
                                 apiRegion.proxyInjection === undefined
@@ -321,16 +320,9 @@ export function createOnyxiaApi(params: {
                                 return {
                                     url: k8sPublicEndpoint.URL,
                                     oidcParams:
-                                        k8sPublicEndpoint.oidcConfiguration === undefined
-                                            ? undefined
-                                            : {
-                                                  issuerUri:
-                                                      k8sPublicEndpoint.oidcConfiguration
-                                                          .issuerURI,
-                                                  clientId:
-                                                      k8sPublicEndpoint.oidcConfiguration
-                                                          .clientID
-                                              }
+                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                            k8sPublicEndpoint.oidcConfiguration
+                                        )
                                 };
                             })(),
                             sliders:
@@ -739,14 +731,6 @@ export function createOnyxiaApi(params: {
             },
             { promise: true }
         ),
-        testAccessToken: async () => {
-            try {
-                await onyxiaApi.getUserAndProjects();
-            } catch {
-                return { canAccessTokenBeValidated: false };
-            }
-            return { canAccessTokenBeValidated: true };
-        },
         getQuotas: async () => {
             let resp;
 
@@ -797,7 +781,7 @@ export function createOnyxiaApi(params: {
             const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
 
             const response = await fetch(`${url}/my-lab/events`, {
-                headers: getHeaders()
+                headers: await getHeaders()
             })
                 // NOTE: This happens when there's no data to read.
                 .catch(() => undefined);
@@ -995,3 +979,28 @@ export function createOnyxiaApi(params: {
 
 const originalOnunhandledrejection = window.onunhandledrejection;
 const originalOnerror = window.onerror;
+
+function apiTypesOidcConfigurationToOidcParams_Partial(
+    oidcConfiguration: Partial<ApiTypes.OidcConfiguration> | undefined
+): OidcParams_Partial {
+    return {
+        issuerUri: oidcConfiguration?.issuerURI || undefined,
+        clientId: oidcConfiguration?.clientID || undefined,
+        extraQueryParams_raw: oidcConfiguration?.extraQueryParams || undefined,
+        scope_spaceSeparated: oidcConfiguration?.scope || undefined,
+        audience: oidcConfiguration?.audience || undefined,
+        idleSessionLifetimeInSeconds: (() => {
+            const value = oidcConfiguration?.idleSessionLifetimeInSeconds;
+
+            if (value === "" || value === undefined) {
+                return undefined;
+            }
+
+            if (typeof value === "number") {
+                return value;
+            }
+
+            return parseInt(value);
+        })()
+    };
+}

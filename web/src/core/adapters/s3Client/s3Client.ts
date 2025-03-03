@@ -17,6 +17,7 @@ import {
     removeObjectNameFromListBucketCondition,
     removeResourceArnInGetObjectStatement
 } from "./utils/bucketPolicy";
+import type { OidcParams_Partial } from "core/ports/OnyxiaApi";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -43,12 +44,7 @@ export namespace ParamsOfCreateS3Client {
     export type Sts = Common & {
         isStsEnabled: true;
         stsUrl: string | undefined;
-        oidcParams:
-            | {
-                  issuerUri?: string;
-                  clientId: string;
-              }
-            | undefined;
+        oidcParams: OidcParams_Partial;
         durationSeconds: number | undefined;
         role:
             | {
@@ -137,7 +133,8 @@ export function createS3Client(
                                 "/?" +
                                     Object.entries({
                                         Action: "AssumeRoleWithWebIdentity",
-                                        WebIdentityToken: oidc.getTokens().accessToken,
+                                        WebIdentityToken: (await oidc.getTokens())
+                                            .accessToken,
                                         DurationSeconds:
                                             params.durationSeconds ?? 7 * 24 * 3600,
                                         Version: "2011-06-15",

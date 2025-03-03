@@ -30,26 +30,25 @@ injectCustomFontFaceIfNotAlreadyDone();
 const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
-    transformUrlBeforeRedirectToLogin: url =>
-        [url]
-            .map(injectTransferableEnvsInQueryParams)
-            .map(injectGlobalStatesInSearchParams)
-            .map(
-                url =>
-                    addParamToUrl({
-                        url,
-                        name: onyxiaInstancePublicUrlKey,
-                        value: `${window.location.origin}${env.PUBLIC_URL}`
-                    }).newUrl
-            )
-            .map(
-                url =>
-                    addParamToUrl({
-                        url,
-                        name: "ui_locales",
-                        value: evtLang.state
-                    }).newUrl
-            )[0],
+    transformUrlBeforeRedirectToLogin: ({ authorizationUrl, isKeycloak }) => {
+        if (isKeycloak) {
+            authorizationUrl = injectTransferableEnvsInQueryParams(authorizationUrl);
+            authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
+            authorizationUrl = addParamToUrl({
+                url: authorizationUrl,
+                name: onyxiaInstancePublicUrlKey,
+                value: `${window.location.origin}${env.PUBLIC_URL}`
+            }).newUrl;
+        }
+
+        authorizationUrl = addParamToUrl({
+            url: authorizationUrl,
+            name: "ui_locales",
+            value: evtLang.state
+        }).newUrl;
+
+        return authorizationUrl;
+    },
     disablePersonalInfosInjectionInGroup: env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
     isCommandBarEnabledByDefault: !env.DISABLE_COMMAND_BAR,
     quotaWarningThresholdPercent: env.QUOTA_WARNING_THRESHOLD * 100,

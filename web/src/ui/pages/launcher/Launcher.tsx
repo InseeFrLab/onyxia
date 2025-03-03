@@ -33,13 +33,14 @@ import { z } from "zod";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function Launcher(props: Props) {
+const Launcher = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ Launcher });
@@ -513,7 +514,9 @@ export default function Launcher(props: Props) {
             />
         </>
     );
-}
+});
+
+export default Launcher;
 
 const { i18n } = declareComponentKeys<
     | {

@@ -71,10 +71,7 @@ export type ApiTypes = {
                 };
                 initScript: string;
                 k8sPublicEndpoint: {
-                    oidcConfiguration?: {
-                        issuerURI?: string;
-                        clientID: string;
-                    };
+                    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                     URL?: string;
                 };
                 openshiftSCC?: {
@@ -97,10 +94,7 @@ export type ApiTypes = {
                                   roleSessionName: string;
                               }
                             | undefined;
-                        oidcConfiguration?: {
-                            issuerURI?: string;
-                            clientID: string;
-                        };
+                        oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                     };
 
                     /** Ok to be undefined only if sts is undefined */
@@ -123,10 +117,7 @@ export type ApiTypes = {
                 kvEngine: string;
                 role: string;
                 authPath?: string;
-                oidcConfiguration?: {
-                    issuerURI?: string;
-                    clientID: string;
-                };
+                oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
             };
             proxyInjection?: {
                 enabled?: boolean;
@@ -146,11 +137,7 @@ export type ApiTypes = {
                 pathToCaBundle: string;
             };
         }[];
-        oidcConfiguration?: {
-            issuerURI: string;
-            clientID: string;
-            extraQueryParams?: string;
-        };
+        oidcConfiguration?: ApiTypes.OidcConfiguration;
     };
     "/<public|my-lab>/catalogs": {
         catalogs: {
@@ -270,3 +257,14 @@ export type ApiTypes = {
         type: "Normal" | "Warning" | string; // Allows specific types but also remains open for extension.
     };
 };
+
+export namespace ApiTypes {
+    export type OidcConfiguration = {
+        issuerURI: string;
+        clientID: string;
+        extraQueryParams?: string;
+        scope?: string;
+        audience?: string;
+        idleSessionLifetimeInSeconds?: number | string;
+    };
+}

@@ -7,13 +7,14 @@ import type { PageRoute } from "./route";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
 import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function SqlOlapShell(props: Props) {
+const SqlOlapShell = withLoginEnforced((props: Props) => {
     const { className } = props;
 
     const isReady = useCoreState("sqlOlapShell", "isReady");
@@ -34,7 +35,9 @@ export default function SqlOlapShell(props: Props) {
     }
 
     return <ReadySqlOlapShell {...props} />;
-}
+});
+
+export default SqlOlapShell;
 
 function ReadySqlOlapShell(params: Props) {
     const { className } = params;
