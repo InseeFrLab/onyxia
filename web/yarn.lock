@@ -4199,6 +4199,15 @@ evt@^2.5.8:
     run-exclusive "^2.2.19"
     tsafe "^1.8.5"
 
+evt@^2.5.9:
+  version "2.5.9"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.9.tgz#cd270e50ce1e7c586bf86242c054dd958d06a5c4"
+  integrity sha512-GpjX476FSlttEGWHT8BdVMoI8wGXQGbEOtKcP4E+kggg+yJzXBZN2n4x7TS/zPBJ1DZqWI+rguZZApjjzQ0HpA==
+  dependencies:
+    minimal-polyfills "^2.2.3"
+    run-exclusive "^2.2.19"
+    tsafe "^1.8.5"
+
 execa@~8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/execa/-/execa-8.0.1.tgz#51f6a5943b580f963c3ca9c6321796db8cc39b8c"
@@ -4716,12 +4725,12 @@ husky@^9.1.7:
   resolved "https://registry.yarnpkg.com/husky/-/husky-9.1.7.tgz#d46a38035d101b46a70456a850ff4201344c0b2d"
   integrity sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==
 
-i18nifty@^3.2.3:
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.2.3.tgz#dfb40441e1c7e2993debd14c09dd7e20b439fa9a"
-  integrity sha512-LqEbyPMHdfLNqySeBe6hQF97OYRkCtAryUfSjDx+eoJGXNMtRMypHoYYN+recYEx9RQjDubOOzfIVDjv587jug==
+i18nifty@^3.2.5:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.2.5.tgz#2ddc7065592f4a80d5ac106b261548273d1a2f71"
+  integrity sha512-uids7FCHXwIzchlYGnnY7m7YJR6VRhZT+X7ltoi+Gd3wz4OcA/HDFKEzYJVDGy3ispbxkzdNSWLzmUOueKNbKg==
   dependencies:
-    powerhooks "^1.0.19"
+    powerhooks "^1.0.21"
     tsafe "^1.8.5"
 
 ieee754@^1.1.4:
@@ -5677,10 +5686,10 @@ object-keys@^1.1.1:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
-oidc-spa@^6.9.5:
-  version "6.9.5"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.5.tgz#d1e83c533cb71622380adabe0c2eabcb10f6e088"
-  integrity sha512-RF0fTYyVa3JreZPGL8mYPLABRuFvA8VSzmcq4r8wtbwAvV5SqDFqynWTU0DPGKMn2vMRIq8TssaOwb+AZKlL/Q==
+oidc-spa@^6.9.6:
+  version "6.9.6"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.6.tgz#01f833b258d64b081a084dd48df573e51318eefe"
+  integrity sha512-x5DCtk/xhnVR+zjlyxoLYaKB1DkM++d+uZVWTINWJIpDPLL7h+aB2FDjF3XwAfsTGtWleJGIotXgpQM0ILk4Pw==
 
 once@^1.3.0:
   version "1.4.0"
@@ -5712,16 +5721,16 @@ oniguruma-to-es@0.7.0:
     regex "^5.0.2"
     regex-recursion "^4.3.0"
 
-onyxia-ui@^6.2.4:
-  version "6.2.4"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.2.4.tgz#2eb80ce081a57cfa64893d3fec5122e87fbdccfe"
-  integrity sha512-1VPx/ULY5ZaTOnONsrSKb+3tsl5kzvx5AA+zrAq6vvkiydSdao5k1HJHOD44b2qfqfNgRKA/WvmwQIaoBea7FA==
+onyxia-ui@^6.2.5:
+  version "6.2.5"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.2.5.tgz#14918fa97d2086cafa7f4848256c5e9f5829b486"
+  integrity sha512-MDQZhvPOVYuCTkRwqJDfNLKeBTyROKmEiqhO780LIYRQsYJV8+Pa1lXhpes30GB+/8clqZNA6iNMQTgq6vLbeg==
   dependencies:
     "@mui/icons-material" "^6.1.7"
     evt "^2.5.8"
     memoizee "^0.4.17"
     minimal-polyfills "^2.2.3"
-    powerhooks "^1.0.19"
+    powerhooks "^1.0.21"
     react-markdown "^9.0.1"
     rehype-raw "^7.0.0"
     run-exclusive "^2.2.19"
@@ -5942,12 +5951,12 @@ postcss@^8.4.49:
     picocolors "^1.1.1"
     source-map-js "^1.2.1"
 
-powerhooks@^1.0.19:
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.19.tgz#e93ce44f55d31ca26a4511883a49cfe5341d47af"
-  integrity sha512-kmZX0LLvJyaIphwf2FjKABAQwQFrRqsEA41N4CB8EzfDobyXle545t4teajVo/NPboy0HEaioyv55FWN7d58/Q==
+powerhooks@^1.0.21:
+  version "1.0.21"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.21.tgz#a0b31193570558be17501fea85a87dc6c7d46ca2"
+  integrity sha512-U+e0+mGtnJPHIPatZ2rWynt3Cc20mtBm26xnBRx0GLzRDc6SqQ2/lO9oleDRfYEdYUX5iOeWizjHq2lCNA/aRQ==
   dependencies:
-    evt "^2.5.8"
+    evt "^2.5.9"
     memoizee "^0.4.17"
     tsafe "^1.8.5"
 
