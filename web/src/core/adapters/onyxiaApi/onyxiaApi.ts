@@ -86,7 +86,9 @@ export function createOnyxiaApi(params: {
         async () => {
             const { data } = await axiosInstance.get<
                 ApiTypes["/<public|my-lab>/catalogs"]
-            >(`/${getOidcAccessToken() === undefined ? "public" : "my-lab"}/catalogs`);
+            >(
+                `/${(await getOidcAccessToken()) === undefined ? "public" : "my-lab"}/catalogs`
+            );
 
             return data;
         },
