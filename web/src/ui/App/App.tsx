@@ -31,6 +31,12 @@ const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
     transformUrlBeforeRedirectToLogin: ({ authorizationUrl, isKeycloak }) => {
+        authorizationUrl = addParamToUrl({
+            url: authorizationUrl,
+            name: "ui_locales",
+            value: evtLang.state
+        }).newUrl;
+
         if (isKeycloak) {
             authorizationUrl = injectTransferableEnvsInQueryParams(authorizationUrl);
             authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
@@ -40,12 +46,6 @@ const { CoreProvider } = createCoreProvider({
                 value: `${window.location.origin}${env.PUBLIC_URL}`
             }).newUrl;
         }
-
-        authorizationUrl = addParamToUrl({
-            url: authorizationUrl,
-            name: "ui_locales",
-            value: evtLang.state
-        }).newUrl;
 
         return authorizationUrl;
     },

@@ -3,6 +3,7 @@ import { createOidc as createOidcSpa } from "oidc-spa";
 import { parseKeycloakIssuerUri } from "oidc-spa/tools/parseKeycloakIssuerUri";
 import type { OidcParams, OidcParams_Partial } from "core/ports/OnyxiaApi";
 import { objectKeys } from "tsafe/objectKeys";
+import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 
 export async function createOidc<AutoLogin extends boolean>(
     params: OidcParams & {
@@ -38,22 +39,23 @@ export async function createOidc<AutoLogin extends boolean>(
             }
 
             if (audience !== undefined) {
-                const url_obj = new URL(authorizationUrl);
-
-                url_obj.searchParams.set("audience", audience);
-
-                authorizationUrl = url_obj.href;
+                authorizationUrl = addParamToUrl({
+                    url: authorizationUrl,
+                    name: "audience",
+                    value: audience
+                }).newUrl;
             }
 
             if (extraQueryParams_raw !== undefined) {
-                const url_obj = new URL(authorizationUrl);
                 const extraUrlSearchParams = new URLSearchParams(extraQueryParams_raw);
 
                 for (const [key, value] of extraUrlSearchParams) {
-                    url_obj.searchParams.set(key, value);
+                    authorizationUrl = addParamToUrl({
+                        url: authorizationUrl,
+                        name: key,
+                        value
+                    }).newUrl;
                 }
-
-                authorizationUrl = url_obj.href;
             }
 
             return authorizationUrl;
