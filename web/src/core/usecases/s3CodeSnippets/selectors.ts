@@ -75,8 +75,17 @@ Sys.setenv("AWS_ACCESS_KEY_ID" = "${credentials.AWS_ACCESS_KEY_ID}",
            "AWS_SESSION_TOKEN" = "${credentials.AWS_SESSION_TOKEN}",
            "AWS_S3_ENDPOINT"= "${credentials.AWS_S3_ENDPOINT}")
 
-library("aws.s3")
-bucketlist(region="")
+library(aws.s3)
+
+# Get username
+username <- gsub("user-", "", Sys.getenv("KUBERNETES_NAMESPACE"))
+
+# List contents in the user bucket
+file_list <- get_bucket(username, region = "")
+
+# List files
+file_names <- sapply(file_list, function(x) x$Key)
+print(file_names)
 `;
                     case "R (paws)":
                         return `
@@ -99,7 +108,16 @@ minio <- paws::s3(config = list(
 	endpoint = paste0("https://", Sys.getenv("AWS_S3_ENDPOINT")),
 	region = Sys.getenv("AWS_DEFAULT_REGION")))
   
-minio$list_buckets()
+# Get username
+username <- gsub("user-", "", Sys.getenv("KUBERNETES_NAMESPACE"))
+
+# List contents in the user bucket
+response <- minio$list_objects_v2(Bucket = username)
+
+# List files
+file_names <- response$Contents |> purrr::map_chr(~ .x$Key)
+print(file_names)
+
 						`;
                     case "Python (s3fs)":
                         return `
