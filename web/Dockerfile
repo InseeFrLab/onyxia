@@ -24,13 +24,14 @@ USER 101
 # Be mindful that the entrypoint is generated a build time but the 
 # bash code is executed at container startup.
 RUN echo $'#!/bin/sh                                                                                           \n\
-if [ -n "$CUSTOM_RESOURCES" ]; then                                                                            \n\
-    wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES" --ca-certificate="$CUSTOM_RESOURCES_CA_CERTIFICATE"  \n\
-    unzip /tmp/custom-resources.zip -d /usr/share/nginx/tmp_html/custom-resources                              \n\
-fi                                                                                                             \n\
 cd /usr/share/nginx                                                                                            \n\
 rm -rf ./html/* ./html/.* 2>/dev/null                                                                          \n\
 cp -r ./tmp_html/. ./html/                                                                                     \n\
+if [ -n "$CUSTOM_RESOURCES" ]; then                                                                            \n\
+    wget -O ./html/custom-resources.zip "$CUSTOM_RESOURCES" --ca-certificate="$CUSTOM_RESOURCES_CA_CERTIFICATE"\n\
+    unzip ./html/custom-resources.zip -d ./html/custom-resources                                               \n\
+    rm ./html/custom-resources.zip                                                                             \n\
+fi                                                                                                             \n\
 cd html                                                                                                        \n\
 npx vite-envs                                                                                                  \n\
 exec nginx -g "daemon off;"                                                                                    \n\
