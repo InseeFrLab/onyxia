@@ -5,6 +5,7 @@ import { assert, is } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
 import * as projectManagement from "core/usecases/projectManagement";
+import { getServiceOpenUrl } from "./decoupledLogic/getServiceOpenUrl";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -80,28 +81,7 @@ const services = createSelector(
                     friendlyName: helmRelease.friendlyName ?? helmRelease.chartName,
                     iconUrl: logoUrlByReleaseName[helmRelease.helmReleaseName],
                     startedAt: helmRelease.startedAt,
-                    openUrl: (() => {
-                        if (!helmRelease.postInstallInstructions) {
-                            return [...helmRelease.urls].sort()[0];
-                        }
-
-                        const urlRegex = new RegExp(
-                            helmRelease.urls
-                                .map(
-                                    url =>
-                                        url
-                                            .replace(/\/$/, "") // Remove trailing slash
-                                            .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
-                                        "(?:[/?#][^\\s]*|\\b)" // Ensure correct path/query matching
-                                )
-                                .join("|"),
-                            "g"
-                        );
-
-                        const match = urlRegex.exec(helmRelease.postInstallInstructions);
-
-                        return match ? match[0] : [...helmRelease.urls].sort()[0];
-                    })(),
+                    openUrl: getServiceOpenUrl({ helmRelease }),
                     postInstallInstructions: helmRelease.postInstallInstructions,
                     servicePassword: (() => {
                         const { postInstallInstructions } = helmRelease;
