@@ -5,6 +5,7 @@ import { assert, is } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
 import * as projectManagement from "core/usecases/projectManagement";
+import { getServiceOpenUrl } from "./decoupledLogic/getServiceOpenUrl";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -80,7 +81,7 @@ const services = createSelector(
                     friendlyName: helmRelease.friendlyName ?? helmRelease.chartName,
                     iconUrl: logoUrlByReleaseName[helmRelease.helmReleaseName],
                     startedAt: helmRelease.startedAt,
-                    openUrl: [...helmRelease.urls].sort()[0],
+                    openUrl: getServiceOpenUrl({ helmRelease }),
                     postInstallInstructions: helmRelease.postInstallInstructions,
                     servicePassword: (() => {
                         const { postInstallInstructions } = helmRelease;
