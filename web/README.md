@@ -2,7 +2,7 @@
     🖥&nbsp;&nbsp;<strong><em>The Web Application</em></strong>&nbsp;&nbsp;🖥️
     <br>
     <br>
-    <strong>Interested in Contributing?</strong> Take a look at <a href="https://docs.onyxia.sh/contributing/onyxia">our technical documentation</a>
+    <strong>Interested in Contributing?</strong> Take a look at <a href="https://docs.onyxia.sh/contributors-doc/onyxia">our technical documentation</a>
     <br>
     <br>
 </p>
