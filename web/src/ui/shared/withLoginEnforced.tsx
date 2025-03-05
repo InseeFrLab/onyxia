@@ -18,10 +18,6 @@ export function withLoginEnforced<Props extends Record<string, unknown>>(
                 return;
             }
 
-            console.log(
-                "Redirecting to login page!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            );
-
             userAuthentication.login({ doesCurrentHrefRequiresAuth: true });
         }, []);
 
