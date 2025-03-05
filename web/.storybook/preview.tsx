@@ -29,6 +29,7 @@ const preview: Preview = {
         },
         docs: { disable: true, hidden: true }
     },
+
     globalTypes: {
         locale: {
             name: "Locale",
@@ -40,7 +41,9 @@ const preview: Preview = {
             }
         }
     },
+
     argTypes: {},
+
     decorators: [
         (Story, { globals: { locale } }) => {
             const isStorybookUiDark = useStorybookUiDarkMode();
