@@ -20,10 +20,10 @@ export function getServiceOpenUrl(params: { helmRelease: HelmReleaseLike }): str
                 url =>
                     url
                         .replace(/\/$/, "") // Remove trailing slash
-                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:[/?#][^\\s]*|\\b)" // Ensure correct path/query matching
+                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:[/?#][^\\s)]*)?" // Allow paths and query parameters
             )
             .join("|"),
-        "g"
+        "gi"
     );
 
     const match = urlRegex.exec(postInstallInstructions);
