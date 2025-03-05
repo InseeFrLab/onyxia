@@ -6782,10 +6782,10 @@ tss-react@^4.9.13:
     "@emotion/serialize" "*"
     "@emotion/utils" "*"
 
-tss-react@^4.9.14:
-  version "4.9.14"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.14.tgz#0b606b7a08fe80670c8c7d09f2c24421422a2300"
-  integrity sha512-nAj4RCQk3ADzrmtxmTcmN1B9EKxPMIxuCfJ3ll964CksndJ2/ZImF6rAMo2Kud5yE3ENXHpPIBHCyuMtgptMvw==
+tss-react@^4.9.15:
+  version "4.9.15"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.15.tgz#a26fc24889a462ab4858094bc5b33cdda36e45ab"
+  integrity sha512-rLiEmDwUtln9RKTUR/ZPYBrufF0Tq/PFggO1M7P8M3/FAcodPQ746Ug9MCEFkURKDlntN17+Oja0DMMz5yBnsQ==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
