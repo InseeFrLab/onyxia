@@ -13,3 +13,9 @@ jobs:
         event-type: onyxia_release
         client-payload: '{"release_tag_name": "${{github.event.release.tag_name}}"}'
         token: ${{secrets.MY_GITHUB_TOKEN}}
+    - uses: peter-evans/repository-dispatch@v2.1.2
+      with:
+        repository: InseeFrLab/onyxia-ops
+        event-type: onyxia_release
+        client-payload: '{"release_tag_name": "${{github.event.release.tag_name}}"}'
+        token: ${{secrets.MY_GITHUB_TOKEN}}
