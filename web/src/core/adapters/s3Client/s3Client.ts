@@ -233,7 +233,8 @@ export function createS3Client(
                         ? {
                               signer: {
                                   sign: request => Promise.resolve(request)
-                              }
+                              },
+                              credentials: { accessKeyId: "", secretAccessKey: "" }
                           }
                         : {
                               credentials: {
