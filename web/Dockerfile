@@ -1,24 +1,35 @@
-FROM node:20-alpine as build
+# Stage 1: Build using Node.js
+FROM node:20-alpine AS build
 WORKDIR /app
-COPY . .
-RUN yarn install --frozen-lockfile --network-timeout 1000000
-RUN yarn build
 
+# Optimize caching by installing dependencies first
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
-FROM nginx:stable-alpine
-RUN apk add --update nodejs npm
-RUN apk add --update wget unzip
-COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf    
-COPY --from=build /app/dist /usr/share/nginx/tmp_html
-RUN npm i -g vite-envs@`node -e 'console.log(require("/usr/share/nginx/tmp_html/.vite-envs.json").version)'`
+# Copy source files and build
+COPY . .  
+RUN yarn vite-envs update-types && yarn mui-icons-material-lazy postinstall && yarn patch-package
+RUN yarn build  
 
-# Run nginx as non-root
-RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp/nginx.pid;@' /etc/nginx/nginx.conf && \
-    diff -u /etc/nginx/nginx.conf.orig /etc/nginx/nginx.conf ||: && \
-    chown -R 101:101 /usr/share/nginx && \
-    chown -Rc 101 /var/cache/nginx
-# Equivalent to 'USER nginx', see: https://github.com/inseefrlab/onyxia/pull/279
-USER 101
+# Stage 2: Final Nginx runtime
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+
+# Define non-root user variables
+ENV NGINX_USER_ID=101
+ENV NGINX_GROUP_ID=101
+ENV NGINX_USER=nginx
+
+# Temporarily switch to root to install dependencies and configure Nginx
+USER root
+
+RUN apk add --update nodejs npm wget unzip
+
+# Remove default Nginx config and replace it with our own
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf  
+COPY --from=build /app/dist /usr/share/nginx/tmp_html/
+RUN npm install -g vite-envs@`node -e 'console.log(require("/usr/share/nginx/tmp_html/.vite-envs.json").version)'`
 
 # Generating /entrypoint.sh  
 # Be mindful that the entrypoint is generated a build time but the 
@@ -35,6 +46,14 @@ fi                                                                              
 cd html                                                                                                        \n\
 npx vite-envs                                                                                                  \n\
 exec nginx -g "daemon off;"                                                                                    \n\
-' > /usr/share/nginx/entrypoint.sh && chmod +x /usr/share/nginx/entrypoint.sh
+' > /usr/share/nginx/entrypoint.sh
 
+# Ensure non-root user has ownership of necessary directories
+RUN chown -R $NGINX_USER_ID:$NGINX_GROUP_ID /usr/share/nginx /usr/share/nginx/entrypoint.sh && \
+    chmod +x /usr/share/nginx/entrypoint.sh
+
+# Switch back to non-root user for security
+USER $NGINX_USER_ID
+
+# Run the entrypoint script
 ENTRYPOINT ["/usr/share/nginx/entrypoint.sh"]
