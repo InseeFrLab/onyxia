@@ -73,7 +73,7 @@ export const translations: Translations<"en"> = {
             "Para acceder a tu almacenamiento fuera de los servicios de datalab",
         "init script section helper":
             "Descarga o copia el script de inicialización en el lenguaje de programación de tu elección.",
-        "expires in": ({ howMuchTime }) => `Expira en ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => `Expira ${howMuchTime}`
     },
     AccountKubernetesTab: {
         "credentials section title": "Conéctate al clúster de Kubernetes",
@@ -117,7 +117,7 @@ export const translations: Translations<"en"> = {
                 </MuiLink>
             </>
         ),
-        "expires in": ({ howMuchTime }) => `El token expira en ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => `El token expira ${howMuchTime}`
     },
     ProjectSettings: {
         "page header title": "Configuración del Proyecto",
