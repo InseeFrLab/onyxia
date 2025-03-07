@@ -407,12 +407,13 @@ export function createS3Client(
                 }
 
                 // Extract allowed prefixes based on the policy statements
-                const allowedPrefix = s3BucketPolicy.Statement.filter(
-                    statement =>
-                        statement.Effect === "Allow" &&
-                        (statement.Action.includes("s3:GetObject") ||
-                            statement.Action.includes("s3:*"))
-                )
+                const allowedPrefix = (s3BucketPolicy.Statement ?? [])
+                    .filter(
+                        statement =>
+                            statement.Effect === "Allow" &&
+                            (statement.Action.includes("s3:GetObject") ||
+                                statement.Action.includes("s3:*"))
+                    )
                     .flatMap(statement =>
                         Array.isArray(statement.Resource)
                             ? statement.Resource

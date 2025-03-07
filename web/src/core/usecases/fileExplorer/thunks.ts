@@ -307,8 +307,9 @@ export const thunks = {
                 return r.s3Client;
             });
 
-            const filePath = pathJoin(directoryPath, basename);
-            const s3Prefix = pathJoin("s3", filePath);
+            const itemPath =
+                pathJoin(directoryPath, basename) + (kind === "directory" ? "/" : "");
+            const s3Prefix = pathJoin("s3", itemPath);
 
             const cmdId = Date.now();
 
@@ -327,7 +328,7 @@ export const thunks = {
             );
 
             const modifiedBucketPolicy = await s3Client.setPathAccessPolicy({
-                path: filePath,
+                path: itemPath,
                 policy,
                 currentBucketPolicy: getState()[name].bucketPolicy
             });

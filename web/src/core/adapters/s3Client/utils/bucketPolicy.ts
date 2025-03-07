@@ -2,10 +2,26 @@ import { S3BucketPolicy } from "core/ports/S3Client";
 
 // Adds `objectName` to the `s3:prefix` condition in the `s3:ListBucket` statement
 export const addObjectNameToListBucketCondition = (
-    statements: S3BucketPolicy["Statement"] = [],
+    statements: S3BucketPolicy["Statement"],
     bucketArn: string,
     objectName: string
 ): S3BucketPolicy["Statement"] => {
+    if (statements === null) {
+        return [
+            {
+                Effect: "Allow",
+                Principal: { AWS: ["*"] },
+                Action: ["s3:ListBucket"],
+                Resource: [bucketArn],
+                Condition: {
+                    StringEquals: {
+                        "s3:prefix": [objectName]
+                    }
+                }
+            }
+        ];
+    }
+
     const listBucketStatementIndex = statements.findIndex(
         statement =>
             statement.Action.includes("s3:ListBucket") &&
@@ -64,10 +80,14 @@ export const addObjectNameToListBucketCondition = (
 
 // Removes `objectName` from the `s3:prefix` condition in the `s3:ListBucket` statement
 export const removeObjectNameFromListBucketCondition = (
-    statements: S3BucketPolicy["Statement"] = [],
+    statements: S3BucketPolicy["Statement"],
     bucketArn: string,
     objectName: string
 ) => {
+    if (statements === null) {
+        return null;
+    }
+
     return statements.map(statement => {
         if (
             statement.Action.includes("s3:ListBucket") &&
@@ -96,9 +116,20 @@ export const removeObjectNameFromListBucketCondition = (
 
 // Adds a new `s3:GetObject` statement for `resourceArn`
 export const addResourceArnInGetObjectStatement = (
-    statements: S3BucketPolicy["Statement"] = [],
+    statements: S3BucketPolicy["Statement"],
     resourceArn: string
 ): S3BucketPolicy["Statement"] => {
+    if (statements === null) {
+        return [
+            {
+                Effect: "Allow",
+                Principal: { AWS: ["*"] },
+                Action: ["s3:GetObject"],
+                Resource: [resourceArn]
+            }
+        ];
+    }
+
     const existingStatementIndex = statements.findIndex(statement =>
         Array.isArray(statement.Action)
             ? statement.Action.includes("s3:GetObject")
@@ -131,6 +162,9 @@ export const removeResourceArnInGetObjectStatement = (
     statements: S3BucketPolicy["Statement"],
     resourceArn: string
 ): S3BucketPolicy["Statement"] => {
+    if (statements === null) {
+        return null;
+    }
     const existingStatementIndex = statements.findIndex(
         statement =>
             (Array.isArray(statement.Action)
