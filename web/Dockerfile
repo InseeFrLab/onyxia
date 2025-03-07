@@ -22,14 +22,14 @@ ENV NGINX_USER=nginx
 # Temporarily switch to root to install dependencies and configure Nginx
 USER root
 
-RUN apk add --update nodejs npm wget unzip
+RUN apk add --update nodejs npm unzip wget && rm -rf /var/cache/apk/*
 
 # Remove default Nginx config and replace it with our own
 RUN rm /etc/nginx/conf.d/default.conf
 
 COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf  
 COPY --from=build /app/dist /usr/share/nginx/tmp_html/
-RUN npm install -g vite-envs@`node -e 'console.log(require("/usr/share/nginx/tmp_html/.vite-envs.json").version)'`
+RUN npm install --ignore-scripts -g vite-envs@`node -e 'console.log(require("/usr/share/nginx/tmp_html/.vite-envs.json").version)'`
 
 # Generating /entrypoint.sh  
 # Be mindful that the entrypoint is generated a build time but the 
