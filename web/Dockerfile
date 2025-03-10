@@ -2,7 +2,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Optimize caching by installing dependencies first
-ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn/v6
+ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
 COPY package.json yarn.lock ./
 RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
     YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
