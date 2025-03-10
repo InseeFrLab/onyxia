@@ -1,15 +1,31 @@
-# Stage 1: Build using Node.js
 FROM node:20-alpine AS build
 WORKDIR /app
 
 # Optimize caching by installing dependencies first
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
+
+# Print Yarn cache directory before install
+RUN echo "🔍 Yarn Global Cache: $(yarn cache dir)"
+
+# Check if cache directories exist
+RUN echo "🔍 Checking cache directories..." && \
+    ls -lah /root/.cache/yarn || echo "❌ Yarn cache not found!" && \
+    ls -lah /app/node_modules/.vite || echo "❌ Vite cache not found!"
+
+RUN --mount=type=cache,target=/root/.yarn \
+    yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
 # Copy source files and build
 COPY . .  
-RUN yarn vite-envs update-types && yarn mui-icons-material-lazy postinstall && yarn patch-package
-RUN yarn build  
+
+RUN echo "🔍 Vite Cache Directory: /app/node_modules/.vite"
+
+
+RUN --mount=type=cache,target=/app/node_modules/.vite \
+    yarn vite-envs update-types && \
+    yarn mui-icons-material-lazy postinstall && \
+    yarn patch-package && \
+    yarn build
 
 # Stage 2: Final Nginx runtime
 FROM nginxinc/nginx-unprivileged:1.27-alpine
