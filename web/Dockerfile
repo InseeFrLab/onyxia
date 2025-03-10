@@ -4,12 +4,10 @@ WORKDIR /app
 # Optimize caching by installing dependencies first
 ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
 
-RUN rm -rf /usr/local/share/.cache/yarn && \
-mkdir -p /usr/local/share/.cache/yarn
+RUN ls -lah /usr/local/share/.cache/yarn/v6/npm-mui-icons-material-lazy*
 
 COPY package.json yarn.lock ./
-RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
-    YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
+RUN yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
 # Copy source files and build
 COPY . .  
