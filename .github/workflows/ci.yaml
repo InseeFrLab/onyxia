@@ -22,14 +22,6 @@ jobs:
           action_name: checkout
           sub_directory: web
       - uses: actions/setup-node@v4.1.0
-      # Cache Yarn dependencies (before install)
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/yarn
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            yarn-${{ runner.os }}-
       # Install dependencies with caching
       - uses: bahmutov/npm-install@v1.10.4
         env:
@@ -104,16 +96,6 @@ jobs:
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: actions/setup-node@v4.1.0
-
-      # Cache Yarn dependencies (before install)
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/yarn
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            yarn-${{ runner.os }}-
-
       # Install dependencies with caching
       - uses: bahmutov/npm-install@v1.10.4
         env:
