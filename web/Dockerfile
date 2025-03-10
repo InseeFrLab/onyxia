@@ -7,16 +7,16 @@ ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
 
 COPY package.json yarn.lock ./
 
-# Extract the version of mui-icons-material-lazy from node_modules
 RUN export MUI_ICONS_MATERIAL_LAZY_VERSION=$(node -e \
-    "console.log(require('./node_modules/mui-icons-material-lazy/package.json').version)") && \
-    # Install mui-icons-material-lazy without cache (ensures fresh version)
-    yarn add --ignore-scripts mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION --no-cache && \
-    # Mount cache for yarn install (so dependencies are cached)
-    --mount=type=cache,target=$YARN_CACHE_FOLDER \
+    "console.log(require('./package.json').dependencies['mui-icons-material-lazy']") && \
+    echo "📌 Installing mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION" && \
+    yarn add --ignore-scripts mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION --no-cache
+
+# Mount cache and install all dependencies (except mui-icons-material-lazy)
+RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
     YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install \
         --frozen-lockfile --ignore-scripts --network-timeout 1000000
-        
+
 # Copy source files and build
 COPY . .  
 
