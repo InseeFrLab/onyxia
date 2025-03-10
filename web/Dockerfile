@@ -1,13 +1,14 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-RUN echo "$(yarn --version)"
 # Optimize caching by installing dependencies first
 ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
 
+
 COPY package.json yarn.lock ./
+
 RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
-    YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
+    YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER  yarn add --ignore-scripts mui-icons-material-lazy@`node -e "console.log(require('./node_modules/mui-icons-material-lazy/package.json').version)"` --no-cache && yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
 # Copy source files and build
 COPY . .  
