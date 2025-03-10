@@ -5,7 +5,8 @@ WORKDIR /app
 ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
 
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
+RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
+    YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
 # Copy source files and build
 COPY . .  
@@ -27,7 +28,7 @@ ENV NGINX_USER=nginx
 # Temporarily switch to root to install dependencies and configure Nginx
 USER root
 
-RUN apk add --update nodejs npm unzip wget && rm -rf /var/cache/apk/*
+RUN apk add --update nodejs npm unzip wget
 
 # Remove default Nginx config and replace it with our own
 RUN rm /etc/nginx/conf.d/default.conf
