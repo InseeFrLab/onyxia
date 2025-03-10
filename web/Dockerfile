@@ -2,24 +2,13 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Optimize caching by installing dependencies first
+ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn/v6
 COPY package.json yarn.lock ./
-
-# Print Yarn cache directory before install
-RUN echo "🔍 Yarn Global Cache: $(yarn cache dir)"
-
-# Check if cache directories exist
-RUN echo "🔍 Checking cache directories..." && \
-    ls -lah /root/.cache/yarn || echo "❌ Yarn cache not found!" && \
-    ls -lah /app/node_modules/.vite || echo "❌ Vite cache not found!"
-
-RUN --mount=type=cache,target=/root/.yarn \
-    yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
+RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
+    YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
 # Copy source files and build
 COPY . .  
-
-RUN echo "🔍 Vite Cache Directory: /app/node_modules/.vite"
-
 
 RUN --mount=type=cache,target=/app/node_modules/.vite \
     yarn vite-envs update-types && \
