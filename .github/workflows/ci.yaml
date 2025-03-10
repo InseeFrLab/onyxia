@@ -90,8 +90,8 @@ jobs:
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
           platforms: linux/amd64,linux/arm64
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   release:
     runs-on: ubuntu-latest
