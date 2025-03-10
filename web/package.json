@@ -5,7 +5,8 @@
     "version": "4.40.8",
     "license": "MIT",
     "scripts": {
-        "postinstall": "yarn install-git-hooks && vite-envs update-types && mui-icons-material-lazy postinstall && patch-package",
+        "postinstall": "yarn install-git-hooks && yarn postinstall:code-gen",
+        "postinstall:code-gen": "vite-envs update-types && mui-icons-material-lazy postinstall && patch-package",
         "install-git-hooks": "cd .. && husky web/.husky",
         "dev": "tsx scripts/unyamlify-env-local.ts && vite",
         "build": "tsc && vite build",

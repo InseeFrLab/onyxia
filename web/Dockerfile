@@ -1,6 +1,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
+RUN echo "$(yarn --version)"
 # Optimize caching by installing dependencies first
 ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
 
@@ -12,9 +13,7 @@ RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
 COPY . .  
 
 RUN --mount=type=cache,target=/app/node_modules/.vite \
-    yarn vite-envs update-types && \
-    yarn mui-icons-material-lazy postinstall && \
-    yarn patch-package && \
+    yarn postinstall:code-gen && \
     yarn build
 
 # Stage 2: Final Nginx runtime
