@@ -33,7 +33,7 @@ const { CoreProvider } = createCoreProvider({
     transformUrlBeforeRedirectToLogin: ({ authorizationUrl, isKeycloak }) => {
         authorizationUrl = addParamToUrl({
             url: authorizationUrl,
-            name: "ui_locales",
+            name: isKeycloak ? "kc_locale" : "ui_locales",
             value: evtLang.state
         }).newUrl;
 
