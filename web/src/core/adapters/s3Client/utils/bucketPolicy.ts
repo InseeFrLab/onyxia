@@ -211,5 +211,5 @@ const removeKey = <T extends Record<string, any>, K extends keyof T>(
     }
 
     const { [key]: _, ...rest } = obj;
-    return Object.keys(rest).length > 0 ? (rest as Omit<T, K>) : undefined;
+    return Object.keys(rest).length > 0 ? rest : undefined;
 };
