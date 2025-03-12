@@ -88,30 +88,33 @@ export const removeObjectNameFromListBucketCondition = (
         return null;
     }
 
-    return statements.map(statement => {
-        if (
-            statement.Action.includes("s3:ListBucket") &&
-            statement.Resource.includes(bucketArn)
-        ) {
-            const updatedPrefixCondition = statement.Condition?.StringEquals?.[
-                "s3:prefix"
-            ]?.filter((prefix: string) => prefix !== objectName);
-
-            return {
-                ...statement,
-                Condition: {
-                    ...statement.Condition,
-                    StringEquals: {
-                        ...statement.Condition?.StringEquals,
-                        ...(updatedPrefixCondition?.length
-                            ? { "s3:prefix": updatedPrefixCondition }
-                            : {})
-                    }
+    return statements
+        .map(statement => {
+            if (
+                statement.Action.includes("s3:ListBucket") &&
+                statement.Resource.includes(bucketArn)
+            ) {
+                const updatedPrefixCondition = statement.Condition?.StringEquals?.[
+                    "s3:prefix"
+                ]?.filter((prefix: string) => prefix !== objectName);
+                if (updatedPrefixCondition.length > 0) {
+                    return {
+                        ...statement,
+                        Condition: {
+                            ...statement.Condition,
+                            StringEquals: {
+                                ...statement.Condition?.StringEquals,
+                                ...{ "s3:prefix": updatedPrefixCondition }
+                            }
+                        }
+                    };
+                } else {
+                    return undefined;
                 }
-            };
-        }
-        return statement;
-    });
+            }
+            return statement;
+        })
+        .filter(statement => statement !== undefined);
 };
 
 // Adds a new `s3:GetObject` statement for `resourceArn`
