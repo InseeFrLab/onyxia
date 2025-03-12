@@ -28,7 +28,8 @@ ENV NGINX_USER=nginx
 # Temporarily switch to root to install dependencies and configure Nginx
 USER root
 
-RUN apk add --update nodejs npm unzip wget
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add --update nodejs npm unzip wget
 
 # Remove default Nginx config and replace it with our own
 RUN rm /etc/nginx/conf.d/default.conf
