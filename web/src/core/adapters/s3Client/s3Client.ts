@@ -2,7 +2,7 @@ import axios from "axios";
 import type { S3BucketPolicy, S3Client, S3Object } from "core/ports/S3Client";
 import {
     getNewlyRequestedOrCachedTokenFactory,
-    createSessionStorageTokenPersistance
+    createSessionStorageTokenPersistence
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert, is } from "tsafe/assert";
 import type { Oidc } from "core/ports/Oidc";
@@ -90,7 +90,7 @@ export function createS3Client(
 
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
-                    persistance: createSessionStorageTokenPersistance<{
+                    persistence: createSessionStorageTokenPersistence<{
                         // NOTE: StsToken are like ReturnType<S3Client["getToken"]> but we know that
                         // session token expiration time and acquisition time are defined.
                         accessKeyId: string;

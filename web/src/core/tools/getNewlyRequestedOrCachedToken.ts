@@ -1,7 +1,7 @@
 import * as runExclusive from "run-exclusive";
 import memoize from "memoizee";
 
-export type TokenPersistance<T> = {
+export type TokenPersistence<T> = {
     get: () => Promise<{ token: T; ttl: number } | undefined>;
     set: (cache: { token: T; ttl: number }) => Promise<void>;
     clear: () => void;
@@ -12,28 +12,28 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
 >(params: {
     requestNewToken: () => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
-    persistance: TokenPersistance<T> | undefined;
+    persistence: TokenPersistence<T> | undefined;
 }) {
     const {
         requestNewToken,
         returnCachedTokenIfStillValidForXPercentOfItsTTL,
-        persistance
+        persistence
     } = params;
 
     let cache: { token: T; ttl: number } | undefined = undefined;
 
-    let hasCacheBeenRestoredFromPersistance = false;
+    let hasCacheBeenRestoredFromPersistence = false;
 
     const getNewlyRequestedOrCachedTokenWithoutParams = runExclusive.build<
         () => Promise<T>
     >(async () => {
-        if (!hasCacheBeenRestoredFromPersistance && persistance !== undefined) {
-            hasCacheBeenRestoredFromPersistance = true;
+        if (!hasCacheBeenRestoredFromPersistence && persistence !== undefined) {
+            hasCacheBeenRestoredFromPersistence = true;
 
-            const cacheFromPersistance = await persistance.get();
+            const cacheFromPersistence = await persistence.get();
 
-            if (cacheFromPersistance !== undefined) {
-                cache = cacheFromPersistance;
+            if (cacheFromPersistence !== undefined) {
+                cache = cacheFromPersistence;
             }
         }
 
@@ -56,7 +56,7 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
             ttl: token.expirationTime - Date.now()
         };
 
-        await persistance?.set(cache);
+        await persistence?.set(cache);
 
         return token;
     });
@@ -70,12 +70,12 @@ export function getNewlyRequestedOrCachedTokenFactory<
 >(params: {
     requestNewToken: (...args: Args) => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
-    persistance: TokenPersistance<T> | undefined;
+    persistence: TokenPersistence<T> | undefined;
 }) {
     const {
         requestNewToken,
         returnCachedTokenIfStillValidForXPercentOfItsTTL,
-        persistance
+        persistence
     } = params;
 
     const getNewlyRequestedOrCachedTokenFactory_memo = memoize(
@@ -83,7 +83,7 @@ export function getNewlyRequestedOrCachedTokenFactory<
             getNewlyRequestedOrCachedTokenWithoutParamsFactory({
                 requestNewToken: () => requestNewToken(...args),
                 returnCachedTokenIfStillValidForXPercentOfItsTTL,
-                persistance
+                persistence
             }),
         { length: requestNewToken.length }
     );
@@ -96,16 +96,16 @@ export function getNewlyRequestedOrCachedTokenFactory<
     }
 
     async function clearCachedToken() {
-        await persistance?.clear();
+        await persistence?.clear();
         getNewlyRequestedOrCachedTokenFactory_memo.clear();
     }
 
     return { getNewlyRequestedOrCachedToken, clearCachedToken };
 }
 
-export function createSessionStorageTokenPersistance<T>(params: {
+export function createSessionStorageTokenPersistence<T>(params: {
     sessionStorageKey: string;
-}): TokenPersistance<T> {
+}): TokenPersistence<T> {
     const { sessionStorageKey } = params;
 
     return {

@@ -9,7 +9,7 @@ import type {
 import type { ReturnType } from "tsafe";
 import {
     getNewlyRequestedOrCachedTokenFactory,
-    createSessionStorageTokenPersistance
+    createSessionStorageTokenPersistence
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import type { Oidc } from "core/ports/Oidc";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
@@ -35,7 +35,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
 
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
-            persistance: createSessionStorageTokenPersistance<
+            persistence: createSessionStorageTokenPersistence<
                 ReturnType<SecretsManager["getToken"]>
             >({
                 sessionStorageKey:
