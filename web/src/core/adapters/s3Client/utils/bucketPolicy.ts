@@ -97,7 +97,7 @@ export const removeObjectNameFromListBucketCondition = (
                 const updatedPrefixCondition: string[] =
                     statement.Condition?.StringEquals?.["s3:prefix"]?.filter(
                         (prefix: string) => prefix !== objectName
-                    );
+                    ) ?? [];
 
                 if (updatedPrefixCondition.length > 0) {
                     return {
