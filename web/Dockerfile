@@ -2,15 +2,14 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Optimize caching by installing dependencies first
-ENV YARN_CACHE_FOLDER=/usr/local/share/.cache/yarn
-
+ENV YARN_CACHE_FOLDER=~/.cache/yarn
 
 COPY package.json yarn.lock ./
 
-RUN export MUI_ICONS_MATERIAL_LAZY_VERSION=$(node -e \
-    "console.log(require('./package.json').dependencies['mui-icons-material-lazy']") && \
-    echo "📌 Installing mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION" && \
-    yarn add --ignore-scripts mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION --no-cache
+# RUN export MUI_ICONS_MATERIAL_LAZY_VERSION=$(node -e \
+#     "console.log(require('./package.json').dependencies['mui-icons-material-lazy'])") && \
+#     echo "📌 Installing mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION" && \
+#     yarn add --ignore-scripts mui-icons-material-lazy@$MUI_ICONS_MATERIAL_LAZY_VERSION --no-cache
 
 # Mount cache and install all dependencies (except mui-icons-material-lazy)
 RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
