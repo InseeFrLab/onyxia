@@ -81,7 +81,7 @@ jobs:
           push: true
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
-          platforms: linux/amd64,linux/arm64
+          platforms: "${{ needs.prepare_release.outputs.new_chart_version != '' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
