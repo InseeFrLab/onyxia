@@ -60,7 +60,7 @@ export function createS3Client(
     params: ParamsOfCreateS3Client,
     getOidc: (
         oidcParams: ParamsOfCreateS3Client.Sts["oidcParams"]
-    ) => Promise<Oidc.LoggedIn>
+    ) => Promise<{ oidc: Oidc.LoggedIn; doClearCachedS3Token: boolean }>
 ): S3Client {
     const prApi = (async () => {
         const { getNewlyRequestedOrCachedToken, clearCachedToken } = await (async () => {
@@ -86,7 +86,7 @@ export function createS3Client(
                 };
             }
 
-            const oidc = await getOidc(params.oidcParams);
+            const { oidc, doClearCachedS3Token } = await getOidc(params.oidcParams);
 
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
@@ -99,20 +99,18 @@ export function createS3Client(
                         expirationTime: number;
                         acquisitionTime: number;
                     }>({
-                        sessionStorageKey:
-                            "s3ClientToken_" +
-                            fnv1aHashToHex(
-                                (() => {
-                                    const { durationSeconds, url, stsUrl, role } = params;
+                        sessionStorageKey: `s3ClientToken:${fnv1aHashToHex(
+                            (() => {
+                                const { durationSeconds, url, stsUrl, role } = params;
 
-                                    return JSON.stringify({
-                                        durationSeconds,
-                                        url,
-                                        stsUrl,
-                                        role
-                                    });
-                                })()
-                            )
+                                return JSON.stringify({
+                                    durationSeconds,
+                                    url,
+                                    stsUrl,
+                                    role
+                                });
+                            })()
+                        )}`
                     }),
                     requestNewToken: async () => {
                         // NOTE: We renew the OIDC access token because it's expiration time
@@ -194,7 +192,7 @@ export function createS3Client(
                     returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
                 });
 
-            if (oidc.isNewBrowserSession) {
+            if (doClearCachedS3Token) {
                 await clearCachedToken();
             }
 

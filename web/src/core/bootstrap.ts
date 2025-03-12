@@ -212,19 +212,40 @@ export async function bootstrapCore(
 
         assert(oidcParams !== undefined);
 
+        const oidc_vault = await createOidc({
+            ...mergeOidcParams({
+                oidcParams,
+                oidcParams_partial: deploymentRegion.vault.oidcParams
+            }),
+            transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
+            autoLogin: true
+        });
+
+        const doClearCachedVaultToken: boolean = await (async () => {
+            const [{ projects }, { fnv1aHashToHex }] = await Promise.all([
+                onyxiaApi.getUserAndProjects(),
+                import("core/tools/fnv1aHashToHex")
+            ]);
+
+            const KEY = "onyxia:vault:projects-hash";
+
+            const hash = fnv1aHashToHex(JSON.stringify(projects));
+
+            if (!oidc_vault.isNewBrowserSession && sessionStorage.getItem(KEY) === hash) {
+                return false;
+            }
+
+            sessionStorage.setItem(KEY, hash);
+            return true;
+        })();
+
         context.secretsManager = await createSecretManager({
             kvEngine: deploymentRegion.vault.kvEngine,
             role: deploymentRegion.vault.role,
             url: deploymentRegion.vault.url,
             authPath: deploymentRegion.vault.authPath,
-            oidc: await createOidc({
-                ...mergeOidcParams({
-                    oidcParams,
-                    oidcParams_partial: deploymentRegion.vault.oidcParams
-                }),
-                transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
-                autoLogin: true
-            })
+            getAccessToken: async () => (await oidc_vault.getTokens()).accessToken,
+            doClearCachedVaultToken
         });
     }
 

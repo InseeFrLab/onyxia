@@ -171,14 +171,16 @@ export const protectedThunks = {
                     "core/adapters/oidc"
                 );
                 const { paramsOfBootstrapCore, onyxiaApi } = rootContext;
-                const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
-
-                assert(oidcParams !== undefined);
 
                 return createS3Client(
                     s3Config.paramsOfCreateS3Client,
-                    oidcParams_partial =>
-                        createOidc({
+                    async oidcParams_partial => {
+                        const { oidcParams } =
+                            await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+                        assert(oidcParams !== undefined);
+
+                        const oidc_s3 = await createOidc({
                             ...mergeOidcParams({
                                 oidcParams,
                                 oidcParams_partial
@@ -186,7 +188,31 @@ export const protectedThunks = {
                             autoLogin: true,
                             transformUrlBeforeRedirect_ui:
                                 paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
-                        })
+                        });
+
+                        const doClearCachedS3Token: boolean = await (async () => {
+                            const [{ projects }, { fnv1aHashToHex }] = await Promise.all([
+                                onyxiaApi.getUserAndProjects(),
+                                import("core/tools/fnv1aHashToHex")
+                            ]);
+
+                            const KEY = "onyxia:s3:projects-hash";
+
+                            const hash = fnv1aHashToHex(JSON.stringify(projects));
+
+                            if (
+                                !oidc_s3.isNewBrowserSession &&
+                                sessionStorage.getItem(KEY) === hash
+                            ) {
+                                return false;
+                            }
+
+                            sessionStorage.setItem(KEY, hash);
+                            return true;
+                        })();
+
+                        return { oidc: oidc_s3, doClearCachedS3Token };
+                    }
                 );
             })();
 
