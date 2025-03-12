@@ -94,31 +94,47 @@ export const removeObjectNameFromListBucketCondition = (
                 statement.Action.includes("s3:ListBucket") &&
                 statement.Resource.includes(bucketArn)
             ) {
-                const updatedPrefixCondition = statement.Condition?.StringEquals?.[
-                    "s3:prefix"
-                ]?.filter((prefix: string) => prefix !== objectName);
+                const updatedPrefixCondition: string[] =
+                    statement.Condition?.StringEquals?.["s3:prefix"]?.filter(
+                        (prefix: string) => prefix !== objectName
+                    );
 
-                const updatedCondition = removeKey(
-                    {
-                        ...statement.Condition,
-                        StringEquals: {
-                            ...removeKey(statement.Condition?.StringEquals, "s3:prefix"),
-                            ...(updatedPrefixCondition?.length
-                                ? { "s3:prefix": updatedPrefixCondition }
-                                : {})
+                if (updatedPrefixCondition.length > 0) {
+                    return {
+                        ...statement,
+                        Condition: {
+                            ...statement.Condition,
+                            StringEquals: {
+                                ...statement.Condition?.StringEquals,
+                                "s3:prefix": updatedPrefixCondition
+                            }
                         }
-                    },
-                    "StringEquals"
-                );
-
-                if (updatedCondition === undefined) {
-                    return undefined;
+                    };
                 }
 
-                return {
-                    ...statement,
-                    Condition: updatedCondition
-                };
+                const updatedStringEquals = removeKey(
+                    statement.Condition?.StringEquals,
+                    "s3:prefix"
+                );
+
+                // If "StringEquals" is still valid, return updated statement
+                if (updatedStringEquals) {
+                    return {
+                        ...statement,
+                        Condition: {
+                            ...statement.Condition,
+                            StringEquals: updatedStringEquals
+                        }
+                    };
+                }
+
+                // Remove "StringEquals" from Condition
+                const updatedCondition = removeKey(statement.Condition, "StringEquals");
+
+                // If Condition is still valid, return updated statement
+                return updatedCondition
+                    ? { ...statement, Condition: updatedCondition }
+                    : undefined;
             }
             return statement;
         })
