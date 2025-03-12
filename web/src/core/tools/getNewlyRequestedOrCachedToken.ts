@@ -4,7 +4,7 @@ import memoize from "memoizee";
 export type TokenPersistence<T> = {
     get: () => Promise<{ token: T; ttl: number } | undefined>;
     set: (cache: { token: T; ttl: number }) => Promise<void>;
-    clear: () => void;
+    clear: () => Promise<void>;
 };
 
 function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
@@ -123,7 +123,7 @@ export function createSessionStorageTokenPersistence<T>(params: {
 
             return { token, ttl };
         },
-        clear: () => {
+        clear: async () => {
             sessionStorage.removeItem(sessionStorageKey);
         }
     };
