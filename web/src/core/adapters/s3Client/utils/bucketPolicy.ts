@@ -88,30 +88,41 @@ export const removeObjectNameFromListBucketCondition = (
         return null;
     }
 
-    return statements.map(statement => {
-        if (
-            statement.Action.includes("s3:ListBucket") &&
-            statement.Resource.includes(bucketArn)
-        ) {
-            const updatedPrefixCondition = statement.Condition?.StringEquals?.[
-                "s3:prefix"
-            ]?.filter((prefix: string) => prefix !== objectName);
+    return statements
+        .map(statement => {
+            if (
+                statement.Action.includes("s3:ListBucket") &&
+                statement.Resource.includes(bucketArn)
+            ) {
+                const updatedPrefixCondition = statement.Condition?.StringEquals?.[
+                    "s3:prefix"
+                ]?.filter((prefix: string) => prefix !== objectName);
 
-            return {
-                ...statement,
-                Condition: {
-                    ...statement.Condition,
-                    StringEquals: {
-                        ...statement.Condition?.StringEquals,
-                        ...(updatedPrefixCondition?.length
-                            ? { "s3:prefix": updatedPrefixCondition }
-                            : {})
-                    }
+                const updatedCondition = removeKey(
+                    {
+                        ...statement.Condition,
+                        StringEquals: {
+                            ...removeKey(statement.Condition?.StringEquals, "s3:prefix"),
+                            ...(updatedPrefixCondition?.length
+                                ? { "s3:prefix": updatedPrefixCondition }
+                                : {})
+                        }
+                    },
+                    "StringEquals"
+                );
+
+                if (updatedCondition === undefined) {
+                    return undefined;
                 }
-            };
-        }
-        return statement;
-    });
+
+                return {
+                    ...statement,
+                    Condition: updatedCondition
+                };
+            }
+            return statement;
+        })
+        .filter(statement => statement !== undefined);
 };
 
 // Adds a new `s3:GetObject` statement for `resourceArn`
@@ -189,4 +200,16 @@ export const removeResourceArnInGetObjectStatement = (
                   : statement
           )
         : statements.filter((_, index) => index !== existingStatementIndex);
+};
+
+const removeKey = <T extends Record<string, any>, K extends keyof T>(
+    obj: T | undefined,
+    key: K
+): Omit<T, K> | undefined => {
+    if (!obj || !(key in obj)) {
+        return obj;
+    }
+
+    const { [key]: _, ...rest } = obj;
+    return Object.keys(rest).length > 0 ? (rest as Omit<T, K>) : undefined;
 };
