@@ -26,7 +26,7 @@ build/Release
 server/*.spec.js
 kubernetes
 
-/build
+/dist
 /Dockerfile
 /node_modules
 /.github
