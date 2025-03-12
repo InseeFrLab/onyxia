@@ -5,7 +5,7 @@ WORKDIR /app
 ENV YARN_CACHE_FOLDER=~/.cache/yarn
 COPY package.json yarn.lock ./
 
-# Mount cache and install all dependencies (except mui-icons-material-lazy)
+# Mount cache and install all dependencies
 RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
     YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install \
         --frozen-lockfile --ignore-scripts --network-timeout 1000000
