@@ -5224,10 +5224,10 @@ jsonify@^0.0.1:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.1.tgz#2aa3111dae3d34a0f151c63f3a45d995d9420978"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-keycloakify@^11.8.19:
-  version "11.8.19"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.19.tgz#1d7d7961ebdc3c56e2d0600b997c9336dcfcf7aa"
-  integrity sha512-a698r7KvAGycJGfs07cIs8W+jFJZfKj2ze/cJgYAzXwbFAZ1ST0WneoECfXz6Dxqwi1bg/9R3WG8p59IRufNBw==
+keycloakify@^11.8.21:
+  version "11.8.21"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.21.tgz#761f59d70097599f0424db1b2577db1cfb1522c5"
+  integrity sha512-pCvs+e44TZrTn0jrSgScFFE04poIMHZYqxIVX9uB+nQf7mToXl64Bw2ogPW0soR2g7QlhnQMXZGv19yrm7IW7g==
   dependencies:
     tsafe "^1.8.5"
 
@@ -5886,10 +5886,10 @@ object-keys@^1.1.1:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
-oidc-spa@^6.9.7:
-  version "6.9.7"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.7.tgz#66b1d6d6743c4869096412de8964773e183f4b21"
-  integrity sha512-zy+b+kH0AXkOO8wW9HPj4HAjOUfxJ08srCIiJYuMSXMNgxr9P7t06qTtgcGzIpPE+a7AKFw5sR33wIcim/fuvQ==
+oidc-spa@^6.9.9:
+  version "6.9.9"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.9.tgz#6f216b991be7acbb71ba017f9904e5b518029b4e"
+  integrity sha512-k86tsi4P2QwaVXztIfgiHi3XPkKn8hStFjjLGqBvwC9bNOM/yCWV/qnmxJchbyp5tLg3MDPn8ViHcPIriiT9fA==
 
 once@^1.3.0:
   version "1.4.0"
@@ -6773,8 +6773,16 @@ string-argv@~0.3.2:
   resolved "https://registry.yarnpkg.com/string-argv/-/string-argv-0.3.2.tgz#2b6d0ef24b656274d957d54e0a4bbf6153dc02b6"
   integrity sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
-  name string-width-cjs
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@^4.1.0:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -6816,8 +6824,14 @@ stringify-entities@^4.0.0:
     character-entities-html4 "^2.0.0"
     character-entities-legacy "^3.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
-  name strip-ansi-cjs
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -7032,10 +7046,10 @@ tss-react@^4.9.13:
     "@emotion/serialize" "*"
     "@emotion/utils" "*"
 
-tss-react@^4.9.14:
-  version "4.9.14"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.14.tgz#0b606b7a08fe80670c8c7d09f2c24421422a2300"
-  integrity sha512-nAj4RCQk3ADzrmtxmTcmN1B9EKxPMIxuCfJ3ll964CksndJ2/ZImF6rAMo2Kud5yE3ENXHpPIBHCyuMtgptMvw==
+tss-react@^4.9.15:
+  version "4.9.15"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.15.tgz#a26fc24889a462ab4858094bc5b33cdda36e45ab"
+  integrity sha512-rLiEmDwUtln9RKTUR/ZPYBrufF0Tq/PFggO1M7P8M3/FAcodPQ746Ug9MCEFkURKDlntN17+Oja0DMMz5yBnsQ==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
