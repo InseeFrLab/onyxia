@@ -1,4 +1,4 @@
-import { useEffect, memo } from "react";
+import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { ExplorerUploadModalDropArea } from "./ExplorerUploadModalDropArea";
@@ -7,10 +7,7 @@ import { ExplorerUploadProgress } from "./ExplorerUploadProgress";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { useArrayDiff } from "powerhooks/useArrayDiff";
-import type { StatefulReadonlyEvt } from "evt";
-import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
-import { useConst } from "powerhooks/useConst";
-import { Evt } from "evt";
+
 import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerUploadModalProps = {
@@ -37,34 +34,6 @@ export const ExplorerUploadModal = memo((props: ExplorerUploadModalProps) => {
         }
     });
 
-    const evtFilesBeingUploaded = useConst(() => Evt.create(filesBeingUploaded));
-
-    useEffect(() => {
-        evtFilesBeingUploaded.state = filesBeingUploaded;
-    }, [filesBeingUploaded]);
-
-    return (
-        <DialogWrapper
-            isOpen={isOpen}
-            onClose={onClose}
-            evtFilesBeingUploaded={evtFilesBeingUploaded}
-            onFileSelected={onFileSelected}
-        />
-    );
-});
-
-type DialogWrapperProps = Omit<ExplorerUploadModalProps, "filesBeingUploaded"> & {
-    evtFilesBeingUploaded: StatefulReadonlyEvt<
-        ExplorerUploadModalProps["filesBeingUploaded"]
-    >;
-};
-
-//NOTE: Dialog can't re-render the Dialog without unmounting and recreating body and button.
-// we use a stateful evt that is a constant so that this wrapper component doesn't re render
-// wen filesBeingUploaded changes.
-const DialogWrapper = memo((props: DialogWrapperProps) => {
-    const { evtFilesBeingUploaded, isOpen, onClose, onFileSelected } = props;
-
     const { t } = useTranslation({ ExplorerUploadModal });
 
     return (
@@ -74,7 +43,7 @@ const DialogWrapper = memo((props: DialogWrapperProps) => {
             title={t("import files")}
             body={
                 <ExplorerUploadModalBody
-                    evtFilesBeingUploaded={evtFilesBeingUploaded}
+                    filesBeingUploaded={filesBeingUploaded}
                     onFileSelected={onFileSelected}
                 />
             }
@@ -88,20 +57,17 @@ const DialogWrapper = memo((props: DialogWrapperProps) => {
 });
 
 const { ExplorerUploadModalBody } = (() => {
-    type Props = Pick<DialogWrapperProps, "evtFilesBeingUploaded"> &
-        Pick<ExplorerUploadModalProps, "onFileSelected">;
+    type Props = Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
 
     const ExplorerUploadModalBody = memo((props: Props) => {
-        const { onFileSelected, evtFilesBeingUploaded } = props;
+        const { onFileSelected, filesBeingUploaded } = props;
 
         const { classes } = useStyles();
-
-        useRerenderOnStateChange(evtFilesBeingUploaded);
 
         return (
             <div className={classes.root}>
                 <ExplorerUploadModalDropArea onFileSelected={onFileSelected} />
-                {evtFilesBeingUploaded.state.map(
+                {filesBeingUploaded.map(
                     ({ directoryPath, basename, size, uploadPercent }) => (
                         <ExplorerUploadProgress
                             className={classes.progress}
