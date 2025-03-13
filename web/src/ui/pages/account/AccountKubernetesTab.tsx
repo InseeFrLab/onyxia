@@ -23,7 +23,7 @@ export type Props = {
     className?: string;
 };
 
-export const AccountKubernetesTab = memo((props: Props) => {
+const AccountKubernetesTab = memo((props: Props) => {
     const { className } = props;
 
     const { classes, theme } = useStyles();
@@ -160,6 +160,8 @@ export const AccountKubernetesTab = memo((props: Props) => {
         </div>
     );
 });
+
+export default AccountKubernetesTab;
 
 const { i18n } = declareComponentKeys<
     | "credentials section title"

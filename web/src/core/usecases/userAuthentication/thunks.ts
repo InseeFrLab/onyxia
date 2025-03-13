@@ -1,6 +1,12 @@
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
-import { actions } from "./state";
+import { actions, type KcActionResult } from "./state";
+import { protectedSelectors } from "./selectors";
+import { parseKeycloakIssuerUri } from "oidc-spa/tools/parseKeycloakIssuerUri";
+import { isAmong } from "tsafe/isAmong";
+import { id } from "tsafe/id";
+
+type Kc_Action = KcActionResult["kc_action"];
 
 export const thunks = {
     login:
@@ -24,6 +30,57 @@ export const thunks = {
             assert(oidc.isUserLoggedIn);
 
             return oidc.logout({ redirectTo });
+        },
+    kcChangePassword:
+        () =>
+        async (...args): Promise<never> => {
+            const [, getState, { oidc }] = args;
+
+            assert(oidc.isUserLoggedIn);
+
+            const isKeycloak = protectedSelectors.isKeycloak(getState());
+
+            assert(isKeycloak);
+
+            return oidc.goToAuthServer({
+                extraQueryParams: {
+                    kc_action: id<Kc_Action>("CHANGE_PASSWORD")
+                }
+            });
+        },
+    kcUpdateProfile:
+        () =>
+        async (...args): Promise<never> => {
+            const [, getState, { oidc }] = args;
+
+            assert(oidc.isUserLoggedIn);
+
+            const isKeycloak = protectedSelectors.isKeycloak(getState());
+
+            assert(isKeycloak);
+
+            return oidc.goToAuthServer({
+                extraQueryParams: {
+                    kc_action: id<Kc_Action>("UPDATE_PROFILE")
+                }
+            });
+        },
+    kcDeleteAccount:
+        () =>
+        async (...args): Promise<never> => {
+            const [, getState, { oidc }] = args;
+
+            assert(oidc.isUserLoggedIn);
+
+            const isKeycloak = protectedSelectors.isKeycloak(getState());
+
+            assert(isKeycloak);
+
+            return oidc.goToAuthServer({
+                extraQueryParams: {
+                    kc_action: id<Kc_Action>("delete_account")
+                }
+            });
         }
 } satisfies Thunks;
 
@@ -41,7 +98,73 @@ export const protectedThunks = {
                         : {
                               isUserLoggedIn: true,
                               user: (await onyxiaApi.getUserAndProjects()).user,
-                              decodedIdToken: (await oidc.getTokens()).decodedIdToken
+                              providerSpecific: (() => {
+                                  case_keycloak: {
+                                      const keycloak = parseKeycloakIssuerUri(
+                                          oidc.params.issuerUri
+                                      );
+
+                                      if (keycloak === undefined) {
+                                          break case_keycloak;
+                                      }
+
+                                      const actionResult = (() => {
+                                          if (oidc.backFromAuthServer === undefined) {
+                                              return undefined;
+                                          }
+
+                                          const kc_actions = [
+                                              "CHANGE_PASSWORD",
+                                              "UPDATE_PROFILE",
+                                              "delete_account"
+                                          ] as const;
+
+                                          assert<
+                                              Equals<
+                                                  (typeof kc_actions)[number],
+                                                  Kc_Action
+                                              >
+                                          >;
+
+                                          const kc_action =
+                                              oidc.backFromAuthServer.result.kc_action;
+
+                                          if (!isAmong(kc_actions, kc_action)) {
+                                              return undefined;
+                                          }
+
+                                          const kc_action_status: string | undefined =
+                                              oidc.backFromAuthServer.result
+                                                  .kc_action_status;
+
+                                          switch (kc_action) {
+                                              case "CHANGE_PASSWORD":
+                                                  return {
+                                                      kc_action,
+                                                      isSuccess:
+                                                          kc_action_status === "success"
+                                                  };
+                                              case "UPDATE_PROFILE":
+                                                  return {
+                                                      kc_action,
+                                                      isSuccess:
+                                                          kc_action_status === "success"
+                                                  };
+                                              case "delete_account":
+                                                  return { kc_action };
+                                              default:
+                                                  assert<Equals<typeof kc_action, never>>;
+                                          }
+                                      })();
+
+                                      return {
+                                          type: "keycloak",
+                                          actionResult
+                                      };
+                                  }
+
+                                  return { type: "other" };
+                              })()
                           }
                 )
             );

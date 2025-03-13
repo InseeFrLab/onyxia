@@ -133,11 +133,14 @@ export const protectedThunks = {
         () =>
         async (...args) => {
             /* prettier-ignore */
-            const [dispatch, getState, { secretsManager, oidc, paramsOfBootstrapCore }] = args;
+            const [dispatch, getState, { secretsManager, paramsOfBootstrapCore }] = args;
 
-            assert(oidc.isUserLoggedIn);
+            const { isUserLoggedIn, user } =
+                userAuthentication.selectors.main(getState());
 
-            const { username, email } = userAuthentication.selectors.user(getState());
+            assert(isUserLoggedIn);
+
+            const { username, email } = user;
 
             // NOTE: Default values
             const userConfigs: UserConfigs = {
@@ -212,8 +215,7 @@ export const selectors = (() => {
 
     // NOTE: This will not crash even if the user is not logged in.
     const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
-        const { isUserLoggedIn } =
-            userAuthentication.selectors.authenticationState(rootState);
+        const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
 
         if (!isUserLoggedIn) {
             return undefined;

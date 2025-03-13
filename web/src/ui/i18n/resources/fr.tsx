@@ -9,7 +9,7 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
     Account: {
-        infos: "Information du compte",
+        profile: "Profil",
         git: undefined,
         storage: "Connexion au stockage",
         k8sCodeSnippets: "Connexion à Kubernetes",
@@ -20,13 +20,17 @@ export const translations: Translations<"fr"> = {
         "personal tokens tooltip": 'Ou en anglais "token".',
         vault: "Vault"
     },
-    AccountInfoTab: {
-        "general information": "Informations générales",
-        "user id": "Identifiant (IDEP)",
-        "full name": "Nom complet",
-        email: "Adresse mail",
-        "instructions about how to change password":
-            'Pour changer votre mot de passe, déconnectez-vous simplement, puis cliquez sur le lien "mot de passe oublié".'
+    AccountProfileTab: {
+        "user id": "ID utilisateur",
+        "full name": "Nom",
+        email: "Email",
+        "update profile": "Mettre à jour le profil",
+        "change password": "Changer le mot de passe",
+        "delete account": "Supprimer le compte",
+        "password update feedback": ({ isSuccess }) =>
+            isSuccess ? "Mot de passe mis à jour avec succès" : "Mot de passe inchangé",
+        "profile update feedback": ({ isSuccess }) =>
+            isSuccess ? "Profil mis à jour avec succès" : "Profil inchangé"
     },
     AccountGitTab: {
         gitName: "Nom d'utilisateur pour Git",

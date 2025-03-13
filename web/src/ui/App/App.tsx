@@ -106,7 +106,7 @@ function ContextualizedApp(props: { className?: string }) {
         domRect: { height: globalAlertHeight }
     } = useDomRect();
     const { cx, classes } = useStyles({ globalAlertHeight });
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
     return (
         <>
@@ -195,7 +195,7 @@ const useStyles = tss
 function useSyncDarkModeWithValueInProfile() {
     const { userConfigs } = useCore().functions;
 
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 

@@ -8,10 +8,7 @@ export function withLoginEnforced<Props extends Record<string, unknown>>(
 ): FC<Props> {
     function ComponentWithLoginEnforced(props: Props) {
         const { userAuthentication } = useCore().functions;
-        const { isUserLoggedIn } = useCoreState(
-            "userAuthentication",
-            "authenticationState"
-        );
+        const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
         useEffect(() => {
             if (isUserLoggedIn) {

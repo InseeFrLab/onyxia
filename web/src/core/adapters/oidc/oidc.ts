@@ -64,6 +64,10 @@ export async function createOidc<AutoLogin extends boolean>(
         homeUrl: import.meta.env.BASE_URL
     });
 
+    // TODO: On next oidc-spa major, just return oidc directly
+    // getTokens will be async.
+    // Do not forget to directly assign autoLogin to the create function.
+
     if (!oidc.isUserLoggedIn) {
         if (autoLogin) {
             await oidc.login({ doesCurrentHrefRequiresAuth: true });

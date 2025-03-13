@@ -22,6 +22,15 @@ export declare namespace Oidc {
         subscribeToAutoLogoutCountdown: (
             tickCallback: (params: { secondsLeft: number | undefined }) => void
         ) => { unsubscribeFromAutoLogoutCountdown: () => void };
+        backFromAuthServer:
+            | {
+                  extraQueryParams: Record<string, string>;
+                  result: Record<string, string>;
+              }
+            | undefined;
+        goToAuthServer: (params: {
+            extraQueryParams: Record<string, string>;
+        }) => Promise<never>;
     };
 
     export type Tokens = Tokens.WithRefreshToken | Tokens.WithoutRefreshToken;
