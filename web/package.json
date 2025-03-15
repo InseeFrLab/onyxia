@@ -67,7 +67,7 @@
         "oidc-spa": "^6.9.7",
         "onyxia-ui": "^6.2.5",
         "pathe": "^1.1.2",
-        "powerhooks": "^1.0.21",
+        "powerhooks": "^2.0.1",
         "react": "^18.3.1",
         "react-code-blocks": "^0.1.6",
         "react-dom": "^18.3.1",
