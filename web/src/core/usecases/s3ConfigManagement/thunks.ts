@@ -11,6 +11,7 @@ import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { updateDefaultS3ConfigsAfterPotentialDeletion } from "./decoupledLogic/updateDefaultS3ConfigsAfterPotentialDeletion";
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 export const thunks = {
     testS3Connection:
@@ -187,14 +188,12 @@ export const protectedThunks = {
                             }),
                             autoLogin: true,
                             transformUrlBeforeRedirect_ui:
-                                paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
+                                paramsOfBootstrapCore.transformUrlBeforeRedirectToOidcAuthorizationUrl,
+                            getCurrentLang: paramsOfBootstrapCore.getCurrentLang
                         });
 
                         const doClearCachedS3Token: boolean = await (async () => {
-                            const [{ projects }, { fnv1aHashToHex }] = await Promise.all([
-                                onyxiaApi.getUserAndProjects(),
-                                import("core/tools/fnv1aHashToHex")
-                            ]);
+                            const { projects } = await onyxiaApi.getUserAndProjects();
 
                             const KEY = "onyxia:s3:projects-hash";
 

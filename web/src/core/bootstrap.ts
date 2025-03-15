@@ -14,12 +14,13 @@ import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
 import { pluginSystemInitCore } from "pluginSystem";
 import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 type ParamsOfBootstrapCore = {
     apiUrl: string;
-    transformUrlBeforeRedirectToLogin: (params: {
-        isKeycloak: boolean;
+    transformUrlBeforeRedirectToOidcAuthorizationUrl: (params: {
         authorizationUrl: string;
+        oidcProvider: "keycloak" | undefined;
     }) => string;
     getCurrentLang: () => Language;
     disablePersonalInfosInjectionInGroup: boolean;
@@ -42,7 +43,12 @@ export type Core = GenericCore<typeof usecases, Context>;
 export async function bootstrapCore(
     params: ParamsOfBootstrapCore
 ): Promise<{ core: Core }> {
-    const { apiUrl, transformUrlBeforeRedirectToLogin, isAuthGloballyRequired } = params;
+    const {
+        apiUrl,
+        transformUrlBeforeRedirectToOidcAuthorizationUrl,
+        getCurrentLang,
+        isAuthGloballyRequired
+    } = params;
 
     let isCoreCreated = false;
 
@@ -119,7 +125,9 @@ export async function bootstrapCore(
 
         return createOidc({
             ...oidcParams,
-            transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
+            transformUrlBeforeRedirect_ui:
+                transformUrlBeforeRedirectToOidcAuthorizationUrl,
+            getCurrentLang,
             autoLogin: false
         });
     })();
@@ -217,15 +225,14 @@ export async function bootstrapCore(
                 oidcParams,
                 oidcParams_partial: deploymentRegion.vault.oidcParams
             }),
-            transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
+            transformUrlBeforeRedirect_ui:
+                transformUrlBeforeRedirectToOidcAuthorizationUrl,
+            getCurrentLang,
             autoLogin: true
         });
 
         const doClearCachedVaultToken: boolean = await (async () => {
-            const [{ projects }, { fnv1aHashToHex }] = await Promise.all([
-                onyxiaApi.getUserAndProjects(),
-                import("core/tools/fnv1aHashToHex")
-            ]);
+            const { projects } = await onyxiaApi.getUserAndProjects();
 
             const KEY = "onyxia:vault:projects-hash";
 

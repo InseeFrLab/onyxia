@@ -139,7 +139,8 @@ export const thunks = {
                     }),
                     autoLogin: true,
                     transformUrlBeforeRedirect_ui:
-                        paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
+                        paramsOfBootstrapCore.transformUrlBeforeRedirectToOidcAuthorizationUrl,
+                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;

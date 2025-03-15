@@ -8,13 +8,15 @@ import {
     getSearchParam,
     getAllSearchParams
 } from "powerhooks/tools/urlSearchParams";
+import type { Language } from "core/ports/OnyxiaApi/Language";
 
 export async function createOidc<AutoLogin extends boolean>(
     params: OidcParams & {
         transformUrlBeforeRedirect_ui: (params: {
-            isKeycloak: boolean;
             authorizationUrl: string;
+            oidcProvider: "keycloak" | undefined;
         }) => string;
+        getCurrentLang: () => Language;
         autoLogin: AutoLogin;
     }
 ): Promise<AutoLogin extends true ? Oidc.LoggedIn : Oidc> {
@@ -24,6 +26,7 @@ export async function createOidc<AutoLogin extends boolean>(
         scope_spaceSeparated,
         audience,
         transformUrlBeforeRedirect_ui,
+        getCurrentLang,
         extraQueryParams_raw,
         idleSessionLifetimeInSeconds,
         autoLogin
@@ -75,9 +78,18 @@ export async function createOidc<AutoLogin extends boolean>(
             }
 
             if (!isSilent) {
+                authorizationUrl = addOrUpdateSearchParam({
+                    url: authorizationUrl,
+                    name: "ui_locales",
+                    value: getCurrentLang(),
+                    encodeMethod: "www-form"
+                });
+
                 authorizationUrl = transformUrlBeforeRedirect_ui({
-                    isKeycloak:
-                        parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined,
+                    oidcProvider:
+                        parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined
+                            ? "keycloak"
+                            : undefined,
                     authorizationUrl
                 });
             }

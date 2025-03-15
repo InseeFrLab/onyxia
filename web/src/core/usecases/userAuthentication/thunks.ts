@@ -81,6 +81,29 @@ export const thunks = {
                     kc_action: id<Kc_Action>("delete_account")
                 }
             });
+        },
+    kcRedirectToAccountConsole:
+        () =>
+        (...args): Promise<never> => {
+            const [, getState, { oidc, paramsOfBootstrapCore }] = args;
+
+            assert(oidc.isUserLoggedIn);
+
+            const isKeycloak = protectedSelectors.isKeycloak(getState());
+
+            assert(isKeycloak);
+
+            const keycloak = parseKeycloakIssuerUri(oidc.params.issuerUri);
+
+            assert(keycloak !== undefined);
+
+            window.location.href = keycloak.getAccountUrl({
+                backToAppFromAccountUrl: window.location.href,
+                clientId: oidc.params.clientId,
+                locale: paramsOfBootstrapCore.getCurrentLang()
+            });
+
+            return new Promise<never>(() => {});
         }
 } satisfies Thunks;
 

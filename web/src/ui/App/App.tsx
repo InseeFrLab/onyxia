@@ -30,15 +30,11 @@ injectCustomFontFaceIfNotAlreadyDone();
 const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
-    transformUrlBeforeRedirectToLogin: ({ authorizationUrl, isKeycloak }) => {
-        authorizationUrl = addOrUpdateSearchParam({
-            url: authorizationUrl,
-            name: "ui_locales",
-            value: evtLang.state,
-            encodeMethod: "www-form"
-        });
-
-        if (isKeycloak) {
+    transformUrlBeforeRedirectToOidcAuthorizationUrl: ({
+        authorizationUrl,
+        oidcProvider
+    }) => {
+        if (oidcProvider === "keycloak") {
             authorizationUrl = addOrUpdateSearchParam({
                 url: authorizationUrl,
                 name: onyxiaInstancePublicUrlKey,
@@ -48,7 +44,6 @@ const { CoreProvider } = createCoreProvider({
             authorizationUrl = injectTransferableEnvsInQueryParams(authorizationUrl);
             authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
         }
-
         return authorizationUrl;
     },
     disablePersonalInfosInjectionInGroup: env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
