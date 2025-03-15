@@ -12,9 +12,8 @@ import type { Language } from "core/ports/OnyxiaApi/Language";
 
 export async function createOidc<AutoLogin extends boolean>(
     params: OidcParams & {
-        transformUrlBeforeRedirect_ui: (params: {
+        transformBeforeRedirectForKeycloakTheme: (params: {
             authorizationUrl: string;
-            oidcProvider: "keycloak" | undefined;
         }) => string;
         getCurrentLang: () => Language;
         autoLogin: AutoLogin;
@@ -25,7 +24,7 @@ export async function createOidc<AutoLogin extends boolean>(
         clientId,
         scope_spaceSeparated,
         audience,
-        transformUrlBeforeRedirect_ui,
+        transformBeforeRedirectForKeycloakTheme,
         getCurrentLang,
         extraQueryParams_raw,
         idleSessionLifetimeInSeconds,
@@ -85,13 +84,11 @@ export async function createOidc<AutoLogin extends boolean>(
                     encodeMethod: "www-form"
                 });
 
-                authorizationUrl = transformUrlBeforeRedirect_ui({
-                    oidcProvider:
-                        parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined
-                            ? "keycloak"
-                            : undefined,
-                    authorizationUrl
-                });
+                if (parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined) {
+                    authorizationUrl = transformBeforeRedirectForKeycloakTheme({
+                        authorizationUrl
+                    });
+                }
             }
 
             return authorizationUrl;

@@ -187,8 +187,8 @@ export const protectedThunks = {
                                 oidcParams_partial
                             }),
                             autoLogin: true,
-                            transformUrlBeforeRedirect_ui:
-                                paramsOfBootstrapCore.transformUrlBeforeRedirectToOidcAuthorizationUrl,
+                            transformBeforeRedirectForKeycloakTheme:
+                                paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
                             getCurrentLang: paramsOfBootstrapCore.getCurrentLang
                         });
 

@@ -25,13 +25,7 @@ export const translations: Translations<"fi"> = {
         "user id": "Käyttäjä-ID",
         "full name": "Nimi",
         email: "Sähköposti",
-        "update profile": "Päivitä profiili",
-        "change password": "Vaihda salasana",
-        "delete account": "Poista tili",
-        "password update feedback": ({ isSuccess }) =>
-            isSuccess ? "Salasana päivitetty onnistuneesti" : "Salasana ei muuttunut",
-        "profile update feedback": ({ isSuccess }) =>
-            isSuccess ? "Profiili päivitetty onnistuneesti" : "Profiili ei muuttunut"
+        "account management": "Tilin hallinta"
     },
     AccountGitTab: {
         gitName: "Käyttäjänimi Gitille",

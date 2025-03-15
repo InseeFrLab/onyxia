@@ -1,27 +1,53 @@
-import { getSearchParam } from "powerhooks/tools/urlSearchParams";
+import { getSearchParam, addOrUpdateSearchParam } from "powerhooks/tools/urlSearchParams";
+import { updateSearchBarUrl } from "powerhooks/tools/updateSearchBar";
 
-export const onyxiaInstancePublicUrlKey = "onyxia-instance-public-url";
+const LOCAL_STORAGE_AND_SEARCH_PARAM_NAME = "onyxia-instance-public-url";
 
 export function getOnyxiaInstancePublicUrl() {
-    const localStorageValue = localStorage.getItem(onyxiaInstancePublicUrlKey);
+    look_in_url: {
+        const { wasPresent, value, url_withoutTheParam } = getSearchParam({
+            name: LOCAL_STORAGE_AND_SEARCH_PARAM_NAME,
+            url: window.location.href
+        });
 
-    if (localStorageValue !== null) {
-        return localStorageValue;
+        if (!wasPresent) {
+            break look_in_url;
+        }
+
+        localStorage.setItem(LOCAL_STORAGE_AND_SEARCH_PARAM_NAME, value);
+
+        updateSearchBarUrl(url_withoutTheParam);
+
+        return value;
     }
 
-    const { wasPresent, value, url_withoutTheParam } = getSearchParam({
-        name: onyxiaInstancePublicUrlKey,
-        url: window.location.href
+    look_in_localStorage: {
+        const value = localStorage.getItem(LOCAL_STORAGE_AND_SEARCH_PARAM_NAME);
+
+        if (value === null) {
+            break look_in_localStorage;
+        }
+
+        return value;
+    }
+
+    console.warn(
+        "No Onyxia instance public URL found in the URL or in the local storage."
+    );
+
+    return "/";
+}
+
+export function injectOnyxiaInstancePublicUrl(params: {
+    authorizationUrl: string;
+    onyxiaInstancePublicUrl: string;
+}): string {
+    const { authorizationUrl, onyxiaInstancePublicUrl } = params;
+
+    return addOrUpdateSearchParam({
+        url: authorizationUrl,
+        name: LOCAL_STORAGE_AND_SEARCH_PARAM_NAME,
+        value: onyxiaInstancePublicUrl,
+        encodeMethod: "encodeURIComponent"
     });
-
-    if (!wasPresent) {
-        console.warn(`${onyxiaInstancePublicUrlKey} not found in url`);
-        return "/";
-    }
-
-    localStorage.setItem(onyxiaInstancePublicUrlKey, value);
-
-    window.history.replaceState({}, "", url_withoutTheParam);
-
-    return value;
 }

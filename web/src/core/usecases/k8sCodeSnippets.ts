@@ -138,8 +138,8 @@ export const thunks = {
                         oidcParams_partial: region.kubernetes.oidcParams
                     }),
                     autoLogin: true,
-                    transformUrlBeforeRedirect_ui:
-                        paramsOfBootstrapCore.transformUrlBeforeRedirectToOidcAuthorizationUrl,
+                    transformBeforeRedirectForKeycloakTheme:
+                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
                     getCurrentLang: paramsOfBootstrapCore.getCurrentLang
                 });
 

@@ -24,13 +24,7 @@ export const translations: Translations<"it"> = {
         "user id": "ID utente",
         "full name": "Nome",
         email: "Email",
-        "update profile": "Aggiorna profilo",
-        "change password": "Cambia password",
-        "delete account": "Elimina account",
-        "password update feedback": ({ isSuccess }) =>
-            isSuccess ? "Password aggiornata con successo" : "Password invariata",
-        "profile update feedback": ({ isSuccess }) =>
-            isSuccess ? "Profilo aggiornato con successo" : "Profilo invariato"
+        "account management": "Gestione dell'account"
     },
     AccountGitTab: {
         gitName: "Nome utente per Git",
@@ -360,9 +354,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

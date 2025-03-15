@@ -24,13 +24,7 @@ export const translations: Translations<"de"> = {
         "user id": "Benutzer-ID",
         "full name": "Name",
         email: "E-Mail",
-        "update profile": "Profil aktualisieren",
-        "change password": "Passwort ändern",
-        "delete account": "Konto löschen",
-        "password update feedback": ({ isSuccess }) =>
-            isSuccess ? "Passwort erfolgreich aktualisiert" : "Passwort unverändert",
-        "profile update feedback": ({ isSuccess }) =>
-            isSuccess ? "Profil erfolgreich aktualisiert" : "Profil unverändert"
+        "account management": "Kontoverwaltung"
     },
     AccountGitTab: {
         gitName: "Benutzername für Git",

@@ -24,13 +24,7 @@ export const translations: Translations<"zh-CN"> = {
         "user id": "用户ID",
         "full name": "姓名",
         email: "电子邮件",
-        "update profile": "更新个人资料",
-        "change password": "更改密码",
-        "delete account": "删除账户",
-        "password update feedback": ({ isSuccess }) =>
-            isSuccess ? "密码更新成功" : "密码未更改",
-        "profile update feedback": ({ isSuccess }) =>
-            isSuccess ? "个人资料更新成功" : "个人资料未更改"
+        "account management": "账户管理"
     },
     AccountGitTab: {
         gitName: "Git 用户名",

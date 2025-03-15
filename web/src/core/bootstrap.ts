@@ -18,9 +18,8 @@ import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 type ParamsOfBootstrapCore = {
     apiUrl: string;
-    transformUrlBeforeRedirectToOidcAuthorizationUrl: (params: {
+    transformBeforeRedirectForKeycloakTheme: (params: {
         authorizationUrl: string;
-        oidcProvider: "keycloak" | undefined;
     }) => string;
     getCurrentLang: () => Language;
     disablePersonalInfosInjectionInGroup: boolean;
@@ -45,7 +44,7 @@ export async function bootstrapCore(
 ): Promise<{ core: Core }> {
     const {
         apiUrl,
-        transformUrlBeforeRedirectToOidcAuthorizationUrl,
+        transformBeforeRedirectForKeycloakTheme,
         getCurrentLang,
         isAuthGloballyRequired
     } = params;
@@ -125,8 +124,7 @@ export async function bootstrapCore(
 
         return createOidc({
             ...oidcParams,
-            transformUrlBeforeRedirect_ui:
-                transformUrlBeforeRedirectToOidcAuthorizationUrl,
+            transformBeforeRedirectForKeycloakTheme,
             getCurrentLang,
             autoLogin: false
         });
@@ -225,8 +223,7 @@ export async function bootstrapCore(
                 oidcParams,
                 oidcParams_partial: deploymentRegion.vault.oidcParams
             }),
-            transformUrlBeforeRedirect_ui:
-                transformUrlBeforeRedirectToOidcAuthorizationUrl,
+            transformBeforeRedirectForKeycloakTheme,
             getCurrentLang,
             autoLogin: true
         });

@@ -24,13 +24,7 @@ export const translations: Translations<"nl"> = {
         "user id": "Gebruikers-ID",
         "full name": "Naam",
         email: "E-mail",
-        "update profile": "Profiel bijwerken",
-        "change password": "Wachtwoord wijzigen",
-        "delete account": "Account verwijderen",
-        "password update feedback": ({ isSuccess }) =>
-            isSuccess ? "Wachtwoord succesvol bijgewerkt" : "Wachtwoord ongewijzigd",
-        "profile update feedback": ({ isSuccess }) =>
-            isSuccess ? "Profiel succesvol bijgewerkt" : "Profiel ongewijzigd"
+        "account management": "Accountbeheer"
     },
     AccountGitTab: {
         gitName: "Gebruikersnaam voor Git",
