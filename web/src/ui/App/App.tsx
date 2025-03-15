@@ -15,7 +15,7 @@ import {
     injectCustomFontFaceIfNotAlreadyDone
 } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
-import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { addOrUpdateSearchParam } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
@@ -31,20 +31,22 @@ const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
     transformUrlBeforeRedirectToLogin: ({ authorizationUrl, isKeycloak }) => {
-        authorizationUrl = addParamToUrl({
+        authorizationUrl = addOrUpdateSearchParam({
             url: authorizationUrl,
             name: "ui_locales",
-            value: evtLang.state
-        }).newUrl;
+            value: evtLang.state,
+            encodeMethod: "www-form"
+        });
 
         if (isKeycloak) {
-            authorizationUrl = injectTransferableEnvsInQueryParams(authorizationUrl);
-            authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
-            authorizationUrl = addParamToUrl({
+            authorizationUrl = addOrUpdateSearchParam({
                 url: authorizationUrl,
                 name: onyxiaInstancePublicUrlKey,
-                value: `${window.location.origin}${env.PUBLIC_URL}`
-            }).newUrl;
+                value: `${window.location.origin}${env.PUBLIC_URL}`,
+                encodeMethod: "encodeURIComponent"
+            });
+            authorizationUrl = injectTransferableEnvsInQueryParams(authorizationUrl);
+            authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
         }
 
         return authorizationUrl;

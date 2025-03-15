@@ -3,7 +3,11 @@ import { createOidc as createOidcSpa } from "oidc-spa";
 import { parseKeycloakIssuerUri } from "oidc-spa/tools/parseKeycloakIssuerUri";
 import type { OidcParams, OidcParams_Partial } from "core/ports/OnyxiaApi";
 import { objectKeys } from "tsafe/objectKeys";
-import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import {
+    addOrUpdateSearchParam,
+    getSearchParam,
+    getAllSearchParams
+} from "powerhooks/tools/urlSearchParams";
 
 export async function createOidc<AutoLogin extends boolean>(
     params: OidcParams & {
@@ -30,32 +34,52 @@ export async function createOidc<AutoLogin extends boolean>(
         clientId,
         scopes: scope_spaceSeparated?.split(" "),
         transformUrlBeforeRedirect_next: ({ authorizationUrl, isSilent }) => {
+            if (audience !== undefined) {
+                authorizationUrl = addOrUpdateSearchParam({
+                    url: authorizationUrl,
+                    name: "audience",
+                    value: audience,
+                    encodeMethod: "www-form"
+                });
+            }
+
+            add_extraQueryParams_raw: {
+                if (extraQueryParams_raw === undefined) {
+                    break add_extraQueryParams_raw;
+                }
+
+                const extraQueryParams_raw_normalized = extraQueryParams_raw
+                    .replace(/^\?/, "")
+                    .replace(/^&/, "")
+                    .replace(/&$/, "");
+
+                if (extraQueryParams_raw_normalized === "") {
+                    break add_extraQueryParams_raw;
+                }
+
+                for (const name of Object.keys(
+                    getAllSearchParams(
+                        `https://dummy.com?${extraQueryParams_raw_normalized}`
+                    )
+                )) {
+                    const { wasPresent, url_withoutTheParam } = getSearchParam({
+                        url: authorizationUrl,
+                        name
+                    });
+                    if (wasPresent) {
+                        authorizationUrl = url_withoutTheParam;
+                    }
+                }
+
+                authorizationUrl = `${authorizationUrl}&${extraQueryParams_raw_normalized}`;
+            }
+
             if (!isSilent) {
                 authorizationUrl = transformUrlBeforeRedirect_ui({
                     isKeycloak:
                         parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined,
                     authorizationUrl
                 });
-            }
-
-            if (audience !== undefined) {
-                authorizationUrl = addParamToUrl({
-                    url: authorizationUrl,
-                    name: "audience",
-                    value: audience
-                }).newUrl;
-            }
-
-            if (extraQueryParams_raw !== undefined) {
-                const extraUrlSearchParams = new URLSearchParams(extraQueryParams_raw);
-
-                for (const [key, value] of extraUrlSearchParams) {
-                    authorizationUrl = addParamToUrl({
-                        url: authorizationUrl,
-                        name: key,
-                        value
-                    }).newUrl;
-                }
             }
 
             return authorizationUrl;
