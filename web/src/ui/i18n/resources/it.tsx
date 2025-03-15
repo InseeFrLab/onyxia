@@ -9,7 +9,7 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 export const translations: Translations<"it"> = {
     /* spell-checker: disable */
     Account: {
-        infos: "Informazioni dell'account",
+        profile: "Profilo",
         git: undefined,
         storage: "Connessione allo storage",
         k8sCodeSnippets: "Connessione a Kubernetes",
@@ -20,13 +20,17 @@ export const translations: Translations<"it"> = {
         "personal tokens tooltip": 'O in inglese solo "token".',
         vault: "Vault"
     },
-    AccountInfoTab: {
-        "general information": "Informazioni generali",
-        "user id": "Identificatore (IDEP)",
-        "full name": "Nome completo",
-        email: "Indirizzo email",
-        "instructions about how to change password":
-            'Per cambiare la tua password, semplicemente esci e clicca sul link "password dimenticata".'
+    AccountProfileTab: {
+        "user id": "ID utente",
+        "full name": "Nome",
+        email: "Email",
+        "update profile": "Aggiorna profilo",
+        "change password": "Cambia password",
+        "delete account": "Elimina account",
+        "password update feedback": ({ isSuccess }) =>
+            isSuccess ? "Password aggiornata con successo" : "Password invariata",
+        "profile update feedback": ({ isSuccess }) =>
+            isSuccess ? "Profilo aggiornato con successo" : "Profilo invariato"
     },
     AccountGitTab: {
         gitName: "Nome utente per Git",
@@ -356,8 +360,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

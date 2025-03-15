@@ -43,12 +43,18 @@ export const thunks = {
             dispatch(actions.catalogsFetching());
 
             const { catalogs, chartsByCatalogId } = await (async () => {
-                const isInGroupProject =
-                    !userAuthentication.selectors.authenticationState(getState())
-                        .isUserLoggedIn
-                        ? false
-                        : projectManagement.protectedSelectors.currentProject(getState())
-                              .group !== undefined;
+                const isInGroupProject = (() => {
+                    const { isUserLoggedIn } =
+                        userAuthentication.selectors.main(getState());
+
+                    if (!isUserLoggedIn) {
+                        return false;
+                    }
+                    return (
+                        projectManagement.protectedSelectors.currentProject(getState())
+                            .group !== undefined
+                    );
+                })();
 
                 const { catalogs: catalogs_all, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();

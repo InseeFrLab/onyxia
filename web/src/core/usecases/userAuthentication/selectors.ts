@@ -5,27 +5,31 @@ import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-/** To use only when we know the user is authenticated */
-const user = createSelector(state, state => {
-    assert(state.isUserLoggedIn);
-
-    return state.user;
-});
-
-const authenticationState = createSelector(state, state => {
+const main = createSelector(state, state => {
     if (!state.isUserLoggedIn) {
-        return {
-            isUserLoggedIn: false as const
-        };
+        return { isUserLoggedIn: false as const };
     }
+
+    const { user, providerSpecific } = state;
 
     return {
         isUserLoggedIn: true as const,
-        user: state.user
+        user,
+        providerSpecific
     };
 });
 
+/** User must be logged in to use this selector */
+const isKeycloak = createSelector(state, state => {
+    assert(state.isUserLoggedIn);
+
+    return state.providerSpecific.type === "keycloak";
+});
+
 export const selectors = {
-    authenticationState,
-    user
+    main
+};
+
+export const protectedSelectors = {
+    isKeycloak
 };

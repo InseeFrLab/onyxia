@@ -106,7 +106,10 @@ export const thunks = {
                                   projectManagement.protectedSelectors.currentProject(
                                       getState()
                                   );
-                              const user = userAuthentication.selectors.user(getState());
+                              const { isUserLoggedIn, user } =
+                                  userAuthentication.selectors.main(getState());
+
+                              assert(isUserLoggedIn);
 
                               return project.group === undefined
                                   ? {

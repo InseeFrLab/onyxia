@@ -451,7 +451,7 @@ const privateThunks = {
                 { paramsOfBootstrapCore, secretsManager, onyxiaApi }
             ] = args;
 
-            const user = userAuthentication.selectors.user(getState());
+            const { user } = await onyxiaApi.getUserAndProjects();
 
             const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
 

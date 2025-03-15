@@ -26,7 +26,7 @@ export function Header(props: Props) {
 
     const { userAuthentication } = useCore().functions;
 
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
     return (
         <header className={cx(classes.root, className)}>

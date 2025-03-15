@@ -4,6 +4,7 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import * as userAuthentication from "core/usecases/userAuthentication";
 import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { getS3Configs, type S3Config } from "./decoupledLogic/getS3Configs";
+import { assert } from "tsafe/assert";
 
 const s3Configs = createSelector(
     createSelector(
@@ -16,7 +17,10 @@ const s3Configs = createSelector(
     ),
     s3ConfigConnectionTest.protectedSelectors.configTestResults,
     s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
-    createSelector(userAuthentication.selectors.user, user => user.username),
+    createSelector(userAuthentication.selectors.main, ({ isUserLoggedIn, user }) => {
+        assert(isUserLoggedIn);
+        return user.username;
+    }),
     createSelector(
         projectManagement.protectedSelectors.currentProject,
         project => project.group

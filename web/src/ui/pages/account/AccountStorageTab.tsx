@@ -44,7 +44,7 @@ export type Props = {
     className?: string;
 };
 
-export const AccountStorageTab = memo((props: Props) => {
+const AccountStorageTab = memo((props: Props) => {
     const { className } = props;
 
     const { classes, theme } = useStyles();
@@ -181,6 +181,8 @@ export const AccountStorageTab = memo((props: Props) => {
         </div>
     );
 });
+
+export default AccountStorageTab;
 
 const { i18n } = declareComponentKeys<
     | "credentials section title"

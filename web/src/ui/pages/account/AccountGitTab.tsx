@@ -18,7 +18,7 @@ export type Props = {
     className?: string;
 };
 
-export const AccountGitTab = memo((props: Props) => {
+const AccountGitTab = memo((props: Props) => {
     const { className } = props;
 
     const { t } = useTranslation({ AccountGitTab });
@@ -92,6 +92,8 @@ export const AccountGitTab = memo((props: Props) => {
         </div>
     );
 });
+
+export default AccountGitTab;
 
 const { i18n } = declareComponentKeys<
     | "gitName"

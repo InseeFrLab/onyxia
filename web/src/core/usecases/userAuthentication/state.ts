@@ -16,9 +16,29 @@ namespace State {
     export type LoggedIn = {
         isUserLoggedIn: true;
         user: User;
-        decodedIdToken: Record<string, unknown>;
+        providerSpecific:
+            | {
+                  type: "keycloak";
+                  actionResult: KcActionResult | undefined;
+              }
+            | {
+                  type: "other";
+              };
     };
 }
+
+export type KcActionResult =
+    | {
+          kc_action: "CHANGE_PASSWORD";
+          isSuccess: boolean;
+      }
+    | {
+          kc_action: "UPDATE_PROFILE";
+          isSuccess: boolean;
+      }
+    | {
+          kc_action: "delete_account";
+      };
 
 export const { reducer, actions } = createUsecaseActions({
     name,

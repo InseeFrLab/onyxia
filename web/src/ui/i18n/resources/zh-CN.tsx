@@ -9,7 +9,7 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
     Account: {
-        infos: "账号信息",
+        profile: "个人资料",
         git: undefined,
         storage: "链接到储存器",
         "user-interface": "变换显示模式",
@@ -20,13 +20,17 @@ export const translations: Translations<"zh-CN"> = {
         "personal tokens tooltip": "服务的访问令牌",
         vault: "Vault"
     },
-    AccountInfoTab: {
-        "general information": "一般信息",
-        "user id": "身分名 (IDEP)",
-        "full name": "全名",
-        email: "邮件地址",
-        "instructions about how to change password":
-            "要更改密码，只需登出，然后点击“忘记密码”链接。"
+    AccountProfileTab: {
+        "user id": "用户ID",
+        "full name": "姓名",
+        email: "电子邮件",
+        "update profile": "更新个人资料",
+        "change password": "更改密码",
+        "delete account": "删除账户",
+        "password update feedback": ({ isSuccess }) =>
+            isSuccess ? "密码更新成功" : "密码未更改",
+        "profile update feedback": ({ isSuccess }) =>
+            isSuccess ? "个人资料更新成功" : "个人资料未更改"
     },
     AccountGitTab: {
         gitName: "Git 用户名",

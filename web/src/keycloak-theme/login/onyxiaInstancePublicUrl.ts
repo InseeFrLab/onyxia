@@ -1,4 +1,4 @@
-import { retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
+import { getSearchParam } from "powerhooks/tools/urlSearchParams";
 
 export const onyxiaInstancePublicUrlKey = "onyxia-instance-public-url";
 
@@ -9,21 +9,19 @@ export function getOnyxiaInstancePublicUrl() {
         return localStorageValue;
     }
 
-    const result = retrieveParamFromUrl({
+    const { wasPresent, value, url_withoutTheParam } = getSearchParam({
         name: onyxiaInstancePublicUrlKey,
         url: window.location.href
     });
 
-    if (!result.wasPresent) {
+    if (!wasPresent) {
         console.warn(`${onyxiaInstancePublicUrlKey} not found in url`);
         return "/";
     }
 
-    const { newUrl, value } = result;
-
     localStorage.setItem(onyxiaInstancePublicUrlKey, value);
 
-    window.history.replaceState({}, "", newUrl);
+    window.history.replaceState({}, "", url_withoutTheParam);
 
     return value;
 }

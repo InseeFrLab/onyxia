@@ -1,10 +1,7 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import {
-    retrieveParamFromUrl,
-    addParamToUrl,
-    updateSearchBarUrl
-} from "powerhooks/tools/urlSearchParams";
+import { getSearchParam, addOrUpdateSearchParam } from "powerhooks/tools/urlSearchParams";
+import { updateSearchBarUrl } from "powerhooks/tools/updateSearchBar";
 import { assert, type Equals, is } from "tsafe/assert";
 import { isAmong } from "tsafe/isAmong";
 import { kcEnvNames } from "keycloak-theme/kc.gen";
@@ -1358,18 +1355,18 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     break look_in_url;
                 }
 
-                const result = retrieveParamFromUrl({
+                const { wasPresent, value, url_withoutTheParam } = getSearchParam({
                     url: window.location.href,
                     name: envName
                 });
 
-                if (!result.wasPresent) {
+                if (!wasPresent) {
                     break look_in_url;
                 }
 
-                let { newUrl, value: envValue } = result;
+                updateSearchBarUrl(url_withoutTheParam);
 
-                updateSearchBarUrl(newUrl);
+                let envValue = value;
 
                 if (isProductionKeycloak) {
                     const kcEnvName = `ONYXIA_${envName}` as const;
@@ -1424,16 +1421,16 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             const envValue = getEnvValue();
 
             if (kcContext === undefined) {
-                injectFunctions.push(
-                    url =>
-                        addParamToUrl({
-                            url,
-                            name: envName,
-                            value: envValue.replace(
-                                /%PUBLIC_URL%\/custom-resources/g,
-                                `${window.location.origin}${PUBLIC_URL}/custom-resources`
-                            )
-                        }).newUrl
+                injectFunctions.push(url =>
+                    addOrUpdateSearchParam({
+                        url,
+                        name: envName,
+                        value: envValue.replace(
+                            /%PUBLIC_URL%\/custom-resources/g,
+                            `${window.location.origin}${PUBLIC_URL}/custom-resources`
+                        ),
+                        encodeMethod: "encodeURIComponent"
+                    })
                 );
             }
 
@@ -1481,7 +1478,12 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
             const envValue = import.meta.env[envName];
 
-            url = addParamToUrl({ url, "name": envName, "value": envValue }).newUrl;
+            url = addOrUpdateSearchParam({
+                url,
+                name: envName,
+                value: envValue,
+                encodeMethod: "encodeURIComponent"
+            });
 
             if (envValue === "") {
                 continue;
