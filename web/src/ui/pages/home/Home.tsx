@@ -37,10 +37,7 @@ export default function Home(props: Props) {
         hasLogo: env.HOMEPAGE_LOGO !== undefined
     });
 
-    const { isUserLoggedIn, user } = useCoreState(
-        "userAuthentication",
-        "authenticationState"
-    );
+    const { isUserLoggedIn, user } = useCoreState("userAuthentication", "main");
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const { t } = useTranslation({ Home });

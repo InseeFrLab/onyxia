@@ -9,7 +9,7 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 export const translations: Translations<"no"> = {
     /* spell-checker: disable */
     Account: {
-        infos: "Kontoinformasjon",
+        profile: "Profil",
         git: undefined,
         storage: "Koble til lagring",
         k8sCodeSnippets: "Kubernetes",
@@ -21,13 +21,11 @@ export const translations: Translations<"no"> = {
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
         vault: "Vault"
     },
-    AccountInfoTab: {
-        "general information": "Generell informasjon",
-        "user id": "Bruker-ID (IDEP)",
-        "full name": "Fullt navn",
-        email: "E-postadresse",
-        "instructions about how to change password":
-            'For å endre passordet ditt, logg ut og klikk på lenken for "glemt passord"'
+    AccountProfileTab: {
+        "user id": "Bruker-ID",
+        "full name": "Navn",
+        email: "E-post",
+        "account management": "Kontohåndtering"
     },
     AccountGitTab: {
         gitName: "Brukernavn for Git",

@@ -12,7 +12,7 @@ export type Props = {
     className?: string;
 };
 
-export const AccountUserInterfaceTab = memo((props: Props) => {
+const AccountUserInterfaceTab = memo((props: Props) => {
     const { className } = props;
 
     const { t } = useTranslation({ AccountUserInterfaceTab });
@@ -109,6 +109,8 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
         </div>
     );
 });
+
+export default AccountUserInterfaceTab;
 
 const { i18n } = declareComponentKeys<
     | "title"

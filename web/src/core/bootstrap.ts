@@ -14,11 +14,11 @@ import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
 import { pluginSystemInitCore } from "pluginSystem";
 import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 type ParamsOfBootstrapCore = {
     apiUrl: string;
-    transformUrlBeforeRedirectToLogin: (params: {
-        isKeycloak: boolean;
+    transformBeforeRedirectForKeycloakTheme: (params: {
         authorizationUrl: string;
     }) => string;
     getCurrentLang: () => Language;
@@ -42,7 +42,12 @@ export type Core = GenericCore<typeof usecases, Context>;
 export async function bootstrapCore(
     params: ParamsOfBootstrapCore
 ): Promise<{ core: Core }> {
-    const { apiUrl, transformUrlBeforeRedirectToLogin, isAuthGloballyRequired } = params;
+    const {
+        apiUrl,
+        transformBeforeRedirectForKeycloakTheme,
+        getCurrentLang,
+        isAuthGloballyRequired
+    } = params;
 
     let isCoreCreated = false;
 
@@ -119,7 +124,8 @@ export async function bootstrapCore(
 
         return createOidc({
             ...oidcParams,
-            transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
+            transformBeforeRedirectForKeycloakTheme,
+            getCurrentLang,
             autoLogin: false
         });
     })();
@@ -212,19 +218,38 @@ export async function bootstrapCore(
 
         assert(oidcParams !== undefined);
 
+        const oidc_vault = await createOidc({
+            ...mergeOidcParams({
+                oidcParams,
+                oidcParams_partial: deploymentRegion.vault.oidcParams
+            }),
+            transformBeforeRedirectForKeycloakTheme,
+            getCurrentLang,
+            autoLogin: true
+        });
+
+        const doClearCachedVaultToken: boolean = await (async () => {
+            const { projects } = await onyxiaApi.getUserAndProjects();
+
+            const KEY = "onyxia:vault:projects-hash";
+
+            const hash = fnv1aHashToHex(JSON.stringify(projects));
+
+            if (!oidc_vault.isNewBrowserSession && sessionStorage.getItem(KEY) === hash) {
+                return false;
+            }
+
+            sessionStorage.setItem(KEY, hash);
+            return true;
+        })();
+
         context.secretsManager = await createSecretManager({
             kvEngine: deploymentRegion.vault.kvEngine,
             role: deploymentRegion.vault.role,
             url: deploymentRegion.vault.url,
             authPath: deploymentRegion.vault.authPath,
-            oidc: await createOidc({
-                ...mergeOidcParams({
-                    oidcParams,
-                    oidcParams_partial: deploymentRegion.vault.oidcParams
-                }),
-                transformUrlBeforeRedirect_ui: transformUrlBeforeRedirectToLogin,
-                autoLogin: true
-            })
+            getAccessToken: async () => (await oidc_vault.getTokens()).accessToken,
+            doClearCachedVaultToken
         });
     }
 

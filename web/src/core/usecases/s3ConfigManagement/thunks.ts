@@ -11,6 +11,7 @@ import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { updateDefaultS3ConfigsAfterPotentialDeletion } from "./decoupledLogic/updateDefaultS3ConfigsAfterPotentialDeletion";
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 export const thunks = {
     testS3Connection:
@@ -171,22 +172,46 @@ export const protectedThunks = {
                     "core/adapters/oidc"
                 );
                 const { paramsOfBootstrapCore, onyxiaApi } = rootContext;
-                const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
-
-                assert(oidcParams !== undefined);
 
                 return createS3Client(
                     s3Config.paramsOfCreateS3Client,
-                    oidcParams_partial =>
-                        createOidc({
+                    async oidcParams_partial => {
+                        const { oidcParams } =
+                            await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+                        assert(oidcParams !== undefined);
+
+                        const oidc_s3 = await createOidc({
                             ...mergeOidcParams({
                                 oidcParams,
                                 oidcParams_partial
                             }),
                             autoLogin: true,
-                            transformUrlBeforeRedirect_ui:
-                                paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
-                        })
+                            transformBeforeRedirectForKeycloakTheme:
+                                paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
+                            getCurrentLang: paramsOfBootstrapCore.getCurrentLang
+                        });
+
+                        const doClearCachedS3Token: boolean = await (async () => {
+                            const { projects } = await onyxiaApi.getUserAndProjects();
+
+                            const KEY = "onyxia:s3:projects-hash";
+
+                            const hash = fnv1aHashToHex(JSON.stringify(projects));
+
+                            if (
+                                !oidc_s3.isNewBrowserSession &&
+                                sessionStorage.getItem(KEY) === hash
+                            ) {
+                                return false;
+                            }
+
+                            sessionStorage.setItem(KEY, hash);
+                            return true;
+                        })();
+
+                        return { oidc: oidc_s3, doClearCachedS3Token };
+                    }
                 );
             })();
 

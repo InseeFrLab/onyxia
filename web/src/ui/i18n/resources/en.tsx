@@ -8,7 +8,7 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"en"> = {
     Account: {
-        infos: "Account infos",
+        profile: "Profile",
         git: "Git",
         storage: "Connect to storage",
         k8sCodeSnippets: "Kubernetes",
@@ -20,13 +20,11 @@ export const translations: Translations<"en"> = {
             "Password that are generated for you and that have a given validity period",
         vault: "Vault"
     },
-    AccountInfoTab: {
-        "general information": "General information",
-        "user id": "User id (IDEP)",
-        "full name": "Full name",
-        email: "Email address",
-        "instructions about how to change password":
-            'To change your password, simply logout, and click on the "forgot password" link.'
+    AccountProfileTab: {
+        "user id": "User ID",
+        "full name": "Name",
+        email: "Email",
+        "account management": "Account management"
     },
     AccountGitTab: {
         gitName: "Username for Git",

@@ -138,8 +138,9 @@ export const thunks = {
                         oidcParams_partial: region.kubernetes.oidcParams
                     }),
                     autoLogin: true,
-                    transformUrlBeforeRedirect_ui:
-                        paramsOfBootstrapCore.transformUrlBeforeRedirectToLogin
+                    transformBeforeRedirectForKeycloakTheme:
+                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;
@@ -149,15 +150,18 @@ export const thunks = {
 
             const oidcTokens = await kubernetesOidcClient.getTokens();
 
+            const { isUserLoggedIn, user } =
+                userAuthentication.selectors.main(getState());
+
+            assert(isUserLoggedIn);
+
             dispatch(
                 actions.refreshed({
                     idpIssuerUrl: kubernetesOidcClient.params.issuerUri,
                     clientId: kubernetesOidcClient.params.clientId,
                     refreshToken: oidcTokens.refreshToken ?? "",
                     idToken: oidcTokens.idToken,
-                    user: `${region.kubernetes.usernamePrefix ?? ""}${
-                        userAuthentication.selectors.user(getState()).username
-                    }`,
+                    user: `${region.kubernetes.usernamePrefix ?? ""}${user.username}`,
                     expirationTime:
                         oidcTokens.refreshTokenExpirationTime ??
                         oidcTokens.accessTokenExpirationTime

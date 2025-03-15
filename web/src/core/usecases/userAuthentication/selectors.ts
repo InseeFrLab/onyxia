@@ -1,31 +1,23 @@
 import { createSelector } from "clean-architecture";
 import { State as RootState } from "core/bootstrap";
 import { name } from "./state";
-import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-/** To use only when we know the user is authenticated */
-const user = createSelector(state, state => {
-    assert(state.isUserLoggedIn);
-
-    return state.user;
-});
-
-const authenticationState = createSelector(state, state => {
+const main = createSelector(state, state => {
     if (!state.isUserLoggedIn) {
-        return {
-            isUserLoggedIn: false as const
-        };
+        return { isUserLoggedIn: false as const };
     }
+
+    const { user, isKeycloak } = state;
 
     return {
         isUserLoggedIn: true as const,
-        user: state.user
+        user,
+        isKeycloak
     };
 });
 
 export const selectors = {
-    authenticationState,
-    user
+    main
 };

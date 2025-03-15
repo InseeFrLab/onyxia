@@ -1,10 +1,7 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import {
-    retrieveParamFromUrl,
-    addParamToUrl,
-    updateSearchBarUrl
-} from "powerhooks/tools/urlSearchParams";
+import { getSearchParam, addOrUpdateSearchParam } from "powerhooks/tools/urlSearchParams";
+import { updateSearchBarUrl } from "powerhooks/tools/updateSearchBar";
 import { assert, type Equals, is } from "tsafe/assert";
 import { isAmong } from "tsafe/isAmong";
 import { kcEnvNames } from "keycloak-theme/kc.gen";
@@ -29,7 +26,7 @@ import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
-export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
+export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
     {
         envName: "ONYXIA_API_URL",
         isUsedInKeycloakTheme: false,
@@ -1256,7 +1253,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             Extract<Parser, { envName: K }>["validateAndParseOrGetDefault"]
         >;
     } & { PUBLIC_URL: string };
-    injectTransferableEnvsInQueryParams: (url: string) => string;
+    injectEnvsTransferableToKeycloakTheme: (authorizationUrl: string) => string;
 } {
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
 
@@ -1358,18 +1355,18 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     break look_in_url;
                 }
 
-                const result = retrieveParamFromUrl({
+                const { wasPresent, value, url_withoutTheParam } = getSearchParam({
                     url: window.location.href,
                     name: envName
                 });
 
-                if (!result.wasPresent) {
+                if (!wasPresent) {
                     break look_in_url;
                 }
 
-                let { newUrl, value: envValue } = result;
+                updateSearchBarUrl(url_withoutTheParam);
 
-                updateSearchBarUrl(newUrl);
+                let envValue = value;
 
                 if (isProductionKeycloak) {
                     const kcEnvName = `ONYXIA_${envName}` as const;
@@ -1424,16 +1421,16 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             const envValue = getEnvValue();
 
             if (kcContext === undefined) {
-                injectFunctions.push(
-                    url =>
-                        addParamToUrl({
-                            url,
-                            name: envName,
-                            value: envValue.replace(
-                                /%PUBLIC_URL%\/custom-resources/g,
-                                `${window.location.origin}${PUBLIC_URL}/custom-resources`
-                            )
-                        }).newUrl
+                injectFunctions.push(url =>
+                    addOrUpdateSearchParam({
+                        url,
+                        name: envName,
+                        value: envValue.replace(
+                            /%PUBLIC_URL%\/custom-resources/g,
+                            `${window.location.origin}${PUBLIC_URL}/custom-resources`
+                        ),
+                        encodeMethod: "encodeURIComponent"
+                    })
                 );
             }
 
@@ -1453,14 +1450,12 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
     }
 
-    function injectTransferableEnvsInQueryParams(url: string): string {
-        let newUrl = url;
-
+    function injectEnvsTransferableToKeycloakTheme(authorizationUrl: string): string {
         for (const inject of injectFunctions) {
-            newUrl = inject(newUrl);
+            authorizationUrl = inject(authorizationUrl);
         }
 
-        return newUrl;
+        return authorizationUrl;
     }
 
     //Do not remove, helper to generate an url to preview the theme.
@@ -1481,7 +1476,12 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
             const envValue = import.meta.env[envName];
 
-            url = addParamToUrl({ url, "name": envName, "value": envValue }).newUrl;
+            url = addOrUpdateSearchParam({
+                url,
+                name: envName,
+                value: envValue,
+                encodeMethod: "encodeURIComponent"
+            });
 
             if (envValue === "") {
                 continue;
@@ -1495,5 +1495,5 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
     }
     */
 
-    return { env, injectTransferableEnvsInQueryParams };
+    return { env, injectEnvsTransferableToKeycloakTheme };
 }

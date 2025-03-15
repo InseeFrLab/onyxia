@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useSplashScreen, useDarkMode } from "onyxia-ui";
-import { env, injectTransferableEnvsInQueryParams } from "env";
+import { env, injectEnvsTransferableToKeycloakTheme } from "env";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCore } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
@@ -15,12 +15,11 @@ import {
     injectCustomFontFaceIfNotAlreadyDone
 } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
-import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
-import { onyxiaInstancePublicUrlKey } from "keycloak-theme/login/onyxiaInstancePublicUrl";
+import { injectOnyxiaInstancePublicUrl } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
 
 loadThemedFavicon();
@@ -30,23 +29,13 @@ injectCustomFontFaceIfNotAlreadyDone();
 const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
-    transformUrlBeforeRedirectToLogin: ({ authorizationUrl, isKeycloak }) => {
-        authorizationUrl = addParamToUrl({
-            url: authorizationUrl,
-            name: "ui_locales",
-            value: evtLang.state
-        }).newUrl;
-
-        if (isKeycloak) {
-            authorizationUrl = injectTransferableEnvsInQueryParams(authorizationUrl);
-            authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
-            authorizationUrl = addParamToUrl({
-                url: authorizationUrl,
-                name: onyxiaInstancePublicUrlKey,
-                value: `${window.location.origin}${env.PUBLIC_URL}`
-            }).newUrl;
-        }
-
+    transformBeforeRedirectForKeycloakTheme: ({ authorizationUrl }) => {
+        authorizationUrl = injectOnyxiaInstancePublicUrl({
+            authorizationUrl,
+            onyxiaInstancePublicUrl: `${window.location.origin}${env.PUBLIC_URL}`
+        });
+        authorizationUrl = injectEnvsTransferableToKeycloakTheme(authorizationUrl);
+        authorizationUrl = injectGlobalStatesInSearchParams(authorizationUrl);
         return authorizationUrl;
     },
     disablePersonalInfosInjectionInGroup: env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
@@ -106,7 +95,7 @@ function ContextualizedApp(props: { className?: string }) {
         domRect: { height: globalAlertHeight }
     } = useDomRect();
     const { cx, classes } = useStyles({ globalAlertHeight });
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
     return (
         <>
@@ -195,7 +184,7 @@ const useStyles = tss
 function useSyncDarkModeWithValueInProfile() {
     const { userConfigs } = useCore().functions;
 
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 

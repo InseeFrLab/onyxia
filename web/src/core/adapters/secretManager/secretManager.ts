@@ -9,9 +9,8 @@ import type {
 import type { ReturnType } from "tsafe";
 import {
     getNewlyRequestedOrCachedTokenFactory,
-    createSessionStorageTokenPersistance
+    createSessionStorageTokenPersistence
 } from "core/tools/getNewlyRequestedOrCachedToken";
-import type { Oidc } from "core/ports/Oidc";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 const version = "v1";
@@ -20,7 +19,8 @@ type Params = {
     url: string;
     kvEngine: string;
     role: string;
-    oidc: Oidc.LoggedIn;
+    getAccessToken: () => Promise<string>;
+    doClearCachedVaultToken: boolean;
     /**
      * Default: 'jwt'
      * When it's 'jwt' we will request /v1/auth/jwt/login
@@ -29,24 +29,29 @@ type Params = {
 };
 
 export async function createSecretManager(params: Params): Promise<SecretsManager> {
-    const { url, kvEngine, role, oidc, authPath = "jwt" } = params;
+    const {
+        url,
+        kvEngine,
+        role,
+        getAccessToken,
+        doClearCachedVaultToken,
+        authPath = "jwt"
+    } = params;
 
     const createAxiosInstance = () => axios.create({ baseURL: url });
 
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
-            persistance: createSessionStorageTokenPersistance<
+            persistence: createSessionStorageTokenPersistence<
                 ReturnType<SecretsManager["getToken"]>
             >({
-                sessionStorageKey:
-                    "vaultToken_" +
-                    fnv1aHashToHex(
-                        (() => {
-                            const { url, authPath, role } = params;
+                sessionStorageKey: `vaultToken_${fnv1aHashToHex(
+                    (() => {
+                        const { url, authPath, role } = params;
 
-                            return JSON.stringify({ url, authPath, role, version });
-                        })()
-                    )
+                        return JSON.stringify({ url, authPath, role, version });
+                    })()
+                )}`
             }),
             requestNewToken: async () => {
                 const now = Date.now();
@@ -57,7 +62,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     auth: { lease_duration: number; client_token: string };
                 }>(`/${version}/auth/${authPath}/login`, {
                     role,
-                    jwt: (await oidc.getTokens()).accessToken
+                    jwt: await getAccessToken()
                 });
 
                 return {
@@ -69,7 +74,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
             returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
         });
 
-    if (oidc.isNewBrowserSession) {
+    if (doClearCachedVaultToken) {
         clearCachedToken();
     }
 

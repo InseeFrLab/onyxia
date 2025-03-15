@@ -342,8 +342,7 @@ const main = createSelector(
 );
 
 const isFileExplorerEnabled = (rootState: RootState) => {
-    const { isUserLoggedIn } =
-        userAuthentication.selectors.authenticationState(rootState);
+    const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
 
     if (!isUserLoggedIn) {
         const { s3Configs } =

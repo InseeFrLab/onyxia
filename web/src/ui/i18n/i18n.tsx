@@ -59,10 +59,10 @@ export const languagesPrettyPrint: Record<Language, string> = objectFromEntries(
         /* spell-checker: disable */
         en: "English",
         fr: "Français",
-        de: "Deutsch",
+        de: "German (Deutsch)",
         it: "Italiano",
         es: "Español",
-        nl: "Nederlands",
+        nl: "Dutch (Nederlands)",
         no: "Norsk",
         fi: "Suomi",
         "zh-CN": "简体中文"

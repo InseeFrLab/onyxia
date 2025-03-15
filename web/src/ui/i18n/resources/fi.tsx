@@ -9,7 +9,7 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 export const translations: Translations<"fi"> = {
     /* spell-checker: disable */
     Account: {
-        infos: "Tilin tiedot",
+        profile: "Profiili",
         git: undefined,
         storage: "Yhdistä tallennustilaan",
         k8sCodeSnippets: "Kubernetes",
@@ -21,13 +21,11 @@ export const translations: Translations<"fi"> = {
             "Sinulle generoidut salasanat, joilla on määritelty voimassaoloaika",
         vault: "Vault"
     },
-    AccountInfoTab: {
-        "general information": "Yleiset tiedot",
-        "user id": "Käyttäjätunnus (IDEP)",
-        "full name": "Koko nimi",
-        email: "Sähköpostiosoite",
-        "instructions about how to change password":
-            'Vaihtaaksesi salasanasi, kirjaudu vain ulos ja klikkaa "unohdin salasanani" -linkkiä.'
+    AccountProfileTab: {
+        "user id": "Käyttäjä-ID",
+        "full name": "Nimi",
+        email: "Sähköposti",
+        "account management": "Tilin hallinta"
     },
     AccountGitTab: {
         gitName: "Käyttäjänimi Gitille",
