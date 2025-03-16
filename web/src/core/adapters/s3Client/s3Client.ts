@@ -327,22 +327,49 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const resolveBucketPolicy = async () => {
-                const { GetBucketPolicyCommand, S3ServiceException } = await import(
-                    "@aws-sdk/client-s3"
-                );
+            console.log("before");
 
-                let sendResp: import("@aws-sdk/client-s3").GetBucketPolicyCommandOutput;
-                try {
-                    sendResp = await awsS3Client.send(
-                        new GetBucketPolicyCommand({ Bucket: bucketName })
+            const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
+                await (async () => {
+                    const { GetBucketPolicyCommand, S3ServiceException } = await import(
+                        "@aws-sdk/client-s3"
                     );
-                } catch (error) {
-                    if (!(error instanceof S3ServiceException)) {
-                        console.error(
-                            "An unknown error occurred when fetching bucket policy",
-                            error
+
+                    let sendResp: import("@aws-sdk/client-s3").GetBucketPolicyCommandOutput;
+                    try {
+                        sendResp = await awsS3Client.send(
+                            new GetBucketPolicyCommand({ Bucket: bucketName })
                         );
+                    } catch (error) {
+                        if (!(error instanceof S3ServiceException)) {
+                            console.error(
+                                "An unknown error occurred when fetching bucket policy",
+                                error
+                            );
+                            return {
+                                isBucketPolicyAvailable: false,
+                                bucketPolicy: undefined,
+                                allowedPrefix: []
+                            };
+                        }
+
+                        switch (error.$metadata?.httpStatusCode) {
+                            case 404:
+                                console.info(
+                                    "Bucket policy does not exist (404), it's ok."
+                                );
+                                return {
+                                    isBucketPolicyAvailable: true,
+                                    bucketPolicy: undefined,
+                                    allowedPrefix: []
+                                };
+                            case 403:
+                                console.info("Access denied to bucket policy (403).");
+                                break;
+                            default:
+                                console.error("An S3 error occurred:", error.message);
+                                break;
+                        }
                         return {
                             isBucketPolicyAvailable: false,
                             bucketPolicy: undefined,
@@ -350,84 +377,66 @@ export function createS3Client(
                         };
                     }
 
-                    switch (error.$metadata?.httpStatusCode) {
-                        case 404:
-                            console.info("Bucket policy does not exist (404), it's ok.");
-                            return {
-                                isBucketPolicyAvailable: true,
-                                bucketPolicy: undefined,
-                                allowedPrefix: []
-                            };
-                        case 403:
-                            console.info("Access denied to bucket policy (403).");
-                            break;
-                        default:
-                            console.error("An S3 error occurred:", error.message);
-                            break;
+                    if (!sendResp.Policy) {
+                        return {
+                            isBucketPolicyAvailable: true,
+                            bucketPolicy: undefined,
+                            allowedPrefix: []
+                        };
                     }
-                    return {
-                        isBucketPolicyAvailable: false,
-                        bucketPolicy: undefined,
-                        allowedPrefix: []
-                    };
-                }
 
-                if (!sendResp.Policy) {
+                    const s3BucketPolicy = (() => {
+                        const s3BucketPolicy = JSON.parse(sendResp.Policy);
+
+                        try {
+                            // Validate and parse the policy
+                            zS3BucketPolicy.parse(s3BucketPolicy);
+                        } catch (error) {
+                            console.error(
+                                "Bucket policy isn't of the expected shape",
+                                error
+                            );
+                            return undefined;
+                        }
+
+                        assert(is<S3BucketPolicy>(s3BucketPolicy));
+
+                        return s3BucketPolicy;
+                    })();
+
+                    if (s3BucketPolicy === undefined) {
+                        return {
+                            isBucketPolicyAvailable: false,
+                            bucketPolicy: undefined,
+                            allowedPrefix: []
+                        };
+                    }
+
+                    // Extract allowed prefixes based on the policy statements
+                    const allowedPrefix = (s3BucketPolicy.Statement ?? [])
+                        .filter(
+                            statement =>
+                                statement.Effect === "Allow" &&
+                                (statement.Action.includes("s3:GetObject") ||
+                                    statement.Action.includes("s3:*"))
+                        )
+                        .flatMap(statement =>
+                            Array.isArray(statement.Resource)
+                                ? statement.Resource
+                                : [statement.Resource]
+                        )
+                        .map(resource =>
+                            resource.replace(`arn:aws:s3:::${bucketName}/`, "")
+                        );
+
                     return {
                         isBucketPolicyAvailable: true,
-                        bucketPolicy: undefined,
-                        allowedPrefix: []
+                        bucketPolicy: s3BucketPolicy,
+                        allowedPrefix
                     };
-                }
-
-                const s3BucketPolicy = (() => {
-                    const s3BucketPolicy = JSON.parse(sendResp.Policy);
-
-                    try {
-                        // Validate and parse the policy
-                        zS3BucketPolicy.parse(s3BucketPolicy);
-                    } catch (error) {
-                        console.error("Bucket policy isn't of the expected shape", error);
-                        return undefined;
-                    }
-
-                    assert(is<S3BucketPolicy>(s3BucketPolicy));
-
-                    return s3BucketPolicy;
                 })();
 
-                if (s3BucketPolicy === undefined) {
-                    return {
-                        isBucketPolicyAvailable: false,
-                        bucketPolicy: undefined,
-                        allowedPrefix: []
-                    };
-                }
-
-                // Extract allowed prefixes based on the policy statements
-                const allowedPrefix = (s3BucketPolicy.Statement ?? [])
-                    .filter(
-                        statement =>
-                            statement.Effect === "Allow" &&
-                            (statement.Action.includes("s3:GetObject") ||
-                                statement.Action.includes("s3:*"))
-                    )
-                    .flatMap(statement =>
-                        Array.isArray(statement.Resource)
-                            ? statement.Resource
-                            : [statement.Resource]
-                    )
-                    .map(resource => resource.replace(`arn:aws:s3:::${bucketName}/`, ""));
-
-                return {
-                    isBucketPolicyAvailable: true,
-                    bucketPolicy: s3BucketPolicy,
-                    allowedPrefix
-                };
-            };
-
-            const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
-                await resolveBucketPolicy();
+            console.log("after");
 
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
