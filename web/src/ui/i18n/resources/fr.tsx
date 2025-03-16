@@ -195,10 +195,10 @@ export const translations: Translations<"fr"> = {
         "workingDirectoryPath textField label": "Chemin du répertoire de travail",
         "workingDirectoryPath textField helper text": (
             <>
-                Cela vous permet de spécifier le seau et le préfixe de l'objet S3 que vous
-                possédez sur le service S3. <br />
-                Exemple : <code>mon-seau/mon-préfixe/</code> ou{" "}
-                <code>juste mon-seau/</code> si vous possédez tout le seau.
+                Cela vous permet de spécifier le bucket et le préfixe de l'objet S3 que
+                vous possédez sur le service S3. <br />
+                Exemple : <code>mon-bucket/mon-préfixe/</code> ou{" "}
+                <code>juste mon-bucket/</code> si vous possédez tout le bucket.
             </>
         ),
         "account credentials": "Identifiants du compte",
@@ -218,7 +218,7 @@ export const translations: Translations<"fr"> = {
         "url style helper text": `Spécifiez comment votre serveur S3 formate l'URL pour télécharger des fichiers.`,
         "path style label": ({ example }) => (
             <>
-                Style de chemin
+                Path style
                 {example !== undefined && (
                     <>
                         :&nbsp;
@@ -229,7 +229,7 @@ export const translations: Translations<"fr"> = {
         ),
         "virtual-hosted style label": ({ example }) => (
             <>
-                Style hébergé virtuellement
+                Virtual-hosted style
                 {example !== undefined && (
                     <>
                         :&nbsp;
