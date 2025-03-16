@@ -43,7 +43,21 @@ Onyxia is developed by the French National institute of statistics and economic 
     (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png)).
 -   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
 
-## Media
+## Conference talks
+
+<p align="center">
+    <i>New Technologies For Statistics 2025</i><br>
+    <a href="https://youtu.be/AuCJbipr8rs">
+        <img src="https://github.com/user-attachments/assets/d75e1ab4-c510-48ca-a9cb-c41533c216b8" width="420">
+    </a>
+</p>
+
+<p align="center">
+    <i>Offentlig PaaS</i><br>
+    <a href="https://youtu.be/7SuXRfQqdGM?si=qGSctmUdjYAjlF4D">
+        <img src="https://github.com/user-attachments/assets/ecb3f9fa-cb70-4186-8350-b41a0732e491" width="420">
+    </a>
+</p>
 
 <p align="center">
     <i>PyData Paris 2024</i><br>
