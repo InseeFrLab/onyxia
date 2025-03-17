@@ -5886,10 +5886,10 @@ object-keys@^1.1.1:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
-oidc-spa@^6.9.11:
-  version "6.9.11"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.11.tgz#31d230371a5e0c4ecd25dfa24b4acf19a1b5e5e9"
-  integrity sha512-fBCDK8TDMmPVEJF4Ot0y3rhv9mNKPG6Y1B/gFQdgwckRq1/hgBdIJkHBa9CFBTN5rHiiAv0jK6SB1RbwSq8sEA==
+oidc-spa@^6.9.12:
+  version "6.9.12"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.12.tgz#7e55732315932d8486264d8f51d4af65606b3277"
+  integrity sha512-RP1mCfTbfVCGz6pct9C5AX593Z/Exl9h6nQooVcbBAcs283LoKAxgrK0euQ2WJJ4in31W0EI7TFTbLMyYYyxHA==
 
 once@^1.3.0:
   version "1.4.0"
