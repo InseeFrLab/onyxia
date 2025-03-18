@@ -468,10 +468,23 @@ const privateThunks = {
                 userAuthentication.protectedThunks.getTokens()
             );
 
+            const name = (() => {
+                if (user.familyName === undefined && user.firstName === undefined) {
+                    return user.username;
+                }
+
+                if (user.familyName === undefined) {
+                    assert(user.firstName !== undefined);
+                    return user.firstName;
+                }
+
+                return `${user.familyName} ${user.firstName}`;
+            })();
+
             const xOnyxiaContext: XOnyxiaContext = {
                 user: {
                     idep: user.username,
-                    name: `${user.familyName} ${user.firstName}`,
+                    name,
                     email: user.email,
                     password: servicePassword,
                     ip: !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),

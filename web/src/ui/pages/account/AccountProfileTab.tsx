@@ -28,8 +28,6 @@ const AccountProfileTab = memo((props: Props) => {
 
     assert(isUserLoggedIn);
 
-    const fullName = `${user.firstName} ${user.familyName}`;
-
     const { userAuthentication } = useCore().functions;
 
     return (
@@ -40,12 +38,26 @@ const AccountProfileTab = memo((props: Props) => {
                 text={user.username}
                 onRequestCopy={onRequestCopyFactory(user.username)}
             />
-            <SettingField
-                type="text"
-                title={t("full name")}
-                text={fullName}
-                onRequestCopy={onRequestCopyFactory(fullName)}
-            />
+            {(() => {
+                const fullName = (() => {
+                    if (user.firstName === undefined || user.familyName === undefined) {
+                        return undefined;
+                    }
+
+                    return `${user.firstName} ${user.familyName}`;
+                })();
+
+                if (fullName === undefined) {
+                    return null;
+                }
+
+                <SettingField
+                    type="text"
+                    title={t("full name")}
+                    text={fullName}
+                    onRequestCopy={onRequestCopyFactory(fullName)}
+                />;
+            })()}
             <SettingField
                 type="text"
                 title={t("email")}

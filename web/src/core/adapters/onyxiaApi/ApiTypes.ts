@@ -202,7 +202,7 @@ export type ApiTypes = {
     "/user/info": {
         email: string;
         idep: string;
-        nomComplet: string;
+        nomComplet?: string;
         projects: {
             id: string;
             name: string;

@@ -720,7 +720,21 @@ export function createOnyxiaApi(params: {
                     username: data.idep,
                     email: data.email,
                     ...(() => {
+                        if (data.nomComplet === undefined) {
+                            return {
+                                firstName: undefined,
+                                familyName: undefined
+                            };
+                        }
+
                         const [firstName, familyName] = data.nomComplet.split(" ");
+
+                        if (familyName === undefined) {
+                            return {
+                                firstName: data.nomComplet,
+                                familyName: undefined
+                            };
+                        }
 
                         return {
                             firstName,
