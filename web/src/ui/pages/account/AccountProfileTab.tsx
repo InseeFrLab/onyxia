@@ -51,12 +51,14 @@ const AccountProfileTab = memo((props: Props) => {
                     return null;
                 }
 
-                <SettingField
-                    type="text"
-                    title={t("full name")}
-                    text={fullName}
-                    onRequestCopy={onRequestCopyFactory(fullName)}
-                />;
+                return (
+                    <SettingField
+                        type="text"
+                        title={t("full name")}
+                        text={fullName}
+                        onRequestCopy={onRequestCopyFactory(fullName)}
+                    />
+                );
             })()}
             <SettingField
                 type="text"
