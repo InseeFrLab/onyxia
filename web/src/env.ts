@@ -86,6 +86,70 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
+        envName: "PALETTE_OVERRIDE_LIGHT",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
+            envValue,
+            envName
+        }): DeepPartial<PaletteBase> => {
+            if (envValue === "") {
+                return {};
+            }
+
+            let paletteOverride: any;
+
+            try {
+                paletteOverride = JSON5.parse(envValue);
+            } catch (err) {
+                throw new Error(`${envName} is not parsable JSON5: ${envValue}`);
+            }
+
+            assert(
+                typeGuard<DeepPartial<PaletteBase>>(
+                    paletteOverride,
+                    typeof paletteOverride === "object" &&
+                        paletteOverride !== null &&
+                        !(paletteOverride instanceof Array)
+                ),
+                `${envName} should be a JSON object`
+            );
+
+            return paletteOverride;
+        }
+    },
+    {
+        envName: "PALETTE_OVERRIDE_DARK",
+        isUsedInKeycloakTheme: true,
+        validateAndParseOrGetDefault: ({
+            envValue,
+            envName
+        }): DeepPartial<PaletteBase> => {
+            if (envValue === "") {
+                return {};
+            }
+
+            let paletteOverride: any;
+
+            try {
+                paletteOverride = JSON5.parse(envValue);
+            } catch (err) {
+                throw new Error(`${envName} is not parsable JSON5: ${envValue}`);
+            }
+
+            assert(
+                typeGuard<DeepPartial<PaletteBase>>(
+                    paletteOverride,
+                    typeof paletteOverride === "object" &&
+                        paletteOverride !== null &&
+                        !(paletteOverride instanceof Array)
+                ),
+                `${envName} should be a JSON object`
+            );
+
+            return paletteOverride;
+        }
+    },
+    {
         envName: "SPLASHSCREEN_LOGO",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({

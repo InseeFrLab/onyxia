@@ -15,6 +15,8 @@ type ImportMetaEnv = {
   HEADER_TEXT_FOCUS: string
   DARK_MODE: string
   PALETTE_OVERRIDE: string
+  PALETTE_OVERRIDE_LIGHT: string
+  PALETTE_OVERRIDE_DARK: string
   FONT: string
   SPLASHSCREEN_LOGO: string
   SPLASHSCREEN_LOGO_SCALE_FACTOR: string

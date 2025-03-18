@@ -5886,10 +5886,10 @@ object-keys@^1.1.1:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
-oidc-spa@^6.9.12:
-  version "6.9.12"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.12.tgz#7e55732315932d8486264d8f51d4af65606b3277"
-  integrity sha512-RP1mCfTbfVCGz6pct9C5AX593Z/Exl9h6nQooVcbBAcs283LoKAxgrK0euQ2WJJ4in31W0EI7TFTbLMyYYyxHA==
+oidc-spa@^6.9.13:
+  version "6.9.13"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-6.9.13.tgz#1f8cf1ae0d2d6bbeba718abf90b881a90a917cc1"
+  integrity sha512-SunZdW9XY8H0gq/zvtcUuXay1IM1iiUmX+9vlLNQCmQpi4OyoYm/9qA950C8V6Qy6/AWR7TKY1Iu09Oakf84rA==
 
 once@^1.3.0:
   version "1.4.0"
@@ -5921,10 +5921,10 @@ oniguruma-to-es@0.7.0:
     regex "^5.0.2"
     regex-recursion "^4.3.0"
 
-onyxia-ui@^6.2.7:
-  version "6.2.7"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.2.7.tgz#31c8b93b37aca395ce68d924940f8308b95377dd"
-  integrity sha512-zgSVR8PfzNHAuFcc+QlIo7Q90ON1vud591M1c+vi6ns/hYiK6SdxDcJQgcDAHsRilebjNtIMSCT5PEBeuw3UpA==
+onyxia-ui@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.3.0.tgz#2fa9355009c9168bc3e558185b18270e1f8c6fa3"
+  integrity sha512-HHfzHDkPW6J2V6KMH3G1JlBjjGhCzvneqdWq/1wLtPBvOiJfHgODfQsbxS0d1aAtmMFqp+7X6ukxtxhdScjL1g==
   dependencies:
     "@mui/icons-material" "^6.1.7"
     "@types/memoizee" "^0.4.11"

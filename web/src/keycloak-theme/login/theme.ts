@@ -1,5 +1,5 @@
 import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
-import { palette } from "ui/theme/palette";
+import { getPalette } from "ui/theme/palette";
 import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
 import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "ui/theme/loadThemedFavicon";
@@ -14,7 +14,7 @@ const { OnyxiaUi, evtTheme } = createOnyxiaUi({
         }),
         fontFamily: `'${env.FONT.fontFamily}', 'Roboto', sans-serif`
     }),
-    palette,
+    palette: getPalette,
     splashScreenParams: undefined
 });
 
