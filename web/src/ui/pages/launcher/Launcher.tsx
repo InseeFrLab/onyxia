@@ -34,6 +34,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { getIsAtomic } from "core/tools/Stringifyable";
 
 export type Props = {
     route: PageRoute;
@@ -499,6 +500,16 @@ const Launcher = withLoginEnforced((props: Props) => {
                         onErrorMsgChanged={errorMsg =>
                             setDataTextEditorErrorMsg(errorMsg)
                         }
+                        additionalValidation={helmValues_candidate => {
+                            assert(
+                                !getIsAtomic(helmValues_candidate) &&
+                                    !(helmValues_candidate instanceof Array)
+                            );
+
+                            return launcher.additionalValidation({
+                                helmValues_candidate
+                            });
+                        }}
                     />
                 </div>
             </div>

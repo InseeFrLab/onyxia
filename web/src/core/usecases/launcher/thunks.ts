@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, type Equals, is } from "tsafe/assert";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -17,6 +17,7 @@ import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
+import { computeRootForm } from "./decoupledLogic";
 
 type RestorableServiceConfigLike = {
     catalogId: string;
@@ -432,6 +433,31 @@ export const thunks = {
             });
 
             dispatch(actions.launchCompleted());
+        },
+    additionalValidation:
+        (params: { helmValues_candidate: Record<string, Stringifyable> }) =>
+        (...args) => {
+            const { helmValues_candidate } = params;
+
+            const [, getState] = args;
+
+            const wrap =
+                privateSelectors.paramsOfComputeRootForm_butHelmValues(getState());
+
+            assert(wrap !== null);
+
+            try {
+                computeRootForm({
+                    ...wrap,
+                    helmValues: helmValues_candidate
+                });
+            } catch (error) {
+                assert(is<Error>(error));
+
+                return { isValid: false as const, errorMsg: error.message };
+            }
+
+            return { isValid: true as const };
         }
 } satisfies Thunks;
 

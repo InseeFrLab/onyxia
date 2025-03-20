@@ -132,6 +132,13 @@ function StoryComponent(props: Props) {
                 onChange={setValue}
                 jsonSchema={jsonSchema}
                 onErrorMsgChanged={errorMsg => console.log({ errorMsg })}
+                additionalValidation={value => {
+                    if (value instanceof Array && value.length === 0) {
+                        return { isValid: false, errorMsg: "Array must not be empty" };
+                    }
+
+                    return { isValid: true };
+                }}
             />
             <div>
                 <h3>Value:</h3>

@@ -48,7 +48,7 @@ const helmValues = createSelector(readyState, state => {
     return state.helmValues;
 });
 
-const rootForm = createSelector(
+const paramsOfComputeRootForm_butHelmValues = createSelector(
     isReady,
     chartName,
     createSelector(readyState, state => {
@@ -58,7 +58,6 @@ const rootForm = createSelector(
 
         return state.helmValuesSchema;
     }),
-    helmValues,
     createSelector(readyState, state => {
         if (state === null) {
             return null;
@@ -73,23 +72,34 @@ const rootForm = createSelector(
 
         return state.xOnyxiaContext;
     }),
-    (
-        isReady,
-        chartName,
-        helmValuesSchema,
-        helmValues,
-        helmDependencies,
-        xOnyxiaContext
-    ) => {
+    (isReady, chartName, helmValuesSchema, helmDependencies, xOnyxiaContext) => {
         if (!isReady) {
             return null;
         }
 
         assert(chartName !== null);
         assert(helmValuesSchema !== null);
-        assert(helmValues !== null);
         assert(helmDependencies !== null);
         assert(xOnyxiaContext !== null);
+
+        return { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext };
+    }
+);
+
+const rootForm = createSelector(
+    isReady,
+    paramsOfComputeRootForm_butHelmValues,
+    helmValues,
+    (isReady, computeRootFormParams_butHelmValues, helmValues) => {
+        if (!isReady) {
+            return null;
+        }
+
+        assert(computeRootFormParams_butHelmValues !== null);
+        assert(helmValues !== null);
+
+        const { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext } =
+            computeRootFormParams_butHelmValues;
 
         return computeRootForm({
             chartName,
@@ -656,5 +666,6 @@ export const privateSelectors = {
         }
         return state.helmValues;
     }),
-    rootForm
+    rootForm,
+    paramsOfComputeRootForm_butHelmValues
 };

@@ -126,6 +126,12 @@ export function mergeTemporaryRangeSliders(params: {
                     });
                 });
 
+            if (lowEndRange.value > highEndRange.value) {
+                throw new Error(
+                    `The low end of the ${title} range slider is greater than its high end`
+                );
+            }
+
             return {
                 lowEndRange,
                 highEndRange

@@ -11,6 +11,9 @@ export type Props = {
     onChange: (newValue: Stringifyable) => void;
     onErrorMsgChanged?: (errorMsg: string | undefined) => void;
     jsonSchema: Record<string, Stringifyable>;
+    additionalValidation?: (
+        value: Stringifyable
+    ) => { isValid: true } | { isValid: false; errorMsg: string };
 };
 
 {

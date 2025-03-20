@@ -60,6 +60,10 @@ export type Props = {
     onChange: (newValue: Stringifyable) => void;
     onErrorMsgChanged?: (errorMsg: string | undefined) => void;
     jsonSchema: Record<string, Stringifyable>;
+
+    additionalValidation?: (
+        value: Stringifyable
+    ) => { isValid: true } | { isValid: false; errorMsg: string };
 };
 
 {
@@ -67,7 +71,14 @@ export type Props = {
         import("../TextEditor").Props,
         "extensions" | "value" | "onChange" | "children"
     > &
-        Pick<Props, "value" | "onChange" | "jsonSchema" | "onErrorMsgChanged">;
+        Pick<
+            Props,
+            | "value"
+            | "onChange"
+            | "jsonSchema"
+            | "onErrorMsgChanged"
+            | "additionalValidation"
+        >;
 
     assert<Equals<Props, Props_Expected>>;
 }
@@ -101,6 +112,7 @@ export default function DataTextEditor(props: Props) {
         value: value_default,
         onChange,
         onErrorMsgChanged,
+        additionalValidation,
         ...rest
     } = props;
 
@@ -121,18 +133,27 @@ export default function DataTextEditor(props: Props) {
     );
 
     const getErrorMsg = useConstCallback((value: Stringifyable) => {
-        if (ajvValidateFunction(value)) {
-            return undefined;
+        if (!ajvValidateFunction(value)) {
+            const { errors } = ajvValidateFunction;
+
+            assert(!!errors);
+
+            const [error] = errors;
+
+            assert(error !== undefined);
+
+            return error.message ?? "Invalid";
         }
-        const { errors } = ajvValidateFunction;
 
-        assert(!!errors);
+        if (additionalValidation !== undefined) {
+            const result = additionalValidation(value);
 
-        const [error] = errors;
+            if (!result.isValid) {
+                return result.errorMsg;
+            }
+        }
 
-        assert(error !== undefined);
-
-        return error.message ?? "Invalid";
+        return undefined;
     });
 
     const [errorMsg, setErrorMsg] = useState<string | undefined>(
