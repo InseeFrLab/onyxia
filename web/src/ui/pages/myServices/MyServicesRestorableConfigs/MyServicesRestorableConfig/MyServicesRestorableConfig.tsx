@@ -28,6 +28,7 @@ export type Props = {
     isLast: boolean;
     onRequestDelete: () => void;
     onRequestToMove: (params: { direction: "up" | "down" }) => void;
+    onRequestRename: (params: { friendlyName_new: string }) => void;
 };
 
 export const MyServicesRestorableConfig = memo((props: Props) => {
@@ -41,7 +42,9 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
         isFirst,
         isLast,
         onRequestDelete,
-        onRequestToMove
+        onRequestToMove,
+        // TODO: Implement UI
+        onRequestRename
     } = props;
 
     const { classes, cx } = useStyles({

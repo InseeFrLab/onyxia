@@ -3,6 +3,12 @@ import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
 import { actions, type State } from "./state";
 import { getAreSameRestorableConfig } from "./decoupledLogic/getAreSameRestorableConfig";
+// NOTE: Polyfill of a browser feature.
+import structuredClone from "@ungap/structured-clone";
+import {
+    getAreSameRestorableConfigRef,
+    type RestorableServiceConfigRef
+} from "./decoupledLogic/getAreSameRestorableConfigRef";
 
 export const protectedThunks = {
     initialize:
@@ -30,12 +36,6 @@ export const protectedThunks = {
         }
 } satisfies Thunks;
 
-type RestorableServiceConfigLike = {
-    friendlyName: string;
-    catalogId: string;
-    chartName: string;
-};
-
 export const thunks = {
     saveRestorableConfig:
         (params: {
@@ -49,13 +49,9 @@ export const thunks = {
             const { restorableConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
-            const restorableConfigWithSameFriendlyNameAndSameService = (() => {
-                const results = restorableConfigs.filter(
-                    restorableConfig_i =>
-                        restorableConfig_i.friendlyName ===
-                            restorableConfig.friendlyName &&
-                        restorableConfig_i.catalogId === restorableConfig.catalogId &&
-                        restorableConfig_i.chartName === restorableConfig.chartName
+            const restorableConfig_withSameRef = (() => {
+                const results = restorableConfigs.filter(restorableConfig_i =>
+                    getAreSameRestorableConfigRef(restorableConfig_i, restorableConfig)
                 );
 
                 if (results.length === 0) {
@@ -69,93 +65,132 @@ export const thunks = {
 
             // NOTE: In case of double call, as we don't provide a "loading state"
             if (
-                restorableConfigWithSameFriendlyNameAndSameService !== undefined &&
-                getAreSameRestorableConfig(
-                    restorableConfig,
-                    restorableConfigWithSameFriendlyNameAndSameService
-                )
+                restorableConfig_withSameRef !== undefined &&
+                getAreSameRestorableConfig(restorableConfig, restorableConfig_withSameRef)
             ) {
-                return;
-            }
-
-            const newRestorableConfigs =
-                restorableConfigWithSameFriendlyNameAndSameService === undefined
-                    ? [...restorableConfigs, restorableConfig]
-                    : restorableConfigs.map(restorableConfig_i =>
-                          restorableConfig_i ===
-                          restorableConfigWithSameFriendlyNameAndSameService
-                              ? restorableConfig
-                              : restorableConfig_i
-                      );
-
-            await dispatch(
-                projectManagement.protectedThunks.updateConfigValue({
-                    key: "restorableConfigs",
-                    value: newRestorableConfigs
-                })
-            );
-        },
-    deleteRestorableConfig:
-        (params: { restorableConfig: RestorableServiceConfigLike }) =>
-        async (...args) => {
-            const [dispatch, getState] = args;
-
-            const { restorableConfig } = params;
-
-            const { restorableConfigs } =
-                projectManagement.protectedSelectors.projectConfig(getState());
-
-            const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
-                restorableConfig_i =>
-                    restorableConfig_i.friendlyName === restorableConfig.friendlyName &&
-                    restorableConfig_i.catalogId === restorableConfig.catalogId &&
-                    restorableConfig_i.chartName === restorableConfig.chartName
-            );
-
-            // NOTE: In case of double call, as we don't provide a "loading state"
-            if (indexOfRestorableConfigToDelete === -1) {
-                return;
-            }
-
-            const newRestorableConfigs = restorableConfigs.filter(
-                (_, index) => index !== indexOfRestorableConfigToDelete
-            );
-
-            await dispatch(
-                projectManagement.protectedThunks.updateConfigValue({
-                    key: "restorableConfigs",
-                    value: newRestorableConfigs
-                })
-            );
-        },
-    reorderRestorableConfigs:
-        (params: { restorableServiceConfigId: string; targetIndex: number }) =>
-        async (...args) => {
-            const [dispatch, getState] = args;
-
-            const { restorableServiceConfigId, targetIndex } = params;
-
-            const { restorableConfigs } =
-                projectManagement.protectedSelectors.projectConfig(getState());
-
-            const currentIndex = restorableConfigs.findIndex(
-                restorableConfig =>
-                    restorableConfig.restorableServiceConfigId ===
-                    restorableServiceConfigId
-            );
-
-            assert(currentIndex !== -1);
-
-            if (currentIndex === targetIndex) {
                 return;
             }
 
             const restorableConfigs_new = [...restorableConfigs];
 
-            const restorableConfig = restorableConfigs[currentIndex];
+            if (restorableConfig_withSameRef === undefined) {
+                restorableConfigs_new.unshift(restorableConfig);
+            } else {
+                const i = restorableConfigs.indexOf(restorableConfig_withSameRef);
 
-            restorableConfigs_new.splice(currentIndex, 1);
+                assert(i !== -1);
+
+                restorableConfigs_new[i] = restorableConfig;
+            }
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    key: "restorableConfigs",
+                    value: restorableConfigs_new
+                })
+            );
+        },
+    deleteRestorableConfig:
+        (params: { restorableConfigRef: RestorableServiceConfigRef }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { restorableConfigRef: ref } = params;
+
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.projectConfig(getState());
+
+            const index_toDelete = restorableConfigs.findIndex(c =>
+                getAreSameRestorableConfigRef(c, ref)
+            );
+
+            // NOTE: In case of double call, as we don't provide a "loading state"
+            if (index_toDelete === -1) {
+                return;
+            }
+
+            const restorableConfigs_new = restorableConfigs.filter(
+                (_, index) => index !== index_toDelete
+            );
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    key: "restorableConfigs",
+                    value: restorableConfigs_new
+                })
+            );
+        },
+    reorderRestorableConfigs:
+        (params: {
+            restorableConfigRef: RestorableServiceConfigRef;
+            targetIndex: number;
+        }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { restorableConfigRef: ref, targetIndex } = params;
+
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.projectConfig(getState());
+
+            const index_current = restorableConfigs.findIndex(c =>
+                getAreSameRestorableConfigRef(c, ref)
+            );
+
+            assert(index_current !== -1);
+
+            if (index_current === targetIndex) {
+                return;
+            }
+
+            const restorableConfigs_new = [...restorableConfigs];
+
+            const restorableConfig = restorableConfigs[index_current];
+
+            restorableConfigs_new.splice(index_current, 1);
             restorableConfigs_new.splice(targetIndex, 0, restorableConfig);
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    key: "restorableConfigs",
+                    value: restorableConfigs_new
+                })
+            );
+        },
+    renameRestorableConfig:
+        (params: {
+            restorableConfigRef: RestorableServiceConfigRef;
+            friendlyName_new: string;
+        }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { restorableConfigRef: ref, friendlyName_new } = params;
+
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.projectConfig(getState());
+
+            const restorableConfig_current = restorableConfigs.find(c =>
+                getAreSameRestorableConfigRef(c, ref)
+            );
+
+            assert(restorableConfig_current !== undefined);
+
+            if (restorableConfig_current.friendlyName === friendlyName_new) {
+                return;
+            }
+
+            const index = restorableConfigs.indexOf(restorableConfig_current);
+
+            assert(index !== -1);
+
+            const restorableConfigs_new = [...restorableConfigs];
+
+            const restorableConfig_new = structuredClone(restorableConfig_current);
+
+            restorableConfig_new.friendlyName = friendlyName_new;
+
+            restorableConfigs_new[index] = restorableConfig_new;
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({

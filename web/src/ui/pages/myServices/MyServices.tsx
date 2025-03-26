@@ -50,7 +50,7 @@ const MyServices = withLoginEnforced((props: Props) => {
     /* prettier-ignore */
     const { serviceManagement, restorableConfigManagement, k8sCodeSnippets, clusterEventsMonitor } = useCore().functions;
     /* prettier-ignore */
-    const { restorableConfigs, chartIconUrlByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
+    const restorableConfigs = useCoreState("restorableConfigManagement", "restorableConfigs");
     const {
         isUpdating,
         services,

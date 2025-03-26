@@ -128,8 +128,7 @@ const Launcher = withLoginEnforced((props: Props) => {
                 friendlyName: route.params.name,
                 isShared: route.params.shared,
                 s3ConfigId: route.params.s3,
-                helmValuesPatch: route.params.helmValuesPatch,
-                creationTime: Date.now()
+                helmValuesPatch: route.params.helmValuesPatch
             },
             autoLaunch
         });
@@ -212,7 +211,9 @@ const Launcher = withLoginEnforced((props: Props) => {
         assert(restorableConfig !== undefined);
 
         if (isRestorableConfigSaved) {
-            restorableConfigManagement.deleteRestorableConfig({ restorableConfig });
+            restorableConfigManagement.deleteRestorableConfig({
+                restorableConfigRef: restorableConfig
+            });
         } else {
             {
                 const dDoProceed = new Deferred<boolean>();
