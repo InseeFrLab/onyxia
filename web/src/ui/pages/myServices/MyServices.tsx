@@ -146,13 +146,13 @@ const MyServices = withLoginEnforced((props: Props) => {
 
     const onRequestDeleteRestorableConfig = useConstCallback<
         MyServicesRestorableConfigsProps["onRequestDelete"]
-    >(({ restorableConfigIndex }) => {
+    >(({ restorableConfigId }) => {
         restorableConfigManagement.deleteRestorableConfig({
-            restorableConfig: restorableConfigs[restorableConfigIndex]
+            restorableConfig: restorableConfigs[restorableConfigId]
         });
     });
 
-    const restorableConfigEntires = useMemo(
+    const restorableConfigEntries = useMemo(
         (): MyServicesRestorableConfigsProps["entries"] =>
             restorableConfigs.map((restorableConfig, restorableConfigIndex) => {
                 const buildLink = (autoLaunch: boolean) => {
@@ -183,7 +183,7 @@ const MyServices = withLoginEnforced((props: Props) => {
                 };
 
                 return {
-                    restorableConfigIndex,
+                    restorableConfigId: `${restorableConfigIndex}`,
                     chartIconUrl:
                         chartIconUrlByRestorableConfigIndex[restorableConfigIndex],
                     friendlyName: restorableConfig.friendlyName,
@@ -379,10 +379,18 @@ const MyServices = withLoginEnforced((props: Props) => {
                                 )}
                                 <MyServicesRestorableConfigs
                                     isShortVariant={!isSavedConfigsExtended}
-                                    entries={restorableConfigEntires}
+                                    entries={restorableConfigEntries}
                                     onRequestDelete={onRequestDeleteRestorableConfig}
                                     onRequestToggleIsShortVariant={
                                         onRequestToggleIsShortVariant
+                                    }
+                                    onRequestToMove={params =>
+                                        restorableConfigManagement.reorderRestorableConfigs(
+                                            {
+                                                indexOfTarget: params.toIndex,
+                                                startIndex: params.fromIndex
+                                            }
+                                        )
                                     }
                                 />
                             </div>

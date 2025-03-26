@@ -7,19 +7,22 @@ import type { Link } from "type-route";
 import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     className?: string;
     isShortVariant: boolean;
     entries: {
-        restorableConfigIndex: number;
+        restorableConfigId: string;
         chartIconUrl: string | undefined;
         friendlyName: string;
         /** link.href used as id for callback */
         launchLink: Link;
         editLink: Link;
     }[];
-    onRequestDelete: (params: { restorableConfigIndex: number }) => void;
+    onRequestToMove: (params: { restorableConfigId: string; toIndex: number }) => void;
+
+    onRequestDelete: (params: { restorableConfigId: string }) => void;
     onRequestToggleIsShortVariant: () => void;
 };
 
@@ -29,13 +32,35 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
         entries,
         isShortVariant,
         onRequestDelete,
-        onRequestToggleIsShortVariant
+        onRequestToggleIsShortVariant,
+        onRequestToMove
     } = props;
 
     const { classes, cx } = useStyles();
 
-    const onRequestDeleteFactory = useCallbackFactory(
-        ([restorableConfigIndex]: [number]) => onRequestDelete({ restorableConfigIndex })
+    const onRequestDeleteFactory = useCallbackFactory(([restorableConfigId]: [string]) =>
+        onRequestDelete({ restorableConfigId })
+    );
+
+    const onConfigRequestToMoveFactory = useCallbackFactory(
+        ([restorableConfigId]: [string], [params]: [{ direction: "up" | "down" }]) => {
+            const { direction } = params;
+
+            const index_current = entries.findIndex(entry => entry.restorableConfigId);
+
+            assert(index_current !== -1);
+
+            const index_target: number = (() => {
+                switch (direction) {
+                    case "up":
+                        return index_current - 1;
+                    case "down":
+                        return index_current + 1;
+                }
+            })();
+
+            onRequestToMove({ restorableConfigId, toIndex: index_target });
+        }
     );
 
     const { t } = useTranslation({ MyServicesRestorableConfigs });
@@ -54,26 +79,37 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
             )}
             <div className={classes.wrapper}>
                 {entries.map(
-                    ({
-                        restorableConfigIndex,
-                        chartIconUrl,
-                        friendlyName,
-                        launchLink,
-                        editLink
-                    }) => (
-                        <MyServicesRestorableConfig
-                            key={launchLink.href}
-                            className={classes.entry}
-                            isShortVariant={isShortVariant}
-                            chartIconUrl={chartIconUrl}
-                            friendlyName={friendlyName}
-                            launchLink={launchLink}
-                            editLink={editLink}
-                            onRequestDelete={onRequestDeleteFactory(
-                                restorableConfigIndex
-                            )}
-                        />
-                    )
+                    (
+                        {
+                            restorableConfigId,
+                            chartIconUrl,
+                            friendlyName,
+                            launchLink,
+                            editLink
+                        },
+                        index
+                    ) => {
+                        console.log("restorableConfigId", restorableConfigId);
+                        return (
+                            <MyServicesRestorableConfig
+                                key={restorableConfigId}
+                                className={classes.entry}
+                                isShortVariant={isShortVariant}
+                                chartIconUrl={chartIconUrl}
+                                friendlyName={friendlyName}
+                                launchLink={launchLink}
+                                editLink={editLink}
+                                isFirst={index === 0}
+                                isLast={index === entries.length - 1}
+                                onRequestDelete={onRequestDeleteFactory(
+                                    restorableConfigId
+                                )}
+                                onRequestToMove={onConfigRequestToMoveFactory(
+                                    restorableConfigId
+                                )}
+                            />
+                        );
+                    }
                 )}
             </div>
         </div>

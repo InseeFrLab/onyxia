@@ -13,16 +13,18 @@ import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIconUrlByName } from "lazy-icons";
 
-const actions = ["edit", "copy link", "delete"] as const;
+const actions = ["move up", "edit", "copy link", "delete", "move down"] as const;
 
 export type RestorableConfigAction = (typeof actions)[number];
 
 export type Props = {
     callback: (action: RestorableConfigAction) => void;
+    doDisableMoveUp: boolean;
+    doDisableMoveDown: boolean;
 };
 
 export const MyServicesRestorableConfigOptions = memo((props: Props) => {
-    const { callback } = props;
+    const { callback, doDisableMoveUp, doDisableMoveDown } = props;
 
     const { classes } = useStyles();
 
@@ -64,43 +66,63 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 className={classes.menu}
                 onClose={onMenuClose}
             >
-                {actions.map(action => (
-                    <MenuItem
-                        component="a"
-                        data-no-link="true"
-                        key={action}
-                        selected={false}
-                        onClick={onMenuItemClickFactory(action)}
-                    >
-                        <Text typo="body 1" className={classes.menuTypo}>
-                            <Icon
-                                icon={(() => {
-                                    switch (action) {
-                                        case "edit":
-                                            return getIconUrlByName("Edit");
-                                        case "copy link":
-                                            return getIconUrlByName("Link");
-                                        case "delete":
-                                            return getIconUrlByName("Delete");
-                                    }
-                                })()}
-                            />
-                            &nbsp;
-                            {t(
-                                (() => {
-                                    switch (action) {
-                                        case "edit":
-                                            return "edit" as const;
-                                        case "copy link":
-                                            return "copy link" as const;
-                                        case "delete":
-                                            return "remove bookmark" as const;
-                                    }
-                                })()
-                            )}
-                        </Text>
-                    </MenuItem>
-                ))}
+                {actions
+                    .filter(action => {
+                        if (doDisableMoveDown && action === "move down") {
+                            return false;
+                        }
+
+                        if (doDisableMoveUp && action === "move up") {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    .map(action => (
+                        <MenuItem
+                            component="a"
+                            data-no-link="true"
+                            key={action}
+                            selected={false}
+                            onClick={onMenuItemClickFactory(action)}
+                        >
+                            <Text typo="body 1" className={classes.menuTypo}>
+                                <Icon
+                                    icon={(() => {
+                                        switch (action) {
+                                            case "edit":
+                                                return getIconUrlByName("Edit");
+                                            case "copy link":
+                                                return getIconUrlByName("Link");
+                                            case "delete":
+                                                return getIconUrlByName("Delete");
+                                            case "move down":
+                                                return getIconUrlByName("ArrowDownward");
+                                            case "move up":
+                                                return getIconUrlByName("ArrowUpward");
+                                        }
+                                    })()}
+                                />
+                                &nbsp;
+                                {t(
+                                    (() => {
+                                        switch (action) {
+                                            case "edit":
+                                                return "edit" as const;
+                                            case "copy link":
+                                                return "copy link" as const;
+                                            case "delete":
+                                                return "remove bookmark" as const;
+                                            case "move down":
+                                                return "move down" as const;
+                                            case "move up":
+                                                return "move up" as const;
+                                        }
+                                    })()
+                                )}
+                            </Text>
+                        </MenuItem>
+                    ))}
             </Menu>
         </>
     );
@@ -110,7 +132,9 @@ MyServicesRestorableConfigOptions.displayName = symToStr({
     MyServicesRestorableConfigOptions
 });
 
-const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
+const { i18n } = declareComponentKeys<
+    "edit" | "remove bookmark" | "copy link" | "move up" | "move down"
+>()({
     MyServicesRestorableConfigOptions
 });
 export type I18n = typeof i18n;

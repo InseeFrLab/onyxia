@@ -878,7 +878,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     MyServicesRestorableConfigOptions: {
         edit: "Muokkaa",
         "copy link": "Kopioi URL-osoite",
-        "remove bookmark": "Poista"
+        "remove bookmark": "Poista",
+        "move down": "Siirrä alas",
+        "move up": "Siirrä ylös"
     },
     MyServicesRestorableConfig: {
         edit: "Muokkaa",

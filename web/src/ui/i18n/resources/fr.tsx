@@ -897,7 +897,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     MyServicesRestorableConfigOptions: {
         edit: "Modifier",
         "copy link": "Copier l'URL",
-        "remove bookmark": "Supprimer"
+        "remove bookmark": "Supprimer",
+        "move down": "Déplacer vers le bas",
+        "move up": "Déplacer vers le haut"
     },
     MyServicesRestorableConfig: {
         edit: "Modifier",

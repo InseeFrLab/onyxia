@@ -882,7 +882,9 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     MyServicesRestorableConfigOptions: {
         edit: "Rediger",
         "copy link": "Kopier URL-lenke",
-        "remove bookmark": "Slett"
+        "remove bookmark": "Slett",
+        "move down": "Flytt ned",
+        "move up": "Flytt opp"
     },
     MyServicesRestorableConfig: {
         edit: "Rediger",

@@ -874,7 +874,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
     MyServicesRestorableConfigOptions: {
         edit: "Edit",
         "copy link": "Copy URL link",
-        "remove bookmark": "Delete"
+        "remove bookmark": "Delete",
+        "move down": "Move down",
+        "move up": "Move up"
     },
     MyServicesRestorableConfig: {
         edit: "Edit",

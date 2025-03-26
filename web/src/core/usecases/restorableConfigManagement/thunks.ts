@@ -121,5 +121,36 @@ export const thunks = {
                     value: newRestorableConfigs
                 })
             );
+        },
+    reorderRestorableConfigs:
+        (params: { startIndex: number; indexOfTarget: number }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            console.log(params);
+            const { startIndex, indexOfTarget } = params;
+
+            if (startIndex === indexOfTarget) {
+                return;
+            }
+
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.projectConfig(getState());
+
+            const configToReorder = restorableConfigs[indexOfTarget];
+
+            const updatedConfigs = [...restorableConfigs];
+
+            updatedConfigs.splice(startIndex, 1);
+            updatedConfigs.splice(indexOfTarget, 0, configToReorder);
+
+            console.log("restorableConfigs", restorableConfigs);
+            console.log("updatedConfigs", updatedConfigs);
+            // await dispatch(
+            //     projectManagement.protectedThunks.updateConfigValue({
+            //         key: "restorableConfigs",
+            //         value: updatedConfigs
+            //     })
+            // );
         }
 } satisfies Thunks;

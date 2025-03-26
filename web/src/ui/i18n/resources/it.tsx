@@ -887,7 +887,9 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     MyServicesRestorableConfigOptions: {
         edit: "Modificare",
         "copy link": "Copiare l'URL",
-        "remove bookmark": "Eliminare"
+        "remove bookmark": "Eliminare",
+        "move down": "Spostare in basso",
+        "move up": "Spostare in alto"
     },
     MyServicesRestorableConfig: {
         edit: "Modificare",

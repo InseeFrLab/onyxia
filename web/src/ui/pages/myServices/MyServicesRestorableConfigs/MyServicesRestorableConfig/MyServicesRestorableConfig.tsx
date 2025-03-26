@@ -24,7 +24,10 @@ export type Props = {
     friendlyName: string;
     launchLink: Link;
     editLink: Link;
+    isFirst: boolean;
+    isLast: boolean;
     onRequestDelete: () => void;
+    onRequestToMove: (params: { direction: "up" | "down" }) => void;
 };
 
 export const MyServicesRestorableConfig = memo((props: Props) => {
@@ -35,7 +38,10 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
         className,
         launchLink,
         editLink,
-        onRequestDelete
+        isFirst,
+        isLast,
+        onRequestDelete,
+        onRequestToMove
     } = props;
 
     const { classes, cx } = useStyles({
@@ -60,6 +66,12 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
             case "edit":
                 assert(editButtonRef.current !== null);
                 editButtonRef.current.click();
+                return;
+            case "move down":
+                onRequestToMove({ direction: "down" });
+                return;
+            case "move up":
+                onRequestToMove({ direction: "up" });
                 return;
         }
         assert<Equals<typeof action, never>>(false);
@@ -95,8 +107,17 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
             <Button {...launchLink} doOpenNewTabIfHref={false} variant="secondary">
                 {t("launch")}
             </Button>
+            <IconButton
+                //className={classes.linkIcon}
+                icon={getIconUrlByName("DragIndicator")}
+                onClick={() => console.log("drag button")}
+            />
             {isShortVariant && (
-                <MyServicesRestorableConfigOptions callback={configOptionsCallback} />
+                <MyServicesRestorableConfigOptions
+                    doDisableMoveUp={isFirst}
+                    doDisableMoveDown={isLast}
+                    callback={configOptionsCallback}
+                />
             )}
         </div>
     );

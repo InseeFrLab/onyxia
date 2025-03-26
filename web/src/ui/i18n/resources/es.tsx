@@ -889,7 +889,9 @@ export const translations: Translations<"en"> = {
     MyServicesRestorableConfigOptions: {
         edit: "Editar",
         "copy link": "Copiar enlace URL",
-        "remove bookmark": "Eliminar"
+        "remove bookmark": "Eliminar",
+        "move down": "Mover hacia abajo",
+        "move up": "Mover hacia arriba"
     },
     MyServicesRestorableConfig: {
         edit: "Editar",

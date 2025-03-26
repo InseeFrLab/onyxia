@@ -889,7 +889,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     MyServicesRestorableConfigOptions: {
         edit: "Wijzigen",
         "copy link": "URL kopiëren",
-        "remove bookmark": "Verwijderen"
+        "remove bookmark": "Verwijderen",
+        "move down": "Naar beneden verplaatsen",
+        "move up": "Naar boven verplaatsen"
     },
     MyServicesRestorableConfig: {
         edit: "Wijzigen",
