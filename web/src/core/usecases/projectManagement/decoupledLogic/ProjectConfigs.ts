@@ -7,7 +7,7 @@ import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefin
 import { zStringifyableAtomic } from "core/tools/Stringifyable";
 
 export type ProjectConfigs = {
-    __modelVersion: 2;
+    __modelVersion: 1;
     servicePassword: string;
     restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
     s3: {
@@ -46,7 +46,6 @@ export namespace ProjectConfigs {
             path: (string | number)[];
             value: StringifyableAtomic | undefined;
         }[];
-        restorableServiceConfigId: string;
     };
 }
 
@@ -77,8 +76,7 @@ const zRestorableServiceConfig = (() => {
         chartName: z.string(),
         chartVersion: z.string(),
         s3ConfigId: z.union([z.string(), z.undefined()]),
-        helmValuesPatch: z.array(zHelmValuesPatch),
-        restorableServiceConfigId: z.string()
+        helmValuesPatch: z.array(zHelmValuesPatch)
     });
 
     assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();
@@ -140,7 +138,7 @@ export const zProjectConfigs = (() => {
     type TargetType = ProjectConfigs;
 
     const zTargetType = z.object({
-        __modelVersion: z.literal(2),
+        __modelVersion: z.literal(1),
         servicePassword: z.string(),
         restorableConfigs: z.array(zRestorableServiceConfig),
         s3: zS3,

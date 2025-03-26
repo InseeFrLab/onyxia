@@ -30,6 +30,12 @@ export const protectedThunks = {
         }
 } satisfies Thunks;
 
+type RestorableServiceConfigLike = {
+    friendlyName: string;
+    catalogId: string;
+    chartName: string;
+};
+
 export const thunks = {
     saveRestorableConfig:
         (params: {
@@ -90,19 +96,20 @@ export const thunks = {
             );
         },
     deleteRestorableConfig:
-        (params: { restorableServiceConfigId: string }) =>
+        (params: { restorableConfig: RestorableServiceConfigLike }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { restorableServiceConfigId } = params;
+            const { restorableConfig } = params;
 
             const { restorableConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
             const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
                 restorableConfig_i =>
-                    restorableConfig_i.restorableServiceConfigId ===
-                    restorableServiceConfigId
+                    restorableConfig_i.friendlyName === restorableConfig.friendlyName &&
+                    restorableConfig_i.catalogId === restorableConfig.catalogId &&
+                    restorableConfig_i.chartName === restorableConfig.chartName
             );
 
             // NOTE: In case of double call, as we don't provide a "loading state"

@@ -1,5 +1,4 @@
 import { v0ToV1 } from "./v0ToV1";
-import { v1ToV2 } from "./v1ToV2";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import type { ProjectConfigs } from "../ProjectConfigs";
 import { assert, type Equals } from "tsafe/assert";
@@ -36,13 +35,6 @@ export async function projectConfigsMigration(params: {
     try {
         if (modelVersion < 1) {
             await v0ToV1({
-                projectVaultTopDirPath_reserved,
-                secretsManager
-            });
-        }
-
-        if (modelVersion < 2) {
-            await v1ToV2({
                 projectVaultTopDirPath_reserved,
                 secretsManager
             });
