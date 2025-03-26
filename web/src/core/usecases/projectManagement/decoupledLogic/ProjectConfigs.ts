@@ -46,7 +46,7 @@ export namespace ProjectConfigs {
             path: (string | number)[];
             value: StringifyableAtomic | undefined;
         }[];
-        creationTime: number;
+        restorableServiceConfigId: string;
     };
 }
 
@@ -78,7 +78,7 @@ const zRestorableServiceConfig = (() => {
         chartVersion: z.string(),
         s3ConfigId: z.union([z.string(), z.undefined()]),
         helmValuesPatch: z.array(zHelmValuesPatch),
-        creationTime: z.number()
+        restorableServiceConfigId: z.string()
     });
 
     assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();

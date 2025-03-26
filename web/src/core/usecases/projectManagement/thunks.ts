@@ -278,12 +278,12 @@ export const protectedThunks = {
         },
     updateConfigValue:
         <K extends keyof ProjectConfigs>(params: ChangeConfigValueParams<K>) =>
-        (...args) => {
+        async (...args) => {
             const [dispatch, getState, rootContext] = args;
 
             const { mutex } = getContext(rootContext);
 
-            mutex.runExclusive(async () => {
+            await mutex.runExclusive(async () => {
                 const { secretsManager } = rootContext;
 
                 const currentProjectConfig = protectedSelectors.projectConfig(getState());

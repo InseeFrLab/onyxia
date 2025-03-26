@@ -245,7 +245,7 @@ const restorableConfig = createSelector(
 const isRestorableConfigSaved = createSelector(
     isReady,
     restorableConfig,
-    restorableConfigManagement.protectedSelectors.restorableConfigs,
+    restorableConfigManagement.selectors.restorableConfigs,
     (isReady, restorableConfig, restorableConfigs) => {
         if (!isReady) {
             return null;
@@ -529,7 +529,7 @@ const willOverwriteExistingConfigOnSave = createSelector(
     chartName,
     catalogId,
     friendlyName,
-    restorableConfigManagement.protectedSelectors.restorableConfigs,
+    restorableConfigManagement.selectors.restorableConfigs,
     (isReady, chartName, catalogId, friendlyName, restorableConfigs) => {
         if (!isReady) {
             return null;

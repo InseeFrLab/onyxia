@@ -47,7 +47,7 @@ namespace v2 {
                 path: (string | number)[];
                 value: StringifyableAtomic | undefined;
             }[];
-            creationTime: number;
+            restorableServiceConfigId: string;
         };
     }
 }
@@ -109,7 +109,7 @@ export async function v1ToV2(params: {
                     const newValue: v2.ProjectConfigs[typeof key] = legacyValue.map(
                         (restorableServiceConfigs, i) => ({
                             ...restorableServiceConfigs,
-                            creationTime: now + i
+                            restorableServiceConfigId: `${now}-${i}`
                         })
                     );
 

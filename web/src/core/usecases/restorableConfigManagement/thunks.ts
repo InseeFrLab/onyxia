@@ -90,20 +90,19 @@ export const thunks = {
             );
         },
     deleteRestorableConfig:
-        (params: {
-            restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
-        }) =>
+        (params: { restorableServiceConfigId: string }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { restorableConfig } = params;
+            const { restorableServiceConfigId } = params;
 
             const { restorableConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
             const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
                 restorableConfig_i =>
-                    restorableConfig.creationTime === restorableConfig_i.creationTime
+                    restorableConfig_i.restorableServiceConfigId ===
+                    restorableServiceConfigId
             );
 
             // NOTE: In case of double call, as we don't provide a "loading state"
@@ -123,34 +122,38 @@ export const thunks = {
             );
         },
     reorderRestorableConfigs:
-        (params: { startIndex: number; indexOfTarget: number }) =>
+        (params: { restorableServiceConfigId: string; targetIndex: number }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            console.log(params);
-            const { startIndex, indexOfTarget } = params;
-
-            if (startIndex === indexOfTarget) {
-                return;
-            }
+            const { restorableServiceConfigId, targetIndex } = params;
 
             const { restorableConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
-            const configToReorder = restorableConfigs[indexOfTarget];
+            const currentIndex = restorableConfigs.findIndex(
+                restorableConfig =>
+                    restorableConfig.restorableServiceConfigId ===
+                    restorableServiceConfigId
+            );
 
-            const updatedConfigs = [...restorableConfigs];
+            assert(currentIndex !== -1);
 
-            updatedConfigs.splice(startIndex, 1);
-            updatedConfigs.splice(indexOfTarget, 0, configToReorder);
+            if (currentIndex === targetIndex) {
+                return;
+            }
 
-            console.log("restorableConfigs", restorableConfigs);
-            console.log("updatedConfigs", updatedConfigs);
+            const restorableConfigs_new = [...restorableConfigs];
+
+            const restorableConfig = restorableConfigs[currentIndex];
+
+            restorableConfigs_new.splice(currentIndex, 1);
+            restorableConfigs_new.splice(targetIndex, 0, restorableConfig);
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
                     key: "restorableConfigs",
-                    value: updatedConfigs
+                    value: restorableConfigs_new
                 })
             );
         }
