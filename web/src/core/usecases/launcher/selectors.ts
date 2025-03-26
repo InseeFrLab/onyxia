@@ -236,7 +236,8 @@ const restorableConfig = createSelector(
             isShared,
             chartVersion,
             s3ConfigId,
-            helmValuesPatch: diffPatch
+            helmValuesPatch: diffPatch,
+            creationTime: undefined
         };
     }
 );

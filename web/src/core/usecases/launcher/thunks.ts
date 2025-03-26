@@ -32,6 +32,7 @@ type RestorableServiceConfigLike = {
               value: StringifyableAtomic | undefined;
           }[]
         | undefined;
+    creationTime: number | undefined;
 };
 
 {
@@ -294,7 +295,8 @@ export const thunks = {
                         friendlyName: undefined,
                         helmValuesPatch: undefined,
                         isShared: undefined,
-                        s3ConfigId: undefined
+                        s3ConfigId: undefined,
+                        creationTime: undefined
                     },
                     autoLaunch: false
                 })

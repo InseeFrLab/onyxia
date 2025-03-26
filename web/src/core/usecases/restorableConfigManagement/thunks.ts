@@ -103,7 +103,7 @@ export const thunks = {
 
             const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
                 restorableConfig_i =>
-                    getAreSameRestorableConfig(restorableConfig_i, restorableConfig)
+                    restorableConfig.creationTime === restorableConfig_i.creationTime
             );
 
             // NOTE: In case of double call, as we don't provide a "loading state"
@@ -146,11 +146,12 @@ export const thunks = {
 
             console.log("restorableConfigs", restorableConfigs);
             console.log("updatedConfigs", updatedConfigs);
-            // await dispatch(
-            //     projectManagement.protectedThunks.updateConfigValue({
-            //         key: "restorableConfigs",
-            //         value: updatedConfigs
-            //     })
-            // );
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    key: "restorableConfigs",
+                    value: updatedConfigs
+                })
+            );
         }
 } satisfies Thunks;

@@ -128,7 +128,8 @@ const Launcher = withLoginEnforced((props: Props) => {
                 friendlyName: route.params.name,
                 isShared: route.params.shared,
                 s3ConfigId: route.params.s3,
-                helmValuesPatch: route.params.helmValuesPatch
+                helmValuesPatch: route.params.helmValuesPatch,
+                creationTime: Date.now()
             },
             autoLaunch
         });
@@ -149,6 +150,7 @@ const Launcher = withLoginEnforced((props: Props) => {
             isShared,
             s3ConfigId,
             helmValuesPatch,
+            creationTime,
             ...rest
         } = restorableConfig;
 

@@ -1,4 +1,5 @@
 import { v0ToV1 } from "./v0ToV1";
+import { v1ToV2 } from "./v1ToV2";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import type { ProjectConfigs } from "../ProjectConfigs";
 import { assert, type Equals } from "tsafe/assert";
@@ -22,7 +23,7 @@ export async function projectConfigsMigration(params: {
                 path: pathJoin(projectVaultTopDirPath_reserved, key)
             })
             .then(
-                ({ secret }) => secretToValue(secret) as ProjectConfigs["__modelVersion"],
+                ({ secret }) => secretToValue(secret) as number,
                 () => {
                     console.log("The above error is ok");
                     return undefined;
@@ -33,8 +34,15 @@ export async function projectConfigsMigration(params: {
     })();
 
     try {
-        if (modelVersion === 0) {
+        if (modelVersion < 1) {
             await v0ToV1({
+                projectVaultTopDirPath_reserved,
+                secretsManager
+            });
+        }
+
+        if (modelVersion < 2) {
+            await v1ToV2({
                 projectVaultTopDirPath_reserved,
                 secretsManager
             });

@@ -220,7 +220,7 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
     const key = key_ as keyof ProjectConfigs;
     switch (key) {
         case "__modelVersion": {
-            const out: ProjectConfigs[typeof key] = 1;
+            const out: ProjectConfigs[typeof key] = 2;
             // @ts-expect-error
             return out;
         }
