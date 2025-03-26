@@ -6,19 +6,7 @@ export const addObjectNameToListBucketCondition = (
     bucketArn: string,
     objectName: string
 ): S3BucketPolicy["Statement"] => {
-    const { conditionKey, objectPrefix } = (() => {
-        if (objectName.endsWith("/")) {
-            return {
-                conditionKey: "StringLike" as const,
-                objectPrefix: `${objectName}*`
-            };
-        }
-
-        return {
-            conditionKey: "StringEquals" as const,
-            objectPrefix: objectName.endsWith("/") ? `${objectName}*` : objectName
-        };
-    })();
+    const { conditionKey, objectPrefix } = getConditionKeyAndPrefix(objectName);
 
     if (statements === null) {
         return [
@@ -101,15 +89,7 @@ export const removeObjectNameFromListBucketCondition = (
         return null;
     }
 
-    const { conditionKey, objectPrefix } = objectName.endsWith("/")
-        ? {
-              conditionKey: "StringLike" as const,
-              objectPrefix: `${objectName}*`
-          }
-        : {
-              conditionKey: "StringEquals" as const,
-              objectPrefix: objectName
-          };
+    const { conditionKey, objectPrefix } = getConditionKeyAndPrefix(objectName);
 
     return statements
         .map(statement => {
@@ -252,3 +232,20 @@ const removeKey = <T extends Record<string, any>, K extends keyof T>(
     const { [key]: _, ...rest } = obj;
     return Object.keys(rest).length > 0 ? rest : undefined;
 };
+
+function getConditionKeyAndPrefix(objectName: string): {
+    conditionKey: "StringLike" | "StringEquals";
+    objectPrefix: string;
+} {
+    if (objectName.endsWith("/")) {
+        return {
+            conditionKey: "StringLike",
+            objectPrefix: `${objectName}*`
+        };
+    }
+
+    return {
+        conditionKey: "StringEquals",
+        objectPrefix: objectName
+    };
+}
