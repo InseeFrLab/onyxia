@@ -876,6 +876,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "copy link": "Copy URL link",
         "remove bookmark": "Delete",
         "move down": "Move down",
+        "move to bottom": "Move to bottom",
+        "move to top": "Move to top",
         "move up": "Move up"
     },
     MyServicesRestorableConfig: {

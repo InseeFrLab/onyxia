@@ -24,14 +24,14 @@ export type Props = {
     }[];
     onRequestToMove: (params: {
         restorableConfigRef: RestorableServiceConfigRef;
-        index_new: number;
+        targetIndex: number;
     }) => void;
     onRequestDelete: (params: {
         restorableConfigRef: RestorableServiceConfigRef;
     }) => void;
     onRequestRename: (params: {
         restorableConfigRef: RestorableServiceConfigRef;
-        friendlyName_new: string;
+        newFriendlyName: string;
     }) => void;
     onRequestToggleIsShortVariant: () => void;
 };
@@ -59,12 +59,12 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
     const onRequestRenameFactory = useCallbackFactory(
         (
             [friendlyName, catalogId, chartName]: [string, string, string],
-            [params]: [{ friendlyName_new: string }]
+            [params]: [{ newFriendlyName: string }]
         ) => {
-            const { friendlyName_new } = params;
+            const { newFriendlyName } = params;
             onRequestRename({
                 restorableConfigRef: { friendlyName, catalogId, chartName },
-                friendlyName_new
+                newFriendlyName
             });
         }
     );
@@ -72,11 +72,11 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
     const onConfigRequestToMoveFactory = useCallbackFactory(
         (
             [friendlyName, catalogId, chartName]: [string, string, string],
-            [params]: [{ direction: "up" | "down" }]
+            [params]: [{ direction: "up" | "down" | "top" | "bottom" }]
         ) => {
             const { direction } = params;
 
-            const index_current = entries.findIndex(entry =>
+            const currentIndex = entries.findIndex(entry =>
                 getAreSameRestorableConfigRef(entry.restorableConfigRef, {
                     friendlyName,
                     catalogId,
@@ -84,14 +84,18 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
                 })
             );
 
-            assert(index_current !== -1);
+            assert(currentIndex !== -1);
 
-            const index_new: number = (() => {
+            const targetIndex: number = (() => {
                 switch (direction) {
                     case "up":
-                        return index_current - 1;
+                        return currentIndex - 1;
                     case "down":
-                        return index_current + 1;
+                        return currentIndex + 1;
+                    case "top":
+                        return 0;
+                    case "bottom":
+                        return entries.length - 1;
                 }
             })();
 
@@ -101,7 +105,7 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
                     catalogId,
                     chartName
                 },
-                index_new: index_new
+                targetIndex
             });
         }
     );
@@ -143,6 +147,11 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
                                     ref.chartName
                                 )}
                                 onRequestToMove={onConfigRequestToMoveFactory(
+                                    ref.friendlyName,
+                                    ref.catalogId,
+                                    ref.chartName
+                                )}
+                                onRequestRename={onRequestRenameFactory(
                                     ref.friendlyName,
                                     ref.catalogId,
                                     ref.chartName

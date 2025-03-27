@@ -160,12 +160,12 @@ export const thunks = {
     renameRestorableConfig:
         (params: {
             restorableConfigRef: RestorableServiceConfigRef;
-            friendlyName_new: string;
+            newFriendlyName: string;
         }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { restorableConfigRef: ref, friendlyName_new } = params;
+            const { restorableConfigRef: ref, newFriendlyName } = params;
 
             const { restorableConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
@@ -176,7 +176,7 @@ export const thunks = {
 
             assert(restorableConfig_current !== undefined);
 
-            if (restorableConfig_current.friendlyName === friendlyName_new) {
+            if (restorableConfig_current.friendlyName === newFriendlyName) {
                 return;
             }
 
@@ -188,7 +188,7 @@ export const thunks = {
 
             const restorableConfig_new = structuredClone(restorableConfig_current);
 
-            restorableConfig_new.friendlyName = friendlyName_new;
+            restorableConfig_new.friendlyName = newFriendlyName;
 
             restorableConfigs_new[index] = restorableConfig_new;
 

@@ -891,7 +891,9 @@ export const translations: Translations<"en"> = {
         "copy link": "Copiar enlace URL",
         "remove bookmark": "Eliminar",
         "move down": "Mover hacia abajo",
-        "move up": "Mover hacia arriba"
+        "move up": "Mover hacia arriba",
+        "move to top": "Mover al principio",
+        "move to bottom": "Mover al final"
     },
     MyServicesRestorableConfig: {
         edit: "Editar",

@@ -12,8 +12,17 @@ import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIconUrlByName } from "lazy-icons";
+import { isAmong } from "tsafe/isAmong";
 
-const actions = ["move up", "edit", "copy link", "delete", "move down"] as const;
+const moveActions = ["move top", "move up", "move down", "move bottom"] as const;
+
+const actions = [
+    ...moveActions.slice(0, 2),
+    "edit",
+    "copy link",
+    "delete",
+    ...moveActions.slice(2)
+] as const;
 
 export type RestorableConfigAction = (typeof actions)[number];
 
@@ -21,10 +30,11 @@ export type Props = {
     callback: (action: RestorableConfigAction) => void;
     doDisableMoveUp: boolean;
     doDisableMoveDown: boolean;
+    isShortVariant: boolean;
 };
 
 export const MyServicesRestorableConfigOptions = memo((props: Props) => {
-    const { callback, doDisableMoveUp, doDisableMoveDown } = props;
+    const { callback, doDisableMoveUp, doDisableMoveDown, isShortVariant } = props;
 
     const { classes } = useStyles();
 
@@ -57,7 +67,7 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 data-ga-event-category="header"
                 data-ga-event-action="language"
             >
-                <Icon icon={getIconUrlByName("MoreVert")} className={classes.icon} />
+                <Icon icon={getIconUrlByName("DragIndicator")} className={classes.icon} />
             </MuiButton>
             <Menu
                 id={menuId}
@@ -67,23 +77,21 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 onClose={onMenuClose}
             >
                 {actions
-                    .filter(action => {
-                        if (doDisableMoveDown && action === "move down") {
-                            return false;
-                        }
-
-                        if (doDisableMoveUp && action === "move up") {
-                            return false;
-                        }
-
-                        return true;
-                    })
+                    .filter(action =>
+                        isShortVariant ? true : isAmong(moveActions, action)
+                    )
                     .map(action => (
                         <MenuItem
                             component="a"
                             data-no-link="true"
                             key={action}
                             selected={false}
+                            disabled={
+                                (["move up", "move top"].includes(action) &&
+                                    doDisableMoveUp) ||
+                                (["move down", "move bottom"].includes(action) &&
+                                    doDisableMoveDown)
+                            }
                             onClick={onMenuItemClickFactory(action)}
                         >
                             <Text typo="body 1" className={classes.menuTypo}>
@@ -97,8 +105,10 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                                             case "delete":
                                                 return getIconUrlByName("Delete");
                                             case "move down":
+                                            case "move bottom":
                                                 return getIconUrlByName("ArrowDownward");
                                             case "move up":
+                                            case "move top":
                                                 return getIconUrlByName("ArrowUpward");
                                         }
                                     })()}
@@ -115,6 +125,10 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                                                 return "remove bookmark" as const;
                                             case "move down":
                                                 return "move down" as const;
+                                            case "move bottom":
+                                                return "move to bottom" as const;
+                                            case "move top":
+                                                return "move to top" as const;
                                             case "move up":
                                                 return "move up" as const;
                                         }
@@ -133,7 +147,13 @@ MyServicesRestorableConfigOptions.displayName = symToStr({
 });
 
 const { i18n } = declareComponentKeys<
-    "edit" | "remove bookmark" | "copy link" | "move up" | "move down"
+    | "edit"
+    | "remove bookmark"
+    | "copy link"
+    | "move up"
+    | "move down"
+    | "move to top"
+    | "move to bottom"
 >()({
     MyServicesRestorableConfigOptions
 });

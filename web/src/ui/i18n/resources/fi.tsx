@@ -880,7 +880,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "copy link": "Kopioi URL-osoite",
         "remove bookmark": "Poista",
         "move down": "Siirrä alas",
-        "move up": "Siirrä ylös"
+        "move up": "Siirrä ylös",
+        "move to top": "Siirrä ylimmäksi",
+        "move to bottom": "Siirrä alimmaksi"
     },
     MyServicesRestorableConfig: {
         edit: "Muokkaa",

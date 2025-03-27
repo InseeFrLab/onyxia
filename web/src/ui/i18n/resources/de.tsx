@@ -891,7 +891,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "copy link": "URL kopieren",
         "remove bookmark": "Lesezeichen entfernen",
         "move down": "Nach unten verschieben",
-        "move up": "Nach oben verschieben"
+        "move up": "Nach oben verschieben",
+        "move to top": "Ganz nach oben verschieben",
+        "move to bottom": "Ganz nach unten verschieben"
     },
     MyServicesRestorableConfig: {
         edit: "Bearbeiten",
