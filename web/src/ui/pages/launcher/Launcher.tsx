@@ -149,7 +149,6 @@ const Launcher = withLoginEnforced((props: Props) => {
             isShared,
             s3ConfigId,
             helmValuesPatch,
-            creationTime,
             ...rest
         } = restorableConfig;
 

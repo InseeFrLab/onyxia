@@ -8,7 +8,6 @@ import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
-import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";
@@ -210,7 +209,7 @@ const restorableConfig = createSelector(
         s3ConfigId,
         helmValues,
         helmValues_default
-    ): RestorableServiceConfig | null => {
+    ): projectManagement.ProjectConfigs.RestorableServiceConfig | null => {
         if (!isReady) {
             return null;
         }
@@ -236,8 +235,7 @@ const restorableConfig = createSelector(
             isShared,
             chartVersion,
             s3ConfigId,
-            helmValuesPatch: diffPatch,
-            creationTime: undefined
+            helmValuesPatch: diffPatch
         };
     }
 );
