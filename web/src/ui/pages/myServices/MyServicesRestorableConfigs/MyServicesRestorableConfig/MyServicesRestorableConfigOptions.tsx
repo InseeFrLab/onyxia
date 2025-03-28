@@ -67,7 +67,7 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 data-ga-event-category="header"
                 data-ga-event-action="language"
             >
-                <Icon icon={getIconUrlByName("DragIndicator")} className={classes.icon} />
+                <Icon icon={getIconUrlByName("MoreVert")} className={classes.icon} />
             </MuiButton>
             <Menu
                 id={menuId}
@@ -105,11 +105,21 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                                             case "delete":
                                                 return getIconUrlByName("Delete");
                                             case "move down":
+                                                return getIconUrlByName(
+                                                    "KeyboardArrowDown"
+                                                );
                                             case "move bottom":
-                                                return getIconUrlByName("ArrowDownward");
+                                                return getIconUrlByName(
+                                                    "KeyboardDoubleArrowDown"
+                                                );
                                             case "move up":
+                                                return getIconUrlByName(
+                                                    "KeyboardArrowUp"
+                                                );
                                             case "move top":
-                                                return getIconUrlByName("ArrowUpward");
+                                                return getIconUrlByName(
+                                                    "KeyboardDoubleArrowUp"
+                                                );
                                         }
                                     })()}
                                 />

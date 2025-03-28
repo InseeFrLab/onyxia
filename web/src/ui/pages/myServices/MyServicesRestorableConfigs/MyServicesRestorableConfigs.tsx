@@ -210,7 +210,6 @@ const useStyles = tss.withName({ MyServicesRestorableConfigs }).create(({ theme 
                 opacity: 1
             },
             "100%": {
-                //backgroundColor: "transparent",
                 opacity: 1
             }
         }
