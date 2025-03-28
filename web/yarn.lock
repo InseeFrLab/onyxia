@@ -5224,10 +5224,10 @@ jsonify@^0.0.1:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.1.tgz#2aa3111dae3d34a0f151c63f3a45d995d9420978"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-keycloakify@^11.8.21:
-  version "11.8.21"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.21.tgz#761f59d70097599f0424db1b2577db1cfb1522c5"
-  integrity sha512-pCvs+e44TZrTn0jrSgScFFE04poIMHZYqxIVX9uB+nQf7mToXl64Bw2ogPW0soR2g7QlhnQMXZGv19yrm7IW7g==
+keycloakify@^11.8.22:
+  version "11.8.22"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.8.22.tgz#87082c911c1277ddf2c63755cec3c1909abf8888"
+  integrity sha512-OngWbF5vfzcKwN0cbUskExon3xH8GjURN33GHuBrPiWwR2n0sybyHj/A9IbPOlqYBapZxRKZAexwlTI55vrsbg==
   dependencies:
     tsafe "^1.8.5"
 
@@ -5921,7 +5921,7 @@ oniguruma-to-es@0.7.0:
     regex "^5.0.2"
     regex-recursion "^4.3.0"
 
-onyxia-ui@^6.2.7:
+onyxia-ui@^6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.4.0.tgz#5a8ebd9b13f91e4ce7593f63aa08b914f4201a00"
   integrity sha512-xbvnVeUp+OlKhBs9j563ae35lv5NQlEDLius0D6K2BpcgKdiMbzMytJ7ZLwyoJoufwP8thiAxQI0b/lpnFVubg==
@@ -7047,10 +7047,10 @@ tss-react@^4.9.13:
     "@emotion/serialize" "*"
     "@emotion/utils" "*"
 
-tss-react@^4.9.15:
-  version "4.9.15"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.15.tgz#a26fc24889a462ab4858094bc5b33cdda36e45ab"
-  integrity sha512-rLiEmDwUtln9RKTUR/ZPYBrufF0Tq/PFggO1M7P8M3/FAcodPQ746Ug9MCEFkURKDlntN17+Oja0DMMz5yBnsQ==
+tss-react@^4.9.16:
+  version "4.9.16"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.16.tgz#efc2d6f145ad417fdc37e3b022cdad379e3e3cec"
+  integrity sha512-7g9B96gdmR7klrYcslLdw0maeyS+PnWsID28eBkKQEbEJNbMjlgvgTFlGUyURrfafmbpkfjRzE5+lDMRT91LEQ==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
