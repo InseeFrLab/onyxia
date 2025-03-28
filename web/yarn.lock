@@ -941,61 +941,6 @@
     style-mod "^4.1.0"
     w3c-keyname "^2.2.4"
 
-"@dnd-kit/abstract@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@dnd-kit/abstract/-/abstract-0.0.10.tgz#0e7c040a534f9272cf94e918d7380271288b20ab"
-  integrity sha512-tLMRmg7WSEp/IfmA2LeOVaHXoznA8VJlauWpMyH1zMw11VVmARXo65MEo33jpmxcYO7qX0sQ50vsFyJPDWEKAQ==
-  dependencies:
-    "@dnd-kit/geometry" "^0.0.10"
-    "@dnd-kit/state" "^0.0.10"
-    tslib "^2.6.2"
-
-"@dnd-kit/collision@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@dnd-kit/collision/-/collision-0.0.10.tgz#155724f1c79cedf179bc96af62a1467f800eec4b"
-  integrity sha512-yvmx8agWC4ztN2yeZUG1bayRleJx7t8gLK6NYg68+57Gm/stWaiDXLCDoEMINRj/GGWTNSEs5bhU3SdCwV8O/A==
-  dependencies:
-    "@dnd-kit/abstract" "^0.0.10"
-    "@dnd-kit/geometry" "^0.0.10"
-    tslib "^2.6.2"
-
-"@dnd-kit/dom@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@dnd-kit/dom/-/dom-0.0.10.tgz#83e31a9d56c07aa776e7eb42f1161348f2b6f3f4"
-  integrity sha512-rafzRGWCM6EDyHiSBWdKy80rv61MoGYss1zKdzWDvnbjTe/WAJwulMr0TT4mXeqxKGcEw+a9WSfdgD9j5uTD1w==
-  dependencies:
-    "@dnd-kit/abstract" "^0.0.10"
-    "@dnd-kit/collision" "^0.0.10"
-    "@dnd-kit/geometry" "^0.0.10"
-    "@dnd-kit/state" "^0.0.10"
-    tslib "^2.6.2"
-
-"@dnd-kit/geometry@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@dnd-kit/geometry/-/geometry-0.0.10.tgz#c288c8a9344bba577ab85e77fb3d538801faea00"
-  integrity sha512-GU8UJH2Flzg0O+LGk2NATimGQ3UUEyyby+3RTFQOVPq7vNFq9daFVYh7pDCOL0pZVhNMkCWLUolXFF8q1DkmKQ==
-  dependencies:
-    "@dnd-kit/state" "^0.0.10"
-    tslib "^2.6.2"
-
-"@dnd-kit/react@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@dnd-kit/react/-/react-0.0.10.tgz#54560e92b70c41ea53bfb0cede823993cfcbc4df"
-  integrity sha512-OOyvCgglBRCpYUR/upKvGvCGBup3Gr5vuFMqT2vu4XME9bTWuzS2mIahsgwlJG3yUHbXtlQ4NSLT2UKMoWVPMw==
-  dependencies:
-    "@dnd-kit/abstract" "^0.0.10"
-    "@dnd-kit/dom" "^0.0.10"
-    "@dnd-kit/state" "^0.0.10"
-    tslib "^2.6.2"
-
-"@dnd-kit/state@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@dnd-kit/state/-/state-0.0.10.tgz#9135aa2962337ae91a8fb367dd6703f2de0eb926"
-  integrity sha512-H759VWyvRXlZq4IKqwbVsRAve5mRAGqmfU93M83st/zcQU695K2h5cpgkkSzkN7rjdTtdwx2+yP8TqmzZ3hcpQ==
-  dependencies:
-    "@preact/signals-core" "^1.6.0"
-    tslib "^2.6.2"
-
 "@duckdb/duckdb-wasm-shell@1.29.0":
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm-shell/-/duckdb-wasm-shell-1.29.0.tgz#238c6f6b1569d8f355cfa7bc4eb17d2f130ace2d"
@@ -1864,11 +1809,6 @@
   version "2.11.8"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
-
-"@preact/signals-core@^1.6.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.8.0.tgz#45ffadb81b48a298a4accd26b3f6c0140cd6dacc"
-  integrity sha512-OBvUsRZqNmjzCZXWLxkZfhcgT+Fk8DDcT/8vD6a1xhDemodyy87UJRJfASMuSD8FaAIeGgGm85ydXhm7lr4fyA==
 
 "@reduxjs/toolkit@^1.9.6":
   version "1.9.7"

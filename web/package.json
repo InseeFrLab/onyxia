@@ -33,7 +33,6 @@
         "@codemirror/state": "6.4.1",
         "@codemirror/theme-one-dark": "6.1.2",
         "@codemirror/view": "6.34.1",
-        "@dnd-kit/react": "^0.0.10",
         "@duckdb/duckdb-wasm": "1.29.0",
         "@duckdb/duckdb-wasm-shell": "1.29.0",
         "@emotion/cache": "^11.13.5",

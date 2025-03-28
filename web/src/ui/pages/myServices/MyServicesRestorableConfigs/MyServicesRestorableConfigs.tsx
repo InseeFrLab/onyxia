@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { tss } from "tss";
 import { MyServicesRestorableConfig } from "./MyServicesRestorableConfig";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -46,6 +46,10 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
         onRequestToMove,
         onRequestRename
     } = props;
+
+    const [lastCardMoved, setLastCardMoved] = useState<
+        RestorableServiceConfigRef | undefined
+    >(undefined);
 
     const { classes, cx } = useStyles();
 
@@ -107,6 +111,12 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
                 },
                 targetIndex
             });
+
+            // We need this setTimeout to be sure animation is well played even if the card moved is the same as the last one
+            setLastCardMoved(undefined);
+            setTimeout(() => {
+                setLastCardMoved({ friendlyName, catalogId, chartName });
+            }, 0);
         }
     );
 
@@ -129,36 +139,39 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
                     (
                         { restorableConfigRef: ref, chartIconUrl, launchLink, editLink },
                         index
-                    ) => {
-                        return (
-                            <MyServicesRestorableConfig
-                                key={JSON.stringify(ref)}
-                                className={classes.entry}
-                                isShortVariant={isShortVariant}
-                                chartIconUrl={chartIconUrl}
-                                friendlyName={ref.friendlyName}
-                                launchLink={launchLink}
-                                editLink={editLink}
-                                isFirst={index === 0}
-                                isLast={index === entries.length - 1}
-                                onRequestDelete={onRequestDeleteFactory(
-                                    ref.friendlyName,
-                                    ref.catalogId,
-                                    ref.chartName
-                                )}
-                                onRequestToMove={onConfigRequestToMoveFactory(
-                                    ref.friendlyName,
-                                    ref.catalogId,
-                                    ref.chartName
-                                )}
-                                onRequestRename={onRequestRenameFactory(
-                                    ref.friendlyName,
-                                    ref.catalogId,
-                                    ref.chartName
-                                )}
-                            />
-                        );
-                    }
+                    ) => (
+                        <MyServicesRestorableConfig
+                            key={JSON.stringify(ref)}
+                            className={cx(
+                                classes.entry,
+                                lastCardMoved &&
+                                    getAreSameRestorableConfigRef(ref, lastCardMoved) &&
+                                    classes.movedHighlight
+                            )}
+                            isShortVariant={isShortVariant}
+                            chartIconUrl={chartIconUrl}
+                            friendlyName={ref.friendlyName}
+                            launchLink={launchLink}
+                            editLink={editLink}
+                            isFirst={index === 0}
+                            isLast={index === entries.length - 1}
+                            onRequestDelete={onRequestDeleteFactory(
+                                ref.friendlyName,
+                                ref.catalogId,
+                                ref.chartName
+                            )}
+                            onRequestToMove={onConfigRequestToMoveFactory(
+                                ref.friendlyName,
+                                ref.catalogId,
+                                ref.chartName
+                            )}
+                            onRequestRename={onRequestRenameFactory(
+                                ref.friendlyName,
+                                ref.catalogId,
+                                ref.chartName
+                            )}
+                        />
+                    )
                 )}
             </div>
         </div>
@@ -183,6 +196,24 @@ const useStyles = tss.withName({ MyServicesRestorableConfigs }).create(({ theme 
     },
     entry: {
         marginBottom: theme.spacing(2)
+    },
+    movedHighlight: {
+        animation: "flash 0.6s ease-out",
+        animationFillMode: "forwards", // pour ne pas revenir au style initial brutalement
+        "@keyframes flash": {
+            "0%": {
+                backgroundColor: theme.colors.useCases.surfaces.background,
+                opacity: 0.7
+            },
+            "50%": {
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
+                opacity: 1
+            },
+            "100%": {
+                //backgroundColor: "transparent",
+                opacity: 1
+            }
+        }
     },
     wrapper: {
         flex: 1,
