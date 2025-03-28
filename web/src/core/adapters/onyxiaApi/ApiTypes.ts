@@ -175,7 +175,9 @@ export type ApiTypes = {
         }[];
     };
     "/my-lab/catalogs/${catalogId}/charts/${chartName}": { version: string }[];
-    "/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}": JSONSchema;
+    "/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}":
+        | JSONSchema
+        | "";
     "/my-lab/services": {
         apps: {
             id: string;
