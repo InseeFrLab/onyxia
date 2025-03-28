@@ -1,4 +1,3 @@
-import type { ProjectConfigs } from "../ProjectConfigs";
 import { assert, type Equals } from "tsafe/assert";
 import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import type { SecretsManager } from "core/ports/SecretsManager";
@@ -62,7 +61,7 @@ namespace v0 {
     }
 }
 
-namespace v1 {
+export namespace v1 {
     export type ProjectConfigs = {
         __modelVersion: 1;
         servicePassword: string;
@@ -106,8 +105,6 @@ namespace v1 {
         };
     }
 }
-
-assert<Equals<v1.ProjectConfigs, ProjectConfigs>>();
 
 export async function v0ToV1(params: {
     projectVaultTopDirPath_reserved: string;

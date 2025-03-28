@@ -18,7 +18,10 @@ export function getAreSameRestorableConfig(
         assert<
             Equals<
                 typeof key,
-                keyof projectManagement.ProjectConfigs.RestorableServiceConfig
+                Exclude<
+                    keyof projectManagement.ProjectConfigs.RestorableServiceConfig,
+                    "creationTime"
+                >
             >
         >();
 

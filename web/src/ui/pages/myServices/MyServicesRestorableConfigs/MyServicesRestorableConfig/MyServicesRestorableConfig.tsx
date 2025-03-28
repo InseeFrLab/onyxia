@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { tss } from "tss";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import {
@@ -10,12 +10,15 @@ import { useTranslation } from "ui/i18n";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
+import { TextField, type TextFieldProps } from "onyxia-ui/TextField";
 import type { Link } from "type-route";
 import { assert, type Equals } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIconUrlByName } from "lazy-icons";
+import { useConst } from "powerhooks/useConst";
+import { Evt } from "evt";
 
 export type Props = {
     className?: string;
@@ -24,7 +27,11 @@ export type Props = {
     friendlyName: string;
     launchLink: Link;
     editLink: Link;
+    isFirst: boolean;
+    isLast: boolean;
     onRequestDelete: () => void;
+    onRequestToMove: (params: { direction: "up" | "down" | "top" | "bottom" }) => void;
+    onRequestRename: (params: { newFriendlyName: string }) => void;
 };
 
 export const MyServicesRestorableConfig = memo((props: Props) => {
@@ -35,7 +42,11 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
         className,
         launchLink,
         editLink,
-        onRequestDelete
+        isFirst,
+        isLast,
+        onRequestDelete,
+        onRequestToMove,
+        onRequestRename
     } = props;
 
     const { classes, cx } = useStyles({
@@ -61,20 +72,71 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
                 assert(editButtonRef.current !== null);
                 editButtonRef.current.click();
                 return;
+            case "move down":
+                onRequestToMove({ direction: "down" });
+                return;
+            case "move up":
+                onRequestToMove({ direction: "up" });
+                return;
+            case "move bottom":
+                onRequestToMove({ direction: "bottom" });
+                return;
+            case "move top":
+                onRequestToMove({ direction: "top" });
+                return;
         }
         assert<Equals<typeof action, never>>(false);
     });
+
+    const [isEditingFriendlyName, setIsEditingFriendlyName] = useState(false);
+    const evtFriendlyNameTextFieldAction = useConst(() =>
+        Evt.create<TextFieldProps["evtAction"]>()
+    );
 
     return (
         <div className={cx(classes.root, className)}>
             {!isShortVariant && (
                 <IconButton icon={getIconUrlByName("Delete")} onClick={onRequestDelete} />
             )}
-            <RoundLogo url={chartIconUrl} className={classes.logo} size="medium" />
             <div className={classes.friendlyNameWrapper}>
-                <Text typo="label 1" className={classes.friendlyName}>
-                    {friendlyName}
-                </Text>
+                <RoundLogo url={chartIconUrl} className={classes.logo} size="medium" />
+
+                {isEditingFriendlyName ? (
+                    <TextField
+                        inputProps_autoFocus={true}
+                        selectAllTextOnFocus={true}
+                        defaultValue={friendlyName}
+                        evtAction={evtFriendlyNameTextFieldAction}
+                        onEnterKeyDown={() =>
+                            evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                        }
+                        onSubmit={newFriendlyName => {
+                            setIsEditingFriendlyName(false);
+
+                            onRequestRename({ newFriendlyName });
+                        }}
+                        onEscapeKeyDown={() => {
+                            setIsEditingFriendlyName(false);
+                        }}
+                    />
+                ) : (
+                    <Text typo="label 1" className={classes.friendlyName}>
+                        {friendlyName}
+                    </Text>
+                )}
+                {isEditingFriendlyName ? (
+                    <IconButton
+                        icon={getIconUrlByName("Check")}
+                        onClick={() =>
+                            evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                        }
+                    />
+                ) : (
+                    <IconButton
+                        icon={getIconUrlByName("Edit")}
+                        onClick={() => setIsEditingFriendlyName(true)}
+                    />
+                )}
             </div>
             <div className={classes.linkAndEditButtonWrapper}>
                 <IconButton
@@ -95,9 +157,13 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
             <Button {...launchLink} doOpenNewTabIfHref={false} variant="secondary">
                 {t("launch")}
             </Button>
-            {isShortVariant && (
-                <MyServicesRestorableConfigOptions callback={configOptionsCallback} />
-            )}
+
+            <MyServicesRestorableConfigOptions
+                doDisableMoveUp={isFirst}
+                doDisableMoveDown={isLast}
+                callback={configOptionsCallback}
+                isShortVariant={isShortVariant}
+            />
         </div>
     );
 });
@@ -130,9 +196,9 @@ const useStyles = tss
             ...theme.spacing.rightLeft("margin", 2)
         },
         friendlyNameWrapper: {
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            flex: 1
+            flex: 1,
+            display: "flex",
+            alignItems: "center"
         },
         friendlyName: {
             overflow: "hidden",

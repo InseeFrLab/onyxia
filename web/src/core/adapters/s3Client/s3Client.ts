@@ -327,8 +327,6 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            console.log("before");
-
             const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
                 await (async () => {
                     const { GetBucketPolicyCommand, S3ServiceException } = await import(
@@ -435,8 +433,6 @@ export function createS3Client(
                         allowedPrefix
                     };
                 })();
-
-            console.log("after");
 
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];

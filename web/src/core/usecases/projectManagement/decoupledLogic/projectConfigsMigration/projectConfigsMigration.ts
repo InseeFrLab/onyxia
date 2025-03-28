@@ -22,7 +22,7 @@ export async function projectConfigsMigration(params: {
                 path: pathJoin(projectVaultTopDirPath_reserved, key)
             })
             .then(
-                ({ secret }) => secretToValue(secret) as ProjectConfigs["__modelVersion"],
+                ({ secret }) => secretToValue(secret) as number,
                 () => {
                     console.log("The above error is ok");
                     return undefined;
@@ -33,7 +33,7 @@ export async function projectConfigsMigration(params: {
     })();
 
     try {
-        if (modelVersion === 0) {
+        if (modelVersion < 1) {
             await v0ToV1({
                 projectVaultTopDirPath_reserved,
                 secretsManager
