@@ -162,7 +162,106 @@ api:
     #     "type": "helm",
     #   }
     # ]
-
+  userProfile:
+    enabled: true
+    rootPath: /userProfile/
+    subPathDefault: default
+    subPathRole: role
+    default:
+      profileSchema: |
+        "git": {
+          "title": "Git access",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "title": "Enable git access from within the service",
+              "type": "boolean",
+              "default": true
+            },
+            "name": {
+              "title": "User name",
+              "type": "string",
+              "default": "",
+              "x-onyxia": {
+                "overwriteDefaultWith": "{{git.name}}"
+              },
+              "hidden": {
+                "value": false,
+                "path": "enabled",
+                "isPathRelative": true
+              }
+            },
+            "email": {
+              "title": "User email",
+              "type": "string",
+              "default": "",
+              "x-onyxia": {
+                "overwriteDefaultWith": "{{git.email}}"
+              },
+              "hidden": {
+                "value": false,
+                "path": "enabled",
+                "isPathRelative": true
+              }
+            },
+            "cache": {
+              "title": "Credentials caching duration",
+              "description": "(in seconds)",
+              "type": "string",
+              "default": "",
+              "x-onyxia": {
+                "overwriteDefaultWith": "{{git.credentials_cache_duration}}"
+              },
+              "hidden": {
+                "value": false,
+                "path": "enabled",
+                "isPathRelative": true
+              }
+            },
+            "token": {
+              "title": "Personal Access Token",
+              "type": "string",
+              "default": "",
+              "render": "password",
+              "x-onyxia": {
+                "overwriteDefaultWith": "{{git.token}}"
+              },
+              "hidden": {
+                "value": false,
+                "path": "enabled",
+                "isPathRelative": true
+              }
+            },
+            "repository": {
+              "title": "Project repository",
+              "description": "cloned in service",
+              "type": "string",
+              "default": "",
+              "x-onyxia": {
+                "overwriteDefaultWith": "{{git.project}}"
+              },
+              "hidden": {
+                "value": false,
+                "path": "enabled",
+                "isPathRelative": true
+              }
+            },
+            "branch": {
+              "title": "Specific branch to use",
+              "type": "string",
+              "default": "",
+              "hidden": {
+                "value": false,
+                "path": "enabled",
+                "isPathRelative": true
+              }
+            }
+          }
+        }
+    roles:
+      #- roleName: datascientist
+      #  profileSchema: |
+      #    ...
   schemas:
     enabled: false
     rootPath: /schemas/

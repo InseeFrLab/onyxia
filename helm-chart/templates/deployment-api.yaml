@@ -113,10 +113,21 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      {{- if or .Values.api.schemas.enabled .Values.api.extraVolumes }}
+      {{- if or .Values.api.schemas.enabled .Values.api.extraVolumes .Values.api.userProfile.enabled }}
       volumes:
-        {{- if .Values.api.schemas.enabled }}
         {{- $fullname := include "onyxia.fullname" . -}}
+        {{- if .Values.api.userProfile.enabled }}
+        - name: {{ $fullname }}-userprofile
+          configMap:
+            name: {{ $fullname }}-userprofile
+        {{- range .Values.api.userProfile.roles }}
+        {{- $role := .roleName -}}
+        - name: {{ $fullname }}-{{ printf "%s %s" "role" $role | sha256sum | trunc 8 }}
+          configMap:
+            name: {{ $fullname }}-{{ printf "%s %s" "role" $role | sha256sum | trunc 8 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.api.schemas.enabled }}
         {{- range .Values.api.schemas.files }}
         - name: {{ $fullname }}-{{ printf "%s %s" .relativePath "default" | sha256sum | trunc 8 }}
           configMap:

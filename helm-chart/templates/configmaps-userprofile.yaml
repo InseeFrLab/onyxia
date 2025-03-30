@@ -1,0 +1,20 @@
+{{- if .Values.api.userProfile.enabled }}
+{{- $fullname := include "onyxia.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-userprofile
+data: |-
+{{ .Values.api.userProfile.default.profileSchema }}
+---
+{{- range .Values.api.userProfile.roles }}
+{{- $role := .roleName -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-{{ printf "%s %s" "role" $role | sha256sum | trunc 8 }}
+data: |-
+{{ .profileSchema | indent 4 }}
+---
+{{- end }}
+{{- end }}
