@@ -14,21 +14,34 @@ const editLink = {
 
 const meta = {
     title: "Pages/MyServices/MyServicesRestorableConfigs",
-    component: MyServicesRestorableConfigs,
+    component: MyServicesRestorableConfigs
+} satisfies Meta<typeof MyServicesRestorableConfigs>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
     args: {
         isShortVariant: false,
         entries: [
             {
-                restorableConfigIndex: 0,
+                restorableConfigRef: {
+                    catalogId: "catalogId",
+                    chartName: "chartName",
+                    friendlyName: "friendlyName"
+                },
                 chartIconUrl: undefined,
-                friendlyName: "My App 1",
                 launchLink,
                 editLink
             },
             {
-                restorableConfigIndex: 1,
+                restorableConfigRef: {
+                    catalogId: "catalogId",
+                    chartName: "chartName",
+                    friendlyName: "friendlyName 2"
+                },
                 chartIconUrl: undefined,
-                friendlyName: "My App 2",
                 launchLink,
                 editLink
             }
@@ -38,18 +51,19 @@ const meta = {
         },
         onRequestToggleIsShortVariant: () => {
             action("Toggle variant requested");
+        },
+        onRequestToMove: params => {
+            action(`Move requested: ${JSON.stringify(params)}`);
+        },
+        onRequestRename: params => {
+            action(`Rename requested : ${params.newFriendlyName}`);
         }
     }
-} satisfies Meta<typeof MyServicesRestorableConfigs>;
-
-export default meta;
-
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {};
+};
 
 export const ShortVariant: Story = {
     args: {
+        ...Default.args,
         isShortVariant: true
     }
 };

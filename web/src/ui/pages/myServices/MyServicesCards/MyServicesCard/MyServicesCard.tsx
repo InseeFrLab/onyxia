@@ -19,7 +19,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { Link } from "type-route";
 import type { Service } from "core/usecases/serviceManagement";
 import { assert, type Equals } from "tsafe/assert";
-import { TextField, TextFieldProps } from "onyxia-ui/TextField";
+import { TextField, type TextFieldProps } from "onyxia-ui/TextField";
 import MuiLink from "@mui/material/Link";
 import { env } from "env";
 

@@ -16,8 +16,9 @@ import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyabl
 import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
-import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { computeRootForm } from "./decoupledLogic";
+
+type RestorableServiceConfig = projectManagement.ProjectConfigs.RestorableServiceConfig;
 
 type RestorableServiceConfigLike = {
     catalogId: string;

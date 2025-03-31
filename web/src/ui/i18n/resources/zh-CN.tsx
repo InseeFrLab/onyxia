@@ -826,7 +826,11 @@ ${
     MyServicesRestorableConfigOptions: {
         edit: "编辑服务",
         "copy link": "复制链接",
-        "remove bookmark": "删除书签"
+        "remove bookmark": "删除书签",
+        "move down": "下移",
+        "move up": "上移",
+        "move to top": "移至顶部",
+        "move to bottom": "移至底部"
     },
     MyServicesRestorableConfig: {
         edit: "编辑服务",

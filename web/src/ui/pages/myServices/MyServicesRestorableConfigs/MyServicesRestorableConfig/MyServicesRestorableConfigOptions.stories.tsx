@@ -13,6 +13,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        callback: action("callback")
+        callback: action("callback"),
+        doDisableMoveDown: false,
+        doDisableMoveUp: false,
+        isShortVariant: false
     }
 };

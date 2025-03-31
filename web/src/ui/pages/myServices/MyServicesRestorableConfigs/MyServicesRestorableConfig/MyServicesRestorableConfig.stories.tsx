@@ -13,6 +13,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
+        onRequestRename: params => action(`onRequestRename ${params.newFriendlyName}`)(),
+        isFirst: false,
+        isLast: false,
+        onRequestToMove: params => action(`requestToMove ${params.direction}}`)(),
         isShortVariant: false,
         chartIconUrl:
             "https://minio.lab.sspcloud.fr/projet-onyxia/assets/servicesImg/vscode.png",

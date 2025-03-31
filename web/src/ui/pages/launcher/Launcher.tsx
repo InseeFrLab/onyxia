@@ -210,7 +210,9 @@ const Launcher = withLoginEnforced((props: Props) => {
         assert(restorableConfig !== undefined);
 
         if (isRestorableConfigSaved) {
-            restorableConfigManagement.deleteRestorableConfig({ restorableConfig });
+            restorableConfigManagement.deleteRestorableConfig({
+                restorableConfigRef: restorableConfig
+            });
         } else {
             {
                 const dDoProceed = new Deferred<boolean>();
