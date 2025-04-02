@@ -17,7 +17,7 @@
     <br>
     <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">our Slack</a>
     <br>
-    <b>What's next? Checkout our</b> <a href="https://docs.onyxia.sh/roadmap">roadmap</a>
+    <b>What's next? Checkout our</b> <a href="https://docs.onyxia.sh/contributors-doc/roadmap">roadmap</a> and attend our <a href="https://docs.onyxia.sh/contributors-doc/community-calls">monthly community calls</a>
 </p>
 
 Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
