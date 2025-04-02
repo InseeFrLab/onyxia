@@ -63,6 +63,7 @@ type ImportMetaEnv = {
   ONYXIA_VERSION_URL: string
   ALLOW_THEME_TESTING_VIA_URL: string
   SCREEN_SCALER: string
+  OIDC_DEBUG_LOGS: string
   // @user-defined-start
   /*
    * Here you can define your own special variables

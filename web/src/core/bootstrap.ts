@@ -27,6 +27,7 @@ type ParamsOfBootstrapCore = {
     quotaWarningThresholdPercent: number;
     quotaCriticalThresholdPercent: number;
     isAuthGloballyRequired: boolean;
+    enableOidcDebugLogs: boolean;
 };
 
 export type Context = {
@@ -46,7 +47,8 @@ export async function bootstrapCore(
         apiUrl,
         transformBeforeRedirectForKeycloakTheme,
         getCurrentLang,
-        isAuthGloballyRequired
+        isAuthGloballyRequired,
+        enableOidcDebugLogs
     } = params;
 
     let isCoreCreated = false;
@@ -126,7 +128,8 @@ export async function bootstrapCore(
             ...oidcParams,
             transformBeforeRedirectForKeycloakTheme,
             getCurrentLang,
-            autoLogin: false
+            autoLogin: false,
+            enableDebugLogs: enableOidcDebugLogs
         });
     })();
 
@@ -225,7 +228,8 @@ export async function bootstrapCore(
             }),
             transformBeforeRedirectForKeycloakTheme,
             getCurrentLang,
-            autoLogin: true
+            autoLogin: true,
+            enableDebugLogs: enableOidcDebugLogs
         });
 
         const doClearCachedVaultToken: boolean = await (async () => {

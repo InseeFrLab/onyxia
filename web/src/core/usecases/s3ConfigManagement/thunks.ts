@@ -189,7 +189,8 @@ export const protectedThunks = {
                             autoLogin: true,
                             transformBeforeRedirectForKeycloakTheme:
                                 paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                            getCurrentLang: paramsOfBootstrapCore.getCurrentLang
+                            getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
+                            enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
                         });
 
                         const doClearCachedS3Token: boolean = await (async () => {

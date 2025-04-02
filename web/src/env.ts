@@ -1291,6 +1291,20 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
 
             return parsedValue;
         }
+    },
+    {
+        envName: "OIDC_DEBUG_LOGS",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+        }
     }
 ]);
 

@@ -17,6 +17,7 @@ export async function createOidc<AutoLogin extends boolean>(
         }) => string;
         getCurrentLang: () => Language;
         autoLogin: AutoLogin;
+        enableDebugLogs: boolean;
     }
 ): Promise<AutoLogin extends true ? Oidc.LoggedIn : Oidc> {
     const {
@@ -28,7 +29,8 @@ export async function createOidc<AutoLogin extends boolean>(
         getCurrentLang,
         extraQueryParams_raw,
         idleSessionLifetimeInSeconds,
-        autoLogin
+        autoLogin,
+        enableDebugLogs
     } = params;
 
     const oidc = await createOidcSpa({
@@ -94,7 +96,8 @@ export async function createOidc<AutoLogin extends boolean>(
             return authorizationUrl;
         },
         idleSessionLifetimeInSeconds,
-        homeUrl: import.meta.env.BASE_URL
+        homeUrl: import.meta.env.BASE_URL,
+        debugLogs: enableDebugLogs
     });
 
     // TODO: On next oidc-spa major, just return oidc directly
