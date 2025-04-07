@@ -19,6 +19,7 @@ export const Public: Story = {
             file: {
                 kind: "file",
                 policy: "public",
+                canChangePolicy: true,
                 basename: "photo.png",
                 size: 2048000, // in bytes
                 lastModified: new Date("2023-09-15")
@@ -42,7 +43,8 @@ export const Private: Story = {
                 policy: "private",
                 basename: "photo.png",
                 size: 2048000,
-                lastModified: new Date("2023-09-15")
+                lastModified: new Date("2023-09-15"),
+                canChangePolicy: true
             },
             url: undefined,
             validityDurationSecondOptions: [3600, 7200, 10800],
