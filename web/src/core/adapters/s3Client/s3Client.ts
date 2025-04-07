@@ -591,9 +591,8 @@ export function createS3Client(
                 basename: objectName,
                 size: metadata.ContentLength,
                 lastModified: metadata.LastModified,
-                policy: "private",
-                canChangePolicy: false
-            } satisfies S3Object.File;
+                policy: "private"
+            };
         },
         deleteFile: async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
