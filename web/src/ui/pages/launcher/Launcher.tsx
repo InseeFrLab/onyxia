@@ -90,7 +90,8 @@ const Launcher = withLoginEnforced((props: Props) => {
         s3ConfigSelect,
         labeledHelmChartSourceUrls,
         helmValues,
-        helmValuesSchema_forDataTextEditor
+        helmValuesSchema_forDataTextEditor,
+        infoAmountInHelmValues
     } = useCoreState("launcher", "main");
 
     const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
@@ -482,6 +483,23 @@ const Launcher = withLoginEnforced((props: Props) => {
                             onFieldErrorChange
                         }}
                     />
+                </div>
+
+                <div>
+                    <span>infoAmountInHelmValues: {infoAmountInHelmValues}</span>
+                    <button
+                        onClick={() => {
+                            launcher.changeInfoAmountInHelmValues({
+                                infoAmountInHelmValues:
+                                    infoAmountInHelmValues ===
+                                    "include values.yaml defaults"
+                                        ? "user provided"
+                                        : "include values.yaml defaults"
+                            });
+                        }}
+                    >
+                        toggle
+                    </button>
                 </div>
 
                 <div

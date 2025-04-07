@@ -65,6 +65,8 @@ export declare namespace State {
         k8sRandomSubdomain: string;
         helmChartSourceUrls: string[];
         availableChartVersions: string[];
+
+        infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
     };
 }
 
@@ -109,6 +111,39 @@ export const { reducer, actions } = createUsecaseActions({
                 });
 
                 return state;
+            },
+            infoAmountInHelmValuesChanged: (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        infoAmountInHelmValues:
+                            | "user provided"
+                            | "include values.yaml defaults";
+                        helmValuesPatch: {
+                            path: (string | number)[];
+                            value: StringifyableAtomic | undefined;
+                        }[];
+                        helmValues_default: Record<string, Stringifyable>;
+                    };
+                }
+            ) => {
+                const { infoAmountInHelmValues, helmValuesPatch, helmValues_default } =
+                    payload;
+
+                assert(state.stateDescription === "ready");
+
+                const helmValues = structuredClone(helmValues_default);
+
+                applyDiffPatch({
+                    objectOrArray: helmValues,
+                    diffPatch: helmValuesPatch
+                });
+
+                state.helmValues_default = helmValues_default;
+                state.helmValues = helmValues;
+                state.infoAmountInHelmValues = infoAmountInHelmValues;
             },
             formFieldValueChanged: (
                 state,

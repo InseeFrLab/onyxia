@@ -74,7 +74,12 @@ export const thunks = {
                     evtCleanupInitialize.post();
                 } else {
                     evtCleanupInitialize = Evt.create();
-                    setContext(rootContext, { evtCleanupInitialize });
+                    setContext(rootContext, {
+                        evtCleanupInitialize,
+                        reComputeHelmValues: () => {
+                            assert(false, "premature call");
+                        }
+                    });
                 }
 
                 const ctx = Evt.newCtx();
@@ -207,6 +212,8 @@ export const thunks = {
                     return;
                 }
 
+                const infoAmountInHelmValues = "user provided";
+
                 const {
                     helmValues: helmValues_default,
                     helmValuesSchema_forDataTextEditor,
@@ -214,8 +221,24 @@ export const thunks = {
                 } = computeHelmValues({
                     helmValuesSchema,
                     xOnyxiaContext,
-                    helmValuesYaml
+                    helmValuesYaml,
+                    infoAmountInHelmValues
                 });
+
+                {
+                    const context = getContext(rootContext);
+
+                    context.reComputeHelmValues = ({ infoAmountInHelmValues }) => {
+                        const { helmValues: helmValues_default } = computeHelmValues({
+                            helmValuesSchema,
+                            xOnyxiaContext,
+                            helmValuesYaml,
+                            infoAmountInHelmValues
+                        });
+
+                        return { helmValues_default };
+                    };
+                }
 
                 const friendlyName_default = chartName;
 
@@ -264,7 +287,8 @@ export const thunks = {
                             catalogName,
                             k8sRandomSubdomain: xOnyxiaContext.k8s.randomSubdomain,
                             helmChartSourceUrls,
-                            availableChartVersions
+                            availableChartVersions,
+                            infoAmountInHelmValues
                         },
                         helmValuesPatch: helmValuesPatch ?? []
                     })
@@ -276,6 +300,33 @@ export const thunks = {
             })();
 
             return { cleanup };
+        },
+    changeInfoAmountInHelmValues:
+        (params: {
+            infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+        }) =>
+        (...args) => {
+            const { infoAmountInHelmValues } = params;
+
+            const [dispatch, getState, rootContext] = args;
+
+            const { reComputeHelmValues } = getContext(rootContext);
+
+            const { helmValues_default } = reComputeHelmValues({
+                infoAmountInHelmValues
+            });
+
+            const restorableConfig = privateSelectors.restorableConfig(getState());
+
+            assert(restorableConfig !== null);
+
+            dispatch(
+                actions.infoAmountInHelmValuesChanged({
+                    helmValues_default,
+                    helmValuesPatch: restorableConfig.helmValuesPatch,
+                    infoAmountInHelmValues
+                })
+            );
         },
     restoreAllDefault:
         () =>
@@ -464,6 +515,9 @@ export const thunks = {
 
 const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     evtCleanupInitialize: Evt<void>;
+    reComputeHelmValues: (params: {
+        infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+    }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
 const privateThunks = {
