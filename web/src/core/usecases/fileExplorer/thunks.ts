@@ -8,7 +8,6 @@ import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
-import { getPolicyAttributes } from "core/tools/getPolicyAttributes";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
