@@ -8,6 +8,7 @@ import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
+import { getPolicyAttributes } from "core/tools/getPolicyAttributes";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -394,7 +395,8 @@ export const thunks = {
                             basename: params.basename,
                             policy: "private",
                             size: undefined,
-                            lastModified: undefined
+                            lastModified: undefined,
+                            canChangePolicy: false
                         }
                     ],
                     directoryPath,
@@ -444,6 +446,8 @@ export const thunks = {
                 });
                 return uploadResult;
             };
+
+            //TODO policy can be public if uploaded inside public directory
             const completedObject = await (async () => {
                 switch (params.createWhat) {
                     case "file": {
@@ -471,7 +475,8 @@ export const thunks = {
                             basename: uploadResult.basename,
                             size: uploadResult.size,
                             lastModified: uploadResult.lastModified,
-                            policy: "private"
+                            policy: "private",
+                            canChangePolicy: false
                         } satisfies S3Object.File;
                     }
                     case "directory": {
@@ -486,7 +491,8 @@ export const thunks = {
                         return {
                             kind: "directory",
                             basename: params.basename,
-                            policy: "private"
+                            policy: "private",
+                            canChangePolicy: false
                         } satisfies S3Object.Directory;
                     }
                 }

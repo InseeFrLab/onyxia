@@ -197,6 +197,7 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                     display: "flex" as const,
                     type: "singleSelect",
                     valueOptions: ["public", "private"],
+
                     renderCell: params => {
                         return (
                             <PolicySwitch
@@ -221,6 +222,7 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                                     e.stopPropagation();
                                 }}
                                 isPolicyChanging={params.row.isPolicyChanging}
+                                disabled={!params.row.canChangePolicy}
                             />
                         );
                     }

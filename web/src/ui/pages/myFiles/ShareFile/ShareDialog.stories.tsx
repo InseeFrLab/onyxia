@@ -80,7 +80,8 @@ export const Private: Story = {
                         policy: "private",
                         basename: "photo.png",
                         size: 2048000,
-                        lastModified: new Date("2023-09-15")
+                        lastModified: new Date("2023-09-15"),
+                        canChangePolicy: true
                     },
                     url: url,
                     validityDurationSecondOptions: [3600, 7200, 10800],
