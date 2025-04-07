@@ -125,26 +125,30 @@ const MyService = withLoginEnforced((props: Props) => {
                                 }}
                             />
                         )}
-                        <Tabs
-                            className={classes.tabs}
-                            classes={{
-                                content: classes.tabsContent
-                            }}
-                            tabs={podNames.map(podName => ({
-                                id: podName,
-                                title: `Pod: ${podName}`
-                            }))}
-                            activeTabId={selectedPodName}
-                            maxTabCount={3}
-                            onRequestChangeActiveTab={podName =>
-                                serviceDetails.changeSelectedPod({ podName })
-                            }
-                        >
-                            <PodLogsTab
-                                helmReleaseName={route.params.helmReleaseName}
-                                podName={selectedPodName}
-                            />
-                        </Tabs>
+                        {selectedPodName === undefined ? (
+                            <>Not available</>
+                        ) : (
+                            <Tabs
+                                className={classes.tabs}
+                                classes={{
+                                    content: classes.tabsContent
+                                }}
+                                tabs={podNames.map(podName => ({
+                                    id: podName,
+                                    title: `Pod: ${podName}`
+                                }))}
+                                activeTabId={selectedPodName}
+                                maxTabCount={3}
+                                onRequestChangeActiveTab={podName =>
+                                    serviceDetails.changeSelectedPod({ podName })
+                                }
+                            >
+                                <PodLogsTab
+                                    helmReleaseName={route.params.helmReleaseName}
+                                    podName={selectedPodName}
+                                />
+                            </Tabs>
+                        )}
                     </div>
                 );
             })()}

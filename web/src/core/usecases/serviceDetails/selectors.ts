@@ -107,6 +107,24 @@ const isCommandBarExpanded = createSelector(readyState, state => {
     return state.isCommandBarExpanded;
 });
 
+const overviewState = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return {
+        commandLogsEntries: state.commandLogsEntry
+    };
+});
+
+const helmState = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return {
+        releaseName: state.helmReleaseName,
+        values: state.helmValues
+    };
+});
 const main = createSelector(
     isReady,
     helmReleaseFriendlyName,
@@ -133,7 +151,7 @@ const main = createSelector(
 
         assert(helmReleaseFriendlyName !== undefined);
         assert(podNames !== undefined);
-        assert(selectedPodName !== undefined);
+        // assert(selectedPodName !== undefined);
         assert(commandLogsEntries !== undefined);
 
         return {
@@ -156,3 +174,67 @@ export const protectedSelectors = {
     formattedHelmValues,
     isCommandBarExpanded
 };
+
+type MainSelectorNew =
+    | {
+          isReady: false;
+          helmReleaseName: string;
+      }
+    | ReadyType;
+
+type ReadyType = {
+    isReady: true;
+    helmRelease: {
+        friendlyName: string;
+        revision: number;
+        state:
+            | "unknown"
+            | "deployed"
+            | "uninstalled"
+            | "superseded"
+            | "failed"
+            | "uninstalling"
+            | "pending-install"
+            | "pending-upgrade"
+            | "pending-rollback";
+        updated: number;
+        chatName: string;
+        version: string;
+    };
+    k8s: Controller[];
+    imageName: string;
+    monitoringUrl: string | undefined;
+    commandLogsEntries: {
+        cmdId: number;
+        cmd: string;
+        resp: string;
+    }[];
+};
+
+type Controller = {
+    healthy: boolean;
+    name: string;
+    kind: "StatefulSet" | "Deployment" | "DaemonSet";
+    pods: Pod[];
+    replicaCount: number;
+};
+
+type Pod = {
+    name: string;
+    state: "Pending" | "Running" | "Succeeded" | "Failed" | "Unknown";
+    reason: string | undefined; //PodInitializing ....
+    container: Container[];
+};
+
+type Container = {
+    ready: boolean;
+    name: string;
+    ressources: Ressources;
+};
+
+type Ressources = {
+    limits: Resource;
+    requests: Resource;
+};
+
+type Resource = { cpu: string; memory: string };

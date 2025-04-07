@@ -13,7 +13,7 @@ import { useEvt } from "evt/hooks";
 import { SearchBar, type SearchBarProps } from "onyxia-ui/SearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { CatalogSwitcherButton } from "./CatalogSwitcherButton";
+import { SwitcherButton } from "ui/shared/SwitcherButton";
 import { CatalogNoSearchMatches } from "./CatalogNoSearchMatches";
 import { assert } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -162,7 +162,7 @@ export default function Catalog(props: Props) {
                     {availableCatalogs.length > 1 && route.params.search === "" && (
                         <div className={classes.catalogSwitcher}>
                             {availableCatalogs.map(({ catalogId, catalogName }) => (
-                                <CatalogSwitcherButton
+                                <SwitcherButton
                                     key={catalogId}
                                     isSelected={catalogId === selectedCatalog.id}
                                     text={resolveLocalizedString(catalogName)}

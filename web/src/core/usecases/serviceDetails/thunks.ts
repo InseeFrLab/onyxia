@@ -110,6 +110,8 @@ const privateThunks = {
                 return;
             }
 
+            console.log(helmRelease);
+
             const { namespace: kubernetesNamespace } =
                 projectManagement.protectedSelectors.currentProject(getState());
 

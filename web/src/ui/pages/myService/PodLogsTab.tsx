@@ -33,6 +33,7 @@ function ActualPodLogsTab(props: Props) {
             podName
         });
 
+        setInactive();
         return setInactive;
     }, [helmReleaseName, podName]);
 
@@ -57,7 +58,7 @@ function ActualLogs(props: { paginatedLogs: string[] }) {
     const { classes } = useStyles();
 
     const [currentPage, setCurrentPage] = useState(paginatedLogs.length);
-    const [doFollow, setDoFollow] = useState(true);
+    const [doFollow, setDoFollow] = useState(false);
 
     const { t } = useTranslation({ PodLogsTab });
 

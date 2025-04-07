@@ -14,27 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        jsonSchema: {
-            type: "object",
-            properties: {
-                name: {
-                    type: "string"
-                },
-                age: {
-                    type: "number"
-                },
-                isDeveloper: {
-                    type: "boolean"
-                },
-                favoritePet: {
-                    type: "array",
-                    items: {
-                        type: "string"
-                    }
-                }
-            },
-            required: ["name", "age"]
-        },
+        jsonSchema: {},
         value: {
             name: "John",
             age: 25,
