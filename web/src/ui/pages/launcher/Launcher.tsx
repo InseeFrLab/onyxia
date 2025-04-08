@@ -352,7 +352,8 @@ const Launcher = withLoginEnforced((props: Props) => {
 
     const { classes, cx } = useStyles({
         isCommandBarEnabled: commandLogsEntries !== undefined,
-        isDataEditorModeEnabled
+        isDataEditorModeEnabled,
+        hasForm: helmValuesSchema_forDataTextEditor !== undefined
     });
 
     const [dataTextEditorErrorMsg, setDataTextEditorErrorMsg] = useState<
@@ -579,9 +580,13 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss
-    .withParams<{ isCommandBarEnabled: boolean; isDataEditorModeEnabled: boolean }>()
+    .withParams<{
+        isCommandBarEnabled: boolean;
+        isDataEditorModeEnabled: boolean;
+        hasForm: boolean;
+    }>()
     .withName({ Launcher })
-    .create(({ theme, isCommandBarEnabled, isDataEditorModeEnabled }) => {
+    .create(({ theme, isCommandBarEnabled, isDataEditorModeEnabled, hasForm }) => {
         const MAX_WIDTH = 1250;
 
         return {
@@ -626,7 +631,7 @@ const useStyles = tss
                 flex: 1,
                 overflow: "visible",
                 position: "relative",
-                marginTop: theme.spacing(3)
+                marginTop: !hasForm ? theme.spacing(3) : undefined
             },
             dataTextEditor: {
                 position: "absolute",
