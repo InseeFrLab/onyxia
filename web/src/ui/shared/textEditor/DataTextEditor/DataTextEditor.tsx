@@ -71,6 +71,8 @@ export type Props = {
         isChecked: boolean;
         onIsCheckedChange: (isChecked: boolean) => void;
     };
+
+    isJson5Enabled?: boolean;
 };
 
 {
@@ -86,6 +88,7 @@ export type Props = {
             | "onErrorMsgChanged"
             | "additionalValidation"
             | "allDefaults"
+            | "isJson5Enabled"
         >;
 
     assert<Equals<Props, Props_Expected>>;
@@ -122,6 +125,7 @@ export default function DataTextEditor(props: Props) {
         onErrorMsgChanged,
         additionalValidation,
         allDefaults,
+        isJson5Enabled = true,
         ...rest
     } = props;
 
@@ -324,35 +328,39 @@ export default function DataTextEditor(props: Props) {
             extensions={extensions}
             children={
                 <>
-                    <div className={classes.formatWrapper}>
-                        <FormControl variant="standard">
-                            <Select
-                                value={format}
-                                label="Format"
-                                onChange={event =>
-                                    onFormatChange(event.target.value as any)
-                                }
-                            >
-                                <MenuItem value={"YAML"}>YAML</MenuItem>
-                                <MenuItem value={"JSON5"}>JSON5</MenuItem>
-                            </Select>
-                        </FormControl>
-                        {allDefaults !== undefined && (
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={allDefaults.isChecked}
+                    {(isJson5Enabled || allDefaults !== undefined) && (
+                        <div className={classes.formatWrapper}>
+                            {isJson5Enabled && (
+                                <FormControl variant="standard">
+                                    <Select
+                                        value={format}
+                                        label="Format"
                                         onChange={event =>
-                                            allDefaults.onIsCheckedChange(
-                                                event.target.checked
-                                            )
+                                            onFormatChange(event.target.value as any)
                                         }
-                                    />
-                                }
-                                label="All defaults"
-                            />
-                        )}
-                    </div>
+                                    >
+                                        <MenuItem value={"YAML"}>YAML</MenuItem>
+                                        <MenuItem value={"JSON5"}>JSON5</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
+                            {allDefaults !== undefined && (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={allDefaults.isChecked}
+                                            onChange={event =>
+                                                allDefaults.onIsCheckedChange(
+                                                    event.target.checked
+                                                )
+                                            }
+                                        />
+                                    }
+                                    label="All defaults"
+                                />
+                            )}
+                        </div>
+                    )}
 
                     {hasJsonSchema && (
                         <>

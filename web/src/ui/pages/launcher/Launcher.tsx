@@ -535,6 +535,7 @@ const Launcher = withLoginEnforced((props: Props) => {
                                 });
                             }
                         }}
+                        isJson5Enabled={false}
                     />
                 </div>
             </div>

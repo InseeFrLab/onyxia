@@ -18,6 +18,8 @@ export type Props = {
         isChecked: boolean;
         onIsCheckedChange: (isChecked: boolean) => void;
     };
+
+    isJson5Enabled?: boolean;
 };
 
 {
