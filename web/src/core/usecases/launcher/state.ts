@@ -57,7 +57,7 @@ export declare namespace State {
         helmValues: Record<string, Stringifyable>;
         helmValuesYaml: string;
 
-        helmValuesSchema_forDataTextEditor: JSONSchema;
+        helmValuesSchema_forDataTextEditor: JSONSchema | undefined;
 
         chartIconUrl: string | undefined;
         catalogRepositoryUrl: string;

@@ -61,7 +61,7 @@ export type Props = {
     value: Stringifyable;
     onChange: (newValue: Stringifyable) => void;
     onErrorMsgChanged?: (errorMsg: string | undefined) => void;
-    jsonSchema: Record<string, Stringifyable>;
+    jsonSchema: Record<string, Stringifyable> | undefined;
 
     additionalValidation?: (
         value: Stringifyable
@@ -116,7 +116,7 @@ function parseValue(params: { valueStr: string; format: Format }): Stringifyable
 
 export default function DataTextEditor(props: Props) {
     const {
-        jsonSchema,
+        jsonSchema: jsonSchema_props,
         value: value_default,
         onChange,
         onErrorMsgChanged,
@@ -124,6 +124,17 @@ export default function DataTextEditor(props: Props) {
         allDefaults,
         ...rest
     } = props;
+
+    const hasJsonSchema = jsonSchema_props !== undefined;
+
+    const jsonSchema = useMemo(
+        (): Record<string, Stringifyable> =>
+            jsonSchema_props ?? {
+                type: "object",
+                properties: {}
+            },
+        [jsonSchema_props]
+    );
 
     const jsonSchemaStr = useMemo(
         () => JSON.stringify(jsonSchema, null, 2),
@@ -343,31 +354,35 @@ export default function DataTextEditor(props: Props) {
                         )}
                     </div>
 
-                    <div className={classes.bottomLeft}>
-                        {errorMsg !== undefined && (
-                            <div className={classes.errorTextWrapper}>
-                                <Text typo="body 2" className={classes.errorText}>
-                                    <Icon icon={ErrorIcon} />
-                                    &nbsp;
-                                    {capitalize(errorMsg)}
-                                    &nbsp;
-                                </Text>
+                    {hasJsonSchema && (
+                        <>
+                            <div className={classes.bottomLeft}>
+                                {errorMsg !== undefined && (
+                                    <div className={classes.errorTextWrapper}>
+                                        <Text typo="body 2" className={classes.errorText}>
+                                            <Icon icon={ErrorIcon} />
+                                            &nbsp;
+                                            {capitalize(errorMsg)}
+                                            &nbsp;
+                                        </Text>
+                                    </div>
+                                )}
+                                <Button
+                                    startIcon={DataObjectIcon}
+                                    onClick={() => setIsJsonSchemaDialogOpen(true)}
+                                    variant="ternary"
+                                >
+                                    Schema
+                                </Button>
                             </div>
-                        )}
-                        <Button
-                            startIcon={DataObjectIcon}
-                            onClick={() => setIsJsonSchemaDialogOpen(true)}
-                            variant="ternary"
-                        >
-                            Schema
-                        </Button>
-                    </div>
 
-                    <JsonSchemaDialog
-                        isOpen={isJsonSchemaDialogOpen}
-                        onClose={onJsonSchemaDialogClose}
-                        jsonSchemaStr={jsonSchemaStr}
-                    />
+                            <JsonSchemaDialog
+                                isOpen={isJsonSchemaDialogOpen}
+                                onClose={onJsonSchemaDialogClose}
+                                jsonSchemaStr={jsonSchemaStr}
+                            />
+                        </>
+                    )}
                 </>
             }
         />

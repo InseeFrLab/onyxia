@@ -13,7 +13,7 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
-import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
+import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
@@ -147,7 +147,7 @@ export const thunks = {
 
                 const {
                     helmDependencies,
-                    helmValuesSchema,
+                    helmValuesSchema: helmValuesSchema_orUndefined,
                     helmChartSourceUrls,
                     helmValuesYaml
                 } = await onyxiaApi.getHelmChartDetails({
@@ -155,6 +155,13 @@ export const thunks = {
                     chartName,
                     chartVersion
                 });
+
+                const hasHelmValuesSchema = helmValuesSchema_orUndefined !== undefined;
+
+                const helmValuesSchema: JSONSchema = helmValuesSchema_orUndefined ?? {
+                    type: "object",
+                    properties: {}
+                };
 
                 if (getIsCanceled()) {
                     return;
@@ -212,7 +219,9 @@ export const thunks = {
                     return;
                 }
 
-                const infoAmountInHelmValues = "user provided";
+                const infoAmountInHelmValues = hasHelmValuesSchema
+                    ? "user provided"
+                    : "include values.yaml defaults";
 
                 const {
                     helmValues: helmValues_default,
@@ -280,7 +289,9 @@ export const thunks = {
                             helmValues_default,
                             helmValuesYaml,
 
-                            helmValuesSchema_forDataTextEditor,
+                            helmValuesSchema_forDataTextEditor: hasHelmValuesSchema
+                                ? helmValuesSchema_forDataTextEditor
+                                : undefined,
 
                             chartIconUrl,
                             catalogRepositoryUrl,

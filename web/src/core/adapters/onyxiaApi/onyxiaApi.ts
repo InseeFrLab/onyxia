@@ -496,12 +496,9 @@ export function createOnyxiaApi(params: {
                             getApiCatalogsMemo()
                         ] as const);
 
-                    const helmValuesSchema: JSONSchema = (() => {
+                    const helmValuesSchema: JSONSchema | undefined = (() => {
                         if (helmValuesSchemaOrEmptyString === "") {
-                            return {
-                                type: "object",
-                                properties: {}
-                            };
+                            return undefined;
                         }
 
                         zJSONSchema.parse(helmValuesSchemaOrEmptyString);
