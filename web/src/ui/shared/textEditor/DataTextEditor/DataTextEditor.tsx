@@ -346,6 +346,7 @@ export default function DataTextEditor(props: Props) {
                             )}
                             {allDefaults !== undefined && (
                                 <FormControlLabel
+                                    className={classes.allDefaultsLabel}
                                     control={
                                         <Checkbox
                                             checked={allDefaults.isChecked}
@@ -445,5 +446,8 @@ const useStyles = tss
             border: `1px solid ${theme.colors.useCases.alertSeverity.error.background}`,
             backgroundColor: theme.colors.useCases.alertSeverity.error.background,
             boxShadow: theme.shadows[2]
+        },
+        allDefaultsLabel: {
+            marginRight: 0
         }
     }));
