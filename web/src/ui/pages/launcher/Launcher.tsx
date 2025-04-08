@@ -507,6 +507,7 @@ const Launcher = withLoginEnforced((props: Props) => {
                     className={classes.dataTextEditorWrapper}
                 >
                     <DataTextEditor
+                        key={infoAmountInHelmValues}
                         className={classes.dataTextEditor}
                         value={helmValues}
                         jsonSchema={helmValuesSchema_forDataTextEditor}
