@@ -26,7 +26,8 @@ describe(symToStr({ computeHelmValues }), () => {
             helmValuesYaml: YAML.stringify({
                 r: "values.yaml"
             }),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -62,7 +63,8 @@ describe(symToStr({ computeHelmValues }), () => {
             helmValuesYaml: YAML.stringify({
                 r: "values.yaml"
             }),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -95,7 +97,8 @@ describe(symToStr({ computeHelmValues }), () => {
             helmValuesYaml: YAML.stringify({
                 r: "values.yaml"
             }),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -128,7 +131,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -169,7 +173,8 @@ describe(symToStr({ computeHelmValues }), () => {
             helmValuesYaml: YAML.stringify({
                 r: "values.yaml"
             }),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -199,7 +204,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -230,7 +236,8 @@ describe(symToStr({ computeHelmValues }), () => {
                     }
                 },
                 helmValuesYaml: YAML.stringify({}),
-                xOnyxiaContext
+                xOnyxiaContext,
+                infoAmountInHelmValues: "user provided"
             });
         }).toThrow();
     });
@@ -252,7 +259,8 @@ describe(symToStr({ computeHelmValues }), () => {
                     }
                 },
                 helmValuesYaml: YAML.stringify({}),
-                xOnyxiaContext
+                xOnyxiaContext,
+                infoAmountInHelmValues: "user provided"
             });
         }).toThrow();
     });
@@ -278,7 +286,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -321,7 +330,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -363,7 +373,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -404,7 +415,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -440,7 +452,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -477,7 +490,8 @@ describe(symToStr({ computeHelmValues }), () => {
                     }
                 },
                 helmValuesYaml: YAML.stringify({}),
-                xOnyxiaContext
+                xOnyxiaContext,
+                infoAmountInHelmValues: "user provided"
             });
         }).toThrow();
     });
@@ -500,7 +514,8 @@ describe(symToStr({ computeHelmValues }), () => {
                     }
                 },
                 helmValuesYaml: YAML.stringify({}),
-                xOnyxiaContext
+                xOnyxiaContext,
+                infoAmountInHelmValues: "user provided"
             });
         }).toThrow();
     });
@@ -524,7 +539,8 @@ describe(symToStr({ computeHelmValues }), () => {
                     }
                 },
                 helmValuesYaml: YAML.stringify({}),
-                xOnyxiaContext
+                xOnyxiaContext,
+                infoAmountInHelmValues: "user provided"
             });
         }).toThrow();
     });
@@ -550,7 +566,8 @@ describe(symToStr({ computeHelmValues }), () => {
                     }
                 },
                 helmValuesYaml: YAML.stringify({}),
-                xOnyxiaContext
+                xOnyxiaContext,
+                infoAmountInHelmValues: "user provided"
             });
         }).toThrow();
     });
@@ -575,7 +592,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
@@ -620,7 +638,8 @@ describe(symToStr({ computeHelmValues }), () => {
                 }
             },
             helmValuesYaml: YAML.stringify({}),
-            xOnyxiaContext
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
         });
 
         const expected = {
