@@ -485,23 +485,6 @@ const Launcher = withLoginEnforced((props: Props) => {
                     />
                 </div>
 
-                <div>
-                    <span>infoAmountInHelmValues: {infoAmountInHelmValues}</span>
-                    <button
-                        onClick={() => {
-                            launcher.changeInfoAmountInHelmValues({
-                                infoAmountInHelmValues:
-                                    infoAmountInHelmValues ===
-                                    "include values.yaml defaults"
-                                        ? "user provided"
-                                        : "include values.yaml defaults"
-                            });
-                        }}
-                    >
-                        toggle
-                    </button>
-                </div>
-
                 <div
                     ref={ref_dataTextEditorWrapper}
                     className={classes.dataTextEditorWrapper}
@@ -530,6 +513,17 @@ const Launcher = withLoginEnforced((props: Props) => {
                             return launcher.additionalValidation({
                                 helmValues_candidate
                             });
+                        }}
+                        allDefaults={{
+                            isChecked:
+                                infoAmountInHelmValues === "include values.yaml defaults",
+                            onIsCheckedChange: isChecked => {
+                                launcher.changeInfoAmountInHelmValues({
+                                    infoAmountInHelmValues: isChecked
+                                        ? "include values.yaml defaults"
+                                        : "user provided"
+                                });
+                            }
                         }}
                     />
                 </div>

@@ -14,6 +14,10 @@ export type Props = {
     additionalValidation?: (
         value: Stringifyable
     ) => { isValid: true } | { isValid: false; errorMsg: string };
+    allDefaults?: {
+        isChecked: boolean;
+        onIsCheckedChange: (isChecked: boolean) => void;
+    };
 };
 
 {

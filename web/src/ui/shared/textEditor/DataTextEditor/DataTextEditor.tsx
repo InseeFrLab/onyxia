@@ -45,6 +45,8 @@ import { same } from "evt/tools/inDepth/same";
 import { JsonSchemaDialog } from "./JsonSchemaDialog";
 import { Button } from "onyxia-ui/Button";
 import DataObjectIcon from "@mui/icons-material/DataObject";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const ajv = new Ajv({
     strict: false
@@ -64,6 +66,11 @@ export type Props = {
     additionalValidation?: (
         value: Stringifyable
     ) => { isValid: true } | { isValid: false; errorMsg: string };
+
+    allDefaults?: {
+        isChecked: boolean;
+        onIsCheckedChange: (isChecked: boolean) => void;
+    };
 };
 
 {
@@ -78,6 +85,7 @@ export type Props = {
             | "jsonSchema"
             | "onErrorMsgChanged"
             | "additionalValidation"
+            | "allDefaults"
         >;
 
     assert<Equals<Props, Props_Expected>>;
@@ -113,6 +121,7 @@ export default function DataTextEditor(props: Props) {
         onChange,
         onErrorMsgChanged,
         additionalValidation,
+        allDefaults,
         ...rest
     } = props;
 
@@ -304,16 +313,35 @@ export default function DataTextEditor(props: Props) {
             extensions={extensions}
             children={
                 <>
-                    <FormControl className={classes.formatWrapper} variant="standard">
-                        <Select
-                            value={format}
-                            label="Format"
-                            onChange={event => onFormatChange(event.target.value as any)}
-                        >
-                            <MenuItem value={"YAML"}>YAML</MenuItem>
-                            <MenuItem value={"JSON5"}>JSON5</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <div className={classes.formatWrapper}>
+                        <FormControl variant="standard">
+                            <Select
+                                value={format}
+                                label="Format"
+                                onChange={event =>
+                                    onFormatChange(event.target.value as any)
+                                }
+                            >
+                                <MenuItem value={"YAML"}>YAML</MenuItem>
+                                <MenuItem value={"JSON5"}>JSON5</MenuItem>
+                            </Select>
+                        </FormControl>
+                        {allDefaults !== undefined && (
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={allDefaults.isChecked}
+                                        onChange={event =>
+                                            allDefaults.onIsCheckedChange(
+                                                event.target.checked
+                                            )
+                                        }
+                                    />
+                                }
+                                label="All defaults"
+                            />
+                        )}
+                    </div>
 
                     <div className={classes.bottomLeft}>
                         {errorMsg !== undefined && (
@@ -366,7 +394,14 @@ const useStyles = tss
             border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             boxShadow: theme.shadows[2],
-            padding: theme.spacing(2)
+            padding: theme.spacing(2),
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(3),
+            alignItems: "end",
+            "& > *": {
+                display: "inline"
+            }
         },
         bottomLeft: {
             position: "absolute",
