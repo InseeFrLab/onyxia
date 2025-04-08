@@ -20,6 +20,7 @@ const itemsSample: Item[] = [
         size: 1024000, // en bytes
         lastModified: new Date("2023-10-01"),
         policy: "private",
+        canChangePolicy: true,
         isBeingDeleted: false,
         isPolicyChanging: false,
         isBeingCreated: false
@@ -30,6 +31,8 @@ const itemsSample: Item[] = [
         size: 2048000, // en bytes
         lastModified: new Date("2023-09-15"),
         policy: "public",
+        canChangePolicy: false,
+
         isBeingDeleted: false,
         isPolicyChanging: false,
         isBeingCreated: true,
@@ -41,7 +44,8 @@ const itemsSample: Item[] = [
         policy: "private",
         isBeingDeleted: false,
         isPolicyChanging: true,
-        isBeingCreated: false
+        isBeingCreated: false,
+        canChangePolicy: true
     },
     {
         kind: "file",
@@ -49,6 +53,8 @@ const itemsSample: Item[] = [
         size: 5120000, // en bytes
         lastModified: new Date("2023-09-20"),
         policy: "private",
+        canChangePolicy: true,
+
         isBeingDeleted: false,
         isPolicyChanging: false,
         isBeingCreated: false
@@ -57,6 +63,8 @@ const itemsSample: Item[] = [
         kind: "directory",
         basename: "Photos",
         policy: "public",
+        canChangePolicy: true,
+
         isBeingDeleted: false,
         isPolicyChanging: false,
         isBeingCreated: false

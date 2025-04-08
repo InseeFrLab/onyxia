@@ -9,7 +9,7 @@ import type { Oidc } from "core/ports/Oidc";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
-import { checkIfS3KeyIsPublic } from "core/tools/checkIfS3KeyIsPublic";
+import { getPolicyAttributes } from "core/tools/getPolicyAttributes";
 import { zS3BucketPolicy } from "./utils/policySchema";
 import {
     addObjectNameToListBucketCondition,
@@ -458,8 +458,8 @@ export function createS3Client(
                 } while (continuationToken !== undefined);
             }
 
-            const isPathPublic = (path: string) => {
-                return checkIfS3KeyIsPublic(allowedPrefix, path);
+            const policyAttributes = (path: string) => {
+                return getPolicyAttributes(allowedPrefix, path);
             };
 
             const directories = CommonPrefixes.filter(exclude(undefined))
@@ -470,7 +470,7 @@ export function createS3Client(
                     return {
                         kind: "directory",
                         basename: split[split.length - 2],
-                        policy: isPathPublic(directoryPath) ? "public" : "private"
+                        ...policyAttributes(directoryPath)
                     } satisfies S3Object;
                 });
 
@@ -483,7 +483,7 @@ export function createS3Client(
                         basename: split[split.length - 1],
                         size: Size,
                         lastModified: LastModified,
-                        policy: isPathPublic(Key) ? "public" : "private"
+                        ...policyAttributes(Key)
                     } satisfies S3Object;
                 }
             );
@@ -591,8 +591,9 @@ export function createS3Client(
                 basename: objectName,
                 size: metadata.ContentLength,
                 lastModified: metadata.LastModified,
-                policy: "private"
-            };
+                policy: "private",
+                canChangePolicy: false
+            } satisfies S3Object.File;
         },
         deleteFile: async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);

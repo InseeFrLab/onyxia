@@ -20,6 +20,8 @@ const itemsSample: Item[] = [
         size: 1024000, // en bytes
         lastModified: new Date("2023-10-01"),
         policy: "private",
+        canChangePolicy: true,
+
         isBeingDeleted: false,
         isPolicyChanging: false,
         isBeingCreated: false
@@ -32,6 +34,7 @@ const itemsSample: Item[] = [
         policy: "public",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: false,
         isBeingCreated: true,
         uploadPercent: 75 // Example upload percentage
     },
@@ -41,7 +44,8 @@ const itemsSample: Item[] = [
         policy: "private",
         isBeingDeleted: false,
         isPolicyChanging: true,
-        isBeingCreated: false
+        isBeingCreated: false,
+        canChangePolicy: true
     },
     {
         kind: "file",
@@ -50,6 +54,8 @@ const itemsSample: Item[] = [
         lastModified: new Date("2023-09-20"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -57,6 +63,8 @@ const itemsSample: Item[] = [
         kind: "directory",
         basename: "Photos",
         policy: "public",
+        canChangePolicy: true,
+
         isBeingDeleted: false,
         isPolicyChanging: false,
         isBeingCreated: false
@@ -88,6 +96,8 @@ const itemsIcons: Item[] = [
         basename: "Documents",
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -100,6 +110,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-02-04"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -111,6 +123,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-01"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -121,6 +135,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-02"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -132,6 +148,8 @@ const itemsIcons: Item[] = [
         policy: "private",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: true,
+
         isBeingCreated: false
     },
     {
@@ -141,6 +159,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-04"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: false,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -153,6 +173,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-05"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -165,6 +187,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-06"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -177,6 +201,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-07"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -189,6 +215,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-08"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -200,6 +228,8 @@ const itemsIcons: Item[] = [
         policy: "private",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: true,
+
         isBeingCreated: false
     },
 
@@ -211,6 +241,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-10"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -223,6 +255,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-11"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -233,6 +267,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-12"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -245,6 +281,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-13"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -257,6 +295,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-14"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -267,6 +307,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-15"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -277,6 +319,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-16"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -287,6 +331,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-17"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -297,6 +343,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-18"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -309,6 +357,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-19"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -319,6 +369,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-20"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -332,6 +384,8 @@ const itemsIcons: Item[] = [
         policy: "private",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: true,
+
         isBeingCreated: false
     },
 
@@ -343,6 +397,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-25"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -355,6 +411,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-22"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -367,6 +425,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-23"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -379,6 +439,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-24"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -392,6 +454,8 @@ const itemsIcons: Item[] = [
         policy: "public",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: true,
+
         isBeingCreated: false
     },
 
@@ -403,6 +467,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-27"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -415,6 +481,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-28"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -427,6 +495,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-29"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -440,6 +510,8 @@ const itemsIcons: Item[] = [
         policy: "public",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: true,
+
         isBeingCreated: false
     },
 
@@ -451,6 +523,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-01-31"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -464,6 +538,8 @@ const itemsIcons: Item[] = [
         policy: "public",
         isBeingDeleted: false,
         isPolicyChanging: false,
+        canChangePolicy: true,
+
         isBeingCreated: false
     },
 
@@ -475,6 +551,8 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-02-02"),
         policy: "private",
         isBeingDeleted: false,
+        canChangePolicy: true,
+
         isPolicyChanging: false,
         isBeingCreated: false
     },
@@ -487,6 +565,7 @@ const itemsIcons: Item[] = [
         lastModified: new Date("2023-02-03"),
         policy: "public",
         isBeingDeleted: false,
+        canChangePolicy: true,
         isPolicyChanging: false,
         isBeingCreated: false
     }

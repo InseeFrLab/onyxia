@@ -68,6 +68,7 @@ export namespace CurrentWorkingDirectoryView {
         export type Common = {
             basename: string;
             policy: "public" | "private";
+            canChangePolicy: boolean;
             isBeingDeleted: boolean;
             isPolicyChanging: boolean;
         };
@@ -141,6 +142,7 @@ const currentWorkingDirectoryView = createSelector(
                 const common = {
                     basename: object.basename,
                     policy: object.policy,
+                    canChangePolicy: object.canChangePolicy,
                     isBeingDeleted,
                     isPolicyChanging
                 } satisfies CurrentWorkingDirectoryView.Item.Common;

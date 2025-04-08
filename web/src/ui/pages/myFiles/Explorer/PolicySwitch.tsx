@@ -13,10 +13,19 @@ type Props = {
     policy: Item["policy"];
     changePolicy: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     isPolicyChanging: boolean; // New loading prop
+    disabled?: boolean;
 };
 
 export const PolicySwitch = memo((props: Props) => {
-    const { className, size, policy, changePolicy, ariaLabel, isPolicyChanging } = props;
+    const {
+        className,
+        size,
+        policy,
+        changePolicy,
+        ariaLabel,
+        isPolicyChanging,
+        disabled = false
+    } = props;
 
     const isPublic = policy === "public";
 
@@ -26,7 +35,7 @@ export const PolicySwitch = memo((props: Props) => {
         <IconButton
             className={cx(classes.root, className)}
             onClick={changePolicy} // Prevent click if loading
-            disabled={isPolicyChanging}
+            disabled={disabled || isPolicyChanging}
             size={size}
             icon={getIconUrlByName(isPublic ? "Visibility" : "VisibilityOff")}
             aria-label={ariaLabel ?? "Policy switch"}

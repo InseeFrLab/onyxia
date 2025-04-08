@@ -6,6 +6,7 @@ export namespace S3Object {
     export type Base = {
         basename: string;
         policy: "public" | "private";
+        canChangePolicy: boolean;
     };
 
     export type File = Base & {

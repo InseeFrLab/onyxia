@@ -394,7 +394,8 @@ export const thunks = {
                             basename: params.basename,
                             policy: "private",
                             size: undefined,
-                            lastModified: undefined
+                            lastModified: undefined,
+                            canChangePolicy: false
                         }
                     ],
                     directoryPath,
@@ -444,6 +445,8 @@ export const thunks = {
                 });
                 return uploadResult;
             };
+
+            //TODO policy can be public if uploaded inside public directory
             const completedObject = await (async () => {
                 switch (params.createWhat) {
                     case "file": {
@@ -471,7 +474,8 @@ export const thunks = {
                             basename: uploadResult.basename,
                             size: uploadResult.size,
                             lastModified: uploadResult.lastModified,
-                            policy: "private"
+                            policy: "private",
+                            canChangePolicy: false
                         } satisfies S3Object.File;
                     }
                     case "directory": {
@@ -486,7 +490,8 @@ export const thunks = {
                         return {
                             kind: "directory",
                             basename: params.basename,
-                            policy: "private"
+                            policy: "private",
+                            canChangePolicy: false
                         } satisfies S3Object.Directory;
                     }
                 }
