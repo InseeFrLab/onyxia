@@ -10,6 +10,7 @@ import { declareComponentKeys } from "i18nifty";
 import type { Item } from "../../shared/types";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { on } from "events";
 
 export type ExplorerItemsProps = {
     className?: string;
@@ -35,8 +36,12 @@ export type ExplorerItemsProps = {
     onCopyPath: (params: { basename: string }) => void;
     onShare: (params: { fileBasename: string }) => void;
     evtAction: NonPostableEvt<
-        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+        | "DELETE SELECTED ITEM"
+        | "COPY SELECTED ITEM PATH"
+        | "SHARE SELECTED FILE"
+        | "DOWNLOAD DIRECTORY"
     >;
+    onDownloadItems: (params: { items: Item[] }) => void;
 };
 
 export const ExplorerItems = memo((props: ExplorerItemsProps) => {
@@ -52,7 +57,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         onCopyPath,
         onDeleteItem,
         onShare,
-        evtAction
+        evtAction,
+        onDownloadItems
     } = props;
     const isEmpty = items.length === 0;
 
@@ -124,6 +130,10 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                         onShare({
                             fileBasename: selectedItem.basename
                         });
+                        return;
+                    case "DOWNLOAD DIRECTORY":
+                        assert(selectedItem.kind !== "none");
+                        onDownloadItems({ items: [selectedItem] });
                         return;
                 }
                 assert<Equals<typeof action, never>>();

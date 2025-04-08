@@ -71,6 +71,7 @@ export type ExplorerProps = {
     }) => void;
     onRefresh: () => void;
     onDeleteItem: (params: { item: Item }) => void;
+    onDownloadItems: (params: { items: Item[] }) => void;
     onDeleteItems: (params: { items: Item[] }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
@@ -114,7 +115,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         onShareFileOpen,
         onShareFileClose,
         onShareRequestSignedUrl,
-        onChangeShareSelectedValidityDuration
+        onChangeShareSelectedValidityDuration,
+        onDownloadItems
     } = props;
 
     const [items] = useMemo(
@@ -214,6 +216,9 @@ export const Explorer = memo((props: ExplorerProps) => {
             case "share":
                 evtExplorerItemsAction.post("SHARE SELECTED FILE");
                 return;
+            case "donwload directory":
+                evtExplorerItemsAction.post("DOWNLOAD DIRECTORY");
+                return;
         }
         assert<Equals<typeof buttonId, never>>();
     });
@@ -292,6 +297,12 @@ export const Explorer = memo((props: ExplorerProps) => {
             }
 
             onDeleteItem({ item });
+        }
+    );
+
+    const itemOnDownloadDirectory = useConstCallback(
+        async ({ items }: Parameters<ItemsProps["onDownloadItems"]>[0]) => {
+            onDownloadItems({ items });
         }
     );
 
@@ -437,6 +448,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         isBucketPolicyFeatureEnabled={
                                             isBucketPolicyFeatureEnabled
                                         }
+                                        onDownloadItems={itemOnDownloadDirectory}
                                     />
                                 );
                             case "list":
@@ -457,6 +469,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         isBucketPolicyFeatureEnabled={
                                             isBucketPolicyFeatureEnabled
                                         }
+                                        onDownloadItems={itemOnDownloadDirectory}
                                     />
                                 );
                         }

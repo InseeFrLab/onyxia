@@ -1,5 +1,6 @@
 import { assert } from "tsafe/assert";
 import { Evt } from "evt";
+import { Zip, ZipPassThrough } from "fflate/browser";
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
 import { protectedSelectors } from "./selectors";
@@ -858,5 +859,135 @@ export const thunks = {
             );
 
             dispatch(actions.requestSignedUrlCompleted({ url }));
+        },
+    downloadObjectsAsZip:
+        (params: { s3Objects: S3Object[] }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { directoryPath } = getState()[name];
+            assert(directoryPath !== undefined);
+
+            const { s3Objects } = params;
+
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const { readable, writable } = new TransformStream();
+            const writer = writable.getWriter();
+
+            const zipDone = new Promise<void>((resolve, reject) => {
+                const zip = new Zip((err, chunk, final) => {
+                    if (err) {
+                        writer.abort(err);
+                        reject(err);
+                        return;
+                    }
+
+                    writer.write(chunk);
+
+                    if (final) {
+                        writer.close();
+                        resolve();
+                    }
+                });
+
+                const { crawl } = crawlFactory({
+                    list: async ({ directoryPath }) => {
+                        const { objects } = await s3Client.listObjects({
+                            path: directoryPath
+                        });
+
+                        return {
+                            fileBasenames: objects
+                                .filter(o => o.kind === "file" && o.basename !== ".keep")
+                                .map(o => o.basename),
+                            directoryBasenames: objects
+                                .filter(o => o.kind === "directory")
+                                .map(o => o.basename)
+                        };
+                    }
+                });
+
+                (async () => {
+                    for (const object of s3Objects) {
+                        const basePath = pathJoin(directoryPath, object.basename);
+
+                        if (object.kind === "file") {
+                            const downloadUrl = await s3Client.getFileDownloadUrl({
+                                path: basePath,
+                                validityDurationSecond: 300
+                            });
+
+                            const res = await fetch(downloadUrl);
+                            if (!res.ok || !res.body) continue;
+
+                            const entry = new ZipPassThrough(object.basename);
+                            if (object.lastModified) entry.mtime = object.lastModified;
+
+                            zip.add(entry);
+
+                            const reader = res.body.getReader();
+                            while (true) {
+                                const { done, value } = await reader.read();
+                                if (done) break;
+                                entry.push(value);
+                            }
+
+                            entry.push(new Uint8Array(0), true);
+                        }
+
+                        if (object.kind === "directory") {
+                            const { filePaths } = await crawl({
+                                directoryPath: basePath
+                            });
+
+                            for (const relativeFilePath of filePaths) {
+                                const absolutePath = pathJoin(basePath, relativeFilePath);
+                                const zipEntryPath = pathJoin(
+                                    object.basename,
+                                    relativeFilePath
+                                );
+
+                                const url = await s3Client.getFileDownloadUrl({
+                                    path: absolutePath,
+                                    validityDurationSecond: 300
+                                });
+
+                                const res = await fetch(url);
+                                if (!res.ok || !res.body) continue;
+
+                                const entry = new ZipPassThrough(zipEntryPath);
+                                zip.add(entry);
+
+                                const reader = res.body.getReader();
+                                while (true) {
+                                    const { done, value } = await reader.read();
+                                    if (done) break;
+                                    entry.push(value);
+                                }
+
+                                entry.push(new Uint8Array(0), true);
+                            }
+                        }
+                    }
+
+                    zip.end();
+                })().catch(reject);
+            });
+
+            await zipDone;
+
+            return {
+                stream: readable,
+                zipFileName:
+                    s3Objects.length === 1
+                        ? `${s3Objects[0].basename}.zip`
+                        : `archive.zip`
+            };
         }
 } satisfies Thunks;

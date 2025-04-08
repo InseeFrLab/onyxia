@@ -45,6 +45,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return getIconUrlByName("Delete");
                         case "share":
                             return getIconUrlByName("Share");
+                        case "donwload directory":
+                            return getIconUrlByName("Download");
                     }
                 })(),
                 isDisabled: (() => {
@@ -59,6 +61,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         case "share":
                         case "copy path":
                             return selectedItemKind !== "file";
+                        case "donwload directory":
+                            return selectedItemKind === "none";
                     }
                 })(),
                 label: buttonId === "new" ? t("upload file") : t(buttonId)
@@ -136,7 +140,8 @@ const buttonIds = [
     "create directory",
     "delete",
     "share",
-    "copy path"
+    "copy path",
+    "donwload directory"
 ] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
