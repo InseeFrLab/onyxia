@@ -345,8 +345,8 @@ const Launcher = withLoginEnforced((props: Props) => {
     );
 
     const [isDataEditorModeEnabled, setIsDataEditorModeEnabled] = useSessionState({
-        initialValue: false,
-        stateUniqueId: "isDataEditorModeEnabled",
+        initialValue: !isReady ? false : helmValuesSchema_forDataTextEditor === undefined,
+        stateUniqueId: `isDataEditorModeEnabled:${route.params.catalogId}:${route.params.chartName}`,
         zState: z.boolean()
     });
 
@@ -452,38 +452,47 @@ const Launcher = withLoginEnforced((props: Props) => {
                     erroredFormFields={erroredFormFields}
                     dataTextEditorErrorMsg={dataTextEditorErrorMsg}
                 />
-                <RadioGroup
-                    className={classes.modeSwitch}
-                    value={isDataEditorModeEnabled ? "editor" : "form"}
-                    onChange={event =>
-                        setIsDataEditorModeEnabled(event.target.value === "editor")
-                    }
-                >
-                    <FormControlLabel
-                        value="form"
-                        control={
-                            <Radio disabled={dataTextEditorErrorMsg !== undefined} />
-                        }
-                        label={t("form")}
-                    />
-                    <FormControlLabel
-                        value="editor"
-                        control={<Radio />}
-                        label={t("editor")}
-                    />
-                </RadioGroup>
-                <div className={classes.rootFormWrapper}>
-                    <RootFormComponent
-                        className={classes.rootForm}
-                        rootForm={rootForm}
-                        callbacks={{
-                            onAdd: launcher.addArrayItem,
-                            onChange: launcher.changeFormFieldValue,
-                            onRemove,
-                            onFieldErrorChange
-                        }}
-                    />
-                </div>
+                {helmValuesSchema_forDataTextEditor !== undefined && (
+                    <>
+                        <RadioGroup
+                            className={classes.modeSwitch}
+                            value={isDataEditorModeEnabled ? "editor" : "form"}
+                            onChange={event =>
+                                setIsDataEditorModeEnabled(
+                                    event.target.value === "editor"
+                                )
+                            }
+                        >
+                            <FormControlLabel
+                                value="form"
+                                control={
+                                    <Radio
+                                        disabled={dataTextEditorErrorMsg !== undefined}
+                                    />
+                                }
+                                label={t("form")}
+                            />
+                            <FormControlLabel
+                                value="editor"
+                                control={<Radio />}
+                                label={t("editor")}
+                            />
+                        </RadioGroup>
+
+                        <div className={classes.rootFormWrapper}>
+                            <RootFormComponent
+                                className={classes.rootForm}
+                                rootForm={rootForm}
+                                callbacks={{
+                                    onAdd: launcher.addArrayItem,
+                                    onChange: launcher.changeFormFieldValue,
+                                    onRemove,
+                                    onFieldErrorChange
+                                }}
+                            />
+                        </div>
+                    </>
+                )}
 
                 <div
                     ref={ref_dataTextEditorWrapper}
@@ -616,7 +625,8 @@ const useStyles = tss
                 display: isDataEditorModeEnabled ? undefined : "none",
                 flex: 1,
                 overflow: "visible",
-                position: "relative"
+                position: "relative",
+                marginTop: theme.spacing(3)
             },
             dataTextEditor: {
                 position: "absolute",
