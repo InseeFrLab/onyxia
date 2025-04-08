@@ -6,6 +6,8 @@ export const addObjectNameToListBucketCondition = (
     bucketArn: string,
     objectName: string
 ): S3BucketPolicy["Statement"] => {
+    const { conditionKey, objectPrefix } = getConditionKeyAndPrefix(objectName);
+
     if (statements === null) {
         return [
             {
@@ -14,8 +16,8 @@ export const addObjectNameToListBucketCondition = (
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
-                        "s3:prefix": [objectName]
+                    [conditionKey]: {
+                        "s3:prefix": [objectPrefix]
                     }
                 }
             }
@@ -38,43 +40,42 @@ export const addObjectNameToListBucketCondition = (
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
-                        "s3:prefix": [objectName]
+                    [conditionKey]: {
+                        "s3:prefix": [objectPrefix]
                     }
                 }
             }
         ];
     }
 
-    // Update existing s3:ListBucket statement
-    const listBucketStatement = statements[listBucketStatementIndex];
-    const updatedPrefixCondition = listBucketStatement.Condition?.StringEquals?.[
-        "s3:prefix"
-    ]
-        ? Array.isArray(listBucketStatement.Condition.StringEquals["s3:prefix"])
-            ? [
-                  ...new Set([
-                      ...listBucketStatement.Condition.StringEquals["s3:prefix"],
-                      objectName
-                  ])
-              ]
-            : [listBucketStatement.Condition.StringEquals["s3:prefix"], objectName]
-        : [objectName];
+    const statement = statements[listBucketStatementIndex];
+    const updatedStatement = { ...statement };
 
-    // Return new statements array with updated s3:ListBucket statement
-    return statements.map((statement, index) =>
-        index === listBucketStatementIndex
+    // Get existing "s3:prefix" array (or string) for the correct condition key
+    const existingCondition = updatedStatement.Condition?.[conditionKey];
+    const existingPrefixesRaw = existingCondition?.["s3:prefix"];
+
+    const existingPrefixes: string[] = existingPrefixesRaw
+        ? Array.isArray(existingPrefixesRaw)
+            ? existingPrefixesRaw
+            : [existingPrefixesRaw]
+        : [];
+
+    const newPrefixes = Array.from(new Set([...existingPrefixes, objectPrefix]));
+
+    return statements.map((s, i) =>
+        i === listBucketStatementIndex
             ? {
-                  ...statement,
+                  ...s,
                   Condition: {
-                      ...statement.Condition,
-                      StringEquals: {
-                          ...statement.Condition?.StringEquals,
-                          "s3:prefix": updatedPrefixCondition
+                      ...s.Condition,
+                      [conditionKey]: {
+                          ...s.Condition?.[conditionKey],
+                          "s3:prefix": newPrefixes
                       }
                   }
               }
-            : statement
+            : s
     );
 };
 
@@ -88,6 +89,8 @@ export const removeObjectNameFromListBucketCondition = (
         return null;
     }
 
+    const { conditionKey, objectPrefix } = getConditionKeyAndPrefix(objectName);
+
     return statements
         .map(statement => {
             if (
@@ -95,8 +98,8 @@ export const removeObjectNameFromListBucketCondition = (
                 statement.Resource.includes(bucketArn)
             ) {
                 const updatedPrefixCondition: string[] =
-                    statement.Condition?.StringEquals?.["s3:prefix"]?.filter(
-                        (prefix: string) => prefix !== objectName
+                    statement.Condition?.[conditionKey]?.["s3:prefix"]?.filter(
+                        (prefix: string) => prefix !== objectPrefix
                     ) ?? [];
 
                 if (updatedPrefixCondition.length > 0) {
@@ -104,8 +107,8 @@ export const removeObjectNameFromListBucketCondition = (
                         ...statement,
                         Condition: {
                             ...statement.Condition,
-                            StringEquals: {
-                                ...statement.Condition?.StringEquals,
+                            [conditionKey]: {
+                                ...statement.Condition?.[conditionKey],
                                 "s3:prefix": updatedPrefixCondition
                             }
                         }
@@ -113,23 +116,23 @@ export const removeObjectNameFromListBucketCondition = (
                 }
 
                 const updatedStringEquals = removeKey(
-                    statement.Condition?.StringEquals,
+                    statement.Condition?.[conditionKey],
                     "s3:prefix"
                 );
 
-                // If "StringEquals" is still valid, return updated statement
+                // If "conditionKey" is still valid, return updated statement
                 if (updatedStringEquals) {
                     return {
                         ...statement,
                         Condition: {
                             ...statement.Condition,
-                            StringEquals: updatedStringEquals
+                            [conditionKey]: updatedStringEquals
                         }
                     };
                 }
 
-                // Remove "StringEquals" from Condition
-                const updatedCondition = removeKey(statement.Condition, "StringEquals");
+                // Remove "conditionKey" from Condition
+                const updatedCondition = removeKey(statement.Condition, conditionKey);
 
                 // If Condition is still valid, return updated statement
                 return updatedCondition
@@ -229,3 +232,20 @@ const removeKey = <T extends Record<string, any>, K extends keyof T>(
     const { [key]: _, ...rest } = obj;
     return Object.keys(rest).length > 0 ? rest : undefined;
 };
+
+function getConditionKeyAndPrefix(objectName: string): {
+    conditionKey: "StringLike" | "StringEquals";
+    objectPrefix: string;
+} {
+    if (objectName.endsWith("/")) {
+        return {
+            conditionKey: "StringLike",
+            objectPrefix: `${objectName}*`
+        };
+    }
+
+    return {
+        conditionKey: "StringEquals",
+        objectPrefix: objectName
+    };
+}
