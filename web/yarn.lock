@@ -7258,10 +7258,10 @@ vfile@^6.0.0:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
 
-vite-envs@^4.4.11:
-  version "4.4.11"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.11.tgz#86e394cb4791dd563839b5d9931284566612ff8e"
-  integrity sha512-uJtnRYu+tB7dhmjvYDU8dgsCCGZet+O0Yh4P3HlTYGOhfqYyG/nFVEY3eZcS1/GH2hpKXTTB4NHX6v6xT5Dqzg==
+vite-envs@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.6.0.tgz#88533d95e09061a0c6c5bf992f36b8a46aac3e0c"
+  integrity sha512-LkkkWiIsJhogm0YP6hYJhjUFfG8KLKJvnwFtTz4J5Otg9/RjmCCTkgbJWdb65cv5vlvA8xwGfm+NwSMl5H1Wjg==
 
 vite-node@2.1.6:
   version "2.1.6"
