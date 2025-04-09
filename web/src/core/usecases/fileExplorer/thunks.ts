@@ -971,6 +971,15 @@ export const thunks = {
                                 directoryPath: basePath
                             });
 
+                            if (filePaths.length === 0) {
+                                // Create a zip folder entry
+                                const zipEntry = new ZipPassThrough(
+                                    `${object.basename}/`
+                                );
+                                zip.add(zipEntry);
+                                zipEntry.push(new Uint8Array(0), true);
+                                break;
+                            }
                             for (const relativeFilePath of filePaths) {
                                 const absolutePath = pathJoin(basePath, relativeFilePath);
                                 const zipEntryPath = pathJoin(
