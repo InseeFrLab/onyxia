@@ -216,7 +216,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             case "share":
                 evtExplorerItemsAction.post("SHARE SELECTED FILE");
                 return;
-            case "donwload directory":
+            case "download directory":
                 evtExplorerItemsAction.post("DOWNLOAD DIRECTORY");
                 return;
         }

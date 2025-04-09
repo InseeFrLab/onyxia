@@ -370,6 +370,7 @@ export const translations: Translations<"de"> = {
     ExplorerButtonBar: {
         file: "Datei",
         delete: "löschen",
+        "download directory": "Herunterladen",
         "upload file": "Datei hochladen",
         "copy path": "Den S3-Objektnamen kopieren",
         "create directory": "Neues Verzeichnis",

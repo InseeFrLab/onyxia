@@ -333,6 +333,7 @@ export const translations: Translations<"zh-CN"> = {
     ExplorerButtonBar: {
         file: "文件",
         delete: "删除",
+        "download directory": "下载",
         "upload file": "上传文件",
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",

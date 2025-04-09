@@ -371,6 +371,7 @@ export const translations: Translations<"en"> = {
     ExplorerButtonBar: {
         file: "file",
         delete: "delete",
+        "download directory": "Download",
         "upload file": "Upload file",
         "copy path": "Copy S3 object name",
         "create directory": "Create directory",

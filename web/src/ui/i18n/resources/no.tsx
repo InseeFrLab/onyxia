@@ -381,6 +381,7 @@ export const translations: Translations<"no"> = {
         "copy path": "Kopier S3-objektnavnet",
         "create directory": "Opprett katalog",
         refresh: "oppdater",
+        "download directory": "Last ned",
         new: "Ny",
         share: "Del",
         "alt list view": "Vis liste",

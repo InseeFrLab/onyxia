@@ -880,19 +880,17 @@ export const thunks = {
             const { readable, writable } = new TransformStream();
             const writer = writable.getWriter();
 
-            const zipDone = new Promise<void>((resolve, reject) => {
+            await (async () => {
                 const zip = new Zip((err, chunk, final) => {
                     if (err) {
                         writer.abort(err);
-                        reject(err);
-                        return;
+                        throw err;
                     }
 
                     writer.write(chunk);
 
                     if (final) {
                         writer.close();
-                        resolve();
                     }
                 });
 
@@ -902,46 +900,65 @@ export const thunks = {
                             path: directoryPath
                         });
 
-                        return {
-                            fileBasenames: objects
-                                .filter(o => o.kind === "file" && o.basename !== ".keep")
-                                .map(o => o.basename),
-                            directoryBasenames: objects
-                                .filter(o => o.kind === "directory")
-                                .map(o => o.basename)
-                        };
+                        return objects.reduce<{
+                            fileBasenames: string[];
+                            directoryBasenames: string[];
+                        }>(
+                            (acc, { kind, basename }) => {
+                                switch (kind) {
+                                    case "directory":
+                                        acc.directoryBasenames.push(basename);
+                                        break;
+                                    case "file":
+                                        if (basename !== ".keep") {
+                                            acc.fileBasenames.push(basename);
+                                        }
+                                        break;
+                                }
+                                return acc;
+                            },
+                            {
+                                fileBasenames: [],
+                                directoryBasenames: []
+                            }
+                        );
                     }
                 });
 
-                (async () => {
-                    for (const object of s3Objects) {
-                        const basePath = pathJoin(directoryPath, object.basename);
+                const createZipEntryFromUrl = async ({
+                    zipPath,
+                    url,
+                    modifiedDate
+                }: {
+                    zipPath: string;
+                    url: string;
+                    modifiedDate?: string | number | Date;
+                }) => {
+                    const res = await fetch(url);
+                    if (!res.ok || !res.body) return;
 
-                        if (object.kind === "file") {
-                            const downloadUrl = await s3Client.getFileDownloadUrl({
-                                path: basePath,
-                                validityDurationSecond: 300
-                            });
+                    const entry = new ZipPassThrough(zipPath);
+                    if (modifiedDate) entry.mtime = modifiedDate;
 
-                            const res = await fetch(downloadUrl);
-                            if (!res.ok || !res.body) continue;
+                    zip.add(entry);
 
-                            const entry = new ZipPassThrough(object.basename);
-                            if (object.lastModified) entry.mtime = object.lastModified;
+                    const reader = res.body.getReader();
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        entry.push(value);
+                    }
 
-                            zip.add(entry);
+                    entry.push(new Uint8Array(0), true);
+                };
 
-                            const reader = res.body.getReader();
-                            while (true) {
-                                const { done, value } = await reader.read();
-                                if (done) break;
-                                entry.push(value);
-                            }
+                const downloadTasks: Promise<void>[] = [];
 
-                            entry.push(new Uint8Array(0), true);
-                        }
+                for (const object of s3Objects) {
+                    const basePath = pathJoin(directoryPath, object.basename);
 
-                        if (object.kind === "directory") {
+                    switch (object.kind) {
+                        case "directory": {
                             const { filePaths } = await crawl({
                                 directoryPath: basePath
                             });
@@ -958,36 +975,45 @@ export const thunks = {
                                     validityDurationSecond: 300
                                 });
 
-                                const res = await fetch(url);
-                                if (!res.ok || !res.body) continue;
-
-                                const entry = new ZipPassThrough(zipEntryPath);
-                                zip.add(entry);
-
-                                const reader = res.body.getReader();
-                                while (true) {
-                                    const { done, value } = await reader.read();
-                                    if (done) break;
-                                    entry.push(value);
-                                }
-
-                                entry.push(new Uint8Array(0), true);
+                                downloadTasks.push(
+                                    createZipEntryFromUrl({
+                                        zipPath: zipEntryPath,
+                                        url,
+                                        modifiedDate: undefined
+                                    })
+                                );
                             }
+                            break;
+                        }
+
+                        case "file": {
+                            const url = await s3Client.getFileDownloadUrl({
+                                path: basePath,
+                                validityDurationSecond: 300
+                            });
+
+                            downloadTasks.push(
+                                createZipEntryFromUrl({
+                                    zipPath: object.basename,
+                                    url,
+                                    modifiedDate: object.lastModified
+                                })
+                            );
+                            break;
                         }
                     }
+                }
 
-                    zip.end();
-                })().catch(reject);
-            });
-
-            await zipDone;
+                await Promise.all(downloadTasks);
+                zip.end();
+            })();
 
             return {
                 stream: readable,
                 zipFileName:
                     s3Objects.length === 1
                         ? `${s3Objects[0].basename}.zip`
-                        : `archive.zip`
+                        : `onyxia-download-${new Date().toISOString()}.zip`
             };
         }
 } satisfies Thunks;

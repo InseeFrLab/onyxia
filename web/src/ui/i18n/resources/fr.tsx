@@ -381,7 +381,8 @@ export const translations: Translations<"fr"> = {
         new: "Nouveau",
         share: "Partager",
         "alt list view": "Afficher la liste",
-        "alt block view": "Afficher en bloc"
+        "alt block view": "Afficher en bloc",
+        "download directory": "Télécharger"
     },
     SecretsExplorerButtonBar: {
         secret: "secret",

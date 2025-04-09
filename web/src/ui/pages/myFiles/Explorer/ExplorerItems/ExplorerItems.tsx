@@ -10,7 +10,6 @@ import { declareComponentKeys } from "i18nifty";
 import type { Item } from "../../shared/types";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { on } from "events";
 
 export type ExplorerItemsProps = {
     className?: string;

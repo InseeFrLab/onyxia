@@ -377,6 +377,7 @@ export const translations: Translations<"fi"> = {
     ExplorerButtonBar: {
         file: "tiedosto",
         delete: "poista",
+        "download directory": "Lataa",
         "upload file": "Lataa tiedosto",
         "copy path": "Kopioi S3-objektin nimi",
         "create directory": "Luo hakemisto",
