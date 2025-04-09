@@ -343,6 +343,9 @@ export const translations: Translations<"zh-CN"> = {
         "alt list view": "显示列表",
         "alt block view": "显示块"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "下载准备中 ..."
+    },
     SecretsExplorerButtonBar: {
         secret: "密码",
         rename: "重命名",

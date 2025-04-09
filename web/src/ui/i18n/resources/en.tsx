@@ -381,6 +381,9 @@ export const translations: Translations<"en"> = {
         "alt list view": "Show list",
         "alt block view": "Show block"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Preparing download ..."
+    },
     ExplorerItems: {
         "empty directory": "This directory is empty"
     },

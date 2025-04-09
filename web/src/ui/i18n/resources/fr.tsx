@@ -384,6 +384,9 @@ export const translations: Translations<"fr"> = {
         "alt block view": "Afficher en bloc",
         "download directory": "Télécharger"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Préparation du téléchargement ..."
+    },
     SecretsExplorerButtonBar: {
         secret: "secret",
         rename: "renommer",

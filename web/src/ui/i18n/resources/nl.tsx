@@ -379,6 +379,9 @@ export const translations: Translations<"nl"> = {
         "alt list view": "Toon lijst",
         "alt block view": "Toon blok"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Voorbereiding van de download ..."
+    },
     SecretsExplorerButtonBar: {
         secret: "geheim",
         rename: "hernoemen",

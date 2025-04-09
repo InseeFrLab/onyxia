@@ -32,7 +32,7 @@ export declare namespace ExplorersCreateParams {
 const privateThunks = {
     createOperation:
         (params: {
-            operation: "create" | "delete" | "modifyPolicy";
+            operation: "create" | "delete" | "modifyPolicy" | "downloading";
             objects: S3Object[];
             directoryPath: string;
         }) =>
@@ -870,6 +870,14 @@ export const thunks = {
 
             const { s3Objects } = params;
 
+            const operationId = await dispatch(
+                privateThunks.createOperation({
+                    operation: "downloading",
+                    objects: s3Objects,
+                    directoryPath
+                })
+            );
+
             const s3Client = await dispatch(
                 s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
@@ -1008,6 +1016,12 @@ export const thunks = {
                 zip.end();
             })();
 
+            dispatch(
+                actions.operationCompleted({
+                    objects: s3Objects,
+                    operationId
+                })
+            );
             return {
                 stream: readable,
                 zipFileName:

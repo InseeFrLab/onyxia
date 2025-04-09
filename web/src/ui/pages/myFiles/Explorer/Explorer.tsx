@@ -46,6 +46,7 @@ import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
 import type { ShareView } from "core/usecases/fileExplorer";
+import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
 
 export type ExplorerProps = {
     /**
@@ -78,7 +79,6 @@ export type ExplorerProps = {
     scrollableDivRef: RefObject<any>;
     pathMinDepth: number;
     onOpenFile: (params: { basename: string }) => void;
-
     shareView: ShareView | undefined;
     onShareFileOpen: (params: { fileBasename: string }) => void;
     onShareFileClose: () => void;
@@ -86,6 +86,7 @@ export type ExplorerProps = {
     onChangeShareSelectedValidityDuration: (params: {
         validityDurationSecond: number;
     }) => void;
+    evtIsDownloadSnackbarOpen: StatefulReadonlyEvt<boolean>;
 } & Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">; //NOTE: TODO only defined when explorer type is s3
 
 export const Explorer = memo((props: ExplorerProps) => {
@@ -116,7 +117,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         onShareFileClose,
         onShareRequestSignedUrl,
         onChangeShareSelectedValidityDuration,
-        onDownloadItems
+        onDownloadItems,
+        evtIsDownloadSnackbarOpen
     } = props;
 
     const [items] = useMemo(
@@ -534,6 +536,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                 onFileSelected={onFileSelected}
                 filesBeingUploaded={filesBeingUploaded}
             />
+
+            <ExplorerDownloadSnackbar evtIsOpen={evtIsDownloadSnackbarOpen} />
         </>
     );
 });

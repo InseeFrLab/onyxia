@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>;
 const evtAction = Evt.create<{
     action: "show notification";
     message: string;
-    severity: "error" | "warning";
+    severity: "warning" | "info" | "error" | "success";
 }>();
 
 export const Default: Story = {
@@ -47,6 +47,38 @@ export const WarningNotification: Story = {
             action: "show notification",
             message: "Cluster resources are running low.",
             severity: "warning"
+        });
+    }
+};
+
+export const InfoNotification: Story = {
+    args: {
+        evtAction,
+        onOpenClusterEventsDialog: () => {
+            console.log("Cluster Events Dialog opened");
+        }
+    },
+    play: async () => {
+        evtAction.post({
+            action: "show notification",
+            message: "New cluster features are available.",
+            severity: "info"
+        });
+    }
+};
+
+export const SuccessNotification: Story = {
+    args: {
+        evtAction,
+        onOpenClusterEventsDialog: () => {
+            console.log("Cluster Events Dialog opened");
+        }
+    },
+    play: async () => {
+        evtAction.post({
+            action: "show notification",
+            message: "Cluster upgraded successfully.",
+            severity: "success"
         });
     }
 };

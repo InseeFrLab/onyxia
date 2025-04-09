@@ -378,6 +378,9 @@ export const translations: Translations<"it"> = {
         "alt list view": "Mostra lista",
         "alt block view": "Mostra blocco"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Preparazione del download ..."
+    },
     SecretsExplorerButtonBar: {
         secret: "segreto",
         rename: "rinominare",

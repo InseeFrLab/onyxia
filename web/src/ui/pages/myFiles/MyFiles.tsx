@@ -52,8 +52,15 @@ function MyFiles(props: Props) {
         currentWorkingDirectoryView,
         pathMinDepth,
         viewMode,
-        shareView
+        shareView,
+        isDownloadPreparing
     } = useCoreState("fileExplorer", "main");
+
+    const evtIsSnackbarOpen = useConst(() => Evt.create(isDownloadPreparing));
+
+    useEffect(() => {
+        evtIsSnackbarOpen.state = isDownloadPreparing;
+    }, [isDownloadPreparing]);
 
     const { fileExplorer } = useCore().functions;
 
@@ -251,6 +258,7 @@ function MyFiles(props: Props) {
                     fileExplorer.changeShareSelectedValidityDuration
                 }
                 onDownloadItems={onDownloadItems}
+                evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
             />
         </div>
     );

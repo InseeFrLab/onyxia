@@ -387,6 +387,9 @@ export const translations: Translations<"fi"> = {
         "alt list view": "Näytä lista",
         "alt block view": "Näytä lohko"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Latauksen valmistelu ..."
+    },
     ExplorerItems: {
         "empty directory": "Tämä hakemisto on tyhjä"
     },

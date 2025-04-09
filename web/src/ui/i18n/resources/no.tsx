@@ -387,6 +387,9 @@ export const translations: Translations<"no"> = {
         "alt list view": "Vis liste",
         "alt block view": "Vis blokk"
     },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Forberedelse av nedlasting ..."
+    },
     ExplorerItems: {
         "empty directory": "Denne katalogen er tom"
     },
