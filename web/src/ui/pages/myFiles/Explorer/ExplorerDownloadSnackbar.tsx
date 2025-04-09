@@ -9,11 +9,11 @@ import { useTranslation } from "ui/i18n";
 import { type StatefulReadonlyEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
-export type ExplorerDownloadSnackbarProps = {
+type Props = {
     evtIsOpen: StatefulReadonlyEvt<boolean>;
 };
 
-export function ExplorerDownloadSnackbar(props: ExplorerDownloadSnackbarProps) {
+export function ExplorerDownloadSnackbar(props: Props) {
     const { evtIsOpen } = props;
 
     const [open, setOpen] = useState<boolean>(evtIsOpen.state);
