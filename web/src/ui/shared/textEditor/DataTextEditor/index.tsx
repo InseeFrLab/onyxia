@@ -10,10 +10,16 @@ export type Props = {
     value: Stringifyable;
     onChange: (newValue: Stringifyable) => void;
     onErrorMsgChanged?: (errorMsg: string | undefined) => void;
-    jsonSchema: Record<string, Stringifyable>;
+    jsonSchema: Record<string, Stringifyable> | undefined;
     additionalValidation?: (
         value: Stringifyable
     ) => { isValid: true } | { isValid: false; errorMsg: string };
+    allDefaults?: {
+        isChecked: boolean;
+        onIsCheckedChange: (isChecked: boolean) => void;
+    };
+
+    isJson5Enabled?: boolean;
 };
 
 {

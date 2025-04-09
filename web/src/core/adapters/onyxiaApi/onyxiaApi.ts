@@ -9,6 +9,7 @@ import {
     type Project,
     type OidcParams,
     type OidcParams_Partial,
+    type JSONSchema,
     zJSONSchema
 } from "core/ports/OnyxiaApi";
 import axios, { AxiosHeaders } from "axios";
@@ -485,16 +486,25 @@ export function createOnyxiaApi(params: {
         getHelmChartDetails: (() => {
             const memoizedImplementation = memoize(
                 async (catalogId: string, chartName: string, chartVersion: string) => {
-                    const [{ data: helmValuesSchema }, apiCatalogs] = await Promise.all([
-                        axiosInstance.get<
-                            ApiTypes["/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
-                        >(
-                            `/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}`
-                        ),
-                        getApiCatalogsMemo()
-                    ] as const);
+                    const [{ data: helmValuesSchemaOrEmptyString }, apiCatalogs] =
+                        await Promise.all([
+                            axiosInstance.get<
+                                ApiTypes["/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
+                            >(
+                                `/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}`
+                            ),
+                            getApiCatalogsMemo()
+                        ] as const);
 
-                    zJSONSchema.parse(helmValuesSchema);
+                    const helmValuesSchema: JSONSchema | undefined = (() => {
+                        if (helmValuesSchemaOrEmptyString === "") {
+                            return undefined;
+                        }
+
+                        zJSONSchema.parse(helmValuesSchemaOrEmptyString);
+
+                        return helmValuesSchemaOrEmptyString;
+                    })();
 
                     const apiChart = (() => {
                         const entry = apiCatalogs.catalogs.find(c => c.id === catalogId);

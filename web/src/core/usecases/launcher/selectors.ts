@@ -581,6 +581,12 @@ const main = createSelector(
 
         return state.helmValuesSchema_forDataTextEditor;
     }),
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.infoAmountInHelmValues;
+    }),
     (
         isReady,
         friendlyName,
@@ -601,7 +607,8 @@ const main = createSelector(
         s3ConfigSelect,
         labeledHelmChartSourceUrls,
         helmValues,
-        helmValuesSchema_forDataTextEditor
+        helmValuesSchema_forDataTextEditor,
+        infoAmountInHelmValues
     ) => {
         if (!isReady) {
             return {
@@ -628,6 +635,7 @@ const main = createSelector(
         assert(labeledHelmChartSourceUrls !== null);
         assert(helmValues !== null);
         assert(helmValuesSchema_forDataTextEditor !== null);
+        assert(infoAmountInHelmValues !== null);
 
         return {
             isReady: true as const,
@@ -649,7 +657,8 @@ const main = createSelector(
             s3ConfigSelect,
             labeledHelmChartSourceUrls,
             helmValues,
-            helmValuesSchema_forDataTextEditor
+            helmValuesSchema_forDataTextEditor,
+            infoAmountInHelmValues
         };
     }
 );

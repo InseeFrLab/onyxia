@@ -34,7 +34,7 @@ export type OnyxiaApi = {
         chartName: string;
         chartVersion: string;
     }) => Promise<{
-        helmValuesSchema: JSONSchema;
+        helmValuesSchema: JSONSchema | undefined;
         helmValuesYaml: string;
         helmChartSourceUrls: string[];
         helmDependencies: {

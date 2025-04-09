@@ -90,7 +90,8 @@ const Launcher = withLoginEnforced((props: Props) => {
         s3ConfigSelect,
         labeledHelmChartSourceUrls,
         helmValues,
-        helmValuesSchema_forDataTextEditor
+        helmValuesSchema_forDataTextEditor,
+        infoAmountInHelmValues
     } = useCoreState("launcher", "main");
 
     const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
@@ -344,14 +345,15 @@ const Launcher = withLoginEnforced((props: Props) => {
     );
 
     const [isDataEditorModeEnabled, setIsDataEditorModeEnabled] = useSessionState({
-        initialValue: false,
-        stateUniqueId: "isDataEditorModeEnabled",
+        initialValue: !isReady ? false : helmValuesSchema_forDataTextEditor === undefined,
+        stateUniqueId: `isDataEditorModeEnabled:${route.params.catalogId}:${route.params.chartName}`,
         zState: z.boolean()
     });
 
     const { classes, cx } = useStyles({
         isCommandBarEnabled: commandLogsEntries !== undefined,
-        isDataEditorModeEnabled
+        isDataEditorModeEnabled,
+        hasForm: helmValuesSchema_forDataTextEditor !== undefined
     });
 
     const [dataTextEditorErrorMsg, setDataTextEditorErrorMsg] = useState<
@@ -451,44 +453,54 @@ const Launcher = withLoginEnforced((props: Props) => {
                     erroredFormFields={erroredFormFields}
                     dataTextEditorErrorMsg={dataTextEditorErrorMsg}
                 />
-                <RadioGroup
-                    className={classes.modeSwitch}
-                    value={isDataEditorModeEnabled ? "editor" : "form"}
-                    onChange={event =>
-                        setIsDataEditorModeEnabled(event.target.value === "editor")
-                    }
-                >
-                    <FormControlLabel
-                        value="form"
-                        control={
-                            <Radio disabled={dataTextEditorErrorMsg !== undefined} />
-                        }
-                        label={t("form")}
-                    />
-                    <FormControlLabel
-                        value="editor"
-                        control={<Radio />}
-                        label={t("editor")}
-                    />
-                </RadioGroup>
-                <div className={classes.rootFormWrapper}>
-                    <RootFormComponent
-                        className={classes.rootForm}
-                        rootForm={rootForm}
-                        callbacks={{
-                            onAdd: launcher.addArrayItem,
-                            onChange: launcher.changeFormFieldValue,
-                            onRemove,
-                            onFieldErrorChange
-                        }}
-                    />
-                </div>
+                {helmValuesSchema_forDataTextEditor !== undefined && (
+                    <>
+                        <RadioGroup
+                            className={classes.modeSwitch}
+                            value={isDataEditorModeEnabled ? "editor" : "form"}
+                            onChange={event =>
+                                setIsDataEditorModeEnabled(
+                                    event.target.value === "editor"
+                                )
+                            }
+                        >
+                            <FormControlLabel
+                                value="form"
+                                control={
+                                    <Radio
+                                        disabled={dataTextEditorErrorMsg !== undefined}
+                                    />
+                                }
+                                label={t("form")}
+                            />
+                            <FormControlLabel
+                                value="editor"
+                                control={<Radio />}
+                                label={t("editor")}
+                            />
+                        </RadioGroup>
+
+                        <div className={classes.rootFormWrapper}>
+                            <RootFormComponent
+                                className={classes.rootForm}
+                                rootForm={rootForm}
+                                callbacks={{
+                                    onAdd: launcher.addArrayItem,
+                                    onChange: launcher.changeFormFieldValue,
+                                    onRemove,
+                                    onFieldErrorChange
+                                }}
+                            />
+                        </div>
+                    </>
+                )}
 
                 <div
                     ref={ref_dataTextEditorWrapper}
                     className={classes.dataTextEditorWrapper}
                 >
                     <DataTextEditor
+                        key={infoAmountInHelmValues}
                         className={classes.dataTextEditor}
                         value={helmValues}
                         jsonSchema={helmValuesSchema_forDataTextEditor}
@@ -512,6 +524,18 @@ const Launcher = withLoginEnforced((props: Props) => {
                                 helmValues_candidate
                             });
                         }}
+                        allDefaults={{
+                            isChecked:
+                                infoAmountInHelmValues === "include values.yaml defaults",
+                            onIsCheckedChange: isChecked => {
+                                launcher.changeInfoAmountInHelmValues({
+                                    infoAmountInHelmValues: isChecked
+                                        ? "include values.yaml defaults"
+                                        : "user provided"
+                                });
+                            }
+                        }}
+                        isJson5Enabled={false}
                     />
                 </div>
             </div>
@@ -557,9 +581,13 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss
-    .withParams<{ isCommandBarEnabled: boolean; isDataEditorModeEnabled: boolean }>()
+    .withParams<{
+        isCommandBarEnabled: boolean;
+        isDataEditorModeEnabled: boolean;
+        hasForm: boolean;
+    }>()
     .withName({ Launcher })
-    .create(({ theme, isCommandBarEnabled, isDataEditorModeEnabled }) => {
+    .create(({ theme, isCommandBarEnabled, isDataEditorModeEnabled, hasForm }) => {
         const MAX_WIDTH = 1250;
 
         return {
@@ -603,7 +631,8 @@ const useStyles = tss
                 display: isDataEditorModeEnabled ? undefined : "none",
                 flex: 1,
                 overflow: "visible",
-                position: "relative"
+                position: "relative",
+                marginTop: !hasForm ? theme.spacing(3) : undefined
             },
             dataTextEditor: {
                 position: "absolute",

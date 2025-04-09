@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 
 export function useSessionState<T extends Stringifyable>(params: {
     stateUniqueId: string;
     zState: { parse: (data: any) => T };
     initialValue: T | (() => T);
 }): [T, (newValue: T) => void] {
-    const { initialValue, stateUniqueId, zState } = params;
+    const { initialValue: initialValue_props, stateUniqueId, zState } = params;
+
+    const initialValue = useMemo(() => {
+        if (typeof initialValue_props === "function") {
+            return initialValue_props();
+        }
+
+        return initialValue_props;
+    }, [initialValue_props]);
 
     const [state, setState_base] = useState(() => {
         from_storage: {
@@ -20,10 +29,6 @@ export function useSessionState<T extends Stringifyable>(params: {
             return storedState;
         }
 
-        if (typeof initialValue === "function") {
-            return initialValue();
-        }
-
         return initialValue;
     });
 
@@ -31,6 +36,10 @@ export function useSessionState<T extends Stringifyable>(params: {
         setState_base(newValue);
         storeState(stateUniqueId, newValue);
     });
+
+    useEffectOnValueChange(() => {
+        setState(initialValue);
+    }, [initialValue]);
 
     return [state, setState] as const;
 }

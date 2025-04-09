@@ -13,7 +13,7 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
-import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
+import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
@@ -74,7 +74,12 @@ export const thunks = {
                     evtCleanupInitialize.post();
                 } else {
                     evtCleanupInitialize = Evt.create();
-                    setContext(rootContext, { evtCleanupInitialize });
+                    setContext(rootContext, {
+                        evtCleanupInitialize,
+                        reComputeHelmValues: () => {
+                            assert(false, "premature call");
+                        }
+                    });
                 }
 
                 const ctx = Evt.newCtx();
@@ -142,7 +147,7 @@ export const thunks = {
 
                 const {
                     helmDependencies,
-                    helmValuesSchema,
+                    helmValuesSchema: helmValuesSchema_orUndefined,
                     helmChartSourceUrls,
                     helmValuesYaml
                 } = await onyxiaApi.getHelmChartDetails({
@@ -150,6 +155,13 @@ export const thunks = {
                     chartName,
                     chartVersion
                 });
+
+                const hasHelmValuesSchema = helmValuesSchema_orUndefined !== undefined;
+
+                const helmValuesSchema: JSONSchema = helmValuesSchema_orUndefined ?? {
+                    type: "object",
+                    properties: {}
+                };
 
                 if (getIsCanceled()) {
                     return;
@@ -207,6 +219,10 @@ export const thunks = {
                     return;
                 }
 
+                const infoAmountInHelmValues = hasHelmValuesSchema
+                    ? "user provided"
+                    : "include values.yaml defaults";
+
                 const {
                     helmValues: helmValues_default,
                     helmValuesSchema_forDataTextEditor,
@@ -214,8 +230,24 @@ export const thunks = {
                 } = computeHelmValues({
                     helmValuesSchema,
                     xOnyxiaContext,
-                    helmValuesYaml
+                    helmValuesYaml,
+                    infoAmountInHelmValues
                 });
+
+                {
+                    const context = getContext(rootContext);
+
+                    context.reComputeHelmValues = ({ infoAmountInHelmValues }) => {
+                        const { helmValues: helmValues_default } = computeHelmValues({
+                            helmValuesSchema,
+                            xOnyxiaContext,
+                            helmValuesYaml,
+                            infoAmountInHelmValues
+                        });
+
+                        return { helmValues_default };
+                    };
+                }
 
                 const friendlyName_default = chartName;
 
@@ -257,14 +289,17 @@ export const thunks = {
                             helmValues_default,
                             helmValuesYaml,
 
-                            helmValuesSchema_forDataTextEditor,
+                            helmValuesSchema_forDataTextEditor: hasHelmValuesSchema
+                                ? helmValuesSchema_forDataTextEditor
+                                : undefined,
 
                             chartIconUrl,
                             catalogRepositoryUrl,
                             catalogName,
                             k8sRandomSubdomain: xOnyxiaContext.k8s.randomSubdomain,
                             helmChartSourceUrls,
-                            availableChartVersions
+                            availableChartVersions,
+                            infoAmountInHelmValues
                         },
                         helmValuesPatch: helmValuesPatch ?? []
                     })
@@ -276,6 +311,33 @@ export const thunks = {
             })();
 
             return { cleanup };
+        },
+    changeInfoAmountInHelmValues:
+        (params: {
+            infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+        }) =>
+        (...args) => {
+            const { infoAmountInHelmValues } = params;
+
+            const [dispatch, getState, rootContext] = args;
+
+            const { reComputeHelmValues } = getContext(rootContext);
+
+            const { helmValues_default } = reComputeHelmValues({
+                infoAmountInHelmValues
+            });
+
+            const restorableConfig = privateSelectors.restorableConfig(getState());
+
+            assert(restorableConfig !== null);
+
+            dispatch(
+                actions.infoAmountInHelmValuesChanged({
+                    helmValues_default,
+                    helmValuesPatch: restorableConfig.helmValuesPatch,
+                    infoAmountInHelmValues
+                })
+            );
         },
     restoreAllDefault:
         () =>
@@ -464,6 +526,9 @@ export const thunks = {
 
 const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     evtCleanupInitialize: Evt<void>;
+    reComputeHelmValues: (params: {
+        infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+    }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
 const privateThunks = {

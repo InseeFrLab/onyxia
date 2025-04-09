@@ -4,8 +4,7 @@ import {
 } from "core/ports/OnyxiaApi/XOnyxia";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import type { Stringifyable } from "core/tools/Stringifyable";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
@@ -22,6 +21,12 @@ import {
     type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
 } from "./shared/getJSONSchemaType";
 import structuredClone from "@ungap/structured-clone";
+import {
+    computeDiff,
+    applyDiffPatch,
+    getValueAtPath,
+    type Stringifyable
+} from "core/tools/Stringifyable";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: XOnyxiaParams["overwriteDefaultWith"];
@@ -55,30 +60,34 @@ export function computeHelmValues(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValuesYaml: string;
     xOnyxiaContext: XOnyxiaContextLike;
+    infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
 }): {
     helmValues: Record<string, Stringifyable>;
     helmValuesSchema_forDataTextEditor: JSONSchemaLike;
     isChartUsingS3: boolean;
 } {
-    const { helmValuesSchema, helmValuesYaml, xOnyxiaContext } = params;
+    const { helmValuesSchema, helmValuesYaml, xOnyxiaContext, infoAmountInHelmValues } =
+        params;
 
     const helmValuesSchema_forDataTextEditor = structuredClone(helmValuesSchema);
 
     let isChartUsingS3 = false;
 
+    const helmValuesYaml_parsed = (() => {
+        const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
+
+        assert(
+            helmValuesYaml_parsed instanceof Object &&
+                !(helmValuesYaml_parsed instanceof Array)
+        );
+
+        return helmValuesYaml_parsed;
+    })();
+
     const helmValues = computeHelmValues_rec({
         helmValuesSchema,
         helmValuesSchema_forDataTextEditor,
-        helmValuesYaml_parsed: (() => {
-            const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
-
-            assert(
-                helmValuesYaml_parsed instanceof Object &&
-                    !(helmValuesYaml_parsed instanceof Array)
-            );
-
-            return helmValuesYaml_parsed;
-        })(),
+        helmValuesYaml_parsed,
         xOnyxiaContext: (() => {
             const s3PropertyName = "s3";
 
@@ -99,6 +108,28 @@ export function computeHelmValues(params: {
     });
 
     assert(helmValues instanceof Object && !(helmValues instanceof Array));
+
+    if (infoAmountInHelmValues === "include values.yaml defaults") {
+        const { diffPatch } = computeDiff({
+            before: helmValues,
+            current: helmValuesYaml_parsed
+        });
+
+        applyDiffPatch({
+            objectOrArray: helmValues,
+            diffPatch: diffPatch.filter(({ path }) => {
+                const value_current = getValueAtPath(helmValues, path);
+
+                if (value_current !== undefined) {
+                    return false;
+                }
+
+                return true;
+            })
+        });
+    } else {
+        assert<Equals<typeof infoAmountInHelmValues, "user provided">>();
+    }
 
     return { helmValues, isChartUsingS3, helmValuesSchema_forDataTextEditor };
 }
