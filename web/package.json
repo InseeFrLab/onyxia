@@ -56,6 +56,7 @@
         "codemirror-json-schema": "0.7.9",
         "compare-versions": "^6.1.1",
         "evt": "^2.5.9",
+        "fflate": "^0.8.2",
         "file-saver": "^2.0.5",
         "flexsearch": "0.7.43",
         "i18nifty": "^3.2.6",

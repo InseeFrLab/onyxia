@@ -333,6 +333,7 @@ export const translations: Translations<"zh-CN"> = {
     ExplorerButtonBar: {
         file: "文件",
         delete: "删除",
+        "download directory": "下载",
         "upload file": "上传文件",
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",
@@ -341,6 +342,9 @@ export const translations: Translations<"zh-CN"> = {
         share: "分享",
         "alt list view": "显示列表",
         "alt block view": "显示块"
+    },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "下载准备中 ..."
     },
     SecretsExplorerButtonBar: {
         secret: "密码",

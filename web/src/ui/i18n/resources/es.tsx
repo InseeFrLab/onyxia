@@ -383,6 +383,7 @@ export const translations: Translations<"en"> = {
     ExplorerButtonBar: {
         file: "archivo",
         delete: "eliminar",
+        "download directory": "Descargar",
         "upload file": "Subir archivo",
         "copy path": "Copiar nombre del objeto S3",
         "create directory": "Crear directorio",
@@ -391,6 +392,9 @@ export const translations: Translations<"en"> = {
         share: "Compartir",
         "alt list view": "Mostrar lista",
         "alt block view": "Mostrar bloque"
+    },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Preparing download ..."
     },
     ExplorerItems: {
         "empty directory": "Este directorio está vacío"

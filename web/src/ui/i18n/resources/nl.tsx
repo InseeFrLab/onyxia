@@ -373,10 +373,14 @@ export const translations: Translations<"nl"> = {
         "copy path": "De naam van het S3-object kopiëren",
         "create directory": "Nieuwe map",
         refresh: "vernieuwen",
+        "download directory": "Downloaden",
         new: "Nieuw",
         share: "Delen",
         "alt list view": "Toon lijst",
         "alt block view": "Toon blok"
+    },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Voorbereiding van de download ..."
     },
     SecretsExplorerButtonBar: {
         secret: "geheim",

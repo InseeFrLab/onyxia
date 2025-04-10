@@ -82,8 +82,12 @@ export const Default: Story = {
         onPolicyChange: action("Policy change"),
         onCopyPath: action("Copy path"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
+        onDownloadItems: action("Download Items"),
         evtAction: Evt.create<
-            "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+            | "DELETE SELECTED ITEM"
+            | "COPY SELECTED ITEM PATH"
+            | "SHARE SELECTED FILE"
+            | "DOWNLOAD DIRECTORY"
         >(),
         onShare: action("Share file")
     }
@@ -581,9 +585,13 @@ export const IconsSupported: Story = {
         onDeleteItems: action("Delete items"),
         onPolicyChange: action("Policy change"),
         onCopyPath: action("Copy path"),
+        onDownloadItems: action("Download Items"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
         evtAction: Evt.create<
-            "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+            | "DELETE SELECTED ITEM"
+            | "COPY SELECTED ITEM PATH"
+            | "SHARE SELECTED FILE"
+            | "DOWNLOAD DIRECTORY"
         >(),
         onShare: action("Share file")
     }

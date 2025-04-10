@@ -377,6 +377,7 @@ export const translations: Translations<"fi"> = {
     ExplorerButtonBar: {
         file: "tiedosto",
         delete: "poista",
+        "download directory": "Lataa",
         "upload file": "Lataa tiedosto",
         "copy path": "Kopioi S3-objektin nimi",
         "create directory": "Luo hakemisto",
@@ -385,6 +386,9 @@ export const translations: Translations<"fi"> = {
         share: "Jaa",
         "alt list view": "Näytä lista",
         "alt block view": "Näytä lohko"
+    },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Latauksen valmistelu ..."
     },
     ExplorerItems: {
         "empty directory": "Tämä hakemisto on tyhjä"

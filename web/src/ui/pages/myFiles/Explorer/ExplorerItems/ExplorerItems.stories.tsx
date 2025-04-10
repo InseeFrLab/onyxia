@@ -82,8 +82,12 @@ export const Default: Story = {
         onCopyPath: action("Copy path"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
         onPolicyChange: action("Policy change"),
+        onDownloadItems: action("On Download Items"),
         evtAction: Evt.create<
-            "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+            | "DELETE SELECTED ITEM"
+            | "COPY SELECTED ITEM PATH"
+            | "SHARE SELECTED FILE"
+            | "DOWNLOAD DIRECTORY"
         >(),
         onShare: action("Share file")
     }
@@ -100,8 +104,12 @@ export const EmptyDirectory: Story = {
         onCopyPath: action("Copy path"),
         onPolicyChange: action("Policy change"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
+        onDownloadItems: action("On Download Items"),
         evtAction: Evt.create<
-            "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+            | "DELETE SELECTED ITEM"
+            | "COPY SELECTED ITEM PATH"
+            | "SHARE SELECTED FILE"
+            | "DOWNLOAD DIRECTORY"
         >(),
         onShare: action("Share file")
     }

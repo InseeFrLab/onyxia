@@ -15,7 +15,7 @@ export type State = {
     ongoingOperations: {
         directoryPath: string;
         operationId: string;
-        operation: "create" | "delete" | "modifyPolicy";
+        operation: "create" | "delete" | "modifyPolicy" | "downloading";
         objects: S3Object[];
     }[];
     s3FilesBeingUploaded: {
@@ -171,7 +171,7 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     operationId: string;
                     objects: S3Object[];
-                    operation: "create" | "delete" | "modifyPolicy";
+                    operation: "create" | "delete" | "modifyPolicy" | "downloading";
                 };
             }
         ) => {
@@ -200,6 +200,7 @@ export const { reducer, actions } = createUsecaseActions({
                     state.objects.push(...objects);
                     break;
                 case "modifyPolicy":
+                case "downloading":
                     break;
             }
         },
