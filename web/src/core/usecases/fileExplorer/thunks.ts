@@ -967,19 +967,18 @@ export const thunks = {
 
                     switch (object.kind) {
                         case "directory": {
-                            const { filePaths } = await crawl({
+                            const { filePaths, directoryPaths } = await crawl({
                                 directoryPath: basePath
                             });
 
-                            if (filePaths.length === 0) {
-                                // Create a zip folder entry
+                            directoryPaths.forEach(path => {
                                 const zipEntry = new ZipPassThrough(
-                                    `${object.basename}/`
+                                    `${pathJoin(object.basename, path)}/`
                                 );
                                 zip.add(zipEntry);
                                 zipEntry.push(new Uint8Array(0), true);
-                                break;
-                            }
+                            });
+
                             for (const relativeFilePath of filePaths) {
                                 const absolutePath = pathJoin(basePath, relativeFilePath);
                                 const zipEntryPath = pathJoin(
