@@ -134,7 +134,6 @@ const useStyles = tss
                 height: "100vh",
                 display: "flex",
                 flexDirection: "column",
-                backgroundColor: theme.colors.useCases.surfaces.background,
                 margin: `0 ${rootRightLeftMargin}px`,
                 position: "relative"
             },

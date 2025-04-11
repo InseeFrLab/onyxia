@@ -263,6 +263,7 @@ const useStyles = tss
             borderTop: `1px solid ${theme.colors.useCases.typography.textPrimary}`,
             display: "flex",
             ...theme.spacing.topBottom("padding", 4),
+            paddingBottom: theme.spacing(1),
             "& > *": {
                 flex: 1
             },

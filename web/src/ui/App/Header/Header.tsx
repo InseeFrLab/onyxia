@@ -84,7 +84,6 @@ export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ Header }).create(({ theme }) => ({
     root: {
-        backgroundColor: theme.colors.useCases.surfaces.background,
         overflow: "auto",
         display: "flex",
         alignItems: "center",
