@@ -65,7 +65,7 @@
         "minimal-polyfills": "^2.2.3",
         "mui-icons-material-lazy": "^1.0.4",
         "oidc-spa": "^6.13.2",
-        "onyxia-ui": "^6.2.7",
+        "onyxia-ui": "^6.4.0",
         "pathe": "^1.1.2",
         "powerhooks": "^2.0.1",
         "react": "^18.3.1",

@@ -5921,7 +5921,7 @@ oniguruma-to-es@0.7.0:
     regex "^5.0.2"
     regex-recursion "^4.3.0"
 
-onyxia-ui@^6.2.7:
+onyxia-ui@^6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.4.0.tgz#5a8ebd9b13f91e4ce7593f63aa08b914f4201a00"
   integrity sha512-xbvnVeUp+OlKhBs9j563ae35lv5NQlEDLius0D6K2BpcgKdiMbzMytJ7ZLwyoJoufwP8thiAxQI0b/lpnFVubg==
