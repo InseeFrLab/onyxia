@@ -11,6 +11,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { customIcons, getIconUrl, getIconUrlByName } from "lazy-icons";
+import { tss } from "tss";
 
 type Props = {
     className?: string;
@@ -30,10 +31,12 @@ export const LeftBar = memo((props: Props) => {
 
     const { t } = useTranslation({ LeftBar });
 
+    const { classes, cx } = useStyles();
+
     return (
         <>
             <OnyxiaUiLeftBar
-                className={className}
+                className={cx(classes.root, className)}
                 doPersistIsPanelOpen={true}
                 defaultIsPanelOpen={true}
                 collapsedWidth={logoContainerWidth}
@@ -172,6 +175,8 @@ export const LeftBar = memo((props: Props) => {
         </>
     );
 });
+
+const useStyles = tss.withName({ LeftBar }).create({ root: {} });
 
 LeftBar.displayName = symToStr({ LeftBar });
 
