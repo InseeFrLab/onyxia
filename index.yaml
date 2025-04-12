@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   onyxia:
   - apiVersion: v2
+    created: "2025-04-12T03:53:14.056670219Z"
+    description: Onyxia is your datalab's hub.
+    digest: d2865bf61fe752fdc6aba787f9e1d21a3a6f0b11ff0076a93c207035e8f4fbfd
+    icon: https://inseefrlab.github.io/onyxia/icon.svg
+    name: onyxia
+    type: application
+    urls:
+    - https://github.com/InseeFrLab/onyxia/releases/download/v10.13.1/onyxia-10.13.1.tgz
+    version: 10.13.1
+  - apiVersion: v2
     created: "2025-04-11T15:38:18.328975253Z"
     description: Onyxia is your datalab's hub.
     digest: 81513153b9de0d51ecaf4abbeea923f241b036adc22eb684a49414c3b11165a4
@@ -3091,4 +3101,4 @@ entries:
     urls:
     - https://github.com/InseeFrLab/onyxia/releases/download/v4.1.1/onyxia-4.1.1.tgz
     version: 4.1.1
-generated: "2025-04-11T15:38:18.327757687Z"
+generated: "2025-04-12T03:53:14.054900688Z"
