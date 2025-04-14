@@ -368,6 +368,7 @@ export const translations: Translations<"it"> = {
     ExplorerButtonBar: {
         file: "file",
         delete: "eliminare",
+        "download directory": "Scaricare",
         "upload file": "Caricare un file",
         "copy path": "Copia il nome dell'oggetto S3",
         "create directory": "Nuova cartella",
@@ -376,6 +377,9 @@ export const translations: Translations<"it"> = {
         share: "Condividi",
         "alt list view": "Mostra lista",
         "alt block view": "Mostra blocco"
+    },
+    ExplorerDownloadSnackbar: {
+        "download preparation": "Preparazione del download ..."
     },
     SecretsExplorerButtonBar: {
         secret: "segreto",

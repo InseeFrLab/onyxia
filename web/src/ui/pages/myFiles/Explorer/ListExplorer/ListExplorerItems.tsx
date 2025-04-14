@@ -45,8 +45,12 @@ export type ListExplorerItemsProps = {
     onDeleteItems: (params: { items: Item[] }, onDeleteConfirmed?: () => void) => void;
     onCopyPath: (params: { basename: string }) => void;
     onShare: (params: { fileBasename: string }) => void;
+    onDownloadItems: (params: { items: Item[] }) => void;
     evtAction: NonPostableEvt<
-        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
+        | "DELETE SELECTED ITEM"
+        | "COPY SELECTED ITEM PATH"
+        | "SHARE SELECTED FILE"
+        | "DOWNLOAD DIRECTORY"
     >;
 };
 
@@ -72,7 +76,8 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
         onPolicyChange,
         onSelectedItemKindValueChange,
         onShare,
-        evtAction
+        evtAction,
+        onDownloadItems
     } = props;
 
     const apiRef = useGridApiRef();
@@ -276,6 +281,8 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                             fileBasename: selectedItems[0].basename
                         });
                         return;
+                    case "DOWNLOAD DIRECTORY":
+                        onDownloadItems({ items: selectedItems });
                 }
             }),
         [evtAction, onDeleteItems, onCopyPath]

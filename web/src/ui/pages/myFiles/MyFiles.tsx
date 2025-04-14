@@ -22,6 +22,7 @@ import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 
 export type Props = {
     route: PageRoute;
@@ -51,8 +52,15 @@ function MyFiles(props: Props) {
         currentWorkingDirectoryView,
         pathMinDepth,
         viewMode,
-        shareView
+        shareView,
+        isDownloadPreparing
     } = useCoreState("fileExplorer", "main");
+
+    const evtIsSnackbarOpen = useConst(() => Evt.create(isDownloadPreparing));
+
+    useEffect(() => {
+        evtIsSnackbarOpen.state = isDownloadPreparing;
+    }, [isDownloadPreparing]);
 
     const { fileExplorer } = useCore().functions;
 
@@ -89,6 +97,18 @@ function MyFiles(props: Props) {
             fileExplorer.delete({
                 s3Object: params.item
             })
+    );
+
+    const onDownloadItems = useConstCallback(
+        async (params: Param0<ExplorerProps["onDownloadItems"]>) => {
+            const { items } = params;
+
+            const { url, filename } = await fileExplorer.getDownloadUrl({
+                s3Objects: items
+            });
+
+            triggerBrowserDownload({ url, filename });
+        }
     );
 
     const onDeleteItems = useConstCallback(
@@ -226,6 +246,8 @@ function MyFiles(props: Props) {
                 onChangeShareSelectedValidityDuration={
                     fileExplorer.changeShareSelectedValidityDuration
                 }
+                onDownloadItems={onDownloadItems}
+                evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
             />
         </div>
     );

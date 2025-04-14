@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import { Alert } from "onyxia-ui/Alert";
-import { NonPostableEvt } from "evt";
+import { type NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { tss } from "tss";
 import { IconButton } from "onyxia-ui/IconButton";
@@ -11,7 +11,7 @@ export type ClusterEventsSnackbarProps = {
     evtAction: NonPostableEvt<{
         action: "show notification";
         message: string;
-        severity: "error" | "warning";
+        severity: "warning" | "info" | "error" | "success";
     }>;
     onOpenClusterEventsDialog: () => void;
 };
@@ -20,10 +20,12 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
     const { evtAction, onOpenClusterEventsDialog } = props;
 
     const [openState, setOpenState] = useState<
-        | {
-              message: string;
-              severity: "error" | "warning";
-          }
+        | Pick<
+              ClusterEventsSnackbarProps["evtAction"] extends NonPostableEvt<infer U>
+                  ? U
+                  : never,
+              "message" | "severity"
+          >
         | undefined
     >(undefined);
 

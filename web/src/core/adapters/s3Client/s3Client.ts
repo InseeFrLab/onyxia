@@ -592,7 +592,7 @@ export function createS3Client(
                 size: metadata.ContentLength,
                 lastModified: metadata.LastModified,
                 policy: "private",
-                canChangePolicy: false
+                canChangePolicy: true
             } satisfies S3Object.File;
         },
         deleteFile: async ({ path }) => {

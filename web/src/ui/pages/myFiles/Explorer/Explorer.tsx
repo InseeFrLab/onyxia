@@ -46,6 +46,7 @@ import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
 import type { ShareView } from "core/usecases/fileExplorer";
+import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
 
 export type ExplorerProps = {
     /**
@@ -71,13 +72,13 @@ export type ExplorerProps = {
     }) => void;
     onRefresh: () => void;
     onDeleteItem: (params: { item: Item }) => void;
+    onDownloadItems: (params: { items: Item[] }) => void;
     onDeleteItems: (params: { items: Item[] }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
     pathMinDepth: number;
     onOpenFile: (params: { basename: string }) => void;
-
     shareView: ShareView | undefined;
     onShareFileOpen: (params: { fileBasename: string }) => void;
     onShareFileClose: () => void;
@@ -85,6 +86,7 @@ export type ExplorerProps = {
     onChangeShareSelectedValidityDuration: (params: {
         validityDurationSecond: number;
     }) => void;
+    evtIsDownloadSnackbarOpen: StatefulReadonlyEvt<boolean>;
 } & Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">; //NOTE: TODO only defined when explorer type is s3
 
 export const Explorer = memo((props: ExplorerProps) => {
@@ -114,7 +116,9 @@ export const Explorer = memo((props: ExplorerProps) => {
         onShareFileOpen,
         onShareFileClose,
         onShareRequestSignedUrl,
-        onChangeShareSelectedValidityDuration
+        onChangeShareSelectedValidityDuration,
+        onDownloadItems,
+        evtIsDownloadSnackbarOpen
     } = props;
 
     const [items] = useMemo(
@@ -214,6 +218,9 @@ export const Explorer = memo((props: ExplorerProps) => {
             case "share":
                 evtExplorerItemsAction.post("SHARE SELECTED FILE");
                 return;
+            case "download directory":
+                evtExplorerItemsAction.post("DOWNLOAD DIRECTORY");
+                return;
         }
         assert<Equals<typeof buttonId, never>>();
     });
@@ -292,6 +299,12 @@ export const Explorer = memo((props: ExplorerProps) => {
             }
 
             onDeleteItem({ item });
+        }
+    );
+
+    const itemOnDownloadDirectory = useConstCallback(
+        async ({ items }: Parameters<ItemsProps["onDownloadItems"]>[0]) => {
+            onDownloadItems({ items });
         }
     );
 
@@ -437,6 +450,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         isBucketPolicyFeatureEnabled={
                                             isBucketPolicyFeatureEnabled
                                         }
+                                        onDownloadItems={itemOnDownloadDirectory}
                                     />
                                 );
                             case "list":
@@ -457,6 +471,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         isBucketPolicyFeatureEnabled={
                                             isBucketPolicyFeatureEnabled
                                         }
+                                        onDownloadItems={itemOnDownloadDirectory}
                                     />
                                 );
                         }
@@ -521,6 +536,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                 onFileSelected={onFileSelected}
                 filesBeingUploaded={filesBeingUploaded}
             />
+
+            <ExplorerDownloadSnackbar evtIsOpen={evtIsDownloadSnackbarOpen} />
         </>
     );
 });

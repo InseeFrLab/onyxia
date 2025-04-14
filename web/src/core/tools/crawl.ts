@@ -8,36 +8,46 @@ export function crawlFactory(params: {
 }) {
     const { list } = params;
 
-    async function crawlRec(params: { directoryPath: string; filePaths: string[] }) {
-        const { directoryPath, filePaths } = params;
+    async function crawlRec(params: {
+        directoryPath: string;
+        filePaths: string[];
+        directoryPaths: string[];
+    }) {
+        const { directoryPath, filePaths, directoryPaths } = params;
 
         const { directoryBasenames, fileBasenames } = await list({
             directoryPath
         });
 
-        const toPath = (fileOrDirectoryBasename: string) =>
-            pathJoin(directoryPath, fileOrDirectoryBasename);
+        const toPath = (fileOrDirectoryBasename: string) => {
+            return pathJoin(directoryPath, fileOrDirectoryBasename);
+        };
 
         filePaths.push(...fileBasenames.map(toPath));
 
         await Promise.all(
-            directoryBasenames
-                .map(toPath)
-                .map(directoryPath => crawlRec({ directoryPath, filePaths }))
+            directoryBasenames.map(toPath).map(directoryPath => {
+                directoryPaths.push(directoryPath);
+                return crawlRec({ directoryPath, filePaths, directoryPaths });
+            })
         );
     }
 
     async function crawl(params: {
         directoryPath: string;
-    }): Promise<{ filePaths: string[] }> {
+    }): Promise<{ filePaths: string[]; directoryPaths: string[] }> {
         const { directoryPath } = params;
 
         const filePaths: string[] = [];
+        const directoryPaths: string[] = [directoryPath];
 
-        await crawlRec({ directoryPath, filePaths });
+        await crawlRec({ directoryPath, filePaths, directoryPaths });
 
         return {
-            filePaths: filePaths.map(filePath => pathRelative(directoryPath, filePath))
+            filePaths: filePaths.map(filePath => pathRelative(directoryPath, filePath)),
+            directoryPaths: directoryPaths.map(dirPath =>
+                pathRelative(directoryPath, dirPath)
+            )
         };
     }
 
