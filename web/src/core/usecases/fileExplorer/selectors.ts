@@ -20,13 +20,11 @@ type UploadProgress = {
         uploadPercent: number;
     };
 };
-const isDownloadPreparing = createSelector(state, (state): boolean => {
-    const { ongoingOperations } = state;
-    return (
-        ongoingOperations.filter(operation => operation.operation === "downloading")
-            .length > 0
-    );
-});
+const isDownloadPreparing = createSelector(
+    createSelector(state, state => state.ongoingOperations),
+    (ongoingOperations): boolean =>
+        ongoingOperations.some(operation => operation.operation === "downloading")
+);
 
 const uploadProgress = createSelector(state, (state): UploadProgress => {
     const { s3FilesBeingUploaded } = state;

@@ -103,22 +103,11 @@ function MyFiles(props: Props) {
         async (params: Param0<ExplorerProps["onDownloadItems"]>) => {
             const { items } = params;
 
-            if (items.length === 1 && items[0].kind === "file") {
-                const filename = items[0].basename;
-                const url = await fileExplorer.getFileDownloadUrl({
-                    basename: filename
-                });
-                triggerBrowserDownload({ url, filename });
-            }
-
-            const { stream, zipFileName } = await fileExplorer.downloadObjectsAsZip({
+            const { url, filename } = await fileExplorer.getDownloadUrl({
                 s3Objects: items
             });
 
-            const blob = await new Response(stream).blob();
-            const blobUrl = URL.createObjectURL(blob);
-
-            triggerBrowserDownload({ url: blobUrl, filename: zipFileName });
+            triggerBrowserDownload({ url, filename });
         }
     );
 
