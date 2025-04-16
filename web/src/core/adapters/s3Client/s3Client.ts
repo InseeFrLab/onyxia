@@ -655,6 +655,30 @@ export function createS3Client(
             return downloadUrl;
         },
 
+        getFileContent: async ({ path }: { path: string }) => {
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+
+            const { getAwsS3Client } = await prApi;
+            const { awsS3Client } = await getAwsS3Client();
+
+            const { GetObjectCommand } = await import("@aws-sdk/client-s3");
+
+            const response = await awsS3Client.send(
+                new GetObjectCommand({
+                    Bucket: bucketName,
+                    Key: objectName
+                })
+            );
+
+            assert(response.Body instanceof ReadableStream);
+
+            return {
+                stream: response.Body,
+                lastModified: response.LastModified,
+                size: response.ContentLength
+            };
+        },
+
         getFileContentType: async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 

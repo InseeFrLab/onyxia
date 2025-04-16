@@ -103,7 +103,7 @@ function MyFiles(props: Props) {
         async (params: Param0<ExplorerProps["onDownloadItems"]>) => {
             const { items } = params;
 
-            const { url, filename } = await fileExplorer.getDownloadUrl({
+            const { url, filename } = await fileExplorer.getBlobUrl({
                 s3Objects: items
             });
 

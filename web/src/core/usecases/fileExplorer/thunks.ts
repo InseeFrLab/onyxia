@@ -180,6 +180,48 @@ const privateThunks = {
                 })
             );
         },
+    downloadObject:
+        (params: { s3Object: S3Object }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { directoryPath } = getState()[name];
+            assert(directoryPath !== undefined);
+
+            const { s3Object } = params;
+
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const basename = s3Object.basename;
+            const path = pathJoin(directoryPath, basename);
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc cp ${pathJoin("s3", path)} .`
+                })
+            );
+
+            const { stream, size } = await s3Client.getFileContent({
+                path
+            });
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: `...${path}: 100% of ${size} Bytes uploaded`
+                })
+            );
+
+            return { stream };
+        },
     downloadObjectsAsZip:
         (params: { s3Objects: S3Object[] }) =>
         async (...args) => {
@@ -190,14 +232,6 @@ const privateThunks = {
 
             const { s3Objects } = params;
 
-            const operationId = await dispatch(
-                privateThunks.createOperation({
-                    operation: "downloading",
-                    objects: s3Objects,
-                    directoryPath
-                })
-            );
-
             const s3Client = await dispatch(
                 s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
@@ -207,6 +241,21 @@ const privateThunks = {
 
             const { readable, writable } = new TransformStream();
             const writer = writable.getWriter();
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc cp --recursive ${s3Objects
+                        .map(({ basename }) =>
+                            pathJoin("s3", pathJoin(directoryPath, basename))
+                        )
+                        .join(" ")} .`
+                })
+            );
+
+            let totalSize: number = 0;
 
             {
                 const zip = new Zip((err, chunk, final) => {
@@ -253,24 +302,21 @@ const privateThunks = {
                     }
                 });
 
-                const createZipEntryFromUrl = async ({
+                const createZipEntryFromStream = async ({
                     zipPath,
-                    url,
+                    stream,
                     modifiedDate
                 }: {
                     zipPath: string;
-                    url: string;
+                    stream: ReadableStream<Uint8Array>;
                     modifiedDate?: string | number | Date;
                 }) => {
-                    const res = await fetch(url);
-                    if (!res.ok || !res.body) return;
-
                     const entry = new ZipPassThrough(zipPath);
                     if (modifiedDate) entry.mtime = modifiedDate;
 
                     zip.add(entry);
 
-                    const reader = res.body.getReader();
+                    const reader = stream.getReader();
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
@@ -306,16 +352,17 @@ const privateThunks = {
                                     relativeFilePath
                                 );
 
-                                const url = await s3Client.getFileDownloadUrl({
-                                    path: absolutePath,
-                                    validityDurationSecond: 300
-                                });
+                                const { stream, size, lastModified } =
+                                    await s3Client.getFileContent({
+                                        path: absolutePath
+                                    });
 
+                                totalSize += size ?? 0;
                                 downloadTasks.push(
-                                    createZipEntryFromUrl({
+                                    createZipEntryFromStream({
                                         zipPath: zipEntryPath,
-                                        url,
-                                        modifiedDate: undefined
+                                        stream,
+                                        modifiedDate: lastModified
                                     })
                                 );
                             }
@@ -323,15 +370,16 @@ const privateThunks = {
                         }
 
                         case "file": {
-                            const url = await s3Client.getFileDownloadUrl({
-                                path: basePath,
-                                validityDurationSecond: 300
+                            const { stream, size } = await s3Client.getFileContent({
+                                path: basePath
                             });
 
+                            totalSize += size ?? 0;
+
                             downloadTasks.push(
-                                createZipEntryFromUrl({
+                                createZipEntryFromStream({
                                     zipPath: object.basename,
-                                    url,
+                                    stream,
                                     modifiedDate: object.lastModified
                                 })
                             );
@@ -341,15 +389,17 @@ const privateThunks = {
                 }
 
                 await Promise.all(downloadTasks);
+
                 zip.end();
             }
 
             dispatch(
-                actions.operationCompleted({
-                    objects: s3Objects,
-                    operationId
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: `...${pathJoin(directoryPath, s3Objects.at(-1)?.basename ?? "")}: 100% of ${totalSize} Bytes uploaded`
                 })
             );
+
             return {
                 stream: readable,
                 zipFileName:
@@ -1038,29 +1088,55 @@ export const thunks = {
 
             dispatch(actions.requestSignedUrlCompleted({ url }));
         },
-    getDownloadUrl:
+    getBlobUrl:
         (params: { s3Objects: S3Object[] }) =>
         async (...args): Promise<{ url: string; filename: string }> => {
             const { s3Objects } = params;
-            const [dispatch] = args;
 
-            if (s3Objects.length === 1 && s3Objects[0].kind === "file") {
-                const basename = s3Objects[0].basename;
-                const url = await dispatch(
-                    thunks.getFileDownloadUrl({
-                        basename
-                    })
-                );
-                return { url, filename: basename };
-            }
+            const [dispatch, getState] = args;
 
-            const { stream, zipFileName } = await dispatch(
-                privateThunks.downloadObjectsAsZip({ s3Objects })
+            const { directoryPath } = getState()[name];
+            assert(directoryPath !== undefined);
+
+            const operationId = await dispatch(
+                privateThunks.createOperation({
+                    operation: "downloading",
+                    objects: s3Objects,
+                    directoryPath
+                })
             );
 
-            const blob = await new Response(stream).blob();
-            const blobUrl = URL.createObjectURL(blob);
+            const { stream, filename } =
+                s3Objects.length === 1 && s3Objects[0].kind === "file"
+                    ? await (async () => {
+                          const { stream } = await dispatch(
+                              privateThunks.downloadObject({ s3Object: s3Objects[0] })
+                          );
 
-            return { url: blobUrl, filename: zipFileName };
+                          return {
+                              stream,
+                              filename: s3Objects[0].basename
+                          };
+                      })()
+                    : await (async () => {
+                          const { stream, zipFileName } = await dispatch(
+                              privateThunks.downloadObjectsAsZip({ s3Objects })
+                          );
+                          return {
+                              stream,
+                              filename: zipFileName
+                          };
+                      })();
+
+            const blobUrl = URL.createObjectURL(await new Response(stream).blob());
+
+            dispatch(
+                actions.operationCompleted({
+                    objects: s3Objects,
+                    operationId
+                })
+            );
+
+            return { url: blobUrl, filename };
         }
 } satisfies Thunks;
