@@ -217,9 +217,7 @@ export const thunks = {
 
             assert(helmRelease !== undefined);
 
-            const { postInstallInstructions } = helmRelease;
-
-            assert(postInstallInstructions !== undefined);
+            const { postInstallInstructions = "" } = helmRelease;
 
             dispatch(
                 actions.commandLogsEntryAdded({
