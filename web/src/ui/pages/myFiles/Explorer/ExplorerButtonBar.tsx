@@ -8,17 +8,17 @@ import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useStyles } from "tss";
-import { ViewMode } from "../shared/types";
+import type { ViewMode } from "../shared/types";
 import { getIconUrlByName } from "lazy-icons";
 
-export type Props = {
+export type ExplorerButtonBarProps = {
     selectedItemKind: "file" | "directory" | "multiple" | "none";
     viewMode: ViewMode;
     onViewModeChange: (params: { viewMode: ViewMode }) => void;
     callback: (buttonId: ButtonId) => void;
 };
 
-export const ExplorerButtonBar = memo((props: Props) => {
+export const ExplorerButtonBar = memo((props: ExplorerButtonBarProps) => {
     const { selectedItemKind, callback, onViewModeChange, viewMode } = props;
 
     const { t } = useTranslation({ ExplorerButtonBar });

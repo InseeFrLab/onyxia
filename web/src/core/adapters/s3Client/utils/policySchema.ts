@@ -1,5 +1,5 @@
 import type { S3BucketPolicy } from "core/ports/S3Client";
-import { assert, Equals } from "tsafe";
+import { assert, type Equals } from "tsafe";
 import { z } from "zod";
 import { id } from "tsafe/id";
 

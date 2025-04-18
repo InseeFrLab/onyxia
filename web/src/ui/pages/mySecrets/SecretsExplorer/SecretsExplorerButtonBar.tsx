@@ -5,7 +5,7 @@ import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
 import { getIconUrlByName } from "lazy-icons";
 
-export type Props = {
+export type SecretsExplorerButtonBarProps = {
     selectedItemKind: "file" | "directory" | "none";
     isSelectedItemInEditingState: boolean;
     isFileOpen: boolean;
@@ -13,7 +13,7 @@ export type Props = {
     callback: (buttonId: ButtonId) => void;
 };
 
-export const SecretsExplorerButtonBar = memo((props: Props) => {
+export const SecretsExplorerButtonBar = memo((props: SecretsExplorerButtonBarProps) => {
     const { selectedItemKind, isSelectedItemInEditingState, isFileOpen, callback } =
         props;
 

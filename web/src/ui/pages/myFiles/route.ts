@@ -8,7 +8,7 @@ import {
     type ValueSerializer,
     noMatch
 } from "type-route";
-import { ViewMode, viewModes } from "./shared/types";
+import { type ViewMode, viewModes } from "./shared/types";
 
 export const routeDefs = {
     myFiles: defineRoute(

@@ -3,7 +3,7 @@ import {} from "./";
 import { action } from "@storybook/addon-actions";
 import { PolicySwitch } from "./PolicySwitch";
 import { useState } from "react";
-import { Item } from "../shared/types";
+import type { Item } from "../shared/types";
 
 const meta = {
     title: "Pages/MyFiles/Explorer/PolicySwitch",

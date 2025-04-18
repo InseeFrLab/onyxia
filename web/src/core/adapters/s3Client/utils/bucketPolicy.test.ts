@@ -4,7 +4,7 @@ import {
     addObjectNameToListBucketCondition,
     removeObjectNameFromListBucketCondition
 } from "./bucketPolicy";
-import { S3BucketPolicy } from "core/ports/S3Client";
+import type { S3BucketPolicy } from "core/ports/S3Client";
 
 describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
     const bucketArn = "bucketArn";

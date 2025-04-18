@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ConfirmCustomS3ConfigDeletionDialog } from "./ConfirmCustomS3ConfigDeletionDialog";
 import { Evt } from "evt";
 import { action } from "@storybook/addon-actions";

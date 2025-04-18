@@ -1,10 +1,10 @@
 import {
     createI18nApi,
     declareComponentKeys,
-    LocalizedString as GenericLocalizedString
+    type LocalizedString as GenericLocalizedString
 } from "i18nifty";
 import { fallbackLanguage, type Language } from "./types";
-import { ComponentKey } from "./types";
+import type { ComponentKey } from "./types";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
 import { env } from "env";
 import { objectEntries } from "tsafe/objectEntries";

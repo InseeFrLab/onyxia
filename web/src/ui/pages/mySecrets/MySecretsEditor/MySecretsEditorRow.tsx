@@ -19,7 +19,7 @@ import type { Param0 } from "tsafe";
 import { declareComponentKeys } from "i18nifty";
 import { getIconUrlByName } from "lazy-icons";
 
-export type Props = {
+export type MySecretsEditorRowProps = {
     isLocked: boolean;
 
     /** NOTE: We can't use "key" as it's a reserved props*/
@@ -45,7 +45,7 @@ export type Props = {
     isDarker: boolean;
 };
 
-export const MySecretsEditorRow = memo((props: Props) => {
+export const MySecretsEditorRow = memo((props: MySecretsEditorRowProps) => {
     const { t } = useTranslation({ MySecretsEditorRow });
 
     const {
@@ -304,7 +304,7 @@ const { i18n } = declareComponentKeys<"key input desc" | "value input desc">()({
 export type I18n = typeof i18n;
 
 const useStyles = tss
-    .withParams<Props & { isInEditingState: boolean }>()
+    .withParams<MySecretsEditorRowProps & { isInEditingState: boolean }>()
     .withName({ MySecretsEditorRow })
     .create(({ theme, isInEditingState, isDarker }) => ({
         root: {

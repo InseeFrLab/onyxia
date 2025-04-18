@@ -8,7 +8,7 @@ import { TextField } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { UnpackEvt } from "evt";
+import type { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
 import { LanguageSelect } from "onyxia-ui/LanguageSelect";

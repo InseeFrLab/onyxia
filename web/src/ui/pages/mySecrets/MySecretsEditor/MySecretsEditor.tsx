@@ -10,7 +10,10 @@ import { useTranslation } from "ui/i18n";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
-import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
+import {
+    MySecretsEditorRow,
+    type MySecretsEditorRowProps as RowProps
+} from "./MySecretsEditorRow";
 import { useArrayDiff } from "powerhooks/useArrayDiff";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";

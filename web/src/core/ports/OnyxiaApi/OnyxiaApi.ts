@@ -4,7 +4,7 @@ import type { Catalog } from "./Catalog";
 import type { Chart } from "./Chart";
 import type { HelmRelease } from "./HelmRelease";
 import type { User } from "./User";
-import { JSONSchema } from "./JSONSchema";
+import type { JSONSchema } from "./JSONSchema";
 import type { NonPostableEvt } from "evt";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import type { OidcParams } from "./OidcParams";

@@ -1,4 +1,4 @@
-import { S3BucketPolicy } from "core/ports/S3Client";
+import type { S3BucketPolicy } from "core/ports/S3Client";
 
 // Adds `objectName` to the `s3:prefix` condition in the `s3:ListBucket` statement
 export const addObjectNameToListBucketCondition = (

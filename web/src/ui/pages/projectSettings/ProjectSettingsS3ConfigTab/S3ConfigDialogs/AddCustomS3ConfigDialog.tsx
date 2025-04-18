@@ -20,13 +20,13 @@ import { TestS3ConnectionButton } from "../TestS3ConnectionButton";
 import FormHelperText from "@mui/material/FormHelperText";
 import Switch from "@mui/material/Switch";
 
-export type Props = {
+export type AddCustomS3ConfigDialogProps = {
     evtOpen: NonPostableEvt<{
         s3ConfigIdToEdit: string | undefined;
     }>;
 };
 
-export const AddCustomS3ConfigDialog = memo((props: Props) => {
+export const AddCustomS3ConfigDialog = memo((props: AddCustomS3ConfigDialogProps) => {
     const { evtOpen } = props;
 
     const { t } = useTranslation({ AddCustomS3ConfigDialog });

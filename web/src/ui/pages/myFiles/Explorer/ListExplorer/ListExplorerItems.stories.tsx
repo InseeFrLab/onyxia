@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ListExplorerItems } from "./ListExplorerItems";
 import { action } from "@storybook/addon-actions";
 import { Evt } from "evt";
-import { Item } from "../../shared/types";
+import type { Item } from "../../shared/types";
 
 const meta = {
     title: "Pages/MyFiles/Explorer/ListExplorerItems",

@@ -1,5 +1,5 @@
 import { createSelector } from "clean-architecture";
-import { State as RootState } from "core/bootstrap";
+import { type State as RootState } from "core/bootstrap";
 import { name } from "./state";
 
 const state = (rootState: RootState) => rootState[name];

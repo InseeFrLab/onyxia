@@ -3,7 +3,7 @@ import { assert, type Equals, is } from "tsafe/assert";
 import { getFormFieldAtPath } from "./getFormFieldAtPath";
 import {
     helmValuesPathToFormFieldPath,
-    FormFieldGroupLike as FormFieldGroupLike_helmValuesPathToFormFieldPath
+    type FormFieldGroupLike as FormFieldGroupLike_helmValuesPathToFormFieldPath
 } from "./helmValuesPathToFormFieldPath";
 import { getHelmValuesPathDeeperCommonSubpath } from "../../shared/getHelmValuesPathDeeperCommonSubpath";
 

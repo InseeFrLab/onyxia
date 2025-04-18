@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useCore, useCoreState } from "core";
-import { S3ConfigDialogs, Props as S3ConfigDialogsProps } from "./S3ConfigDialogs";
+import { S3ConfigDialogs, type S3ConfigDialogsProps } from "./S3ConfigDialogs";
 import { useConst } from "powerhooks/useConst";
 import { Evt, type UnpackEvt } from "evt";
 import { S3ConfigCard } from "./S3ConfigCard";

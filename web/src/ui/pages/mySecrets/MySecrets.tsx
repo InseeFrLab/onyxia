@@ -4,8 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useCoreState, useCore } from "core";
-import { SecretsExplorer } from "./SecretsExplorer";
-import { ExplorerProps } from "./SecretsExplorer";
+import { SecretsExplorer, type SecretsExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
 import { routes } from "ui/routes";
 import { useSplashScreen } from "onyxia-ui";
@@ -95,14 +94,18 @@ const MySecrets = withLoginEnforced((props: Props) => {
     }, [route.params.path, route.params.openFile]);
 
     const onNavigate = useConstCallback(
-        ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
+        ({ directoryPath }: Param0<SecretsExplorerProps["onNavigate"]>) =>
             routes[route.name]({ path: directoryPath }).push()
     );
 
     const onRefresh = useConstCallback(() => secretExplorer.refresh());
 
     const onEditBasename = useConstCallback(
-        ({ kind, basename, newBasename }: Param0<ExplorerProps["onEditBasename"]>) => {
+        ({
+            kind,
+            basename,
+            newBasename
+        }: Param0<SecretsExplorerProps["onEditBasename"]>) => {
             secretExplorer.rename({
                 renamingWhat: kind,
                 basename,
@@ -112,7 +115,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
     );
 
     const onNewItem = useConstCallback(
-        ({ kind, suggestedBasename }: Param0<ExplorerProps["onNewItem"]>) => {
+        ({ kind, suggestedBasename }: Param0<SecretsExplorerProps["onNewItem"]>) => {
             switch (kind) {
                 case "directory":
                     secretExplorer.create({
@@ -131,7 +134,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
     );
 
     const onDeleteItem = useConstCallback(
-        ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
+        ({ kind, basename }: Param0<SecretsExplorerProps["onDeleteItem"]>) =>
             secretExplorer.delete({
                 deleteWhat: kind,
                 basename
@@ -139,7 +142,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
     );
 
     const onCopyPath = useConstCallback(
-        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+        ({ path }: Param0<SecretsExplorerProps["onCopyPath"]>) => {
             const [_root, ...rest] = path.split("/");
             copyToClipboard(rest.join("/"));
         }
@@ -158,7 +161,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
     }, [currentWorkingDirectoryView === undefined]);
 
     const [evtExplorerAction] = useState(() =>
-        Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>()
+        Evt.create<UnpackEvt<SecretsExplorerProps["evtAction"]>>()
     );
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -182,13 +185,13 @@ const MySecrets = withLoginEnforced((props: Props) => {
     );
 
     const onOpenFile = useConstCallback<
-        Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
+        Extract<SecretsExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
         routes.mySecrets({ ...route.params, openFile: basename }).replace();
     });
 
     const onCloseFile = useConstCallback<
-        Extract<ExplorerProps, { isFileOpen: true }>["onCloseFile"]
+        Extract<SecretsExplorerProps, { isFileOpen: true }>["onCloseFile"]
     >(() =>
         routes[route.name](
             (() => {
@@ -199,7 +202,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
     );
 
     const onRefreshOpenFile = useConstCallback<
-        Extract<ExplorerProps, { isFileOpen: true }>["onRefreshOpenFile"]
+        Extract<SecretsExplorerProps, { isFileOpen: true }>["onRefreshOpenFile"]
     >(() => {
         assert(secretEditorState !== null);
         assert(secretEditorState.secretWithMetadata !== undefined);

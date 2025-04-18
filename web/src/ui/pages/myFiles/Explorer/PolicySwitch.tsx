@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Item } from "../shared/types";
+import type { Item } from "../shared/types";
 import { type IconProps } from "onyxia-ui/Icon";
 import { IconButton } from "onyxia-ui/IconButton";
 import { tss } from "tss";

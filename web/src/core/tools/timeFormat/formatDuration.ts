@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import { DurationTranslationFunction } from "./type";
+import type { DurationTranslationFunction } from "./type";
 import { TIME_UNITS, DURATION_DIVISOR_KEYS } from "./constants";
 
 type DurationUnit = {

@@ -1,6 +1,6 @@
 import {
     gridClasses,
-    GridDensity,
+    type GridDensity,
     gridDensitySelector,
     GridMenu,
     useGridApiContext,

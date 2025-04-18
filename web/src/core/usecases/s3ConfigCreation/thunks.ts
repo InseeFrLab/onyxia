@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { actions, type State, ChangeValueParams } from "./state";
+import { actions, type State, type ChangeValueParams } from "./state";
 import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";

@@ -7,7 +7,7 @@ import { protectedSelectors } from "./selectors";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
-import { S3Object } from "core/ports/S3Client";
+import type { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 
 export type ExplorersCreateParams =

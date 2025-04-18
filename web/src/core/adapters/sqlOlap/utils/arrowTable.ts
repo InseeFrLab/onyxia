@@ -1,5 +1,5 @@
 import type { Table, DataType, Vector } from "apache-arrow";
-import { Column } from "core/ports/SqlOlap";
+import type { Column } from "core/ports/SqlOlap";
 import { assert } from "tsafe/assert";
 
 export async function createArrowTableApi() {

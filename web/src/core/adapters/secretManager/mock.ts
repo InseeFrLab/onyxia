@@ -1,7 +1,7 @@
 import { join as pathJoin, relative as pathRelative } from "pathe";
 import { partition } from "evt/tools/reducers/partition";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
-import { SecretWithMetadata, SecretsManager } from "core/ports/SecretsManager";
+import type { SecretWithMetadata, SecretsManager } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
 
 createSecretManager.artificialDelayMs = 0;

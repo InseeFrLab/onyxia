@@ -9,7 +9,7 @@ import {
     MyServicesRestorableConfigs,
     type Props as MyServicesRestorableConfigsProps
 } from "./MyServicesRestorableConfigs";
-import { ButtonId } from "./MyServicesButtonBar";
+import { type ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreState, useCore } from "core";
 import { routes } from "ui/routes";

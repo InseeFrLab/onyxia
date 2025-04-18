@@ -1,5 +1,5 @@
 import type { SecretsManager } from "core/ports/SecretsManager";
-import { ProjectConfigs } from "./ProjectConfigs";
+import type { ProjectConfigs } from "./ProjectConfigs";
 import { assert, type Equals } from "tsafe/assert";
 import { join as pathJoin } from "pathe";
 import { id } from "tsafe/id";

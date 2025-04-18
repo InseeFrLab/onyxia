@@ -4,7 +4,7 @@ import type { QueryStringSerializer } from "type-route";
 import { partition } from "evt/tools/reducers/partition";
 import { assert, type Equals } from "tsafe/assert";
 import type { ValueSerializer } from "type-route";
-import { StringifyableAtomic } from "core/tools/Stringifyable";
+import { type StringifyableAtomic } from "core/tools/Stringifyable";
 
 const { helmValuesPatchWrap, queryStringSerializer } = (() => {
     const helmValuesPatch_key = "helmValuesPatch";

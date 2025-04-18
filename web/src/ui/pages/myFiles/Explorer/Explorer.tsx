@@ -6,7 +6,6 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems";
 import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
-import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin } from "pathe";
 import { useTranslation } from "ui/i18n";
@@ -20,7 +19,7 @@ import { id } from "tsafe/id";
 import type { NonPostableEvt, StatefulReadonlyEvt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { ExplorerItems } from "./ExplorerItems";
-import { ExplorerButtonBar } from "./ExplorerButtonBar";
+import { ExplorerButtonBar, type ExplorerButtonBarProps } from "./ExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
@@ -42,7 +41,7 @@ import {
     type ListExplorerItemsProps
 } from "./ListExplorer/ListExplorerItems";
 import type { Item } from "../shared/types";
-import { ViewMode } from "../shared/types";
+import type { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
 import type { ShareView } from "core/usecases/fileExplorer";
@@ -192,38 +191,40 @@ export const Explorer = memo((props: ExplorerProps) => {
         Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
     );
 
-    const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
-        switch (buttonId) {
-            case "refresh":
-                onRefresh();
-                return;
-            case "delete":
-                evtExplorerItemsAction.post("DELETE SELECTED ITEM");
-                return;
-            case "copy path":
-                evtExplorerItemsAction.post("COPY SELECTED ITEM PATH");
-                return;
-            case "create directory":
-                setCreateS3DirectoryDialogState({
-                    directories: items
-                        .filter(isDirectory)
-                        .map(({ basename }) => basename),
-                    resolveBasename: basename => onCreateDirectory({ basename })
-                });
-                return;
+    const buttonBarCallback = useConstCallback<ExplorerButtonBarProps["callback"]>(
+        buttonId => {
+            switch (buttonId) {
+                case "refresh":
+                    onRefresh();
+                    return;
+                case "delete":
+                    evtExplorerItemsAction.post("DELETE SELECTED ITEM");
+                    return;
+                case "copy path":
+                    evtExplorerItemsAction.post("COPY SELECTED ITEM PATH");
+                    return;
+                case "create directory":
+                    setCreateS3DirectoryDialogState({
+                        directories: items
+                            .filter(isDirectory)
+                            .map(({ basename }) => basename),
+                        resolveBasename: basename => onCreateDirectory({ basename })
+                    });
+                    return;
 
-            case "new":
-                setIsUploadModalOpen(true);
-                return;
-            case "share":
-                evtExplorerItemsAction.post("SHARE SELECTED FILE");
-                return;
-            case "download directory":
-                evtExplorerItemsAction.post("DOWNLOAD DIRECTORY");
-                return;
+                case "new":
+                    setIsUploadModalOpen(true);
+                    return;
+                case "share":
+                    evtExplorerItemsAction.post("SHARE SELECTED FILE");
+                    return;
+                case "download directory":
+                    evtExplorerItemsAction.post("DOWNLOAD DIRECTORY");
+                    return;
+            }
+            assert<Equals<typeof buttonId, never>>();
         }
-        assert<Equals<typeof buttonId, never>>();
-    });
+    );
 
     useEvt(
         ctx =>

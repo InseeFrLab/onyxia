@@ -1,5 +1,5 @@
 import { ShareDialog } from "./ShareDialog";
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { action } from "@storybook/addon-actions";
 

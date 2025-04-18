@@ -4,7 +4,7 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
-import { NonPostableEvt } from "evt";
+import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";

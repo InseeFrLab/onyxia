@@ -7,7 +7,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { SecretsExplorerItemsProps as ItemsProps } from "./SecretsExplorerItems/SecretsExplorerItems";
 import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
-import { Props as ButtonBarProps } from "./SecretsExplorerButtonBar";
+import { type SecretsExplorerButtonBarProps as ButtonBarProps } from "./SecretsExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { useTranslation } from "ui/i18n";
@@ -40,7 +40,7 @@ import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 
-export type ExplorerProps = {
+export type SecretsExplorerProps = {
     /**
      * For this component to work it must have a fixed width
      * For being able to scroll without moving the button bar it must have a fixed height.
@@ -93,7 +93,7 @@ export type ExplorerProps = {
       }
 );
 
-export const SecretsExplorer = memo((props: ExplorerProps) => {
+export const SecretsExplorer = memo((props: SecretsExplorerProps) => {
     const {
         className,
         doShowHidden,

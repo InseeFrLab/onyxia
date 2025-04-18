@@ -11,7 +11,7 @@ import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { declareComponentKeys } from "i18nifty";
 import { ReadmeDialog } from "./ReadmeDialog";
-import { Evt, NonPostableEvt } from "evt";
+import { Evt, type NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName } from "lazy-icons";
