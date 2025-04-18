@@ -13,7 +13,7 @@ export const thunks = {
     changeSelectedCatalogId:
         (params: { catalogId: string | undefined }) =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi }] = args;
+            const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
 
             const state = getState()[name];
 
@@ -59,16 +59,32 @@ export const thunks = {
                 const { catalogs: catalogs_all, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                const catalogs = catalogs_all.filter(({ visibility }) => {
-                    switch (visibility) {
-                        case "always":
-                            return true;
-                        case "only in groups projects":
-                            return isInGroupProject;
-                        case "ony in personal projects":
-                            return !isInGroupProject;
-                    }
-                });
+                const catalogs = catalogs_all
+                    .filter(({ visibility }) => {
+                        switch (visibility) {
+                            case "always":
+                                return true;
+                            case "only in groups projects":
+                                return isInGroupProject;
+                            case "ony in personal projects":
+                                return !isInGroupProject;
+                        }
+                    })
+                    .map(catalog => ({
+                        ...catalog,
+                        isContainingAllCharts: false
+                    }));
+
+                !paramsOfBootstrapCore.disableDisplayAllCatalog &&
+                    catalogs.unshift({
+                        id: "all",
+                        name: "All",
+                        description: undefined,
+                        repositoryUrl: "",
+                        isProduction: true,
+                        visibility: "always",
+                        isContainingAllCharts: true
+                    });
 
                 return { catalogs, chartsByCatalogId };
             })();
@@ -89,6 +105,7 @@ export const thunks = {
                             catalogId =>
                                 (out[catalogId] = chartsByCatalogId[catalogId].map(
                                     chart => ({
+                                        id: `${catalogId}-${chart.name}`,
                                         name: chart.name,
                                         description: chart.description ?? "",
                                         iconUrl: chart.iconUrl,

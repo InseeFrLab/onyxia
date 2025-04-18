@@ -161,16 +161,22 @@ export default function Catalog(props: Props) {
                     />
                     {availableCatalogs.length > 1 && route.params.search === "" && (
                         <div className={classes.catalogSwitcher}>
-                            {availableCatalogs.map(({ catalogId, catalogName }) => (
-                                <CatalogSwitcherButton
-                                    key={catalogId}
-                                    isSelected={catalogId === selectedCatalog.id}
-                                    text={resolveLocalizedString(catalogName)}
-                                    onClick={() =>
-                                        routes.catalog({ catalogId }).replace()
-                                    }
-                                />
-                            ))}
+                            {availableCatalogs.map(
+                                ({ catalogId, catalogName, isAllCatalog }) => (
+                                    <CatalogSwitcherButton
+                                        key={catalogId}
+                                        isSelected={catalogId === selectedCatalog.id}
+                                        text={
+                                            isAllCatalog
+                                                ? t("title all catalog")
+                                                : resolveLocalizedString(catalogName)
+                                        }
+                                        onClick={() =>
+                                            routes.catalog({ catalogId }).replace()
+                                        }
+                                    />
+                                )
+                            )}
                         </div>
                     )}
                     <div ref={scrollableDivRef} className={classes.cardsWrapper}>
@@ -232,6 +238,7 @@ const { i18n } = declareComponentKeys<
     | "search results"
     | { K: "no result found"; P: { forWhat: string } }
     | "search"
+    | "title all catalog"
 >()({ Catalog });
 export type I18n = typeof i18n;
 

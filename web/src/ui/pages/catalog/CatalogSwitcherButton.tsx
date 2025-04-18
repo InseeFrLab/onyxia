@@ -1,11 +1,12 @@
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
+import { type ReactNode } from "react";
 
 export type Props = {
     className?: string;
     isSelected: boolean;
     onClick: () => void;
-    text: JSX.Element;
+    text: ReactNode;
 };
 
 export function CatalogSwitcherButton(props: Props) {
