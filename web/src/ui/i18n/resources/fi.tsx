@@ -549,7 +549,8 @@ export const translations: Translations<"fi"> = {
         header: "Palvelukatalogi",
         "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
         "search results": "Hakutulokset",
-        search: "Haku"
+        search: "Haku",
+        "title all catalog": "Kaikki"
     },
     CatalogChartCard: {
         launch: "Käynnistä",

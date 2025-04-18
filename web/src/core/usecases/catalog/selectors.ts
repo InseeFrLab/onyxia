@@ -112,31 +112,49 @@ const filteredCharts = createSelector(
             };
         }
 
-        return searchResults === undefined
-            ? chartsByCatalogId[selectedCatalogId].map(chart =>
-                  chartToCardData({
-                      chart,
-                      chartNameHighlightedIndexes: [],
-                      chartDescriptionHighlightedIndexes: [],
-                      catalogId: selectedCatalogId
-                  })
-              )
-            : searchResults.map(
-                  ({
-                      catalogId,
-                      chartName,
-                      chartNameHighlightedIndexes,
-                      chartDescriptionHighlightedIndexes
-                  }) =>
-                      chartToCardData({
-                          chart: chartsByCatalogId[catalogId].find(
-                              chart => chart.name === chartName
-                          )!,
-                          chartNameHighlightedIndexes,
-                          chartDescriptionHighlightedIndexes,
-                          catalogId
-                      })
-              );
+        if (searchResults !== undefined) {
+            return searchResults.map(
+                ({
+                    catalogId,
+                    chartName,
+                    chartNameHighlightedIndexes,
+                    chartDescriptionHighlightedIndexes
+                }) =>
+                    chartToCardData({
+                        chart: chartsByCatalogId[catalogId].find(
+                            chart => chart.name === chartName
+                        )!,
+                        chartNameHighlightedIndexes,
+                        chartDescriptionHighlightedIndexes,
+                        catalogId
+                    })
+            );
+        }
+
+        const catalog = catalogs.find(c => c.id === selectedCatalogId);
+
+        assert(catalog !== undefined);
+
+        const catalogIdsToDisplay = (() => {
+            if (catalog.isContainingAllCharts) {
+                return Object.keys(chartsByCatalogId);
+            }
+
+            return chartsByCatalogId[selectedCatalogId] === undefined
+                ? []
+                : [selectedCatalogId];
+        })();
+
+        return catalogIdsToDisplay.flatMap(catalogId =>
+            (chartsByCatalogId[catalogId] ?? []).map(chart =>
+                chartToCardData({
+                    chart,
+                    chartNameHighlightedIndexes: [],
+                    chartDescriptionHighlightedIndexes: [],
+                    catalogId
+                })
+            )
+        );
     }
 );
 
@@ -162,16 +180,21 @@ const selectedCatalog = createSelector(
 
 const availableCatalogs = createSelector(
     catalogs,
-    (catalogs): { catalogId: string; catalogName: LocalizedString }[] | undefined => {
+    (
+        catalogs
+    ):
+        | { catalogId: string; catalogName: LocalizedString; isAllCatalog: boolean }[]
+        | undefined => {
         if (catalogs === undefined) {
             return undefined;
         }
 
         return catalogs
             .filter(({ isProduction }) => isProduction)
-            .map(({ id, name }) => ({
+            .map(({ id, name, isContainingAllCharts }) => ({
                 catalogId: id,
-                catalogName: name
+                catalogName: name,
+                isAllCatalog: isContainingAllCharts
             }));
     }
 );

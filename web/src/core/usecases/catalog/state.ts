@@ -13,10 +13,11 @@ export namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        catalogs: Catalog[];
+        catalogs: (Catalog & { isContainingAllCharts: boolean })[];
         chartsByCatalogId: Record<
             string,
             {
+                id: string;
                 name: string;
                 description: string;
                 iconUrl: string | undefined;
@@ -58,7 +59,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     selectedCatalogId: string;
-                    catalogs: Catalog[];
+                    catalogs: (Catalog & { isContainingAllCharts: boolean })[];
                     chartsByCatalogId: State.Ready["chartsByCatalogId"];
                 };
             }

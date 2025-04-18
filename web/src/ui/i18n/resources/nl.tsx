@@ -553,7 +553,8 @@ export const translations: Translations<"nl"> = {
         header: "Catalogus van de diensten",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
         "search results": "Resultaten van de zoekopdracht",
-        search: "Zoeken"
+        search: "Zoeken",
+        "title all catalog": "Alle"
     },
     CatalogChartCard: {
         launch: "Opstarten",

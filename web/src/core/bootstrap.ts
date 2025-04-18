@@ -28,6 +28,7 @@ type ParamsOfBootstrapCore = {
     quotaCriticalThresholdPercent: number;
     isAuthGloballyRequired: boolean;
     enableOidcDebugLogs: boolean;
+    disableDisplayAllCatalog: boolean;
 };
 
 export type Context = {

@@ -551,7 +551,8 @@ export const translations: Translations<"it"> = {
         header: "Catalogo di servizi",
         "no result found": ({ forWhat }) => `Nessun risultato trovato per ${forWhat}`,
         "search results": "Risultati della ricerca",
-        search: "Cercare"
+        search: "Cercare",
+        "title all catalog": "Tutti"
     },
     CatalogChartCard: {
         launch: "Avviare",

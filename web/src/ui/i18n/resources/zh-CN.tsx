@@ -508,7 +508,8 @@ export const translations: Translations<"zh-CN"> = {
         header: "服务目录",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "search results": "搜索结果",
-        search: "收索服务"
+        search: "收索服务",
+        "title all catalog": "全部"
     },
     CatalogChartCard: {
         launch: "启动",

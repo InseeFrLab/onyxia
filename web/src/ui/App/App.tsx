@@ -43,7 +43,8 @@ const { CoreProvider } = createCoreProvider({
     quotaWarningThresholdPercent: env.QUOTA_WARNING_THRESHOLD * 100,
     quotaCriticalThresholdPercent: env.QUOTA_CRITICAL_THRESHOLD * 100,
     isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED,
-    enableOidcDebugLogs: env.OIDC_DEBUG_LOGS
+    enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
+    disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG
 });
 
 type Props = {
