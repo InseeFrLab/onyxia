@@ -857,28 +857,34 @@ export function createOnyxiaApi(params: {
                         return;
                     }
 
-                    const event: ApiTypes["/my-lab/events"] = JSON.parse(
-                        part.slice("data:".length)
-                    );
+                    try {
+                        const event: ApiTypes["/my-lab/events"] = JSON.parse(
+                            part.slice("data:".length)
+                        );
 
-                    onNewEvent({
-                        eventId: event.metadata.uid,
-                        message: event.message,
-                        timestamp: new Date(event.metadata.creationTimestamp).getTime(),
-                        severity: (() => {
-                            switch (event.type) {
-                                case "Normal":
-                                    return "info";
-                                case "Warning":
-                                    return "warning";
-                                case "Error":
-                                    return "error";
-                                default:
-                                    return "info";
-                            }
-                        })(),
-                        originalEvent: event
-                    });
+                        onNewEvent({
+                            eventId: event.metadata.uid,
+                            message: event.message,
+                            timestamp: new Date(
+                                event.metadata.creationTimestamp
+                            ).getTime(),
+                            severity: (() => {
+                                switch (event.type) {
+                                    case "Normal":
+                                        return "info";
+                                    case "Warning":
+                                        return "warning";
+                                    case "Error":
+                                        return "error";
+                                    default:
+                                        return "info";
+                                }
+                            })(),
+                            originalEvent: event
+                        });
+                    } catch (error) {
+                        console.error("Failed to parse cluster event:", error, part);
+                    }
                 });
             }
 
