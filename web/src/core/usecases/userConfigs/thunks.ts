@@ -1,88 +1,11 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { Thunks, State as RootState } from "core/bootstrap";
-import type { Id } from "tsafe";
+import type { Thunks } from "core/bootstrap";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
-import {
-    createUsecaseActions,
-    createObjectThatThrowsIfAccessed,
-    createSelector
-} from "clean-architecture";
-import * as userAuthentication from "./userAuthentication";
+import * as userAuthentication from "../userAuthentication";
 import { join as pathJoin } from "pathe";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
-
-/*
- * Values of the user profile that can be changed.
- * Those value are persisted in the secret manager
- * (That is currently vault)
- */
-
-export type UserConfigs = Id<
-    Record<string, string | boolean | number | null>,
-    {
-        gitName: string;
-        gitEmail: string;
-        gitCredentialCacheDuration: number;
-        isBetaModeEnabled: boolean;
-        isDevModeEnabled: boolean;
-        isDarkModeEnabled: boolean;
-        githubPersonalAccessToken: string | null;
-        doDisplayMySecretsUseInServiceDialog: boolean;
-        doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: boolean;
-        selectedProjectId: string | null;
-        isCommandBarEnabled: boolean;
-    }
->;
-
-export type State = {
-    [K in keyof UserConfigs]: {
-        value: UserConfigs[K];
-        isBeingChanged: boolean;
-    };
-};
-
-export const name = "userConfigs";
-
-export const { reducer, actions } = createUsecaseActions({
-    name,
-    initialState: createObjectThatThrowsIfAccessed<State>({
-        debugMessage:
-            "The userConfigState should have been initialized during the store initialization"
-    }),
-    reducers: {
-        initializationCompleted: (
-            ...[, { payload }]: [any, { payload: { userConfigs: UserConfigs } }]
-        ) => {
-            const { userConfigs } = payload;
-
-            return Object.fromEntries(
-                Object.entries(userConfigs).map(([key, value]) => [
-                    key,
-                    { value, isBeingChanged: false }
-                ])
-            ) as any;
-        },
-        changeStarted: (state, { payload }: { payload: ChangeValueParams }) => {
-            const wrap = state[payload.key];
-
-            wrap.value = payload.value;
-            wrap.isBeingChanged = true;
-        },
-        changeCompleted: (
-            state,
-            { payload }: { payload: { key: keyof UserConfigs } }
-        ) => {
-            state[payload.key].isBeingChanged = false;
-        }
-    }
-});
-
-export type ChangeValueParams<K extends keyof UserConfigs = keyof UserConfigs> = {
-    key: K;
-    value: UserConfigs[K];
-};
+import { name, actions, type ChangeValueParams, type UserConfigs } from "./state";
 
 export const thunks = {
     changeValue:
@@ -201,38 +124,3 @@ const privateThunks = {
             return pathJoin("/", userProject.vaultTopDir, ".onyxia");
         }
 } satisfies Thunks;
-
-export const selectors = (() => {
-    const state = (rootState: RootState): State => rootState[name];
-
-    const userConfigs = createSelector(state, state => {
-        const userConfigs: any = {};
-
-        objectKeys(state).forEach(key => (userConfigs[key] = state[key].value));
-
-        return userConfigs as UserConfigs;
-    });
-
-    // NOTE: This will not crash even if the user is not logged in.
-    const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
-        const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
-
-        if (!isUserLoggedIn) {
-            return undefined;
-        }
-
-        return userConfigs(rootState).isDarkModeEnabled;
-    };
-
-    const isVaultEnabled = createSelector(
-        deploymentRegionManagement.selectors.currentDeploymentRegion,
-        deploymentRegion => deploymentRegion.vault !== undefined
-    );
-
-    return {
-        userConfigs,
-        userConfigsWithUpdateProgress: state,
-        isDarkModeEnabled,
-        isVaultEnabled
-    };
-})();
