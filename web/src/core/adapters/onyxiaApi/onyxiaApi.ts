@@ -857,9 +857,13 @@ export function createOnyxiaApi(params: {
                         return;
                     }
 
-                    const event: ApiTypes["/my-lab/events"] = JSON.parse(
-                        part.slice("data:".length)
-                    );
+                    let event: ApiTypes["/my-lab/events"];
+                    try {
+                        event = JSON.parse(part.slice("data:".length));
+                    } catch (error) {
+                        console.error("Failed to parse cluster event:", error, part);
+                        return;
+                    }
 
                     onNewEvent({
                         eventId: event.metadata.uid,
