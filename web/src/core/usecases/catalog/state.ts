@@ -5,6 +5,15 @@ import { createUsecaseActions } from "clean-architecture";
 
 export type State = State.NotFetched | State.Ready;
 
+export const allCatalog: Catalog = {
+    id: "all",
+    name: "All",
+    description: undefined,
+    repositoryUrl: "",
+    isProduction: true,
+    visibility: "always"
+};
+
 export namespace State {
     export type NotFetched = {
         stateDescription: "not fetched";
@@ -13,7 +22,7 @@ export namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        catalogs: (Catalog & { isContainingAllCharts: boolean })[];
+        catalogs: Catalog[];
         chartsByCatalogId: Record<
             string,
             {
@@ -59,7 +68,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     selectedCatalogId: string;
-                    catalogs: (Catalog & { isContainingAllCharts: boolean })[];
+                    catalogs: Catalog[];
                     chartsByCatalogId: State.Ready["chartsByCatalogId"];
                 };
             }

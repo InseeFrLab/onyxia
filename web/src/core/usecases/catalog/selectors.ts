@@ -1,7 +1,7 @@
 import { assert } from "tsafe/assert";
 import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
-import { name, type State } from "./state";
+import { allCatalog, name, type State } from "./state";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 const readyState = (rootState: RootState) => {
@@ -136,7 +136,7 @@ const filteredCharts = createSelector(
         assert(catalog !== undefined);
 
         const catalogIdsToDisplay = (() => {
-            if (catalog.isContainingAllCharts) {
+            if (catalog.id === allCatalog.id) {
                 return Object.keys(chartsByCatalogId);
             }
 
@@ -180,21 +180,16 @@ const selectedCatalog = createSelector(
 
 const availableCatalogs = createSelector(
     catalogs,
-    (
-        catalogs
-    ):
-        | { catalogId: string; catalogName: LocalizedString; isAllCatalog: boolean }[]
-        | undefined => {
+    (catalogs): { catalogId: string; catalogName: LocalizedString }[] | undefined => {
         if (catalogs === undefined) {
             return undefined;
         }
 
         return catalogs
             .filter(({ isProduction }) => isProduction)
-            .map(({ id, name, isContainingAllCharts }) => ({
+            .map(({ id, name }) => ({
                 catalogId: id,
-                catalogName: name,
-                isAllCatalog: isContainingAllCharts
+                catalogName: name
             }));
     }
 );

@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "clean-architecture";
-import { actions, name, type State } from "./state";
+import { actions, allCatalog, name, type State } from "./state";
 import { assert, is } from "tsafe/assert";
 import memoize from "memoizee";
 import FlexSearch from "flexsearch";
@@ -59,32 +59,19 @@ export const thunks = {
                 const { catalogs: catalogs_all, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                const catalogs = catalogs_all
-                    .filter(({ visibility }) => {
-                        switch (visibility) {
-                            case "always":
-                                return true;
-                            case "only in groups projects":
-                                return isInGroupProject;
-                            case "ony in personal projects":
-                                return !isInGroupProject;
-                        }
-                    })
-                    .map(catalog => ({
-                        ...catalog,
-                        isContainingAllCharts: false
-                    }));
+                const catalogs = catalogs_all.filter(({ visibility }) => {
+                    switch (visibility) {
+                        case "always":
+                            return true;
+                        case "only in groups projects":
+                            return isInGroupProject;
+                        case "ony in personal projects":
+                            return !isInGroupProject;
+                    }
+                });
 
                 !paramsOfBootstrapCore.disableDisplayAllCatalog &&
-                    catalogs.unshift({
-                        id: "all",
-                        name: "All",
-                        description: undefined,
-                        repositoryUrl: "",
-                        isProduction: true,
-                        visibility: "always",
-                        isContainingAllCharts: true
-                    });
+                    catalogs.unshift(allCatalog);
 
                 return { catalogs, chartsByCatalogId };
             })();
