@@ -141,11 +141,19 @@ export const MyServicesCard = memo((props: Props) => {
                         }}
                     />
                 ) : (
-                    <MuiLink {...myServiceLink}>
-                        <Text className={classes.title} typo="object heading">
-                            {capitalize(service.friendlyName)}
-                        </Text>
-                    </MuiLink>
+                    (() => {
+                        const node = (
+                            <Text className={classes.title} typo="object heading">
+                                {capitalize(service.friendlyName)}
+                            </Text>
+                        );
+
+                        return service.state === "suspended" ? (
+                            node
+                        ) : (
+                            <MuiLink {...myServiceLink}>{node}</MuiLink>
+                        );
+                    })()
                 )}
                 {isEditingFriendlyName ? (
                     <IconButton
