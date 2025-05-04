@@ -663,4 +663,56 @@ describe(symToStr({ computeHelmValues }), () => {
 
         expect(got).toStrictEqual(expected);
     });
+
+    it("Default for object array", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            g: {
+                xx: "v xx",
+                yy: "v yy"
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: [{ p: "{{g.xx}}" }, { p: "{{g.yy}}" }]
+                        },
+                        items: {
+                            type: "object"
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        console.log("cool", JSON.stringify(got, null, 2));
+
+        const expected = {
+            helmValues: { r: [{ p: "v xx" }, { p: "v yy" }] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [{ p: "v xx" }, { p: "v yy" }],
+                        items: {
+                            type: "object"
+                        }
+                    }
+                },
+                required: ["r"]
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
 });
