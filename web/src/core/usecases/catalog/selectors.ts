@@ -1,7 +1,7 @@
 import { assert } from "tsafe/assert";
 import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
-import { name, type State } from "./state";
+import { allCatalog, name, type State } from "./state";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 const readyState = (rootState: RootState) => {
@@ -112,31 +112,49 @@ const filteredCharts = createSelector(
             };
         }
 
-        return searchResults === undefined
-            ? chartsByCatalogId[selectedCatalogId].map(chart =>
-                  chartToCardData({
-                      chart,
-                      chartNameHighlightedIndexes: [],
-                      chartDescriptionHighlightedIndexes: [],
-                      catalogId: selectedCatalogId
-                  })
-              )
-            : searchResults.map(
-                  ({
-                      catalogId,
-                      chartName,
-                      chartNameHighlightedIndexes,
-                      chartDescriptionHighlightedIndexes
-                  }) =>
-                      chartToCardData({
-                          chart: chartsByCatalogId[catalogId].find(
-                              chart => chart.name === chartName
-                          )!,
-                          chartNameHighlightedIndexes,
-                          chartDescriptionHighlightedIndexes,
-                          catalogId
-                      })
-              );
+        if (searchResults !== undefined) {
+            return searchResults.map(
+                ({
+                    catalogId,
+                    chartName,
+                    chartNameHighlightedIndexes,
+                    chartDescriptionHighlightedIndexes
+                }) =>
+                    chartToCardData({
+                        chart: chartsByCatalogId[catalogId].find(
+                            chart => chart.name === chartName
+                        )!,
+                        chartNameHighlightedIndexes,
+                        chartDescriptionHighlightedIndexes,
+                        catalogId
+                    })
+            );
+        }
+
+        const catalog = catalogs.find(c => c.id === selectedCatalogId);
+
+        assert(catalog !== undefined);
+
+        const catalogIdsToDisplay = (() => {
+            if (catalog.id === allCatalog.id) {
+                return Object.keys(chartsByCatalogId);
+            }
+
+            return chartsByCatalogId[selectedCatalogId] === undefined
+                ? []
+                : [selectedCatalogId];
+        })();
+
+        return catalogIdsToDisplay.flatMap(catalogId =>
+            (chartsByCatalogId[catalogId] ?? []).map(chart =>
+                chartToCardData({
+                    chart,
+                    chartNameHighlightedIndexes: [],
+                    chartDescriptionHighlightedIndexes: [],
+                    catalogId
+                })
+            )
+        );
     }
 );
 

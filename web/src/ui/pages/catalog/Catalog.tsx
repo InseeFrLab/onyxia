@@ -165,7 +165,11 @@ export default function Catalog(props: Props) {
                                 <CatalogSwitcherButton
                                     key={catalogId}
                                     isSelected={catalogId === selectedCatalog.id}
-                                    text={resolveLocalizedString(catalogName)}
+                                    text={
+                                        catalogId === "all"
+                                            ? t("title all catalog")
+                                            : resolveLocalizedString(catalogName)
+                                    }
                                     onClick={() =>
                                         routes.catalog({ catalogId }).replace()
                                     }
@@ -232,6 +236,7 @@ const { i18n } = declareComponentKeys<
     | "search results"
     | { K: "no result found"; P: { forWhat: string } }
     | "search"
+    | "title all catalog"
 >()({ Catalog });
 export type I18n = typeof i18n;
 

@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "clean-architecture";
-import { actions, name, type State } from "./state";
+import { actions, allCatalog, name, type State } from "./state";
 import { assert, is } from "tsafe/assert";
 import memoize from "memoizee";
 import FlexSearch from "flexsearch";
@@ -13,7 +13,7 @@ export const thunks = {
     changeSelectedCatalogId:
         (params: { catalogId: string | undefined }) =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi }] = args;
+            const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
 
             const state = getState()[name];
 
@@ -70,6 +70,9 @@ export const thunks = {
                     }
                 });
 
+                !paramsOfBootstrapCore.disableDisplayAllCatalog &&
+                    catalogs.unshift(allCatalog);
+
                 return { catalogs, chartsByCatalogId };
             })();
 
@@ -89,6 +92,7 @@ export const thunks = {
                             catalogId =>
                                 (out[catalogId] = chartsByCatalogId[catalogId].map(
                                     chart => ({
+                                        id: `${catalogId}-${chart.name}`,
                                         name: chart.name,
                                         description: chart.description ?? "",
                                         iconUrl: chart.iconUrl,

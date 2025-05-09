@@ -550,7 +550,8 @@ export const translations: Translations<"no"> = {
         header: "Tjenestekatalog",
         "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
         "search results": "Søkeresultat",
-        search: "Søk"
+        search: "Søk",
+        "title all catalog": "Alle"
     },
     CatalogChartCard: {
         launch: "Start",
