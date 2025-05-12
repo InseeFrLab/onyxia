@@ -164,7 +164,7 @@ export const LeftBar = memo((props: Props) => {
                             return "dataExplorer";
                         case "page404":
                             return null;
-                        case "terms":
+                        case "document":
                             return null;
                         case false:
                             return null;

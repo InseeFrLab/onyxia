@@ -54,7 +54,11 @@ export const Footer = memo((props: Props) => {
             {env.TERMS_OF_SERVICES !== undefined && (
                 <>
                     {spacing}
-                    <a {...routes.terms().link}>
+                    <a
+                        {...routes.document({
+                            source: env.TERMS_OF_SERVICES
+                        }).link}
+                    >
                         {" "}
                         <Text typo="body 2">{t("terms of service")}</Text>{" "}
                     </a>

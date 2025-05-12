@@ -8,7 +8,7 @@ import * as myService from "./myService";
 import * as myServices from "./myServices";
 import * as page404 from "./page404";
 import * as projectSettings from "./projectSettings";
-import * as terms from "./terms";
+import * as document from "./document";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 
@@ -27,7 +27,7 @@ export const pages = {
     myServices,
     page404,
     projectSettings,
-    terms,
+    document,
     sqlOlapShell,
     dataExplorer
 };
