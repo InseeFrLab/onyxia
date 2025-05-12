@@ -693,8 +693,6 @@ describe(symToStr({ computeHelmValues }), () => {
             infoAmountInHelmValues: "user provided"
         });
 
-        console.log("cool", JSON.stringify(got, null, 2));
-
         const expected = {
             helmValues: { r: [{ p: "v xx" }, { p: "v yy" }] },
             helmValuesSchema_forDataTextEditor: {
@@ -705,6 +703,69 @@ describe(symToStr({ computeHelmValues }), () => {
                         default: [{ p: "v xx" }, { p: "v yy" }],
                         items: {
                             type: "object"
+                        }
+                    }
+                },
+                required: ["r"]
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("Fallback to default when nested don't match pattern", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            g: {
+                xx: "v xx"
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: [{ p: "{{g.xx}}" }, { p: "{{g.yy}}" }]
+                        },
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string",
+                                    pattern: "^.+$"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({
+                r: [{ p: "v default xx" }, { p: "v default yy" }]
+            }),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        const expected = {
+            helmValues: { r: [{ p: "v default xx" }, { p: "v default yy" }] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [{ p: "v default xx" }, { p: "v default yy" }],
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string",
+                                    pattern: "^.+$"
+                                }
+                            }
                         }
                     }
                 },
