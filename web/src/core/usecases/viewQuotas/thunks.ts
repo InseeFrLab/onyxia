@@ -10,7 +10,27 @@ export const thunks = {
         (...args) => {
             const [dispatch, getState, { evtAction }] = args;
 
+            {
+                const isDisabledOnInstance =
+                    privateSelectors.isDisabledOnInstance(getState());
+
+                if (isDisabledOnInstance) {
+                    return {
+                        setInactive: () => {}
+                    };
+                }
+            }
+
             const ctx = Evt.newCtx();
+
+            evtAction
+                .pipe(
+                    ctx,
+                    action =>
+                        action.usecaseName === "viewQuotas" &&
+                        action.actionName === "quotasDisabled"
+                )
+                .attachOnce(() => ctx.done());
 
             evtAction
                 .pipe(
@@ -62,6 +82,10 @@ export const thunks = {
                         );
                     });
 
+                    if (ctx.completionStatus !== undefined) {
+                        break;
+                    }
+
                     try {
                         await dispatch(thunks.update());
                     } catch {
@@ -70,11 +94,11 @@ export const thunks = {
                 }
             })();
 
-            function setInactive() {
-                ctx.done();
-            }
-
-            return { setInactive };
+            return {
+                setInactive: () => {
+                    ctx.done();
+                }
+            };
         },
     update:
         () =>
@@ -92,6 +116,11 @@ export const thunks = {
             dispatch(actions.updateStarted());
 
             const quotas = await onyxiaApi.getQuotas();
+
+            if (quotas === undefined) {
+                dispatch(actions.quotasDisabled());
+                return;
+            }
 
             dispatch(
                 actions.updateCompleted({

@@ -30,7 +30,7 @@ export const thunks = {
                     const commandLogsEntry =
                         viewQuotas.protectedSelectors.commandLogsEntry(getState());
 
-                    assert(commandLogsEntry !== undefined);
+                    assert(commandLogsEntry !== null);
 
                     dispatch(actions.commandLogsEntryAdded({ commandLogsEntry }));
                 }

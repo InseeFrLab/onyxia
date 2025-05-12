@@ -767,7 +767,7 @@ export function createOnyxiaApi(params: {
                 assert(is<any>(error));
 
                 if (error.response?.status === 403) {
-                    return {};
+                    return undefined;
                 }
 
                 throw error;

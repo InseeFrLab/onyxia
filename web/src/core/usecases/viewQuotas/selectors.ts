@@ -1,6 +1,6 @@
 import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { name } from "./state";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
@@ -11,13 +11,11 @@ const state = (rootState: RootState) => rootState[name];
 
 const readyState = createSelector(state, state => {
     if (state.stateDescription !== "ready") {
-        return undefined;
+        return null;
     }
 
     return state;
 });
-
-const isReady = createSelector(state, state => state.stateDescription === "ready");
 
 type QuotaEntry = {
     name: string;
@@ -28,8 +26,8 @@ type QuotaEntry = {
 };
 
 const allQuotas = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     const { quotas, quotaWarningThresholdPercent, quotaCriticalThresholdPercent } = state;
@@ -71,12 +69,14 @@ const allQuotas = createSelector(readyState, state => {
 });
 
 const isOnlyNonNegligibleQuotas = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     return state.isOnlyNonNegligibleQuotas;
 });
+
+const isReady = createSelector(readyState, readyState => readyState !== null);
 
 const quotas = createSelector(
     isReady,
@@ -84,11 +84,11 @@ const quotas = createSelector(
     isOnlyNonNegligibleQuotas,
     (isReady, allQuotas, isOnlyNonNegligibleQuotas) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(allQuotas !== undefined);
-        assert(isOnlyNonNegligibleQuotas !== undefined);
+        assert(allQuotas !== null);
+        assert(isOnlyNonNegligibleQuotas !== null);
 
         return !isOnlyNonNegligibleQuotas
             ? allQuotas
@@ -98,46 +98,51 @@ const quotas = createSelector(
 
 const totalQuotasCount = createSelector(isReady, allQuotas, (isReady, allQuotas) => {
     if (!isReady) {
-        return undefined;
+        return null;
     }
-    assert(allQuotas !== undefined);
+    assert(allQuotas !== null);
 
     return allQuotas.length;
 });
 
 const isOngoingPodDeletion = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     return state.isOngoingPodDeletion;
 });
 
 const main = createSelector(
-    isReady,
+    createSelector(state, state => state.stateDescription),
     quotas,
     isOngoingPodDeletion,
     isOnlyNonNegligibleQuotas,
     totalQuotasCount,
     (
-        isReady,
+        stateDescription,
         quotas,
         isOngoingPodDeletion,
         isOnlyNonNegligibleQuotas,
         totalQuotasCount
     ) => {
-        if (!isReady) {
+        if (
+            stateDescription === "not initialized" ||
+            stateDescription === "disabled on instance"
+        ) {
             return {
-                isReady: false as const
+                stateDescription
             };
         }
 
-        assert(quotas !== undefined);
-        assert(isOngoingPodDeletion !== undefined);
-        assert(isOnlyNonNegligibleQuotas !== undefined);
-        assert(totalQuotasCount !== undefined);
+        assert<Equals<typeof stateDescription, "ready">>();
+
+        assert(quotas !== null);
+        assert(isOngoingPodDeletion !== null);
+        assert(isOnlyNonNegligibleQuotas !== null);
+        assert(totalQuotasCount !== null);
 
         return {
-            isReady: true as const,
+            stateDescription: "ready" as const,
             quotas,
             isOngoingPodDeletion,
             isOnlyNonNegligibleQuotas,
@@ -148,10 +153,10 @@ const main = createSelector(
 
 const commandLogsEntry = createSelector(isReady, allQuotas, (isReady, quotas) => {
     if (!isReady) {
-        return undefined;
+        return null;
     }
 
-    assert(quotas !== undefined);
+    assert(quotas !== null);
 
     const [limits, requests] = arrPartition(quotas, quota =>
         quota.name.startsWith("limits")
@@ -197,7 +202,11 @@ export const selectors = {
 };
 
 export const privateSelectors = {
-    isOngoingPodDeletion
+    isOngoingPodDeletion,
+    isDisabledOnInstance: createSelector(
+        state,
+        state => state.stateDescription === "disabled on instance"
+    )
 };
 
 export const protectedSelectors = {

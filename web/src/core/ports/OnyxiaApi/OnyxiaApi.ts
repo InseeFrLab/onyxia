@@ -75,7 +75,10 @@ export type OnyxiaApi = {
 
     onboard: (params: { group: string | undefined }) => Promise<void>;
 
-    getQuotas: () => Promise<Record<string, Record<"spec" | "usage", string | number>>>;
+    // NOTE: Undefined if quotas are disabled on instance (403 response)
+    getQuotas: () => Promise<
+        Record<string, Record<"spec" | "usage", string | number>> | undefined
+    >;
 
     kubectlLogs: (params: {
         helmReleaseName: string;

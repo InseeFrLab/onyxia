@@ -1,9 +1,9 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 
-export type State = State.NotInitialized | State.Ready;
+export type State = State.NotInitialized | State.Ready | State.DisabledOnInstance;
 
 export namespace State {
     export type Common = {
@@ -12,6 +12,10 @@ export namespace State {
 
     export type NotInitialized = Common & {
         stateDescription: "not initialized";
+    };
+
+    export type DisabledOnInstance = Common & {
+        stateDescription: "disabled on instance";
     };
 
     export type Ready = Common & {
@@ -37,7 +41,17 @@ export const { reducer, actions } = createUsecaseActions({
     ),
     reducers: {
         updateStarted: state => {
+            if (state.stateDescription === "disabled on instance") {
+                return;
+            }
+
             state.isUpdating = true;
+        },
+        quotasDisabled: () => {
+            return id<State.DisabledOnInstance>({
+                isUpdating: false,
+                stateDescription: "disabled on instance"
+            });
         },
         updateCompleted: (
             state,
@@ -59,6 +73,8 @@ export const { reducer, actions } = createUsecaseActions({
                 projectId
             } = payload;
 
+            assert(state.stateDescription !== "disabled on instance");
+
             return id<State.Ready>({
                 stateDescription: "ready",
                 isUpdating: false,
@@ -69,7 +85,7 @@ export const { reducer, actions } = createUsecaseActions({
                         return false;
                     }
 
-                    assert(state.stateDescription === "ready");
+                    assert<Equals<typeof state.stateDescription, "ready">>;
 
                     if (!state.isOngoingPodDeletion) {
                         return false;
@@ -82,7 +98,7 @@ export const { reducer, actions } = createUsecaseActions({
                         return true;
                     }
 
-                    assert(state.stateDescription === "ready");
+                    assert<Equals<typeof state.stateDescription, "ready">>;
 
                     return state.isOnlyNonNegligibleQuotas;
                 })(),
