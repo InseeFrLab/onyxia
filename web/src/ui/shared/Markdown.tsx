@@ -1,7 +1,13 @@
+import { useMemo, useEffect, useState, memo } from "react";
 import { createMarkdown } from "onyxia-ui/Markdown";
 import { session } from "ui/routes";
 import type { Param0 } from "tsafe";
 import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
+import { ensureUrlIsSafe } from "./ensureUrlIsSafe";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
+import memoizee from "memoizee";
+import { assert } from "tsafe/assert";
+import { symToStr } from "tsafe/symToStr";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const { Markdown } = createMarkdown({
@@ -17,22 +23,96 @@ export const { Markdown } = createMarkdown({
     })
 });
 
-export function LocalizedMarkdown(
-    props: Omit<Param0<typeof Markdown>, "children" | "lang"> & {
-        children: LocalizedString;
+/**
+ * The localizedString provided as children can represent Markdown, urls
+ * or a mix of both.
+ * If the source isn't trusted `urlSourceOnly` should be set to true (we enforce the source of the Markdown to be self-hosted).
+ */
+export const LocalizedMarkdown = memo(
+    (
+        props: Omit<Param0<typeof Markdown>, "children" | "lang"> & {
+            urlSourceOnly?: boolean;
+            children: LocalizedString;
+        }
+    ) => {
+        const { children: localizedString, urlSourceOnly = false, ...rest } = props;
+
+        const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
+            labelWhenMismatchingLanguage: true
+        });
+
+        const { langAttrValue, str: urlOrMarkdown } = useMemo(
+            () => resolveLocalizedStringDetailed(localizedString),
+            [localizedString, resolveLocalizedStringDetailed]
+        );
+
+        const isSafeUrl = useMemo(() => {
+            try {
+                ensureUrlIsSafe(urlOrMarkdown);
+            } catch {
+                return false;
+            }
+
+            const isSafeUrl = urlOrMarkdown.endsWith(".md");
+
+            if (urlSourceOnly) {
+                assert(
+                    isSafeUrl,
+                    "Rendering of inlined Markdown text isn't allowed here"
+                );
+            }
+
+            return isSafeUrl;
+        }, [urlOrMarkdown, urlSourceOnly]);
+
+        const [markdown, setMarkdown] = useState<string | undefined>(
+            isSafeUrl ? undefined : urlOrMarkdown
+        );
+
+        useEffect(() => {
+            if (!isSafeUrl) {
+                return;
+            }
+
+            let isActive = true;
+
+            (async () => {
+                const url = urlOrMarkdown;
+
+                let markdown: string;
+
+                try {
+                    markdown = await fetchText_memoized(url);
+                } catch {
+                    markdown = `Can't resolve ${url}`;
+                }
+
+                if (!isActive) {
+                    return;
+                }
+
+                setMarkdown(markdown);
+            })();
+
+            return () => {
+                isActive = false;
+            };
+        }, [urlOrMarkdown, isSafeUrl]);
+
+        if (markdown === undefined) {
+            return <CircularProgress />;
+        }
+
+        return (
+            <Markdown {...rest} lang={langAttrValue}>
+                {markdown}
+            </Markdown>
+        );
     }
-) {
-    const { children, ...rest } = props;
+);
 
-    const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
-        labelWhenMismatchingLanguage: true
-    });
+LocalizedMarkdown.displayName = symToStr({ LocalizedMarkdown });
 
-    const { langAttrValue, str } = resolveLocalizedStringDetailed(children);
-
-    return (
-        <Markdown {...rest} lang={langAttrValue}>
-            {str}
-        </Markdown>
-    );
-}
+const fetchText_memoized = memoizee((url: string) => fetch(url).then(r => r.text()), {
+    promise: true
+});

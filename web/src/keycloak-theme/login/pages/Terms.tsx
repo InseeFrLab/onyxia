@@ -5,8 +5,9 @@ import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
-import { downloadTermsMarkdown } from "ui/shared/downloadTermsMarkdown";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";
+import { env } from "env";
 
 export default function Terms(
     props: PageProps<Extract<KcContext, { pageId: "terms.ftl" }>, I18n>
@@ -24,9 +25,46 @@ export default function Terms(
     >(undefined);
 
     useEffect(() => {
-        downloadTermsMarkdown({
-            currentLanguageTag: kcContext.locale?.currentLanguageTag ?? "en"
-        }).then(setTos);
+        let isActive = true;
+
+        (async () => {
+            const currentLanguageTag = kcContext.locale?.currentLanguageTag ?? "en";
+
+            if (env.TERMS_OF_SERVICES === undefined) {
+                setTos({
+                    termsMarkdown:
+                        "TERMS_OF_SERVICES was not defined on this Onyxia instance",
+                    langOfTheTerms: "en"
+                });
+                return;
+            }
+
+            const { createResolveLocalizedString } = createResolveLocalizedStringFactory({
+                createJsxElement: ({ text, lang }) => ({ text, lang })
+            });
+
+            const { resolveLocalizedString } = createResolveLocalizedString({
+                currentLanguage: currentLanguageTag,
+                fallbackLanguage: "en",
+                labelWhenMismatchingLanguage: true
+            });
+
+            const { text: termsUrl, lang: langOfTheTerms } = resolveLocalizedString(
+                env.TERMS_OF_SERVICES
+            );
+
+            const termsMarkdown = await fetch(termsUrl).then(r => r.text());
+
+            if (!isActive) {
+                return;
+            }
+
+            setTos({ termsMarkdown, langOfTheTerms });
+        })();
+
+        return () => {
+            isActive = false;
+        };
     }, []);
 
     if (tos === undefined) {
