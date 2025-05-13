@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { Button, type ButtonProps } from "onyxia-ui/Button";
-import { urlToLink } from "ui/routes";
+import { useUrlToLink } from "ui/routes";
 import type { LinkFromConfig } from "ui/shared/LinkFromConfig";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { getIconUrl } from "lazy-icons";
@@ -15,7 +16,9 @@ export function LinkFromConfigButton(props: Props) {
 
     const { label, url, icon, startIcon, endIcon } = linkFromConfig;
 
-    const link = urlToLink(url);
+    const { urlToLink } = useUrlToLink();
+
+    const link = useMemo(() => urlToLink(url), [urlToLink]);
 
     return (
         <Button

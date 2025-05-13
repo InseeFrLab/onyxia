@@ -5,7 +5,7 @@ import { assert } from "tsafe/assert";
 
 export type LinkFromConfig = {
     label: LocalizedString;
-    url: string;
+    url: LocalizedString;
     icon?: string;
     startIcon?: string;
     endIcon?: string;
@@ -15,7 +15,7 @@ export const zLinkFromConfig = z
     .object({
         icon: z.string().optional(),
         label: zLocalizedString,
-        url: z.string(),
+        url: zLocalizedString,
         startIcon: z.string().optional(),
         endIcon: z.string().optional()
     })

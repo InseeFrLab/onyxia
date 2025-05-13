@@ -9,7 +9,7 @@ import { routes } from "ui/routes";
 import { ProjectSelect } from "./ProjectSelect";
 import { RegionSelect } from "./RegionSelect";
 import { useCore, useCoreState } from "core";
-import { urlToLink } from "ui/routes";
+import { useUrlToLink } from "ui/routes";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { getIconUrl } from "lazy-icons";
 
@@ -27,6 +27,8 @@ export function Header(props: Props) {
     const { userAuthentication } = useCore().functions;
 
     const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
+
+    const { urlToLink } = useUrlToLink();
 
     return (
         <header className={cx(classes.root, className)}>

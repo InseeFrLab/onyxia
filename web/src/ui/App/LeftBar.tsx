@@ -3,7 +3,7 @@ import { memo } from "react";
 import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
 import { useTranslation } from "ui/i18n";
 import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
-import { useRoute, routes, urlToLink } from "ui/routes";
+import { useRoute, routes, useUrlToLink } from "ui/routes";
 import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
 import { useCore, useCoreState } from "core";
@@ -32,6 +32,8 @@ export const LeftBar = memo((props: Props) => {
     const { t } = useTranslation({ LeftBar });
 
     const { classes, cx } = useStyles();
+
+    const { urlToLink } = useUrlToLink();
 
     return (
         <>
@@ -115,29 +117,23 @@ export const LeftBar = memo((props: Props) => {
                         groupId: "custom-leftbar-links",
                         label: t("divider: onyxia instance specific features")
                     },
-                    ...env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
-                        link: urlToLink(url),
-                        ...rest
-                    }))
-                        .map(({ icon, startIcon, ...rest }) => ({
-                            ...rest,
-                            icon: getIconUrl(icon) ?? getIconUrl(startIcon)
-                        }))
-                        .map(
-                            ({ link, icon, label }, i): LeftBarProps.Item => ({
-                                itemId: `custom-leftbar-item-${i}`,
-                                icon:
-                                    (assert(
-                                        icon !== undefined,
-                                        "We should have validated that when parsing the env"
-                                    ),
-                                    icon),
-                                label: (
-                                    <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
-                                ),
-                                link
-                            })
-                        )
+                    ...env.LEFTBAR_LINKS.map(
+                        ({ url, icon, startIcon, label }, i): LeftBarProps.Item => ({
+                            itemId: `custom-leftbar-item-${i}`,
+                            icon: (() => {
+                                const out = getIconUrl(icon) ?? getIconUrl(startIcon);
+
+                                assert(
+                                    out !== undefined,
+                                    "We should have validated that parsing the env"
+                                );
+
+                                return out;
+                            })(),
+                            label: <LocalizedMarkdown inline>{label}</LocalizedMarkdown>,
+                            link: urlToLink(url)
+                        })
+                    )
                 ]}
                 currentItemId={(() => {
                     switch (route.name) {

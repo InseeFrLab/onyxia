@@ -1,6 +1,9 @@
 import { createRouter, type Link } from "type-route";
 import { routeDefs, routerOpts } from "ui/pages";
 import { pluginSystemInitRouter } from "pluginSystem";
+import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
+import { useMemo } from "react";
+import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
 export const { RouteProvider, useRoute, routes, session } = createRouter(
     routerOpts,
@@ -26,19 +29,50 @@ export const { getPreviousRouteName } = (() => {
     return { getPreviousRouteName };
 })();
 
-export function urlToLink(url: string): Link & { target?: "_blank" } {
-    const isLocalUrl = url.startsWith("/");
+export function useUrlToLink() {
+    const { resolveLocalizedString } = useResolveLocalizedString();
 
-    return {
-        href: url,
-        onClick: !isLocalUrl
-            ? () => {
-                  /* nothing */
-              }
-            : e => {
-                  e.preventDefault();
-                  session.push(url);
-              },
-        ...(isLocalUrl ? {} : { target: "_blank" })
-    };
+    const urlToLink = useMemo(
+        () =>
+            (url: LocalizedString): Link & { target?: "_blank" } => {
+                const url_str = resolveLocalizedString(url);
+
+                const isInternalUrl = (() => {
+                    try {
+                        ensureUrlIsSafe(url_str);
+                    } catch {
+                        return false;
+                    }
+
+                    return true;
+                })();
+
+                if (!isInternalUrl) {
+                    return {
+                        href: url_str,
+                        target: "_blank",
+                        onClick: () => {
+                            /* nothing */
+                        }
+                    };
+                }
+
+                if (url_str.endsWith(".md")) {
+                    return routes.document({
+                        source: url
+                    }).link;
+                }
+
+                return {
+                    href: url_str,
+                    onClick: e => {
+                        e.preventDefault();
+                        session.push(url_str);
+                    }
+                };
+            },
+        [resolveLocalizedString]
+    );
+
+    return { urlToLink };
 }
