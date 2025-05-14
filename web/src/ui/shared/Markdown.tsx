@@ -9,6 +9,7 @@ import { assert } from "tsafe/assert";
 import { symToStr } from "tsafe/symToStr";
 import { urlToLink } from "ui/routes";
 import { PUBLIC_URL } from "env";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const { Markdown } = createMarkdown({
@@ -57,9 +58,13 @@ export const LocalizedMarkdown = memo(
             return isSafeUrl;
         }, [urlOrMarkdown, urlSourceOnly]);
 
-        const [markdown, setMarkdown] = useState<string | undefined>(
-            isSafeUrl ? undefined : urlOrMarkdown
-        );
+        const markdown_tmp = isSafeUrl ? undefined : urlOrMarkdown;
+
+        const [markdown, setMarkdown] = useState<string | undefined>(markdown_tmp);
+
+        useEffectOnValueChange(() => {
+            setMarkdown(markdown_tmp);
+        }, [markdown_tmp]);
 
         useEffect(() => {
             if (!isSafeUrl) {
