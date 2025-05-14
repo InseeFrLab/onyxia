@@ -1,6 +1,5 @@
 import { useMemo, useEffect, useState, memo } from "react";
 import { createMarkdown } from "onyxia-ui/Markdown";
-import { session } from "ui/routes";
 import type { Param0 } from "tsafe";
 import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
 import { ensureUrlIsSafe } from "./ensureUrlIsSafe";
@@ -8,19 +7,12 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import memoizee from "memoizee";
 import { assert } from "tsafe/assert";
 import { symToStr } from "tsafe/symToStr";
+import { urlToLink } from "ui/routes";
+import { PUBLIC_URL } from "env";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const { Markdown } = createMarkdown({
-    getLinkProps: ({ href }) => ({
-        href,
-        target: !href.startsWith("/") ? "_blank" : undefined,
-        onClick: !href.startsWith("/")
-            ? undefined
-            : e => {
-                  e.preventDefault();
-                  session.push(href);
-              }
-    })
+    getLinkProps: ({ href }) => urlToLink(href)
 });
 
 /**
@@ -90,6 +82,8 @@ export const LocalizedMarkdown = memo(
                 if (!isActive) {
                     return;
                 }
+
+                markdown = markdown.replace(/%PUBLIC_URL%/g, PUBLIC_URL);
 
                 setMarkdown(markdown);
             })();

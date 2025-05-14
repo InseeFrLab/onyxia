@@ -26,6 +26,17 @@ import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
+//NOTE: Initially we where in CRA so we used PUBLIC_URL,
+// in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
+// CRA: "" <=> Vite: "/"
+// CRA: "/foo" <=> Vite: "/foo/"
+// So we convert the Vite format to the CRA format for retro compatibility.
+export const PUBLIC_URL = (() => {
+    const BASE_URL = import.meta.env.BASE_URL;
+
+    return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
+})();
+
 export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
     {
         envName: "ONYXIA_API_URL",
@@ -1353,17 +1364,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     const kcContext =
         window.kcContext?.themeType === "login" ? window.kcContext : undefined;
-
-    //NOTE: Initially we where in CRA so we used PUBLIC_URL,
-    // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
-    // CRA: "" <=> Vite: "/"
-    // CRA: "/foo" <=> Vite: "/foo/"
-    // So we convert the Vite format to the CRA format for retro compatibility.
-    const PUBLIC_URL = (() => {
-        const BASE_URL = import.meta.env.BASE_URL;
-
-        return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
-    })();
 
     const env: any = new Proxy(
         {},
