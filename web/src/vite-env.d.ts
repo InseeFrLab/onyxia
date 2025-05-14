@@ -62,7 +62,6 @@ type ImportMetaEnv = {
   DISABLE_DISPLAY_ALL_CATALOG: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
-  ALLOW_THEME_TESTING_VIA_URL: string
   SCREEN_SCALER: string
   OIDC_DEBUG_LOGS: string
   // @user-defined-start

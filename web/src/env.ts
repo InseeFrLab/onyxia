@@ -1439,11 +1439,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             const localStorageKey = `${localStoragePrefix}${envName}`;
 
             look_in_url: {
-                if (
-                    kcContext === undefined &&
-                    (import.meta.env.ALLOW_THEME_TESTING_VIA_URL !== "true" ||
-                        !id<EnvName[]>(["FONT", "PALETTE_OVERRIDE"]).includes(envName))
-                ) {
+                if (kcContext === undefined) {
                     break look_in_url;
                 }
 
@@ -1549,43 +1545,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
         return authorizationUrl;
     }
-
-    //Do not remove, helper to generate an url to preview the theme.
-    /*
-    {
-
-        let url = "https://datalab.sspcloud.fr";
-
-        for (const envName of id<EnvName[]>([
-            "FONT",
-            "PALETTE_OVERRIDE",
-            "HOMEPAGE_MAIN_ASSET",
-            "HOMEPAGE_MAIN_ASSET_X_OFFSET",
-            "HOMEPAGE_MAIN_ASSET_Y_OFFSET",
-            "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
-            "HEADER_TEXT_FOCUS"
-        ])) {
-
-            const envValue = import.meta.env[envName];
-
-            url = addOrUpdateSearchParam({
-                url,
-                name: envName,
-                value: envValue,
-                encodeMethod: "encodeURIComponent"
-            });
-
-            if (envValue === "") {
-                continue;
-            }
-
-
-        }
-
-        console.log(url);
-
-    }
-    */
 
     return { env, injectEnvsTransferableToKeycloakTheme };
 }
