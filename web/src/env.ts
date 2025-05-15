@@ -763,9 +763,9 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
             if (envValue === "") {
                 assert(is<typeof env>(env_));
 
-                return env_.HOMEPAGE_HERO_TEXT === undefined
+                return env_.HOMEPAGE_BELOW_HERO_TEXT === undefined
                     ? undefined
-                    : toFn(env_.HOMEPAGE_HERO_TEXT);
+                    : toFn(env_.HOMEPAGE_BELOW_HERO_TEXT);
             }
 
             if (!getIsJSON5ObjectOrArray(envValue)) {
