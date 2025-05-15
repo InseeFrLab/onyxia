@@ -47,7 +47,7 @@ rm -rf ./html/* ./html/.* 2>/dev/null                                           
 cp -r ./tmp_html/. ./html/                                                                                     \n\
 if [ -n "$CUSTOM_RESOURCES" ]; then                                                                            \n\
     wget -O ./html/custom-resources.zip "$CUSTOM_RESOURCES" --ca-certificate="$CUSTOM_RESOURCES_CA_CERTIFICATE"\n\
-    unzip ./html/custom-resources.zip -d ./html/custom-resources                                               \n\
+    unzip -o ./html/custom-resources.zip -d ./html/custom-resources                                               \n\
     rm ./html/custom-resources.zip                                                                             \n\
 fi                                                                                                             \n\
 cd html                                                                                                        \n\
