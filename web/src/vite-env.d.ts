@@ -27,6 +27,7 @@ type ImportMetaEnv = {
   SOCIAL_MEDIA_IMAGE: string
   BACKGROUND_ASSET: string
   HEADER_LINKS: string
+  FOOTER_LINKS: string
   LEFTBAR_LINKS: string
   DISABLE_HOMEPAGE: string
   HOMEPAGE_LOGO: string

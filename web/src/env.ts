@@ -509,6 +509,57 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
+        envName: "FOOTER_LINKS",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            if (envValue === "") {
+                return [];
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON5.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            type ParsedValue = LinkFromConfig[];
+
+            const zParsedValue = z.array(
+                zLinkFromConfig.superRefine((data, ctx) => {
+                    if (data.endIcon !== undefined) {
+                        ctx.addIssue({
+                            code: z.ZodIssueCode.custom,
+                            message: `You can specify endIcons in ${envName}, see: ${JSON.stringify(
+                                data
+                            )}`
+                        });
+                    }
+                })
+            );
+
+            {
+                type Got = ReturnType<(typeof zParsedValue)["parse"]>;
+                type Expected = ParsedValue;
+
+                assert<Got extends Expected ? true : false>();
+                assert<Expected extends Got ? true : false>();
+            }
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
+        }
+    },
+    {
         envName: "DISABLE_HOMEPAGE",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue, envName }) => {

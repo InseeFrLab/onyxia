@@ -1,16 +1,19 @@
-import { memo } from "react";
+import { memo, useMemo, Fragment } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { LanguageSelect } from "onyxia-ui/LanguageSelect";
 import { languagesPrettyPrint } from "ui/i18n";
 import { useTranslation } from "ui/i18n";
-import githubSvgUrl from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 import { declareComponentKeys } from "i18nifty";
 import { env } from "env";
 import { routes } from "ui/routes";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
+import { useUrlToLink } from "ui/routes";
+import { getIconUrl } from "lazy-icons";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
+import type { LinkFromConfig } from "ui/shared/LinkFromConfig";
 
 export type Props = {
     className?: string;
@@ -25,23 +28,54 @@ export const Footer = memo((props: Props) => {
 
     const { lang, setLang } = useLang();
 
+    const { urlToLink } = useUrlToLink();
+
+    const headerLinks = useMemo(
+        (): LinkFromConfig[] => [
+            ...(env.TERMS_OF_SERVICES === undefined
+                ? []
+                : [
+                      {
+                          label: t("terms of service"),
+                          url: routes.document({ source: env.TERMS_OF_SERVICES }).link
+                              .href
+                      }
+                  ]),
+            ...env.FOOTER_LINKS
+        ],
+        [t]
+    );
+
     const spacing = <div className={classes.spacing} />;
 
     return (
         <footer className={cx(classes.root, className)}>
-            <Text typo="body 2">2017 - 2025 Onyxia</Text>
-            {spacing}
-            <a
-                href="https://github.com/InseeFrLab/onyxia"
-                className={classes.contribute}
-                target="_blank"
-                rel="noreferrer"
-            >
-                <ThemedImage className={classes.icon} url={githubSvgUrl} />
-                &nbsp;
-                <Text typo="body 2">{t("contribute")}</Text>
-            </a>
+            {headerLinks
+                .map(({ url, startIcon, icon, ...rest }) => ({
+                    link: urlToLink(url),
+                    icon: startIcon ?? icon,
+                    ...rest
+                }))
+                .map(({ link, icon, label }, index) => (
+                    <Fragment key={index}>
+                        <a className={classes.linkAnchor} rel="noreferrer" {...link}>
+                            {icon !== undefined && (
+                                <>
+                                    <ThemedImage
+                                        className={classes.icon}
+                                        url={getIconUrl(icon)}
+                                    />
+                                    &nbsp;
+                                </>
+                            )}
+                            <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
+                        </a>
+                        {spacing}
+                    </Fragment>
+                ))}
+
             <div className={classes.sep} />
+
             {env.ENABLED_LANGUAGES.length !== 1 && (
                 <LanguageSelect
                     languagesPrettyPrint={languagesPrettyPrint}
@@ -51,23 +85,10 @@ export const Footer = memo((props: Props) => {
                     changeLanguageText={t("change language")}
                 />
             )}
-            {env.TERMS_OF_SERVICES !== undefined && (
-                <>
-                    {spacing}
-                    <a
-                        {...routes.document({
-                            source: env.TERMS_OF_SERVICES
-                        }).link}
-                    >
-                        {" "}
-                        <Text typo="body 2">{t("terms of service")}</Text>{" "}
-                    </a>
-                </>
-            )}
             {spacing}
             {env.ONYXIA_VERSION !== undefined && (
                 <a href={env.ONYXIA_VERSION_URL} target="_blank" rel="noreferrer">
-                    <Text typo="body 2">v{env.ONYXIA_VERSION}</Text>
+                    <Text typo="body 2">Onyxia v{env.ONYXIA_VERSION}</Text>
                 </a>
             )}
             {spacing}
@@ -83,7 +104,7 @@ export const Footer = memo((props: Props) => {
 });
 
 const { i18n } = declareComponentKeys<
-    "contribute" | "terms of service" | "change language" | "dark mode switch"
+    "terms of service" | "change language" | "dark mode switch"
 >()({ Footer });
 export type I18n = typeof i18n;
 
@@ -104,11 +125,13 @@ const useStyles = tss
             }
         },
         icon: {
-            fill: theme.colors.useCases.typography.textPrimary
+            fill: theme.colors.useCases.typography.textPrimary,
+            height: `calc(${theme.typography.variants["body 1"].style.lineHeight} * 0.8)`
         },
-        contribute: {
+        linkAnchor: {
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            color: "inherit"
         },
         sep: {
             flex: 1
