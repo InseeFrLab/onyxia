@@ -17,7 +17,7 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
         Buffer.from(
             [
                 `# You can edit this file to test the web app in different configuration locally`,
-                `# After editing this file you must re-run: yarn start`,
+                `# After editing this file you must re-run: \`yarn dev\``,
                 ``,
                 `onyxia:`,
                 `  web:`,
