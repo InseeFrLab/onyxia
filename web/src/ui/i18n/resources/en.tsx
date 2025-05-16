@@ -801,7 +801,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
         )
     },
     Footer: {
-        contribute: "Contribute",
         "terms of service": "Terms of service",
         "change language": "Change language",
         "dark mode switch": "Dark mode switch"

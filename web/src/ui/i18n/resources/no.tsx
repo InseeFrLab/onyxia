@@ -808,7 +808,6 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         )
     },
     Footer: {
-        contribute: "Bidra",
         "terms of service": "Vilkår for bruk",
         "change language": "Bytt språk",
         "dark mode switch": "Mørk modus"

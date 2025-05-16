@@ -803,7 +803,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         )
     },
     Footer: {
-        contribute: "Osallistu",
         "terms of service": "Käyttöehdot",
         "change language": "Vaihda kieli",
         "dark mode switch": "Tumma tila"

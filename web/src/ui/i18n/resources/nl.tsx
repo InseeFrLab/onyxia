@@ -815,7 +815,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         )
     },
     Footer: {
-        contribute: "Bijdragen aan het project",
         "terms of service": "Gebruiksvoorwaarden",
         "change language": "Taal wijzigen",
         "dark mode switch": "Schakelaar voor donkere modus"

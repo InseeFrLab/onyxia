@@ -755,7 +755,6 @@ ${
         )
     },
     Footer: {
-        contribute: "为项目做贡献",
         "terms of service": "使用条款",
         "change language": "切换语言",
         "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关

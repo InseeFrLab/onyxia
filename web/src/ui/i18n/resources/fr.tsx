@@ -822,7 +822,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         )
     },
     Footer: {
-        contribute: "Contribuer au projet",
         "terms of service": "Conditions d'utilisation",
         "change language": "Changer la langue",
         "dark mode switch": "Interrupteur pour le mode sombre"

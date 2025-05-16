@@ -814,7 +814,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         )
     },
     Footer: {
-        contribute: "Zum Projekt beitragen",
         "terms of service": "Nutzungsbedingungen",
         "change language": "Sprache ändern",
         "dark mode switch": "Umschalter für den Dark Mode"

@@ -815,7 +815,6 @@ export const translations: Translations<"en"> = {
         )
     },
     Footer: {
-        contribute: "Contribuir",
         "terms of service": "Términos de servicio",
         "change language": "Cambiar idioma",
         "dark mode switch": "Activar modo oscuro"

@@ -354,8 +354,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },
@@ -812,7 +813,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         )
     },
     Footer: {
-        contribute: "Contribuire al proggetto",
         "terms of service": "Condizioni d'uso",
         "change language": "Cambiare la lingua",
         "dark mode switch": "Interruttore per la modalità scura"
