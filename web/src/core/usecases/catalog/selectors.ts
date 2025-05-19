@@ -137,7 +137,7 @@ const filteredCharts = createSelector(
 
         const catalogIdsToDisplay = (() => {
             if (catalog.id === allCatalog.id) {
-                return Object.keys(chartsByCatalogId);
+                return catalogs.filter(c => c.isProduction).map(c => c.id);
             }
 
             return chartsByCatalogId[selectedCatalogId] === undefined
