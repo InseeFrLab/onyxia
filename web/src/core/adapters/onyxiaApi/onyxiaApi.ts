@@ -163,6 +163,19 @@ export function createOnyxiaApi(params: {
                             defaultNetworkPolicy:
                                 apiRegion.services.defaultConfiguration?.networkPolicy,
                             kubernetesClusterDomain: apiRegion.services.expose.domain,
+                            kubernetesClusterIngressPort: (() => {
+                                const v = apiRegion.services.expose.ingressPort;
+                                if (v === undefined) {
+                                    return undefined;
+                                }
+                                if (typeof v === "string") {
+                                    const n = parseInt(v);
+                                    assert(!isNaN(n));
+                                    return n;
+                                }
+
+                                return v;
+                            })(),
                             ingressClassName: apiRegion.services.expose.ingressClassName,
                             ingress: apiRegion.services.expose.ingress,
                             route: apiRegion.services.expose.route,

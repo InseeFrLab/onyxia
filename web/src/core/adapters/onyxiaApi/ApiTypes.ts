@@ -16,6 +16,7 @@ export type ApiTypes = {
                 customValues?: Record<string, unknown>;
                 expose: {
                     domain: string;
+                    ingressPort?: number | string;
                     ingressClassName: string;
                     ingress?: boolean;
                     route?: boolean;

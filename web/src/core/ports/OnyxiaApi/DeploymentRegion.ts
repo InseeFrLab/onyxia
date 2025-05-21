@@ -6,6 +6,7 @@ export type DeploymentRegion = {
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
+    kubernetesClusterIngressPort: number | undefined;
     ingressClassName: string | undefined;
     ingress: boolean | undefined;
     route: boolean | undefined;

@@ -26,6 +26,7 @@ export namespace State {
         helmReleases: HelmRelease[];
         lockedHelmReleaseNames: string[];
         logoUrlByReleaseName: Record<string, string | undefined>;
+        kubernetesClusterIngressPort: number | undefined;
     };
 }
 
@@ -55,6 +56,7 @@ export const { reducer, actions } = createUsecaseActions({
                         kubernetesNamespace: string;
                         logoUrlByReleaseName: Record<string, string | undefined>;
                         username: string;
+                        kubernetesClusterIngressPort: number | undefined;
                     };
                 }
             ) => {
@@ -62,7 +64,8 @@ export const { reducer, actions } = createUsecaseActions({
                     helmReleases,
                     kubernetesNamespace,
                     logoUrlByReleaseName,
-                    username
+                    username,
+                    kubernetesClusterIngressPort
                 } = payload;
 
                 return id<State.Ready>({
@@ -76,7 +79,8 @@ export const { reducer, actions } = createUsecaseActions({
                             ? state.lockedHelmReleaseNames
                             : [],
                     logoUrlByReleaseName,
-                    username
+                    username,
+                    kubernetesClusterIngressPort
                 });
             },
             helmReleaseLocked: (

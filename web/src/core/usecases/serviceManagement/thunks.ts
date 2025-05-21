@@ -1,5 +1,6 @@
 import { id } from "tsafe/id";
 import * as projectManagement from "core/usecases/projectManagement";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import type { Thunks } from "core/bootstrap";
 import { createUsecaseContextApi } from "clean-architecture";
 import { assert } from "tsafe/assert";
@@ -442,6 +443,9 @@ const privateThunks = {
                 user: { username }
             } = await onyxiaApi.getUserAndProjects();
 
+            const { kubernetesClusterIngressPort } =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
+
             dispatch(
                 actions.updateCompleted({
                     kubernetesNamespace,
@@ -455,7 +459,8 @@ const privateThunks = {
                             })
                         ])
                     ),
-                    username
+                    username,
+                    kubernetesClusterIngressPort
                 })
             );
         }
