@@ -77,7 +77,7 @@ const services = createSelector(
                 const { openUrl, postInstallInstructions_patched } =
                     getServiceOpenUrlAndMaybeAddPortToPostInstallInstructionsUrls({
                         helmRelease,
-                        kubernetesClusterIngressPort: 0
+                        kubernetesClusterIngressPort: state.kubernetesClusterIngressPort
                     });
 
                 return {
