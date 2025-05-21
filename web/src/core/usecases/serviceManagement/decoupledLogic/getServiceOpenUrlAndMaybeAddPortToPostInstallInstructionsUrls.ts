@@ -31,6 +31,10 @@ export function getServiceOpenUrlAndMaybeAddPortToPostInstallInstructionsUrls(pa
             return [];
         }
 
+        if (urls.length === 0) {
+            return [];
+        }
+
         const urlRegex = new RegExp(
             urls
                 .map(
