@@ -5,6 +5,7 @@ export type ApiTypes = {
     "/public/ip": {
         ip: string;
     };
+    "/profile/schema": JSONSchema | "";
     "/public/configuration": {
         build: {
             version: string;

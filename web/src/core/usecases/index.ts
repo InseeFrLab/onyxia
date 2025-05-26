@@ -13,6 +13,7 @@ import * as s3ConfigManagement from "./s3ConfigManagement";
 import * as serviceDetails from "./serviceDetails";
 import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
+import * as userProfileForm from "./userProfileForm";
 import * as userConfigs from "./userConfigs";
 import * as secretsEditor from "./secretsEditor";
 import * as s3CodeSnippets from "./s3CodeSnippets";
@@ -39,6 +40,7 @@ export const usecases = {
     serviceDetails,
     serviceManagement,
     userAuthentication,
+    userProfileForm,
     userConfigs,
     secretsEditor,
     s3CodeSnippets,

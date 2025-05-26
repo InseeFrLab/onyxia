@@ -103,6 +103,62 @@ export function createOnyxiaApi(params: {
 
             return data.ip;
         },
+        getUserProfileJsonSchema: memoize(
+            async () => {
+                try {
+                    const { data: schemaOrEmptyString } =
+                        await axiosInstance.get<ApiTypes["/profile/schema"]>(
+                            "/profile/schema"
+                        );
+
+                    const schema: JSONSchema | undefined = (() => {
+                        if (schemaOrEmptyString === "") {
+                            return undefined;
+                        }
+
+                        zJSONSchema.parse(schemaOrEmptyString);
+
+                        return schemaOrEmptyString;
+                    })();
+
+                    if (schema === undefined) {
+                        return undefined;
+                    }
+
+                    return schema;
+                } catch {
+                    console.log("WARNING: REMOVE! This is just for testing");
+
+                    const schema: JSONSchema = {
+                        type: "object",
+                        properties: {
+                            firstName: {
+                                type: "string",
+                                title: "First name",
+                                default: "John",
+                                description: "Your first name"
+                            },
+                            familyName: {
+                                type: "string",
+                                title: "Family name",
+                                default: "Doe",
+                                description: "Your family name"
+                            },
+                            email: {
+                                type: "string",
+                                title: "Email",
+                                default: "john.doe@gmail.com",
+                                description: "Your email address"
+                            }
+                        },
+                        required: ["firstName", "familyName", "email"]
+                    };
+
+                    return schema;
+                }
+            },
+            { promise: true }
+        ),
         getAvailableRegionsAndOidcParams: memoize(
             async () => {
                 const { data } = await axiosInstance.get<

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, Suspense, lazy } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingField } from "ui/shared/SettingField";
 import { useCoreState, useCore } from "core";
@@ -8,11 +8,13 @@ import { declareComponentKeys } from "i18nifty";
 import { assert } from "tsafe/assert";
 import { Button } from "onyxia-ui/Button";
 
+const UserProfileForm = lazy(() => import("./UserProfileForm"));
+
 export type Props = {
     className?: string;
 };
 
-const AccountProfileTab = memo((props: Props) => {
+export const AccountProfileTab = memo((props: Props) => {
     const { className } = props;
 
     const { t } = useTranslation({ AccountProfileTab });
@@ -28,7 +30,7 @@ const AccountProfileTab = memo((props: Props) => {
 
     assert(isUserLoggedIn);
 
-    const { userAuthentication } = useCore().functions;
+    const { userAuthentication, userProfileForm } = useCore().functions;
 
     return (
         <div className={className}>
@@ -60,6 +62,11 @@ const AccountProfileTab = memo((props: Props) => {
                     />
                 );
             })()}
+            {userProfileForm.getIsEnabled() && (
+                <Suspense>
+                    <UserProfileForm />
+                </Suspense>
+            )}
             <SettingField
                 type="text"
                 title={t("email")}
@@ -74,8 +81,6 @@ const AccountProfileTab = memo((props: Props) => {
         </div>
     );
 });
-
-export default AccountProfileTab;
 
 const { i18n } = declareComponentKeys<
     "user id" | "full name" | "email" | "account management"

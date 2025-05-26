@@ -95,4 +95,6 @@ export type OnyxiaApi = {
         }) => void;
         evtUnsubscribe: NonPostableEvt<void>;
     }) => Promise<void>;
+
+    getUserProfileJsonSchema: () => Promise<JSONSchema | undefined>;
 };
