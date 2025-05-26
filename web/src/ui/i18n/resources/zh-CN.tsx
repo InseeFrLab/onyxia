@@ -265,6 +265,20 @@ export const translations: Translations<"zh-CN"> = {
         reset: "重置",
         "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
     },
+    FileExplorer: {
+        "page title - my files": "文件资源管理器",
+        "what this page is used for - my files": "在此处存储您的数据.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                阅读{" "}
+                <MuiLink href={docHref} target="_blank">
+                    我们的文档
+                </MuiLink>
+                。&nbsp;
+                <MuiLink {...accountTabLink}>配置 Minio 客户端</MuiLink>。
+            </>
+        )
+    },
     MyFiles: {
         "page title - my files": "我的文件",
         "what this page is used for - my files": "在此处存储您的数据.",
@@ -466,6 +480,7 @@ export const translations: Translations<"zh-CN"> = {
         "divider: external services features": "外部服务功能",
         "divider: onyxia instance specific features": "Onyxia实例特定功能",
         dataExplorer: "数据浏览器",
+        fileExplorer: "文件浏览器",
         sqlOlapShell: "SQL OLAP 外壳"
     },
     AutoLogoutCountdown: {

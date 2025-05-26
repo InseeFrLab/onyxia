@@ -298,6 +298,23 @@ export const translations: Translations<"en"> = {
         "reset helper dialogs helper text":
             "Restablecer ventanas de mensajes que se han solicitado no mostrar nuevamente"
     },
+    FileExplorer: {
+        "page title - my files": "Explorador de archivos",
+        "what this page is used for - my files":
+            "Aquí puedes explorar tus Buckets de S3.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Lee{" "}
+                <MuiLink href={docHref} target="_blank">
+                    nuestra documentación
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configura los clientes de minio
+                </MuiLink>.
+            </>
+        )
+    },
     MyFiles: {
         "page title - my files": "Mis Archivos",
         "what this page is used for - my files":
@@ -510,6 +527,7 @@ export const translations: Translations<"en"> = {
         "divider: onyxia instance specific features":
             "Funciones específicas de la instancia de Onyxia",
         dataExplorer: "Explorador de datos",
+        fileExplorer: "Explorador de archivos",
         sqlOlapShell: "SQL Olap Shell"
     },
     AutoLogoutCountdown: {

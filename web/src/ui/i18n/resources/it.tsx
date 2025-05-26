@@ -296,6 +296,22 @@ export const translations: Translations<"it"> = {
         "reset helper dialogs helper text":
             "Ripristinare le finestre di messaggi che hai richiesto di non mostrare più"
     },
+    FileExplorer: {
+        "page title - my files": "Esplora file",
+        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Leggere{" "}
+                <MuiLink href={docHref} target="_blank">
+                    la nostra documentazione
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configurare i client MinIO
+                </MuiLink>.
+            </>
+        )
+    },
     MyFiles: {
         "page title - my files": "I miei file",
         "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
@@ -354,9 +370,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -506,6 +521,7 @@ export const translations: Translations<"it"> = {
         "divider: onyxia instance specific features":
             "Funzioni specifiche di questa istanza di Onyxia",
         dataExplorer: "Esploratore di Dati",
+        fileExplorer: "Esploratore di File",
         sqlOlapShell: "Guscio SQL OLAP"
     },
     AutoLogoutCountdown: {

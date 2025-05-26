@@ -1,4 +1,4 @@
-import { id } from "tsafe";
+import { id } from "tsafe/id";
 import {
     createRouter,
     defineRoute,
@@ -8,10 +8,10 @@ import {
     type ValueSerializer,
     noMatch
 } from "type-route";
-import { type ViewMode, viewModes } from "./shared/types";
+import { type ViewMode, viewModes } from "../myFiles/shared/types";
 
 export const routeDefs = {
-    myFiles: defineRoute(
+    fileExplorer: defineRoute(
         {
             path: param.path.trailing.optional.ofType({
                 parse: raw => decodeURIComponent(raw), // decode the path
@@ -29,7 +29,7 @@ export const routeDefs = {
                 )
                 .default(viewModes[0])
         },
-        ({ path }) => `/my-files/${path}`
+        ({ path }) => `/file-explorer/${path}`
     )
 };
 

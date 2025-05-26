@@ -294,6 +294,21 @@ export const translations: Translations<"fi"> = {
         "reset helper dialogs helper text":
             "Nollaa ohjeviestit, joista on pyydetty, ettei niitä näytetä uudelleen"
     },
+    FileExplorer: {
+        "page title - my files": "Tiedostoselain",
+        "what this page is used for - my files":
+            "Täällä voit selata S3 Bucket -tiedostojasi.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Lue{" "}
+                <MuiLink href={docHref} target="_blank">
+                    dokumentaatiomme
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
+            </>
+        )
+    },
     MyFiles: {
         "page title - my files": "Omat tiedostot",
         "what this page is used for - my files":
@@ -502,6 +517,7 @@ export const translations: Translations<"fi"> = {
         "divider: onyxia instance specific features":
             "Onyxia-instanssin erityisominaisuudet",
         dataExplorer: "Data Explorer",
+        fileExplorer: "Tiedostonhallinta",
         sqlOlapShell: "SQL OLAP-kuori"
     },
     AutoLogoutCountdown: {

@@ -257,7 +257,9 @@ export function createOnyxiaApi(params: {
                                                     )
                                             },
                                             workingDirectory:
-                                                s3Config_api.workingDirectory
+                                                s3Config_api.workingDirectory,
+                                            bookmarkedDirectory:
+                                                s3Config_api.bookmarkedDirectory
                                         }));
 
                                 return {
@@ -349,6 +351,7 @@ export function createOnyxiaApi(params: {
                         })
                 );
 
+                console.log(regions);
                 return { regions, oidcParams };
             },
             { promise: true }
