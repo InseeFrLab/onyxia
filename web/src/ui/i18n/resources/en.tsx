@@ -303,6 +303,19 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
+    S3EntryCard: {
+        "space path": "Space path",
+        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+            switch (type) {
+                case "personal":
+                    return "My data";
+                case "group":
+                    return "Group data";
+                case "admin":
+                    return "Administrator";
+            }
+        }
+    },
     MyFiles: {
         "page title - my files": "My Files",
         "what this page is used for - my files": "Here you can browse your S3 Buckets.",

@@ -312,6 +312,19 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
+    S3EntryCard: {
+        "space path": "Ruimtepad",
+        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+            switch (type) {
+                case "personal":
+                    return "Mijn gegevens";
+                case "group":
+                    return "Groepsgegevens";
+                case "admin":
+                    return "Beheerder";
+            }
+        }
+    },
     MyFiles: {
         "page title - my files": "Mijn bestanden",
         "what this page is used for - my files": "Sla hier uw gegevensbestanden op.",

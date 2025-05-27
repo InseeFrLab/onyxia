@@ -351,7 +351,6 @@ export function createOnyxiaApi(params: {
                         })
                 );
 
-                console.log(regions);
                 return { regions, oidcParams };
             },
             { promise: true }

@@ -8,8 +8,7 @@ import { routes } from "ui/routes";
 import { useCoreState, useCore } from "core";
 import { MyFilesDisabledDialog } from "../myFiles/MyFilesDisabledDialog";
 import type { Link } from "type-route";
-import { Datasource } from "./Datasource";
-import Grid from "@mui/material/Grid2";
+import { S3Entries } from "./S3Entries/S3Entries";
 
 type Props = {
     route: PageRoute;
@@ -41,45 +40,8 @@ function FileExplorer(props: Props) {
                     accountTabLink: routes.account({ tabId: "storage" }).link
                 })}
                 helpIcon={getIconUrlByName("SentimentSatisfied")}
-                // titleCollapseParams={titleCollapseParams}
-                // helpCollapseParams={helpCollapseParams}
             />
-            <Grid container spacing={2}>
-                {[
-                    {
-                        id: "1",
-                        title: "Données personnelles",
-                        description: "Vos propres fichiers et jeux de données.",
-                        path: "s3://projet/user/john",
-                        type: "personal" as const
-                    },
-                    {
-                        id: "2",
-                        title: "Projet X",
-                        description: "Sources de données partagées pour l'équipe X.",
-                        path: "s3://projet-x/shared",
-                        type: "group" as const
-                    },
-                    {
-                        id: "3",
-                        title: "Catalogue Insee",
-                        description: "Sources publiques ajoutées par l'administration.",
-                        path: "s3://admin/catalogue",
-                        type: "admin" as const
-                    },
-                    {
-                        id: "4",
-                        title: "Ajout manuel",
-                        description: "Source ajoutée depuis vos paramètres.",
-                        path: "s3://custom/user/datasource",
-                        type: "custom" as const
-                    }
-                ].map((datasource, index) => (
-                    <Grid size={{ xs: 12, sm: 6 }} key={index}>
-                        <Datasource {...datasource} />
-                    </Grid>
-                ))}
-            </Grid>
+            <S3Entries />
         </div>
     );
 }

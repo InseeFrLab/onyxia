@@ -309,6 +309,19 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
+    S3EntryCard: {
+        "space path": "Tilapolku",
+        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+            switch (type) {
+                case "personal":
+                    return "Omat tiedot";
+                case "group":
+                    return "Ryhmän tiedot";
+                case "admin":
+                    return "Ylläpitäjä";
+            }
+        }
+    },
     MyFiles: {
         "page title - my files": "Omat tiedostot",
         "what this page is used for - my files":

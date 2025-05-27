@@ -279,6 +279,19 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
+    S3EntryCard: {
+        "space path": "空间路径",
+        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+            switch (type) {
+                case "personal":
+                    return "我的数据";
+                case "group":
+                    return "群组数据";
+                case "admin":
+                    return "管理员";
+            }
+        }
+    },
     MyFiles: {
         "page title - my files": "我的文件",
         "what this page is used for - my files": "在此处存储您的数据.",

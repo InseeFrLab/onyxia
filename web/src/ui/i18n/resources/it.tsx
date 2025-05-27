@@ -312,6 +312,19 @@ export const translations: Translations<"it"> = {
             </>
         )
     },
+    S3EntryCard: {
+        "space path": "Percorso dello spazio",
+        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+            switch (type) {
+                case "personal":
+                    return "I miei dati";
+                case "group":
+                    return "Dati del gruppo";
+                case "admin":
+                    return "Amministratore";
+            }
+        }
+    },
     MyFiles: {
         "page title - my files": "I miei file",
         "what this page is used for - my files": "Archivia qui i tuoi file di dati.",

@@ -308,6 +308,19 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
+    S3EntryCard: {
+        "space path": "Områdesti",
+        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+            switch (type) {
+                case "personal":
+                    return "Mine data";
+                case "group":
+                    return "Gruppedata";
+                case "admin":
+                    return "Administrator";
+            }
+        }
+    },
     MyFiles: {
         "page title - my files": "Mine filer",
         "what this page is used for - my files": "Her kan du bla gjennom S3-bøtter.",
