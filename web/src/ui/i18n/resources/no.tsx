@@ -23,7 +23,6 @@ export const translations: Translations<"no"> = {
     },
     AccountProfileTab: {
         "user id": "Bruker-ID",
-        "full name": "Navn",
         email: "E-post",
         "account management": "Kontohåndtering"
     },

@@ -22,7 +22,6 @@ export const translations: Translations<"zh-CN"> = {
     },
     AccountProfileTab: {
         "user id": "用户ID",
-        "full name": "姓名",
         email: "电子邮件",
         "account management": "账户管理"
     },

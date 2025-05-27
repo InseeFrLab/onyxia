@@ -22,7 +22,6 @@ export const translations: Translations<"en"> = {
     },
     AccountProfileTab: {
         "user id": "User ID",
-        "full name": "Name",
         email: "Email",
         "account management": "Account management"
     },

@@ -22,7 +22,6 @@ export const translations: Translations<"nl"> = {
     },
     AccountProfileTab: {
         "user id": "Gebruikers-ID",
-        "full name": "Naam",
         email: "E-mail",
         "account management": "Accountbeheer"
     },

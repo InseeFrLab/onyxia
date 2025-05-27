@@ -41,28 +41,6 @@ export const AccountProfileTab = memo((props: Props) => {
                 text={user.username}
                 onRequestCopy={onRequestCopyFactory(user.username)}
             />
-            {(() => {
-                const fullName = (() => {
-                    if (user.firstName === undefined || user.familyName === undefined) {
-                        return undefined;
-                    }
-
-                    return `${user.firstName} ${user.familyName}`;
-                })();
-
-                if (fullName === undefined) {
-                    return null;
-                }
-
-                return (
-                    <SettingField
-                        type="text"
-                        title={t("full name")}
-                        text={fullName}
-                        onRequestCopy={onRequestCopyFactory(fullName)}
-                    />
-                );
-            })()}
             <SettingField
                 type="text"
                 title={t("email")}
@@ -84,9 +62,7 @@ export const AccountProfileTab = memo((props: Props) => {
     );
 });
 
-const { i18n } = declareComponentKeys<
-    "user id" | "full name" | "email" | "account management"
->()({
+const { i18n } = declareComponentKeys<"user id" | "email" | "account management">()({
     AccountProfileTab
 });
 export type I18n = typeof i18n;

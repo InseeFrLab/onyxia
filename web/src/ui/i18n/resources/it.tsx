@@ -22,7 +22,6 @@ export const translations: Translations<"it"> = {
     },
     AccountProfileTab: {
         "user id": "ID utente",
-        "full name": "Nome",
         email: "Email",
         "account management": "Gestione dell'account"
     },
@@ -354,9 +353,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

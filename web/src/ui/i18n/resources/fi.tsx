@@ -23,7 +23,6 @@ export const translations: Translations<"fi"> = {
     },
     AccountProfileTab: {
         "user id": "Käyttäjä-ID",
-        "full name": "Nimi",
         email: "Sähköposti",
         "account management": "Tilin hallinta"
     },
