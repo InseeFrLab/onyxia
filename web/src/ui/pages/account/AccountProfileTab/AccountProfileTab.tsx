@@ -7,6 +7,7 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { declareComponentKeys } from "i18nifty";
 import { assert } from "tsafe/assert";
 import { Button } from "onyxia-ui/Button";
+import Divider from "@mui/material/Divider";
 
 const UserProfileForm = lazy(() => import("./UserProfileForm"));
 
@@ -62,11 +63,6 @@ export const AccountProfileTab = memo((props: Props) => {
                     />
                 );
             })()}
-            {userProfileForm.getIsEnabled() && (
-                <Suspense>
-                    <UserProfileForm />
-                </Suspense>
-            )}
             <SettingField
                 type="text"
                 title={t("email")}
@@ -77,6 +73,12 @@ export const AccountProfileTab = memo((props: Props) => {
                 <Button onClick={() => userAuthentication.kcRedirectToAccountConsole()}>
                     {t("account management")}
                 </Button>
+            )}
+            <Divider sx={{ my: 7 }} />
+            {userProfileForm.getIsEnabled() && (
+                <Suspense>
+                    <UserProfileForm />
+                </Suspense>
             )}
         </div>
     );

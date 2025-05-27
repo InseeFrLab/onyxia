@@ -96,6 +96,16 @@ export const protectedThunks = {
 
             setContext(rootContext, { isEnabled: true });
 
+            const {
+                helmValues: values_default,
+                helmValuesSchema_forDataTextEditor: schema_allPropertiesRequired
+            } = computeHelmValues({
+                helmValuesSchema: schema,
+                xOnyxiaContext: createObjectThatThrowsIfAccessed(),
+                helmValuesYaml: "{}",
+                infoAmountInHelmValues: "user provided"
+            });
+
             const values_stored = await (async () => {
                 const { userProfileValuesStr } =
                     userConfigs.selectors.userConfigs(getState());
@@ -117,7 +127,7 @@ export const protectedThunks = {
 
                 const ajv = new Ajv({ strict: false });
 
-                const ajvValidateFunction = ajv.compile(schema);
+                const ajvValidateFunction = ajv.compile(schema_allPropertiesRequired);
 
                 const isValid = ajvValidateFunction(values);
 
@@ -145,13 +155,6 @@ export const protectedThunks = {
 
             const values = (() => {
                 if (values_stored === undefined || values_stored instanceof Error) {
-                    const { helmValues: values_default } = computeHelmValues({
-                        helmValuesSchema: schema,
-                        xOnyxiaContext: createObjectThatThrowsIfAccessed(),
-                        helmValuesYaml: "{}",
-                        infoAmountInHelmValues: "user provided"
-                    });
-
                     return values_default;
                 }
 

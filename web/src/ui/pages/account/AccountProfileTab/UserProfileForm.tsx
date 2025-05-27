@@ -1,6 +1,7 @@
 import { useCore, useCoreState } from "core";
 import { Button } from "onyxia-ui/Button";
-import { RootFormComponent } from "ui/pages/launcher/RootFormComponent/RootFormComponent";
+import { FormFieldGroupComponent } from "ui/pages/launcher/RootFormComponent/FormFieldGroupComponent";
+//import { RootFormComponent } from "ui/pages/launcher/RootFormComponent/RootFormComponent";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
@@ -9,6 +10,7 @@ export default function UserProfileForm() {
 
     return (
         <>
+            {/*
             <RootFormComponent
                 rootForm={rootForm}
                 callbacks={{
@@ -23,6 +25,24 @@ export default function UserProfileForm() {
                     onFieldErrorChange: params => {
                         console.log("error", params);
                     }
+                }}
+            />
+            */}
+            <FormFieldGroupComponent
+                helmValuesPath={[]}
+                nodes={rootForm.main}
+                canAdd={false}
+                canRemove={false}
+                callbacks={{
+                    onAdd: ({ helmValuesPath }) =>
+                        userProfileForm.addArrayItem({ valuesPath: helmValuesPath }),
+                    onChange: params => userProfileForm.changeFormFieldValue(params),
+                    onRemove: ({ helmValuesPath, index }) =>
+                        userProfileForm.removeArrayItem({
+                            valuesPath: helmValuesPath,
+                            index
+                        }),
+                    onFieldErrorChange: () => {}
                 }}
             />
 
