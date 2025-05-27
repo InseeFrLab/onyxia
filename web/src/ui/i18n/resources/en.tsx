@@ -21,9 +21,17 @@ export const translations: Translations<"en"> = {
         vault: "Vault"
     },
     AccountProfileTab: {
+        "account id": "Account identifier",
+        "account id helper":
+            "Your intangible identifiers linked to the identity you use to log in to the platform",
         "user id": "User ID",
         email: "Email",
         "account management": "Account management"
+    },
+    UserProfileForm: {
+        "customizable profile": "Customizable profile",
+        "customizable profile helper":
+            "Useful information for the automatic configuration of your services"
     },
     AccountGitTab: {
         gitName: "Username for Git",

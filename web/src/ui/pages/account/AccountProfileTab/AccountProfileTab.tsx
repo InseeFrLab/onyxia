@@ -8,6 +8,7 @@ import { declareComponentKeys } from "i18nifty";
 import { assert } from "tsafe/assert";
 import { Button } from "onyxia-ui/Button";
 import Divider from "@mui/material/Divider";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 
 const UserProfileForm = lazy(() => import("./UserProfileForm"));
 
@@ -35,6 +36,11 @@ export const AccountProfileTab = memo((props: Props) => {
 
     return (
         <div className={className}>
+            <SettingSectionHeader
+                title={t("account id")}
+                helperText={t("account id helper")}
+            />
+
             <SettingField
                 type="text"
                 title={t("user id")}
@@ -52,7 +58,7 @@ export const AccountProfileTab = memo((props: Props) => {
                     {t("account management")}
                 </Button>
             )}
-            <Divider sx={{ my: 7 }} />
+            <Divider sx={{ my: 5 }} />
             {userProfileForm.getIsEnabled() && (
                 <Suspense>
                     <UserProfileForm />
@@ -62,7 +68,9 @@ export const AccountProfileTab = memo((props: Props) => {
     );
 });
 
-const { i18n } = declareComponentKeys<"user id" | "email" | "account management">()({
+const { i18n } = declareComponentKeys<
+    "user id" | "email" | "account management" | "account id" | "account id helper"
+>()({
     AccountProfileTab
 });
 export type I18n = typeof i18n;

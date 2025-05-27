@@ -22,9 +22,17 @@ export const translations: Translations<"no"> = {
         vault: "Vault"
     },
     AccountProfileTab: {
+        "account id": "Kontoidentifikator",
+        "account id helper":
+            "Dine immaterielle identifikatorer knyttet til identiteten du bruker for å logge inn på plattformen",
         "user id": "Bruker-ID",
         email: "E-post",
-        "account management": "Kontohåndtering"
+        "account management": "Kontoadministrasjon"
+    },
+    UserProfileForm: {
+        "customizable profile": "Tilpassbar profil",
+        "customizable profile helper":
+            "Nyttig informasjon for automatisk konfigurasjon av tjenestene dine"
     },
     AccountGitTab: {
         gitName: "Brukernavn for Git",

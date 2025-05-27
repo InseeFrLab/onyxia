@@ -21,9 +21,17 @@ export const translations: Translations<"nl"> = {
         vault: "Vault"
     },
     AccountProfileTab: {
+        "account id": "Account-ID",
+        "account id helper":
+            "Je ontastbare identificaties die gekoppeld zijn aan de identiteit waarmee je inlogt op het platform",
         "user id": "Gebruikers-ID",
         email: "E-mail",
         "account management": "Accountbeheer"
+    },
+    UserProfileForm: {
+        "customizable profile": "Aanpasbaar profiel",
+        "customizable profile helper":
+            "Nuttige informatie voor de automatische configuratie van uw diensten"
     },
     AccountGitTab: {
         gitName: "Gebruikersnaam voor Git",

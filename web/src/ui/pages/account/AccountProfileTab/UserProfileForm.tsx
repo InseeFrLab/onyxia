@@ -2,14 +2,24 @@ import { useCore, useCoreState } from "core";
 import { Button } from "onyxia-ui/Button";
 import { FormFieldGroupComponent } from "ui/pages/launcher/RootFormComponent/FormFieldGroupComponent";
 //import { RootFormComponent } from "ui/pages/launcher/RootFormComponent/RootFormComponent";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
+import { declareComponentKeys } from "i18nifty";
+import { useTranslation } from "ui/i18n";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
 
     const { rootForm, isThereThingsToSave } = useCoreState("userProfileForm", "main");
 
+    const { t } = useTranslation({ UserProfileForm });
+
     return (
         <>
+            <SettingSectionHeader
+                title={t("customizable profile")}
+                helperText={t("customizable profile helper")}
+            />
+
             {/*
             <RootFormComponent
                 rootForm={rootForm}
@@ -65,3 +75,10 @@ export default function UserProfileForm() {
         </>
     );
 }
+
+const { i18n } = declareComponentKeys<
+    "customizable profile" | "customizable profile helper"
+>()({
+    UserProfileForm
+});
+export type I18n = typeof i18n;

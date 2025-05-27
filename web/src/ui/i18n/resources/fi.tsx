@@ -22,9 +22,17 @@ export const translations: Translations<"fi"> = {
         vault: "Vault"
     },
     AccountProfileTab: {
-        "user id": "Käyttäjä-ID",
+        "account id": "Tilin tunniste",
+        "account id helper":
+            "Aineettomat tunnisteesi, jotka liittyvät siihen henkilöllisyyteen, jolla kirjaudut alustalle",
+        "user id": "Käyttäjätunnus",
         email: "Sähköposti",
-        "account management": "Tilin hallinta"
+        "account management": "Tilinhallinta"
+    },
+    UserProfileForm: {
+        "customizable profile": "Mukautettava profiili",
+        "customizable profile helper":
+            "Hyödyllistä tietoa palvelujen automaattista konfigurointia varten"
     },
     AccountGitTab: {
         gitName: "Käyttäjänimi Gitille",
