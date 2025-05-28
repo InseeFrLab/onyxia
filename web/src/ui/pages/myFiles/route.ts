@@ -17,7 +17,6 @@ export const routeDefs = {
                 parse: raw => decodeURIComponent(raw), // decode the path
                 stringify: value => encodeURI(value) // encode when creating URL
             }),
-            openFile: param.query.optional.string,
             mode: param.query.optional
                 .ofType(
                     id<ValueSerializer<ViewMode>>({
