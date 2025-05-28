@@ -9,6 +9,7 @@ import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe/assert";
 import { getProjectS3ConfigId } from "./projectS3ConfigId";
 import type * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 
@@ -25,6 +26,11 @@ export namespace S3Config {
     export type FromDeploymentRegion = Common & {
         origin: "deploymentRegion";
         paramsOfCreateS3Client: ParamsOfCreateS3Client;
+        bookmarkedLocations: {
+            directoryPath: string;
+            title: LocalizedString;
+            description: LocalizedString | undefined;
+        }[];
     };
 
     export type FromProject = Common & {
@@ -205,6 +211,13 @@ export function getS3Configs(params: {
                 })
             };
 
+            const bookmarkedLocations: S3Config.FromDeploymentRegion["bookmarkedLocations"] =
+                c.bookmarkedLocations.map(({ title, description, bucketName, path }) => ({
+                    title,
+                    description,
+                    directoryPath: `${bucketName}/${path ?? ""}`
+                }));
+
             return {
                 origin: "deploymentRegion",
                 id,
@@ -215,6 +228,7 @@ export function getS3Configs(params: {
                 }),
                 region,
                 workingDirectoryPath,
+                bookmarkedLocations,
                 paramsOfCreateS3Client,
                 isXOnyxiaDefault: false,
                 isExplorerConfig: false

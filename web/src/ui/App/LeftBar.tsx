@@ -96,7 +96,7 @@ export const LeftBar = memo((props: Props) => {
                         itemId: "myFiles",
                         icon: customIcons.filesSvgUrl,
                         label: t("myFiles"),
-                        link: routes.myFiles().link,
+                        link: routes.myFilesIndex().link,
                         availability: isFileExplorerEnabled ? "available" : "not visible"
                     },
                     {
@@ -153,6 +153,8 @@ export const LeftBar = memo((props: Props) => {
                         case "mySecrets":
                             return "mySecrets";
                         case "myFiles":
+                            return "myFiles";
+                        case "myFilesIndex":
                             return "myFiles";
                         case "sqlOlapShell":
                             return "sqlOlapShell";

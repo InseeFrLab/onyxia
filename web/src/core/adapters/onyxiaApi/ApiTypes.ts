@@ -111,6 +111,12 @@ export type ApiTypes = {
                               bucketNamePrefix: string;
                               bucketNamePrefixGroup: string;
                           };
+                    bookmarkedDirectory?: {
+                        bucket: string;
+                        description: LocalizedString | undefined;
+                        path?: string;
+                        title: LocalizedString;
+                    }[];
                 }>;
             };
             vault?: {

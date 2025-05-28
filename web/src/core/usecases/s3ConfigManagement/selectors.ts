@@ -43,4 +43,23 @@ const s3Configs = createSelector(
         })
 );
 
-export const selectors = { s3Configs };
+const indexedS3Locations = createSelector(s3Configs, s3Configs => {
+    const s3Config = s3Configs.find(({ isExplorerConfig }) => isExplorerConfig);
+
+    assert(s3Config !== undefined);
+
+    const defaultWorkingLocation = {
+        dataSource: s3Config.dataSource,
+        directoryPath: s3Config.workingDirectoryPath
+    };
+
+    const bookmarkedLocations =
+        s3Config.origin === "project" ? [] : s3Config.bookmarkedLocations;
+
+    return {
+        defaultWorkingLocation,
+        bookmarkedLocations
+    };
+});
+
+export const selectors = { s3Configs, indexedS3Locations };

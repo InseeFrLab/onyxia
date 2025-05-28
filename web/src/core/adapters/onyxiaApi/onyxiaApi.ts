@@ -270,7 +270,24 @@ export function createOnyxiaApi(params: {
                                                     )
                                             },
                                             workingDirectory:
-                                                s3Config_api.workingDirectory
+                                                s3Config_api.workingDirectory,
+                                            bookmarkedLocations:
+                                                s3Config_api.bookmarkedDirectory ===
+                                                undefined
+                                                    ? []
+                                                    : s3Config_api.bookmarkedDirectory.map(
+                                                          ({
+                                                              title,
+                                                              bucket,
+                                                              description,
+                                                              path
+                                                          }) => ({
+                                                              bucketName: bucket,
+                                                              path,
+                                                              title,
+                                                              description
+                                                          })
+                                                      )
                                         }));
 
                                 return {

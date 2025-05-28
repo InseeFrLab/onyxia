@@ -19,7 +19,6 @@ import type { PageRoute } from "./route";
 import { assert } from "tsafe/assert";
 import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
-import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 
@@ -28,17 +27,7 @@ export type Props = {
     className?: string;
 };
 
-const MyFilesMaybeDisabled = withLoginEnforced((props: Props) => {
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
-    if (!isFileExplorerEnabled) {
-        return <MyFilesDisabledDialog />;
-    }
-    return <MyFiles {...props} />;
-});
-
-export default MyFilesMaybeDisabled;
-
-function MyFiles(props: Props) {
+const MyFiles = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFiles });
@@ -250,7 +239,9 @@ function MyFiles(props: Props) {
             />
         </div>
     );
-}
+});
+
+export default MyFiles;
 
 const { i18n } = declareComponentKeys<
     | "page title - my files"

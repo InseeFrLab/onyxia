@@ -1,4 +1,5 @@
 import type { OidcParams_Partial } from "./OidcParams";
+import type { LocalizedString } from "./Language";
 
 export type DeploymentRegion = {
     id: string;
@@ -132,5 +133,11 @@ export namespace DeploymentRegion {
                   bucketNamePrefix: string;
                   bucketNamePrefixGroup: string;
               };
+        bookmarkedLocations: {
+            bucketName: string;
+            path: string | undefined;
+            title: LocalizedString;
+            description: LocalizedString | undefined;
+        }[];
     };
 }

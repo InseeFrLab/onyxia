@@ -3,6 +3,7 @@ import * as catalog from "./catalog";
 import * as launcher from "./launcher";
 import * as home from "./home";
 import * as myFiles from "./myFiles";
+import * as myFilesIndex from "./myFilesIndex";
 import * as mySecrets from "./mySecrets";
 import * as myService from "./myService";
 import * as myServices from "./myServices";
@@ -22,6 +23,7 @@ export const pages = {
     launcher,
     home,
     myFiles,
+    myFilesIndex,
     mySecrets,
     myService,
     myServices,
