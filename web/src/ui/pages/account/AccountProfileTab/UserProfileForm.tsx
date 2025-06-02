@@ -1,10 +1,11 @@
 import { useCore, useCoreState } from "core";
 import { Button } from "onyxia-ui/Button";
 import { FormFieldGroupComponent } from "ui/pages/launcher/RootFormComponent/FormFieldGroupComponent";
-//import { RootFormComponent } from "ui/pages/launcher/RootFormComponent/RootFormComponent";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
+import { tss } from "tss";
+import { getIconUrlByName } from "lazy-icons";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
@@ -13,31 +14,15 @@ export default function UserProfileForm() {
 
     const { t } = useTranslation({ UserProfileForm });
 
+    const { classes } = useStyles();
+
     return (
         <>
             <SettingSectionHeader
                 title={t("customizable profile")}
                 helperText={t("customizable profile helper")}
+                className={classes.header}
             />
-
-            {/*
-            <RootFormComponent
-                rootForm={rootForm}
-                callbacks={{
-                    onAdd: ({ helmValuesPath }) =>
-                        userProfileForm.addArrayItem({ valuesPath: helmValuesPath }),
-                    onChange: params => userProfileForm.changeFormFieldValue(params),
-                    onRemove: ({ helmValuesPath, index }) =>
-                        userProfileForm.removeArrayItem({
-                            valuesPath: helmValuesPath,
-                            index
-                        }),
-                    onFieldErrorChange: params => {
-                        console.log("error", params);
-                    }
-                }}
-            />
-            */}
             <FormFieldGroupComponent
                 helmValuesPath={[]}
                 nodes={rootForm.main}
@@ -55,29 +40,40 @@ export default function UserProfileForm() {
                     onFieldErrorChange: () => {}
                 }}
             />
-
-            <div>
+            <div className={classes.buttonWrapper}>
                 <Button
                     variant="primary"
                     onClick={() => userProfileForm.save()}
                     disabled={!isThereThingsToSave}
                 >
-                    Save
+                    {t("save")}
                 </Button>
                 <Button
                     variant="ternary"
                     onClick={() => userProfileForm.restore()}
                     disabled={!isThereThingsToSave}
+                    startIcon={getIconUrlByName("SettingsBackupRestore")}
                 >
-                    Restore
+                    {t("restore")}
                 </Button>
             </div>
         </>
     );
 }
 
+const useStyles = tss.withName({ UserProfileForm }).create(({ theme }) => ({
+    header: {
+        marginBottom: theme.spacing(6)
+    },
+    buttonWrapper: {
+        marginTop: theme.spacing(6),
+        display: "flex",
+        gap: theme.spacing(2)
+    }
+}));
+
 const { i18n } = declareComponentKeys<
-    "customizable profile" | "customizable profile helper"
+    "customizable profile" | "customizable profile helper" | "save" | "restore"
 >()({
     UserProfileForm
 });

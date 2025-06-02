@@ -32,7 +32,9 @@ export const translations: Translations<"fi"> = {
     UserProfileForm: {
         "customizable profile": "Mukautettava profiili",
         "customizable profile helper":
-            "Hyödyllistä tietoa palvelujen automaattista konfigurointia varten"
+            "Hyödyllistä tietoa palvelujen automaattista konfigurointia varten",
+        save: "Tallenna",
+        restore: "Palauta"
     },
     AccountGitTab: {
         gitName: "Käyttäjänimi Gitille",

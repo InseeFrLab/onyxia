@@ -1,7 +1,7 @@
 import type { JSONSchema } from "core/ports/OnyxiaApi";
 import { createUsecaseActions } from "clean-architecture";
 import type { Stringifyable } from "core/tools/Stringifyable";
-import structuredClone from "@ungap/structured-clone";
+import { structuredCloneButFunctions } from "core/tools/structuredCloneButFunctions";
 import {
     type FormFieldValue,
     type RootForm,
@@ -39,15 +39,15 @@ export const { reducer, actions } = createUsecaseActions({
             const { schema, values } = payload;
             return {
                 schema,
-                values_previous: structuredClone(values),
-                values: structuredClone(values)
+                values_previous: structuredCloneButFunctions(values),
+                values: structuredCloneButFunctions(values)
             };
         },
         saved: state => {
-            state.values_previous = structuredClone(state.values);
+            state.values_previous = structuredCloneButFunctions(state.values);
         },
         restored: state => {
-            state.values = structuredClone(state.values_previous);
+            state.values = structuredCloneButFunctions(state.values_previous);
         },
         formFieldValueChanged: (
             state,

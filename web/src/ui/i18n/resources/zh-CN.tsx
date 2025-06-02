@@ -29,7 +29,9 @@ export const translations: Translations<"zh-CN"> = {
     },
     UserProfileForm: {
         "customizable profile": "可定制的个人资料",
-        "customizable profile helper": "用于自动配置服务的有用信息"
+        "customizable profile helper": "用于自动配置服务的有用信息",
+        save: "保存",
+        restore: "恢复"
     },
     AccountGitTab: {
         gitName: "Git 用户名",

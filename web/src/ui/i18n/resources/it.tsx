@@ -31,7 +31,9 @@ export const translations: Translations<"it"> = {
     UserProfileForm: {
         "customizable profile": "Profilo personalizzabile",
         "customizable profile helper":
-            "Informazioni utili per la configurazione automatica dei tuoi servizi"
+            "Informazioni utili per la configurazione automatica dei tuoi servizi",
+        save: "Salva",
+        restore: "Ripristina"
     },
     AccountGitTab: {
         gitName: "Nome utente per Git",
@@ -361,8 +363,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

@@ -132,23 +132,29 @@ export function createOnyxiaApi(params: {
                     const schema: JSONSchema = {
                         type: "object",
                         properties: {
-                            firstName: {
-                                type: "string",
-                                title: "First name",
-                                default: "John",
-                                description: "Your first name"
-                            },
-                            familyName: {
-                                type: "string",
-                                title: "Family name",
-                                default: "Doe",
-                                description: "Your family name"
-                            },
-                            email: {
-                                type: "string",
-                                title: "Email",
-                                default: "john.doe@gmail.com",
-                                description: "Your email address"
+                            generalInfo: {
+                                type: "object",
+                                description: "General profile information",
+                                properties: {
+                                    firstName: {
+                                        type: "string",
+                                        title: "First name",
+                                        default: "John",
+                                        description: "Your first name"
+                                    },
+                                    familyName: {
+                                        type: "string",
+                                        title: "Family name",
+                                        default: "Doe",
+                                        description: "Your family name"
+                                    },
+                                    email: {
+                                        type: "string",
+                                        title: "Email",
+                                        default: "john.doe@gmail.com",
+                                        description: "Your email address"
+                                    }
+                                }
                             },
                             git: {
                                 type: "object",
@@ -161,10 +167,12 @@ export function createOnyxiaApi(params: {
                                         description:
                                             "Your username for git operations (e.g. git commit, git push)"
                                     },
-                                    emailx: {
+                                    email: {
                                         type: "string",
                                         title: "Git email",
-                                        default: "john.doe@gmail.com"
+                                        default: "john.doe@gmail.com",
+                                        description:
+                                            "Your username for git operations (e.g. git commit, git push)"
                                     }
                                 }
                             }

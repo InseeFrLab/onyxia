@@ -31,7 +31,9 @@ export const translations: Translations<"de"> = {
     UserProfileForm: {
         "customizable profile": "Anpassbares Profil",
         "customizable profile helper":
-            "Nützliche Informationen für die automatische Konfiguration Ihrer Dienste"
+            "Nützliche Informationen für die automatische Konfiguration Ihrer Dienste",
+        save: "Speichern",
+        restore: "Wiederherstellen"
     },
     AccountGitTab: {
         gitName: "Benutzername für Git",
