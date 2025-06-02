@@ -102,45 +102,37 @@ export async function createArrowTableApi() {
     }) => {
         const { vector, expectedType } = params;
 
-        switch (expectedType) {
-            case "boolean":
-                return Array.from(vector.toArray()).map(Boolean);
-            case "string":
-                return Array.from(vector.toArray()).map(String);
-            case "date":
-                return Array.from(vector.toArray()).map(value => {
-                    if (value === null) {
-                        return null;
-                    }
+        return Array.from({ length: vector.length }, (_, i) => {
+            const value = vector.get(i);
+
+            if (value === null) return null;
+
+            switch (expectedType) {
+                case "boolean":
+                    return Boolean(value);
+                case "string":
+                    return String(value);
+                case "date":
                     assert(typeof value === "number");
                     return new Date(value);
-                });
-            case "dateTime": {
-                return Array.from(vector.toArray()).map(value => {
-                    if (value === null) {
-                        return null;
-                    }
+                case "dateTime": {
                     assert(typeof value === "bigint");
-                    const milliseconds = value / 1_000_000n; //Timestamps are in nanoseconds
+                    const milliseconds = value / 1_000_000n; //Timestamps are in nanoseconds;
                     return new Date(Number(milliseconds));
-                });
-            }
-
-            case "number":
-                return Array.from(vector.toArray()).map(Number);
-            case "bigint":
-                //return Array.from(vector.toArray()).map(value => BigInt(value as bigint)); #waiting for https://github.com/microsoft/TypeScript/issues/46395
-                return Array.from(vector.toArray()).map(String);
-            case "binary":
-                return Array.from(vector.toArray()).map(value => {
+                }
+                case "number":
+                    return Number(value);
+                case "bigint":
+                    return String(value); //#waiting for https://github.com/microsoft/TypeScript/issues/46395
+                case "binary":
                     if (value instanceof Uint8Array) {
                         return Array.from(value)
                             .map(byte => byte.toString(16).padStart(2, "0"))
                             .join("");
                     }
                     return value;
-                });
-        }
+            }
+        });
     };
 
     return { arrowTableToRows, arrowTableToColumns };
