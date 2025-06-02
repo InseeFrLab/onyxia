@@ -7,7 +7,6 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { declareComponentKeys } from "i18nifty";
 import { assert } from "tsafe/assert";
 import { Button } from "onyxia-ui/Button";
-import Divider from "@mui/material/Divider";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 
 const UserProfileForm = lazy(() => import("./UserProfileForm"));
@@ -58,7 +57,6 @@ export const AccountProfileTab = memo((props: Props) => {
                     {t("account management")}
                 </Button>
             )}
-            <Divider sx={{ my: 5 }} />
             {userProfileForm.getIsEnabled() && (
                 <Suspense>
                     <UserProfileForm />

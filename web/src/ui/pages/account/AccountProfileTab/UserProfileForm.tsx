@@ -6,6 +6,7 @@ import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { getIconUrlByName } from "lazy-icons";
+import Divider from "@mui/material/Divider";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
@@ -18,6 +19,7 @@ export default function UserProfileForm() {
 
     return (
         <>
+            <Divider sx={{ my: 5 }} />
             <SettingSectionHeader
                 title={t("customizable profile")}
                 helperText={t("customizable profile helper")}
