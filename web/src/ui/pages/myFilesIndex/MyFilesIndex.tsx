@@ -35,14 +35,30 @@ function MyFilesIndex(props: Props) {
 
     //const { t } = useTranslation({ MyFilesIndex });
 
-    const { defaultWorkingLocation, bookmarkedLocations } = useCoreState(
-        "s3ConfigManagement",
-        "indexedS3Locations"
-    );
+    const indexedS3Locations = useCoreState("s3ConfigManagement", "indexedS3Locations");
 
     const { cx, classes } = useStyles();
 
     const { resolveLocalizedString } = useResolveLocalizedString();
+
+    if (indexedS3Locations.type === "user created s3 config") {
+        const { directoryPath, dataSource } = indexedS3Locations;
+
+        return (
+            <div>
+                <Text typo="body 1">Default location of your custom s3 config:</Text>
+                <Text typo="object heading">{dataSource}</Text>
+                <Button
+                    {...routes.myFiles({ path: directoryPath }).link}
+                    doOpenNewTabIfHref={false}
+                >
+                    Go
+                </Button>
+            </div>
+        );
+    }
+
+    const { locations } = indexedS3Locations;
 
     return (
         <div className={cx(classes.root, className)}>
@@ -62,22 +78,34 @@ function MyFilesIndex(props: Props) {
                 helpIcon={getIconUrlByName("SentimentSatisfied")}
             />
             <div>
-                <Text typo="object heading">{defaultWorkingLocation.dataSource}</Text>
+                <Text typo="object heading">Your location</Text>
+                <Text typo="object heading">{locations.personal.dataSource}</Text>
                 <Button
-                    {...routes.myFiles({ path: defaultWorkingLocation.directoryPath })
-                        .link}
+                    {...routes.myFiles({ path: locations.personal.directoryPath }).link}
                     doOpenNewTabIfHref={false}
                 >
                     Go
                 </Button>
             </div>
-            {bookmarkedLocations.map(({ title, description, directoryPath }, i) => (
+            {locations.adminBookmarks.map(({ title, description, directoryPath }, i) => (
                 <div key={i}>
                     <Text typo="object heading">{resolveLocalizedString(title)}</Text>
                     {description !== undefined && (
                         <Text typo="caption">{resolveLocalizedString(description)}</Text>
                     )}
                     <Text typo="caption">{directoryPath}</Text>
+                    <Button
+                        {...routes.myFiles({ path: directoryPath }).link}
+                        doOpenNewTabIfHref={false}
+                    >
+                        Go
+                    </Button>
+                </div>
+            ))}
+            {locations.projects.map(({ dataSource, directoryPath, projectName }, i) => (
+                <div key={i}>
+                    <Text typo="object heading">Storage space for {projectName}</Text>
+                    <Text typo="caption">DataSource {dataSource}</Text>
                     <Button
                         {...routes.myFiles({ path: directoryPath }).link}
                         doOpenNewTabIfHref={false}
