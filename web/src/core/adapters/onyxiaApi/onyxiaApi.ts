@@ -127,60 +127,8 @@ export function createOnyxiaApi(params: {
 
                     return schema;
                 } catch {
-                    console.log("WARNING: REMOVE! This is just for testing");
-
-                    const schema: JSONSchema = {
-                        type: "object",
-                        properties: {
-                            generalInfo: {
-                                type: "object",
-                                description: "General profile information",
-                                properties: {
-                                    firstName: {
-                                        type: "string",
-                                        title: "First name",
-                                        default: "",
-                                        description: "Your first name"
-                                    },
-                                    familyName: {
-                                        type: "string",
-                                        title: "Family name",
-                                        default: "",
-                                        description: "Your family name"
-                                    },
-                                    email: {
-                                        type: "string",
-                                        title: "Email",
-                                        default: "",
-                                        description: "Your email address"
-                                    }
-                                }
-                            },
-                            git: {
-                                type: "object",
-                                description: "Git configuration",
-                                properties: {
-                                    username: {
-                                        type: "string",
-                                        title: "Git username",
-                                        default: "",
-                                        description:
-                                            "Your username for git operations (e.g. git commit, git push)"
-                                    },
-                                    email: {
-                                        type: "string",
-                                        title: "Git email",
-                                        default: "",
-                                        description:
-                                            "Your username for git operations (e.g. git commit, git push)"
-                                    }
-                                }
-                            }
-                        },
-                        required: ["firstName", "familyName", "email"]
-                    };
-
-                    return schema;
+                    // TODO: Remove try/catch block once the API is released
+                    return undefined;
                 }
             },
             { promise: true }
