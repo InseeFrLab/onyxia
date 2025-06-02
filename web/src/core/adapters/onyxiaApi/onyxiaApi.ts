@@ -139,19 +139,19 @@ export function createOnyxiaApi(params: {
                                     firstName: {
                                         type: "string",
                                         title: "First name",
-                                        default: "John",
+                                        default: "",
                                         description: "Your first name"
                                     },
                                     familyName: {
                                         type: "string",
                                         title: "Family name",
-                                        default: "Doe",
+                                        default: "",
                                         description: "Your family name"
                                     },
                                     email: {
                                         type: "string",
                                         title: "Email",
-                                        default: "john.doe@gmail.com",
+                                        default: "",
                                         description: "Your email address"
                                     }
                                 }
@@ -163,14 +163,14 @@ export function createOnyxiaApi(params: {
                                     username: {
                                         type: "string",
                                         title: "Git username",
-                                        default: "john.doe",
+                                        default: "",
                                         description:
                                             "Your username for git operations (e.g. git commit, git push)"
                                     },
                                     email: {
                                         type: "string",
                                         title: "Git email",
-                                        default: "john.doe@gmail.com",
+                                        default: "",
                                         description:
                                             "Your username for git operations (e.g. git commit, git push)"
                                     }
