@@ -126,10 +126,9 @@ export const createDuckDbSqlOlap = (params: {
             const stmt = await conn.prepare(sqlQuery);
             const res = await stmt.query();
 
-            const { arrowTableToColumns, arrowTableToRows } = await prArrowTableApi;
+            const { arrowTableToJsData } = await prArrowTableApi;
 
-            const columns = arrowTableToColumns({ table: res });
-            const rows = arrowTableToRows({ table: res, columns });
+            const { columns, rows } = arrowTableToJsData({ table: res });
 
             await conn.close();
 

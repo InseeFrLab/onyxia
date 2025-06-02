@@ -77,7 +77,7 @@ export default function DataExplorer(props: Props) {
                                 typo="caption"
                                 className={classes.dataGridColumnHeaderType}
                             >
-                                {column.rowType}
+                                {column.displayType}
                             </Text>
                         </Text>
                     ),
@@ -86,6 +86,7 @@ export default function DataExplorer(props: Props) {
                         switch (column.type) {
                             case "bigint":
                             case "binary":
+                            case "time":
                                 return "string";
                             default:
                                 return column.type;
