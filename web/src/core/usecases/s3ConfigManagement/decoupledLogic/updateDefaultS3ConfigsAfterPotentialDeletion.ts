@@ -29,7 +29,8 @@ export function updateDefaultS3ConfigsAfterPotentialDeletion(params: {
         configTestResults: [],
         ongoingConfigTests: [],
         username: "johndoe",
-        projectGroup: undefined
+        projectGroup: undefined,
+        groupProjects: []
     });
 
     const actions: R = {

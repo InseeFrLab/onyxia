@@ -8,6 +8,7 @@ const state = (rootState: RootState) => rootState[name];
 const projectConfig = createSelector(state, state => state.currentProjectConfigs);
 
 export const protectedSelectors = {
+    projects: createSelector(state, state => state.projects),
     currentProject: createSelector(state, state => {
         const { projects, selectedProjectId } = state;
 
@@ -22,7 +23,7 @@ export const protectedSelectors = {
 
 export const selectors = {
     projectSelect: createSelector(
-        createSelector(state, state => state.projects),
+        protectedSelectors.projects,
         createSelector(state, state => state.selectedProjectId),
         (projects, selectedProjectId) => ({
             options: projects.map(({ id, name }) => ({ value: id, label: name })),

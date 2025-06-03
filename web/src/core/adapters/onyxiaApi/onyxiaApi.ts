@@ -259,7 +259,7 @@ export function createOnyxiaApi(params: {
                                             workingDirectory:
                                                 s3Config_api.workingDirectory,
                                             bookmarkedDirectory:
-                                                s3Config_api.bookmarkedDirectory
+                                                s3Config_api.bookmarkedDirectory ?? []
                                         }));
 
                                 return {

@@ -5,6 +5,8 @@ import * as userAuthentication from "core/usecases/userAuthentication";
 import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { getS3Configs, type S3Config } from "./decoupledLogic/getS3Configs";
 import { assert } from "tsafe/assert";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
+import { exclude } from "tsafe/exclude";
 
 const s3Configs = createSelector(
     createSelector(
@@ -25,13 +27,19 @@ const s3Configs = createSelector(
         projectManagement.protectedSelectors.currentProject,
         project => project.group
     ),
+    createSelector(projectManagement.protectedSelectors.projects, projects => {
+        return projects
+            .map(({ name, group }) => (group === undefined ? undefined : { name, group }))
+            .filter(exclude(undefined));
+    }),
     (
         projectConfigsS3,
         s3RegionConfigs,
         configTestResults,
         ongoingConfigTests,
         username,
-        projectGroup
+        projectGroup,
+        groupProjects
     ): S3Config[] =>
         getS3Configs({
             projectConfigsS3,
@@ -39,8 +47,62 @@ const s3Configs = createSelector(
             configTestResults,
             ongoingConfigTests,
             username,
-            projectGroup
+            projectGroup,
+            groupProjects
         })
 );
 
-export const selectors = { s3Configs };
+type IndexedS3Locations =
+    | IndexedS3Locations.AdminCreatedS3Config
+    | IndexedS3Locations.UserCreatedS3Config;
+
+namespace IndexedS3Locations {
+    export type AdminCreatedS3Config = {
+        type: "admin created s3 config";
+        locations: {
+            adminBookmarks: {
+                directoryPath: string;
+                title: LocalizedString;
+                description: LocalizedString | undefined;
+            }[];
+            projects: {
+                projectName: string;
+                dataSource: string;
+                directoryPath: string;
+            }[];
+            personal: {
+                username: string;
+                dataSource: string;
+                directoryPath: string;
+            };
+        };
+    };
+
+    export type UserCreatedS3Config = {
+        type: "user created s3 config";
+        directoryPath: string;
+        dataSource: string;
+    };
+}
+
+const indexedS3Locations = createSelector(s3Configs, (s3Configs): IndexedS3Locations => {
+    const s3Config = s3Configs.find(({ isExplorerConfig }) => isExplorerConfig);
+
+    assert(s3Config !== undefined);
+
+    switch (s3Config.origin) {
+        case "deploymentRegion":
+            return {
+                type: "admin created s3 config",
+                locations: s3Config.locations
+            };
+        case "project":
+            return {
+                type: "user created s3 config",
+                directoryPath: s3Config.workingDirectoryPath,
+                dataSource: s3Config.dataSource
+            };
+    }
+});
+
+export const selectors = { s3Configs, indexedS3Locations };

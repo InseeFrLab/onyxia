@@ -9,19 +9,21 @@ import { useCoreState, useCore } from "core";
 import { MyFilesDisabledDialog } from "../myFiles/MyFilesDisabledDialog";
 import type { Link } from "type-route";
 import { S3Entries } from "./S3Entries/S3Entries";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function FileExplorerMaybeDisabled(props: Props) {
+export const FileExplorerMaybeDisabled = withLoginEnforced((props: Props) => {
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
     if (!isFileExplorerEnabled) {
         return <MyFilesDisabledDialog />;
     }
     return <FileExplorer {...props} />;
-}
+});
+export default FileExplorerMaybeDisabled;
 
 function FileExplorer(props: Props) {
     const { className, route } = props;
@@ -29,6 +31,9 @@ function FileExplorer(props: Props) {
 
     const { t } = useTranslation({ FileExplorer });
 
+    const indexedS3Locations = useCoreState("s3ConfigManagement", "indexedS3Locations");
+
+    console.log(indexedS3Locations);
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader

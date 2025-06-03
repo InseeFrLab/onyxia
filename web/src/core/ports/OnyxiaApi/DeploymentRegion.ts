@@ -133,13 +133,11 @@ export namespace DeploymentRegion {
                   bucketNamePrefixGroup: string;
               };
 
-        bookmarkedDirectory:
-            | {
-                  bucketName: string;
-                  path: string | undefined;
-                  title: LocalizedString;
-                  description: LocalizedString | undefined;
-              }[]
-            | undefined;
+        bookmarkedDirectory: {
+            bucketName: string;
+            path: string | undefined;
+            title: LocalizedString;
+            description: LocalizedString | undefined;
+        }[];
     };
 }

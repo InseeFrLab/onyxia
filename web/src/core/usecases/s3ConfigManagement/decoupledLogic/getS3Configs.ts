@@ -9,6 +9,7 @@ import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe/assert";
 import { getProjectS3ConfigId } from "./projectS3ConfigId";
 import type * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 
@@ -25,6 +26,23 @@ export namespace S3Config {
     export type FromDeploymentRegion = Common & {
         origin: "deploymentRegion";
         paramsOfCreateS3Client: ParamsOfCreateS3Client;
+        locations: {
+            adminBookmarks: {
+                directoryPath: string;
+                title: LocalizedString;
+                description: LocalizedString | undefined;
+            }[];
+            projects: {
+                projectName: string;
+                dataSource: string;
+                directoryPath: string;
+            }[];
+            personal: {
+                username: string;
+                dataSource: string;
+                directoryPath: string;
+            };
+        };
     };
 
     export type FromProject = Common & {
@@ -47,6 +65,10 @@ export function getS3Configs(params: {
     ongoingConfigTests: s3ConfigConnectionTest.OngoingConfigTest[];
     username: string;
     projectGroup: string | undefined;
+    groupProjects: {
+        name: string;
+        group: string;
+    }[];
 }): S3Config[] {
     const {
         projectConfigsS3: {
@@ -58,7 +80,8 @@ export function getS3Configs(params: {
         configTestResults,
         ongoingConfigTests,
         username,
-        projectGroup
+        projectGroup,
+        groupProjects
     } = params;
 
     const getDataSource = (params: {
@@ -205,16 +228,52 @@ export function getS3Configs(params: {
                 })
             };
 
+            const adminBookmarks: S3Config.FromDeploymentRegion["locations"]["adminBookmarks"] =
+                c.bookmarkedDirectory.map(({ title, description, bucketName, path }) => ({
+                    title,
+                    description,
+                    directoryPath: `${bucketName}/${path ?? ""}`
+                }));
+
+            const dataSource = getDataSource({
+                url,
+                pathStyleAccess,
+                workingDirectoryPath
+            });
+
             return {
                 origin: "deploymentRegion",
                 id,
-                dataSource: getDataSource({
-                    url,
-                    pathStyleAccess,
-                    workingDirectoryPath
-                }),
+                dataSource,
                 region,
                 workingDirectoryPath,
+                locations: {
+                    adminBookmarks,
+                    personal: {
+                        username,
+                        dataSource,
+                        directoryPath: workingDirectoryPath
+                    },
+                    projects: groupProjects.map(({ name, group }) => {
+                        const directoryPath = getWorkingDirectoryPath({
+                            workingDirectory: c.workingDirectory,
+                            context: {
+                                type: "groupProject",
+                                projectGroup: group
+                            }
+                        });
+
+                        return {
+                            dataSource: getDataSource({
+                                url,
+                                pathStyleAccess,
+                                workingDirectoryPath: directoryPath
+                            }),
+                            directoryPath,
+                            projectName: name
+                        };
+                    })
+                },
                 paramsOfCreateS3Client,
                 isXOnyxiaDefault: false,
                 isExplorerConfig: false
