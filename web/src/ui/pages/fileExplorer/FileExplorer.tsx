@@ -2,10 +2,10 @@ import { tss } from "tss";
 import type { PageRoute } from "./route";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { getIconUrlByName, customIcons } from "lazy-icons";
-import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { declareComponentKeys, useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { env } from "env";
 import { routes } from "ui/routes";
-import { useCoreState, useCore } from "core";
+import { useCoreState } from "core";
 import { MyFilesDisabledDialog } from "../myFiles/MyFilesDisabledDialog";
 import type { Link } from "type-route";
 import { S3Entries } from "./S3Entries/S3Entries";
@@ -33,20 +33,62 @@ function FileExplorer(props: Props) {
 
     const indexedS3Locations = useCoreState("s3ConfigManagement", "indexedS3Locations");
 
-    console.log(indexedS3Locations);
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        labelWhenMismatchingLanguage: false
+    });
+
+    if (indexedS3Locations.type === "user created s3 config") {
+        return <>My Files</>;
+    }
+
+    if (indexedS3Locations.locations.length < 2) {
+        return <>My Files</>;
+    }
+
+    const entries = indexedS3Locations.locations.map(location => ({
+        type: location.type,
+        directoryPath: location.directoryPath,
+        ...(() => {
+            switch (location.type) {
+                case "admin bookmark":
+                    return {
+                        title: resolveLocalizedString(location.title),
+                        description:
+                            location.description !== undefined
+                                ? resolveLocalizedString(location.description)
+                                : undefined
+                    };
+                case "personal":
+                    return {
+                        title: t(`title ${location.type}`),
+                        description: t(`description ${location.type}`)
+                    };
+                case "project":
+                    return {
+                        title: t(`title ${location.type}`, {
+                            projectName: location.projectName
+                        }),
+                        description: t(`description ${location.type}`, {
+                            projectName: location.projectName
+                        })
+                    };
+            }
+        })()
+    }));
+
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
                 mainIcon={customIcons.filesSvgUrl}
-                title={t("page title - my files")}
-                helpTitle={t("what this page is used for - my files")}
+                title={t("page title - file explorer")}
+                helpTitle={t("what this page is used for - file explorer")}
                 helpContent={t("help content", {
                     docHref: env.S3_DOCUMENTATION_LINK,
                     accountTabLink: routes.account({ tabId: "storage" }).link
                 })}
                 helpIcon={getIconUrlByName("SentimentSatisfied")}
             />
-            <S3Entries />
+            <S3Entries entries={entries} />
         </div>
     );
 }
@@ -60,8 +102,8 @@ const useStyles = tss.withName({ FileExplorer }).create({
 });
 
 const { i18n } = declareComponentKeys<
-    | "page title - my files"
-    | "what this page is used for - my files"
+    | "page title - file explorer"
+    | "what this page is used for - file explorer"
     | {
           K: "help content";
           P: {
@@ -70,5 +112,9 @@ const { i18n } = declareComponentKeys<
           };
           R: JSX.Element;
       }
+    | "title personal"
+    | "description personal"
+    | { K: "title project"; P: { projectName: string }; R: string }
+    | { K: "description project"; P: { projectName: string }; R: string }
 >()({ FileExplorer });
 export type I18n = typeof i18n;

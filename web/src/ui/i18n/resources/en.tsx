@@ -288,8 +288,9 @@ export const translations: Translations<"en"> = {
             "Reset message windows that have been requested not to be shown again"
     },
     FileExplorer: {
-        "page title - my files": "File Explorer",
-        "what this page is used for - my files": "Here you can browse your S3 Buckets.",
+        "page title - file explorer": "File Explorer",
+        "what this page is used for - file explorer":
+            "Here you can browse your S3 Buckets.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Read{" "}
@@ -309,7 +310,7 @@ export const translations: Translations<"en"> = {
             switch (type) {
                 case "personal":
                     return "My data";
-                case "group":
+                case "project":
                     return "Group data";
                 case "admin":
                     return "Administrator";
@@ -317,8 +318,9 @@ export const translations: Translations<"en"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "My Files",
-        "what this page is used for - my files": "Here you can browse your S3 Buckets.",
+        "page title - file explorer": "My Files",
+        "what this page is used for - file explorer":
+            "Here you can browse your S3 Buckets.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Read{" "}

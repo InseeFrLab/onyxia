@@ -299,8 +299,8 @@ export const translations: Translations<"en"> = {
             "Restablecer ventanas de mensajes que se han solicitado no mostrar nuevamente"
     },
     FileExplorer: {
-        "page title - my files": "Explorador de archivos",
-        "what this page is used for - my files":
+        "page title - file explorer": "Explorador de archivos",
+        "what this page is used for - file explorer":
             "Aquí puedes explorar tus Buckets de S3.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
@@ -321,7 +321,7 @@ export const translations: Translations<"en"> = {
             switch (type) {
                 case "personal":
                     return "Mis datos";
-                case "group":
+                case "project":
                     return "Datos del grupo";
                 case "admin":
                     return "Administrador";
@@ -329,8 +329,8 @@ export const translations: Translations<"en"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "Mis Archivos",
-        "what this page is used for - my files":
+        "page title - file explorer": "Mis Archivos",
+        "what this page is used for - file explorer":
             "Aquí puedes explorar tus Buckets de S3.",
         "help content": ({ accountTabLink, docHref }) => (
             <>

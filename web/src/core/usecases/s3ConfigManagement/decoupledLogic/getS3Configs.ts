@@ -23,26 +23,30 @@ export namespace S3Config {
         isExplorerConfig: boolean;
     };
 
+    export namespace FromDeploymentRegion {
+        type Common = { directoryPath: string };
+
+        export type PersonalLocation = Common & {
+            type: "personal";
+        };
+
+        export type ProjectLocation = Common & {
+            type: "project";
+            projectName: string;
+        };
+        export type AdminBookmarkLocation = Common & {
+            type: "admin bookmark";
+            title: LocalizedString;
+            description?: LocalizedString;
+        };
+
+        export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;
+    }
+
     export type FromDeploymentRegion = Common & {
         origin: "deploymentRegion";
         paramsOfCreateS3Client: ParamsOfCreateS3Client;
-        locations: {
-            adminBookmarks: {
-                directoryPath: string;
-                title: LocalizedString;
-                description: LocalizedString | undefined;
-            }[];
-            projects: {
-                projectName: string;
-                dataSource: string;
-                directoryPath: string;
-            }[];
-            personal: {
-                username: string;
-                dataSource: string;
-                directoryPath: string;
-            };
-        };
+        locations: FromDeploymentRegion.Location[];
     };
 
     export type FromProject = Common & {
@@ -228,12 +232,27 @@ export function getS3Configs(params: {
                 })
             };
 
-            const adminBookmarks: S3Config.FromDeploymentRegion["locations"]["adminBookmarks"] =
-                c.bookmarkedDirectory.map(({ title, description, bucketName, path }) => ({
+            const adminBookmarks: S3Config.FromDeploymentRegion.AdminBookmarkLocation[] =
+                c.bookmarkedDirectory.map(({ title, description, bucket, path }) => ({
                     title,
                     description,
-                    directoryPath: `${bucketName}/${path ?? ""}`
+                    type: "admin bookmark",
+                    directoryPath: `${bucket}/${path ?? ""}`
                 }));
+
+            console.log(c.bookmarkedDirectory);
+
+            const projectsLocations: S3Config.FromDeploymentRegion.ProjectLocation[] =
+                groupProjects.map(({ group }) => {
+                    const directoryPath = getWorkingDirectoryPath({
+                        workingDirectory: c.workingDirectory,
+                        context: {
+                            type: "groupProject",
+                            projectGroup: group
+                        }
+                    });
+                    return { type: "project", directoryPath, projectName: group };
+                });
 
             const dataSource = getDataSource({
                 url,
@@ -247,33 +266,11 @@ export function getS3Configs(params: {
                 dataSource,
                 region,
                 workingDirectoryPath,
-                locations: {
-                    adminBookmarks,
-                    personal: {
-                        username,
-                        dataSource,
-                        directoryPath: workingDirectoryPath
-                    },
-                    projects: groupProjects.map(({ name, group }) => {
-                        const directoryPath = getWorkingDirectoryPath({
-                            workingDirectory: c.workingDirectory,
-                            context: {
-                                type: "groupProject",
-                                projectGroup: group
-                            }
-                        });
-
-                        return {
-                            dataSource: getDataSource({
-                                url,
-                                pathStyleAccess,
-                                workingDirectoryPath: directoryPath
-                            }),
-                            directoryPath,
-                            projectName: name
-                        };
-                    })
-                },
+                locations: [
+                    { type: "personal", directoryPath: workingDirectoryPath },
+                    ...projectsLocations,
+                    ...adminBookmarks
+                ],
                 paramsOfCreateS3Client,
                 isXOnyxiaDefault: false,
                 isExplorerConfig: false

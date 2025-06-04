@@ -302,8 +302,9 @@ export const translations: Translations<"fr"> = {
             "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
     },
     FileExplorer: {
-        "page title - my files": "Explorateur de fichiers",
-        "what this page is used for - my files": "Stocker ici vos fichiers de données.",
+        "page title - file explorer": "Explorateur de fichiers",
+        "what this page is used for - file explorer":
+            "Stocker ici vos fichiers de données.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lire{" "}
@@ -315,7 +316,12 @@ export const translations: Translations<"fr"> = {
                     Configurer les clients MinIO
                 </MuiLink>.
             </>
-        )
+        ),
+        "title personal": "Mes données",
+        "description personal": "Vos propres fichiers et jeux de données.",
+        "title project": ({ projectName }) => `Projet ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Espace de stockage partagées pour le projet ${projectName}`
     },
     S3EntryCard: {
         "space path": "Chemin de l'espace",
@@ -323,16 +329,17 @@ export const translations: Translations<"fr"> = {
             switch (type) {
                 case "personal":
                     return "Mes données";
-                case "group":
+                case "project":
                     return "Données de groupe";
-                case "admin":
+                case "admin bookmark":
                     return "Administrateur";
             }
         }
     },
     MyFiles: {
-        "page title - my files": "Mes fichiers",
-        "what this page is used for - my files": "Stocker ici vos fichiers de données.",
+        "page title - file explorer": "Mes fichiers",
+        "what this page is used for - file explorer":
+            "Stocker ici vos fichiers de données.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lire{" "}

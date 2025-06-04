@@ -299,8 +299,8 @@ export const translations: Translations<"nl"> = {
             "De berichtvensters waarvan u heeft gevraagd ze niet meer weer te geven, opnieuw initialiseren"
     },
     FileExplorer: {
-        "page title - my files": "Bestandsverkenner",
-        "what this page is used for - my files": "Sla hier uw gegevensbestanden op.",
+        "page title - file explorer": "Bestandsverkenner",
+        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lezen{" "}
@@ -318,7 +318,7 @@ export const translations: Translations<"nl"> = {
             switch (type) {
                 case "personal":
                     return "Mijn gegevens";
-                case "group":
+                case "project":
                     return "Groepsgegevens";
                 case "admin":
                     return "Beheerder";
@@ -326,8 +326,8 @@ export const translations: Translations<"nl"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "Mijn bestanden",
-        "what this page is used for - my files": "Sla hier uw gegevensbestanden op.",
+        "page title - file explorer": "Mijn bestanden",
+        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lezen{" "}

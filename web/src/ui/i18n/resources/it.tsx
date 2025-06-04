@@ -297,8 +297,8 @@ export const translations: Translations<"it"> = {
             "Ripristinare le finestre di messaggi che hai richiesto di non mostrare più"
     },
     FileExplorer: {
-        "page title - my files": "Esplora file",
-        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
+        "page title - file explorer": "Esplora file",
+        "what this page is used for - file explorer": "Archivia qui i tuoi file di dati.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Leggere{" "}
@@ -318,7 +318,7 @@ export const translations: Translations<"it"> = {
             switch (type) {
                 case "personal":
                     return "I miei dati";
-                case "group":
+                case "project":
                     return "Dati del gruppo";
                 case "admin":
                     return "Amministratore";
@@ -326,8 +326,8 @@ export const translations: Translations<"it"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "I miei file",
-        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
+        "page title - file explorer": "I miei file",
+        "what this page is used for - file explorer": "Archivia qui i tuoi file di dati.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Leggere{" "}
@@ -383,8 +383,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

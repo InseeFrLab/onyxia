@@ -10,11 +10,11 @@ import { getIconUrlByName } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
-type DataSourceType = "personal" | "group" | "admin";
+type DataSourceType = "personal" | "project" | "admin bookmark";
 
 type Props = {
     title: string;
-    description: string;
+    description: string | undefined;
     path: string;
     type: DataSourceType;
     onCardClick: () => void;
@@ -35,7 +35,7 @@ export function S3EntryCard(props: Props) {
                             <Text typo="object heading" componentProps={{ lang: "und" }}>
                                 {title}
                             </Text>
-                            <Text typo="body 2">{description}</Text>
+                            {description && <Text typo="body 2">{description}</Text>}
                             <Text typo="body 2" className={classes.path}>
                                 {`${t("space path")} : ${path}`}
                             </Text>
@@ -58,8 +58,8 @@ const useStyles = tss
     .create(({ theme, type }) => {
         const typeColors = {
             personal: theme.colors.useCases.alertSeverity.success.main,
-            group: theme.colors.useCases.alertSeverity.info.main,
-            admin: theme.colors.useCases.alertSeverity.warning.main
+            project: theme.colors.useCases.alertSeverity.info.main,
+            "admin bookmark": theme.colors.useCases.alertSeverity.warning.main
         };
 
         return {

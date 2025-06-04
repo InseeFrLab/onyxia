@@ -295,8 +295,8 @@ export const translations: Translations<"no"> = {
             "Tilbakestill meldingsvinduer som er bedt om å ikke vises igjen"
     },
     FileExplorer: {
-        "page title - my files": "Filutforsker",
-        "what this page is used for - my files": "Her kan du bla gjennom S3-bøtter.",
+        "page title - file explorer": "Filutforsker",
+        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Les{" "}
@@ -314,7 +314,7 @@ export const translations: Translations<"no"> = {
             switch (type) {
                 case "personal":
                     return "Mine data";
-                case "group":
+                case "project":
                     return "Gruppedata";
                 case "admin":
                     return "Administrator";
@@ -322,8 +322,8 @@ export const translations: Translations<"no"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "Mine filer",
-        "what this page is used for - my files": "Her kan du bla gjennom S3-bøtter.",
+        "page title - file explorer": "Mine filer",
+        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Les{" "}

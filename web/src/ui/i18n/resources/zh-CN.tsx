@@ -266,8 +266,8 @@ export const translations: Translations<"zh-CN"> = {
         "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
     },
     FileExplorer: {
-        "page title - my files": "文件资源管理器",
-        "what this page is used for - my files": "在此处存储您的数据.",
+        "page title - file explorer": "文件资源管理器",
+        "what this page is used for - file explorer": "在此处存储您的数据.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 阅读{" "}
@@ -285,7 +285,7 @@ export const translations: Translations<"zh-CN"> = {
             switch (type) {
                 case "personal":
                     return "我的数据";
-                case "group":
+                case "project":
                     return "群组数据";
                 case "admin":
                     return "管理员";
@@ -293,8 +293,8 @@ export const translations: Translations<"zh-CN"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "我的文件",
-        "what this page is used for - my files": "在此处存储您的数据.",
+        "page title - file explorer": "我的文件",
+        "what this page is used for - file explorer": "在此处存储您的数据.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 阅读{" "}

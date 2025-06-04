@@ -299,8 +299,8 @@ export const translations: Translations<"de"> = {
             "Die Hilfsdialoge zurücksetzen, die Sie aufgefordert haben, nicht mehr anzuzeigen"
     },
     FileExplorer: {
-        "page title - my files": "Datei-Explorer",
-        "what this page is used for - my files": "Speichern Sie hier Ihre Dateien.",
+        "page title - file explorer": "Datei-Explorer",
+        "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lesen Sie
@@ -318,7 +318,7 @@ export const translations: Translations<"de"> = {
             switch (type) {
                 case "personal":
                     return "Meine Daten";
-                case "group":
+                case "project":
                     return "Gruppendaten";
                 case "admin":
                     return "Administrator";
@@ -326,8 +326,8 @@ export const translations: Translations<"de"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "Meine Dateien",
-        "what this page is used for - my files": "Speichern Sie hier Ihre Dateien.",
+        "page title - file explorer": "Meine Dateien",
+        "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lesen Sie

@@ -1,12 +1,12 @@
 import { createSelector } from "clean-architecture";
-import * as projectManagement from "core/usecases/projectManagement";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
-import * as userAuthentication from "core/usecases/userAuthentication";
-import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
-import { getS3Configs, type S3Config } from "./decoupledLogic/getS3Configs";
-import { assert } from "tsafe/assert";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
+import * as projectManagement from "core/usecases/projectManagement";
+import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import * as userAuthentication from "core/usecases/userAuthentication";
+import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
+import { getS3Configs, type S3Config } from "./decoupledLogic/getS3Configs";
 
 const s3Configs = createSelector(
     createSelector(
@@ -57,25 +57,29 @@ type IndexedS3Locations =
     | IndexedS3Locations.UserCreatedS3Config;
 
 namespace IndexedS3Locations {
+    export namespace AdminCreatedS3Config {
+        type Common = { directoryPath: string };
+
+        export type PersonalLocation = Common & {
+            type: "personal";
+        };
+
+        export type ProjectLocation = Common & {
+            type: "project";
+            projectName: string;
+        };
+        export type AdminBookmarkLocation = Common & {
+            type: "admin bookmark";
+            title: LocalizedString;
+            description?: LocalizedString;
+        };
+
+        export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;
+    }
+
     export type AdminCreatedS3Config = {
         type: "admin created s3 config";
-        locations: {
-            adminBookmarks: {
-                directoryPath: string;
-                title: LocalizedString;
-                description: LocalizedString | undefined;
-            }[];
-            projects: {
-                projectName: string;
-                dataSource: string;
-                directoryPath: string;
-            }[];
-            personal: {
-                username: string;
-                dataSource: string;
-                directoryPath: string;
-            };
-        };
+        locations: AdminCreatedS3Config.Location[];
     };
 
     export type UserCreatedS3Config = {

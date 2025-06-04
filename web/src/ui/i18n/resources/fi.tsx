@@ -295,8 +295,8 @@ export const translations: Translations<"fi"> = {
             "Nollaa ohjeviestit, joista on pyydetty, ettei niitä näytetä uudelleen"
     },
     FileExplorer: {
-        "page title - my files": "Tiedostoselain",
-        "what this page is used for - my files":
+        "page title - file explorer": "Tiedostoselain",
+        "what this page is used for - file explorer":
             "Täällä voit selata S3 Bucket -tiedostojasi.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
@@ -315,7 +315,7 @@ export const translations: Translations<"fi"> = {
             switch (type) {
                 case "personal":
                     return "Omat tiedot";
-                case "group":
+                case "project":
                     return "Ryhmän tiedot";
                 case "admin":
                     return "Ylläpitäjä";
@@ -323,8 +323,8 @@ export const translations: Translations<"fi"> = {
         }
     },
     MyFiles: {
-        "page title - my files": "Omat tiedostot",
-        "what this page is used for - my files":
+        "page title - file explorer": "Omat tiedostot",
+        "what this page is used for - file explorer":
             "Täällä voit selata S3 Bucket -tiedostojasi.",
         "help content": ({ accountTabLink, docHref }) => (
             <>

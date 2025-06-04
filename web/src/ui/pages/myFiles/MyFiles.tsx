@@ -203,8 +203,8 @@ function MyFiles(props: Props) {
         <div className={cx(classes.root, className)}>
             <PageHeader
                 mainIcon={customIcons.filesSvgUrl}
-                title={t("page title - my files")}
-                helpTitle={t("what this page is used for - my files")}
+                title={t("page title - file explorer")}
+                helpTitle={t("what this page is used for - file explorer")}
                 helpContent={t("help content", {
                     docHref: env.S3_DOCUMENTATION_LINK,
                     accountTabLink: routes.account({ tabId: "storage" }).link
@@ -253,8 +253,8 @@ function MyFiles(props: Props) {
 }
 
 const { i18n } = declareComponentKeys<
-    | "page title - my files"
-    | "what this page is used for - my files"
+    | "page title - file explorer"
+    | "what this page is used for - file explorer"
     | {
           K: "help content";
           P: {

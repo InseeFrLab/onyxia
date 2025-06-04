@@ -1,37 +1,31 @@
 import Grid from "@mui/material/Grid2";
 import { S3EntryCard } from "./S3EntryCard";
 
-export function S3Entries() {
+type S3Entry = {
+    type: "personal" | "project" | "admin bookmark";
+    directoryPath: string;
+    title: string;
+    description: string | undefined;
+};
+
+type Props = {
+    entries: S3Entry[];
+};
+
+export function S3Entries(props: Props) {
+    const { entries } = props;
+
     return (
         <Grid container spacing={2}>
-            {[
-                {
-                    id: "1",
-                    title: "Mes données",
-                    description: "Vos propres fichiers et jeux de données.",
-                    path: "user",
-                    type: "personal" as const
-                },
-                {
-                    id: "2",
-                    title: "Projet X",
-                    description: "Sources de données partagées pour l'équipe X.",
-                    path: "projet-x",
-                    type: "group" as const
-                },
-                {
-                    id: "3",
-                    title: "Catalogue Insee",
-                    description: "Sources publiques ajoutées par l'administration.",
-                    path: "donnees-insee/diffusion",
-                    type: "admin" as const
-                }
-            ].map(datasource => (
-                <Grid size={{ xs: 12, sm: 6 }} key={datasource.id}>
+            {entries.map(entry => (
+                <Grid size={{ xs: 12, sm: 6 }} key={entry.title}>
                     <S3EntryCard
-                        {...datasource}
+                        title={entry.title}
+                        description={entry.description}
+                        path={entry.directoryPath}
+                        type={entry.type}
                         onCardClick={
-                            () => console.log(`Navigating to ${datasource.path}`)
+                            () => console.log(`Navigating to ${entry.directoryPath}`)
                             //routes[route.name]({ path: "ddecrulle/" }).push()
                         }
                     />
