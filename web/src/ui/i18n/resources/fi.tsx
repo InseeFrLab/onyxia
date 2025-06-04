@@ -307,17 +307,22 @@ export const translations: Translations<"fi"> = {
                 . &nbsp;
                 <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
             </>
-        )
+        ),
+        "title personal": "Omat tietoni",
+        "description personal": "Omat tiedostosi ja tietoaineistosi.",
+        "title project": ({ projectName }) => `Projekti ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Projektin ${projectName} yhteinen tallennustila`
     },
     S3EntryCard: {
         "space path": "Tilapolku",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Omat tiedot";
                 case "project":
                     return "Ryhmän tiedot";
-                case "admin":
+                case "admin bookmark":
                     return "Ylläpitäjä";
             }
         }

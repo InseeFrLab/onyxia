@@ -306,17 +306,22 @@ export const translations: Translations<"no"> = {
                 . &nbsp;
                 <MuiLink {...accountTabLink}>Konfigurer minio-klientene</MuiLink>.
             </>
-        )
+        ),
+        "title personal": "Mine data",
+        "description personal": "Dine egne filer og datasett.",
+        "title project": ({ projectName }) => `Prosjekt ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Felles lagringsområde for prosjektet ${projectName}`
     },
     S3EntryCard: {
         "space path": "Områdesti",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Mine data";
                 case "project":
                     return "Gruppedata";
-                case "admin":
+                case "admin bookmark":
                     return "Administrator";
             }
         }

@@ -233,14 +233,12 @@ export function getS3Configs(params: {
             };
 
             const adminBookmarks: S3Config.FromDeploymentRegion.AdminBookmarkLocation[] =
-                c.bookmarkedDirectory.map(({ title, description, bucket, path }) => ({
+                c.bookmarkedDirectory.map(({ title, description, bucketName, path }) => ({
                     title,
                     description,
                     type: "admin bookmark",
-                    directoryPath: `${bucket}/${path ?? ""}`
+                    directoryPath: `${bucketName}/${path ?? ""}`
                 }));
-
-            console.log(c.bookmarkedDirectory);
 
             const projectsLocations: S3Config.FromDeploymentRegion.ProjectLocation[] =
                 groupProjects.map(({ group }) => {

@@ -310,17 +310,22 @@ export const translations: Translations<"de"> = {
                 . &nbsp;
                 <MuiLink {...accountTabLink}>MinIO-Clients konfigurieren</MuiLink>.
             </>
-        )
+        ),
+        "title personal": "Meine Daten",
+        "description personal": "Ihre eigenen Dateien und Datensätze.",
+        "title project": ({ projectName }) => `Projekt ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Gemeinsamer Speicherplatz für das Projekt ${projectName}`
     },
     S3EntryCard: {
         "space path": "Pfad des Bereichs",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Meine Daten";
                 case "project":
                     return "Gruppendaten";
-                case "admin":
+                case "admin bookmark":
                     return "Administrator";
             }
         }

@@ -321,7 +321,7 @@ export const translations: Translations<"fr"> = {
         "description personal": "Vos propres fichiers et jeux de données.",
         "title project": ({ projectName }) => `Projet ${projectName}`,
         "description project": ({ projectName }) =>
-            `Espace de stockage partagées pour le projet ${projectName}`
+            `Espace de stockage partagé pour le projet ${projectName}`
     },
     S3EntryCard: {
         "space path": "Chemin de l'espace",

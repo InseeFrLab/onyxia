@@ -1,5 +1,4 @@
 import { tss } from "tss";
-import type { PageRoute } from "./route";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { declareComponentKeys, useTranslation, useResolveLocalizedString } from "ui/i18n";
@@ -12,7 +11,6 @@ import { S3Entries } from "./S3Entries/S3Entries";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 type Props = {
-    route: PageRoute;
     className?: string;
 };
 
@@ -26,7 +24,7 @@ export const FileExplorerMaybeDisabled = withLoginEnforced((props: Props) => {
 export default FileExplorerMaybeDisabled;
 
 function FileExplorer(props: Props) {
-    const { className, route } = props;
+    const { className } = props;
     const { classes, cx } = useStyles();
 
     const { t } = useTranslation({ FileExplorer });
@@ -38,11 +36,15 @@ function FileExplorer(props: Props) {
     });
 
     if (indexedS3Locations.type === "user created s3 config") {
-        return <>My Files</>;
+        routes["myFiles"]({ path: indexedS3Locations.directoryPath }).replace();
+        return;
     }
 
     if (indexedS3Locations.locations.length < 2) {
-        return <>My Files</>;
+        routes["myFiles"]({
+            path: indexedS3Locations.locations[0].directoryPath
+        }).replace();
+        return;
     }
 
     const entries = indexedS3Locations.locations.map(location => ({

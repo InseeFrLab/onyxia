@@ -277,17 +277,21 @@ export const translations: Translations<"zh-CN"> = {
                 。&nbsp;
                 <MuiLink {...accountTabLink}>配置 Minio 客户端</MuiLink>。
             </>
-        )
+        ),
+        "title personal": "我的数据",
+        "description personal": "您自己的文件和数据集。",
+        "title project": ({ projectName }) => `项目 ${projectName}`,
+        "description project": ({ projectName }) => `项目 ${projectName} 的共享存储空间`
     },
     S3EntryCard: {
         "space path": "空间路径",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "我的数据";
                 case "project":
                     return "群组数据";
-                case "admin":
+                case "admin bookmark":
                     return "管理员";
             }
         }

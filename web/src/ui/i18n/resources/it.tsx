@@ -310,17 +310,22 @@ export const translations: Translations<"it"> = {
                     Configurare i client MinIO
                 </MuiLink>.
             </>
-        )
+        ),
+        "title personal": "I miei dati",
+        "description personal": "I tuoi file e dataset personali.",
+        "title project": ({ projectName }) => `Progetto ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Spazio di archiviazione condiviso per il progetto ${projectName}`
     },
     S3EntryCard: {
         "space path": "Percorso dello spazio",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "I miei dati";
                 case "project":
                     return "Dati del gruppo";
-                case "admin":
+                case "admin bookmark":
                     return "Amministratore";
             }
         }
@@ -383,9 +388,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

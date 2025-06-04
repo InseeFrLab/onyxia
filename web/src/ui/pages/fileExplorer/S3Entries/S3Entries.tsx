@@ -1,5 +1,6 @@
 import Grid from "@mui/material/Grid2";
 import { S3EntryCard } from "./S3EntryCard";
+import { routes } from "ui/routes";
 
 type S3Entry = {
     type: "personal" | "project" | "admin bookmark";
@@ -24,9 +25,8 @@ export function S3Entries(props: Props) {
                         description={entry.description}
                         path={entry.directoryPath}
                         type={entry.type}
-                        onCardClick={
-                            () => console.log(`Navigating to ${entry.directoryPath}`)
-                            //routes[route.name]({ path: "ddecrulle/" }).push()
+                        onCardClick={() =>
+                            routes.myFiles({ path: entry.directoryPath }).push()
                         }
                     />
                 </Grid>

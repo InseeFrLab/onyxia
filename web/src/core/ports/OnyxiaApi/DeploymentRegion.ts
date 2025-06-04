@@ -134,7 +134,7 @@ export namespace DeploymentRegion {
               };
 
         bookmarkedDirectory: {
-            bucket: string;
+            bucketName: string;
             path: string | undefined;
             title: LocalizedString;
             description: LocalizedString | undefined;

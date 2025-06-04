@@ -313,17 +313,22 @@ export const translations: Translations<"en"> = {
                     Configura los clientes de minio
                 </MuiLink>.
             </>
-        )
+        ),
+        "title personal": "Mis datos",
+        "description personal": "Tus propios archivos y conjuntos de datos.",
+        "title project": ({ projectName }) => `Proyecto ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Espacio de almacenamiento compartido para el proyecto ${projectName}`
     },
     S3EntryCard: {
         "space path": "Ruta del espacio",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Mis datos";
                 case "project":
                     return "Datos del grupo";
-                case "admin":
+                case "admin bookmark":
                     return "Administrador";
             }
         }

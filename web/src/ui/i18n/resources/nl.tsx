@@ -310,17 +310,22 @@ export const translations: Translations<"nl"> = {
                 . &nbsp;
                 <MuiLink {...accountTabLink}>Minio-clients instellen</MuiLink>.
             </>
-        )
+        ),
+        "title personal": "Mijn gegevens",
+        "description personal": "Je eigen bestanden en datasets.",
+        "title project": ({ projectName }) => `Project ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Gedeelde opslagruimte voor project ${projectName}`
     },
     S3EntryCard: {
         "space path": "Ruimtepad",
-        "chip title": ({ type }: { type: "personal" | "group" | "admin" }) => {
+        "chip title": ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Mijn gegevens";
                 case "project":
                     return "Groepsgegevens";
-                case "admin":
+                case "admin bookmark":
                     return "Beheerder";
             }
         }
