@@ -213,6 +213,15 @@ export function getS3Configs(params: {
                 workingDirectory: c.workingDirectory,
                 context: workingDirectoryContext
             });
+
+            const personalWorkingDirectoryPath = getWorkingDirectoryPath({
+                workingDirectory: c.workingDirectory,
+                context: {
+                    type: "personalProject" as const,
+                    username
+                }
+            });
+
             const url = c.url;
             const pathStyleAccess = c.pathStyleAccess;
             const region = c.region;
@@ -265,7 +274,7 @@ export function getS3Configs(params: {
                 region,
                 workingDirectoryPath,
                 locations: [
-                    { type: "personal", directoryPath: workingDirectoryPath },
+                    { type: "personal", directoryPath: personalWorkingDirectoryPath },
                     ...projectsLocations,
                     ...adminBookmarks
                 ],
