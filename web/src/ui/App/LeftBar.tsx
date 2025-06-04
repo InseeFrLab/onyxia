@@ -91,13 +91,13 @@ export const LeftBar = memo((props: Props) => {
                         ? "available"
                         : "not visible"
                 },
-                {
-                    itemId: "myFiles",
-                    icon: customIcons.filesSvgUrl,
-                    label: t("myFiles"),
-                    link: routes.myFiles().link,
-                    availability: isFileExplorerEnabled ? "available" : "not visible"
-                },
+                // {
+                //     itemId: "myFiles",
+                //     icon: customIcons.filesSvgUrl,
+                //     label: t("myFiles"),
+                //     link: routes.myFiles().link,
+                //     availability: isFileExplorerEnabled ? "available" : "not visible"
+                // },
                 {
                     itemId: "fileExplorer",
                     icon: customIcons.filesSvgUrl,
@@ -150,7 +150,6 @@ export const LeftBar = memo((props: Props) => {
                     case "projectSettings":
                         return "projectSettings";
                     case "catalog":
-                        return "catalog";
                     case "launcher":
                         return "catalog";
                     case "myServices":
@@ -159,9 +158,8 @@ export const LeftBar = memo((props: Props) => {
                     case "mySecrets":
                         return "mySecrets";
                     case "fileExplorer":
-                        return "fileExplorer";
                     case "myFiles":
-                        return "myFiles";
+                        return "fileExplorer";
                     case "sqlOlapShell":
                         return "sqlOlapShell";
                     case "dataExplorer":
