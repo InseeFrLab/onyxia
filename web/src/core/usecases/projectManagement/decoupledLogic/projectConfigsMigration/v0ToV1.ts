@@ -266,7 +266,8 @@ export async function v0ToV1(params: {
                             configTestResults: [],
                             ongoingConfigTests: [],
                             username: "johndoe",
-                            projectGroup: undefined
+                            projectGroup: undefined,
+                            groupProjects: []
                         });
 
                         for (const [propertyName_legacy, propertyName] of [

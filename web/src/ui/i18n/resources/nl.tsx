@@ -298,9 +298,41 @@ export const translations: Translations<"nl"> = {
         "reset helper dialogs helper text":
             "De berichtvensters waarvan u heeft gevraagd ze niet meer weer te geven, opnieuw initialiseren"
     },
+    FileExplorer: {
+        "page title - file explorer": "Bestandsverkenner",
+        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Lezen{" "}
+                <MuiLink href={docHref} target="_blank">
+                    onze documentatie
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>Minio-clients instellen</MuiLink>.
+            </>
+        ),
+        "title personal": "Mijn gegevens",
+        "description personal": "Je eigen bestanden en datasets.",
+        "title project": ({ projectName }) => `Project ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Gedeelde opslagruimte voor project ${projectName}`
+    },
+    S3EntryCard: {
+        "space path": "Ruimtepad",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "Mijn gegevens";
+                case "project":
+                    return "Groepsgegevens";
+                case "admin bookmark":
+                    return "Beheerder";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "Mijn bestanden",
-        "what this page is used for - my files": "Sla hier uw gegevensbestanden op.",
+        "page title - file explorer": "Mijn bestanden",
+        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lezen{" "}
@@ -507,6 +539,7 @@ export const translations: Translations<"nl"> = {
         "divider: onyxia instance specific features":
             "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
         dataExplorer: "Data Verkenner",
+        fileExplorer: "Bestanden Verkenner",
         sqlOlapShell: "SQL OLAP Shell"
     },
     AutoLogoutCountdown: {

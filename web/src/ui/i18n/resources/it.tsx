@@ -296,9 +296,43 @@ export const translations: Translations<"it"> = {
         "reset helper dialogs helper text":
             "Ripristinare le finestre di messaggi che hai richiesto di non mostrare più"
     },
+    FileExplorer: {
+        "page title - file explorer": "Esplora file",
+        "what this page is used for - file explorer": "Archivia qui i tuoi file di dati.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Leggere{" "}
+                <MuiLink href={docHref} target="_blank">
+                    la nostra documentazione
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configurare i client MinIO
+                </MuiLink>.
+            </>
+        ),
+        "title personal": "I miei dati",
+        "description personal": "I tuoi file e dataset personali.",
+        "title project": ({ projectName }) => `Progetto ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Spazio di archiviazione condiviso per il progetto ${projectName}`
+    },
+    S3EntryCard: {
+        "space path": "Percorso dello spazio",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "I miei dati";
+                case "project":
+                    return "Dati del gruppo";
+                case "admin bookmark":
+                    return "Amministratore";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "I miei file",
-        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
+        "page title - file explorer": "I miei file",
+        "what this page is used for - file explorer": "Archivia qui i tuoi file di dati.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Leggere{" "}
@@ -354,9 +388,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -506,6 +539,7 @@ export const translations: Translations<"it"> = {
         "divider: onyxia instance specific features":
             "Funzioni specifiche di questa istanza di Onyxia",
         dataExplorer: "Esploratore di Dati",
+        fileExplorer: "Esploratore di File",
         sqlOlapShell: "Guscio SQL OLAP"
     },
     AutoLogoutCountdown: {

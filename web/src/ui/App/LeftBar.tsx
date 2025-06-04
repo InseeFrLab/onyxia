@@ -36,139 +36,144 @@ export const LeftBar = memo((props: Props) => {
     const { urlToLink } = useUrlToLink();
 
     return (
-        <>
-            <OnyxiaUiLeftBar
-                className={cx(classes.root, className)}
-                doPersistIsPanelOpen={true}
-                defaultIsPanelOpen={true}
-                collapsedWidth={logoContainerWidth}
-                reduceText={t("reduce")}
-                items={[
-                    {
-                        itemId: "home",
-                        icon: customIcons.homeSvgUrl,
-                        label: t("home"),
-                        link: routes.home().link,
-                        availability: env.DISABLE_HOMEPAGE ? "not visible" : "available"
-                    },
-                    {
-                        itemId: "account",
-                        icon: customIcons.accountSvgUrl,
-                        label: t("account"),
-                        link: routes.account().link
-                    },
-                    {
-                        itemId: "projectSettings",
-                        icon: getIconUrlByName("DisplaySettings"),
-                        label: t("projectSettings"),
-                        link: routes.projectSettings().link
-                    },
-                    {
-                        groupId: "services",
-                        label: t("divider: services features")
-                    },
-                    {
-                        itemId: "catalog",
-                        icon: customIcons.catalogSvgUrl,
-                        label: t("catalog"),
-                        link: routes.catalog().link
-                    },
-                    {
-                        itemId: "myServices",
-                        icon: customIcons.servicesSvgUrl,
-                        label: t("myServices"),
-                        link: routes.myServices().link
-                    },
-                    {
-                        groupId: "external-services",
-                        label: t("divider: external services features")
-                    },
-                    {
-                        itemId: "mySecrets",
-                        icon: customIcons.secretsSvgUrl,
-                        label: t("mySecrets"),
-                        link: routes.mySecrets().link,
-                        availability: secretExplorer.getIsEnabled()
-                            ? "available"
-                            : "not visible"
-                    },
-                    {
-                        itemId: "myFiles",
-                        icon: customIcons.filesSvgUrl,
-                        label: t("myFiles"),
-                        link: routes.myFiles().link,
-                        availability: isFileExplorerEnabled ? "available" : "not visible"
-                    },
-                    {
-                        itemId: "dataExplorer",
-                        icon: getIconUrlByName("DocumentScanner"),
-                        label: t("dataExplorer"),
-                        link: routes.dataExplorer().link,
-                        availability: isFileExplorerEnabled ? "available" : "not visible"
-                    },
-                    {
-                        itemId: "sqlOlapShell",
-                        icon: getIconUrlByName("Terminal"),
-                        label: t("sqlOlapShell"),
-                        link: routes.sqlOlapShell().link,
-                        availability: isDevModeEnabled ? "available" : "not visible"
-                    },
-                    {
-                        groupId: "custom-leftbar-links",
-                        label: t("divider: onyxia instance specific features")
-                    },
-                    ...env.LEFTBAR_LINKS.map(
-                        ({ url, icon, startIcon, label }, i): LeftBarProps.Item => ({
-                            itemId: `custom-leftbar-item-${i}`,
-                            icon: (() => {
-                                const out = getIconUrl(icon) ?? getIconUrl(startIcon);
+        <OnyxiaUiLeftBar
+            className={cx(classes.root, className)}
+            doPersistIsPanelOpen={true}
+            defaultIsPanelOpen={true}
+            collapsedWidth={logoContainerWidth}
+            reduceText={t("reduce")}
+            items={[
+                {
+                    itemId: "home",
+                    icon: customIcons.homeSvgUrl,
+                    label: t("home"),
+                    link: routes.home().link,
+                    availability: env.DISABLE_HOMEPAGE ? "not visible" : "available"
+                },
+                {
+                    itemId: "account",
+                    icon: customIcons.accountSvgUrl,
+                    label: t("account"),
+                    link: routes.account().link
+                },
+                {
+                    itemId: "projectSettings",
+                    icon: getIconUrlByName("DisplaySettings"),
+                    label: t("projectSettings"),
+                    link: routes.projectSettings().link
+                },
+                {
+                    groupId: "services",
+                    label: t("divider: services features")
+                },
+                {
+                    itemId: "catalog",
+                    icon: customIcons.catalogSvgUrl,
+                    label: t("catalog"),
+                    link: routes.catalog().link
+                },
+                {
+                    itemId: "myServices",
+                    icon: customIcons.servicesSvgUrl,
+                    label: t("myServices"),
+                    link: routes.myServices().link
+                },
+                {
+                    groupId: "external-services",
+                    label: t("divider: external services features")
+                },
+                {
+                    itemId: "mySecrets",
+                    icon: customIcons.secretsSvgUrl,
+                    label: t("mySecrets"),
+                    link: routes.mySecrets().link,
+                    availability: secretExplorer.getIsEnabled()
+                        ? "available"
+                        : "not visible"
+                },
+                // {
+                //     itemId: "myFiles",
+                //     icon: customIcons.filesSvgUrl,
+                //     label: t("myFiles"),
+                //     link: routes.myFiles().link,
+                //     availability: isFileExplorerEnabled ? "available" : "not visible"
+                // },
+                {
+                    itemId: "fileExplorer",
+                    icon: customIcons.filesSvgUrl,
+                    label: t("fileExplorer"),
+                    link: routes.fileExplorer().link,
+                    availability: isFileExplorerEnabled ? "available" : "not visible"
+                },
+                {
+                    itemId: "dataExplorer",
+                    icon: getIconUrlByName("DocumentScanner"),
+                    label: t("dataExplorer"),
+                    link: routes.dataExplorer().link,
+                    availability: isFileExplorerEnabled ? "available" : "not visible"
+                },
+                {
+                    itemId: "sqlOlapShell",
+                    icon: getIconUrlByName("Terminal"),
+                    label: t("sqlOlapShell"),
+                    link: routes.sqlOlapShell().link,
+                    availability: isDevModeEnabled ? "available" : "not visible"
+                },
+                {
+                    groupId: "custom-leftbar-links",
+                    label: t("divider: onyxia instance specific features")
+                },
+                ...env.LEFTBAR_LINKS.map(
+                    ({ url, icon, startIcon, label }, i): LeftBarProps.Item => ({
+                        itemId: `custom-leftbar-item-${i}`,
+                        icon: (() => {
+                            const out = getIconUrl(icon) ?? getIconUrl(startIcon);
 
-                                assert(
-                                    out !== undefined,
-                                    "We should have validated that parsing the env"
-                                );
+                            assert(
+                                out !== undefined,
+                                "We should have validated that parsing the env"
+                            );
 
-                                return out;
-                            })(),
-                            label: <LocalizedMarkdown inline>{label}</LocalizedMarkdown>,
-                            link: urlToLink(url)
-                        })
-                    )
-                ]}
-                currentItemId={(() => {
-                    switch (route.name) {
-                        case "home":
-                            return "home" as const;
-                        case "account":
-                            return "account";
-                        case "projectSettings":
-                            return "projectSettings";
-                        case "catalog":
-                            return "catalog";
-                        case "launcher":
-                            return "catalog";
-                        case "myServices":
-                        case "myService":
-                            return "myServices";
-                        case "mySecrets":
-                            return "mySecrets";
-                        case "myFiles":
-                            return "myFiles";
-                        case "sqlOlapShell":
-                            return "sqlOlapShell";
-                        case "dataExplorer":
-                            return "dataExplorer";
-                        case "page404":
-                            return null;
-                        case "document":
-                            return null;
-                        case false:
-                            return null;
-                    }
-                    assert<Equals<typeof route, never>>(false);
-                })()}
-            />
-        </>
+                            return out;
+                        })(),
+                        label: <LocalizedMarkdown inline>{label}</LocalizedMarkdown>,
+                        link: urlToLink(url)
+                    })
+                )
+            ]}
+            currentItemId={(() => {
+                switch (route.name) {
+                    case "home":
+                        return "home" as const;
+                    case "account":
+                        return "account";
+                    case "projectSettings":
+                        return "projectSettings";
+                    case "catalog":
+                    case "launcher":
+                        return "catalog";
+                    case "myServices":
+                    case "myService":
+                        return "myServices";
+                    case "mySecrets":
+                        return "mySecrets";
+                    case "fileExplorer":
+                    case "myFiles":
+                        return "fileExplorer";
+                    case "sqlOlapShell":
+                        return "sqlOlapShell";
+                    case "dataExplorer":
+                        return "dataExplorer";
+                    case "page404":
+                        return null;
+                    case "document":
+                        return null;
+                    case false:
+                        return null;
+                }
+                assert<Equals<typeof route, never>>(false);
+            })()}
+        />
     );
 });
 
@@ -185,6 +190,7 @@ const { i18n } = declareComponentKeys<
     | "myServices"
     | "mySecrets"
     | "myFiles"
+    | "fileExplorer"
     | "dataExplorer"
     | "sqlOlapShell"
     | "divider: services features"

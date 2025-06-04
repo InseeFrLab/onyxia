@@ -294,9 +294,41 @@ export const translations: Translations<"no"> = {
         "reset helper dialogs helper text":
             "Tilbakestill meldingsvinduer som er bedt om å ikke vises igjen"
     },
+    FileExplorer: {
+        "page title - file explorer": "Filutforsker",
+        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Les{" "}
+                <MuiLink href={docHref} target="_blank">
+                    dokumentasjonen vår
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>Konfigurer minio-klientene</MuiLink>.
+            </>
+        ),
+        "title personal": "Mine data",
+        "description personal": "Dine egne filer og datasett.",
+        "title project": ({ projectName }) => `Prosjekt ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Felles lagringsområde for prosjektet ${projectName}`
+    },
+    S3EntryCard: {
+        "space path": "Områdesti",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "Mine data";
+                case "project":
+                    return "Gruppedata";
+                case "admin bookmark":
+                    return "Administrator";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "Mine filer",
-        "what this page is used for - my files": "Her kan du bla gjennom S3-bøtter.",
+        "page title - file explorer": "Mine filer",
+        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Les{" "}
@@ -504,6 +536,7 @@ export const translations: Translations<"no"> = {
         "divider: onyxia instance specific features":
             "Onyxia-instansspesifikke funksjoner",
         dataExplorer: "Datautforsker",
+        fileExplorer: "Filutforsker",
         sqlOlapShell: "SQL OLAP-Skall"
     },
     AutoLogoutCountdown: {

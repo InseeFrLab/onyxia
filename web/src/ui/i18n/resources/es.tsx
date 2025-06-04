@@ -298,9 +298,44 @@ export const translations: Translations<"en"> = {
         "reset helper dialogs helper text":
             "Restablecer ventanas de mensajes que se han solicitado no mostrar nuevamente"
     },
+    FileExplorer: {
+        "page title - file explorer": "Explorador de archivos",
+        "what this page is used for - file explorer":
+            "Aquí puedes explorar tus Buckets de S3.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Lee{" "}
+                <MuiLink href={docHref} target="_blank">
+                    nuestra documentación
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configura los clientes de minio
+                </MuiLink>.
+            </>
+        ),
+        "title personal": "Mis datos",
+        "description personal": "Tus propios archivos y conjuntos de datos.",
+        "title project": ({ projectName }) => `Proyecto ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Espacio de almacenamiento compartido para el proyecto ${projectName}`
+    },
+    S3EntryCard: {
+        "space path": "Ruta del espacio",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "Mis datos";
+                case "project":
+                    return "Datos del grupo";
+                case "admin bookmark":
+                    return "Administrador";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "Mis Archivos",
-        "what this page is used for - my files":
+        "page title - file explorer": "Mis Archivos",
+        "what this page is used for - file explorer":
             "Aquí puedes explorar tus Buckets de S3.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
@@ -510,6 +545,7 @@ export const translations: Translations<"en"> = {
         "divider: onyxia instance specific features":
             "Funciones específicas de la instancia de Onyxia",
         dataExplorer: "Explorador de datos",
+        fileExplorer: "Explorador de archivos",
         sqlOlapShell: "SQL Olap Shell"
     },
     AutoLogoutCountdown: {

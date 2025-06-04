@@ -9,6 +9,7 @@ import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe/assert";
 import { getProjectS3ConfigId } from "./projectS3ConfigId";
 import type * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 
@@ -22,9 +23,30 @@ export namespace S3Config {
         isExplorerConfig: boolean;
     };
 
+    export namespace FromDeploymentRegion {
+        type Common = { directoryPath: string };
+
+        export type PersonalLocation = Common & {
+            type: "personal";
+        };
+
+        export type ProjectLocation = Common & {
+            type: "project";
+            projectName: string;
+        };
+        export type AdminBookmarkLocation = Common & {
+            type: "admin bookmark";
+            title: LocalizedString;
+            description?: LocalizedString;
+        };
+
+        export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;
+    }
+
     export type FromDeploymentRegion = Common & {
         origin: "deploymentRegion";
         paramsOfCreateS3Client: ParamsOfCreateS3Client;
+        locations: FromDeploymentRegion.Location[];
     };
 
     export type FromProject = Common & {
@@ -47,6 +69,10 @@ export function getS3Configs(params: {
     ongoingConfigTests: s3ConfigConnectionTest.OngoingConfigTest[];
     username: string;
     projectGroup: string | undefined;
+    groupProjects: {
+        name: string;
+        group: string;
+    }[];
 }): S3Config[] {
     const {
         projectConfigsS3: {
@@ -58,7 +84,8 @@ export function getS3Configs(params: {
         configTestResults,
         ongoingConfigTests,
         username,
-        projectGroup
+        projectGroup,
+        groupProjects
     } = params;
 
     const getDataSource = (params: {
@@ -186,6 +213,15 @@ export function getS3Configs(params: {
                 workingDirectory: c.workingDirectory,
                 context: workingDirectoryContext
             });
+
+            const personalWorkingDirectoryPath = getWorkingDirectoryPath({
+                workingDirectory: c.workingDirectory,
+                context: {
+                    type: "personalProject" as const,
+                    username
+                }
+            });
+
             const url = c.url;
             const pathStyleAccess = c.pathStyleAccess;
             const region = c.region;
@@ -205,16 +241,43 @@ export function getS3Configs(params: {
                 })
             };
 
+            const adminBookmarks: S3Config.FromDeploymentRegion.AdminBookmarkLocation[] =
+                c.bookmarkedDirectory.map(({ title, description, bucketName, path }) => ({
+                    title,
+                    description,
+                    type: "admin bookmark",
+                    directoryPath: `${bucketName}/${path ?? ""}`
+                }));
+
+            const projectsLocations: S3Config.FromDeploymentRegion.ProjectLocation[] =
+                groupProjects.map(({ group }) => {
+                    const directoryPath = getWorkingDirectoryPath({
+                        workingDirectory: c.workingDirectory,
+                        context: {
+                            type: "groupProject",
+                            projectGroup: group
+                        }
+                    });
+                    return { type: "project", directoryPath, projectName: group };
+                });
+
+            const dataSource = getDataSource({
+                url,
+                pathStyleAccess,
+                workingDirectoryPath
+            });
+
             return {
                 origin: "deploymentRegion",
                 id,
-                dataSource: getDataSource({
-                    url,
-                    pathStyleAccess,
-                    workingDirectoryPath
-                }),
+                dataSource,
                 region,
                 workingDirectoryPath,
+                locations: [
+                    { type: "personal", directoryPath: personalWorkingDirectoryPath },
+                    ...projectsLocations,
+                    ...adminBookmarks
+                ],
                 paramsOfCreateS3Client,
                 isXOnyxiaDefault: false,
                 isExplorerConfig: false

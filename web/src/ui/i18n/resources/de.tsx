@@ -298,9 +298,41 @@ export const translations: Translations<"de"> = {
         "reset helper dialogs helper text":
             "Die Hilfsdialoge zurücksetzen, die Sie aufgefordert haben, nicht mehr anzuzeigen"
     },
+    FileExplorer: {
+        "page title - file explorer": "Datei-Explorer",
+        "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Lesen Sie
+                <MuiLink href={docHref} target="_blank">
+                    unsere Dokumentation
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>MinIO-Clients konfigurieren</MuiLink>.
+            </>
+        ),
+        "title personal": "Meine Daten",
+        "description personal": "Ihre eigenen Dateien und Datensätze.",
+        "title project": ({ projectName }) => `Projekt ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Gemeinsamer Speicherplatz für das Projekt ${projectName}`
+    },
+    S3EntryCard: {
+        "space path": "Pfad des Bereichs",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "Meine Daten";
+                case "project":
+                    return "Gruppendaten";
+                case "admin bookmark":
+                    return "Administrator";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "Meine Dateien",
-        "what this page is used for - my files": "Speichern Sie hier Ihre Dateien.",
+        "page title - file explorer": "Meine Dateien",
+        "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lesen Sie
@@ -506,6 +538,7 @@ export const translations: Translations<"de"> = {
         "divider: onyxia instance specific features":
             "Funktionen spezifisch für diese Onyxia-Instanz",
         dataExplorer: "Daten-Explorer",
+        fileExplorer: "Datei-Explorer",
         sqlOlapShell: "SQL OLAP-Shell"
     },
     AutoLogoutCountdown: {

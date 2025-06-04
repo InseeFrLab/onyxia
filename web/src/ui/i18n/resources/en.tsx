@@ -287,9 +287,45 @@ export const translations: Translations<"en"> = {
         "reset helper dialogs helper text":
             "Reset message windows that have been requested not to be shown again"
     },
+    FileExplorer: {
+        "page title - file explorer": "File Explorer",
+        "what this page is used for - file explorer":
+            "Here you can browse your S3 Buckets.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Read{" "}
+                <MuiLink href={docHref} target="_blank">
+                    our documentation
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configure the minio clients
+                </MuiLink>.
+            </>
+        ),
+        "title personal": "My data",
+        "description personal": "Your own files and datasets.",
+        "title project": ({ projectName }) => `Project ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Shared storage space for project ${projectName}`
+    },
+    S3EntryCard: {
+        "space path": "Space path",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "My data";
+                case "project":
+                    return "Group data";
+                case "admin bookmark":
+                    return "Administrator";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "My Files",
-        "what this page is used for - my files": "Here you can browse your S3 Buckets.",
+        "page title - file explorer": "My Files",
+        "what this page is used for - file explorer":
+            "Here you can browse your S3 Buckets.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Read{" "}
@@ -498,6 +534,7 @@ export const translations: Translations<"en"> = {
         "divider: external services features": "External services features",
         "divider: onyxia instance specific features": "Onyxia instance specific features",
         dataExplorer: "Data Explorer",
+        fileExplorer: "File Explorer",
         sqlOlapShell: "SQL Olap Shell"
     },
     AutoLogoutCountdown: {

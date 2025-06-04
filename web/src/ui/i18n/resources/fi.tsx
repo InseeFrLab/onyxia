@@ -294,9 +294,42 @@ export const translations: Translations<"fi"> = {
         "reset helper dialogs helper text":
             "Nollaa ohjeviestit, joista on pyydetty, ettei niitä näytetä uudelleen"
     },
+    FileExplorer: {
+        "page title - file explorer": "Tiedostoselain",
+        "what this page is used for - file explorer":
+            "Täällä voit selata S3 Bucket -tiedostojasi.",
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                Lue{" "}
+                <MuiLink href={docHref} target="_blank">
+                    dokumentaatiomme
+                </MuiLink>
+                . &nbsp;
+                <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
+            </>
+        ),
+        "title personal": "Omat tietoni",
+        "description personal": "Omat tiedostosi ja tietoaineistosi.",
+        "title project": ({ projectName }) => `Projekti ${projectName}`,
+        "description project": ({ projectName }) =>
+            `Projektin ${projectName} yhteinen tallennustila`
+    },
+    S3EntryCard: {
+        "space path": "Tilapolku",
+        "chip title": ({ type }) => {
+            switch (type) {
+                case "personal":
+                    return "Omat tiedot";
+                case "project":
+                    return "Ryhmän tiedot";
+                case "admin bookmark":
+                    return "Ylläpitäjä";
+            }
+        }
+    },
     MyFiles: {
-        "page title - my files": "Omat tiedostot",
-        "what this page is used for - my files":
+        "page title - file explorer": "Omat tiedostot",
+        "what this page is used for - file explorer":
             "Täällä voit selata S3 Bucket -tiedostojasi.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
@@ -502,6 +535,7 @@ export const translations: Translations<"fi"> = {
         "divider: onyxia instance specific features":
             "Onyxia-instanssin erityisominaisuudet",
         dataExplorer: "Data Explorer",
+        fileExplorer: "Tiedostonhallinta",
         sqlOlapShell: "SQL OLAP-kuori"
     },
     AutoLogoutCountdown: {

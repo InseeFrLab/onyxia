@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { OnyxiaUi } from "../src/ui/theme";
 import { injectCustomFontFaceIfNotAlreadyDone } from "../src/ui/theme/injectCustomFontFaceIfNotAlreadyDone";
 import {
-    Language,
+    type Language,
     languagesPrettyPrint,
     useLang,
     fallbackLanguage

@@ -17,6 +17,8 @@ export type ComponentKey =
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
     | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
     | import("ui/pages/myFiles/MyFiles").I18n
+    | import("ui/pages/fileExplorer/FileExplorer").I18n
+    | import("ui/pages/fileExplorer/S3Entries/S3EntryCard").I18n
     | import("ui/pages/myFiles/MyFilesDisabledDialog").I18n
     | import("ui/pages/myFiles/Explorer/Explorer").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerButtonBar").I18n
