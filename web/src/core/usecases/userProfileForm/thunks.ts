@@ -7,15 +7,20 @@ import {
     computeHelmValues,
     type FormFieldValue
 } from "core/usecases/launcher/decoupledLogic";
-import { createObjectThatThrowsIfAccessed } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 import type { Stringifyable } from "core/tools/Stringifyable";
+import * as launcher from "core/usecases/launcher";
 
 export const thunks = {
     getIsEnabled:
         () =>
         (...args) => {
             const [, , rootContext] = args;
+
+            // NOTE: This is so that we can access the xOnyxia before this usecase is initialized
+            if (!getIsContextSet(rootContext)) {
+                return false;
+            }
 
             const { isEnabled } = getContext(rootContext);
 
@@ -74,7 +79,7 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-const { getContext, setContext } = createUsecaseContextApi<{
+const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     isEnabled: boolean;
 }>();
 
@@ -94,14 +99,17 @@ export const protectedThunks = {
                 return;
             }
 
-            setContext(rootContext, { isEnabled: true });
-
             const {
                 helmValues: values_default,
                 helmValuesSchema_forDataTextEditor: schema_allPropertiesRequired
             } = computeHelmValues({
                 helmValuesSchema: schema,
-                xOnyxiaContext: createObjectThatThrowsIfAccessed(),
+                xOnyxiaContext: await dispatch(
+                    launcher.protectedThunks.getXOnyxiaContext({
+                        doInjectPersonalInfos: true,
+                        s3ConfigId: undefined
+                    })
+                ),
                 helmValuesYaml: "{}",
                 infoAmountInHelmValues: "user provided"
             });
@@ -167,5 +175,7 @@ export const protectedThunks = {
                     values
                 })
             );
+
+            setContext(rootContext, { isEnabled: true });
         }
 } satisfies Thunks;

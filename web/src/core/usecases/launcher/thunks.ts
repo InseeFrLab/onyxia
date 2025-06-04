@@ -210,7 +210,7 @@ export const thunks = {
                 })();
 
                 const xOnyxiaContext = await dispatch(
-                    privateThunks.getXOnyxiaContext({
+                    protectedThunks.getXOnyxiaContext({
                         s3ConfigId,
                         doInjectPersonalInfos
                     })
@@ -532,7 +532,7 @@ const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
-const privateThunks = {
+export const protectedThunks = {
     getXOnyxiaContext:
         (params: { s3ConfigId: string | undefined; doInjectPersonalInfos: boolean }) =>
         async (...args): Promise<XOnyxiaContext> => {
@@ -737,7 +737,10 @@ const privateThunks = {
             };
 
             return xOnyxiaContext;
-        },
+        }
+} satisfies Thunks;
+
+export const privateThunks = {
     getChartInfos:
         (params: {
             catalogId: string;

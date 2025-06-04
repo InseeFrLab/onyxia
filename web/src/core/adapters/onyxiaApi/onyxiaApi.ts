@@ -128,6 +128,7 @@ export function createOnyxiaApi(params: {
                     return schema;
                 } catch {
                     // TODO: Remove try/catch block once the API is released
+                    console.log("Warning, there was an issue with /profile/schema");
                     return undefined;
                 }
             },
