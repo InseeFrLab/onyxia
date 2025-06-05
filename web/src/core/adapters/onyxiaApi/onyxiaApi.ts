@@ -105,32 +105,37 @@ export function createOnyxiaApi(params: {
         },
         getUserProfileJsonSchema: memoize(
             async () => {
-                try {
-                    const { data: schemaOrEmptyString } =
-                        await axiosInstance.get<ApiTypes["/profile/schema"]>(
-                            "/profile/schema"
-                        );
+                const { data: schemaOrEmptyString } =
+                    await axiosInstance.get<ApiTypes["/profile/schema"]>(
+                        "/profile/schema"
+                    );
 
-                    const schema: JSONSchema | undefined = (() => {
-                        if (schemaOrEmptyString === "") {
-                            return undefined;
-                        }
-
-                        zJSONSchema.parse(schemaOrEmptyString);
-
-                        return schemaOrEmptyString;
-                    })();
-
-                    if (schema === undefined) {
+                const schema: JSONSchema | undefined = (() => {
+                    if (schemaOrEmptyString === "") {
                         return undefined;
                     }
 
-                    return schema;
-                } catch {
-                    // TODO: Remove try/catch block once the API is released
-                    console.log("Warning, there was an issue with /profile/schema");
+                    try {
+                        zJSONSchema.parse(schemaOrEmptyString);
+                    } catch (error) {
+                        assert(is<Error>(error));
+
+                        console.warn(
+                            "Declarative user schema isn't a valid JSON Schema",
+                            error.message
+                        );
+
+                        return undefined;
+                    }
+
+                    return schemaOrEmptyString;
+                })();
+
+                if (schema === undefined) {
                     return undefined;
                 }
+
+                return schema;
             },
             { promise: true }
         ),

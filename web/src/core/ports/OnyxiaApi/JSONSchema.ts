@@ -40,43 +40,47 @@ export const zJSONSchema = (() => {
 
     let zTargetType_lazyRef: z.ZodType<TargetType>;
 
-    const zTargetType = z.object({
-        type: z
-            .enum(["object", "array", "string", "boolean", "integer", "number"])
-            .optional(),
-        title: z.string().optional(),
-        description: z.string().optional(),
-        default: zStringifyable.optional(),
-        hidden: z
-            .union([
-                z.boolean(),
-                z.object({
-                    value: zStringifyable,
-                    path: z.string(),
-                    isPathRelative: z.boolean().optional()
-                })
-            ])
-            .optional(),
-        items: z.lazy(() => zTargetType_lazyRef).optional(),
-        minItems: z.number().int().optional(),
-        maxItems: z.number().nonnegative().int().optional(),
-        minimum: z.number().optional(),
-        pattern: z.string().optional(),
-        render: z.enum(["textArea", "password", "list", "slider"]).optional(),
-        enum: z.array(zStringifyable).optional(),
-        listEnum: z.array(zStringifyable).optional(),
-        sliderMax: z.number().optional(),
-        sliderMin: z.number().optional(),
-        sliderUnit: z.string().optional(),
-        sliderStep: z.number().optional(),
-        sliderExtremitySemantic: z.string().optional(),
-        sliderRangeId: z.string().optional(),
-        sliderExtremity: z.enum(["down", "up"]).optional(),
-        const: zStringifyable.optional(),
-        properties: z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
-        required: z.array(z.string()).optional(),
-        [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParams.optional()
-    });
+    const zTargetType = z
+        .object({
+            type: z
+                .enum(["object", "array", "string", "boolean", "integer", "number"])
+                .optional(),
+            title: z.string().optional(),
+            description: z.string().optional(),
+            default: zStringifyable.optional(),
+            hidden: z
+                .union([
+                    z.boolean(),
+                    z.object({
+                        value: zStringifyable,
+                        path: z.string(),
+                        isPathRelative: z.boolean().optional()
+                    })
+                ])
+                .optional(),
+            items: z.lazy(() => zTargetType_lazyRef).optional(),
+            minItems: z.number().int().optional(),
+            maxItems: z.number().nonnegative().int().optional(),
+            minimum: z.number().optional(),
+            pattern: z.string().optional(),
+            render: z.enum(["textArea", "password", "list", "slider"]).optional(),
+            enum: z.array(zStringifyable).optional(),
+            listEnum: z.array(zStringifyable).optional(),
+            sliderMax: z.number().optional(),
+            sliderMin: z.number().optional(),
+            sliderUnit: z.string().optional(),
+            sliderStep: z.number().optional(),
+            sliderExtremitySemantic: z.string().optional(),
+            sliderRangeId: z.string().optional(),
+            sliderExtremity: z.enum(["down", "up"]).optional(),
+            const: zStringifyable.optional(),
+            properties: z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
+            required: z.array(z.string()).optional(),
+            [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParams.optional()
+        })
+        .refine(schema => schema.type !== undefined || schema.const !== undefined, {
+            message: "At least one of `type` or `const` must be defined"
+        });
 
     zTargetType_lazyRef = zTargetType;
 
