@@ -82,6 +82,7 @@ export type XOnyxiaContext = {
         decodedIdToken: Record<string, unknown>;
         accessToken: string;
         refreshToken: string;
+        // See: https://docs.onyxia.sh/v/v10/admin-doc/catalog-of-services/customize-your-charts/declarative-user-profile
         profile: Record<string, Stringifyable> | undefined;
     };
     service: {
