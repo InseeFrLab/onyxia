@@ -1,8 +1,7 @@
 import type { State as RootState } from "core/bootstrap";
 import { name } from "./state";
-import { createSelector } from "clean-architecture";
+import { createSelector, createObjectThatThrowsIfAccessed } from "clean-architecture";
 import { computeRootForm } from "core/usecases/launcher/decoupledLogic";
-import { createObjectThatThrowsIfAccessed } from "clean-architecture";
 import { same } from "evt/tools/inDepth/same";
 
 const state = (rootState: RootState) => {

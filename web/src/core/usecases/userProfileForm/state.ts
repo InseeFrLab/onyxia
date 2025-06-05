@@ -1,5 +1,8 @@
 import type { JSONSchema } from "core/ports/OnyxiaApi";
-import { createUsecaseActions } from "clean-architecture";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "clean-architecture";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { structuredCloneButFunctions } from "core/tools/structuredCloneButFunctions";
 import {
@@ -9,7 +12,6 @@ import {
     mutateHelmValues_removeArrayItem,
     mutateHelmValues_update
 } from "core/usecases/launcher/decoupledLogic";
-import { createObjectThatThrowsIfAccessed } from "clean-architecture";
 
 type State = {
     schema: JSONSchema;
