@@ -7,6 +7,7 @@ import {
 const testCases: {
     helmRelease: HelmReleaseLike;
     kubernetesClusterIngressPort: number | undefined;
+    preferredOpenUrlHostname: string | undefined;
     expected: {
         openUrl: string | undefined;
         postInstallInstructions_patched: string | undefined;
@@ -18,6 +19,7 @@ const testCases: {
             postInstallInstructions: undefined
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com/",
             postInstallInstructions_patched: undefined
@@ -29,7 +31,24 @@ const testCases: {
             postInstallInstructions: undefined
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: { openUrl: "https://a.com", postInstallInstructions_patched: undefined }
+    },
+    {
+        helmRelease: {
+            urls: [
+                "https://subdomain.a.com/",
+                "https://subdomain.b.com/",
+                "https://subdomain.a-b.com/"
+            ],
+            postInstallInstructions: ""
+        },
+        kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: "b.com",
+        expected: {
+            openUrl: "https://subdomain.b.com/",
+            postInstallInstructions_patched: ""
+        }
     },
     {
         helmRelease: {
@@ -37,6 +56,7 @@ const testCases: {
             postInstallInstructions: "Check this link: https://unrelated.com/page"
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com", // Should ignore unrelated URLs
             postInstallInstructions_patched: "Check this link: https://unrelated.com/page"
@@ -49,6 +69,7 @@ const testCases: {
                 "Click this link: https://example.com/foo?token=abc and follow the steps."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com/foo?token=abc",
             postInstallInstructions_patched:
@@ -61,6 +82,7 @@ const testCases: {
             postInstallInstructions: "You can try https://example.com/foo to get started."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com/foo",
             postInstallInstructions_patched:
@@ -74,6 +96,7 @@ const testCases: {
                 "Visit https://example.com/foo for setup or https://test.com/bar for documentation."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com/foo",
             postInstallInstructions_patched:
@@ -86,6 +109,7 @@ const testCases: {
             postInstallInstructions: "Check https://example.com/page and let us know."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://sub.example.com", // Should not match and return the default URL
             postInstallInstructions_patched:
@@ -99,6 +123,7 @@ const testCases: {
                 "Invalid URL: https://example.com_missing_path should not be matched."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com", // Should not match and return the default URL
             postInstallInstructions_patched:
@@ -112,6 +137,7 @@ const testCases: {
                 "You can try https://example.com#anchor to see the details."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com#anchor",
             postInstallInstructions_patched:
@@ -125,6 +151,7 @@ const testCases: {
                 "Visit https://example.com/foo/bar/baz?param=123&other=abc before continuing."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com/foo/bar/baz?param=123&other=abc",
             postInstallInstructions_patched:
@@ -138,6 +165,7 @@ const testCases: {
                 "Go to https://example.com/setup and enter your credentials."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://example.com/setup",
             postInstallInstructions_patched:
@@ -151,6 +179,7 @@ const testCases: {
                 "Find more details here: https://docs.example.com or contact support."
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://docs.example.com",
             postInstallInstructions_patched:
@@ -167,6 +196,7 @@ const testCases: {
                 "\n- Votre nom d'utilisateur est **elastic**\n- Votre mot de passe est **mot-de-pase**\n- Vous pouvez vous connecter à elastic avec votre navigateur à ce [lien](https://user-ddecrulle-elasticsearch-507582.user.lab.sspcloud.fr)\n- Vous pouvez vous connectez à elastic depuis l'intérieur du datalab à cette URL : **http://elastic-507582-elasticsearch:9200**\n- Vous pouvez vous connecter à kibana avec votre navigateur à ce [lien](https://user-ddecrulle-507582.user.lab.sspcloud.fr)\n- Un seul cluster de elastic peut être démarré dans un projet\n\n**NOTES sur la suppression :**\n\n- **Vous pouvez supprimer ce chart en toute sécurité et en recréer un plus tard**\n- Les volumes de données ne seront pas supprimés\n- Si vous démarrez un nouveau elastic, il réutilisera ces volumes en silence.\n- Si vous souhaitez supprimer définitivement ces volumes : `kubectl delete pvc data-elastic-elasticsearch-master-0 data-elastic-elasticsearch-master-1 data-elastic-elasticsearch-data-0 data-elastic-elasticsearch-data-1`\n"
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://user-ddecrulle-elasticsearch-507582.user.lab.sspcloud.fr",
             postInstallInstructions_patched:
@@ -184,6 +214,7 @@ const testCases: {
             `
         },
         kubernetesClusterIngressPort: undefined,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://user-ddecrulle-100154-0.user.lab.sspcloud.fr/vnc.html",
             postInstallInstructions_patched: `
@@ -205,6 +236,7 @@ const testCases: {
             `
         },
         kubernetesClusterIngressPort: 8080,
+        preferredOpenUrlHostname: undefined,
         expected: {
             openUrl: "https://user-ddecrulle-100154-0.user.lab.sspcloud.fr:8080/vnc.html",
             postInstallInstructions_patched: `
@@ -219,12 +251,21 @@ const testCases: {
 
 describe("getServiceOpenUrl", () => {
     testCases.forEach(
-        ({ helmRelease, kubernetesClusterIngressPort, expected }, index) => {
+        (
+            {
+                helmRelease,
+                kubernetesClusterIngressPort,
+                preferredOpenUrlHostname,
+                expected
+            },
+            index
+        ) => {
             it(`should return the correct URL for test case #${index + 1}`, () => {
                 const result =
                     getServiceOpenUrlAndMaybeAddPortToPostInstallInstructionsUrls({
                         helmRelease,
-                        kubernetesClusterIngressPort
+                        kubernetesClusterIngressPort,
+                        preferredOpenUrlHostname
                     });
                 expect(result).toStrictEqual(expected);
             });

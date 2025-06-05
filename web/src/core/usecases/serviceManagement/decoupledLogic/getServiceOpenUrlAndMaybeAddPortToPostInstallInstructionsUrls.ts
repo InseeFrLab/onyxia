@@ -9,10 +9,12 @@ export type HelmReleaseLike = {
 export function getServiceOpenUrlAndMaybeAddPortToPostInstallInstructionsUrls(params: {
     helmRelease: HelmReleaseLike;
     kubernetesClusterIngressPort: number | undefined;
+    preferredOpenUrlHostname: string | undefined;
 }) {
     const {
         helmRelease: { urls, postInstallInstructions },
-        kubernetesClusterIngressPort
+        kubernetesClusterIngressPort,
+        preferredOpenUrlHostname
     } = params;
 
     let openUrl: string | undefined = undefined;
@@ -88,14 +90,23 @@ export function getServiceOpenUrlAndMaybeAddPortToPostInstallInstructionsUrls(pa
             break set_openUrl;
         }
 
+        const url_thatIsSubdomainOfPreferredOpenUrlHostname = preferredOpenUrlHostname
+            ? urls.filter(e =>
+                  new URL(e).hostname.endsWith("." + preferredOpenUrlHostname)
+              )[0]
+            : undefined;
+
         const url_firstInAlphabeticalOrder = [...urls].sort((a, b) =>
             a.localeCompare(b)
         )[0];
 
+        const hostnameToOpen =
+            url_thatIsSubdomainOfPreferredOpenUrlHostname ?? url_firstInAlphabeticalOrder;
+
         openUrl =
             kubernetesClusterIngressPort === undefined
-                ? url_firstInAlphabeticalOrder
-                : addPort(url_firstInAlphabeticalOrder, kubernetesClusterIngressPort);
+                ? hostnameToOpen
+                : addPort(hostnameToOpen, kubernetesClusterIngressPort);
     }
 
     return { openUrl, postInstallInstructions_patched };
