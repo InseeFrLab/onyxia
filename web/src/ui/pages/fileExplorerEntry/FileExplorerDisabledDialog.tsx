@@ -4,9 +4,9 @@ import { Button } from "onyxia-ui/Button";
 import { routes } from "ui/routes";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
-export const MyFilesDisabledDialog = memo(() => {
+export const FileExplorerDisabledDialog = memo(() => {
     const onClose = () => routes.home().push();
-    const { t } = useTranslation({ MyFilesDisabledDialog });
+    const { t } = useTranslation({ FileExplorerDisabledDialog });
 
     return (
         <Dialog
@@ -45,6 +45,6 @@ export const MyFilesDisabledDialog = memo(() => {
 
 const { i18n } = declareComponentKeys<
     "dialog title" | "dialog body" | "cancel" | "go to settings"
->()({ MyFilesDisabledDialog });
+>()({ FileExplorerDisabledDialog });
 
 export type I18n = typeof i18n;

@@ -10,14 +10,15 @@ type S3Entry = {
 };
 
 type Props = {
+    className?: string;
     entries: S3Entry[];
 };
 
 export function S3Entries(props: Props) {
-    const { entries } = props;
+    const { entries, className } = props;
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className={className}>
             {entries.map(entry => (
                 <Grid size={{ xs: 12, sm: 6 }} key={entry.title}>
                     <S3EntryCard

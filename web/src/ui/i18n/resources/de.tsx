@@ -330,21 +330,7 @@ export const translations: Translations<"de"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "Meine Dateien",
-        "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lesen Sie
-                <MuiLink href={docHref} target="_blank">
-                    unsere Dokumentation
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>MinIO-Clients konfigurieren</MuiLink>.
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "Kein S3-Server konfiguriert",
         "dialog body":
             "Für diese Instanz ist kein S3-Server konfiguriert. Sie können jedoch manuell einen hinzufügen, um den S3-Dateiexplorer zu aktivieren.",

@@ -330,21 +330,7 @@ export const translations: Translations<"nl"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "Mijn bestanden",
-        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lezen{" "}
-                <MuiLink href={docHref} target="_blank">
-                    onze documentatie
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Minio-clients instellen</MuiLink>.
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "Geen S3-server geconfigureerd",
         "dialog body":
             "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",

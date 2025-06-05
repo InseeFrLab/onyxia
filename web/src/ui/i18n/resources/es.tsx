@@ -333,24 +333,7 @@ export const translations: Translations<"en"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "Mis Archivos",
-        "what this page is used for - file explorer":
-            "Aquí puedes explorar tus Buckets de S3.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lee{" "}
-                <MuiLink href={docHref} target="_blank">
-                    nuestra documentación
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configura los clientes de minio
-                </MuiLink>.
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "No hay servidor S3 configurado",
         "dialog body":
             "No hay ningún servidor S3 configurado para esta instancia. Pero puedes agregar uno manualmente para habilitar el explorador de archivos S3.",

@@ -16,21 +16,20 @@ export type ComponentKey =
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems").I18n
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
     | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
-    | import("ui/pages/myFiles/MyFiles").I18n
-    | import("ui/pages/fileExplorer/FileExplorer").I18n
-    | import("ui/pages/fileExplorer/S3Entries/S3EntryCard").I18n
-    | import("ui/pages/myFiles/MyFilesDisabledDialog").I18n
-    | import("ui/pages/myFiles/Explorer/Explorer").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerButtonBar").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerItems").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerItems/ExplorerItem").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
-    | import("ui/pages/myFiles/Explorer/ListExplorer/ListExplorerItems").I18n
-    | import("ui/pages/myFiles/Explorer/ExplorerDownloadSnackbar").I18n
-    | import("ui/pages/myFiles/ShareFile/ShareDialog").I18n
-    | import("ui/pages/myFiles/ShareFile/SelectTime").I18n
+    | import("ui/pages/fileExplorerEntry/FileExplorerEntry").I18n
+    | import("ui/pages/fileExplorerEntry/S3Entries/S3EntryCard").I18n
+    | import("ui/pages/fileExplorerEntry/FileExplorerDisabledDialog").I18n
+    | import("ui/pages/fileExplorer/Explorer/Explorer").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerButtonBar").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerItems").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerItems/ExplorerItem").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
+    | import("ui/pages/fileExplorer/Explorer/ListExplorer/ListExplorerItems").I18n
+    | import("ui/pages/fileExplorer/Explorer/ExplorerDownloadSnackbar").I18n
+    | import("ui/pages/fileExplorer/ShareFile/ShareDialog").I18n
+    | import("ui/pages/fileExplorer/ShareFile/SelectTime").I18n
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n

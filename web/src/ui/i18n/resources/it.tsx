@@ -330,23 +330,7 @@ export const translations: Translations<"it"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "I miei file",
-        "what this page is used for - file explorer": "Archivia qui i tuoi file di dati.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Leggere{" "}
-                <MuiLink href={docHref} target="_blank">
-                    la nostra documentazione
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare i client MinIO
-                </MuiLink>.
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "Nessun server S3 configurato",
         "dialog body":
             "Non è stato configurato nessun server S3 per questa istanza. Tuttavia, è possibile aggiungerne uno manualmente per abilitare l'esploratore file S3.",
@@ -388,8 +372,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

@@ -1,82 +1,154 @@
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import { getIconUrlByName, customIcons } from "lazy-icons";
-import { declareComponentKeys, useTranslation, useResolveLocalizedString } from "ui/i18n";
-import { env } from "env";
+import { useEffect } from "react";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { useCoreState, useCore } from "core";
+import { Explorer, type ExplorerProps } from "./Explorer";
 import { routes } from "ui/routes";
-import { useCoreState } from "core";
-import { MyFilesDisabledDialog } from "../myFiles/MyFilesDisabledDialog";
-import type { Link } from "type-route";
-import { S3Entries } from "./S3Entries/S3Entries";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { useSplashScreen } from "onyxia-ui";
+import { Evt } from "evt";
+import type { Param0 } from "tsafe";
+import { useConst } from "powerhooks/useConst";
+import type { PageRoute } from "./route";
+import { assert } from "tsafe/assert";
+import { env } from "env";
+import { getIconUrlByName, customIcons } from "lazy-icons";
+import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
+import { useTranslation } from "ui/i18n";
 
-type Props = {
+export type Props = {
+    route: PageRoute;
     className?: string;
 };
 
-export const FileExplorerMaybeDisabled = withLoginEnforced((props: Props) => {
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
-    if (!isFileExplorerEnabled) {
-        return <MyFilesDisabledDialog />;
-    }
-    return <FileExplorer {...props} />;
-});
-export default FileExplorerMaybeDisabled;
-
 function FileExplorer(props: Props) {
-    const { className } = props;
-    const { classes, cx } = useStyles();
+    const { className, route } = props;
 
     const { t } = useTranslation({ FileExplorer });
 
-    const indexedS3Locations = useCoreState("s3ConfigManagement", "indexedS3Locations");
+    const {
+        isCurrentWorkingDirectoryLoaded,
+        commandLogsEntries,
+        isNavigationOngoing,
+        uploadProgress,
+        currentWorkingDirectoryView,
+        pathMinDepth,
+        viewMode,
+        shareView,
+        isDownloadPreparing
+    } = useCoreState("fileExplorer", "main");
 
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        labelWhenMismatchingLanguage: false
+    const evtIsSnackbarOpen = useConst(() => Evt.create(isDownloadPreparing));
+
+    useEffect(() => {
+        evtIsSnackbarOpen.state = isDownloadPreparing;
+    }, [isDownloadPreparing]);
+
+    const { fileExplorer } = useCore().functions;
+
+    useEffect(() => {
+        fileExplorer.initialize({
+            directoryPath: route.params.path,
+            viewMode: route.params.mode
+        });
+    }, []);
+
+    const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
+
+    const onCreateDirectory = useConstCallback(
+        ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
+            fileExplorer.create({
+                createWhat: "directory",
+                basename
+            })
+    );
+
+    const onDeleteItem = useConstCallback(
+        (params: Param0<ExplorerProps["onDeleteItem"]>) =>
+            fileExplorer.delete({
+                s3Object: params.item
+            })
+    );
+
+    const onDownloadItems = useConstCallback(
+        async (params: Param0<ExplorerProps["onDownloadItems"]>) => {
+            const { items } = params;
+
+            const { url, filename } = await fileExplorer.getBlobUrl({
+                s3Objects: items
+            });
+
+            triggerBrowserDownload({ url, filename });
+        }
+    );
+
+    const onDeleteItems = useConstCallback(
+        (params: Param0<ExplorerProps["onDeleteItems"]>) =>
+            fileExplorer.bulkDelete({
+                s3Objects: params.items
+            })
+    );
+
+    const onCopyPath = useConstCallback(
+        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+            assert(currentWorkingDirectoryView !== undefined);
+            return copyToClipboard(
+                path.split(currentWorkingDirectoryView.directoryPath.split("/")[0])[1] //get the path to object without <bucket-name>
+            );
+        }
+    );
+
+    const { classes, cx } = useStyles();
+
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
+
+    useEffect(() => {
+        if (currentWorkingDirectoryView === undefined) {
+            showSplashScreen({ enableTransparency: true });
+        } else {
+            hideSplashScreen();
+        }
+    }, [currentWorkingDirectoryView === undefined]);
+
+    const evtExplorerAction = useConst(() => Evt.create<ExplorerProps["evtAction"]>());
+
+    const onOpenFile = useConstCallback<ExplorerProps["onOpenFile"]>(({ basename }) => {
+        //TODO use dataExplorer thunk
+        if (
+            basename.endsWith(".parquet") ||
+            basename.endsWith(".csv") ||
+            basename.endsWith(".json")
+        ) {
+            const { path } = route.params;
+
+            assert(path !== undefined);
+
+            routes
+                .dataExplorer({
+                    source: `s3://${path.replace(/\/*$/g, "")}/${basename}`
+                })
+                .push();
+            return;
+        }
+
+        fileExplorer.getFileDownloadUrl({ basename }).then(window.open);
     });
 
-    if (indexedS3Locations.type === "user created s3 config") {
-        routes["myFiles"]({ path: indexedS3Locations.directoryPath }).replace();
-        return;
-    }
+    const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
+        ({ files }) =>
+            files.forEach(file =>
+                fileExplorer.create({
+                    createWhat: "file",
+                    basename: file.name,
+                    blob: file
+                })
+            )
+    );
 
-    if (indexedS3Locations.locations.length < 2) {
-        routes["myFiles"]({
-            path: indexedS3Locations.locations[0].directoryPath
-        }).replace();
-        return;
+    if (!isCurrentWorkingDirectoryLoaded) {
+        return null;
     }
-
-    const entries = indexedS3Locations.locations.map(location => ({
-        type: location.type,
-        directoryPath: location.directoryPath,
-        ...(() => {
-            switch (location.type) {
-                case "admin bookmark":
-                    return {
-                        title: resolveLocalizedString(location.title),
-                        description:
-                            location.description !== undefined
-                                ? resolveLocalizedString(location.description)
-                                : undefined
-                    };
-                case "personal":
-                    return {
-                        title: t(`title ${location.type}`),
-                        description: t(`description ${location.type}`)
-                    };
-                case "project":
-                    return {
-                        title: t(`title ${location.type}`, {
-                            projectName: location.projectName
-                        }),
-                        description: t(`description ${location.type}`, {
-                            projectName: location.projectName
-                        })
-                    };
-            }
-        })()
-    }));
 
     return (
         <div className={cx(classes.root, className)}>
@@ -90,33 +162,56 @@ function FileExplorer(props: Props) {
                 })}
                 helpIcon={getIconUrlByName("SentimentSatisfied")}
             />
-            <S3Entries entries={entries} />
+
+            <Explorer
+                onFileSelected={onFileSelected}
+                filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
+                className={classes.explorer}
+                doShowHidden={false}
+                directoryPath={currentWorkingDirectoryView.directoryPath}
+                isNavigating={isNavigationOngoing}
+                commandLogsEntries={commandLogsEntries}
+                evtAction={evtExplorerAction}
+                items={currentWorkingDirectoryView.items}
+                isBucketPolicyFeatureEnabled={
+                    currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
+                }
+                changePolicy={fileExplorer.changePolicy}
+                onNavigate={fileExplorer.changeCurrentDirectory}
+                onRefresh={onRefresh}
+                onDeleteItem={onDeleteItem}
+                onDeleteItems={onDeleteItems}
+                onCreateDirectory={onCreateDirectory}
+                onCopyPath={onCopyPath}
+                pathMinDepth={pathMinDepth}
+                onOpenFile={onOpenFile}
+                viewMode={viewMode}
+                onViewModeChange={fileExplorer.changeViewMode}
+                shareView={shareView}
+                onShareFileOpen={fileExplorer.openShare}
+                onShareFileClose={fileExplorer.closeShare}
+                onShareRequestSignedUrl={fileExplorer.requestShareSignedUrl}
+                onChangeShareSelectedValidityDuration={
+                    fileExplorer.changeShareSelectedValidityDuration
+                }
+                onDownloadItems={onDownloadItems}
+                evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
+            />
         </div>
     );
 }
+
+export default FileExplorer;
 
 const useStyles = tss.withName({ FileExplorer }).create({
     root: {
         height: "100%",
         display: "flex",
         flexDirection: "column"
+    },
+    explorer: {
+        overflow: "hidden",
+        flex: 1,
+        width: "100%"
     }
 });
-
-const { i18n } = declareComponentKeys<
-    | "page title - file explorer"
-    | "what this page is used for - file explorer"
-    | {
-          K: "help content";
-          P: {
-              docHref: string;
-              accountTabLink: Link;
-          };
-          R: JSX.Element;
-      }
-    | "title personal"
-    | "description personal"
-    | { K: "title project"; P: { projectName: string }; R: string }
-    | { K: "description project"; P: { projectName: string }; R: string }
->()({ FileExplorer });
-export type I18n = typeof i18n;

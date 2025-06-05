@@ -327,22 +327,7 @@ export const translations: Translations<"fi"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "Omat tiedostot",
-        "what this page is used for - file explorer":
-            "Täällä voit selata S3 Bucket -tiedostojasi.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lue{" "}
-                <MuiLink href={docHref} target="_blank">
-                    dokumentaatiomme
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "S3-palvelinta ei ole määritetty",
         "dialog body":
             "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",

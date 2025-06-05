@@ -296,21 +296,7 @@ export const translations: Translations<"zh-CN"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "我的文件",
-        "what this page is used for - file explorer": "在此处存储您的数据.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                阅读{" "}
-                <MuiLink href={docHref} target="_blank">
-                    我们的文档
-                </MuiLink>
-                。&nbsp;
-                <MuiLink {...accountTabLink}>配置 Minio 客户端</MuiLink>。
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "未配置S3服务器",
         "dialog body": "此实例未配置S3服务器。但您可以手动添加一个，以启用S3文件浏览器。",
         cancel: "取消",

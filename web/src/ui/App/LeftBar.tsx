@@ -91,18 +91,11 @@ export const LeftBar = memo((props: Props) => {
                         ? "available"
                         : "not visible"
                 },
-                // {
-                //     itemId: "myFiles",
-                //     icon: customIcons.filesSvgUrl,
-                //     label: t("myFiles"),
-                //     link: routes.myFiles().link,
-                //     availability: isFileExplorerEnabled ? "available" : "not visible"
-                // },
                 {
                     itemId: "fileExplorer",
                     icon: customIcons.filesSvgUrl,
                     label: t("fileExplorer"),
-                    link: routes.fileExplorer().link,
+                    link: routes.fileExplorerEntry().link,
                     availability: isFileExplorerEnabled ? "available" : "not visible"
                 },
                 {
@@ -157,7 +150,7 @@ export const LeftBar = memo((props: Props) => {
                         return "myServices";
                     case "mySecrets":
                         return "mySecrets";
-                    case "fileExplorer":
+                    case "fileExplorerEntry":
                     case "myFiles":
                         return "fileExplorer";
                     case "sqlOlapShell":

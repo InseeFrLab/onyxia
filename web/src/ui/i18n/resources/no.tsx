@@ -326,21 +326,7 @@ export const translations: Translations<"no"> = {
             }
         }
     },
-    MyFiles: {
-        "page title - file explorer": "Mine filer",
-        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Les{" "}
-                <MuiLink href={docHref} target="_blank">
-                    dokumentasjonen vår
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Konfigurer minio-klientene</MuiLink>.
-            </>
-        )
-    },
-    MyFilesDisabledDialog: {
+    FileExplorerDisabledDialog: {
         "dialog title": "Ingen S3-server konfigurert",
         "dialog body":
             "Det er ingen S3-server konfigurert for denne instansen. Men du kan legge til en manuelt for å aktivere S3-filutforskeren.",

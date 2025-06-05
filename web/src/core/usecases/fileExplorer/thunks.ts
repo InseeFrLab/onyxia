@@ -412,66 +412,20 @@ const privateThunks = {
 
 export const thunks = {
     initialize:
-        (params: { directoryPath: string | undefined; viewMode: "list" | "block" }) =>
-        (...args): { cleanup: () => void } => {
+        (params: { directoryPath: string; viewMode: "list" | "block" }) =>
+        async (...args) => {
             const { directoryPath, viewMode } = params;
 
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch] = args;
 
-            const ctx = Evt.newCtx();
+            dispatch(actions.viewModeChanged({ viewMode }));
 
-            evtAction.attachOnce(
-                event =>
-                    event.usecaseName === "projectManagement" &&
-                    event.actionName === "projectChanged",
-                ctx,
-                () => {
-                    dispatch(
-                        thunks.initialize({
-                            viewMode: getState()[name].viewMode,
-                            directoryPath: undefined
-                        })
-                    );
-                }
+            await dispatch(
+                privateThunks.navigate({
+                    directoryPath: directoryPath,
+                    doListAgainIfSamePath: false
+                })
             );
-
-            (async () => {
-                dispatch(actions.viewModeChanged({ viewMode }));
-
-                if (directoryPath === undefined) {
-                    const inStateDirectoryPath =
-                        protectedSelectors.directoryPath(getState());
-
-                    const currentS3WorkingDirectoryPath =
-                        protectedSelectors.workingDirectoryPath(getState());
-
-                    await dispatch(
-                        privateThunks.navigate({
-                            directoryPath:
-                                inStateDirectoryPath !== undefined &&
-                                inStateDirectoryPath.startsWith(
-                                    currentS3WorkingDirectoryPath
-                                )
-                                    ? inStateDirectoryPath //we can restore to the past state
-                                    : currentS3WorkingDirectoryPath, //project has changed since last visit of myFiles
-                            doListAgainIfSamePath: true
-                        })
-                    );
-                    return;
-                }
-                await dispatch(
-                    privateThunks.navigate({
-                        directoryPath: directoryPath,
-                        doListAgainIfSamePath: false
-                    })
-                );
-            })();
-
-            const cleanup = () => {
-                ctx.done();
-            };
-
-            return { cleanup };
         },
 
     changeCurrentDirectory:

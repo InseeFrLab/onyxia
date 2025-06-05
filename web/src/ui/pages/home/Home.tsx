@@ -159,7 +159,7 @@ export default function Home(props: Props) {
                               description: t("cardText3"),
                               button: {
                                   label: t("cardButton3"),
-                                  url: routes.myFiles().link.href
+                                  url: routes.fileExplorerEntry().link.href
                               }
                           }
                       ])

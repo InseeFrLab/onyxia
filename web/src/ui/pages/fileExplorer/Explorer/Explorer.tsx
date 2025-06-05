@@ -1,7 +1,6 @@
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
-import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems";
 import { Breadcrumb } from "onyxia-ui/Breadcrumb";
@@ -75,7 +74,6 @@ export type ExplorerProps = {
     onDeleteItems: (params: { items: Item[] }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
-    scrollableDivRef: RefObject<any>;
     pathMinDepth: number;
     onOpenFile: (params: { basename: string }) => void;
     shareView: ShareView | undefined;
@@ -104,7 +102,6 @@ export const Explorer = memo((props: ExplorerProps) => {
         onCopyPath,
         changePolicy,
         onOpenFile,
-        scrollableDivRef,
         onFileSelected,
         filesBeingUploaded,
         pathMinDepth,
@@ -424,7 +421,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                     )}
                 </div>
                 <div
-                    ref={scrollableDivRef}
                     className={css({
                         flex: 1,
                         paddingRight: theme.spacing(2),
