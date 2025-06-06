@@ -112,6 +112,17 @@ const FileExplorer = withLoginEnforced((props: Props) => {
         }
     }, [currentWorkingDirectoryView === undefined]);
 
+    useEffect(() => {
+        if (currentWorkingDirectoryView === undefined) {
+            return;
+        }
+        routes[route.name]({
+            ...route.params,
+            path: currentWorkingDirectoryView.directoryPath,
+            mode: viewMode
+        }).push();
+    });
+
     const evtExplorerAction = useConst(() => Evt.create<ExplorerProps["evtAction"]>());
 
     const onOpenFile = useConstCallback<ExplorerProps["onOpenFile"]>(({ basename }) => {
