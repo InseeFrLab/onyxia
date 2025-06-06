@@ -202,7 +202,6 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                     display: "flex" as const,
                     type: "singleSelect",
                     valueOptions: ["public", "private"],
-
                     renderCell: params => {
                         return (
                             <PolicySwitch
@@ -320,6 +319,12 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
         }
     };
 
+    useEffect(() => {
+        //isBucketPolicyFeatureEnabled can change without full rendering
+        apiRef.current.setColumnVisibility("policy", isBucketPolicyFeatureEnabled);
+        apiRef.current.autosizeColumns(listAutosizeOptions);
+    }, [apiRef, isBucketPolicyFeatureEnabled]);
+
     return (
         <div className={cx(classes.root, className)}>
             <CustomDataGrid<Row>
@@ -329,9 +334,6 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                 initialState={{
                     pagination: {
                         paginationModel: { pageSize: 25, page: 0 }
-                    },
-                    columns: {
-                        columnVisibilityModel: { policy: isBucketPolicyFeatureEnabled }
                     }
                 }}
                 isRowSelectable={(params: GridRowParams<Item>) =>

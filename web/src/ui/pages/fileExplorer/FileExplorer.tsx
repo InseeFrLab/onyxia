@@ -16,13 +16,14 @@ import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import { useTranslation } from "ui/i18n";
+import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-function FileExplorer(props: Props) {
+const FileExplorer = withLoginEnforced((props: Props) => {
     const { className, route } = props;
 
     const { t } = useTranslation({ FileExplorer });
@@ -199,7 +200,7 @@ function FileExplorer(props: Props) {
             />
         </div>
     );
-}
+});
 
 export default FileExplorer;
 
