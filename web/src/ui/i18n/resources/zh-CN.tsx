@@ -21,10 +21,17 @@ export const translations: Translations<"zh-CN"> = {
         vault: "Vault"
     },
     AccountProfileTab: {
+        "account id": "账户标识符",
+        "account id helper": "与您用于登录平台的身份相关联的无形标识符",
         "user id": "用户ID",
-        "full name": "姓名",
         email: "电子邮件",
         "account management": "账户管理"
+    },
+    UserProfileForm: {
+        "customizable profile": "可定制的个人资料",
+        "customizable profile helper": "用于自动配置服务的有用信息",
+        save: "保存",
+        restore: "恢复"
     },
     AccountGitTab: {
         gitName: "Git 用户名",

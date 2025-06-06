@@ -5,6 +5,7 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigsUsecase from "core/usecases/userConfigs";
+import * as userProfileForm from "core/usecases/userProfileForm";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
@@ -209,7 +210,7 @@ export const thunks = {
                 })();
 
                 const xOnyxiaContext = await dispatch(
-                    privateThunks.getXOnyxiaContext({
+                    protectedThunks.getXOnyxiaContext({
                         s3ConfigId,
                         doInjectPersonalInfos
                     })
@@ -531,7 +532,7 @@ const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
-const privateThunks = {
+export const protectedThunks = {
     getXOnyxiaContext:
         (params: { s3ConfigId: string | undefined; doInjectPersonalInfos: boolean }) =>
         async (...args): Promise<XOnyxiaContext> => {
@@ -584,7 +585,10 @@ const privateThunks = {
                     lang: paramsOfBootstrapCore.getCurrentLang(),
                     decodedIdToken,
                     accessToken,
-                    refreshToken: refreshToken ?? ""
+                    refreshToken: refreshToken ?? "",
+                    profile: !dispatch(userProfileForm.thunks.getIsEnabled())
+                        ? undefined
+                        : userProfileForm.protectedSelectors.values(getState())
                 },
                 service: {
                     oneTimePassword: generateRandomPassword()
@@ -733,7 +737,10 @@ const privateThunks = {
             };
 
             return xOnyxiaContext;
-        },
+        }
+} satisfies Thunks;
+
+export const privateThunks = {
     getChartInfos:
         (params: {
             catalogId: string;

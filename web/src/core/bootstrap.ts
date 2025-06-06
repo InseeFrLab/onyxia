@@ -270,6 +270,10 @@ export async function bootstrapCore(
         dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
     }
 
+    if (oidc.isUserLoggedIn) {
+        await dispatch(usecases.userProfileForm.protectedThunks.initialize());
+    }
+
     pluginSystemInitCore({ core, context });
 
     return { core };

@@ -103,6 +103,42 @@ export function createOnyxiaApi(params: {
 
             return data.ip;
         },
+        getUserProfileJsonSchema: memoize(
+            async () => {
+                const { data: schemaOrEmptyString } =
+                    await axiosInstance.get<ApiTypes["/profile/schema"]>(
+                        "/profile/schema"
+                    );
+
+                const schema: JSONSchema | undefined = (() => {
+                    if (schemaOrEmptyString === "") {
+                        return undefined;
+                    }
+
+                    try {
+                        zJSONSchema.parse(schemaOrEmptyString);
+                    } catch (error) {
+                        assert(is<Error>(error));
+
+                        console.warn(
+                            "Declarative user schema isn't a valid JSON Schema",
+                            error.message
+                        );
+
+                        return undefined;
+                    }
+
+                    return schemaOrEmptyString;
+                })();
+
+                if (schema === undefined) {
+                    return undefined;
+                }
+
+                return schema;
+            },
+            { promise: true }
+        ),
         getAvailableRegionsAndOidcParams: memoize(
             async () => {
                 const { data } = await axiosInstance.get<
