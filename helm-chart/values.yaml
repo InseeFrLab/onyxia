@@ -169,91 +169,59 @@ api:
     subPathRole: role
     default:
       profileSchema: |
-        "git": {
-          "title": "Git access",
+        {
           "type": "object",
           "properties": {
-            "enabled": {
-              "title": "Enable git access from within the service",
-              "type": "boolean",
-              "default": true
-            },
-            "name": {
-              "title": "User name",
-              "type": "string",
-              "default": "",
-              "x-onyxia": {
-                "overwriteDefaultWith": "{{git.name}}"
-              },
-              "hidden": {
-                "value": false,
-                "path": "enabled",
-                "isPathRelative": true
+            "generalInfo": {
+              "type": "object",
+              "description": "General profile information",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "title": "First name",
+                  "x-onyxia": {
+                    "overwriteDefaultWith": "{{user.decodedIdToken.given_name}}"
+                  },
+                  "description": "Your first name"
+                },
+                "familyName": {
+                  "type": "string",
+                  "title": "Family name",
+                  "x-onyxia": {
+                    "overwriteDefaultWith": "{{user.decodedIdToken.family_name}}"
+                  },
+                  "description": "Your family name"
+                },
+                "email": {
+                  "type": "string",
+                  "title": "Email",
+                  "x-onyxia": {
+                    "overwriteDefaultWith": "{{user.decodedIdToken.email}}"
+                  },
+                  "description": "Your email address"
+                }
               }
             },
-            "email": {
-              "title": "User email",
-              "type": "string",
-              "default": "",
-              "x-onyxia": {
-                "overwriteDefaultWith": "{{git.email}}"
-              },
-              "hidden": {
-                "value": false,
-                "path": "enabled",
-                "isPathRelative": true
-              }
-            },
-            "cache": {
-              "title": "Credentials caching duration",
-              "description": "(in seconds)",
-              "type": "string",
-              "default": "",
-              "x-onyxia": {
-                "overwriteDefaultWith": "{{git.credentials_cache_duration}}"
-              },
-              "hidden": {
-                "value": false,
-                "path": "enabled",
-                "isPathRelative": true
-              }
-            },
-            "token": {
-              "title": "Personal Access Token",
-              "type": "string",
-              "default": "",
-              "render": "password",
-              "x-onyxia": {
-                "overwriteDefaultWith": "{{git.token}}"
-              },
-              "hidden": {
-                "value": false,
-                "path": "enabled",
-                "isPathRelative": true
-              }
-            },
-            "repository": {
-              "title": "Project repository",
-              "description": "cloned in service",
-              "type": "string",
-              "default": "",
-              "x-onyxia": {
-                "overwriteDefaultWith": "{{git.project}}"
-              },
-              "hidden": {
-                "value": false,
-                "path": "enabled",
-                "isPathRelative": true
-              }
-            },
-            "branch": {
-              "title": "Specific branch to use",
-              "type": "string",
-              "default": "",
-              "hidden": {
-                "value": false,
-                "path": "enabled",
-                "isPathRelative": true
+            "git": {
+              "type": "object",
+              "description": "Git configuration",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "title": "Git username",
+                  "x-onyxia": {
+                    "overwriteDefaultWith": "{{git.name}}"
+                  },
+                  "description": "Your username for git operations (e.g. git commit, git push)"
+                },
+                "email": {
+                  "type": "string",
+                  "title": "Git email",
+                  "description": "Your username for git operations (e.g. git commit, git push)",
+                  "x-onyxia": {
+                    "overwriteDefaultWith": "{{git.email}}"
+                  }
+                }
               }
             }
           }
