@@ -163,69 +163,70 @@ api:
     #   }
     # ]
   userProfile:
-    enabled: true
+    # See https://docs.onyxia.sh/admin-doc/catalog-of-services/customize-your-charts/declarative-user-profile
+    enabled: false
     rootPath: /userProfile/
     subPathDefault: default
     subPathRole: role
     default:
-      profileSchema: |
-        {
-          "type": "object",
-          "properties": {
-            "generalInfo": {
-              "type": "object",
-              "description": "General profile information",
-              "properties": {
-                "firstName": {
-                  "type": "string",
-                  "title": "First name",
-                  "x-onyxia": {
-                    "overwriteDefaultWith": "{{user.decodedIdToken.given_name}}"
-                  },
-                  "description": "Your first name"
-                },
-                "familyName": {
-                  "type": "string",
-                  "title": "Family name",
-                  "x-onyxia": {
-                    "overwriteDefaultWith": "{{user.decodedIdToken.family_name}}"
-                  },
-                  "description": "Your family name"
-                },
-                "email": {
-                  "type": "string",
-                  "title": "Email",
-                  "x-onyxia": {
-                    "overwriteDefaultWith": "{{user.decodedIdToken.email}}"
-                  },
-                  "description": "Your email address"
-                }
-              }
-            },
-            "git": {
-              "type": "object",
-              "description": "Git configuration",
-              "properties": {
-                "username": {
-                  "type": "string",
-                  "title": "Git username",
-                  "x-onyxia": {
-                    "overwriteDefaultWith": "{{git.name}}"
-                  },
-                  "description": "Your username for git operations (e.g. git commit, git push)"
-                },
-                "email": {
-                  "type": "string",
-                  "title": "Git email",
-                  "description": "Your username for git operations (e.g. git commit, git push)",
-                  "x-onyxia": {
-                    "overwriteDefaultWith": "{{git.email}}"
-                  }
-                }
-              }
-            }
-          }
-        }
+      # profileSchema: |
+      #   {
+      #     "type": "object",
+      #     "properties": {
+      #       "generalInfo": {
+      #         "type": "object",
+      #         "description": "General profile information",
+      #         "properties": {
+      #           "firstName": {
+      #             "type": "string",
+      #             "title": "First name",
+      #             "x-onyxia": {
+      #               "overwriteDefaultWith": "{{user.decodedIdToken.given_name}}"
+      #             },
+      #             "description": "Your first name"
+      #           },
+      #           "familyName": {
+      #             "type": "string",
+      #             "title": "Family name",
+      #             "x-onyxia": {
+      #               "overwriteDefaultWith": "{{user.decodedIdToken.family_name}}"
+      #             },
+      #             "description": "Your family name"
+      #           },
+      #           "email": {
+      #             "type": "string",
+      #             "title": "Email",
+      #             "x-onyxia": {
+      #               "overwriteDefaultWith": "{{user.decodedIdToken.email}}"
+      #             },
+      #             "description": "Your email address"
+      #           }
+      #         }
+      #       },
+      #       "git": {
+      #         "type": "object",
+      #         "description": "Git configuration",
+      #         "properties": {
+      #           "username": {
+      #             "type": "string",
+      #             "title": "Git username",
+      #             "x-onyxia": {
+      #               "overwriteDefaultWith": "{{git.name}}"
+      #             },
+      #             "description": "Your username for git operations (e.g. git commit, git push)"
+      #           },
+      #           "email": {
+      #             "type": "string",
+      #             "title": "Git email",
+      #             "description": "Your username for git operations (e.g. git commit, git push)",
+      #             "x-onyxia": {
+      #               "overwriteDefaultWith": "{{git.email}}"
+      #             }
+      #           }
+      #         }
+      #       }
+      #     }
+      #   }
     roles:
       #- roleName: datascientist
       #  profileSchema: |
