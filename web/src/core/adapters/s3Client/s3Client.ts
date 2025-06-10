@@ -655,7 +655,7 @@ export function createS3Client(
             return downloadUrl;
         },
 
-        getFileContent: async ({ path }: { path: string }) => {
+        getFileContent: async ({ path, range }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { getAwsS3Client } = await prApi;
@@ -666,7 +666,8 @@ export function createS3Client(
             const response = await awsS3Client.send(
                 new GetObjectCommand({
                     Bucket: bucketName,
-                    Key: objectName
+                    Key: objectName,
+                    ...(range !== undefined ? { Range: range } : {})
                 })
             );
 
@@ -675,7 +676,8 @@ export function createS3Client(
             return {
                 stream: response.Body,
                 lastModified: response.LastModified,
-                size: response.ContentLength
+                size: response.ContentLength,
+                contentType: response.ContentType
             };
         },
 
