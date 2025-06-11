@@ -27,8 +27,9 @@ export type State = {
               rows: any[];
               columns: Column[];
               rowCount: number | undefined;
-              fileDownloadUrl: string;
+              sourceUrl: string;
               fileType: SupportedFileType;
+              sourceType: "s3" | "http";
           }
         | undefined;
 };
@@ -41,7 +42,7 @@ namespace State {
           }
         | {
               isWellKnown: true;
-              kind: "unsupported file type" | "can't fetch file";
+              reason: "unsupported file type" | "can't fetch file";
           };
 }
 
@@ -120,19 +121,21 @@ export const { actions, reducer } = createUsecaseActions({
                     rows: any[];
                     columns: Column[];
                     rowCount: number | undefined;
-                    fileDownloadUrl: string;
                     fileType: SupportedFileType;
+                    sourceUrl: string;
+                    sourceType: "s3" | "http";
                 };
             }
         ) => {
-            const { rowCount, rows, fileDownloadUrl, columns, fileType } = payload;
+            const { rowCount, rows, sourceUrl, columns, fileType, sourceType } = payload;
             state.isQuerying = false;
             state.data = {
                 rowCount,
                 rows,
                 columns,
-                fileDownloadUrl,
-                fileType
+                sourceUrl,
+                fileType,
+                sourceType
             };
             state.extraRestorableStates = {
                 selectedRowIndex: undefined,

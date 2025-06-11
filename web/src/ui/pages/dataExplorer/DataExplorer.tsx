@@ -178,11 +178,13 @@ export default function DataExplorer(props: Props) {
                                         return error.message;
                                     }
 
-                                    switch (error.kind) {
+                                    switch (error.reason) {
                                         case "unsupported file type":
-                                            return t(error.kind, { supportedFileTypes });
+                                            return t(error.reason, {
+                                                supportedFileTypes
+                                            });
                                         case "can't fetch file":
-                                            return t(error.kind);
+                                            return t(error.reason);
                                     }
                                 })()}
                             </Alert>

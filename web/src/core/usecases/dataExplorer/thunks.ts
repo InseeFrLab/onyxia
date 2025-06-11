@@ -89,14 +89,14 @@ const privateThunks = {
                     actions.queryFailed({
                         error: {
                             isWellKnown: true,
-                            kind: result.reason
+                            reason: result.reason
                         }
                     })
                 );
                 return;
             }
 
-            const { fileDownloadUrl_direct, fileType } = result;
+            const { responseUrl, fileType, sourceType } = result;
 
             const rowCountOrErrorMessage = await (async () => {
                 if (!isSourceUrlChanged) {
@@ -131,9 +131,7 @@ const privateThunks = {
             }
             const rowsAndColumnsOrErrorMessage = await sqlOlap
                 .getRows({
-                    sourceUrl: sourceUrl.startsWith("s3://")
-                        ? sourceUrl
-                        : fileDownloadUrl_direct,
+                    sourceUrl: responseUrl,
                     rowsPerPage: rowsPerPage + 1,
                     page,
                     fileType
@@ -169,8 +167,9 @@ const privateThunks = {
                               ? undefined
                               : queryParams.rowsPerPage * (queryParams.page - 1) +
                                 rows.length,
-                    fileDownloadUrl: fileDownloadUrl_direct,
-                    fileType
+                    sourceUrl: responseUrl,
+                    fileType,
+                    sourceType
                 })
             );
         },
@@ -183,7 +182,8 @@ const privateThunks = {
             | {
                   outcome: "success";
                   fileType: SupportedFileType;
-                  fileDownloadUrl_direct: string;
+                  responseUrl: string;
+                  sourceType: "http" | "s3";
               }
         > => {
             const { sourceUrl } = params;
@@ -206,7 +206,8 @@ const privateThunks = {
                                 return {
                                     getContentType: () => undefined,
                                     getFirstBytes: () => undefined,
-                                    fileDownloadUrl_direct: fileSource.url
+                                    responseUrl: fileSource.url,
+                                    sourceType: fileSource.kind
                                 };
                             }
 
@@ -217,7 +218,8 @@ const privateThunks = {
                                     if (!response || !response.ok) return undefined;
                                     return response.arrayBuffer();
                                 },
-                                fileDownloadUrl_direct: response.url
+                                responseUrl: response.url,
+                                sourceType: fileSource.kind
                             };
                         }
 
@@ -232,11 +234,8 @@ const privateThunks = {
                             return {
                                 getContentType: () => result.contentType ?? undefined,
                                 getFirstBytes: async () => buffer,
-                                fileDownloadUrl_direct:
-                                    await fileSource.s3Client.getFileDownloadUrl({
-                                        path: fileSource.path,
-                                        validityDurationSecond: 60 * 60
-                                    })
+                                responseUrl: sourceUrl,
+                                sourceType: fileSource.kind
                             };
                         }
                     }
@@ -266,12 +265,13 @@ const privateThunks = {
                 return { outcome: "error", reason: "unsupported file type" };
             }
 
-            const { fileDownloadUrl_direct } = result;
+            const { responseUrl, sourceType } = result;
 
             return {
                 outcome: "success",
                 fileType,
-                fileDownloadUrl_direct
+                responseUrl,
+                sourceType
             };
         },
     updateDataSource:
@@ -419,6 +419,38 @@ export const thunks = {
             const { selectedRowIndex } = params;
             const [dispatch, ,] = args;
             dispatch(actions.selectedRowIndexSet({ selectedRowIndex }));
+        },
+    getDownloadUrlAndFilename:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { data } = getState()[name];
+
+            assert(data !== undefined, "Data is not available");
+
+            if (data.sourceType === "http") {
+                return {
+                    fileDownloadUrl: data.sourceUrl,
+                    filename: `data.${data.fileType}`
+                };
+            }
+
+            const s3Client = (
+                await dispatch(
+                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                )
+            )?.s3Client;
+
+            assert(s3Client !== undefined, "S3 client is not available");
+
+            const result = await s3Client.getFileContent({ path: data.sourceUrl });
+            const buffer = await streamToArrayBuffer(result.stream);
+
+            const blob = new Blob([buffer]);
+            const blobUrl = URL.createObjectURL(blob);
+
+            return { fileDownloadUrl: blobUrl, filename: `data.${data.fileType}` };
         }
 } satisfies Thunks;
 
