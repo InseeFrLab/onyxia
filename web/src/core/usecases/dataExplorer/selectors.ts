@@ -47,7 +47,6 @@ const main = createSelector(state, columns, (state, columns) => {
         rowCount: data.rowCount,
         queryParams,
         extraRestorableStates,
-        fileDownloadUrl: data.fileDownloadUrl,
         columns
     };
 });

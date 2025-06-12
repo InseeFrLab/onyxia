@@ -5,11 +5,12 @@ import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import DataExplorer from "./DataExplorer";
-import { useCoreState } from "core";
+import { useCore } from "core";
 import { BaseBar } from "onyxia-ui/BaseBar";
 import { CustomDataGridToolbarDensitySelector } from "ui/shared/Datagrid/CustomDataGridToolbarDensitySelector";
 import { CustomDataGridToolbarColumnsButton } from "ui/shared/Datagrid/CustomDataGridToolbarColumnsButton";
 import { autosizeOptions } from "ui/shared/Datagrid/CustomDataGrid";
+import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 
 export const SlotsDataGridToolbar = memo(() => {
     const { classes } = useStyles();
@@ -52,13 +53,21 @@ function ResizeButton() {
 function DownloadButton() {
     const { t } = useTranslation({ DataExplorer });
 
-    const { fileDownloadUrl } = useCoreState("dataExplorer", "main");
+    const {
+        dataExplorer: { getDownloadUrl }
+    } = useCore().functions;
 
     return (
         <ButtonBarButton
             startIcon={getIconUrlByName("Download")}
-            href={fileDownloadUrl}
-            doOpenNewTabIfHref={true}
+            onClick={async () => {
+                const { fileDownloadUrl } = await getDownloadUrl();
+
+                triggerBrowserDownload({
+                    url: fileDownloadUrl,
+                    filename: "" // The navigateur will handle filename automatically
+                });
+            }}
         >
             {t("download file")}
         </ButtonBarButton>

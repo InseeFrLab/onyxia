@@ -8,9 +8,10 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { inferFileType } from "./decoupledLogic/inferFileType";
 import type { SupportedFileType } from "./decoupledLogic/SupportedFileType";
 import memoize from "memoizee";
+import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
 
 const privateThunks = {
-    getFileDownloadUrl:
+    resolveFileSource:
         (params: { sourceUrl: string }) =>
         async (...args) => {
             const [dispatch, , { oidc }] = args;
@@ -18,10 +19,13 @@ const privateThunks = {
             const { sourceUrl } = params;
 
             if (sourceUrl.startsWith("https://")) {
-                return sourceUrl;
+                return {
+                    kind: "http" as const,
+                    url: sourceUrl
+                };
             }
 
-            const s3path = sourceUrl.replace(/^s3:\/\//, "/");
+            const s3path = sourceUrl.replace(/^s3:\/\//, "");
             assert(s3path !== sourceUrl, "Unsupported protocol");
 
             if (!oidc.isUserLoggedIn) {
@@ -41,10 +45,12 @@ const privateThunks = {
                 assert(false);
             }
 
-            return s3Client.getFileDownloadUrl({
+            return {
+                kind: "s3" as const,
+                url: sourceUrl,
                 path: s3path,
-                validityDurationSecond: 3600 * 6
-            });
+                s3Client
+            };
         },
     performQuery:
         (params: {
@@ -83,14 +89,14 @@ const privateThunks = {
                     actions.queryFailed({
                         error: {
                             isWellKnown: true,
-                            kind: result.reason
+                            reason: result.reason
                         }
                     })
                 );
                 return;
             }
 
-            const { fileDownloadUrl_direct, fileType } = result;
+            const { responseUrl, fileType, sourceType } = result;
 
             const rowCountOrErrorMessage = await (async () => {
                 if (!isSourceUrlChanged) {
@@ -125,9 +131,7 @@ const privateThunks = {
             }
             const rowsAndColumnsOrErrorMessage = await sqlOlap
                 .getRows({
-                    sourceUrl: sourceUrl.startsWith("s3://")
-                        ? sourceUrl
-                        : fileDownloadUrl_direct,
+                    sourceUrl: responseUrl,
                     rowsPerPage: rowsPerPage + 1,
                     page,
                     fileType
@@ -163,8 +167,9 @@ const privateThunks = {
                               ? undefined
                               : queryParams.rowsPerPage * (queryParams.page - 1) +
                                 rows.length,
-                    fileDownloadUrl: fileDownloadUrl_direct,
-                    fileType
+                    sourceUrl: responseUrl,
+                    fileType,
+                    sourceType
                 })
             );
         },
@@ -177,7 +182,8 @@ const privateThunks = {
             | {
                   outcome: "success";
                   fileType: SupportedFileType;
-                  fileDownloadUrl_direct: string;
+                  responseUrl: string;
+                  sourceType: "http" | "s3";
               }
         > => {
             const { sourceUrl } = params;
@@ -185,29 +191,54 @@ const privateThunks = {
 
             const partialFetch = memoize(
                 async () => {
-                    const fileDownloadUrl = await dispatch(
-                        privateThunks.getFileDownloadUrl({ sourceUrl })
+                    const fileSource = await dispatch(
+                        privateThunks.resolveFileSource({ sourceUrl })
                     );
 
-                    const responseOrError = await fetch(fileDownloadUrl, {
-                        method: "GET",
-                        headers: { Range: "bytes=0-15" } // Fetch the first 16 bytes
-                    }).catch(error => error as Error);
+                    switch (fileSource.kind) {
+                        case "http": {
+                            const response = await fetch(fileSource.url, {
+                                method: "GET",
+                                headers: { Range: "bytes=0-15" }
+                            });
 
-                    if (responseOrError instanceof Error) {
-                        return undefined;
+                            if (response instanceof Error || !response.ok) {
+                                return {
+                                    getContentType: () => undefined,
+                                    getFirstBytes: () => undefined,
+                                    responseUrl: fileSource.url,
+                                    sourceType: fileSource.kind
+                                };
+                            }
+
+                            return {
+                                getContentType: () =>
+                                    response?.headers.get("Content-Type") ?? undefined,
+                                getFirstBytes: async () => {
+                                    if (!response || !response.ok) return undefined;
+                                    return response.arrayBuffer();
+                                },
+                                responseUrl: response.url,
+                                sourceType: fileSource.kind
+                            };
+                        }
+
+                        case "s3": {
+                            const result = await fileSource.s3Client.getFileContent({
+                                path: fileSource.path,
+                                range: "bytes=0-15"
+                            });
+
+                            const buffer = await streamToArrayBuffer(result.stream);
+
+                            return {
+                                getContentType: () => result.contentType ?? undefined,
+                                getFirstBytes: async () => buffer,
+                                responseUrl: sourceUrl,
+                                sourceType: fileSource.kind
+                            };
+                        }
                     }
-
-                    const response = responseOrError;
-
-                    if (!response.ok) {
-                        return undefined;
-                    }
-
-                    return {
-                        response,
-                        fileDownloadUrl_direct: response.url
-                    };
                 },
                 { promise: true }
             );
@@ -216,25 +247,11 @@ const privateThunks = {
                 sourceUrl,
                 getContentType: async () => {
                     const result = await partialFetch();
-
-                    if (result === undefined) {
-                        return null;
-                    }
-
-                    const { response } = result;
-
-                    return response.headers.get("Content-Type");
+                    return result.getContentType();
                 },
                 getFirstBytes: async () => {
                     const result = await partialFetch();
-
-                    if (result === undefined) {
-                        return undefined;
-                    }
-
-                    const { response } = result;
-
-                    return response.arrayBuffer();
+                    return result.getFirstBytes();
                 }
             });
 
@@ -248,12 +265,13 @@ const privateThunks = {
                 return { outcome: "error", reason: "unsupported file type" };
             }
 
-            const { fileDownloadUrl_direct } = result;
+            const { responseUrl, sourceType } = result;
 
             return {
                 outcome: "success",
                 fileType,
-                fileDownloadUrl_direct
+                responseUrl,
+                sourceType
             };
         },
     updateDataSource:
@@ -401,6 +419,37 @@ export const thunks = {
             const { selectedRowIndex } = params;
             const [dispatch, ,] = args;
             dispatch(actions.selectedRowIndexSet({ selectedRowIndex }));
+        },
+    getDownloadUrl:
+        () =>
+        async (...args): Promise<{ fileDownloadUrl: string }> => {
+            const [dispatch, getState] = args;
+
+            const { data } = getState()[name];
+
+            assert(data !== undefined, "Data is not available");
+
+            if (data.sourceType === "http") {
+                return {
+                    fileDownloadUrl: data.sourceUrl
+                };
+            }
+
+            const s3Client = (
+                await dispatch(
+                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                )
+            )?.s3Client;
+
+            assert(s3Client !== undefined, "S3 client is not available");
+
+            const result = await s3Client.getFileContent({ path: data.sourceUrl });
+            const buffer = await streamToArrayBuffer(result.stream);
+
+            const blob = new Blob([buffer]);
+            const blobUrl = URL.createObjectURL(blob);
+
+            return { fileDownloadUrl: blobUrl };
         }
 } satisfies Thunks;
 
