@@ -420,9 +420,9 @@ export const thunks = {
             const [dispatch, ,] = args;
             dispatch(actions.selectedRowIndexSet({ selectedRowIndex }));
         },
-    getDownloadUrl:
+    getDownloadUrlAndFilename:
         () =>
-        async (...args): Promise<{ fileDownloadUrl: string }> => {
+        async (...args): Promise<{ fileDownloadUrl: string; filename: string }> => {
             const [dispatch, getState] = args;
 
             const { data } = getState()[name];
@@ -431,7 +431,8 @@ export const thunks = {
 
             if (data.sourceType === "http") {
                 return {
-                    fileDownloadUrl: data.sourceUrl
+                    fileDownloadUrl: data.sourceUrl,
+                    filename: ""
                 };
             }
 
@@ -449,7 +450,15 @@ export const thunks = {
             const blob = new Blob([buffer]);
             const blobUrl = URL.createObjectURL(blob);
 
-            return { fileDownloadUrl: blobUrl };
+            const baseFilename = (() => {
+                const lastPart = data.sourceUrl.split("/").pop();
+                return lastPart?.split(".")[0] ?? "data";
+            })();
+
+            return {
+                fileDownloadUrl: blobUrl,
+                filename: `${baseFilename}.${data.fileType}`
+            };
         }
 } satisfies Thunks;
 
