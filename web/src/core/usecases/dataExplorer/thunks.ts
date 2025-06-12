@@ -420,9 +420,9 @@ export const thunks = {
             const [dispatch, ,] = args;
             dispatch(actions.selectedRowIndexSet({ selectedRowIndex }));
         },
-    getDownloadUrlAndFilename:
+    getDownloadUrl:
         () =>
-        async (...args) => {
+        async (...args): Promise<{ fileDownloadUrl: string }> => {
             const [dispatch, getState] = args;
 
             const { data } = getState()[name];
@@ -431,8 +431,7 @@ export const thunks = {
 
             if (data.sourceType === "http") {
                 return {
-                    fileDownloadUrl: data.sourceUrl,
-                    filename: `data.${data.fileType}`
+                    fileDownloadUrl: data.sourceUrl
                 };
             }
 
@@ -450,7 +449,7 @@ export const thunks = {
             const blob = new Blob([buffer]);
             const blobUrl = URL.createObjectURL(blob);
 
-            return { fileDownloadUrl: blobUrl, filename: `data.${data.fileType}` };
+            return { fileDownloadUrl: blobUrl };
         }
 } satisfies Thunks;
 

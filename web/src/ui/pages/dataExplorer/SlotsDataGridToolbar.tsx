@@ -54,18 +54,18 @@ function DownloadButton() {
     const { t } = useTranslation({ DataExplorer });
 
     const {
-        dataExplorer: { getDownloadUrlAndFilename: getDownloadUrl }
+        dataExplorer: { getDownloadUrl }
     } = useCore().functions;
 
     return (
         <ButtonBarButton
             startIcon={getIconUrlByName("Download")}
             onClick={async () => {
-                const { fileDownloadUrl, filename } = await getDownloadUrl();
+                const { fileDownloadUrl } = await getDownloadUrl();
 
                 triggerBrowserDownload({
                     url: fileDownloadUrl,
-                    filename
+                    filename: "" // The navigateur will handle filename automatically
                 });
             }}
         >
