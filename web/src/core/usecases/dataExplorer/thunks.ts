@@ -247,7 +247,7 @@ const privateThunks = {
                 sourceUrl,
                 getContentType: async () => {
                     const result = await partialFetch();
-                    return result.getContentType() ?? null;
+                    return result.getContentType();
                 },
                 getFirstBytes: async () => {
                     const result = await partialFetch();

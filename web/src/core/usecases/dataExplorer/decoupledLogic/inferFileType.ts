@@ -85,7 +85,7 @@ async function inferFileType_fromBytes(firstBytes: ArrayBuffer) {
 
 export async function inferFileType(params: {
     sourceUrl: string;
-    getContentType: () => Promise<string | null>;
+    getContentType: () => Promise<string | undefined>;
     getFirstBytes: () => Promise<ArrayBuffer | undefined>;
 }): Promise<SupportedFileType | undefined> {
     const { sourceUrl, getContentType, getFirstBytes } = params;
@@ -103,7 +103,7 @@ export async function inferFileType(params: {
     content_type: {
         const contentType = await getContentType();
 
-        if (contentType === null) {
+        if (contentType === undefined) {
             break content_type;
         }
 
