@@ -58,7 +58,7 @@
         "evt": "^2.5.9",
         "fflate": "^0.8.2",
         "file-saver": "^2.0.5",
-        "flexsearch": "0.8.205",
+        "flexsearch": "0.7.43",
         "i18nifty": "^3.2.6",
         "json5": "2.2.3",
         "keycloakify": "^11.8.27",
