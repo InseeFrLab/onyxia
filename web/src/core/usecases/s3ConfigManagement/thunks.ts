@@ -12,8 +12,29 @@ import { updateDefaultS3ConfigsAfterPotentialDeletion } from "./decoupledLogic/u
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import { exclude } from "tsafe/exclude";
+import { actions } from "./state";
 
 export const thunks = {
+    initialize:
+        () =>
+        (...args) => {
+            const [dispatch, getState, rootContext] = args;
+
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
+
+            const { paramsOfCreateS3Client } = s3Config;
+
+            assert(paramsOfCreateS3Client.isStsEnabled);
+
+            const s3Config_region = region.s3Configs.find(
+                ({ sts }) =>
+                    sts.oidcParams.issuerUri ===
+                        paramsOfCreateS3Client.oidcParams.issuerUri &&
+                    sts.oidcParams.clientId === paramsOfCreateS3Client.oidcParams.clientId
+            );
+        },
     testS3Connection:
         (params: { projectS3ConfigId: string }) =>
         async (...args) => {
@@ -193,7 +214,7 @@ export const protectedThunks = {
                             enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
                         });
 
-                        const doClearCachedS3Token: boolean = await (async () => {
+                        const doClearCachedS3Token_project: boolean = await (async () => {
                             const { projects } = await onyxiaApi.getUserAndProjects();
 
                             const KEY = "onyxia:s3:projects-hash";
@@ -211,7 +232,70 @@ export const protectedThunks = {
                             return true;
                         })();
 
-                        return { oidc: oidc_s3, doClearCachedS3Token };
+                        const doClearCachedS3Token_bookmarkClaim: boolean =
+                            await (async () => {
+                                const region =
+                                    deploymentRegionManagement.selectors.currentDeploymentRegion(
+                                        getState()
+                                    );
+
+                                const { paramsOfCreateS3Client } = s3Config;
+
+                                assert(paramsOfCreateS3Client.isStsEnabled);
+
+                                const s3Config_region = region.s3Configs.find(
+                                    ({ sts }) =>
+                                        sts.oidcParams.issuerUri ===
+                                            paramsOfCreateS3Client.oidcParams.issuerUri &&
+                                        sts.oidcParams.clientId ===
+                                            paramsOfCreateS3Client.oidcParams.clientId
+                                );
+
+                                assert(s3Config_region !== undefined);
+
+                                const { decodedIdToken } = await oidc_s3.getTokens();
+
+                                const KEY = "onyxia:s3:bookmark-claim";
+
+                                const hash = fnv1aHashToHex(
+                                    s3Config_region.bookmarkedDirectories
+                                        .map(bookmark => {
+                                            if (bookmark.claimName === undefined) {
+                                                return undefined;
+                                            }
+
+                                            const value =
+                                                decodedIdToken[bookmark.claimName];
+
+                                            if (value === undefined) {
+                                                return undefined;
+                                            }
+
+                                            return value;
+                                        })
+                                        .filter(exclude(undefined))
+                                        .map(x => JSON.stringify(x))
+                                        .sort((a, b) => a.localeCompare(b))
+                                        .join("_")
+                                );
+
+                                if (
+                                    !oidc_s3.isNewBrowserSession &&
+                                    sessionStorage.getItem(KEY) === hash
+                                ) {
+                                    return false;
+                                }
+
+                                sessionStorage.setItem(KEY, hash);
+                                return true;
+                            })();
+
+                        return {
+                            oidc: oidc_s3,
+                            doClearCachedS3Token:
+                                doClearCachedS3Token_project ||
+                                doClearCachedS3Token_bookmarkClaim
+                        };
                     }
                 );
             })();
@@ -274,6 +358,39 @@ export const protectedThunks = {
                 projectManagement.protectedThunks.updateConfigValue({
                     key: "s3",
                     value: projectConfigsS3
+                })
+            );
+        },
+    initialize:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
+
+            region.s3Configs.find(s3Config => {
+                return s3Config.sts.oidcParams !== undefined;
+            });
+
+            const { paramsOfCreateS3Client } = r;
+
+            assert(paramsOfCreateS3Client.isStsEnabled);
+
+            const s3Config_region = region.s3Configs.find(
+                ({ sts }) =>
+                    sts.oidcParams.issuerUri ===
+                        paramsOfCreateS3Client.oidcParams.issuerUri &&
+                    sts.oidcParams.clientId === paramsOfCreateS3Client.oidcParams.clientId
+            );
+
+            assert(s3Config_region !== undefined);
+
+            const { decodedIdToken } = await oidc_s3.getTokens();
+
+            await dispatch(
+                actions.initialized({
+                    bookmarkClaimValue: []
                 })
             );
         }
