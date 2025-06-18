@@ -10,7 +10,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
-type DataSourceType = "personal" | "project" | "admin bookmark";
+type DataSourceType = "personal" | "project" | "bookmark";
 
 type Props = {
     title: string;
@@ -59,7 +59,7 @@ const useStyles = tss
         const typeColors = {
             personal: theme.colors.useCases.alertSeverity.success.main,
             project: theme.colors.useCases.alertSeverity.info.main,
-            "admin bookmark": theme.colors.useCases.alertSeverity.warning.main
+            bookmark: theme.colors.useCases.alertSeverity.warning.main
         };
 
         return {

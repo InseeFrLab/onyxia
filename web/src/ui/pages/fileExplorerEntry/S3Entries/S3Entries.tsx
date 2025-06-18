@@ -3,7 +3,7 @@ import { S3EntryCard } from "./S3EntryCard";
 import { routes } from "ui/routes";
 
 type S3Entry = {
-    type: "personal" | "project" | "admin bookmark";
+    type: "personal" | "project" | "bookmark";
     directoryPath: string;
     title: string;
     description: string | undefined;

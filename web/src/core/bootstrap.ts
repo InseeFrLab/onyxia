@@ -274,6 +274,10 @@ export async function bootstrapCore(
         await dispatch(usecases.userProfileForm.protectedThunks.initialize());
     }
 
+    if (oidc.isUserLoggedIn) {
+        await dispatch(usecases.s3ConfigManagement.protectedThunks.initialize());
+    }
+
     pluginSystemInitCore({ core, context });
 
     return { core };

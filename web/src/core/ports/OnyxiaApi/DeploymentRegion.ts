@@ -134,11 +134,35 @@ export namespace DeploymentRegion {
                   bucketNamePrefixGroup: string;
               };
 
-        bookmarkedDirectory: {
-            bucketName: string;
-            path: string | undefined;
+        // bookmarkedDirectory: {
+        //     bucketName: string;
+        //     path: string | undefined;
+        //     title: LocalizedString;
+        //     description: LocalizedString | undefined;
+        // }[];
+        bookmarkedDirectories: BookmarkedDirectoryEntry[];
+    };
+
+    type BookmarkedDirectoryEntry =
+        | BookmarkedDirectoryEntry.Static
+        | BookmarkedDirectoryEntry.Dynamic;
+
+    namespace BookmarkedDirectoryEntry {
+        type Common = {
+            fullPath: string;
             title: LocalizedString;
             description: LocalizedString | undefined;
-        }[];
-    };
+            tags: string[] | undefined;
+        };
+
+        export type Static = Common & {
+            claimName: undefined;
+        };
+
+        export type Dynamic = Common & {
+            claimName: string;
+            includedClaimPattern?: string;
+            excludedClaimPattern?: string;
+        };
+    }
 }

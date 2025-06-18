@@ -18,6 +18,7 @@ import {
     removeResourceArnInGetObjectStatement
 } from "./utils/bucketPolicy";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi";
+import { decodeJwt } from "core/tools/decodeJwt";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -73,7 +74,8 @@ export function createS3Client(
                               secretAccessKey: params.credentials.secretAccessKey,
                               sessionToken: params.credentials.sessionToken,
                               expirationTime: undefined,
-                              acquisitionTime: undefined
+                              acquisitionTime: undefined,
+                              bookmarkClaimValue: undefined
                           };
 
                 return {
@@ -304,6 +306,18 @@ export function createS3Client(
             }
 
             return getNewlyRequestedOrCachedToken();
+        },
+        getSessionTokenClaim: async ({ claimName }) => {
+            const { getNewlyRequestedOrCachedToken } = await prApi;
+            const token = await getNewlyRequestedOrCachedToken();
+
+            if (token === undefined) {
+                return undefined;
+            }
+
+            const decodedSessionToken = decodeJwt(token.sessionToken);
+
+            return decodedSessionToken[claimName];
         },
         listObjects: async ({ path }) => {
             const { bucketName, prefix } = (() => {

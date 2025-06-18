@@ -52,7 +52,7 @@ function FileExplorerEntry(props: Props) {
         directoryPath: location.directoryPath,
         ...(() => {
             switch (location.type) {
-                case "admin bookmark":
+                case "bookmark":
                     return {
                         title: resolveLocalizedString(location.title),
                         description:

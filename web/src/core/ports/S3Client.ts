@@ -31,6 +31,8 @@ export type S3Client = {
         | undefined
     >;
 
+    getSessionTokenClaim: (params: { claimName: string }) => Promise<unknown | undefined>;
+
     /**
      *  In charge of creating bucket if doesn't exist.
      */

@@ -23,31 +23,35 @@ export namespace S3Config {
         isExplorerConfig: boolean;
     };
 
-    export namespace FromDeploymentRegion {
-        type Common = { directoryPath: string };
-
-        export type PersonalLocation = Common & {
-            type: "personal";
-        };
-
-        export type ProjectLocation = Common & {
-            type: "project";
-            projectName: string;
-        };
-        export type AdminBookmarkLocation = Common & {
-            type: "admin bookmark";
-            title: LocalizedString;
-            description?: LocalizedString;
-        };
-
-        export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;
-    }
-
     export type FromDeploymentRegion = Common & {
         origin: "deploymentRegion";
         paramsOfCreateS3Client: ParamsOfCreateS3Client;
         locations: FromDeploymentRegion.Location[];
     };
+
+    export namespace FromDeploymentRegion {
+        export type Location = Location.Personal | Location.Project | Location.Bookmark;
+
+        export namespace Location {
+            type Common = { directoryPath: string };
+
+            export type Personal = Common & {
+                type: "personal";
+            };
+
+            export type Project = Common & {
+                type: "project";
+                projectName: string;
+            };
+
+            export type Bookmark = Common & {
+                type: "bookmark";
+                title: LocalizedString;
+                description?: LocalizedString;
+                tags?: string[];
+            };
+        }
+    }
 
     export type FromProject = Common & {
         origin: "project";
@@ -242,12 +246,26 @@ export function getS3Configs(params: {
             };
 
             const adminBookmarks: S3Config.FromDeploymentRegion.AdminBookmarkLocation[] =
-                c.bookmarkedDirectory.map(({ title, description, bucketName, path }) => ({
-                    title,
-                    description,
-                    type: "admin bookmark",
-                    directoryPath: `${bucketName}/${path ?? ""}`
-                }));
+                c.bookmarkedDirectory.map(
+                    ({
+                        title,
+                        description,
+                        fullPath,
+                        tags,
+                        claimName,
+                        excludedClaimPattern,
+                        includedClaimPattern
+                    }) => ({
+                        title,
+                        description,
+                        type: "bookmark",
+                        directoryPath: fullPath,
+                        claimName,
+                        excludedClaimPattern,
+                        includedClaimPattern,
+                        tags
+                    })
+                );
 
             const projectsLocations: S3Config.FromDeploymentRegion.ProjectLocation[] =
                 groupProjects.map(({ group }) => {
