@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { selectors } from "./selectors";
+import { selectors, privateSelectors } from "./selectors";
 import type { S3Config } from "./decoupledLogic/getS3Configs";
 import * as projectManagement from "core/usecases/projectManagement";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
@@ -12,6 +12,8 @@ import { updateDefaultS3ConfigsAfterPotentialDeletion } from "./decoupledLogic/u
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import { resolveS3AdminBookmarks } from "./decoupledLogic/resolveS3AdminBookmarks";
+import { actions } from "./state";
 
 export const thunks = {
     testS3Connection:
@@ -193,25 +195,53 @@ export const protectedThunks = {
                             enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
                         });
 
-                        const doClearCachedS3Token: boolean = await (async () => {
-                            const { projects } = await onyxiaApi.getUserAndProjects();
+                        const doClearCachedS3Token_groupClaimValue: boolean =
+                            await (async () => {
+                                const { projects } = await onyxiaApi.getUserAndProjects();
 
-                            const KEY = "onyxia:s3:projects-hash";
+                                const KEY = "onyxia:s3:projects-hash";
 
-                            const hash = fnv1aHashToHex(JSON.stringify(projects));
+                                const hash = fnv1aHashToHex(JSON.stringify(projects));
 
-                            if (
-                                !oidc_s3.isNewBrowserSession &&
-                                sessionStorage.getItem(KEY) === hash
-                            ) {
-                                return false;
-                            }
+                                if (
+                                    !oidc_s3.isNewBrowserSession &&
+                                    sessionStorage.getItem(KEY) === hash
+                                ) {
+                                    return false;
+                                }
 
-                            sessionStorage.setItem(KEY, hash);
-                            return true;
-                        })();
+                                sessionStorage.setItem(KEY, hash);
+                                return true;
+                            })();
 
-                        return { oidc: oidc_s3, doClearCachedS3Token };
+                        const doClearCachedS3Token_s3BookmarkClaimValue: boolean =
+                            (() => {
+                                const resolvedAdminBookmarks =
+                                    privateSelectors.resolvedAdminBookmarks(getState());
+
+                                const KEY = "onyxia:s3:resolvedAdminBookmarks-hash";
+
+                                const hash = fnv1aHashToHex(
+                                    JSON.stringify(resolvedAdminBookmarks)
+                                );
+
+                                if (
+                                    !oidc_s3.isNewBrowserSession &&
+                                    sessionStorage.getItem(KEY) === hash
+                                ) {
+                                    return false;
+                                }
+
+                                sessionStorage.setItem(KEY, hash);
+                                return true;
+                            })();
+
+                        return {
+                            oidc: oidc_s3,
+                            doClearCachedS3Token:
+                                doClearCachedS3Token_groupClaimValue ||
+                                doClearCachedS3Token_s3BookmarkClaimValue
+                        };
                     }
                 );
             })();
@@ -276,6 +306,46 @@ export const protectedThunks = {
                     value: projectConfigsS3
                 })
             );
+        },
+
+    initialize:
+        () =>
+        async (...args) => {
+            const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
+
+            const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+            assert(oidcParams !== undefined);
+
+            const deploymentRegion =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
+
+            const { resolvedAdminBookmarks } = await resolveS3AdminBookmarks({
+                deploymentRegion_s3Configs: deploymentRegion.s3Configs,
+                getDecodedIdToken: async ({ oidcParams_partial }) => {
+                    const { createOidc, mergeOidcParams } = await import(
+                        "core/adapters/oidc"
+                    );
+
+                    const oidc = await createOidc({
+                        ...mergeOidcParams({
+                            oidcParams,
+                            oidcParams_partial
+                        }),
+                        autoLogin: true,
+                        transformBeforeRedirectForKeycloakTheme:
+                            paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
+                        getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
+                        enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                    });
+
+                    const { decodedIdToken } = await oidc.getTokens();
+
+                    return decodedIdToken;
+                }
+            });
+
+            dispatch(actions.initialized({ resolvedAdminBookmarks }));
         }
 } satisfies Thunks;
 
