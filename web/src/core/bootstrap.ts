@@ -16,7 +16,7 @@ import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
-type ParamsOfBootstrapCore = {
+export type ParamsOfBootstrapCore = {
     apiUrl: string;
     transformBeforeRedirectForKeycloakTheme: (params: {
         authorizationUrl: string;
@@ -272,6 +272,10 @@ export async function bootstrapCore(
 
     if (oidc.isUserLoggedIn) {
         await dispatch(usecases.userProfileForm.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
+        await dispatch(usecases.s3ConfigManagement.protectedThunks.initialize());
     }
 
     pluginSystemInitCore({ core, context });
