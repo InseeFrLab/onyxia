@@ -4,7 +4,6 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
 import { useConstCallback } from "powerhooks/useConstCallback";
-
 //Look in my-files.component.tsx
 export type InputFileProps = {
     evtAction: NonPostableEvt<"TRIGGER">;
@@ -43,7 +42,7 @@ export const InputFile = memo((props: InputFileProps) => {
         <input
             aria-hidden="true"
             type="file"
-            multiple={true}
+            multiple
             style={{ display: "none" }}
             ref={ref}
             onChange={onChange}
