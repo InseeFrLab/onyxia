@@ -45,6 +45,7 @@ import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
 import type { ShareView } from "core/usecases/fileExplorer";
 import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
+import { UploadFab } from "ui/shared/UploadFab";
 
 export type ExplorerProps = {
     /**
@@ -475,6 +476,12 @@ export const Explorer = memo((props: ExplorerProps) => {
                         assert<Equals<typeof viewMode, never>>();
                     })()}
                 </div>
+                {filesBeingUploaded.length > 0 && (
+                    <UploadFab
+                        onClick={() => setIsUploadModalOpen(true)}
+                        className={classes.uploadFab}
+                    />
+                )}
             </div>
             <CreateS3DirectoryDialog
                 state={createS3DirectoryDialogState}
@@ -589,6 +596,11 @@ const useStyles = tss
         fileOrDirectoryIcon: {
             height: "unset",
             width: "100%"
+        },
+        uploadFab: {
+            position: "absolute",
+            bottom: theme.spacing(2),
+            right: theme.spacing(4)
         }
     }));
 
