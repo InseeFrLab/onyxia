@@ -765,7 +765,68 @@ describe(symToStr({ computeHelmValues }), () => {
                                     type: "string",
                                     pattern: "^.+$"
                                 }
+                            },
+                            required: ["p"]
+                        }
+                    }
+                },
+                required: ["r"]
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("Overwrite array", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            a: {
+                b: [{ p: "foo" }, { p: "bar" }, { p: "baz" }]
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{a.b}}"
+                        },
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                }
                             }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        const expected = {
+            helmValues: { r: [{ p: "foo" }, { p: "bar" }, { p: "baz" }] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [{ p: "foo" }, { p: "bar" }, { p: "baz" }],
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                }
+                            },
+                            required: ["p"]
                         }
                     }
                 },

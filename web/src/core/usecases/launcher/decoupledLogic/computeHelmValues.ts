@@ -71,6 +71,12 @@ export function computeHelmValues(params: {
 
     const helmValuesSchema_forDataTextEditor = structuredClone(helmValuesSchema);
 
+    editHelmValuesSchemaForDataTextEditor({
+        helmValuesSchema,
+        helmValuesSchema_forDataTextEditor,
+        xOnyxiaContext
+    });
+
     let isChartUsingS3 = false;
 
     const helmValuesYaml_parsed = (() => {
@@ -153,26 +159,7 @@ export function computeHelmValues_rec(params: {
         helmValuesSchema_forDataTextEditor
     } = params;
 
-    for_text_editor_only: {
-        if (helmValuesSchema_forDataTextEditor === undefined) {
-            break for_text_editor_only;
-        }
-
-        delete helmValuesSchema_forDataTextEditor.listEnum;
-        delete helmValuesSchema_forDataTextEditor["x-onyxia"];
-        delete helmValuesSchema_forDataTextEditor.render;
-
-        {
-            const resolvedEnum = resolveEnum({
-                helmValuesSchema,
-                xOnyxiaContext
-            });
-
-            if (resolvedEnum !== undefined) {
-                helmValuesSchema_forDataTextEditor.enum = resolvedEnum;
-            }
-        }
-    }
+    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
 
     use_const: {
         const constValue = helmValuesSchema.const;
@@ -196,8 +183,6 @@ export function computeHelmValues_rec(params: {
         return constValue;
     }
 
-    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
-
     schema_is_object_with_known_properties: {
         if (helmValuesSchemaType !== "object") {
             break schema_is_object_with_known_properties;
@@ -207,10 +192,6 @@ export function computeHelmValues_rec(params: {
 
         if (properties === undefined) {
             break schema_is_object_with_known_properties;
-        }
-
-        if (helmValuesSchema_forDataTextEditor !== undefined) {
-            helmValuesSchema_forDataTextEditor.required = Object.keys(properties);
         }
 
         return Object.fromEntries(
@@ -389,4 +370,137 @@ export function computeHelmValues_rec(params: {
     }
 
     assert(false, `Can't resolve value ${JSON.stringify(params, null, 2)}`);
+}
+
+export function editHelmValuesSchemaForDataTextEditor(params: {
+    helmValuesSchema: JSONSchemaLike;
+    xOnyxiaContext: XOnyxiaContextLike_computeHelmValues_rec;
+    helmValuesSchema_forDataTextEditor: JSONSchemaLike | undefined;
+}): void {
+    const { helmValuesSchema, xOnyxiaContext, helmValuesSchema_forDataTextEditor } =
+        params;
+
+    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
+
+    for_text_editor_only: {
+        if (helmValuesSchema_forDataTextEditor === undefined) {
+            break for_text_editor_only;
+        }
+
+        delete helmValuesSchema_forDataTextEditor.listEnum;
+        delete helmValuesSchema_forDataTextEditor["x-onyxia"];
+        delete helmValuesSchema_forDataTextEditor.render;
+
+        {
+            const resolvedEnum = resolveEnum({
+                helmValuesSchema,
+                xOnyxiaContext
+            });
+
+            if (resolvedEnum !== undefined) {
+                helmValuesSchema_forDataTextEditor.enum = resolvedEnum;
+            }
+        }
+
+        add_required_object: {
+            if (helmValuesSchemaType !== "object") {
+                break add_required_object;
+            }
+
+            const { properties } = helmValuesSchema;
+
+            if (properties === undefined) {
+                break add_required_object;
+            }
+
+            helmValuesSchema_forDataTextEditor.required = Object.keys(properties);
+        }
+
+        add_required_properties_for_dataTextEditor: {
+            const { items } = helmValuesSchema;
+
+            if (items === undefined) {
+                break add_required_properties_for_dataTextEditor;
+            }
+
+            assert(helmValuesSchema_forDataTextEditor.items !== undefined);
+
+            if (items.properties === undefined) {
+                break add_required_properties_for_dataTextEditor;
+            }
+
+            helmValuesSchema_forDataTextEditor.items.required = Object.keys(
+                items.properties
+            );
+        }
+    }
+
+    schema_is_object_with_known_properties: {
+        if (helmValuesSchemaType !== "object") {
+            break schema_is_object_with_known_properties;
+        }
+
+        const { properties } = helmValuesSchema;
+
+        if (properties === undefined) {
+            break schema_is_object_with_known_properties;
+        }
+
+        Object.entries(properties).forEach(([propertyName, propertySchema]) => {
+            editHelmValuesSchemaForDataTextEditor({
+                helmValuesSchema: propertySchema,
+                xOnyxiaContext,
+                helmValuesSchema_forDataTextEditor: (() => {
+                    if (helmValuesSchema_forDataTextEditor === undefined) {
+                        return undefined;
+                    }
+
+                    const { properties: property_forDataTextEditor } =
+                        helmValuesSchema_forDataTextEditor;
+
+                    assert(property_forDataTextEditor !== undefined);
+
+                    const out = property_forDataTextEditor[propertyName];
+
+                    assert(out !== undefined, "crash");
+
+                    return out;
+                })()
+            });
+        });
+
+        return;
+    }
+
+    schema_is_array: {
+        if (helmValuesSchemaType !== "array") {
+            break schema_is_array;
+        }
+
+        const { items } = helmValuesSchema;
+
+        if (items === undefined) {
+            break schema_is_array;
+        }
+
+        try {
+            editHelmValuesSchemaForDataTextEditor({
+                helmValuesSchema: items,
+                xOnyxiaContext,
+                helmValuesSchema_forDataTextEditor: (() => {
+                    if (helmValuesSchema_forDataTextEditor === undefined) {
+                        return undefined;
+                    }
+
+                    const { items: items_resolved } = helmValuesSchema_forDataTextEditor;
+
+                    assert(items_resolved !== undefined);
+
+                    return items_resolved;
+                })()
+            });
+        } catch {
+            return undefined;
+        }
+    }
 }
