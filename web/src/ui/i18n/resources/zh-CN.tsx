@@ -298,7 +298,7 @@ export const translations: Translations<"zh-CN"> = {
                     return "我的数据";
                 case "project":
                     return "群组数据";
-                case "admin bookmark":
+                case "bookmark":
                     return "管理员";
             }
         }

@@ -331,7 +331,7 @@ export const translations: Translations<"fi"> = {
                     return "Omat tiedot";
                 case "project":
                     return "Ryhmän tiedot";
-                case "admin bookmark":
+                case "bookmark":
                     return "Ylläpitäjä";
             }
         }

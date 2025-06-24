@@ -48,9 +48,10 @@ export namespace S3Config {
                 projectName: string;
             };
             export type AdminBookmark = Common & {
-                type: "admin bookmark";
+                type: "bookmark";
                 title: LocalizedString;
                 description?: LocalizedString;
+                tags: string[] | undefined;
             };
         }
     }
@@ -255,14 +256,17 @@ export function getS3Configs(params: {
                         ({ s3ConfigIndex }) => s3ConfigIndex === i
                     );
 
-                    assert(entry !== undefined);
+                    if (entry === undefined) {
+                        return [];
+                    }
 
                     return entry.bookmarkedDirectories.map(
-                        ({ title, description, bucketName, path }) => ({
+                        ({ title, description, fullPath, tags }) => ({
                             title,
                             description,
-                            type: "admin bookmark",
-                            directoryPath: `${bucketName}/${path ?? ""}`
+                            type: "bookmark",
+                            directoryPath: fullPath,
+                            tags
                         })
                     );
                 })();

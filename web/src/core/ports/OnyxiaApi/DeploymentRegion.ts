@@ -143,11 +143,10 @@ export namespace DeploymentRegion {
 
         export namespace BookmarkedDirectory {
             export type Common = {
-                bucketName: string;
-                path: string | undefined;
+                fullPath: string;
                 title: LocalizedString;
                 description: LocalizedString | undefined;
-                tags: string[];
+                tags: string[] | undefined;
             };
 
             export type Static = Common & {
@@ -156,8 +155,8 @@ export namespace DeploymentRegion {
 
             export type Dynamic = Common & {
                 claimName: string;
-                includedClaimPattern: string;
-                excludedClaimPattern: string;
+                includedClaimPattern: string | undefined;
+                excludedClaimPattern: string | undefined;
             };
         }
     }

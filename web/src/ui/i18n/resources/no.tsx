@@ -330,7 +330,7 @@ export const translations: Translations<"no"> = {
                     return "Mine data";
                 case "project":
                     return "Gruppedata";
-                case "admin bookmark":
+                case "bookmark":
                     return "Administrator";
             }
         }

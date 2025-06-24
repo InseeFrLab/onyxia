@@ -334,7 +334,7 @@ export const translations: Translations<"de"> = {
                     return "Meine Daten";
                 case "project":
                     return "Gruppendaten";
-                case "admin bookmark":
+                case "bookmark":
                     return "Administrator";
             }
         }

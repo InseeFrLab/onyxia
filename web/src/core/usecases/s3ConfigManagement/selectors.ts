@@ -79,9 +79,10 @@ namespace IndexedS3Locations {
             projectName: string;
         };
         export type AdminBookmarkLocation = Common & {
-            type: "admin bookmark";
+            type: "bookmark";
             title: LocalizedString;
             description?: LocalizedString;
+            tags: string[] | undefined;
         };
 
         export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;

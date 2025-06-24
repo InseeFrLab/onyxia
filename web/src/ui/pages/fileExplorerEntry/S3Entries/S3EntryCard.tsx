@@ -10,7 +10,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
-type DataSourceType = "personal" | "project" | "admin bookmark";
+type DataSourceType = "personal" | "project" | "bookmark";
 
 type Props = {
     title: string;
@@ -18,10 +18,11 @@ type Props = {
     path: string;
     type: DataSourceType;
     onCardClick: () => void;
+    tags: string[] | undefined;
 };
 
 export function S3EntryCard(props: Props) {
-    const { title, description, path, type, onCardClick } = props;
+    const { title, description, path, type, tags, onCardClick } = props;
 
     const { classes } = useStyles({ type });
     const { t } = useTranslation({ S3EntryCard });
@@ -40,11 +41,14 @@ export function S3EntryCard(props: Props) {
                                 {`${t("space path")} : ${path}`}
                             </Text>
                         </Box>
-                        <Chip
-                            label={t("chip title", { type })}
-                            size="medium"
-                            className={classes.chip}
-                        />
+                        {tags !== undefined &&
+                            tags.map(tag => (
+                                <Chip
+                                    label={tag}
+                                    size="medium"
+                                    className={classes.chip}
+                                />
+                            ))}
                     </Box>
                 </CardContent>
             </CardActionArea>
@@ -59,7 +63,7 @@ const useStyles = tss
         const typeColors = {
             personal: theme.colors.useCases.alertSeverity.success.main,
             project: theme.colors.useCases.alertSeverity.info.main,
-            "admin bookmark": theme.colors.useCases.alertSeverity.warning.main
+            bookmark: theme.colors.useCases.alertSeverity.warning.main
         };
 
         return {

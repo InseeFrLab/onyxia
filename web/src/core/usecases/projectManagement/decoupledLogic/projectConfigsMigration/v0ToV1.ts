@@ -265,6 +265,7 @@ export async function v0ToV1(params: {
                             s3RegionConfigs: [],
                             configTestResults: [],
                             ongoingConfigTests: [],
+                            resolvedAdminBookmarks: [],
                             username: "johndoe",
                             projectGroup: undefined,
                             groupProjects: []

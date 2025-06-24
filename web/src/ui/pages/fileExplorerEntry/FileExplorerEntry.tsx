@@ -52,18 +52,20 @@ function FileExplorerEntry(props: Props) {
         directoryPath: location.directoryPath,
         ...(() => {
             switch (location.type) {
-                case "admin bookmark":
+                case "bookmark":
                     return {
                         title: resolveLocalizedString(location.title),
                         description:
                             location.description !== undefined
                                 ? resolveLocalizedString(location.description)
-                                : undefined
+                                : undefined,
+                        tags: location.tags
                     };
                 case "personal":
                     return {
                         title: t(`title ${location.type}`),
-                        description: t(`description ${location.type}`)
+                        description: t(`description ${location.type}`),
+                        tags: ["personal"]
                     };
                 case "project":
                     return {
@@ -72,7 +74,8 @@ function FileExplorerEntry(props: Props) {
                         }),
                         description: t(`description ${location.type}`, {
                             projectName: location.projectName
-                        })
+                        }),
+                        tags: ["project"]
                     };
             }
         })()

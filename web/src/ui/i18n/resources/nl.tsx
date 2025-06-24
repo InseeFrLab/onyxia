@@ -334,7 +334,7 @@ export const translations: Translations<"nl"> = {
                     return "Mijn gegevens";
                 case "project":
                     return "Groepsgegevens";
-                case "admin bookmark":
+                case "bookmark":
                     return "Beheerder";
             }
         }
