@@ -88,22 +88,22 @@ export async function resolveS3AdminBookmarks(params: {
 
                         return [
                             id<DeploymentRegion.S3Config.BookmarkedDirectory.Common>({
-                                fullPath: substituteTemplate(
-                                    entry.fullPath,
-                                    match,
-                                    value
-                                ),
-                                title: substituteLocalizedString(
-                                    entry.title,
-                                    match,
-                                    value
-                                ) as LocalizedString,
-                                description: substituteLocalizedString(
-                                    entry.description,
-                                    match,
-                                    value
-                                ),
-                                tags: substituteTemplateArray(entry.tags, match, value)
+                                fullPath: substituteTemplateString({
+                                    template: entry.fullPath,
+                                    match
+                                }),
+                                title: substituteLocalizedString({
+                                    localizedString: entry.title,
+                                    match
+                                }) as LocalizedString,
+                                description: substituteLocalizedString({
+                                    localizedString: entry.description,
+                                    match
+                                }),
+                                tags: substituteTemplateArray({
+                                    array: entry.tags,
+                                    match
+                                })
                             })
                         ];
                     });
@@ -115,37 +115,40 @@ export async function resolveS3AdminBookmarks(params: {
     return { resolvedAdminBookmarks };
 }
 
-function substituteTemplate(
-    template: string,
-    match: RegExpExecArray,
-    claimValue: string
-): string {
-    return template
-        .replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "")
-        .replace(/\{\{claimValue\}\}/g, claimValue);
+function substituteTemplateString(params: {
+    template: string;
+    match: RegExpExecArray;
+}): string {
+    const { template, match } = params;
+    return template.replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "");
 }
 
-const substituteTemplateArray = (
-    arr: string[] | undefined,
-    match: RegExpExecArray,
-    claimValue: string
-): string[] | undefined => arr?.map(str => substituteTemplate(str, match, claimValue));
+const substituteTemplateArray = (params: {
+    array: string[] | undefined;
+    match: RegExpExecArray;
+}): string[] | undefined => {
+    const { array, match } = params;
 
-function substituteLocalizedString(
-    input: LocalizedString | undefined,
-    match: RegExpExecArray,
-    claimValue: string
-): LocalizedString | undefined {
+    if (array === undefined) return undefined;
+
+    return array.map(str => substituteTemplateString({ template: str, match }));
+};
+
+function substituteLocalizedString(params: {
+    localizedString: LocalizedString | undefined;
+    match: RegExpExecArray;
+}): LocalizedString | undefined {
+    const { localizedString: input, match } = params;
     if (input === undefined) return undefined;
 
     if (typeof input === "string") {
-        return substituteTemplate(input, match, claimValue);
+        return substituteTemplateString({ template: input, match });
     }
 
     return Object.entries(input).reduce(
         (acc, [lang, value]) =>
             typeof value === "string"
-                ? { ...acc, [lang]: substituteTemplate(value, match, claimValue) }
+                ? { ...acc, [lang]: substituteTemplateString({ template: value, match }) }
                 : acc,
         {}
     );
