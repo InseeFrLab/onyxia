@@ -3,10 +3,11 @@ import { S3EntryCard } from "./S3EntryCard";
 import { routes } from "ui/routes";
 
 type S3Entry = {
-    type: "personal" | "project" | "admin bookmark";
+    type: "personal" | "project" | "bookmark";
     directoryPath: string;
     title: string;
     description: string | undefined;
+    tags: string[] | undefined;
 };
 
 type Props = {
@@ -29,6 +30,7 @@ export function S3Entries(props: Props) {
                         onCardClick={() =>
                             routes.myFiles({ path: entry.directoryPath }).push()
                         }
+                        tags={entry.tags}
                     />
                 </Grid>
             ))}

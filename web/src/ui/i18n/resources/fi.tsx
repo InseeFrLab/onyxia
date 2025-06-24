@@ -321,20 +321,18 @@ export const translations: Translations<"fi"> = {
         "description personal": "Omat tiedostosi ja tietoaineistosi.",
         "title project": ({ projectName }) => `Projekti ${projectName}`,
         "description project": ({ projectName }) =>
-            `Projektin ${projectName} yhteinen tallennustila`
-    },
-    S3EntryCard: {
-        "space path": "Tilapolku",
-        "chip title": ({ type }) => {
+            `Projektin ${projectName} yhteinen tallennustila`,
+        tags: ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Omat tiedot";
                 case "project":
                     return "Ryhmän tiedot";
-                case "admin bookmark":
-                    return "Ylläpitäjä";
             }
         }
+    },
+    S3EntryCard: {
+        "space path": "Tilapolku"
     },
     FileExplorerDisabledDialog: {
         "dialog title": "S3-palvelinta ei ole määritetty",

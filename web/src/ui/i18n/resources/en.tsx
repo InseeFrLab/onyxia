@@ -316,20 +316,18 @@ export const translations: Translations<"en"> = {
         "description personal": "Your own files and datasets.",
         "title project": ({ projectName }) => `Project ${projectName}`,
         "description project": ({ projectName }) =>
-            `Shared storage space for project ${projectName}`
-    },
-    S3EntryCard: {
-        "space path": "Space path",
-        "chip title": ({ type }) => {
+            `Shared storage space for project ${projectName}`,
+        tags: ({ type }) => {
             switch (type) {
                 case "personal":
                     return "My data";
                 case "project":
                     return "Group data";
-                case "admin bookmark":
-                    return "Administrator";
             }
         }
+    },
+    S3EntryCard: {
+        "space path": "Space path"
     },
     FileExplorerDisabledDialog: {
         "dialog title": "No S3 server configured",

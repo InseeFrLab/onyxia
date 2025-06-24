@@ -133,12 +133,31 @@ export namespace DeploymentRegion {
                   bucketNamePrefix: string;
                   bucketNamePrefixGroup: string;
               };
-
-        bookmarkedDirectory: {
-            bucketName: string;
-            path: string | undefined;
-            title: LocalizedString;
-            description: LocalizedString | undefined;
-        }[];
+        bookmarkedDirectories: S3Config.BookmarkedDirectory[];
     };
+
+    export namespace S3Config {
+        export type BookmarkedDirectory =
+            | BookmarkedDirectory.Static
+            | BookmarkedDirectory.Dynamic;
+
+        export namespace BookmarkedDirectory {
+            export type Common = {
+                fullPath: string;
+                title: LocalizedString;
+                description: LocalizedString | undefined;
+                tags: string[] | undefined;
+            };
+
+            export type Static = Common & {
+                claimName: undefined;
+            };
+
+            export type Dynamic = Common & {
+                claimName: string;
+                includedClaimPattern: string | undefined;
+                excludedClaimPattern: string | undefined;
+            };
+        }
+    }
 }

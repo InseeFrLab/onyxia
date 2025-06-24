@@ -7,6 +7,13 @@ import * as userAuthentication from "core/usecases/userAuthentication";
 import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 import { getS3Configs, type S3Config } from "./decoupledLogic/getS3Configs";
+import { name } from "./state";
+import type { State as RootState } from "core/bootstrap";
+
+const resolvedAdminBookmarks = createSelector(
+    (state: RootState) => state[name],
+    state => state.resolvedAdminBookmarks
+);
 
 const s3Configs = createSelector(
     createSelector(
@@ -17,6 +24,7 @@ const s3Configs = createSelector(
         deploymentRegionManagement.selectors.currentDeploymentRegion,
         deploymentRegion => deploymentRegion.s3Configs
     ),
+    resolvedAdminBookmarks,
     s3ConfigConnectionTest.protectedSelectors.configTestResults,
     s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
     createSelector(userAuthentication.selectors.main, ({ isUserLoggedIn, user }) => {
@@ -35,6 +43,7 @@ const s3Configs = createSelector(
     (
         projectConfigsS3,
         s3RegionConfigs,
+        resolvedAdminBookmarks,
         configTestResults,
         ongoingConfigTests,
         username,
@@ -44,6 +53,7 @@ const s3Configs = createSelector(
         getS3Configs({
             projectConfigsS3,
             s3RegionConfigs,
+            resolvedAdminBookmarks,
             configTestResults,
             ongoingConfigTests,
             username,
@@ -69,9 +79,10 @@ namespace IndexedS3Locations {
             projectName: string;
         };
         export type AdminBookmarkLocation = Common & {
-            type: "admin bookmark";
+            type: "bookmark";
             title: LocalizedString;
             description?: LocalizedString;
+            tags: string[] | undefined;
         };
 
         export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;
@@ -110,3 +121,10 @@ const indexedS3Locations = createSelector(s3Configs, (s3Configs): IndexedS3Locat
 });
 
 export const selectors = { s3Configs, indexedS3Locations };
+
+export const privateSelectors = {
+    resolvedAdminBookmarks: createSelector(
+        (state: RootState) => state[name],
+        state => state.resolvedAdminBookmarks
+    )
+};

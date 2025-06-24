@@ -52,18 +52,20 @@ function FileExplorerEntry(props: Props) {
         directoryPath: location.directoryPath,
         ...(() => {
             switch (location.type) {
-                case "admin bookmark":
+                case "bookmark":
                     return {
                         title: resolveLocalizedString(location.title),
                         description:
                             location.description !== undefined
                                 ? resolveLocalizedString(location.description)
-                                : undefined
+                                : undefined,
+                        tags: location.tags
                     };
                 case "personal":
                     return {
                         title: t(`title ${location.type}`),
-                        description: t(`description ${location.type}`)
+                        description: t(`description ${location.type}`),
+                        tags: [t("tags", { type: location.type })]
                     };
                 case "project":
                     return {
@@ -72,7 +74,8 @@ function FileExplorerEntry(props: Props) {
                         }),
                         description: t(`description ${location.type}`, {
                             projectName: location.projectName
-                        })
+                        }),
+                        tags: [t("tags", { type: location.type })]
                     };
             }
         })()
@@ -119,5 +122,10 @@ const { i18n } = declareComponentKeys<
     | "description personal"
     | { K: "title project"; P: { projectName: string }; R: string }
     | { K: "description project"; P: { projectName: string }; R: string }
+    | {
+          K: "tags";
+          P: { type: "project" | "personal" };
+          R: string;
+      }
 >()({ FileExplorer: FileExplorerEntry });
 export type I18n = typeof i18n;
