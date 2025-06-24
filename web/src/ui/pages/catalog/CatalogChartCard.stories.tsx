@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { CatalogChartCard } from "./CatalogChartCard";
 import { action } from "@storybook/addon-actions";
-import { type StringWithHighlights } from "core/usecases/catalog";
+import type { StringWithHighlights } from "core/usecases/catalog";
 
 const meta = {
     title: "Pages/Catalog/CatalogChartCard",
