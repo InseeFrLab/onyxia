@@ -324,20 +324,18 @@ export const translations: Translations<"nl"> = {
         "description personal": "Je eigen bestanden en datasets.",
         "title project": ({ projectName }) => `Project ${projectName}`,
         "description project": ({ projectName }) =>
-            `Gedeelde opslagruimte voor project ${projectName}`
-    },
-    S3EntryCard: {
-        "space path": "Ruimtepad",
-        "chip title": ({ type }) => {
+            `Gedeelde opslagruimte voor project ${projectName}`,
+        tags: ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Mijn gegevens";
                 case "project":
                     return "Groepsgegevens";
-                case "bookmark":
-                    return "Beheerder";
             }
         }
+    },
+    S3EntryCard: {
+        "space path": "Ruimtepad"
     },
     FileExplorerDisabledDialog: {
         "dialog title": "Geen S3-server geconfigureerd",

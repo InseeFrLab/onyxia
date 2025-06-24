@@ -288,20 +288,18 @@ export const translations: Translations<"zh-CN"> = {
         "title personal": "我的数据",
         "description personal": "您自己的文件和数据集。",
         "title project": ({ projectName }) => `项目 ${projectName}`,
-        "description project": ({ projectName }) => `项目 ${projectName} 的共享存储空间`
-    },
-    S3EntryCard: {
-        "space path": "空间路径",
-        "chip title": ({ type }) => {
+        "description project": ({ projectName }) => `项目 ${projectName} 的共享存储空间`,
+        tags: ({ type }) => {
             switch (type) {
                 case "personal":
                     return "我的数据";
                 case "project":
                     return "群组数据";
-                case "bookmark":
-                    return "管理员";
             }
         }
+    },
+    S3EntryCard: {
+        "space path": "空间路径"
     },
     FileExplorerDisabledDialog: {
         "dialog title": "未配置S3服务器",

@@ -320,20 +320,18 @@ export const translations: Translations<"no"> = {
         "description personal": "Dine egne filer og datasett.",
         "title project": ({ projectName }) => `Prosjekt ${projectName}`,
         "description project": ({ projectName }) =>
-            `Felles lagringsområde for prosjektet ${projectName}`
-    },
-    S3EntryCard: {
-        "space path": "Områdesti",
-        "chip title": ({ type }) => {
+            `Felles lagringsområde for prosjektet ${projectName}`,
+        tags: ({ type }) => {
             switch (type) {
                 case "personal":
                     return "Mine data";
                 case "project":
                     return "Gruppedata";
-                case "bookmark":
-                    return "Administrator";
             }
         }
+    },
+    S3EntryCard: {
+        "space path": "Områdesti"
     },
     FileExplorerDisabledDialog: {
         "dialog title": "Ingen S3-server konfigurert",

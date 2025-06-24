@@ -44,6 +44,7 @@ export function S3EntryCard(props: Props) {
                         {tags !== undefined &&
                             tags.map(tag => (
                                 <Chip
+                                    key={tag}
                                     label={tag}
                                     size="medium"
                                     className={classes.chip}
@@ -58,7 +59,7 @@ export function S3EntryCard(props: Props) {
 
 const useStyles = tss
     .withParams<{ type: DataSourceType }>()
-    .withName({ DataSource: S3EntryCard })
+    .withName({ S3EntryCard })
     .create(({ theme, type }) => {
         const typeColors = {
             personal: theme.colors.useCases.alertSeverity.success.main,
@@ -84,14 +85,7 @@ const useStyles = tss
         };
     });
 
-const { i18n } = declareComponentKeys<
-    | {
-          K: "chip title";
-          P: { type: DataSourceType };
-          R: string;
-      }
-    | "space path"
->()({
+const { i18n } = declareComponentKeys<"space path">()({
     S3EntryCard
 });
 export type I18n = typeof i18n;
