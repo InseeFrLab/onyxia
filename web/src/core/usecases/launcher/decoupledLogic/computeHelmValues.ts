@@ -44,6 +44,7 @@ export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
         properties?: Record<string, JSONSchemaLike>;
         required?: string[];
         enum?: Stringifyable[];
+        additionalProperties?: boolean;
         [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
     };
 
@@ -372,7 +373,7 @@ export function computeHelmValues_rec(params: {
     assert(false, `Can't resolve value ${JSON.stringify(params, null, 2)}`);
 }
 
-export function editHelmValuesSchemaForDataTextEditor(params: {
+function editHelmValuesSchemaForDataTextEditor(params: {
     helmValuesSchema: JSONSchemaLike;
     xOnyxiaContext: XOnyxiaContextLike_computeHelmValues_rec;
     helmValuesSchema_forDataTextEditor: JSONSchemaLike | undefined;
@@ -414,6 +415,8 @@ export function editHelmValuesSchemaForDataTextEditor(params: {
             }
 
             helmValuesSchema_forDataTextEditor.required = Object.keys(properties);
+
+            helmValuesSchema_forDataTextEditor.additionalProperties = false;
         }
 
         add_required_properties_for_dataTextEditor: {
@@ -432,6 +435,8 @@ export function editHelmValuesSchemaForDataTextEditor(params: {
             helmValuesSchema_forDataTextEditor.items.required = Object.keys(
                 items.properties
             );
+
+            helmValuesSchema_forDataTextEditor.items.additionalProperties = false;
         }
     }
 
