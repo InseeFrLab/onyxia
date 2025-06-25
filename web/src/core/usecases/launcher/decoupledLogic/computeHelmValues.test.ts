@@ -148,7 +148,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         sliderUnit: ""
                     }
                 },
-                required: ["gpu"]
+                required: ["gpu"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -300,7 +301,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         default: 42
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -344,7 +346,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         default: 42
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -387,7 +390,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         default: true
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -429,7 +433,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         default: "xxx"
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: true
         };
@@ -465,7 +470,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         type: "array"
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -610,7 +616,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         }
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -656,7 +663,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         }
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -706,7 +714,8 @@ describe(symToStr({ computeHelmValues }), () => {
                         }
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -766,11 +775,13 @@ describe(symToStr({ computeHelmValues }), () => {
                                     pattern: "^.+$"
                                 }
                             },
-                            required: ["p"]
+                            required: ["p"],
+                            additionalProperties: false
                         }
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
@@ -778,7 +789,7 @@ describe(symToStr({ computeHelmValues }), () => {
         expect(got).toStrictEqual(expected);
     });
 
-    it("Overwrite array", () => {
+    it("basic using array as default", () => {
         const xOnyxiaContext = {
             s3: {},
             a: {
@@ -826,11 +837,79 @@ describe(symToStr({ computeHelmValues }), () => {
                                     type: "string"
                                 }
                             },
-                            required: ["p"]
+                            required: ["p"],
+                            additionalProperties: false
                         }
                     }
                 },
-                required: ["r"]
+                required: ["r"],
+                additionalProperties: false
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("default array work even when extra properties in objects", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            a: {
+                b: [
+                    { p: "foo", q: "xxx" },
+                    { p: "bar", q: "xxx" },
+                    { p: "baz", q: "xxx" }
+                ]
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{a.b}}"
+                        },
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        const expected = {
+            helmValues: { r: [{ p: "foo" }, { p: "bar" }, { p: "baz" }] },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [{ p: "foo" }, { p: "bar" }, { p: "baz" }],
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                }
+                            },
+                            required: ["p"],
+                            additionalProperties: false
+                        }
+                    }
+                },
+                required: ["r"],
+                additionalProperties: false
             },
             isChartUsingS3: false
         };
