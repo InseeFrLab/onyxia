@@ -32,7 +32,7 @@ export type JSONSchema = {
     const?: Stringifyable;
     properties?: Record<string, JSONSchema>;
     required?: string[];
-    additionalProperties?: boolean;
+    additionalProperties?: boolean | Record<string, unknown>;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParams;
 };
 
@@ -77,7 +77,10 @@ export const zJSONSchema = (() => {
             const: zStringifyable.optional(),
             properties: z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
             required: z.array(z.string()).optional(),
-            additionalProperties: z.boolean().optional(),
+            additionalProperties: z.union([
+                z.boolean().optional(),
+                z.record(z.string(), z.unknown())
+            ]),
             [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParams.optional()
         })
         .refine(schema => schema.type !== undefined || schema.const !== undefined, {
