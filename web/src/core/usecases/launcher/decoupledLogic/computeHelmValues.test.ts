@@ -916,4 +916,99 @@ describe(symToStr({ computeHelmValues }), () => {
 
         expect(got).toStrictEqual(expected);
     });
+
+    it("array mapping", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            a: {
+                b: [
+                    { p: "foo", q_x: "xxx_1" },
+                    { p: "bar", q_x: "xxx_2" },
+                    { p: "baz", q_x: "xxx_3" }
+                ]
+            },
+            k: "hello"
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{a.b}}"
+                        },
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                },
+                                q: {
+                                    type: "string",
+                                    "x-onyxia": {
+                                        overwriteDefaultWith: "{{q_x}}"
+                                    }
+                                },
+                                c: {
+                                    type: "string",
+                                    "x-onyxia": {
+                                        overwriteDefaultWith: "{{k}}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        const expected = {
+            helmValues: {
+                r: [
+                    { p: "foo", q: "xxx_1", c: "hello" },
+                    { p: "bar", q: "xxx_2", c: "hello" },
+                    { p: "baz", q: "xxx_3", c: "hello" }
+                ]
+            },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [
+                            { p: "foo", q: "xxx_1", c: "hello" },
+                            { p: "bar", q: "xxx_2", c: "hello" },
+                            { p: "baz", q: "xxx_3", c: "hello" }
+                        ],
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                },
+                                q: {
+                                    type: "string"
+                                },
+                                c: {
+                                    type: "string"
+                                }
+                            },
+                            required: ["p", "q", "c"],
+                            additionalProperties: false
+                        }
+                    }
+                },
+                required: ["r"],
+                additionalProperties: false
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
 });
