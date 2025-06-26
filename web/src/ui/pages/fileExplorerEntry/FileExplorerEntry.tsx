@@ -59,7 +59,10 @@ function FileExplorerEntry(props: Props) {
                             location.description !== undefined
                                 ? resolveLocalizedString(location.description)
                                 : undefined,
-                        tags: location.tags
+                        tags:
+                            location.tags !== undefined
+                                ? location.tags.map(tag => resolveLocalizedString(tag))
+                                : undefined
                     };
                 case "personal":
                     return {

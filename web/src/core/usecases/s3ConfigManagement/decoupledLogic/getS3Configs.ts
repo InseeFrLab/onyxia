@@ -51,7 +51,7 @@ export namespace S3Config {
                 type: "bookmark";
                 title: LocalizedString;
                 description?: LocalizedString;
-                tags: string[] | undefined;
+                tags: LocalizedString[] | undefined;
             };
         }
     }

@@ -116,7 +116,7 @@ export type ApiTypes = {
                         fullPath: string;
                         title: LocalizedString;
                         description: LocalizedString | undefined;
-                        tags: string[] | undefined;
+                        tags: LocalizedString[] | undefined;
                     } & (
                         | { claimName: undefined }
                         | {

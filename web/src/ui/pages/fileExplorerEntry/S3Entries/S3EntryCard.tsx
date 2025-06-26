@@ -73,7 +73,8 @@ const useStyles = tss
                 backgroundColor:
                     type === "personal"
                         ? alpha(typeColors.personal, 0.25)
-                        : theme.colors.useCases.surfaces.surface1
+                        : theme.colors.useCases.surfaces.surface1,
+                height: "100%"
             },
             path: {
                 color: theme.colors.useCases.typography.textSecondary

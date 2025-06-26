@@ -82,7 +82,7 @@ namespace IndexedS3Locations {
             type: "bookmark";
             title: LocalizedString;
             description?: LocalizedString;
-            tags: string[] | undefined;
+            tags: LocalizedString[] | undefined;
         };
 
         export type Location = PersonalLocation | ProjectLocation | AdminBookmarkLocation;

@@ -146,7 +146,7 @@ export namespace DeploymentRegion {
                 fullPath: string;
                 title: LocalizedString;
                 description: LocalizedString | undefined;
-                tags: string[] | undefined;
+                tags: LocalizedString[] | undefined;
             };
 
             export type Static = Common & {

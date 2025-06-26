@@ -100,7 +100,7 @@ export async function resolveS3AdminBookmarks(params: {
                                     localizedString: entry.description,
                                     match
                                 }),
-                                tags: substituteTemplateArray({
+                                tags: substituteLocalizedStringArray({
                                     array: entry.tags,
                                     match
                                 })
@@ -123,33 +123,42 @@ function substituteTemplateString(params: {
     return template.replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "");
 }
 
-const substituteTemplateArray = (params: {
-    array: string[] | undefined;
+const substituteLocalizedStringArray = (params: {
+    array: LocalizedString[] | undefined;
     match: RegExpExecArray;
-}): string[] | undefined => {
+}): LocalizedString[] | undefined => {
     const { array, match } = params;
 
     if (array === undefined) return undefined;
 
-    return array.map(str => substituteTemplateString({ template: str, match }));
+    return array.map(str =>
+        substituteLocalizedString({
+            localizedString: str,
+            match
+        })
+    );
 };
 
-function substituteLocalizedString(params: {
-    localizedString: LocalizedString | undefined;
+function substituteLocalizedString<T extends LocalizedString | undefined>(params: {
+    localizedString: T;
     match: RegExpExecArray;
-}): LocalizedString | undefined {
+}): T {
     const { localizedString: input, match } = params;
-    if (input === undefined) return undefined;
+
+    if (input === undefined) return undefined as T;
 
     if (typeof input === "string") {
-        return substituteTemplateString({ template: input, match });
+        return substituteTemplateString({ template: input, match }) as T;
     }
 
-    return Object.entries(input).reduce(
-        (acc, [lang, value]) =>
+    const result = Object.fromEntries(
+        Object.entries(input).map(([lang, value]) => [
+            lang,
             typeof value === "string"
-                ? { ...acc, [lang]: substituteTemplateString({ template: value, match }) }
-                : acc,
-        {}
+                ? substituteTemplateString({ template: value, match })
+                : value
+        ])
     );
+
+    return result as T;
 }
