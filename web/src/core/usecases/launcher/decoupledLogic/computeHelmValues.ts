@@ -234,13 +234,82 @@ export function computeHelmValues_rec(params: {
             break use_x_onyxia_overwriteDefaultWith;
         }
 
-        const resolvedValue = resolveXOnyxiaValueReference({
+        let resolvedValue = resolveXOnyxiaValueReference({
             expression: overwriteDefaultWith,
             xOnyxiaContext
         });
 
         if (resolvedValue === undefined) {
             break use_x_onyxia_overwriteDefaultWith;
+        }
+
+        array_mapping: {
+            if (helmValuesSchemaType !== "array") {
+                break array_mapping;
+            }
+
+            if (!(resolvedValue instanceof Array)) {
+                break array_mapping;
+            }
+
+            const { items } = helmValuesSchema;
+
+            if (items === undefined) {
+                break array_mapping;
+            }
+
+            if (items.properties === undefined) {
+                break array_mapping;
+            }
+
+            if (getJSONSchemaType(items) !== "object") {
+                break array_mapping;
+            }
+
+            const items_cloned = structuredClone(items);
+
+            assert(items_cloned.properties !== undefined);
+
+            for (const [propertyName, value] of Object.entries(items_cloned.properties)) {
+                (value["x-onyxia"] ??= {}).overwriteDefaultWith ??= `{{${propertyName}}}`;
+            }
+
+            const resolvedValue_new: typeof resolvedValue = [];
+
+            for (const resolvedValue_i of resolvedValue) {
+                if (
+                    !(resolvedValue_i instanceof Object) ||
+                    resolvedValue_i instanceof Array
+                ) {
+                    break array_mapping;
+                }
+
+                let resolvedValue_i_mapped;
+
+                try {
+                    resolvedValue_i_mapped = computeHelmValues_rec({
+                        helmValuesSchema: items_cloned,
+                        helmValuesSchema_forDataTextEditor: undefined,
+                        helmValuesYaml_parsed: undefined,
+                        xOnyxiaContext: new Proxy(xOnyxiaContext, {
+                            get(...args) {
+                                const [, prop] = args;
+
+                                if (typeof prop === "string" && prop in resolvedValue_i) {
+                                    return resolvedValue_i[prop];
+                                }
+                                return Reflect.get(...args);
+                            }
+                        })
+                    });
+                } catch {
+                    break array_mapping;
+                }
+
+                resolvedValue_new.push(resolvedValue_i_mapped);
+            }
+
+            resolvedValue = resolvedValue_new;
         }
 
         const validationResult = validateValueAgainstJSONSchema({
