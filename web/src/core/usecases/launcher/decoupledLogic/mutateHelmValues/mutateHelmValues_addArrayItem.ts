@@ -30,7 +30,7 @@ assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
 export function mutateHelmValues_addArrayItem(params: {
     helmValues: Record<string, Stringifyable>;
-    helmValuesSchema: JSONSchema;
+    helmValuesSchema: JSONSchemaLike;
     xOnyxiaContext: XOnyxiaContextLike;
     helmValuesPath: (string | number)[];
     helmValuesYaml: string;

@@ -44,7 +44,7 @@ export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
         properties?: Record<string, JSONSchemaLike>;
         required?: string[];
         enum?: Stringifyable[];
-        additionalProperties?: boolean;
+        additionalProperties?: boolean | Record<string, Stringifyable>;
         [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
     };
 
