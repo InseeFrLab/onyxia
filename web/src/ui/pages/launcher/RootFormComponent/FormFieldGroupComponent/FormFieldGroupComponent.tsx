@@ -85,12 +85,22 @@ export function FormFieldGroupComponent(props: Props) {
             })
     );
 
+    /*
     const getOnChange_text = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [string]) =>
             onChange({
                 fieldType: "text field",
                 helmValuesPath: JSON.parse(helmValuesPathStr),
                 value
+            })
+    );
+    */
+    const getOnChange_text_autocomplete = useCallbackFactory(
+        ([helmValuesPathStr]: [string], [{ newValue }]: [{ newValue: string }]) =>
+            onChange({
+                fieldType: "text field",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
+                value: newValue
             })
     );
 
@@ -243,10 +253,13 @@ export function FormFieldGroupComponent(props: Props) {
                                 pattern={node.pattern}
                                 onRemove={onRemove_child}
                                 value={node.value}
-                                onChange={getOnChange_text(helmValuesPathStr)}
+                                onChange={getOnChange_text_autocomplete(
+                                    helmValuesPathStr
+                                )}
                                 onErrorChange={getOnFieldErrorChange_child(
                                     helmValuesPathStr
                                 )}
+                                autocomplete={undefined}
                             />
                         );
                     }
