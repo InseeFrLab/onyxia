@@ -85,6 +85,12 @@ export namespace FormField {
         isSensitive: boolean;
         pattern: string | undefined;
         value: string;
+        autocomplete:
+            | {
+                  isLoadingOptions: boolean;
+                  options: string[];
+              }
+            | undefined;
     };
 
     export type Slider = Common & {
