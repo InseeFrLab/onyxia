@@ -124,10 +124,24 @@ export const { actions, reducer } = createUsecaseActions({
                     fileType: SupportedFileType;
                     sourceUrl: string;
                     sourceType: "s3" | "http";
+                    extraRestorableStates:
+                        | {
+                              selectedRowIndex: number | undefined;
+                              columnVisibility: Record<string, boolean>;
+                          }
+                        | undefined;
                 };
             }
         ) => {
-            const { rowCount, rows, sourceUrl, columns, fileType, sourceType } = payload;
+            const {
+                rowCount,
+                rows,
+                sourceUrl,
+                columns,
+                fileType,
+                sourceType,
+                extraRestorableStates
+            } = payload;
             state.isQuerying = false;
             state.data = {
                 rowCount,
@@ -137,10 +151,7 @@ export const { actions, reducer } = createUsecaseActions({
                 fileType,
                 sourceType
             };
-            state.extraRestorableStates = {
-                selectedRowIndex: undefined,
-                columnVisibility: {}
-            };
+            state.extraRestorableStates = extraRestorableStates;
         },
         queryCanceled: state => {
             state.isQuerying = false;

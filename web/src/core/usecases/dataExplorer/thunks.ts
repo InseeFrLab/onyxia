@@ -59,9 +59,15 @@ const privateThunks = {
                 rowsPerPage: number;
                 page: number;
             };
+            extraRestorableStates:
+                | {
+                      selectedRowIndex: number | undefined;
+                      columnVisibility: Record<string, boolean>;
+                  }
+                | undefined;
         }) =>
         async (...args) => {
-            const { queryParams } = params;
+            const { queryParams, extraRestorableStates } = params;
             const [dispatch, getState, rootContext] = args;
 
             const coreQueryParams = getState()[name].queryParams;
@@ -169,7 +175,8 @@ const privateThunks = {
                                 rows.length,
                     sourceUrl: responseUrl,
                     fileType,
-                    sourceType
+                    sourceType,
+                    extraRestorableStates
                 })
             );
         },
@@ -289,17 +296,18 @@ const privateThunks = {
 
             const [dispatch, getState, rootContext] = args;
 
+            const state = getState()[name];
             if (sourceUrl === "") {
-                if (getState()[name].queryParams !== undefined) {
+                if (state.queryParams !== undefined) {
                     dispatch(actions.restoreState());
                 }
                 return;
             }
-            if (getState()[name].isQuerying) {
+            if (state.isQuerying) {
                 dispatch(actions.queryCanceled());
             }
 
-            if (getState()[name].queryParams?.sourceUrl === sourceUrl) {
+            if (state.queryParams?.sourceUrl === sourceUrl) {
                 return;
             }
 
@@ -313,6 +321,10 @@ const privateThunks = {
                         sourceUrl,
                         rowsPerPage,
                         page
+                    },
+                    extraRestorableStates: {
+                        columnVisibility: {},
+                        selectedRowIndex: undefined
                     }
                 })
             );
@@ -397,12 +409,18 @@ export const thunks = {
         (...args) => {
             const { rowsPerPage, page } = params;
             const [dispatch, getState] = args;
-            const stateQueryParams = getState()[name].queryParams;
+            const { queryParams: stateQueryParams, extraRestorableStates } =
+                getState()[name];
+
             assert(stateQueryParams !== undefined);
 
             dispatch(
                 privateThunks.performQuery({
-                    queryParams: { ...stateQueryParams, page, rowsPerPage }
+                    queryParams: { ...stateQueryParams, page, rowsPerPage },
+                    extraRestorableStates: {
+                        columnVisibility: extraRestorableStates?.columnVisibility ?? {},
+                        selectedRowIndex: undefined //we do not restore the selected row index when changing the pagination
+                    }
                 })
             );
         },

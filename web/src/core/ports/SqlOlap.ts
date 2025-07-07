@@ -16,14 +16,6 @@ export type SqlOlap = {
 
 export type Column = {
     name: string;
-    type:
-        | "string"
-        | "number"
-        | "bigint"
-        | "boolean"
-        | "date"
-        | "dateTime"
-        | "binary"
-        | "time";
+    type: "string" | "number" | "boolean" | "date" | "dateTime" | "binary" | "time";
     displayType: string;
 };

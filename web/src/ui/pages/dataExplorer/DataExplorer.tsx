@@ -84,7 +84,6 @@ export default function DataExplorer(props: Props) {
                     headerAlign: "left",
                     type: (() => {
                         switch (column.type) {
-                            case "bigint":
                             case "binary":
                             case "time":
                                 return "string";

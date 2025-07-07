@@ -19,7 +19,7 @@ export async function createArrowTableApi() {
             case Type.Int: {
                 assert(type instanceof Int);
                 if (type.bitWidth === 64) {
-                    return "bigint";
+                    return "string"; // must be changed to bigint when https://github.com/microsoft/TypeScript/issues/46395
                 }
                 return "number";
             }
@@ -144,8 +144,6 @@ export async function createArrowTableApi() {
                     }
                     return Number(value);
                 }
-                case "bigint":
-                    return String(value); //#waiting for https://github.com/microsoft/TypeScript/issues/46395
                 case "binary":
                     if (value instanceof Uint8Array) {
                         return Array.from(value)
