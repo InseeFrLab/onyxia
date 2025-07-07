@@ -315,8 +315,10 @@ export const protectedThunks = {
 
             const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
-            assert(oidcParams !== undefined);
-
+            if (oidcParams === undefined) {
+                dispatch(actions.initialized({ resolvedAdminBookmarks: [] }));
+                return;
+            }
             const deploymentRegion =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
