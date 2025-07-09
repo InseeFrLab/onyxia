@@ -6,7 +6,7 @@ import { ExplorerIcon } from "../ExplorerIcon/ExplorerIcon";
 import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";
 import { InputFile } from "ui/tools/InputFile";
-import type { InputFileProps } from "ui/tools/InputFile";
+import type { DroppedItem, InputFileProps } from "ui/tools/InputFile";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
@@ -64,7 +64,68 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 
             assert(event.type === "drop");
 
-            onFileSelected({ files: Object.values(event.dataTransfer.files) });
+            const getDroppedItems = (
+                dataTransfer: DataTransfer
+            ): Promise<DroppedItem[]> => {
+                const items = Array.from(dataTransfer.items ?? []);
+
+                const traverse = (
+                    entry: FileSystemEntry,
+                    path: string
+                ): Promise<DroppedItem[]> => {
+                    if (entry.isFile) {
+                        return new Promise(resolve => {
+                            (entry as FileSystemFileEntry).file(file => {
+                                resolve([
+                                    {
+                                        createWhat: "file",
+                                        basename: path + file.name,
+                                        blob: file
+                                    }
+                                ]);
+                            });
+                        });
+                    }
+
+                    if (entry.isDirectory) {
+                        const currentDirPath = path + entry.name + "/";
+
+                        return new Promise(resolve => {
+                            (entry as FileSystemDirectoryEntry)
+                                .createReader()
+                                .readEntries(async entries => {
+                                    const nestedItems = await Promise.all(
+                                        entries.map(child =>
+                                            traverse(child, currentDirPath)
+                                        )
+                                    );
+
+                                    resolve([
+                                        {
+                                            createWhat: "directory",
+                                            basename: currentDirPath
+                                        },
+                                        ...nestedItems.flat()
+                                    ]);
+                                });
+                        });
+                    }
+
+                    return Promise.resolve([]);
+                };
+
+                const entries = items
+                    .map(item => item.webkitGetAsEntry?.())
+                    .filter((e): e is FileSystemEntry => !!e);
+
+                return Promise.all(entries.map(entry => traverse(entry, ""))).then(all =>
+                    all.flat()
+                );
+            };
+
+            getDroppedItems(event.dataTransfer).then(items => {
+                onFileSelected({ items });
+            });
         }
     );
 
