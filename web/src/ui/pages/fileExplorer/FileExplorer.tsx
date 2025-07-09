@@ -148,14 +148,11 @@ const FileExplorer = withLoginEnforced((props: Props) => {
     });
 
     const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
-        ({ files }) =>
-            files.forEach(file =>
-                fileExplorer.create({
-                    createWhat: "file",
-                    basename: file.name,
-                    blob: file
-                })
-            )
+        ({ items }) => {
+            items.forEach(item => {
+                fileExplorer.create(item);
+            });
+        }
     );
 
     if (!isCurrentWorkingDirectoryLoaded) {
