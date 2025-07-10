@@ -172,15 +172,14 @@ export const { reducer, actions } = createUsecaseActions({
                     operationId: string;
                     objects: S3Object[];
                     operation: "create" | "delete" | "modifyPolicy" | "downloading";
+                    directoryPath: string;
                 };
             }
         ) => {
-            const { objects, operation, operationId } = payload;
-
-            assert(state.directoryPath !== undefined);
+            const { objects, operation, operationId, directoryPath } = payload;
 
             state.ongoingOperations.push({
-                directoryPath: state.directoryPath,
+                directoryPath,
                 operationId,
                 objects,
                 operation
@@ -197,7 +196,9 @@ export const { reducer, actions } = createUsecaseActions({
                     break;
                 case "create":
                     //Optimistic update
-                    state.objects.push(...objects);
+                    if (state.directoryPath === directoryPath) {
+                        state.objects.push(...objects);
+                    }
                     break;
                 case "modifyPolicy":
                 case "downloading":

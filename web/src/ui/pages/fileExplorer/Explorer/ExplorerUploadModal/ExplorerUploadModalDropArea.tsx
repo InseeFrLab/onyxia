@@ -88,7 +88,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                     }
 
                     if (entry.isDirectory) {
-                        const currentDirPath = path + entry.name + "/";
+                        const currentDirPath = path + entry.name;
 
                         return new Promise(resolve => {
                             (entry as FileSystemDirectoryEntry)
@@ -96,7 +96,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                                 .readEntries(async entries => {
                                     const nestedItems = await Promise.all(
                                         entries.map(child =>
-                                            traverse(child, currentDirPath)
+                                            traverse(child, currentDirPath + "/")
                                         )
                                     );
 
