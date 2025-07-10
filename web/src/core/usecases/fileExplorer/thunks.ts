@@ -43,7 +43,14 @@ const privateThunks = {
 
             const operationId = `${operation}-${Date.now()}`;
 
-            dispatch(actions.operationStarted({ operationId, objects, operation }));
+            dispatch(
+                actions.operationStarted({
+                    operationId,
+                    objects,
+                    operation,
+                    directoryPath
+                })
+            );
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
@@ -569,19 +576,30 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
+            const { basename, path } = (() => {
+                const segments = params.basename.split("/");
+                const basename = segments.pop()!;
+                const subPath = segments.join("/");
+                const path =
+                    subPath === "" ? directoryPath : pathJoin(directoryPath, subPath);
+                return { basename, path };
+            })();
+
+            console.log("create", { params, basename, path });
+
             const operationId = await dispatch(
                 privateThunks.createOperation({
                     objects: [
                         {
                             kind: params.createWhat,
-                            basename: params.basename,
+                            basename: basename,
                             policy: "private",
                             size: undefined,
                             lastModified: undefined,
                             canChangePolicy: false
                         }
                     ],
-                    directoryPath,
+                    directoryPath: path,
                     operation: "create"
                 })
             );
@@ -635,8 +653,8 @@ export const thunks = {
                     case "file": {
                         dispatch(
                             actions.fileUploadStarted({
-                                basename: params.basename,
-                                directoryPath,
+                                basename,
+                                directoryPath: path,
                                 size: params.blob.size
                             })
                         );
@@ -646,8 +664,8 @@ export const thunks = {
                             onUploadProgress: ({ uploadPercent }) =>
                                 dispatch(
                                     actions.uploadProgressUpdated({
-                                        basename: params.basename,
-                                        directoryPath,
+                                        basename,
+                                        directoryPath: path,
                                         uploadPercent
                                     })
                                 )
@@ -663,7 +681,7 @@ export const thunks = {
                     }
                     case "directory": {
                         await uploadFileAndLogCommand({
-                            path: pathJoin(directoryPath, params.basename, ".keep"),
+                            path: pathJoin(path, basename, ".keep"),
                             blob: new Blob(["This file tells that a directory exists"], {
                                 type: "text/plain"
                             }),
@@ -672,7 +690,7 @@ export const thunks = {
 
                         return {
                             kind: "directory",
-                            basename: params.basename,
+                            basename: basename,
                             policy: "private",
                             canChangePolicy: false
                         } satisfies S3Object.Directory;
@@ -680,6 +698,7 @@ export const thunks = {
                 }
             })();
 
+            console.log("completedObject", completedObject);
             dispatch(
                 actions.operationCompleted({
                     objects: [completedObject],
