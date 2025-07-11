@@ -749,6 +749,19 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     FormFieldGroupComponent: {
         add: "Legg til"
     },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                Hvis aktivert, vil denne konfigurasjonen automatisk bli injisert i
+                tjenestene dine. Du kan fortsatt legge den til manuelt når du starter en
+                tjeneste, selv om dette er deaktivert.
+                <br />
+                <br />
+                Nåværende status:{" "}
+                <strong>{isAutoInjected ? "aktivert" : "deaktivert"}</strong>
+            </>
+        )
+    },
     NumberFormField: {
         "below minimum": ({ minimum }) => `Må være større enn eller lik ${minimum}`,
         "not a number": "Ikke et tall",

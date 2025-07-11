@@ -379,9 +379,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -751,6 +750,19 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     },
     FormFieldGroupComponent: {
         add: "Aggiungi"
+    },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                Se abilitata, questa configurazione verrà automaticamente iniettata nei
+                tuoi servizi. Puoi comunque aggiungerla manualmente durante l'avvio di un
+                servizio, anche se questa opzione è disabilitata.
+                <br />
+                <br />
+                Stato attuale:{" "}
+                <strong>{isAutoInjected ? "abilitato" : "disabilitato"}</strong>
+            </>
+        )
     },
     NumberFormField: {
         "below minimum": ({ minimum }) => `Deve essere maggiore o uguale a ${minimum}`,
