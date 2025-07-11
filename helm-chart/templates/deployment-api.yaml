@@ -13,6 +13,12 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.api.schemas.enabled }}
+        checksum/schemas: {{ include (print $.Template.BasePath "/configmaps-schemas.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.api.userProfile.enabled }}
+        checksum/userProfile: {{ include (print $.Template.BasePath "/configmaps-userprofile.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         {{- include "onyxia.api.selectorLabels" . | nindent 8 }}
 {{- with .Values.api.podLabels }}
@@ -81,7 +87,7 @@ spec:
             {{ $fullname := include "onyxia.fullname" . }}
             {{- if .Values.api.userProfile.enabled }}
             {{- $pathProfile := .Values.api.userProfile.rootPath }}
-            {{- $subpathProfile := .Values.api.userProfile.subPathDefault }} 
+            {{- $subpathProfile := .Values.api.userProfile.subPathDefault }}
             - name: {{ $fullname }}-userprofile
               mountPath: {{ printf "%s%s" $pathProfile $subpathProfile }}
               subPath: default
@@ -97,10 +103,10 @@ spec:
             {{- $subpath := .Values.api.schemas.subPathRole -}}
             {{- range .Values.api.schemas.roles }}
             {{- $role := .roleName -}}
-            {{- range .files }}           
+            {{- range .files }}
             - name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}
               mountPath: {{ printf "%s%s/%s/%s" $path $subpath $role .relativePath }}
-              subPath: {{ .relativePath | base }}    
+              subPath: {{ .relativePath | base }}
             {{- end }}
             {{- end }}
             {{- end }}
@@ -145,7 +151,7 @@ spec:
         {{- range .files }}
         - name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}
           configMap:
-            name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}        
+            name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}
         {{- end }}
         {{- end }}
         {{- end }}
