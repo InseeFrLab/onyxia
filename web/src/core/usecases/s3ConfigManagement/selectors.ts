@@ -123,8 +123,5 @@ const indexedS3Locations = createSelector(s3Configs, (s3Configs): IndexedS3Locat
 export const selectors = { s3Configs, indexedS3Locations };
 
 export const privateSelectors = {
-    resolvedAdminBookmarks: createSelector(
-        (state: RootState) => state[name],
-        state => state.resolvedAdminBookmarks
-    )
+    resolvedAdminBookmarks
 };

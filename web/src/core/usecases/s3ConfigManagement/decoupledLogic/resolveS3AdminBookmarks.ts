@@ -2,6 +2,7 @@ import type { DeploymentRegion, OidcParams_Partial } from "core/ports/OnyxiaApi"
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { LocalizedString } from "ui/i18n";
+import memoizee from "memoizee";
 
 export type DeploymentRegion_S3ConfigLike = {
     sts: {
@@ -29,85 +30,107 @@ export async function resolveS3AdminBookmarks(params: {
 
     const resolvedAdminBookmarks = await Promise.all(
         deploymentRegion_s3Configs.map(async (s3Config, i) => {
-            const decodedIdToken = await getDecodedIdToken({
-                oidcParams_partial: s3Config.sts.oidcParams
-            });
+            const getDecodedIdToken_memo = memoizee(
+                () =>
+                    getDecodedIdToken({
+                        oidcParams_partial: s3Config.sts.oidcParams
+                    }),
+                { promise: true }
+            );
 
             return id<ResolvedAdminBookmark>({
                 s3ConfigIndex: i,
-                bookmarkedDirectories: s3Config.bookmarkedDirectories.flatMap(entry => {
-                    if (entry.claimName === undefined) {
-                        return [
-                            id<DeploymentRegion.S3Config.BookmarkedDirectory.Common>({
-                                fullPath: entry.fullPath,
-                                description: entry.description,
-                                tags: entry.tags,
-                                title: entry.title
-                            })
-                        ];
-                    }
+                bookmarkedDirectories: (
+                    await Promise.all(
+                        s3Config.bookmarkedDirectories.map(async entry => {
+                            if (entry.claimName === undefined) {
+                                return [
+                                    id<DeploymentRegion.S3Config.BookmarkedDirectory.Common>(
+                                        {
+                                            fullPath: entry.fullPath,
+                                            description: entry.description,
+                                            tags: entry.tags,
+                                            title: entry.title
+                                        }
+                                    )
+                                ];
+                            }
 
-                    const { claimName, excludedClaimPattern, includedClaimPattern } =
-                        entry;
+                            const {
+                                claimName,
+                                excludedClaimPattern,
+                                includedClaimPattern
+                            } = entry;
 
-                    const claimValue_arr: string[] = (() => {
-                        const value = decodedIdToken[claimName];
+                            const decodedIdToken = await getDecodedIdToken_memo();
 
-                        if (!value) return [];
+                            const claimValue_arr: string[] = (() => {
+                                const value = decodedIdToken[claimName];
 
-                        if (typeof value === "string") return [value];
-                        if (Array.isArray(value)) return value.map(e => `${e}`);
+                                if (!value) return [];
 
-                        assert(
-                            false,
-                            () =>
-                                `${claimName} not in expected format! ${JSON.stringify(decodedIdToken)}`
-                        );
-                    })();
+                                if (typeof value === "string") return [value];
+                                if (Array.isArray(value)) return value.map(e => `${e}`);
 
-                    const includedRegex = includedClaimPattern
-                        ? new RegExp(includedClaimPattern)
-                        : undefined;
-                    const excludedRegex = excludedClaimPattern
-                        ? new RegExp(excludedClaimPattern)
-                        : undefined;
+                                assert(
+                                    false,
+                                    () =>
+                                        `${claimName} not in expected format! ${JSON.stringify(decodedIdToken)}`
+                                );
+                            })();
 
-                    return claimValue_arr.flatMap(value => {
-                        if (excludedRegex !== undefined && excludedRegex.test(value))
-                            return [];
+                            const includedRegex = includedClaimPattern
+                                ? new RegExp(includedClaimPattern)
+                                : undefined;
+                            const excludedRegex = excludedClaimPattern
+                                ? new RegExp(excludedClaimPattern)
+                                : undefined;
 
-                        if (includedRegex === undefined) {
-                            return [];
-                        }
+                            return claimValue_arr
+                                .map(value => {
+                                    if (
+                                        excludedRegex !== undefined &&
+                                        excludedRegex.test(value)
+                                    )
+                                        return [];
 
-                        const match = includedRegex.exec(value);
+                                    if (includedRegex === undefined) {
+                                        return [];
+                                    }
 
-                        if (!match) {
-                            return [];
-                        }
+                                    const match = includedRegex.exec(value);
 
-                        return [
-                            id<DeploymentRegion.S3Config.BookmarkedDirectory.Common>({
-                                fullPath: substituteTemplateString({
-                                    template: entry.fullPath,
-                                    match
-                                }),
-                                title: substituteLocalizedString({
-                                    localizedString: entry.title,
-                                    match
-                                }) as LocalizedString,
-                                description: substituteLocalizedString({
-                                    localizedString: entry.description,
-                                    match
-                                }),
-                                tags: substituteLocalizedStringArray({
-                                    array: entry.tags,
-                                    match
+                                    if (!match) {
+                                        return [];
+                                    }
+
+                                    return [
+                                        id<DeploymentRegion.S3Config.BookmarkedDirectory.Common>(
+                                            {
+                                                fullPath: substituteTemplateString({
+                                                    template: entry.fullPath,
+                                                    match
+                                                }),
+                                                title: substituteLocalizedString({
+                                                    localizedString: entry.title,
+                                                    match
+                                                }) as LocalizedString,
+                                                description: substituteLocalizedString({
+                                                    localizedString: entry.description,
+                                                    match
+                                                }),
+                                                tags: substituteLocalizedStringArray({
+                                                    array: entry.tags,
+                                                    match
+                                                })
+                                            }
+                                        )
+                                    ];
                                 })
-                            })
-                        ];
-                    });
-                })
+                                .flat();
+                        })
+                    )
+                ).flat()
             });
         })
     );
