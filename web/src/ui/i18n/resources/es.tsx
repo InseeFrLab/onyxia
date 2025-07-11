@@ -754,6 +754,19 @@ export const translations: Translations<"en"> = {
     FormFieldGroupComponent: {
         add: "Añadir"
     },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                Si está activado, esta configuración se inyectará automáticamente en tus
+                servicios. Aun así, puedes añadirla manualmente al iniciar un servicio,
+                incluso si esta opción permanece desactivada.
+                <br />
+                <br />
+                Estado actual:{" "}
+                <strong>{isAutoInjected ? "activado" : "desactivado"}</strong>
+            </>
+        )
+    },
     NumberFormField: {
         "below minimum": ({ minimum }) => `Debe ser mayor o igual a ${minimum}`,
         "not a number": "No es un número",

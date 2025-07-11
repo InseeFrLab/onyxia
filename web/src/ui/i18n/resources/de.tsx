@@ -753,6 +753,19 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     FormFieldGroupComponent: {
         add: "Hinzufügen"
     },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                Wenn aktiviert, wird diese Konfiguration automatisch in Ihre Dienste
+                injiziert. Sie können sie trotzdem manuell hinzufügen, wenn Sie einen
+                Dienst starten – auch wenn diese Option deaktiviert ist.
+                <br />
+                <br />
+                Aktueller Status:{" "}
+                <strong>{isAutoInjected ? "aktiviert" : "deaktiviert"}</strong>
+            </>
+        )
+    },
     NumberFormField: {
         "below minimum": ({ minimum }) => `Muss größer oder gleich ${minimum} sein`,
         "not a number": "Keine Zahl",
