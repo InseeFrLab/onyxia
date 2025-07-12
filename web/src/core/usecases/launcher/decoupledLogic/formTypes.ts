@@ -23,6 +23,7 @@ export type FormFieldGroup = {
     nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
+    isAutoInjected: boolean | undefined;
 };
 
 export type FormField =
