@@ -744,6 +744,19 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     FormFieldGroupComponent: {
         add: "Lisää"
     },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                Jos tämä asetus on käytössä, se lisätään automaattisesti palveluihisi.
+                Voit silti lisätä sen manuaalisesti palvelua käynnistäessäsi, vaikka tämä
+                asetus olisi pois käytöstä.
+                <br />
+                <br />
+                Nykyinen tila:{" "}
+                <strong>{isAutoInjected ? "käytössä" : "ei käytössä"}</strong>
+            </>
+        )
+    },
     NumberFormField: {
         "below minimum": ({ minimum }) =>
             `Täytyy olla suurempi tai yhtä suuri kuin ${minimum}`,

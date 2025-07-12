@@ -382,7 +382,8 @@ function computeRootFormFieldGroup_rec(params: {
                 description: helmValuesSchema.description,
                 nodes,
                 canAdd: false,
-                canRemove: false
+                canRemove: false,
+                isAutoInjected: undefined
             });
         }
         case "array": {
@@ -416,7 +417,8 @@ function computeRootFormFieldGroup_rec(params: {
                 description: helmValuesSchema.description,
                 nodes,
                 canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
-                canRemove: values.length > (helmValuesSchema.minItems ?? 0)
+                canRemove: values.length > (helmValuesSchema.minItems ?? 0),
+                isAutoInjected: undefined
             });
         }
         case "boolean":
@@ -452,7 +454,8 @@ function computeRootFormFieldGroup_rec(params: {
                     assert(typeof value === "string");
 
                     return value;
-                })()
+                })(),
+                autocomplete: undefined
             });
         case "integer":
         case "number":

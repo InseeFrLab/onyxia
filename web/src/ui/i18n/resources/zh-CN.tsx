@@ -698,6 +698,17 @@ ${
     FormFieldGroupComponent: {
         add: "添加"
     },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                如果启用，该配置将自动注入到你的服务中。
+                即使该选项处于禁用状态，你仍然可以在启动 服务时手动添加它。
+                <br />
+                <br />
+                当前状态： <strong>{isAutoInjected ? "已启用" : "已禁用"}</strong>
+            </>
+        )
+    },
     NumberFormField: {
         "below minimum": ({ minimum }) => `必须大于或等于 ${minimum}`,
         "not a number": "不是数字",
