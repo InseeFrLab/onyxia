@@ -6,33 +6,57 @@ import { useBackgroundColor } from "ui/tools/useBackgroundColor";
 import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
 import { Markdown } from "onyxia-ui/Markdown";
+import { AutoInjectSwitch } from "./AutoInjectSwitch";
 
 export function FormFieldGroupComponentWrapper(props: {
     className?: string;
     title: string | undefined;
     description: string | undefined;
     onRemove: (() => void) | undefined;
+    autoInjection:
+        | {
+              isAutoInjected: boolean;
+              onIsAutoInjectedChange: (isAutoInjected: boolean) => void;
+          }
+        | undefined;
     children: ReactNode;
 }) {
-    const { className, title, description, onRemove, children } = props;
+    const { className, title, description, onRemove, autoInjection, children } = props;
 
     const { backgroundColor, setElement: setRootElement } = useBackgroundColor();
 
-    const { cx, classes } = useStyles({ headingWrapperBackgroundColor: backgroundColor });
+    const { cx, classes } = useStyles({
+        headingWrapperBackgroundColor: backgroundColor,
+        isAutoInjected: autoInjection?.isAutoInjected ?? false
+    });
 
     return (
         <fieldset ref={setRootElement} className={cx(classes.root, className)}>
             {title !== undefined && (
                 <div className={classes.headingWrapper}>
-                    <Text typo="label 1" componentProps={{ lang: "und" }}>
+                    <Text
+                        typo="label 1"
+                        componentProps={{ lang: "und" }}
+                        className={classes.headingTexts}
+                    >
                         {capitalize(title)}
                     </Text>
                     {description !== undefined && (
-                        <Text typo="caption" componentProps={{ lang: "und" }}>
+                        <Text
+                            typo="caption"
+                            componentProps={{ lang: "und" }}
+                            className={classes.headingTexts}
+                        >
                             <Markdown inline={true} lang="und">
                                 {capitalize(description)}
                             </Markdown>
                         </Text>
+                    )}
+                    {autoInjection !== undefined && (
+                        <AutoInjectSwitch
+                            isAutoInjected={autoInjection.isAutoInjected}
+                            onChange={autoInjection.onIsAutoInjectedChange}
+                        />
                     )}
                 </div>
             )}
@@ -44,17 +68,17 @@ export function FormFieldGroupComponentWrapper(props: {
                     icon={getIconUrlByName("RemoveCircleOutline")}
                 />
             )}
-            {children}
+            <div>{children}</div>
         </fieldset>
     );
 }
 
 const useStyles = tss
     .withName({ FormFieldGroupComponentWrapper })
-    .withParams<{ headingWrapperBackgroundColor: string }>()
-    .create(({ theme, headingWrapperBackgroundColor }) => ({
+    .withParams<{ headingWrapperBackgroundColor: string; isAutoInjected: boolean }>()
+    .create(({ theme, headingWrapperBackgroundColor, isAutoInjected }) => ({
         root: {
-            border: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+            border: `1px ${isAutoInjected ? "solid" : "dashed"} ${theme.colors.useCases.typography.textTertiary}`,
             borderRadius: theme.spacing(3),
 
             position: "relative"
@@ -70,6 +94,11 @@ const useStyles = tss
             backgroundColor: headingWrapperBackgroundColor,
             borderRadius: theme.spacing(3),
             ...theme.spacing.rightLeft("padding", 2)
+        },
+        headingTexts: {
+            color: isAutoInjected
+                ? undefined
+                : theme.colors.useCases.typography.textDisabled
         },
         removeButton: {
             position: "absolute",
