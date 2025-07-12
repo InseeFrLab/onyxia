@@ -160,6 +160,7 @@ export function FormFieldGroupComponent(props: Props) {
                             title={node.title}
                             onRemove={onRemove_child}
                             description={node.description}
+                            autoInjection={undefined}
                         >
                             <FormFieldGroupComponent
                                 nodes={node.nodes}
