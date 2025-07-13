@@ -45,9 +45,8 @@ export default function UserProfileForm() {
                         assert(false);
                     },
                     onIsAutoInjectedChange: ({ helmValuesPath, isAutoInjected }) =>
-                        // @ts-expect-error: TODO, implement
                         userProfileForm.onIsAutoInjectedChange({
-                            helmValuesPath,
+                            valuesPath: helmValuesPath,
                             isAutoInjected
                         })
                 }}
