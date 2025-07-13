@@ -28,7 +28,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 a: "foo",
                 b: 2
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -83,7 +84,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             helmValues: {
                 a: "foo"
             },
-            xOnyxiaContext: {}
+            xOnyxiaContext: {},
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -154,7 +156,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     size: "10Gi"
                 }
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -232,7 +235,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     size: "10Gi"
                 }
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -297,7 +301,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 a: "value of a",
                 b: [{ foo: "value of foo", bar: 42 }]
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
