@@ -7,6 +7,7 @@ import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { getIconUrlByName } from "lazy-icons";
 import Divider from "@mui/material/Divider";
+import { assert } from "tsafe/assert";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
@@ -39,7 +40,16 @@ export default function UserProfileForm() {
                             valuesPath: helmValuesPath,
                             index
                         }),
-                    onFieldErrorChange: () => {}
+                    onFieldErrorChange: () => {},
+                    onAutocompletePanelOpen: () => {
+                        assert(false);
+                    },
+                    onIsAutoInjectedChange: ({ helmValuesPath, isAutoInjected }) =>
+                        // @ts-expect-error: TODO, implement
+                        userProfileForm.onIsAutoInjectedChange({
+                            helmValuesPath,
+                            isAutoInjected
+                        })
                 }}
             />
             <div className={classes.buttonWrapper}>

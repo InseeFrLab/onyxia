@@ -3,6 +3,7 @@ import { FormFieldGroupComponent } from "./FormFieldGroupComponent";
 import { action } from "@storybook/addon-actions";
 import type { FormField } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { id } from "tsafe/id";
+import { assert } from "tsafe/assert";
 
 const meta = {
     title: "pages/Launcher/FormFieldGroupComponent",
@@ -57,7 +58,13 @@ export const Default: Story = {
             onChange,
             onAdd,
             onRemove,
-            onFieldErrorChange
+            onFieldErrorChange,
+            onAutocompletePanelOpen: () => {
+                assert(false);
+            },
+            onIsAutoInjectedChange: () => {
+                assert(false);
+            }
         }
     }
 };
