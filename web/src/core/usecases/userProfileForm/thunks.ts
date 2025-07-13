@@ -56,6 +56,15 @@ export const thunks = {
 
             dispatch(actions.arrayItemRemoved({ valuesPath, index }));
         },
+    onIsAutoInjectedChange:
+        (params: { valuesPath: (string | number)[]; isAutoInjected: boolean }) =>
+        (...args) => {
+            const { valuesPath } = params;
+
+            console.log(args, valuesPath);
+
+            alert("TODO: Implement");
+        },
     restore:
         () =>
         async (...args) => {
