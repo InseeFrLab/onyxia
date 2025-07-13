@@ -81,7 +81,13 @@ const paramsOfComputeRootForm_butHelmValues = createSelector(
         assert(helmDependencies !== null);
         assert(xOnyxiaContext !== null);
 
-        return { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext };
+        return {
+            chartName,
+            helmValuesSchema,
+            helmDependencies,
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
+        };
     }
 );
 
@@ -105,7 +111,8 @@ const rootForm = createSelector(
             helmValuesSchema,
             helmValues,
             xOnyxiaContext,
-            helmDependencies
+            helmDependencies,
+            autoInjectionDisabledFields: undefined
         });
     }
 );
