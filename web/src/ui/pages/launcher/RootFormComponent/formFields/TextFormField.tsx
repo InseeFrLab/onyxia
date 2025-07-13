@@ -11,6 +11,7 @@ import { IconButton } from "onyxia-ui/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import { id } from "tsafe/id";
+import { same } from "evt/tools/inDepth/same";
 
 type Props = {
     className?: string;
@@ -233,7 +234,7 @@ export const TextFormField = memo((props: Props) => {
             })()}
         </FormFieldWrapper>
     );
-});
+}, same);
 
 const useStyles = tss
     .withName({ TextFormField })

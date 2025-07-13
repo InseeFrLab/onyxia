@@ -417,16 +417,38 @@ export const thunks = {
             );
         },
     changeFormFieldValue:
-        (params: FormFieldValue) =>
+        (params: FormFieldValue, isAutocompleteSelection?: boolean) =>
         (...args) => {
             const [dispatch, getState] = args;
             const formFieldValue = params;
+
+            if (isAutocompleteSelection === true) {
+                assert(
+                    formFieldValue.fieldType === "text field",
+                    [
+                        "At the time of writing this assertion we only support",
+                        "autocomplete on text field but his might no longer be the case"
+                    ].join(" ")
+                );
+
+                alert("Implement autocomplete");
+
+                return;
+            }
 
             const rootForm = privateSelectors.rootForm(getState());
 
             assert(rootForm !== null);
 
             dispatch(actions.formFieldValueChanged({ formFieldValue, rootForm }));
+        },
+    onAutocompletePanelOpen:
+        (params: { helmValuesPath: (string | number)[] }) =>
+        async (...args) => {
+            const { helmValuesPath } = params;
+
+            console.log(args, helmValuesPath);
+            alert("Actually implement autocomplete");
         },
     changeFriendlyName:
         (friendlyName: string) =>
