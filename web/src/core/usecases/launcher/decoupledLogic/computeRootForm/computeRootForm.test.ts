@@ -58,7 +58,8 @@ describe(symToStr({ computeRootForm }), () => {
                     },
                     c: 2
                 }
-            }
+            },
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: RootForm = {
@@ -79,11 +80,13 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "foo"
+                            value: "foo",
+                            autocomplete: undefined
                         }
                     ],
                     canAdd: false,
-                    canRemove: false
+                    canRemove: false,
+                    isAutoInjected: undefined
                 }
             ],
             disabledDependencies: [],
@@ -124,7 +127,8 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "admin"
+                            value: "admin",
+                            autocomplete: undefined
                         },
                         {
                             type: "field",
@@ -136,7 +140,8 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "xxx"
+                            value: "xxx",
+                            autocomplete: undefined
                         }
                     ]
                 }
@@ -200,7 +205,8 @@ describe(symToStr({ computeRootForm }), () => {
                     },
                     c: 2
                 }
-            }
+            },
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: RootForm = {
@@ -221,11 +227,13 @@ describe(symToStr({ computeRootForm }), () => {
                             doRenderAsTextArea: false,
                             isSensitive: false,
                             pattern: undefined,
-                            value: "value of services.a"
+                            value: "value of services.a",
+                            autocomplete: undefined
                         }
                     ],
                     canAdd: false,
-                    canRemove: false
+                    canRemove: false,
+                    isAutoInjected: undefined
                 },
                 {
                     type: "field",
@@ -237,7 +245,8 @@ describe(symToStr({ computeRootForm }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of foo.b"
+                    value: "value of foo.b",
+                    autocomplete: undefined
                 }
             ],
             disabledDependencies: [],
@@ -263,7 +272,8 @@ describe(symToStr({ computeRootForm }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of global.foo.username"
+                    value: "value of global.foo.username",
+                    autocomplete: undefined
                 },
                 {
                     type: "field",
@@ -275,7 +285,8 @@ describe(symToStr({ computeRootForm }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of global.foo.password"
+                    value: "value of global.foo.password",
+                    autocomplete: undefined
                 }
             ],
             dependencies: {}

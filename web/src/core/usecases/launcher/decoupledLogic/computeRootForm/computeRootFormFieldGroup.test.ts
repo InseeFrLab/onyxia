@@ -28,7 +28,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 a: "foo",
                 b: 2
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -47,7 +48,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     helmValuesPath: ["a"],
                     doRenderAsTextArea: false,
                     isSensitive: false,
-                    value: "foo"
+                    value: "foo",
+                    autocomplete: undefined
                 },
                 {
                     type: "field",
@@ -61,7 +63,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         };
 
         expect(got).toStrictEqual(expected);
@@ -81,7 +84,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             helmValues: {
                 a: "foo"
             },
-            xOnyxiaContext: {}
+            xOnyxiaContext: {},
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -100,11 +104,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     helmValuesPath: ["a"],
                     doRenderAsTextArea: false,
                     isSensitive: false,
-                    value: "foo"
+                    value: "foo",
+                    autocomplete: undefined
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         };
 
         expect(got).toStrictEqual(expected);
@@ -150,7 +156,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     size: "10Gi"
                 }
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -176,11 +183,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                         }
                     ],
                     canAdd: false,
-                    canRemove: false
+                    canRemove: false,
+                    isAutoInjected: undefined
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         };
 
         expect(got).toStrictEqual(expected);
@@ -226,7 +235,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     size: "10Gi"
                 }
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -252,11 +262,13 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                         }
                     ],
                     canAdd: false,
-                    canRemove: false
+                    canRemove: false,
+                    isAutoInjected: undefined
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         };
 
         expect(got).toStrictEqual(expected);
@@ -289,7 +301,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 a: "value of a",
                 b: [{ foo: "value of foo", bar: 42 }]
             },
-            xOnyxiaContext
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined
         });
 
         const expected: FormFieldGroup = {
@@ -308,7 +321,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "value of a"
+                    value: "value of a",
+                    autocomplete: undefined
                 },
                 {
                     type: "group",
@@ -332,7 +346,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                                     doRenderAsTextArea: false,
                                     isSensitive: false,
                                     pattern: undefined,
-                                    value: "value of foo"
+                                    value: "value of foo",
+                                    autocomplete: undefined
                                 },
                                 {
                                     type: "field",
@@ -347,15 +362,18 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                                 }
                             ],
                             canAdd: false,
-                            canRemove: false
+                            canRemove: false,
+                            isAutoInjected: undefined
                         }
                     ],
                     canAdd: true,
-                    canRemove: false
+                    canRemove: false,
+                    isAutoInjected: undefined
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         };
 
         expect(got).toStrictEqual(expected);

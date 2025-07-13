@@ -65,13 +65,16 @@ export function computeRootFormFieldGroup(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
+    autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
 }): FormFieldGroup {
-    const { helmValuesSchema, helmValues, xOnyxiaContext } = params;
+    const { helmValuesSchema, helmValues, xOnyxiaContext, autoInjectionDisabledFields } =
+        params;
 
     const formFieldGroup = computeRootFormFieldGroup_rec({
         helmValuesSchema,
         helmValues,
         xOnyxiaContext,
+        autoInjectionDisabledFields,
         helmValuesPath: []
     });
 
@@ -85,9 +88,16 @@ function computeRootFormFieldGroup_rec(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
+    autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
     helmValuesPath: (string | number)[];
 }): FormFieldGroup | FormField | undefined {
-    const { helmValuesSchema, helmValues, xOnyxiaContext, helmValuesPath } = params;
+    const {
+        helmValuesSchema,
+        helmValues,
+        xOnyxiaContext,
+        helmValuesPath,
+        autoInjectionDisabledFields
+    } = params;
 
     const isHidden: boolean = (() => {
         root_hidden: {
@@ -368,9 +378,10 @@ function computeRootFormFieldGroup_rec(params: {
                 .map(([segment, helmValuesSchema_child]) =>
                     computeRootFormFieldGroup_rec({
                         helmValues,
-                        helmValuesPath: [...helmValuesPath, segment],
                         xOnyxiaContext,
-                        helmValuesSchema: helmValuesSchema_child
+                        helmValuesSchema: helmValuesSchema_child,
+                        autoInjectionDisabledFields,
+                        helmValuesPath: [...helmValuesPath, segment]
                     })
                 )
                 .filter(exclude(undefined));
@@ -382,7 +393,8 @@ function computeRootFormFieldGroup_rec(params: {
                 description: helmValuesSchema.description,
                 nodes,
                 canAdd: false,
-                canRemove: false
+                canRemove: false,
+                isAutoInjected: undefined
             });
         }
         case "array": {
@@ -402,9 +414,10 @@ function computeRootFormFieldGroup_rec(params: {
                 .map((...[, index]) =>
                     computeRootFormFieldGroup_rec({
                         helmValues,
-                        helmValuesPath: [...helmValuesPath, index],
                         xOnyxiaContext,
-                        helmValuesSchema: itemSchema
+                        helmValuesSchema: itemSchema,
+                        autoInjectionDisabledFields,
+                        helmValuesPath: [...helmValuesPath, index]
                     })
                 )
                 .filter(exclude(undefined));
@@ -416,7 +429,18 @@ function computeRootFormFieldGroup_rec(params: {
                 description: helmValuesSchema.description,
                 nodes,
                 canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
-                canRemove: values.length > (helmValuesSchema.minItems ?? 0)
+                canRemove: values.length > (helmValuesSchema.minItems ?? 0),
+                isAutoInjected: (() => {
+                    if (autoInjectionDisabledFields === undefined) {
+                        return undefined;
+                    }
+
+                    return (
+                        autoInjectionDisabledFields.find(entry =>
+                            same(entry.helmValuesPath, helmValuesPath)
+                        ) === undefined
+                    );
+                })()
             });
         }
         case "boolean":
@@ -452,7 +476,8 @@ function computeRootFormFieldGroup_rec(params: {
                     assert(typeof value === "string");
 
                     return value;
-                })()
+                })(),
+                autocomplete: undefined
             });
         case "integer":
         case "number":

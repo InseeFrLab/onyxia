@@ -121,6 +121,7 @@ describe(symToStr({ mutateHelmValues_update }), () => {
                         description: THROW_IF_ACCESSED,
                         canAdd: THROW_IF_ACCESSED,
                         canRemove: THROW_IF_ACCESSED,
+                        isAutoInjected: THROW_IF_ACCESSED,
                         nodes: [
                             createObjectWithSomePropertiesThatThrowIfAccessed<FormField.RangeSlider>(
                                 {

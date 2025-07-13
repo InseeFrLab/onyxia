@@ -755,6 +755,19 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     FormFieldGroupComponent: {
         add: "Toevoegen"
     },
+    AutoInjectSwitch: {
+        tooltip: ({ isAutoInjected }) => (
+            <>
+                Indien ingeschakeld, wordt deze configuratie automatisch geïnjecteerd in
+                je services. Je kunt deze alsnog handmatig toevoegen bij het starten van
+                een service, zelfs als deze optie is uitgeschakeld.
+                <br />
+                <br />
+                Huidige status:{" "}
+                <strong>{isAutoInjected ? "ingeschakeld" : "uitgeschakeld"}</strong>
+            </>
+        )
+    },
     NumberFormField: {
         "below minimum": ({ minimum }) => `Moet groter dan of gelijk aan ${minimum} zijn`,
         "not a number": "Geen getal",

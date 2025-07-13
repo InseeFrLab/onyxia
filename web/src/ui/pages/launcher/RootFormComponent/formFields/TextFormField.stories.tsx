@@ -24,12 +24,24 @@ type Params = {
     isSensitive: boolean;
     pattern: string | undefined;
     hasOnRemove: boolean;
+    hasAutocomplete: boolean;
 };
 
 function StoryWrapper(params: Params) {
-    const { isReadonly, doRenderAsTextArea, isSensitive, pattern, hasOnRemove } = params;
+    const {
+        isReadonly,
+        doRenderAsTextArea,
+        isSensitive,
+        pattern,
+        hasOnRemove,
+        hasAutocomplete
+    } = params;
 
-    const [value, setValue] = useState("Hello, world!");
+    const [value, setValue] = useState(hasAutocomplete ? "" : "Hello, world!");
+
+    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+
+    const [options, setOptions] = useState<string[]>([]);
 
     return (
         <>
@@ -42,12 +54,33 @@ function StoryWrapper(params: Params) {
                 isSensitive={isSensitive}
                 pattern={pattern}
                 value={value}
-                onChange={newValue => {
+                onChange={({ newValue, isAutocompleteOptionSelection }) => {
                     onChangeAction(newValue);
                     setValue(newValue);
+
+                    if (isAutocompleteOptionSelection) {
+                        console.log(`Autocomplete selection: ${newValue}`);
+                    }
                 }}
                 onRemove={hasOnRemove ? () => onRemoveAction() : undefined}
                 onErrorChange={onErrorChangeAction}
+                autocomplete={
+                    !hasAutocomplete
+                        ? undefined
+                        : {
+                              isLoadingOptions,
+                              onPanelOpen: async () => {
+                                  setIsLoadingOptions(true);
+
+                                  const now = Date.now();
+
+                                  setOptions([`${now}-1`, `${now}-2`, `${now}-3`]);
+
+                                  setIsLoadingOptions(false);
+                              },
+                              options
+                          }
+                }
             />
             <Divider />
             <p>Value: </p>
@@ -62,7 +95,8 @@ export const Default: Story = {
         doRenderAsTextArea: false,
         isSensitive: false,
         pattern: undefined,
-        hasOnRemove: false
+        hasOnRemove: false,
+        hasAutocomplete: false
     }
 };
 
@@ -72,7 +106,8 @@ export const TextArea: Story = {
         doRenderAsTextArea: true,
         isSensitive: false,
         pattern: undefined,
-        hasOnRemove: false
+        hasOnRemove: false,
+        hasAutocomplete: false
     }
 };
 
@@ -82,7 +117,8 @@ export const Sensitive: Story = {
         doRenderAsTextArea: false,
         isSensitive: true,
         pattern: undefined,
-        hasOnRemove: false
+        hasOnRemove: false,
+        hasAutocomplete: false
     }
 };
 
@@ -92,7 +128,8 @@ export const WithPattern: Story = {
         doRenderAsTextArea: false,
         isSensitive: false,
         pattern: "^[a-zA-Z0-9]*$",
-        hasOnRemove: false
+        hasOnRemove: false,
+        hasAutocomplete: false
     }
 };
 
@@ -102,7 +139,8 @@ export const Readonly: Story = {
         doRenderAsTextArea: false,
         isSensitive: false,
         pattern: undefined,
-        hasOnRemove: false
+        hasOnRemove: false,
+        hasAutocomplete: false
     }
 };
 
@@ -112,6 +150,18 @@ export const WithOnRemove: Story = {
         doRenderAsTextArea: false,
         isSensitive: false,
         pattern: undefined,
-        hasOnRemove: true
+        hasOnRemove: true,
+        hasAutocomplete: false
+    }
+};
+
+export const WithAutocomplete: Story = {
+    args: {
+        isReadonly: false,
+        doRenderAsTextArea: false,
+        isSensitive: false,
+        pattern: undefined,
+        hasOnRemove: false,
+        hasAutocomplete: true
     }
 };
