@@ -280,7 +280,11 @@ export function createS3Client(
                     !(error instanceof BucketAlreadyExists) &&
                     !(error instanceof BucketAlreadyOwnedByYou)
                 ) {
-                    throw error;
+                    console.log(
+                        "An unexpected error occurred while creating the bucket, we ignore it:",
+                        error
+                    );
+                    break create_bucket;
                 }
 
                 console.log(
