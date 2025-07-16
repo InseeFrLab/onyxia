@@ -5,10 +5,13 @@ import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
-//Look in my-files.component.tsx
+export type DroppedItem =
+    | { createWhat: "file"; basename: string; blob: File }
+    | { createWhat: "directory"; basename: string };
+
 export type InputFileProps = {
     evtAction: NonPostableEvt<"TRIGGER">;
-    onFileSelected: (params: { files: File[] }) => void;
+    onFileSelected: (params: { items: DroppedItem[] }) => void;
 };
 
 export const InputFile = memo((props: InputFileProps) => {
@@ -35,7 +38,13 @@ export const InputFile = memo((props: InputFileProps) => {
         ({ target: { files } }) => {
             assert(files !== null);
 
-            onFileSelected({ files: Object.values(files) });
+            const items: DroppedItem[] = Array.from(files).map(file => ({
+                createWhat: "file",
+                basename: file.webkitRelativePath || file.name,
+                blob: file
+            }));
+
+            onFileSelected({ items });
         }
     );
 
@@ -43,7 +52,7 @@ export const InputFile = memo((props: InputFileProps) => {
         <input
             aria-hidden="true"
             type="file"
-            multiple={true}
+            multiple
             style={{ display: "none" }}
             ref={ref}
             onChange={onChange}
