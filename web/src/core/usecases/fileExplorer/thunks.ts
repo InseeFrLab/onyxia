@@ -585,8 +585,6 @@ export const thunks = {
                 return { basename, path };
             })();
 
-            console.log("create", { params, basename, path });
-
             const operationId = await dispatch(
                 privateThunks.createOperation({
                     objects: [
@@ -698,7 +696,6 @@ export const thunks = {
                 }
             })();
 
-            console.log("completedObject", completedObject);
             dispatch(
                 actions.operationCompleted({
                     objects: [completedObject],
