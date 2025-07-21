@@ -3,7 +3,7 @@ import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
-import type { Stringifyable } from "core/tools/Stringifyable";
+import { type Stringifyable, getDoesPathStartWith } from "core/tools/Stringifyable";
 import { structuredCloneButFunctions } from "core/tools/structuredCloneButFunctions";
 import {
     type FormFieldValue,
@@ -13,6 +13,7 @@ import {
     mutateHelmValues_update
 } from "core/usecases/launcher/decoupledLogic";
 import { same } from "evt/tools/inDepth";
+import { assert } from "tsafe/assert";
 
 export type State = {
     schema: JSONSchema;
@@ -149,7 +150,50 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { valuesPath, index } = payload;
 
-            const { userProfileValues } = state.userProfile;
+            const { userProfileValues, autoInjectionDisabledFields } = state.userProfile;
+
+            // autoInjectionDisabledFields
+            // [ "a", "b", 1 ]
+            // [ "a", "b", 3, "c", 3 ]
+            // [ "a", "b", 5 ]
+            // [ "a", "b", 6 ]
+            // [ "a", "b", 7, "c", 3 ]
+            // [ "x", "y", 5 ]
+            // valuesPath: [ "a", "b" ]
+            // index: 3
+            // result autoInjectionDisabledFields
+            // [ "a", "b", 1 ]
+            // [ "a", "b", 4 ]
+            // [ "a", "b", 5 ]
+            // [ "a", "b", 6, "c", 3 ]
+            // [ "x", "y", 5 ]
+            [...autoInjectionDisabledFields].forEach((entry, i) => {
+                if (
+                    !getDoesPathStartWith({
+                        longerPath: entry.valuesPath,
+                        shorterPath: valuesPath
+                    })
+                ) {
+                    return;
+                }
+
+                const index_entry = entry.valuesPath[valuesPath.length];
+
+                assert(typeof index_entry === "number");
+
+                if (index_entry < index) {
+                    return;
+                }
+
+                if (index_entry === index) {
+                    autoInjectionDisabledFields.splice(i, 1);
+                    return;
+                }
+
+                if (index_entry > index) {
+                    entry.valuesPath[valuesPath.length] = index_entry - 1;
+                }
+            });
 
             mutateHelmValues_removeArrayItem({
                 helmValues: userProfileValues,

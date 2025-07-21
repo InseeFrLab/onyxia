@@ -18,6 +18,7 @@ import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
+import type { DeepPartial } from "core/tools/DeepPartial";
 
 type RestorableServiceConfig = projectManagement.ProjectConfigs.RestorableServiceConfig;
 
@@ -447,8 +448,18 @@ export const thunks = {
         async (...args) => {
             const { helmValuesPath } = params;
 
-            console.log(args, helmValuesPath);
-            alert("Actually implement autocomplete");
+            const [dispatch, getState] = args;
+
+            const xOnyxiaContext_hint: DeepPartial<XOnyxiaContext> = {};
+
+            if (dispatch(userProfileForm.thunks.getIsEnabled())) {
+                (xOnyxiaContext_hint.user ??= {}).profile =
+                    userProfileForm.protectedSelectors.userProfileValues_nonAutoInjected(
+                        getState()
+                    );
+            }
+
+            // TODO: Call the reducer
         },
     changeFriendlyName:
         (friendlyName: string) =>
@@ -610,7 +621,9 @@ export const protectedThunks = {
                     refreshToken: refreshToken ?? "",
                     profile: !dispatch(userProfileForm.thunks.getIsEnabled())
                         ? undefined
-                        : userProfileForm.protectedSelectors.values(getState())
+                        : userProfileForm.protectedSelectors.userProfileValues_autoInjected(
+                              getState()
+                          )
                 },
                 service: {
                     oneTimePassword: generateRandomPassword()
