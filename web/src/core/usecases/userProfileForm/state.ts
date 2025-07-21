@@ -12,12 +12,20 @@ import {
     mutateHelmValues_removeArrayItem,
     mutateHelmValues_update
 } from "core/usecases/launcher/decoupledLogic";
+import { same } from "evt/tools/inDepth";
 
-type State = {
+export type State = {
     schema: JSONSchema;
-    values_previous: Record<string, Stringifyable>;
-    values: Record<string, Stringifyable>;
+    userProfile_previous: State.UserProfile;
+    userProfile: State.UserProfile;
 };
+
+export namespace State {
+    export type UserProfile = {
+        userProfileValues: Record<string, Stringifyable>;
+        autoInjectionDisabledFields: { valuesPath: (string | number)[] }[];
+    };
+}
 
 export const name = "userProfileForm";
 
@@ -34,22 +42,22 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     schema: JSONSchema;
-                    values: Record<string, Stringifyable>;
+                    userProfile: State.UserProfile;
                 };
             }
         ) => {
-            const { schema, values } = payload;
+            const { schema, userProfile } = payload;
             return {
                 schema,
-                values_previous: structuredCloneButFunctions(values),
-                values: structuredCloneButFunctions(values)
+                userProfile_previous: structuredCloneButFunctions(userProfile),
+                userProfile: structuredCloneButFunctions(userProfile)
             };
         },
         saved: state => {
-            state.values_previous = structuredCloneButFunctions(state.values);
+            state.userProfile_previous = structuredCloneButFunctions(state.userProfile);
         },
         restored: state => {
-            state.values = structuredCloneButFunctions(state.values_previous);
+            state.userProfile = structuredCloneButFunctions(state.userProfile_previous);
         },
         formFieldValueChanged: (
             state,
@@ -64,13 +72,44 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { formFieldValue, rootForm } = payload;
 
-            const { values } = state;
+            const { userProfileValues } = state.userProfile;
 
             mutateHelmValues_update({
-                helmValues: values,
+                helmValues: userProfileValues,
                 formFieldValue,
                 rootForm
             });
+        },
+        autoInjectedChanged: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    valuesPath: (string | number)[];
+                    isAutoInjected: boolean;
+                };
+            }
+        ) => {
+            const { valuesPath, isAutoInjected } = payload;
+
+            const arr = state.userProfile.autoInjectionDisabledFields;
+
+            if (isAutoInjected) {
+                if (arr.find(entry => same(entry.valuesPath, valuesPath)) !== undefined) {
+                    return;
+                }
+
+                arr.push({ valuesPath });
+            } else {
+                const entry = arr.find(entry => same(entry.valuesPath, valuesPath));
+
+                if (entry === undefined) {
+                    return;
+                }
+
+                arr.splice(arr.indexOf(entry), 1);
+            }
         },
         arrayItemAdded: (
             state,
@@ -84,10 +123,13 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { valuesPath } = payload;
 
-            const { schema, values } = state;
+            const {
+                schema,
+                userProfile: { userProfileValues }
+            } = state;
 
             mutateHelmValues_addArrayItem({
-                helmValues: values,
+                helmValues: userProfileValues,
                 helmValuesSchema: schema,
                 xOnyxiaContext: {},
                 helmValuesPath: valuesPath,
@@ -107,10 +149,10 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { valuesPath, index } = payload;
 
-            const { values } = state;
+            const { userProfileValues } = state.userProfile;
 
             mutateHelmValues_removeArrayItem({
-                helmValues: values,
+                helmValues: userProfileValues,
                 helmValuesPath: valuesPath,
                 index
             });
