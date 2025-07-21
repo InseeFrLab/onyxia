@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, is, type Equals } from "tsafe/assert";
 import { actions, type State } from "./state";
-import { privateSelectors, protectedSelectors } from "./selectors";
+import { privateSelectors } from "./selectors";
 import { createUsecaseContextApi } from "clean-architecture";
 import {
     computeHelmValues,
@@ -87,7 +87,7 @@ export const thunks = {
             await dispatch(
                 userConfigs.thunks.changeValue({
                     key: "userProfileStr",
-                    value: JSON.stringify(protectedSelectors.userProfile(getState()))
+                    value: JSON.stringify(privateSelectors.userProfile(getState()))
                 })
             );
 

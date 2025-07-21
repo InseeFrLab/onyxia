@@ -2,6 +2,7 @@ import type { RootForm, FormFieldGroup, FormField } from "../../formTypes";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 import { getHelmValuesPathDeeperCommonSubpath } from "../../shared/getHelmValuesPathDeeperCommonSubpath";
+import { getDoesPathStartWith } from "core/tools/Stringifyable";
 
 function rootFormToNodes(rootForm: RootForm): FormFieldGroup["nodes"] {
     return [
@@ -107,19 +108,4 @@ export function findInRootForm_rangeSlider(params: {
     }
 
     assert(false);
-}
-
-function getDoesPathStartWith(params: {
-    shorterPath: (string | number)[];
-    longerPath: (string | number)[];
-}) {
-    const { shorterPath, longerPath } = params;
-
-    for (let i = 0; i < shorterPath.length; i++) {
-        if (shorterPath[i] !== longerPath[i]) {
-            return false;
-        }
-    }
-
-    return true;
 }
