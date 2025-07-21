@@ -1,6 +1,6 @@
 import type { Thunks } from "core/bootstrap";
-import { assert, is } from "tsafe/assert";
-import { actions } from "./state";
+import { assert, is, type Equals } from "tsafe/assert";
+import { actions, type State } from "./state";
 import { privateSelectors, protectedSelectors } from "./selectors";
 import { createUsecaseContextApi } from "clean-architecture";
 import {
@@ -8,8 +8,10 @@ import {
     type FormFieldValue
 } from "core/usecases/launcher/decoupledLogic";
 import * as userConfigs from "core/usecases/userConfigs";
-import type { Stringifyable } from "core/tools/Stringifyable";
+import { zStringifyable } from "core/tools/Stringifyable";
 import * as launcher from "core/usecases/launcher";
+import { z } from "zod";
+import { id } from "tsafe/id";
 
 export const thunks = {
     getIsEnabled:
@@ -59,11 +61,16 @@ export const thunks = {
     onIsAutoInjectedChange:
         (params: { valuesPath: (string | number)[]; isAutoInjected: boolean }) =>
         (...args) => {
-            const { valuesPath } = params;
+            const { valuesPath, isAutoInjected } = params;
 
-            console.log(args, valuesPath);
+            const [dispatch] = args;
 
-            alert("TODO: Implement");
+            dispatch(
+                actions.autoInjectedChanged({
+                    valuesPath,
+                    isAutoInjected
+                })
+            );
         },
     restore:
         () =>
@@ -79,8 +86,8 @@ export const thunks = {
 
             await dispatch(
                 userConfigs.thunks.changeValue({
-                    key: "userProfileValuesStr",
-                    value: JSON.stringify(protectedSelectors.values(getState()))
+                    key: "userProfileStr",
+                    value: JSON.stringify(protectedSelectors.userProfile(getState()))
                 })
             );
 
@@ -109,7 +116,7 @@ export const protectedThunks = {
             }
 
             const {
-                helmValues: values_default,
+                helmValues: userProfileValues_default,
                 helmValuesSchema_forDataTextEditor: schema_allPropertiesRequired
             } = computeHelmValues({
                 helmValuesSchema: schema,
@@ -123,22 +130,49 @@ export const protectedThunks = {
                 infoAmountInHelmValues: "user provided"
             });
 
-            const values_stored = await (async () => {
-                const { userProfileValuesStr } =
-                    userConfigs.selectors.userConfigs(getState());
+            const userProfile_stored = await (async () => {
+                const { userProfileStr } = userConfigs.selectors.userConfigs(getState());
 
-                if (userProfileValuesStr === null) {
+                if (userProfileStr === null) {
                     return undefined;
                 }
 
-                let values: Record<string, Stringifyable>;
+                let userProfile: unknown;
 
                 try {
-                    values = JSON.parse(userProfileValuesStr);
+                    userProfile = JSON.parse(userProfileStr);
                 } catch (error) {
                     assert(is<Error>(error));
                     return error;
                 }
+
+                const zUserProfile = (() => {
+                    type TargetType = State.UserProfile;
+
+                    const zTargetType = z.object({
+                        userProfileValues: z.record(z.string(), zStringifyable),
+                        autoInjectionDisabledFields: z.array(
+                            z.object({
+                                valuesPath: z.array(z.union([z.string(), z.number()]))
+                            })
+                        )
+                    });
+
+                    type InferredType = z.infer<typeof zTargetType>;
+
+                    assert<Equals<TargetType, InferredType>>;
+
+                    return id<z.ZodType<TargetType>>(zTargetType);
+                })();
+
+                try {
+                    zUserProfile.parse(userProfile);
+                } catch (error) {
+                    assert(is<Error>(error));
+                    return error;
+                }
+
+                assert(is<State.UserProfile>(userProfile));
 
                 const { Ajv } = await import("ajv");
 
@@ -146,42 +180,46 @@ export const protectedThunks = {
 
                 const ajvValidateFunction = ajv.compile(schema_allPropertiesRequired);
 
-                const isValid = ajvValidateFunction(values);
+                const isValid = ajvValidateFunction(userProfile.userProfileValues);
 
                 if (!isValid) {
                     return new Error("Saved user profile does not match the schema");
                 }
 
-                assert(is<Record<string, Stringifyable>>(values));
-
-                return values;
+                return userProfile;
             })();
 
-            if (values_stored instanceof Error) {
-                const error = values_stored;
+            if (userProfile_stored instanceof Error) {
+                const error = userProfile_stored;
 
                 console.warn(error.message);
 
                 await dispatch(
                     userConfigs.thunks.changeValue({
-                        key: "userProfileValuesStr",
+                        key: "userProfileStr",
                         value: null
                     })
                 );
             }
 
-            const values = (() => {
-                if (values_stored === undefined || values_stored instanceof Error) {
-                    return values_default;
+            const userProfile = (() => {
+                if (
+                    userProfile_stored === undefined ||
+                    userProfile_stored instanceof Error
+                ) {
+                    return id<State.UserProfile>({
+                        userProfileValues: userProfileValues_default,
+                        autoInjectionDisabledFields: []
+                    });
                 }
 
-                return values_stored;
+                return userProfile_stored;
             })();
 
             dispatch(
                 actions.initialized({
                     schema,
-                    values
+                    userProfile
                 })
             );
 

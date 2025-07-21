@@ -11,23 +11,29 @@ const state = (rootState: RootState) => {
 };
 
 const isThereThingsToSave = createSelector(state, state => {
-    const { values_previous, values } = state;
+    const { userProfile_previous, userProfile } = state;
 
-    return !same(values_previous, values);
+    return !same(userProfile_previous, userProfile);
 });
-
-const values = createSelector(state, state => state.values);
 
 const rootForm = createSelector(
     createSelector(state, state => state.schema),
-    values,
-    (schema, values) => {
+    createSelector(state, state => state.userProfile.userProfileValues),
+    createSelector(
+        createSelector(state, state => state.userProfile.autoInjectionDisabledFields),
+        autoInjectionDisabledFields =>
+            autoInjectionDisabledFields.map(({ valuesPath }) => ({
+                helmValuesPath: valuesPath
+            }))
+    ),
+    (schema, userProfileValues, autoInjectionDisabledFields) => {
         return computeRootForm({
             chartName: "dummy",
             helmValuesSchema: schema,
-            helmValues: values,
+            helmValues: userProfileValues,
             xOnyxiaContext: createObjectThatThrowsIfAccessed(),
-            helmDependencies: []
+            helmDependencies: [],
+            autoInjectionDisabledFields
         });
     }
 );
@@ -43,7 +49,7 @@ const main = createSelector(
 export const selectors = { main };
 
 export const protectedSelectors = {
-    values
+    userProfile: createSelector(state, state => state.userProfile)
 };
 
 export const privateSelectors = {
