@@ -25,6 +25,11 @@ export function computeRootForm(params: {
         condition: (string | number)[] | undefined;
     }[];
     autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
+    autocompleteOptions: {
+        helmValuesPath: (string | number)[];
+        isLoadingOptions: boolean;
+        options: string[];
+    }[];
 }): RootForm {
     const {
         chartName,
@@ -32,7 +37,8 @@ export function computeRootForm(params: {
         helmValues,
         xOnyxiaContext,
         helmDependencies,
-        autoInjectionDisabledFields
+        autoInjectionDisabledFields,
+        autocompleteOptions
     } = params;
 
     const rootForm: RootForm = {

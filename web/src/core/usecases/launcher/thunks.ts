@@ -418,12 +418,13 @@ export const thunks = {
             );
         },
     changeFormFieldValue:
-        (params: FormFieldValue, isAutocompleteSelection?: boolean) =>
+        (params: { formFieldValue: FormFieldValue; isAutocompleteSelection: boolean }) =>
         (...args) => {
             const [dispatch, getState] = args;
-            const formFieldValue = params;
 
-            if (isAutocompleteSelection === true) {
+            const { formFieldValue, isAutocompleteSelection } = params;
+
+            if (isAutocompleteSelection) {
                 assert(
                     formFieldValue.fieldType === "text field",
                     [
@@ -432,7 +433,12 @@ export const thunks = {
                     ].join(" ")
                 );
 
-                alert("Implement autocomplete");
+                dispatch(
+                    actions.formFieldValueChanged_autocompleteSelection({
+                        helmValuePath: formFieldValue.helmValuesPath,
+                        optionValue: formFieldValue.value
+                    })
+                );
 
                 return;
             }
@@ -448,18 +454,13 @@ export const thunks = {
         async (...args) => {
             const { helmValuesPath } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch] = args;
 
-            const xOnyxiaContext_hint: DeepPartial<XOnyxiaContext> = {};
-
-            if (dispatch(userProfileForm.thunks.getIsEnabled())) {
-                (xOnyxiaContext_hint.user ??= {}).profile =
-                    userProfileForm.protectedSelectors.userProfileValues_nonAutoInjected(
-                        getState()
-                    );
-            }
-
-            // TODO: Call the reducer
+            dispatch(
+                actions.autocompletePanelOpened({
+                    helmValuesPath
+                })
+            );
         },
     changeFriendlyName:
         (friendlyName: string) =>
@@ -772,6 +773,22 @@ export const protectedThunks = {
             };
 
             return xOnyxiaContext;
+        },
+    getXOnyxiaContext_autocompleteOptions:
+        () =>
+        (...args) => {
+            const [dispatch, getState] = args;
+
+            const xOnyxiaContext_autocompleteOptions: DeepPartial<XOnyxiaContext> = {};
+
+            if (dispatch(userProfileForm.thunks.getIsEnabled())) {
+                (xOnyxiaContext_autocompleteOptions.user ??= {}).profile =
+                    userProfileForm.protectedSelectors.userProfileValues_nonAutoInjected(
+                        getState()
+                    );
+            }
+
+            return xOnyxiaContext_autocompleteOptions;
         }
 } satisfies Thunks;
 

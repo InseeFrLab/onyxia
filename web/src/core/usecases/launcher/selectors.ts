@@ -95,13 +95,33 @@ const rootForm = createSelector(
     isReady,
     paramsOfComputeRootForm_butHelmValues,
     helmValues,
-    (isReady, computeRootFormParams_butHelmValues, helmValues) => {
+    createSelector(
+        createSelector(readyState, state => {
+            if (state === null) {
+                return null;
+            }
+            return state.autocompleteOptions;
+        }),
+        autocompleteOptions => {
+            if (autocompleteOptions === null) {
+                return null;
+            }
+
+            return autocompleteOptions.map(entry => ({
+                helmValuesPath: entry.helmValuesPath,
+                options: entry.options.map(option => option.optionValue),
+                isLoadingOptions: false
+            }));
+        }
+    ),
+    (isReady, computeRootFormParams_butHelmValues, helmValues, autocompleteOptions) => {
         if (!isReady) {
             return null;
         }
 
         assert(computeRootFormParams_butHelmValues !== null);
         assert(helmValues !== null);
+        assert(autocompleteOptions !== null);
 
         const { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext } =
             computeRootFormParams_butHelmValues;
@@ -112,7 +132,8 @@ const rootForm = createSelector(
             helmValues,
             xOnyxiaContext,
             helmDependencies,
-            autoInjectionDisabledFields: undefined
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions
         });
     }
 );

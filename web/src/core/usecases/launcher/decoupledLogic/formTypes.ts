@@ -148,4 +148,4 @@ export namespace FormFieldValue {
     export type Name = "fieldType" | "helmValuesPath" | "value";
 }
 
-assert<Equals<FormFieldValue["fieldType"], FormField["fieldType"]>>(true);
+assert<Equals<FormFieldValue["fieldType"], FormField["fieldType"]>>;

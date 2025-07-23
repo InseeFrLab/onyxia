@@ -90,13 +90,19 @@ function computeRootFormFieldGroup_rec(params: {
     xOnyxiaContext: XOnyxiaContextLike;
     autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
     helmValuesPath: (string | number)[];
+    autocompleteOptions: {
+        helmValuesPath: (string | number)[];
+        isLoadingOptions: boolean;
+        options: string[];
+    }[];
 }): FormFieldGroup | FormField | undefined {
     const {
         helmValuesSchema,
         helmValues,
         xOnyxiaContext,
         helmValuesPath,
-        autoInjectionDisabledFields
+        autoInjectionDisabledFields,
+        autocompleteOptions
     } = params;
 
     const isHidden: boolean = (() => {
@@ -477,7 +483,19 @@ function computeRootFormFieldGroup_rec(params: {
 
                     return value;
                 })(),
-                autocomplete: undefined
+                autocomplete: (() => {
+                    const entry = autocompleteOptions.find(entry =>
+                        same(entry.helmValuesPath, helmValuesPath)
+                    );
+
+                    if (entry === undefined) {
+                        return undefined;
+                    }
+
+                    const { isLoadingOptions, options } = entry;
+
+                    return { isLoadingOptions, options };
+                })()
             });
         case "integer":
         case "number":
