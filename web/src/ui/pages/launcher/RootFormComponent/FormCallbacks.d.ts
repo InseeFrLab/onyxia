@@ -5,7 +5,10 @@ import type {
 } from "core/usecases/launcher/decoupledLogic/formTypes";
 
 export type FormCallbacks = {
-    onChange: (params: FormFieldValue, isAutocompleteSelection?: boolean) => void;
+    onChange: (params: {
+        formFieldValue: FormFieldValue;
+        isAutocompleteSelection: boolean;
+    }) => void;
     onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
     onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
     onFieldErrorChange: (params: {
