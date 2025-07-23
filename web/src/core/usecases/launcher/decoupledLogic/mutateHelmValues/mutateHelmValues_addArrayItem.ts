@@ -43,14 +43,19 @@ export function mutateHelmValues_addArrayItem(params: {
         helmValuesYaml
     } = params;
 
-    const helmValues_array = getValueAtPath(helmValues, helmValuesPath);
+    const helmValues_array = getValueAtPath({
+        stringifyableObjectOrArray: helmValues,
+        path: helmValuesPath,
+        doDeleteFromSource: false,
+        doFailOnUnresolved: true
+    });
 
     assert(helmValues_array instanceof Array);
 
     const defaultItem = (() => {
-        const helmValuesSchema_target = getValueAtPath(
-            helmValuesSchema,
-            helmValuesPath
+        const helmValuesSchema_target = getValueAtPath({
+            stringifyableObjectOrArray: helmValuesSchema,
+            path: helmValuesPath
                 .map(segment => {
                     switch (typeof segment) {
                         case "string":
@@ -60,10 +65,10 @@ export function mutateHelmValues_addArrayItem(params: {
                     }
                     assert<Equals<typeof segment, never>>(false);
                 })
-                .flat()
-        );
-
-        assert(helmValuesSchema_target !== undefined);
+                .flat(),
+            doDeleteFromSource: false,
+            doFailOnUnresolved: true
+        });
 
         assert(is<JSONSchemaLike>(helmValuesSchema_target));
 
@@ -94,10 +99,14 @@ export function mutateHelmValues_addArrayItem(params: {
             string,
             Stringifyable
         >;
-        const helmValuesYaml_parsed_target = getValueAtPath(
-            helmValuesYaml_parsed,
-            helmValuesPath
-        );
+
+        const helmValuesYaml_parsed_target = getValueAtPath({
+            stringifyableObjectOrArray: helmValuesYaml_parsed,
+            path: helmValuesPath,
+            doDeleteFromSource: false,
+            doFailOnUnresolved: false
+        });
+
         assert(
             helmValuesYaml_parsed_target === undefined ||
                 helmValuesYaml_parsed_target instanceof Array
