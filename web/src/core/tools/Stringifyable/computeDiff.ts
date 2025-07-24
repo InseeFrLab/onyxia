@@ -20,7 +20,14 @@ export function computeDiff(params: {
 
     (function crawl(value: Stringifyable, path: (string | number)[]) {
         if (getIsAtomic(value)) {
-            if (getValueAtPath(before, path) !== value) {
+            if (
+                getValueAtPath({
+                    stringifyableObjectOrArray: before,
+                    path,
+                    doDeleteFromSource: false,
+                    doFailOnUnresolved: false
+                }) !== value
+            ) {
                 diffPatch.push({
                     path,
                     value: value
@@ -38,7 +45,14 @@ export function computeDiff(params: {
     })(current, []);
 
     (function crawl(value: Stringifyable, path: (string | number)[]) {
-        if (getValueAtPath(current, path) === undefined) {
+        if (
+            getValueAtPath({
+                stringifyableObjectOrArray: current,
+                path,
+                doDeleteFromSource: false,
+                doFailOnUnresolved: false
+            }) === undefined
+        ) {
             diffPatch.push({
                 path,
                 value: undefined

@@ -29,7 +29,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 b: 2
             },
             xOnyxiaContext,
-            autoInjectionDisabledFields: undefined
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
         });
 
         const expected: FormFieldGroup = {
@@ -85,7 +86,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 a: "foo"
             },
             xOnyxiaContext: {},
-            autoInjectionDisabledFields: undefined
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
         });
 
         const expected: FormFieldGroup = {
@@ -157,7 +159,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 }
             },
             xOnyxiaContext,
-            autoInjectionDisabledFields: undefined
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
         });
 
         const expected: FormFieldGroup = {
@@ -236,7 +239,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 }
             },
             xOnyxiaContext,
-            autoInjectionDisabledFields: undefined
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
         });
 
         const expected: FormFieldGroup = {
@@ -302,7 +306,8 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                 b: [{ foo: "value of foo", bar: 42 }]
             },
             xOnyxiaContext,
-            autoInjectionDisabledFields: undefined
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
         });
 
         const expected: FormFieldGroup = {

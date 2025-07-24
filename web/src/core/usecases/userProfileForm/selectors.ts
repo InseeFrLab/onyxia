@@ -39,7 +39,8 @@ const rootForm = createSelector(
             helmValues: userProfileValues,
             xOnyxiaContext: createObjectThatThrowsIfAccessed(),
             helmDependencies: [],
-            autoInjectionDisabledFields
+            autoInjectionDisabledFields,
+            autocompleteOptions: []
         });
     }
 );

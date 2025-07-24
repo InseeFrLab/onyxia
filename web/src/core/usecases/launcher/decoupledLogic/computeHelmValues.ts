@@ -125,7 +125,12 @@ export function computeHelmValues(params: {
         applyDiffPatch({
             objectOrArray: helmValues,
             diffPatch: diffPatch.filter(({ path }) => {
-                const value_current = getValueAtPath(helmValues, path);
+                const value_current = getValueAtPath({
+                    stringifyableObjectOrArray: helmValues,
+                    path,
+                    doDeleteFromSource: false,
+                    doFailOnUnresolved: false
+                });
 
                 if (value_current !== undefined) {
                     return false;

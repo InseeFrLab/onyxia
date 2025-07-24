@@ -7,7 +7,7 @@ import type {
 export type FormCallbacks = {
     onChange: (params: {
         formFieldValue: FormFieldValue;
-        isAutocompleteSelection: boolean;
+        isAutocompleteOptionSelection: boolean;
     }) => void;
     onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
     onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
