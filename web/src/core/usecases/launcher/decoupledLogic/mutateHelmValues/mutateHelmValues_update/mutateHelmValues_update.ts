@@ -9,14 +9,6 @@ export function mutateHelmValues_update(params: {
     formFieldValue: FormFieldValue;
     /** NOTE: RootForm is readonly we only mutate helmValues */
     rootForm: RootForm;
-
-    // NOTE: If the above formFieldValue has isAutocompleteSelection set to true
-    // we should apply all autocomplete suggestion that have the same group id
-    // TODO: No need to do it here it can be the callers job to do it.
-    autoComplete: {
-        groupId: string;
-        fromFieldValue: FormFieldValue;
-    }[];
 }): void {
     const { helmValues, formFieldValue, rootForm } = params;
 
@@ -37,7 +29,12 @@ export function mutateHelmValues_update(params: {
 
             const value = (() => {
                 if (unit === undefined || unit === "") {
-                    const currentValue = getValueAtPath(helmValues, helmValuesPath);
+                    const currentValue = getValueAtPath({
+                        stringifyableObjectOrArray: helmValues,
+                        path: helmValuesPath,
+                        doDeleteFromSource: false,
+                        doFailOnUnresolved: false
+                    });
 
                     assert(currentValue !== undefined);
 

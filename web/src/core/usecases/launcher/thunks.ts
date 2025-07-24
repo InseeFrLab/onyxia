@@ -273,6 +273,9 @@ export const thunks = {
                             chartVersion,
                             chartVersion_default,
                             xOnyxiaContext,
+                            xOnyxiaContext_autocompleteOptions: dispatch(
+                                privateThunks.getXOnyxiaContext_autocompleteOptions()
+                            ),
 
                             friendlyName: friendlyName ?? friendlyName_default,
                             friendlyName_default,
@@ -418,13 +421,16 @@ export const thunks = {
             );
         },
     changeFormFieldValue:
-        (params: { formFieldValue: FormFieldValue; isAutocompleteSelection: boolean }) =>
+        (params: {
+            formFieldValue: FormFieldValue;
+            isAutocompleteOptionSelection: boolean;
+        }) =>
         (...args) => {
             const [dispatch, getState] = args;
 
-            const { formFieldValue, isAutocompleteSelection } = params;
+            const { formFieldValue, isAutocompleteOptionSelection } = params;
 
-            if (isAutocompleteSelection) {
+            if (isAutocompleteOptionSelection) {
                 assert(
                     formFieldValue.fieldType === "text field",
                     [
@@ -773,7 +779,10 @@ export const protectedThunks = {
             };
 
             return xOnyxiaContext;
-        },
+        }
+} satisfies Thunks;
+
+export const privateThunks = {
     getXOnyxiaContext_autocompleteOptions:
         () =>
         (...args) => {
@@ -789,10 +798,7 @@ export const protectedThunks = {
             }
 
             return xOnyxiaContext_autocompleteOptions;
-        }
-} satisfies Thunks;
-
-export const privateThunks = {
+        },
     getChartInfos:
         (params: {
             catalogId: string;

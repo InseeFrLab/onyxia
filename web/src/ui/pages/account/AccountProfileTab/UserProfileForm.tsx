@@ -34,7 +34,8 @@ export default function UserProfileForm() {
                 callbacks={{
                     onAdd: ({ helmValuesPath }) =>
                         userProfileForm.addArrayItem({ valuesPath: helmValuesPath }),
-                    onChange: params => userProfileForm.changeFormFieldValue(params),
+                    onChange: ({ formFieldValue }) =>
+                        userProfileForm.changeFormFieldValue(formFieldValue),
                     onRemove: ({ helmValuesPath, index }) =>
                         userProfileForm.removeArrayItem({
                             valuesPath: helmValuesPath,

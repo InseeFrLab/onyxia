@@ -11,6 +11,7 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";
+import type { Param0 } from "tsafe";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -71,30 +72,6 @@ const paramsOfComputeRootForm_butHelmValues = createSelector(
 
         return state.xOnyxiaContext;
     }),
-    (isReady, chartName, helmValuesSchema, helmDependencies, xOnyxiaContext) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(chartName !== null);
-        assert(helmValuesSchema !== null);
-        assert(helmDependencies !== null);
-        assert(xOnyxiaContext !== null);
-
-        return {
-            chartName,
-            helmValuesSchema,
-            helmDependencies,
-            xOnyxiaContext,
-            autoInjectionDisabledFields: undefined
-        };
-    }
-);
-
-const rootForm = createSelector(
-    isReady,
-    paramsOfComputeRootForm_butHelmValues,
-    helmValues,
     createSelector(
         createSelector(readyState, state => {
             if (state === null) {
@@ -114,26 +91,50 @@ const rootForm = createSelector(
             }));
         }
     ),
-    (isReady, computeRootFormParams_butHelmValues, helmValues, autocompleteOptions) => {
+    (
+        isReady,
+        chartName,
+        helmValuesSchema,
+        helmDependencies,
+        xOnyxiaContext,
+        autocompleteOptions
+    ): Omit<Param0<typeof computeRootForm>, "helmValues"> | null => {
         if (!isReady) {
             return null;
         }
 
-        assert(computeRootFormParams_butHelmValues !== null);
-        assert(helmValues !== null);
+        assert(chartName !== null);
+        assert(helmValuesSchema !== null);
+        assert(helmDependencies !== null);
+        assert(xOnyxiaContext !== null);
         assert(autocompleteOptions !== null);
 
-        const { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext } =
-            computeRootFormParams_butHelmValues;
-
-        return computeRootForm({
+        return {
             chartName,
             helmValuesSchema,
-            helmValues,
-            xOnyxiaContext,
             helmDependencies,
-            autoInjectionDisabledFields: undefined,
-            autocompleteOptions
+            xOnyxiaContext,
+            autocompleteOptions,
+            autoInjectionDisabledFields: undefined
+        };
+    }
+);
+
+const rootForm = createSelector(
+    isReady,
+    paramsOfComputeRootForm_butHelmValues,
+    helmValues,
+    (isReady, paramsOfComputeRootForm_butHelmValues, helmValues) => {
+        if (!isReady) {
+            return null;
+        }
+
+        assert(paramsOfComputeRootForm_butHelmValues !== null);
+        assert(helmValues !== null);
+
+        return computeRootForm({
+            ...paramsOfComputeRootForm_butHelmValues,
+            helmValues
         });
     }
 );
