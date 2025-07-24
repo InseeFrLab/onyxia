@@ -1,6 +1,6 @@
 import type { FormFieldGroup, FormField } from "../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
-import type { Stringifyable } from "core/tools/Stringifyable";
+import { type Stringifyable, getDoesPathStartWith } from "core/tools/Stringifyable";
 import { createTemporaryRangeSlider } from "./mergeRangeSliders";
 import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -66,16 +66,27 @@ export function computeRootFormFieldGroup(params: {
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
     autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
+    autocompleteOptions: {
+        helmValuesPath: (string | number)[];
+        isLoadingOptions: boolean;
+        options: string[];
+    }[];
 }): FormFieldGroup {
-    const { helmValuesSchema, helmValues, xOnyxiaContext, autoInjectionDisabledFields } =
-        params;
+    const {
+        helmValuesSchema,
+        helmValues,
+        xOnyxiaContext,
+        autoInjectionDisabledFields,
+        autocompleteOptions
+    } = params;
 
     const formFieldGroup = computeRootFormFieldGroup_rec({
         helmValuesSchema,
         helmValues,
         xOnyxiaContext,
         autoInjectionDisabledFields,
-        helmValuesPath: []
+        helmValuesPath: [],
+        autocompleteOptions
     });
 
     assert(formFieldGroup !== undefined);
@@ -381,15 +392,24 @@ function computeRootFormFieldGroup_rec(params: {
             assert(helmValuesSchema.properties !== undefined);
 
             const nodes = Object.entries(helmValuesSchema.properties)
-                .map(([segment, helmValuesSchema_child]) =>
-                    computeRootFormFieldGroup_rec({
+                .map(([segment, helmValuesSchema_child]) => {
+                    const helmValuesPath_child = [...helmValuesPath, segment];
+
+                    return computeRootFormFieldGroup_rec({
                         helmValues,
                         xOnyxiaContext,
                         helmValuesSchema: helmValuesSchema_child,
                         autoInjectionDisabledFields,
-                        helmValuesPath: [...helmValuesPath, segment]
-                    })
-                )
+                        helmValuesPath: helmValuesPath_child,
+                        autocompleteOptions: autocompleteOptions.filter(
+                            ({ helmValuesPath }) =>
+                                getDoesPathStartWith({
+                                    shorterPath: helmValuesPath_child,
+                                    longerPath: helmValuesPath
+                                })
+                        )
+                    });
+                })
                 .filter(exclude(undefined));
 
             return id<FormFieldGroup>({
@@ -417,15 +437,24 @@ function computeRootFormFieldGroup_rec(params: {
             assert(values instanceof Array);
 
             const nodes = values
-                .map((...[, index]) =>
-                    computeRootFormFieldGroup_rec({
+                .map((...[, index]) => {
+                    const helmValuesPath_child = [...helmValuesPath, index];
+
+                    return computeRootFormFieldGroup_rec({
                         helmValues,
                         xOnyxiaContext,
                         helmValuesSchema: itemSchema,
                         autoInjectionDisabledFields,
-                        helmValuesPath: [...helmValuesPath, index]
-                    })
-                )
+                        helmValuesPath: helmValuesPath_child,
+                        autocompleteOptions: autocompleteOptions.filter(
+                            ({ helmValuesPath }) =>
+                                getDoesPathStartWith({
+                                    shorterPath: helmValuesPath_child,
+                                    longerPath: helmValuesPath
+                                })
+                        )
+                    });
+                })
                 .filter(exclude(undefined));
 
             return id<FormFieldGroup>({
