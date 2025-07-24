@@ -47,7 +47,8 @@ export function computeRootForm(params: {
                 helmValuesSchema,
                 helmValues,
                 xOnyxiaContext,
-                autoInjectionDisabledFields
+                autoInjectionDisabledFields,
+                autocompleteOptions
             });
 
             mergeRangeSliders({ formFieldGroup: formFieldGroup_root });
