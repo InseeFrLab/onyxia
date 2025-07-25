@@ -24,16 +24,33 @@ export function computeRootForm(params: {
         chartName: string;
         condition: (string | number)[] | undefined;
     }[];
+    autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
+    autocompleteOptions:
+        | {
+              helmValuesPath: (string | number)[];
+              isLoadingOptions: boolean;
+              options: string[];
+          }[]
+        | undefined;
 }): RootForm {
-    const { chartName, helmValuesSchema, helmValues, xOnyxiaContext, helmDependencies } =
-        params;
+    const {
+        chartName,
+        helmValuesSchema,
+        helmValues,
+        xOnyxiaContext,
+        helmDependencies,
+        autoInjectionDisabledFields,
+        autocompleteOptions
+    } = params;
 
     const rootForm: RootForm = {
         main: (() => {
             const formFieldGroup_root = computeRootFormFieldGroup({
                 helmValuesSchema,
                 helmValues,
-                xOnyxiaContext
+                xOnyxiaContext,
+                autoInjectionDisabledFields,
+                autocompleteOptions
             });
 
             mergeRangeSliders({ formFieldGroup: formFieldGroup_root });

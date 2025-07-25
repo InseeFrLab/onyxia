@@ -18,6 +18,7 @@ import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
+import type { DeepPartial } from "core/tools/DeepPartial";
 
 type RestorableServiceConfig = projectManagement.ProjectConfigs.RestorableServiceConfig;
 
@@ -272,6 +273,9 @@ export const thunks = {
                             chartVersion,
                             chartVersion_default,
                             xOnyxiaContext,
+                            xOnyxiaContext_autocompleteOptions: dispatch(
+                                privateThunks.getXOnyxiaContext_autocompleteOptions()
+                            ),
 
                             friendlyName: friendlyName ?? friendlyName_default,
                             friendlyName_default,
@@ -417,16 +421,52 @@ export const thunks = {
             );
         },
     changeFormFieldValue:
-        (params: FormFieldValue) =>
+        (params: {
+            formFieldValue: FormFieldValue;
+            isAutocompleteOptionSelection: boolean;
+        }) =>
         (...args) => {
             const [dispatch, getState] = args;
-            const formFieldValue = params;
+
+            const { formFieldValue, isAutocompleteOptionSelection } = params;
+
+            if (isAutocompleteOptionSelection) {
+                assert(
+                    formFieldValue.fieldType === "text field",
+                    [
+                        "At the time of writing this assertion we only support",
+                        "autocomplete on text field but his might no longer be the case"
+                    ].join(" ")
+                );
+
+                dispatch(
+                    actions.formFieldValueChanged_autocompleteSelection({
+                        helmValuePath: formFieldValue.helmValuesPath,
+                        optionValue: formFieldValue.value
+                    })
+                );
+
+                return;
+            }
 
             const rootForm = privateSelectors.rootForm(getState());
 
             assert(rootForm !== null);
 
             dispatch(actions.formFieldValueChanged({ formFieldValue, rootForm }));
+        },
+    onAutocompletePanelOpen:
+        (params: { helmValuesPath: (string | number)[] }) =>
+        async (...args) => {
+            const { helmValuesPath } = params;
+
+            const [dispatch] = args;
+
+            dispatch(
+                actions.autocompletePanelOpened({
+                    helmValuesPath
+                })
+            );
         },
     changeFriendlyName:
         (friendlyName: string) =>
@@ -588,7 +628,9 @@ export const protectedThunks = {
                     refreshToken: refreshToken ?? "",
                     profile: !dispatch(userProfileForm.thunks.getIsEnabled())
                         ? undefined
-                        : userProfileForm.protectedSelectors.values(getState())
+                        : userProfileForm.protectedSelectors.userProfileValues_autoInjected(
+                              getState()
+                          )
                 },
                 service: {
                     oneTimePassword: generateRandomPassword()
@@ -741,6 +783,22 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const privateThunks = {
+    getXOnyxiaContext_autocompleteOptions:
+        () =>
+        (...args) => {
+            const [dispatch, getState] = args;
+
+            const xOnyxiaContext_autocompleteOptions: DeepPartial<XOnyxiaContext> = {};
+
+            if (dispatch(userProfileForm.thunks.getIsEnabled())) {
+                (xOnyxiaContext_autocompleteOptions.user ??= {}).profile =
+                    userProfileForm.protectedSelectors.userProfileValues_nonAutoInjected(
+                        getState()
+                    );
+            }
+
+            return xOnyxiaContext_autocompleteOptions;
+        },
     getChartInfos:
         (params: {
             catalogId: string;

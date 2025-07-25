@@ -21,11 +21,13 @@ const rootForm: RootForm = {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "foo"
+                    value: "foo",
+                    autocomplete: undefined
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         },
         {
             type: "group",
@@ -60,7 +62,8 @@ const rootForm: RootForm = {
                 }
             ],
             canAdd: false,
-            canRemove: false
+            canRemove: false,
+            isAutoInjected: undefined
         }
     ],
     disabledDependencies: [],
@@ -101,7 +104,8 @@ const rootForm: RootForm = {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "admin"
+                    value: "admin",
+                    autocomplete: undefined
                 },
                 {
                     type: "field",
@@ -113,7 +117,8 @@ const rootForm: RootForm = {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     pattern: undefined,
-                    value: "xxx"
+                    value: "xxx",
+                    autocomplete: undefined
                 }
             ]
         }

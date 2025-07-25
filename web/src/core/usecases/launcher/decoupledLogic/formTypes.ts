@@ -23,6 +23,7 @@ export type FormFieldGroup = {
     nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
+    isAutoInjected: boolean | undefined;
 };
 
 export type FormField =
@@ -85,6 +86,12 @@ export namespace FormField {
         isSensitive: boolean;
         pattern: string | undefined;
         value: string;
+        autocomplete:
+            | {
+                  isLoadingOptions: boolean;
+                  options: string[];
+              }
+            | undefined;
     };
 
     export type Slider = Common & {
@@ -141,4 +148,4 @@ export namespace FormFieldValue {
     export type Name = "fieldType" | "helmValuesPath" | "value";
 }
 
-assert<Equals<FormFieldValue["fieldType"], FormField["fieldType"]>>(true);
+assert<Equals<FormFieldValue["fieldType"], FormField["fieldType"]>>;

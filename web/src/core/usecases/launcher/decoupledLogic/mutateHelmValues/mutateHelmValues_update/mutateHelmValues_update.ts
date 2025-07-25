@@ -29,7 +29,12 @@ export function mutateHelmValues_update(params: {
 
             const value = (() => {
                 if (unit === undefined || unit === "") {
-                    const currentValue = getValueAtPath(helmValues, helmValuesPath);
+                    const currentValue = getValueAtPath({
+                        stringifyableObjectOrArray: helmValues,
+                        path: helmValuesPath,
+                        doDeleteFromSource: false,
+                        doFailOnUnresolved: false
+                    });
 
                     assert(currentValue !== undefined);
 

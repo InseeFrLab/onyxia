@@ -9,7 +9,12 @@ export function mutateHelmValues_removeArrayItem(params: {
 }): void {
     const { helmValues, helmValuesPath, index } = params;
 
-    const arr = getValueAtPath(helmValues, helmValuesPath);
+    const arr = getValueAtPath({
+        stringifyableObjectOrArray: helmValues,
+        path: helmValuesPath,
+        doDeleteFromSource: false,
+        doFailOnUnresolved: false
+    });
 
     assert(arr instanceof Array);
 

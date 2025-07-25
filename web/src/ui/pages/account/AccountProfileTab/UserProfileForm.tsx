@@ -7,6 +7,7 @@ import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { getIconUrlByName } from "lazy-icons";
 import Divider from "@mui/material/Divider";
+import { assert } from "tsafe/assert";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
@@ -33,13 +34,22 @@ export default function UserProfileForm() {
                 callbacks={{
                     onAdd: ({ helmValuesPath }) =>
                         userProfileForm.addArrayItem({ valuesPath: helmValuesPath }),
-                    onChange: params => userProfileForm.changeFormFieldValue(params),
+                    onChange: ({ formFieldValue }) =>
+                        userProfileForm.changeFormFieldValue(formFieldValue),
                     onRemove: ({ helmValuesPath, index }) =>
                         userProfileForm.removeArrayItem({
                             valuesPath: helmValuesPath,
                             index
                         }),
-                    onFieldErrorChange: () => {}
+                    onFieldErrorChange: () => {},
+                    onAutocompletePanelOpen: () => {
+                        assert(false);
+                    },
+                    onIsAutoInjectedChange: ({ helmValuesPath, isAutoInjected }) =>
+                        userProfileForm.onIsAutoInjectedChange({
+                            valuesPath: helmValuesPath,
+                            isAutoInjected
+                        })
                 }}
             />
             <div className={classes.buttonWrapper}>

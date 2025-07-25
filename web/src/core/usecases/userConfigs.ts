@@ -33,7 +33,7 @@ export type UserConfigs = Id<
         doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: boolean;
         selectedProjectId: string | null;
         isCommandBarEnabled: boolean;
-        userProfileValuesStr: string | null;
+        userProfileStr: string | null;
     }
 >;
 
@@ -156,7 +156,7 @@ export const protectedThunks = {
                 doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: true,
                 selectedProjectId: null,
                 isCommandBarEnabled: paramsOfBootstrapCore.isCommandBarEnabledByDefault,
-                userProfileValuesStr: null
+                userProfileStr: null
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());

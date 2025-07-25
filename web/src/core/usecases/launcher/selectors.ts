@@ -11,6 +11,7 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";
+import type { Param0 } from "tsafe";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -71,7 +72,33 @@ const paramsOfComputeRootForm_butHelmValues = createSelector(
 
         return state.xOnyxiaContext;
     }),
-    (isReady, chartName, helmValuesSchema, helmDependencies, xOnyxiaContext) => {
+    createSelector(
+        createSelector(readyState, state => {
+            if (state === null) {
+                return null;
+            }
+            return state.autocompleteOptions;
+        }),
+        autocompleteOptions => {
+            if (autocompleteOptions === null) {
+                return null;
+            }
+
+            return autocompleteOptions.map(entry => ({
+                helmValuesPath: entry.helmValuesPath,
+                options: entry.options.map(option => option.optionValue),
+                isLoadingOptions: false
+            }));
+        }
+    ),
+    (
+        isReady,
+        chartName,
+        helmValuesSchema,
+        helmDependencies,
+        xOnyxiaContext,
+        autocompleteOptions
+    ): Omit<Param0<typeof computeRootForm>, "helmValues"> | null => {
         if (!isReady) {
             return null;
         }
@@ -80,8 +107,16 @@ const paramsOfComputeRootForm_butHelmValues = createSelector(
         assert(helmValuesSchema !== null);
         assert(helmDependencies !== null);
         assert(xOnyxiaContext !== null);
+        assert(autocompleteOptions !== null);
 
-        return { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext };
+        return {
+            chartName,
+            helmValuesSchema,
+            helmDependencies,
+            xOnyxiaContext,
+            autocompleteOptions,
+            autoInjectionDisabledFields: undefined
+        };
     }
 );
 
@@ -89,23 +124,17 @@ const rootForm = createSelector(
     isReady,
     paramsOfComputeRootForm_butHelmValues,
     helmValues,
-    (isReady, computeRootFormParams_butHelmValues, helmValues) => {
+    (isReady, paramsOfComputeRootForm_butHelmValues, helmValues) => {
         if (!isReady) {
             return null;
         }
 
-        assert(computeRootFormParams_butHelmValues !== null);
+        assert(paramsOfComputeRootForm_butHelmValues !== null);
         assert(helmValues !== null);
 
-        const { chartName, helmValuesSchema, helmDependencies, xOnyxiaContext } =
-            computeRootFormParams_butHelmValues;
-
         return computeRootForm({
-            chartName,
-            helmValuesSchema,
-            helmValues,
-            xOnyxiaContext,
-            helmDependencies
+            ...paramsOfComputeRootForm_butHelmValues,
+            helmValues
         });
     }
 );

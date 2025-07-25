@@ -30,7 +30,14 @@ export type Props = {
 export function FormFieldGroupComponent(props: Props) {
     const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath } = props;
 
-    const { onRemove, onAdd, onChange, onFieldErrorChange } = callbacks;
+    const {
+        onRemove,
+        onAdd,
+        onChange,
+        onFieldErrorChange,
+        onAutocompletePanelOpen,
+        onIsAutoInjectedChange
+    } = callbacks;
 
     const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
         onRemove({ helmValuesPath, index });
@@ -49,9 +56,12 @@ export function FormFieldGroupComponent(props: Props) {
     const getOnChange_checkbox = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [boolean]) =>
             onChange({
-                fieldType: "checkbox",
-                helmValuesPath: JSON.parse(helmValuesPathStr),
-                value
+                formFieldValue: {
+                    fieldType: "checkbox",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    value
+                },
+                isAutocompleteOptionSelection: false
             })
     );
 
@@ -61,45 +71,68 @@ export function FormFieldGroupComponent(props: Props) {
             [value]: [Record<string, Stringifyable> | Stringifyable[]]
         ) =>
             onChange({
-                fieldType: "yaml code block",
-                helmValuesPath: JSON.parse(helmValuesPathStr),
-                value
+                formFieldValue: {
+                    fieldType: "yaml code block",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    value
+                },
+                isAutocompleteOptionSelection: false
             })
     );
 
     const getOnChange_number = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [number]) =>
             onChange({
-                fieldType: "number field",
-                helmValuesPath: JSON.parse(helmValuesPathStr),
-                value
+                formFieldValue: {
+                    fieldType: "number field",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    value
+                },
+                isAutocompleteOptionSelection: false
             })
     );
 
     const getOnChange_select = useCallbackFactory(
         ([helmValuesPathStr]: [string], [selectedOptionIndex]: [number]) =>
             onChange({
-                fieldType: "select",
-                helmValuesPath: JSON.parse(helmValuesPathStr),
-                selectedOptionIndex
+                formFieldValue: {
+                    fieldType: "select",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    selectedOptionIndex
+                },
+                isAutocompleteOptionSelection: false
             })
     );
 
     const getOnChange_text = useCallbackFactory(
-        ([helmValuesPathStr]: [string], [value]: [string]) =>
+        (
+            [helmValuesPathStr]: [string],
+            [{ newValue, isAutocompleteOptionSelection }]: [
+                {
+                    newValue: string;
+                    isAutocompleteOptionSelection: boolean;
+                }
+            ]
+        ) =>
             onChange({
-                fieldType: "text field",
-                helmValuesPath: JSON.parse(helmValuesPathStr),
-                value
+                formFieldValue: {
+                    fieldType: "text field",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    value: newValue
+                },
+                isAutocompleteOptionSelection
             })
     );
 
     const getOnChange_slider = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [number]) =>
             onChange({
-                fieldType: "slider",
-                helmValuesPath: JSON.parse(helmValuesPathStr),
-                value
+                formFieldValue: {
+                    fieldType: "slider",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    value
+                },
+                isAutocompleteOptionSelection: false
             })
     );
 
@@ -112,15 +145,33 @@ export function FormFieldGroupComponent(props: Props) {
             [params]: [{ highEndRangeValue: number; lowEndRangeValue: number }]
         ) =>
             onChange({
-                fieldType: "range slider",
-                highEndRange: {
-                    helmValuesPath: JSON.parse(helmValuesPathStr_highEndRange),
-                    value: params.highEndRangeValue
+                formFieldValue: {
+                    fieldType: "range slider",
+                    highEndRange: {
+                        helmValuesPath: JSON.parse(helmValuesPathStr_highEndRange),
+                        value: params.highEndRangeValue
+                    },
+                    lowEndRange: {
+                        helmValuesPath: JSON.parse(helmValuesPathStr_lowEndRange),
+                        value: params.lowEndRangeValue
+                    }
                 },
-                lowEndRange: {
-                    helmValuesPath: JSON.parse(helmValuesPathStr_lowEndRange),
-                    value: params.lowEndRangeValue
-                }
+                isAutocompleteOptionSelection: false
+            })
+    );
+
+    const getOnAutocompletePanelOpen = useCallbackFactory(
+        ([helmValuesPathStr]: [string]) =>
+            onAutocompletePanelOpen({
+                helmValuesPath: JSON.parse(helmValuesPathStr)
+            })
+    );
+
+    const getOnIsAutoInjectedChange = useCallbackFactory(
+        ([helmValuesPathStr]: [string], [isAutoInjected]: [boolean]) =>
+            onIsAutoInjectedChange({
+                helmValuesPath: JSON.parse(helmValuesPathStr),
+                isAutoInjected
             })
     );
 
@@ -150,6 +201,17 @@ export function FormFieldGroupComponent(props: Props) {
                             title={node.title}
                             onRemove={onRemove_child}
                             description={node.description}
+                            autoInjection={
+                                node.isAutoInjected === undefined
+                                    ? undefined
+                                    : {
+                                          isAutoInjected: node.isAutoInjected,
+                                          onIsAutoInjectedChange:
+                                              getOnIsAutoInjectedChange(
+                                                  JSON.stringify(node.helmValuesPath)
+                                              )
+                                      }
+                            }
                         >
                             <FormFieldGroupComponent
                                 nodes={node.nodes}
@@ -247,6 +309,19 @@ export function FormFieldGroupComponent(props: Props) {
                                 onErrorChange={getOnFieldErrorChange_child(
                                     helmValuesPathStr
                                 )}
+                                autocomplete={
+                                    node.autocomplete === undefined
+                                        ? undefined
+                                        : {
+                                              isLoadingOptions:
+                                                  node.autocomplete.isLoadingOptions,
+                                              options: node.autocomplete.options,
+                                              onPanelOpen:
+                                                  getOnAutocompletePanelOpen(
+                                                      helmValuesPathStr
+                                                  )
+                                          }
+                                }
                             />
                         );
                     }

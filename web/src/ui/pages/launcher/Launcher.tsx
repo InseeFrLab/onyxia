@@ -344,6 +344,10 @@ const Launcher = withLoginEnforced((props: Props) => {
         }
     );
 
+    const onIsAutoInjectedChange = useConstCallback(() => {
+        assert(false);
+    });
+
     const [isDataEditorModeEnabled, setIsDataEditorModeEnabled] = useSessionState({
         initialValue: !isReady ? false : helmValuesSchema_forDataTextEditor === undefined,
         stateUniqueId: `isDataEditorModeEnabled:${route.params.catalogId}:${route.params.chartName}`,
@@ -488,7 +492,10 @@ const Launcher = withLoginEnforced((props: Props) => {
                                     onAdd: launcher.addArrayItem,
                                     onChange: launcher.changeFormFieldValue,
                                     onRemove,
-                                    onFieldErrorChange
+                                    onFieldErrorChange,
+                                    onAutocompletePanelOpen:
+                                        launcher.onAutocompletePanelOpen,
+                                    onIsAutoInjectedChange
                                 }}
                             />
                         </div>

@@ -3,7 +3,7 @@ import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
-import type { Stringifyable } from "core/tools/Stringifyable";
+import { type Stringifyable, getDoesPathStartWith } from "core/tools/Stringifyable";
 import { structuredCloneButFunctions } from "core/tools/structuredCloneButFunctions";
 import {
     type FormFieldValue,
@@ -12,12 +12,21 @@ import {
     mutateHelmValues_removeArrayItem,
     mutateHelmValues_update
 } from "core/usecases/launcher/decoupledLogic";
+import { same } from "evt/tools/inDepth";
+import { assert } from "tsafe/assert";
 
-type State = {
+export type State = {
     schema: JSONSchema;
-    values_previous: Record<string, Stringifyable>;
-    values: Record<string, Stringifyable>;
+    userProfile_previous: State.UserProfile;
+    userProfile: State.UserProfile;
 };
+
+export namespace State {
+    export type UserProfile = {
+        userProfileValues: Record<string, Stringifyable>;
+        autoInjectionDisabledFields: { valuesPath: (string | number)[] }[];
+    };
+}
 
 export const name = "userProfileForm";
 
@@ -34,22 +43,22 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     schema: JSONSchema;
-                    values: Record<string, Stringifyable>;
+                    userProfile: State.UserProfile;
                 };
             }
         ) => {
-            const { schema, values } = payload;
+            const { schema, userProfile } = payload;
             return {
                 schema,
-                values_previous: structuredCloneButFunctions(values),
-                values: structuredCloneButFunctions(values)
+                userProfile_previous: structuredCloneButFunctions(userProfile),
+                userProfile: structuredCloneButFunctions(userProfile)
             };
         },
         saved: state => {
-            state.values_previous = structuredCloneButFunctions(state.values);
+            state.userProfile_previous = structuredCloneButFunctions(state.userProfile);
         },
         restored: state => {
-            state.values = structuredCloneButFunctions(state.values_previous);
+            state.userProfile = structuredCloneButFunctions(state.userProfile_previous);
         },
         formFieldValueChanged: (
             state,
@@ -64,13 +73,44 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { formFieldValue, rootForm } = payload;
 
-            const { values } = state;
+            const { userProfileValues } = state.userProfile;
 
             mutateHelmValues_update({
-                helmValues: values,
+                helmValues: userProfileValues,
                 formFieldValue,
                 rootForm
             });
+        },
+        autoInjectedChanged: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    valuesPath: (string | number)[];
+                    isAutoInjected: boolean;
+                };
+            }
+        ) => {
+            const { valuesPath, isAutoInjected } = payload;
+
+            const arr = state.userProfile.autoInjectionDisabledFields;
+
+            if (isAutoInjected) {
+                const entry = arr.find(entry => same(entry.valuesPath, valuesPath));
+
+                if (entry === undefined) {
+                    return;
+                }
+
+                arr.splice(arr.indexOf(entry), 1);
+            } else {
+                if (arr.find(entry => same(entry.valuesPath, valuesPath)) !== undefined) {
+                    return;
+                }
+
+                arr.push({ valuesPath });
+            }
         },
         arrayItemAdded: (
             state,
@@ -84,10 +124,13 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { valuesPath } = payload;
 
-            const { schema, values } = state;
+            const {
+                schema,
+                userProfile: { userProfileValues }
+            } = state;
 
             mutateHelmValues_addArrayItem({
-                helmValues: values,
+                helmValues: userProfileValues,
                 helmValuesSchema: schema,
                 xOnyxiaContext: {},
                 helmValuesPath: valuesPath,
@@ -107,10 +150,53 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { valuesPath, index } = payload;
 
-            const { values } = state;
+            const { userProfileValues, autoInjectionDisabledFields } = state.userProfile;
+
+            // autoInjectionDisabledFields
+            // [ "a", "b", 1 ]
+            // [ "a", "b", 3, "c", 3 ]
+            // [ "a", "b", 5 ]
+            // [ "a", "b", 6 ]
+            // [ "a", "b", 7, "c", 3 ]
+            // [ "x", "y", 5 ]
+            // valuesPath: [ "a", "b" ]
+            // index: 3
+            // result autoInjectionDisabledFields
+            // [ "a", "b", 1 ]
+            // [ "a", "b", 4 ]
+            // [ "a", "b", 5 ]
+            // [ "a", "b", 6, "c", 3 ]
+            // [ "x", "y", 5 ]
+            [...autoInjectionDisabledFields].forEach((entry, i) => {
+                if (
+                    !getDoesPathStartWith({
+                        longerPath: entry.valuesPath,
+                        shorterPath: valuesPath
+                    })
+                ) {
+                    return;
+                }
+
+                const index_entry = entry.valuesPath[valuesPath.length];
+
+                assert(typeof index_entry === "number");
+
+                if (index_entry < index) {
+                    return;
+                }
+
+                if (index_entry === index) {
+                    autoInjectionDisabledFields.splice(i, 1);
+                    return;
+                }
+
+                if (index_entry > index) {
+                    entry.valuesPath[valuesPath.length] = index_entry - 1;
+                }
+            });
 
             mutateHelmValues_removeArrayItem({
-                helmValues: values,
+                helmValues: userProfileValues,
                 helmValuesPath: valuesPath,
                 index
             });

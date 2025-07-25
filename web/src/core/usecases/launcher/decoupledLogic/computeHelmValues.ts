@@ -20,13 +20,13 @@ import {
     getJSONSchemaType,
     type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
 } from "./shared/getJSONSchemaType";
-import structuredClone from "@ungap/structured-clone";
 import {
     computeDiff,
     applyDiffPatch,
     getValueAtPath,
     type Stringifyable
 } from "core/tools/Stringifyable";
+import { structuredCloneButFunctions } from "core/tools/structuredCloneButFunctions";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: XOnyxiaParams["overwriteDefaultWith"];
@@ -70,7 +70,8 @@ export function computeHelmValues(params: {
     const { helmValuesSchema, helmValuesYaml, xOnyxiaContext, infoAmountInHelmValues } =
         params;
 
-    const helmValuesSchema_forDataTextEditor = structuredClone(helmValuesSchema);
+    const helmValuesSchema_forDataTextEditor =
+        structuredCloneButFunctions(helmValuesSchema);
 
     editHelmValuesSchemaForDataTextEditor({
         helmValuesSchema,
@@ -125,7 +126,12 @@ export function computeHelmValues(params: {
         applyDiffPatch({
             objectOrArray: helmValues,
             diffPatch: diffPatch.filter(({ path }) => {
-                const value_current = getValueAtPath(helmValues, path);
+                const value_current = getValueAtPath({
+                    stringifyableObjectOrArray: helmValues,
+                    path,
+                    doDeleteFromSource: false,
+                    doFailOnUnresolved: false
+                });
 
                 if (value_current !== undefined) {
                     return false;
@@ -266,7 +272,7 @@ export function computeHelmValues_rec(params: {
                 break array_mapping;
             }
 
-            const items_cloned = structuredClone(items);
+            const items_cloned = structuredCloneButFunctions(items);
 
             assert(items_cloned.properties !== undefined);
 

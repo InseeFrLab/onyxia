@@ -1,6 +1,6 @@
 import type { FormFieldGroup, FormField } from "../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
-import type { Stringifyable } from "core/tools/Stringifyable";
+import { type Stringifyable, getDoesPathStartWith } from "core/tools/Stringifyable";
 import { createTemporaryRangeSlider } from "./mergeRangeSliders";
 import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -65,14 +65,30 @@ export function computeRootFormFieldGroup(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
+    autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
+    autocompleteOptions:
+        | {
+              helmValuesPath: (string | number)[];
+              isLoadingOptions: boolean;
+              options: string[];
+          }[]
+        | undefined;
 }): FormFieldGroup {
-    const { helmValuesSchema, helmValues, xOnyxiaContext } = params;
+    const {
+        helmValuesSchema,
+        helmValues,
+        xOnyxiaContext,
+        autoInjectionDisabledFields,
+        autocompleteOptions
+    } = params;
 
     const formFieldGroup = computeRootFormFieldGroup_rec({
         helmValuesSchema,
         helmValues,
         xOnyxiaContext,
-        helmValuesPath: []
+        autoInjectionDisabledFields,
+        helmValuesPath: [],
+        autocompleteOptions
     });
 
     assert(formFieldGroup !== undefined);
@@ -85,9 +101,24 @@ function computeRootFormFieldGroup_rec(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
+    autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
     helmValuesPath: (string | number)[];
+    autocompleteOptions:
+        | {
+              helmValuesPath: (string | number)[];
+              isLoadingOptions: boolean;
+              options: string[];
+          }[]
+        | undefined;
 }): FormFieldGroup | FormField | undefined {
-    const { helmValuesSchema, helmValues, xOnyxiaContext, helmValuesPath } = params;
+    const {
+        helmValuesSchema,
+        helmValues,
+        xOnyxiaContext,
+        helmValuesPath,
+        autoInjectionDisabledFields,
+        autocompleteOptions
+    } = params;
 
     const isHidden: boolean = (() => {
         root_hidden: {
@@ -365,14 +396,26 @@ function computeRootFormFieldGroup_rec(params: {
             assert(helmValuesSchema.properties !== undefined);
 
             const nodes = Object.entries(helmValuesSchema.properties)
-                .map(([segment, helmValuesSchema_child]) =>
-                    computeRootFormFieldGroup_rec({
+                .map(([segment, helmValuesSchema_child]) => {
+                    const helmValuesPath_child = [...helmValuesPath, segment];
+
+                    return computeRootFormFieldGroup_rec({
                         helmValues,
-                        helmValuesPath: [...helmValuesPath, segment],
                         xOnyxiaContext,
-                        helmValuesSchema: helmValuesSchema_child
-                    })
-                )
+                        helmValuesSchema: helmValuesSchema_child,
+                        autoInjectionDisabledFields,
+                        helmValuesPath: helmValuesPath_child,
+                        autocompleteOptions:
+                            autocompleteOptions === undefined
+                                ? undefined
+                                : autocompleteOptions.filter(({ helmValuesPath }) =>
+                                      getDoesPathStartWith({
+                                          shorterPath: helmValuesPath_child,
+                                          longerPath: helmValuesPath
+                                      })
+                                  )
+                    });
+                })
                 .filter(exclude(undefined));
 
             return id<FormFieldGroup>({
@@ -382,7 +425,22 @@ function computeRootFormFieldGroup_rec(params: {
                 description: helmValuesSchema.description,
                 nodes,
                 canAdd: false,
-                canRemove: false
+                canRemove: false,
+                isAutoInjected: (() => {
+                    if (autoInjectionDisabledFields === undefined) {
+                        return undefined;
+                    }
+
+                    if (typeof helmValuesPath[helmValuesPath.length - 1] !== "number") {
+                        return undefined;
+                    }
+
+                    return (
+                        autoInjectionDisabledFields.find(entry =>
+                            same(entry.helmValuesPath, helmValuesPath)
+                        ) === undefined
+                    );
+                })()
             });
         }
         case "array": {
@@ -399,14 +457,26 @@ function computeRootFormFieldGroup_rec(params: {
             assert(values instanceof Array);
 
             const nodes = values
-                .map((...[, index]) =>
-                    computeRootFormFieldGroup_rec({
+                .map((...[, index]) => {
+                    const helmValuesPath_child = [...helmValuesPath, index];
+
+                    return computeRootFormFieldGroup_rec({
                         helmValues,
-                        helmValuesPath: [...helmValuesPath, index],
                         xOnyxiaContext,
-                        helmValuesSchema: itemSchema
-                    })
-                )
+                        helmValuesSchema: itemSchema,
+                        autoInjectionDisabledFields,
+                        helmValuesPath: helmValuesPath_child,
+                        autocompleteOptions:
+                            autocompleteOptions === undefined
+                                ? undefined
+                                : autocompleteOptions.filter(({ helmValuesPath }) =>
+                                      getDoesPathStartWith({
+                                          shorterPath: helmValuesPath_child,
+                                          longerPath: helmValuesPath
+                                      })
+                                  )
+                    });
+                })
                 .filter(exclude(undefined));
 
             return id<FormFieldGroup>({
@@ -416,7 +486,8 @@ function computeRootFormFieldGroup_rec(params: {
                 description: helmValuesSchema.description,
                 nodes,
                 canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
-                canRemove: values.length > (helmValuesSchema.minItems ?? 0)
+                canRemove: values.length > (helmValuesSchema.minItems ?? 0),
+                isAutoInjected: undefined
             });
         }
         case "boolean":
@@ -452,6 +523,26 @@ function computeRootFormFieldGroup_rec(params: {
                     assert(typeof value === "string");
 
                     return value;
+                })(),
+                autocomplete: (() => {
+                    if (autocompleteOptions === undefined) {
+                        return undefined;
+                    }
+
+                    const entry = autocompleteOptions.find(entry =>
+                        same(entry.helmValuesPath, helmValuesPath)
+                    );
+
+                    if (entry === undefined) {
+                        return {
+                            isLoadingOptions: false,
+                            options: []
+                        };
+                    }
+
+                    const { isLoadingOptions, options } = entry;
+
+                    return { isLoadingOptions, options };
                 })()
             });
         case "integer":
