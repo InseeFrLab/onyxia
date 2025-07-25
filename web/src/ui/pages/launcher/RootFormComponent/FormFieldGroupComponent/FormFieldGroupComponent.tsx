@@ -179,7 +179,18 @@ export function FormFieldGroupComponent(props: Props) {
                             title={node.title}
                             onRemove={onRemove_child}
                             description={node.description}
-                            autoInjection={undefined}
+                            autoInjection={
+                                node.isAutoInjected === undefined
+                                    ? undefined
+                                    : {
+                                          isAutoInjected: node.isAutoInjected,
+                                          onIsAutoInjectedChange: isAutoInjected =>
+                                              callbacks.onIsAutoInjectedChange({
+                                                  helmValuesPath: node.helmValuesPath,
+                                                  isAutoInjected
+                                              })
+                                      }
+                            }
                         >
                             <FormFieldGroupComponent
                                 nodes={node.nodes}
