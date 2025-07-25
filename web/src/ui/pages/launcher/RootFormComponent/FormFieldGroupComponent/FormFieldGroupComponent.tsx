@@ -30,7 +30,14 @@ export type Props = {
 export function FormFieldGroupComponent(props: Props) {
     const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath } = props;
 
-    const { onRemove, onAdd, onChange, onFieldErrorChange } = callbacks;
+    const {
+        onRemove,
+        onAdd,
+        onChange,
+        onFieldErrorChange,
+        onAutocompletePanelOpen,
+        onIsAutoInjectedChange
+    } = callbacks;
 
     const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
         onRemove({ helmValuesPath, index });
@@ -153,6 +160,21 @@ export function FormFieldGroupComponent(props: Props) {
             })
     );
 
+    const getOnAutocompletePanelOpen = useCallbackFactory(
+        ([helmValuesPathStr]: [string]) =>
+            onAutocompletePanelOpen({
+                helmValuesPath: JSON.parse(helmValuesPathStr)
+            })
+    );
+
+    const getOnIsAutoInjectedChange = useCallbackFactory(
+        ([helmValuesPathStr]: [string], [isAutoInjected]: [boolean]) =>
+            onIsAutoInjectedChange({
+                helmValuesPath: JSON.parse(helmValuesPathStr),
+                isAutoInjected
+            })
+    );
+
     const { cx, classes } = useStyles();
 
     const { t } = useTranslation({ FormFieldGroupComponent });
@@ -184,11 +206,10 @@ export function FormFieldGroupComponent(props: Props) {
                                     ? undefined
                                     : {
                                           isAutoInjected: node.isAutoInjected,
-                                          onIsAutoInjectedChange: isAutoInjected =>
-                                              callbacks.onIsAutoInjectedChange({
-                                                  helmValuesPath: node.helmValuesPath,
-                                                  isAutoInjected
-                                              })
+                                          onIsAutoInjectedChange:
+                                              getOnIsAutoInjectedChange(
+                                                  JSON.stringify(node.helmValuesPath)
+                                              )
                                       }
                             }
                         >
@@ -288,7 +309,19 @@ export function FormFieldGroupComponent(props: Props) {
                                 onErrorChange={getOnFieldErrorChange_child(
                                     helmValuesPathStr
                                 )}
-                                autocomplete={undefined}
+                                autocomplete={
+                                    node.autocomplete === undefined
+                                        ? undefined
+                                        : {
+                                              isLoadingOptions:
+                                                  node.autocomplete.isLoadingOptions,
+                                              options: node.autocomplete.options,
+                                              onPanelOpen:
+                                                  getOnAutocompletePanelOpen(
+                                                      helmValuesPathStr
+                                                  )
+                                          }
+                                }
                             />
                         );
                     }
