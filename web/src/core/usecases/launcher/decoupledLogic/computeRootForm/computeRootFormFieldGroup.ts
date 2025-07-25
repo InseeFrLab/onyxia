@@ -420,7 +420,21 @@ function computeRootFormFieldGroup_rec(params: {
                 nodes,
                 canAdd: false,
                 canRemove: false,
-                isAutoInjected: undefined
+                isAutoInjected: (() => {
+                    if (autoInjectionDisabledFields === undefined) {
+                        return undefined;
+                    }
+
+                    if (typeof helmValuesPath[helmValuesPath.length - 1] !== "number") {
+                        return undefined;
+                    }
+
+                    return (
+                        autoInjectionDisabledFields.find(entry =>
+                            same(entry.helmValuesPath, helmValuesPath)
+                        ) === undefined
+                    );
+                })()
             });
         }
         case "array": {
@@ -465,17 +479,7 @@ function computeRootFormFieldGroup_rec(params: {
                 nodes,
                 canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
                 canRemove: values.length > (helmValuesSchema.minItems ?? 0),
-                isAutoInjected: (() => {
-                    if (autoInjectionDisabledFields === undefined) {
-                        return undefined;
-                    }
-
-                    return (
-                        autoInjectionDisabledFields.find(entry =>
-                            same(entry.helmValuesPath, helmValuesPath)
-                        ) === undefined
-                    );
-                })()
+                isAutoInjected: undefined
             });
         }
         case "boolean":
