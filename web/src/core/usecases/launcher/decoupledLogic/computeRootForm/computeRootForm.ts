@@ -25,11 +25,13 @@ export function computeRootForm(params: {
         condition: (string | number)[] | undefined;
     }[];
     autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
-    autocompleteOptions: {
-        helmValuesPath: (string | number)[];
-        isLoadingOptions: boolean;
-        options: string[];
-    }[];
+    autocompleteOptions:
+        | {
+              helmValuesPath: (string | number)[];
+              isLoadingOptions: boolean;
+              options: string[];
+          }[]
+        | undefined;
 }): RootForm {
     const {
         chartName,
