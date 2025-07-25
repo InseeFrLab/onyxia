@@ -30,22 +30,32 @@ export function getValueAtPath(params: {
     if (path.length === 1) {
         const [lastSegment] = path;
 
-        if (doFailOnUnresolved) {
-            assert(lastSegment in stringifyableObjectOrArray);
-        }
-
-        let value: Stringifyable;
+        let value: Stringifyable | undefined;
 
         if (stringifyableObjectOrArray instanceof Array) {
             assert(typeof lastSegment === "number");
 
             value = stringifyableObjectOrArray[lastSegment];
 
+            if (value === undefined) {
+                if (doFailOnUnresolved) {
+                    assert(false);
+                }
+                return undefined;
+            }
+
             if (doDeleteFromSource) {
                 stringifyableObjectOrArray.splice(lastSegment, 1);
             }
         } else {
             value = stringifyableObjectOrArray[lastSegment];
+
+            if (value === undefined) {
+                if (doFailOnUnresolved) {
+                    assert(false);
+                }
+                return undefined;
+            }
 
             if (doDeleteFromSource) {
                 delete stringifyableObjectOrArray[lastSegment];
@@ -57,7 +67,7 @@ export function getValueAtPath(params: {
 
     const [firstSegment, ...path_next] = path;
 
-    let stringifyableObjectOrArray_next: Stringifyable;
+    let stringifyableObjectOrArray_next: Stringifyable | undefined;
 
     if (stringifyableObjectOrArray instanceof Array) {
         if (typeof firstSegment !== "number") {
@@ -81,7 +91,10 @@ export function getValueAtPath(params: {
         stringifyableObjectOrArray_next = stringifyableObjectOrArray[firstSegment];
     }
 
-    if (getIsAtomic(stringifyableObjectOrArray_next)) {
+    if (
+        stringifyableObjectOrArray_next === undefined ||
+        getIsAtomic(stringifyableObjectOrArray_next)
+    ) {
         if (doFailOnUnresolved) {
             assert(false);
         }
