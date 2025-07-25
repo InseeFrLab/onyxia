@@ -97,12 +97,6 @@ export const { reducer, actions } = createUsecaseActions({
             const arr = state.userProfile.autoInjectionDisabledFields;
 
             if (isAutoInjected) {
-                if (arr.find(entry => same(entry.valuesPath, valuesPath)) !== undefined) {
-                    return;
-                }
-
-                arr.push({ valuesPath });
-            } else {
                 const entry = arr.find(entry => same(entry.valuesPath, valuesPath));
 
                 if (entry === undefined) {
@@ -110,6 +104,12 @@ export const { reducer, actions } = createUsecaseActions({
                 }
 
                 arr.splice(arr.indexOf(entry), 1);
+            } else {
+                if (arr.find(entry => same(entry.valuesPath, valuesPath)) !== undefined) {
+                    return;
+                }
+
+                arr.push({ valuesPath });
             }
         },
         arrayItemAdded: (
