@@ -40,7 +40,7 @@ const rootForm = createSelector(
             xOnyxiaContext: createObjectThatThrowsIfAccessed(),
             helmDependencies: [],
             autoInjectionDisabledFields,
-            autocompleteOptions: []
+            autocompleteOptions: undefined
         });
     }
 );

@@ -60,7 +60,7 @@ describe(symToStr({ computeRootForm }), () => {
                 }
             },
             autoInjectionDisabledFields: undefined,
-            autocompleteOptions: []
+            autocompleteOptions: undefined
         });
 
         const expected: RootForm = {
@@ -208,7 +208,7 @@ describe(symToStr({ computeRootForm }), () => {
                 }
             },
             autoInjectionDisabledFields: undefined,
-            autocompleteOptions: []
+            autocompleteOptions: undefined
         });
 
         const expected: RootForm = {

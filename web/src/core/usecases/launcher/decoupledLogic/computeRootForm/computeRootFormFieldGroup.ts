@@ -66,11 +66,13 @@ export function computeRootFormFieldGroup(params: {
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
     autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
-    autocompleteOptions: {
-        helmValuesPath: (string | number)[];
-        isLoadingOptions: boolean;
-        options: string[];
-    }[];
+    autocompleteOptions:
+        | {
+              helmValuesPath: (string | number)[];
+              isLoadingOptions: boolean;
+              options: string[];
+          }[]
+        | undefined;
 }): FormFieldGroup {
     const {
         helmValuesSchema,
@@ -101,11 +103,13 @@ function computeRootFormFieldGroup_rec(params: {
     xOnyxiaContext: XOnyxiaContextLike;
     autoInjectionDisabledFields: { helmValuesPath: (string | number)[] }[] | undefined;
     helmValuesPath: (string | number)[];
-    autocompleteOptions: {
-        helmValuesPath: (string | number)[];
-        isLoadingOptions: boolean;
-        options: string[];
-    }[];
+    autocompleteOptions:
+        | {
+              helmValuesPath: (string | number)[];
+              isLoadingOptions: boolean;
+              options: string[];
+          }[]
+        | undefined;
 }): FormFieldGroup | FormField | undefined {
     const {
         helmValuesSchema,
@@ -401,13 +405,15 @@ function computeRootFormFieldGroup_rec(params: {
                         helmValuesSchema: helmValuesSchema_child,
                         autoInjectionDisabledFields,
                         helmValuesPath: helmValuesPath_child,
-                        autocompleteOptions: autocompleteOptions.filter(
-                            ({ helmValuesPath }) =>
-                                getDoesPathStartWith({
-                                    shorterPath: helmValuesPath_child,
-                                    longerPath: helmValuesPath
-                                })
-                        )
+                        autocompleteOptions:
+                            autocompleteOptions === undefined
+                                ? undefined
+                                : autocompleteOptions.filter(({ helmValuesPath }) =>
+                                      getDoesPathStartWith({
+                                          shorterPath: helmValuesPath_child,
+                                          longerPath: helmValuesPath
+                                      })
+                                  )
                     });
                 })
                 .filter(exclude(undefined));
@@ -460,13 +466,15 @@ function computeRootFormFieldGroup_rec(params: {
                         helmValuesSchema: itemSchema,
                         autoInjectionDisabledFields,
                         helmValuesPath: helmValuesPath_child,
-                        autocompleteOptions: autocompleteOptions.filter(
-                            ({ helmValuesPath }) =>
-                                getDoesPathStartWith({
-                                    shorterPath: helmValuesPath_child,
-                                    longerPath: helmValuesPath
-                                })
-                        )
+                        autocompleteOptions:
+                            autocompleteOptions === undefined
+                                ? undefined
+                                : autocompleteOptions.filter(({ helmValuesPath }) =>
+                                      getDoesPathStartWith({
+                                          shorterPath: helmValuesPath_child,
+                                          longerPath: helmValuesPath
+                                      })
+                                  )
                     });
                 })
                 .filter(exclude(undefined));
@@ -517,12 +525,19 @@ function computeRootFormFieldGroup_rec(params: {
                     return value;
                 })(),
                 autocomplete: (() => {
+                    if (autocompleteOptions === undefined) {
+                        return undefined;
+                    }
+
                     const entry = autocompleteOptions.find(entry =>
                         same(entry.helmValuesPath, helmValuesPath)
                     );
 
                     if (entry === undefined) {
-                        return undefined;
+                        return {
+                            isLoadingOptions: false,
+                            options: []
+                        };
                     }
 
                     const { isLoadingOptions, options } = entry;
