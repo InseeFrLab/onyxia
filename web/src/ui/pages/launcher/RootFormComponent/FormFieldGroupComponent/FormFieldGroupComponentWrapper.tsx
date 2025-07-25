@@ -27,7 +27,7 @@ export function FormFieldGroupComponentWrapper(props: {
 
     const { cx, classes } = useStyles({
         headingWrapperBackgroundColor: backgroundColor,
-        isAutoInjected: autoInjection?.isAutoInjected ?? false
+        isAutoInjected: autoInjection?.isAutoInjected ?? true
     });
 
     return (
