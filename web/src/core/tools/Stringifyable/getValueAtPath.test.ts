@@ -24,4 +24,29 @@ describe(symToStr({ getValueAtPath }), () => {
 
         expect(got).toBe(undefined);
     });
+
+    it("works with deleteFromSource set to true", () => {
+        const stringifyableObjectOrArray = { a: [{ b: 42 }] };
+
+        const got = getValueAtPath({
+            stringifyableObjectOrArray,
+            path: ["a", 0, "b"],
+            doDeleteFromSource: true,
+            doFailOnUnresolved: false
+        });
+
+        expect(got).toBe(42);
+        expect(stringifyableObjectOrArray).toStrictEqual({ a: [{}] });
+    });
+
+    it("to throw when doFailOnUnresolved is set to true", () => {
+        expect(() => {
+            getValueAtPath({
+                stringifyableObjectOrArray: {},
+                path: ["a", 0, "b"],
+                doDeleteFromSource: false,
+                doFailOnUnresolved: true
+            });
+        }).toThrow();
+    });
 });
