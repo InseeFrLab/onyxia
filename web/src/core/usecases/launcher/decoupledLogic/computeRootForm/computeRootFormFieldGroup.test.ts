@@ -50,7 +50,10 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     value: "foo",
-                    autocomplete: undefined
+                    autocomplete: {
+                        options: [],
+                        isLoadingOptions: false
+                    }
                 },
                 {
                     type: "field",
@@ -107,7 +110,10 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     doRenderAsTextArea: false,
                     isSensitive: false,
                     value: "foo",
-                    autocomplete: undefined
+                    autocomplete: {
+                        options: [],
+                        isLoadingOptions: false
+                    }
                 }
             ],
             canAdd: false,
@@ -327,7 +333,10 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     isSensitive: false,
                     pattern: undefined,
                     value: "value of a",
-                    autocomplete: undefined
+                    autocomplete: {
+                        options: [],
+                        isLoadingOptions: false
+                    }
                 },
                 {
                     type: "group",
@@ -352,7 +361,10 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                                     isSensitive: false,
                                     pattern: undefined,
                                     value: "value of foo",
-                                    autocomplete: undefined
+                                    autocomplete: {
+                                        options: [],
+                                        isLoadingOptions: false
+                                    }
                                 },
                                 {
                                     type: "field",
