@@ -135,6 +135,14 @@ export function computeAutocompleteOptions(params: {
             continue;
         }
 
+        if (
+            autocompleteOptions.find(
+                autocompleteOption => autocompleteOption.optionValue === optionValue
+            ) !== undefined
+        ) {
+            continue;
+        }
+
         autocompleteOptions.push({
             optionValue,
             overwrite: {
