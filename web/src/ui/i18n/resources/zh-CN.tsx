@@ -33,6 +33,11 @@ export const translations: Translations<"zh-CN"> = {
         save: "保存",
         restore: "恢复"
     },
+    ConfirmNavigationDialog: {
+        "you have unsaved changes": "您有未保存的更改！",
+        cancel: "取消",
+        "continue without saving": "继续且不保存"
+    },
     AccountGitTab: {
         gitName: "Git 用户名",
         "gitName helper text": ({ gitName, focusClassName }) => (

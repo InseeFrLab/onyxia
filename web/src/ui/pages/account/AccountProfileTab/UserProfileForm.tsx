@@ -8,6 +8,14 @@ import { tss } from "tss";
 import { getIconUrlByName } from "lazy-icons";
 import Divider from "@mui/material/Divider";
 import { assert } from "tsafe/assert";
+import { useNavigationInterceptor } from "ui/routes";
+import {
+    ConfirmNavigationDialog,
+    type TextFormDialogProps
+} from "./ConfirmNavigationDialog";
+import { Evt } from "evt";
+import { useConst } from "powerhooks/useConst";
+import { Deferred } from "evt/tools/Deferred";
 
 export default function UserProfileForm() {
     const { userProfileForm } = useCore().functions;
@@ -17,6 +25,34 @@ export default function UserProfileForm() {
     const { t } = useTranslation({ UserProfileForm });
 
     const { classes } = useStyles({ isThereThingsToSave });
+
+    const evtConfirmNavigationDialogOpen = useConst(() =>
+        Evt.create<TextFormDialogProps["evtOpen"]>()
+    );
+
+    useNavigationInterceptor({
+        getDoProceedWithNavigation: async () => {
+            if (!isThereThingsToSave) {
+                return { doProceedWithNavigation: true };
+            }
+
+            const dDoNavigateAnyway = new Deferred<boolean>();
+
+            evtConfirmNavigationDialogOpen.post({
+                onResponse: ({ doNavigateAnyway }) => {
+                    dDoNavigateAnyway.resolve(doNavigateAnyway);
+                }
+            });
+
+            const doNavigateAnyway = await dDoNavigateAnyway.pr;
+
+            if (doNavigateAnyway) {
+                userProfileForm.restore();
+            }
+
+            return { doProceedWithNavigation: doNavigateAnyway };
+        }
+    });
 
     return (
         <>
@@ -69,6 +105,7 @@ export default function UserProfileForm() {
                     {t("restore")}
                 </Button>
             </div>
+            <ConfirmNavigationDialog evtOpen={evtConfirmNavigationDialogOpen} />
         </>
     );
 }

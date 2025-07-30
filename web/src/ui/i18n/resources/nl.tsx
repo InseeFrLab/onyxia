@@ -35,6 +35,11 @@ export const translations: Translations<"nl"> = {
         save: "Opslaan",
         restore: "Herstellen"
     },
+    ConfirmNavigationDialog: {
+        "you have unsaved changes": "Je hebt niet-opgeslagen wijzigingen!",
+        cancel: "Annuleren",
+        "continue without saving": "Doorgaan zonder op te slaan"
+    },
     AccountGitTab: {
         gitName: "Gebruikersnaam voor Git",
         "gitName helper text": ({ gitName, focusClassName }) => (

@@ -1,9 +1,11 @@
-import { createRouter, type Link } from "type-route";
+import { useEffect } from "react";
+import { createRouter, type Link, type Route } from "type-route";
 import { routeDefs, routerOpts } from "ui/pages";
 import { pluginSystemInitRouter } from "pluginSystem";
 import { type LocalizedString, resolveLocalizedString, useLang } from "ui/i18n";
 import { useMemo } from "react";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
+import { useConstCallback } from "powerhooks/useConstCallback";
 
 export const { RouteProvider, useRoute, routes, session } = createRouter(
     routerOpts,
@@ -11,6 +13,35 @@ export const { RouteProvider, useRoute, routes, session } = createRouter(
 );
 
 pluginSystemInitRouter({ routes, session });
+
+export function useNavigationInterceptor(params: {
+    getDoProceedWithNavigation: (prams: {
+        route: Route<typeof routes>;
+    }) => Promise<{ doProceedWithNavigation: boolean }>;
+}) {
+    const getDoProceedWithNavigation = useConstCallback(
+        params.getDoProceedWithNavigation
+    );
+
+    useEffect(() => {
+        const unblock = session.block(async update => {
+            const { doProceedWithNavigation } = await getDoProceedWithNavigation({
+                route: update.route
+            });
+
+            if (!doProceedWithNavigation) {
+                return;
+            }
+
+            unblock();
+            update.retry();
+        });
+
+        return () => {
+            unblock();
+        };
+    }, []);
+}
 
 export const { getPreviousRouteName } = (() => {
     let previousRouteName: keyof typeof routes | false = false;

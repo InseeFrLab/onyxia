@@ -36,6 +36,11 @@ export const translations: Translations<"en"> = {
         save: "Guardar",
         restore: "Restaurar"
     },
+    ConfirmNavigationDialog: {
+        "you have unsaved changes": "¡Tienes cambios sin guardar!",
+        cancel: "Cancelar",
+        "continue without saving": "Continuar sin guardar"
+    },
     AccountGitTab: {
         gitName: "Nombre de usuario para Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
