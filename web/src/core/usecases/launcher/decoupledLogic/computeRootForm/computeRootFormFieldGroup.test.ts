@@ -395,4 +395,80 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
 
         expect(got).toStrictEqual(expected);
     });
+
+    it("with autocomplete options", () => {
+        const xOnyxiaContext = {
+            r: [1, 2, 3]
+        };
+
+        const got = computeRootFormFieldGroup({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    a: {
+                        type: "string"
+                    },
+                    b: {
+                        type: "number",
+                        "x-onyxia": {
+                            overwriteListEnumWith: "r"
+                        }
+                    }
+                }
+            },
+            helmValues: {
+                a: "foo",
+                b: 2
+            },
+            xOnyxiaContext,
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: [
+                {
+                    helmValuesPath: ["a"],
+                    isLoadingOptions: false,
+                    options: ["bar", "baz"]
+                }
+            ]
+        });
+
+        const expected: FormFieldGroup = {
+            type: "group",
+            helmValuesPath: [],
+            title: "<root>",
+            description: undefined,
+            nodes: [
+                {
+                    type: "field",
+                    description: undefined,
+                    pattern: undefined,
+                    title: "a",
+                    isReadonly: false,
+                    fieldType: "text field",
+                    helmValuesPath: ["a"],
+                    doRenderAsTextArea: false,
+                    isSensitive: false,
+                    value: "foo",
+                    autocomplete: {
+                        options: ["bar", "baz"],
+                        isLoadingOptions: false
+                    }
+                },
+                {
+                    type: "field",
+                    description: undefined,
+                    title: "b",
+                    isReadonly: false,
+                    fieldType: "select",
+                    helmValuesPath: ["b"],
+                    options: [1, 2, 3],
+                    selectedOptionIndex: 1
+                }
+            ],
+            canAdd: false,
+            canRemove: false,
+            isAutoInjected: undefined
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
 });
