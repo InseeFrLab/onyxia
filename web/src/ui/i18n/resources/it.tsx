@@ -35,6 +35,11 @@ export const translations: Translations<"it"> = {
         save: "Salva",
         restore: "Ripristina"
     },
+    ConfirmNavigationDialog: {
+        "you have unsaved changes": "You have unsaved changes!",
+        cancel: "Cancel",
+        "continue without saving": "Continue without saving"
+    },
     AccountGitTab: {
         gitName: "Nome utente per Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
@@ -379,8 +384,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

@@ -41,6 +41,7 @@ export type ComponentKey =
     | import("ui/pages/account/Account").I18n
     | import("ui/pages/account/AccountProfileTab/AccountProfileTab").I18n
     | import("ui/pages/account/AccountProfileTab/UserProfileForm").I18n
+    | import("ui/pages/account/AccountProfileTab/ConfirmNavigationDialog").I18n
     | import("ui/pages/account/AccountGitTab").I18n
     | import("ui/pages/account/AccountStorageTab").I18n
     | import("ui/pages/account/AccountKubernetesTab").I18n

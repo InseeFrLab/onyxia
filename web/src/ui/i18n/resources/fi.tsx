@@ -36,6 +36,11 @@ export const translations: Translations<"fi"> = {
         save: "Tallenna",
         restore: "Palauta"
     },
+    ConfirmNavigationDialog: {
+        "you have unsaved changes": "Sinulla on tallentamattomia muutoksia!",
+        cancel: "Peruuta",
+        "continue without saving": "Jatka tallentamatta"
+    },
     AccountGitTab: {
         gitName: "Käyttäjänimi Gitille",
         "gitName helper text": ({ gitName, focusClassName }) => (

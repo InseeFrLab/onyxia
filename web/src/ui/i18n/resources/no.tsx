@@ -36,6 +36,11 @@ export const translations: Translations<"no"> = {
         save: "Lagre",
         restore: "Gjenopprett"
     },
+    ConfirmNavigationDialog: {
+        "you have unsaved changes": "Du har ulagrede endringer!",
+        cancel: "Avbryt",
+        "continue without saving": "Fortsett uten å lagre"
+    },
     AccountGitTab: {
         gitName: "Brukernavn for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
