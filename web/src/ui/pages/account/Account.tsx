@@ -114,7 +114,6 @@ const useStyles = tss.withName({ Account }).create(({ theme }) => ({
     },
     tabs: {
         borderRadius: 8,
-        overflow: "hidden",
         boxShadow: theme.shadows[1]
     }
 }));
