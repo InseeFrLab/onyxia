@@ -441,7 +441,7 @@ export const thunks = {
 
                 dispatch(
                     actions.formFieldValueChanged_autocompleteSelection({
-                        helmValuePath: formFieldValue.helmValuesPath,
+                        helmValuesPath: formFieldValue.helmValuesPath,
                         optionValue: formFieldValue.value
                     })
                 );

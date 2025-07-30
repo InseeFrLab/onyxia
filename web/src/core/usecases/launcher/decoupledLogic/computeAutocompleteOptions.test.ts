@@ -103,7 +103,7 @@ describe(symToStr({ computeHelmValues }), () => {
             {
                 optionValue: "host_3",
                 overwrite: {
-                    helmValuePath: ["s3Profiles", 2],
+                    helmValuesPath: ["s3Profiles", 2],
                     helmValues_subtree: {
                         host: "host_3",
                         accessKeyId: "access_key_id_3",
@@ -114,7 +114,7 @@ describe(symToStr({ computeHelmValues }), () => {
             {
                 optionValue: "host_4",
                 overwrite: {
-                    helmValuePath: ["s3Profiles", 2],
+                    helmValuesPath: ["s3Profiles", 2],
                     helmValues_subtree: {
                         host: "host_4",
                         accessKeyId: "access_key_id_4",

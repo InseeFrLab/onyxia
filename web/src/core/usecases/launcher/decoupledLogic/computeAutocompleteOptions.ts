@@ -14,7 +14,7 @@ export function computeAutocompleteOptions(params: {
 }): {
     optionValue: string;
     overwrite: {
-        helmValuePath: (string | number)[];
+        helmValuesPath: (string | number)[];
         helmValues_subtree: Stringifyable;
     };
 }[] {
@@ -91,7 +91,7 @@ export function computeAutocompleteOptions(params: {
     const autocompleteOptions: {
         optionValue: string;
         overwrite: {
-            helmValuePath: (string | number)[];
+            helmValuesPath: (string | number)[];
             helmValues_subtree: Stringifyable;
         };
     }[] = [];
@@ -146,7 +146,7 @@ export function computeAutocompleteOptions(params: {
         autocompleteOptions.push({
             optionValue,
             overwrite: {
-                helmValuePath: helmValuesPath.slice(0, -1),
+                helmValuesPath: helmValuesPath.slice(0, -1),
                 helmValues_subtree: helmValues_subtree
             }
         });

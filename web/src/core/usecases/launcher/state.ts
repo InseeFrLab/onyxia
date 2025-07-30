@@ -78,7 +78,7 @@ export declare namespace State {
             options: {
                 optionValue: string;
                 overwrite: {
-                    helmValuePath: (string | number)[];
+                    helmValuesPath: (string | number)[];
                     helmValues_subtree: Stringifyable;
                 };
             }[];
@@ -194,17 +194,17 @@ export const { reducer, actions } = createUsecaseActions({
                     payload
                 }: {
                     payload: {
-                        helmValuePath: (string | number)[];
+                        helmValuesPath: (string | number)[];
                         optionValue: string;
                     };
                 }
             ) => {
-                const { helmValuePath, optionValue } = payload;
+                const { helmValuesPath, optionValue } = payload;
 
                 assert(state.stateDescription === "ready");
 
                 const entry = state.autocompleteOptions.find(entry =>
-                    same(entry.helmValuesPath, helmValuePath)
+                    same(entry.helmValuesPath, helmValuesPath)
                 );
 
                 assert(entry !== undefined);
@@ -219,7 +219,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 assignValueAtPath({
                     stringifyableObjectOrArray: state.helmValues,
-                    path: overwrite.helmValuePath,
+                    path: overwrite.helmValuesPath,
                     value: overwrite.helmValues_subtree
                 });
             },
