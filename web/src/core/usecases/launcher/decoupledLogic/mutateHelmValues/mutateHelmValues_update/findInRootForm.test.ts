@@ -22,7 +22,10 @@ const rootForm: RootForm = {
                     isSensitive: false,
                     pattern: undefined,
                     value: "foo",
-                    autocomplete: undefined
+                    autocomplete: {
+                        options: [],
+                        isLoadingOptions: false
+                    }
                 }
             ],
             canAdd: false,
@@ -105,7 +108,10 @@ const rootForm: RootForm = {
                     isSensitive: false,
                     pattern: undefined,
                     value: "admin",
-                    autocomplete: undefined
+                    autocomplete: {
+                        options: [],
+                        isLoadingOptions: false
+                    }
                 },
                 {
                     type: "field",
@@ -118,7 +124,10 @@ const rootForm: RootForm = {
                     isSensitive: false,
                     pattern: undefined,
                     value: "xxx",
-                    autocomplete: undefined
+                    autocomplete: {
+                        options: [],
+                        isLoadingOptions: false
+                    }
                 }
             ]
         }
@@ -142,7 +151,11 @@ describe(symToStr({ findInRootForm }), () => {
             doRenderAsTextArea: false,
             isSensitive: false,
             pattern: undefined,
-            value: "foo"
+            value: "foo",
+            autocomplete: {
+                options: [],
+                isLoadingOptions: false
+            }
         });
     });
 
