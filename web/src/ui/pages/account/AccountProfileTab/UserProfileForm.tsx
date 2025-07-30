@@ -16,7 +16,7 @@ export default function UserProfileForm() {
 
     const { t } = useTranslation({ UserProfileForm });
 
-    const { classes } = useStyles();
+    const { classes } = useStyles({ isThereThingsToSave });
 
     return (
         <>
@@ -73,16 +73,28 @@ export default function UserProfileForm() {
     );
 }
 
-const useStyles = tss.withName({ UserProfileForm }).create(({ theme }) => ({
-    header: {
-        marginBottom: theme.spacing(6)
-    },
-    buttonWrapper: {
-        marginTop: theme.spacing(6),
-        display: "flex",
-        gap: theme.spacing(2)
-    }
-}));
+const useStyles = tss
+    .withName({ UserProfileForm })
+    .withParams<{
+        isThereThingsToSave: boolean;
+    }>()
+    .create(({ theme, isThereThingsToSave }) => ({
+        header: {
+            marginBottom: theme.spacing(6)
+        },
+        buttonWrapper: {
+            ...(!isThereThingsToSave
+                ? {}
+                : {
+                      position: "sticky",
+                      bottom: theme.spacing(4)
+                  }),
+            marginTop: theme.spacing(4),
+            display: "inline-flex",
+            gap: theme.spacing(2),
+            backgroundColor: theme.colors.useCases.surfaces.surface1
+        }
+    }));
 
 const { i18n } = declareComponentKeys<
     "customizable profile" | "customizable profile helper" | "save" | "restore"
