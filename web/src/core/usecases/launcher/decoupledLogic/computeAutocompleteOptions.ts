@@ -168,38 +168,34 @@ function getSchemaAtPath(params: {
     const [firstSegment, ...rest] = path;
 
     switch (typeof firstSegment) {
-        case "string":
-            {
-                if (!(schema.type === "object" && schema.properties !== undefined)) {
-                    return undefined;
-                }
-
-                const schema_next = schema.properties[firstSegment];
-
-                if (schema_next === undefined) {
-                    return undefined;
-                }
-
-                return getSchemaAtPath({
-                    schema: schema_next,
-                    path: rest
-                });
+        case "string": {
+            if (!(schema.type === "object" && schema.properties !== undefined)) {
+                return undefined;
             }
-            break;
-        case "number":
-            {
-                if (!(schema.type === "array" && schema.items !== undefined)) {
-                    return undefined;
-                }
 
-                const schema_next = schema.items;
+            const schema_next = schema.properties[firstSegment];
 
-                return getSchemaAtPath({
-                    schema: schema_next,
-                    path: rest
-                });
+            if (schema_next === undefined) {
+                return undefined;
             }
-            break;
+
+            return getSchemaAtPath({
+                schema: schema_next,
+                path: rest
+            });
+        }
+        case "number": {
+            if (!(schema.type === "array" && schema.items !== undefined)) {
+                return undefined;
+            }
+
+            const schema_next = schema.items;
+
+            return getSchemaAtPath({
+                schema: schema_next,
+                path: rest
+            });
+        }
         default:
             assert<Equals<typeof firstSegment, never>>(false);
     }
