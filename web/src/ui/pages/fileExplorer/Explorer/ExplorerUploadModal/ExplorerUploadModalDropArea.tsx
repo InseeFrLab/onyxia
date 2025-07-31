@@ -11,19 +11,26 @@ import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
-    onFileSelected: InputFileProps["onFileSelected"];
+    onRequestFilesUpload: (params: {
+        files: {
+            basename: string;
+            blob: Blob;
+        }[];
+    }) => void;
 };
+
+assert<Equals<Props["onRequestFilesUpload"], InputFileProps["onRequestFilesUpload"]>>;
 
 export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const [isDragHover, setIsDragHover] = useState(false);
 
-    const { className, onFileSelected } = props;
+    const { className, onRequestFilesUpload } = props;
 
     const { classes, cx } = useStyles({ isDragHover });
 
@@ -64,7 +71,12 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 
             assert(event.type === "drop");
 
-            onFileSelected({ files: Object.values(event.dataTransfer.files) });
+            onRequestFilesUpload({
+                files: Object.values(event.dataTransfer.files).map(file => ({
+                    basename: file.name,
+                    blob: file
+                }))
+            });
         }
     );
 
@@ -94,7 +106,10 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                     </Link>
                 </Text>
             </div>
-            <InputFile evtAction={evtInputFileAction} onFileSelected={onFileSelected} />
+            <InputFile
+                evtAction={evtInputFileAction}
+                onRequestFilesUpload={onRequestFilesUpload}
+            />
         </div>
     );
 });
