@@ -147,13 +147,13 @@ const FileExplorer = withLoginEnforced((props: Props) => {
         fileExplorer.getFileDownloadUrl({ basename }).then(window.open);
     });
 
-    const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
+    const onRequestFilesUpload = useConstCallback<ExplorerProps["onRequestFilesUpload"]>(
         ({ files }) =>
-            files.forEach(file =>
+            files.forEach(({ basename, blob }) =>
                 fileExplorer.create({
                     createWhat: "file",
-                    basename: file.name,
-                    blob: file
+                    basename,
+                    blob
                 })
             )
     );
@@ -176,7 +176,7 @@ const FileExplorer = withLoginEnforced((props: Props) => {
             />
 
             <Explorer
-                onFileSelected={onFileSelected}
+                onRequestFilesUpload={onRequestFilesUpload}
                 onCreateNewEmptyDirectory={onCreateNewEmptyDirectory}
                 filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
                 className={classes.explorer}

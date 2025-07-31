@@ -7,6 +7,7 @@ import { ExplorerUploadProgress } from "./ExplorerUploadProgress";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { useArrayDiff } from "powerhooks/useArrayDiff";
+import { assert, type Equals } from "tsafe/assert";
 
 import { declareComponentKeys } from "i18nifty";
 
@@ -19,10 +20,23 @@ export type ExplorerUploadModalProps = {
         size: number;
         uploadPercent: number;
     }[];
-} & Pick<ExplorerUploadModalDropAreaProps, "onFileSelected">;
+    onRequestFilesUpload: (params: {
+        files: {
+            basename: string;
+            blob: Blob;
+        }[];
+    }) => void;
+};
+
+assert<
+    Equals<
+        ExplorerUploadModalProps["onRequestFilesUpload"],
+        ExplorerUploadModalDropAreaProps["onRequestFilesUpload"]
+    >
+>;
 
 export const ExplorerUploadModal = memo((props: ExplorerUploadModalProps) => {
-    const { isOpen, onClose, filesBeingUploaded, onFileSelected } = props;
+    const { isOpen, onClose, filesBeingUploaded, onRequestFilesUpload } = props;
 
     useArrayDiff({
         array: filesBeingUploaded,
@@ -44,7 +58,7 @@ export const ExplorerUploadModal = memo((props: ExplorerUploadModalProps) => {
             body={
                 <ExplorerUploadModalBody
                     filesBeingUploaded={filesBeingUploaded}
-                    onFileSelected={onFileSelected}
+                    onRequestFilesUpload={onRequestFilesUpload}
                 />
             }
             buttons={
@@ -57,16 +71,21 @@ export const ExplorerUploadModal = memo((props: ExplorerUploadModalProps) => {
 });
 
 const { ExplorerUploadModalBody } = (() => {
-    type Props = Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
+    type Props = Pick<
+        ExplorerUploadModalProps,
+        "onRequestFilesUpload" | "filesBeingUploaded"
+    >;
 
     const ExplorerUploadModalBody = memo((props: Props) => {
-        const { onFileSelected, filesBeingUploaded } = props;
+        const { onRequestFilesUpload, filesBeingUploaded } = props;
 
         const { classes } = useStyles();
 
         return (
             <div className={classes.root}>
-                <ExplorerUploadModalDropArea onFileSelected={onFileSelected} />
+                <ExplorerUploadModalDropArea
+                    onRequestFilesUpload={onRequestFilesUpload}
+                />
                 {filesBeingUploaded.map(
                     ({ directoryPath, basename, size, uploadPercent }) => (
                         <ExplorerUploadProgress

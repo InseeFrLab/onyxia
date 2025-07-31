@@ -8,11 +8,16 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 //Look in my-files.component.tsx
 export type InputFileProps = {
     evtAction: NonPostableEvt<"TRIGGER">;
-    onFileSelected: (params: { files: File[] }) => void;
+    onRequestFilesUpload: (params: {
+        files: {
+            basename: string;
+            blob: Blob;
+        }[];
+    }) => void;
 };
 
 export const InputFile = memo((props: InputFileProps) => {
-    const { evtAction, onFileSelected } = props;
+    const { evtAction, onRequestFilesUpload } = props;
 
     const ref = useRef<HTMLInputElement>(null);
 
@@ -35,7 +40,12 @@ export const InputFile = memo((props: InputFileProps) => {
         ({ target: { files } }) => {
             assert(files !== null);
 
-            onFileSelected({ files: Object.values(files) });
+            onRequestFilesUpload({
+                files: Object.values(files).map(file => ({
+                    basename: file.name,
+                    blob: file
+                }))
+            });
         }
     );
 

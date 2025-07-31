@@ -31,8 +31,10 @@ import type { Equals, Param0 } from "tsafe";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
-import { ExplorerUploadModal } from "./ExplorerUploadModal";
-import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
+import {
+    ExplorerUploadModal,
+    type ExplorerUploadModalProps
+} from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import {
@@ -84,7 +86,33 @@ export type ExplorerProps = {
         validityDurationSecond: number;
     }) => void;
     evtIsDownloadSnackbarOpen: StatefulReadonlyEvt<boolean>;
-} & Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">; //NOTE: TODO only defined when explorer type is s3
+
+    filesBeingUploaded: {
+        directoryPath: string;
+        basename: string;
+        size: number;
+        uploadPercent: number;
+    }[];
+    onRequestFilesUpload: (params: {
+        files: {
+            basename: string;
+            blob: Blob;
+        }[];
+    }) => void;
+};
+
+assert<
+    Equals<
+        ExplorerProps["onRequestFilesUpload"],
+        ExplorerUploadModalProps["onRequestFilesUpload"]
+    >
+>;
+assert<
+    Equals<
+        ExplorerProps["filesBeingUploaded"],
+        ExplorerUploadModalProps["filesBeingUploaded"]
+    >
+>;
 
 export const Explorer = memo((props: ExplorerProps) => {
     const {
@@ -102,7 +130,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         onCopyPath,
         changePolicy,
         onOpenFile,
-        onFileSelected,
+        onRequestFilesUpload,
         filesBeingUploaded,
         pathMinDepth,
         onViewModeChange,
@@ -531,7 +559,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             <ExplorerUploadModal
                 isOpen={isUploadModalOpen}
                 onClose={onUploadModalClose}
-                onFileSelected={onFileSelected}
+                onRequestFilesUpload={onRequestFilesUpload}
                 filesBeingUploaded={filesBeingUploaded}
             />
 
