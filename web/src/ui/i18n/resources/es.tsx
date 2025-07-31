@@ -405,7 +405,7 @@ export const translations: Translations<"en"> = {
         delete: "eliminar",
         "create secret": "Crear secreto",
         "copy path": "Usar en un servicio",
-        "create directory": "Crear directorio",
+        "create new empty directory": "Crear directorio",
         refresh: "refrescar",
         "create what": ({ what }) => `Crear ${what}`,
         new: "Nuevo"
@@ -416,7 +416,7 @@ export const translations: Translations<"en"> = {
         "download directory": "Descargar",
         "upload file": "Subir archivo",
         "copy path": "Copiar nombre del objeto S3",
-        "create directory": "Crear directorio",
+        "create new empty directory": "Crear directorio",
         refresh: "actualizar",
         new: "Nuevo",
         share: "Compartir",

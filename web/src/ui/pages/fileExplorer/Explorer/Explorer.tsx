@@ -72,7 +72,7 @@ export type ExplorerProps = {
     onDeleteItem: (params: { item: Item }) => void;
     onDownloadItems: (params: { items: Item[] }) => void;
     onDeleteItems: (params: { items: Item[] }) => void;
-    onCreateDirectory: (params: { basename: string }) => void;
+    onCreateNewEmptyDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     pathMinDepth: number;
     onOpenFile: (params: { basename: string }) => void;
@@ -98,7 +98,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         onRefresh,
         onDeleteItem,
         onDeleteItems,
-        onCreateDirectory,
+        onCreateNewEmptyDirectory,
         onCopyPath,
         changePolicy,
         onOpenFile,
@@ -200,12 +200,13 @@ export const Explorer = memo((props: ExplorerProps) => {
                 case "copy path":
                     evtExplorerItemsAction.post("COPY SELECTED ITEM PATH");
                     return;
-                case "create directory":
+                case "create new empty directory":
                     setCreateS3DirectoryDialogState({
                         directories: items
                             .filter(isDirectory)
                             .map(({ basename }) => basename),
-                        resolveBasename: basename => onCreateDirectory({ basename })
+                        resolveBasename: basename =>
+                            onCreateNewEmptyDirectory({ basename })
                     });
                     return;
 

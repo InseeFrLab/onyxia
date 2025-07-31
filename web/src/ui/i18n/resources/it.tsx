@@ -384,9 +384,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -402,7 +401,7 @@ export const translations: Translations<"it"> = {
         "download directory": "Scaricare",
         "upload file": "Caricare un file",
         "copy path": "Copia il nome dell'oggetto S3",
-        "create directory": "Nuova cartella",
+        "create new empty directory": "Nuova cartella",
         refresh: "aggiornare",
         new: "Nuovo",
         share: "Condividi",
@@ -418,7 +417,7 @@ export const translations: Translations<"it"> = {
         delete: "eliminare",
         "create secret": "Nuovo segreto",
         "copy path": "Utilizzare nel servizio",
-        "create directory": "Nuova cartella",
+        "create new empty directory": "Nuova cartella",
         refresh: "aggiornare",
         "create what": ({ what }) => `Nuovo ${what}`,
         new: "Nuovo"
