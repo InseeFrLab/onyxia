@@ -363,7 +363,7 @@ export const translations: Translations<"zh-CN"> = {
         "download directory": "下载",
         "upload file": "上传文件",
         "copy path": "复制 S3 对象名称",
-        "create directory": "创建目录",
+        "create new empty directory": "创建目录",
         refresh: "刷新",
         new: "新建",
         share: "分享",
@@ -379,7 +379,7 @@ export const translations: Translations<"zh-CN"> = {
         delete: "删除",
         "create secret": "新的密钥",
         "copy path": "在服务中使用",
-        "create directory": "新建文件夹",
+        "create new empty directory": "新建文件夹",
         refresh: "刷新",
         "create what": ({ what }) => `新 ${what}`,
         new: "新建"

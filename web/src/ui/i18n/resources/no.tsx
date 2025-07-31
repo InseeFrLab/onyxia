@@ -399,7 +399,7 @@ export const translations: Translations<"no"> = {
         delete: "slett",
         "create secret": "Opprett hemmelighet",
         "copy path": "Bruk i en tjeneste",
-        "create directory": "Opprett katalog",
+        "create new empty directory": "Opprett katalog",
         refresh: "oppdater",
         "create what": ({ what }) => `Opprett ${what}`,
         new: "Ny"
@@ -409,7 +409,7 @@ export const translations: Translations<"no"> = {
         delete: "slett",
         "upload file": "Last opp fil",
         "copy path": "Kopier S3-objektnavnet",
-        "create directory": "Opprett katalog",
+        "create new empty directory": "Opprett katalog",
         refresh: "oppdater",
         "download directory": "Last ned",
         new: "Ny",

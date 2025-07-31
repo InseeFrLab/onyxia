@@ -401,7 +401,7 @@ export const translations: Translations<"nl"> = {
         delete: "verwijderen",
         "upload file": "Een bestand uploaden",
         "copy path": "De naam van het S3-object kopiëren",
-        "create directory": "Nieuwe map",
+        "create new empty directory": "Nieuwe map",
         refresh: "vernieuwen",
         "download directory": "Downloaden",
         new: "Nieuw",
@@ -418,7 +418,7 @@ export const translations: Translations<"nl"> = {
         delete: "verwijderen",
         "create secret": "Nieuw geheim",
         "copy path": "Gebruiken binnen de dienst",
-        "create directory": "Nieuwe map",
+        "create new empty directory": "Nieuwe map",
         refresh: "vernieuwen",
         "create what": ({ what }) => `Nieuw ${what}`,
         new: "Nieuw"

@@ -399,7 +399,7 @@ export const translations: Translations<"fi"> = {
         delete: "poista",
         "create secret": "Luo salaisuus",
         "copy path": "Käytä palvelussa",
-        "create directory": "Luo hakemisto",
+        "create new empty directory": "Luo hakemisto",
         refresh: "päivitä",
         "create what": ({ what }) => `Luo ${what}`,
         new: "Uusi"
@@ -410,7 +410,7 @@ export const translations: Translations<"fi"> = {
         "download directory": "Lataa",
         "upload file": "Lataa tiedosto",
         "copy path": "Kopioi S3-objektin nimi",
-        "create directory": "Luo hakemisto",
+        "create new empty directory": "Luo hakemisto",
         refresh: "päivitä",
         new: "Uusi",
         share: "Jaa",

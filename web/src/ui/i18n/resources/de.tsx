@@ -403,7 +403,7 @@ export const translations: Translations<"de"> = {
         "download directory": "Herunterladen",
         "upload file": "Datei hochladen",
         "copy path": "Den S3-Objektnamen kopieren",
-        "create directory": "Neues Verzeichnis",
+        "create new empty directory": "Neues Verzeichnis",
         refresh: "aktualisieren",
         new: "Neu",
         share: "Teilen",
@@ -419,7 +419,7 @@ export const translations: Translations<"de"> = {
         delete: "löschen",
         "create secret": "Neues Geheimnis",
         "copy path": "Im Dienst verwenden",
-        "create directory": "Neues Verzeichnis",
+        "create new empty directory": "Neues Verzeichnis",
         refresh: "aktualisieren",
         "create what": ({ what }) => `Neu ${what}`,
         new: "Neu"

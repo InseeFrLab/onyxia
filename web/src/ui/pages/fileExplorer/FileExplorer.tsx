@@ -57,8 +57,8 @@ const FileExplorer = withLoginEnforced((props: Props) => {
 
     const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
 
-    const onCreateDirectory = useConstCallback(
-        ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
+    const onCreateNewEmptyDirectory = useConstCallback(
+        ({ basename }: Param0<ExplorerProps["onCreateNewEmptyDirectory"]>) =>
             fileExplorer.create({
                 createWhat: "directory",
                 basename
@@ -177,6 +177,7 @@ const FileExplorer = withLoginEnforced((props: Props) => {
 
             <Explorer
                 onFileSelected={onFileSelected}
+                onCreateNewEmptyDirectory={onCreateNewEmptyDirectory}
                 filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
                 className={classes.explorer}
                 doShowHidden={false}
@@ -193,7 +194,6 @@ const FileExplorer = withLoginEnforced((props: Props) => {
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}
                 onDeleteItems={onDeleteItems}
-                onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
                 pathMinDepth={pathMinDepth}
                 onOpenFile={onOpenFile}

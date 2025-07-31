@@ -37,7 +37,7 @@ export const ExplorerButtonBar = memo((props: ExplorerButtonBarProps) => {
                             return getIconUrlByName("Cached");
                         case "copy path":
                             return getIconUrlByName("FilterNone");
-                        case "create directory":
+                        case "create new empty directory":
                             return getIconUrlByName("Add");
                         case "new":
                             return getIconUrlByName("Add");
@@ -54,7 +54,7 @@ export const ExplorerButtonBar = memo((props: ExplorerButtonBarProps) => {
                         case "refresh":
                             return false;
                         case "new":
-                        case "create directory":
+                        case "create new empty directory":
                             return false;
                         case "delete":
                             return selectedItemKind === "none";
@@ -138,7 +138,7 @@ const buttonIds = [
     "refresh",
     "download directory",
     "new",
-    "create directory",
+    "create new empty directory",
     "delete",
     "share",
     "copy path"

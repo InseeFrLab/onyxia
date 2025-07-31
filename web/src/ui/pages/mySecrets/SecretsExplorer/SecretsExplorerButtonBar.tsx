@@ -33,7 +33,7 @@ export const SecretsExplorerButtonBar = memo((props: SecretsExplorerButtonBarPro
                             return getIconUrlByName("Cached");
                         case "copy path":
                             return getIconUrlByName("FilterNone");
-                        case "create directory":
+                        case "create new empty directory":
                             return getIconUrlByName("Add");
                         case "new":
                             return getIconUrlByName("Add");
@@ -54,7 +54,7 @@ export const SecretsExplorerButtonBar = memo((props: SecretsExplorerButtonBarPro
                                 isFileOpen
                             );
                         case "new":
-                        case "create directory":
+                        case "create new empty directory":
                             return isFileOpen;
                         case "delete":
                             return selectedItemKind === "none" || isFileOpen;
@@ -83,7 +83,7 @@ const buttonIds = [
     "refresh",
     "rename",
     "new",
-    "create directory",
+    "create new empty directory",
     "delete",
     "copy path"
 ] as const;

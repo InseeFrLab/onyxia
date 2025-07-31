@@ -245,7 +245,7 @@ export const SecretsExplorer = memo((props: SecretsExplorerProps) => {
                     evtItemsAction.post("COPY SELECTED ITEM PATH");
                 }
                 break;
-            case "create directory":
+            case "create new empty directory":
                 onNewItem({
                     kind: "directory",
                     suggestedBasename: generateUniqDefaultName({
