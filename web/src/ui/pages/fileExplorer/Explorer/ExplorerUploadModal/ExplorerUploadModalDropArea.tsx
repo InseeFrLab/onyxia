@@ -11,15 +11,16 @@ import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, type Equals, is } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { declareComponentKeys } from "i18nifty";
+import { Deferred } from "evt/tools/Deferred";
 
 export type Props = {
     className?: string;
     onRequestFilesUpload: (params: {
         files: {
-            basename: string;
+            fileRelativePath: string;
             blob: Blob;
         }[];
     }) => void;
@@ -43,7 +44,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const onBrowseFileClick = useConstCallback(() => evtInputFileAction.post("TRIGGER"));
 
     const callbackFactory = useCallbackFactory(
-        (
+        async (
             [callbackId]: ["drop" | "dragEnter" | "dragLeave" | "dragOver"],
             [event]: [DragEvent<HTMLDivElement>]
         ) => {
@@ -71,11 +72,87 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 
             assert(event.type === "drop");
 
+            async function traverse(params: {
+                entry: FileSystemEntry;
+                directoryRelativePath: string;
+            }): Promise<
+                {
+                    fileRelativePath: string;
+                    blob: Blob;
+                }[]
+            > {
+                const { entry, directoryRelativePath } = params;
+
+                if (entry.isFile) {
+                    assert(is<FileSystemFileEntry>(entry));
+
+                    const dBlob = new Deferred<Blob>();
+
+                    entry.file(
+                        file => dBlob.resolve(file),
+                        error => dBlob.reject(error)
+                    );
+
+                    const blob = await dBlob.pr;
+
+                    return [
+                        {
+                            fileRelativePath: `${directoryRelativePath}/${entry.name}`,
+                            blob
+                        }
+                    ];
+                }
+
+                if (entry.isDirectory) {
+                    assert(is<FileSystemDirectoryEntry>(entry));
+
+                    const directoryRelativePath_next = `${directoryRelativePath}/${entry.name}`;
+
+                    const dEntries_next = new Deferred<FileSystemEntry[]>();
+
+                    entry.createReader().readEntries(
+                        entries => dEntries_next.resolve(entries),
+                        error => dEntries_next.reject(error)
+                    );
+
+                    const entries_next = await dEntries_next.pr;
+
+                    return (
+                        await Promise.all(
+                            entries_next.map(entry =>
+                                traverse({
+                                    directoryRelativePath: directoryRelativePath_next,
+                                    entry: entry
+                                })
+                            )
+                        )
+                    ).flat();
+                }
+
+                return [];
+            }
+
+            const files = (
+                await Promise.all(
+                    Array.from(event.dataTransfer.items)
+                        .map(item => item.webkitGetAsEntry())
+                        .filter(entry => entry !== null)
+                        .map(entry =>
+                            traverse({
+                                directoryRelativePath: ".",
+                                entry
+                            })
+                        )
+                )
+            ).flat();
+
+            files.forEach(
+                file =>
+                    (file.fileRelativePath = file.fileRelativePath.replace(/^\.\//, ""))
+            );
+
             onRequestFilesUpload({
-                files: Object.values(event.dataTransfer.files).map(file => ({
-                    basename: file.name,
-                    blob: file
-                }))
+                files
             });
         }
     );

@@ -9,6 +9,7 @@ import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
+import { relative as pathRelative } from "pathe";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -20,26 +21,29 @@ export declare namespace ExplorersCreateParams {
     };
 
     export type Directory = Common & {
-        createWhat: "directory";
+        createWhat: "new empty directory";
     };
 
     export type File = Common & {
         createWhat: "file";
+        directoryRelativePath: string;
         blob: Blob;
     };
 }
 
 const privateThunks = {
-    createOperation:
+    startOperationWhenAllConflictingOperationHaveCompleted:
         (params: {
             operation: "create" | "delete" | "modifyPolicy" | "downloading";
-            objects: S3Object[];
-            directoryPath: string;
+            objects: {
+                object: S3Object;
+                directoryPath: string;
+            }[];
         }) =>
         async (...args) => {
-            const [dispatch, ,] = args;
+            const [dispatch] = args;
 
-            const { operation, objects, directoryPath } = params;
+            const { operation, objects } = params;
 
             const operationId = `${operation}-${Date.now()}`;
 
@@ -47,8 +51,7 @@ const privateThunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    targets: objects,
-                    directoryPath,
+                    objects,
                     ignoreOperationId: operationId
                 })
             );
@@ -56,39 +59,59 @@ const privateThunks = {
         },
     waitForNoOngoingOperation:
         (params: {
-            targets: Array<{ kind: "file" | "directory"; basename: string }>;
-            directoryPath: string;
+            objects: {
+                directoryPath: string;
+                object: { kind: "file" | "directory"; basename: string };
+            }[];
             ignoreOperationId?: string;
         }) =>
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
-            const { targets, directoryPath, ignoreOperationId } = params;
+            const { objects, ignoreOperationId } = params;
 
             const { ongoingOperations } = getState()[name];
 
-            const ongoingOperation = ongoingOperations.find(
-                o =>
-                    o.directoryPath === directoryPath &&
-                    o.operationId !== ignoreOperationId &&
-                    targets.every(target =>
-                        o.objects.some(
-                            ongoingObj =>
-                                ongoingObj.kind === target.kind &&
-                                ongoingObj.basename === target.basename
-                        )
-                    )
-            );
+            const relevantOperationIds = ongoingOperations
+                .filter(
+                    ignoreOperationId === undefined
+                        ? () => true
+                        : ongoingOperation =>
+                              ongoingOperation.operationId !== ignoreOperationId
+                )
+                .filter(ongoingOperation => {
+                    for (const { directoryPath, object } of objects) {
+                        const object_matching = ongoingOperation.objects.find(
+                            entry =>
+                                pathRelative(directoryPath, entry.directoryPath) === "" &&
+                                entry.object.kind === object.kind &&
+                                entry.object.basename === object.basename
+                        );
 
-            if (ongoingOperation === undefined) {
+                        if (object_matching === undefined) {
+                            continue;
+                        }
+
+                        return true;
+                    }
+
+                    return false;
+                })
+                .map(ongoingOperation => ongoingOperation.operationId);
+
+            if (relevantOperationIds.length === 0) {
                 return;
             }
 
-            await evtAction.waitFor(
-                event =>
-                    event.usecaseName === "fileExplorer" &&
-                    event.actionName === "operationCompleted" &&
-                    event.payload.operationId === ongoingOperation.operationId
+            await Promise.all(
+                relevantOperationIds.map(operationId =>
+                    evtAction.waitFor(
+                        event =>
+                            event.usecaseName === "fileExplorer" &&
+                            event.actionName === "operationCompleted" &&
+                            event.payload.operationId === operationId
+                    )
+                )
             );
         },
     /**
@@ -125,10 +148,15 @@ const privateThunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    targets: [
-                        { kind: "directory", basename: pathBasename(directoryPath) }
-                    ],
-                    directoryPath: pathJoin(directoryPath, "..") + "/"
+                    objects: [
+                        {
+                            object: {
+                                kind: "directory",
+                                basename: pathBasename(directoryPath)
+                            },
+                            directoryPath: pathJoin(directoryPath, "..") + "/"
+                        }
+                    ]
                 })
             );
 
@@ -573,7 +601,14 @@ export const thunks = {
                 privateThunks.createOperation({
                     objects: [
                         {
-                            kind: params.createWhat,
+                            kind: (() => {
+                                switch (params.createWhat) {
+                                    case "file":
+                                        return "file";
+                                    case "new empty directory":
+                                        return "directory";
+                                }
+                            })(),
                             basename: params.basename,
                             policy: "private",
                             size: undefined,
@@ -661,7 +696,7 @@ export const thunks = {
                             canChangePolicy: false
                         } satisfies S3Object.File;
                     }
-                    case "directory": {
+                    case "new empty directory": {
                         await uploadFileAndLogCommand({
                             path: pathJoin(directoryPath, params.basename, ".keep"),
                             blob: new Blob(["This file tells that a directory exists"], {
@@ -1053,10 +1088,11 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const operationId = await dispatch(
-                privateThunks.createOperation({
+                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
                     operation: "downloading",
-                    objects: s3Objects,
-                    directoryPath
+                    // NOTE: Here in theory we should also lock all the sub files being downloaded
+                    // but hey...
+                    objects: s3Objects.map(object => ({ object, directoryPath }))
                 })
             );
 
@@ -1086,7 +1122,6 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    objects: s3Objects,
                     operationId
                 })
             );
