@@ -1,4 +1,4 @@
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { Evt } from "evt";
 import { Zip, ZipPassThrough } from "fflate/browser";
 import type { Thunks } from "core/bootstrap";
@@ -10,6 +10,7 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { relative as pathRelative } from "pathe";
+import { id } from "tsafe/id";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -35,13 +36,14 @@ const privateThunks = {
     startOperationWhenAllConflictingOperationHaveCompleted:
         (params: {
             operation: "create" | "delete" | "modifyPolicy" | "downloading";
-            objects: {
-                object: S3Object;
-                directoryPath: string;
-            }[];
+            objects: S3Object[];
         }) =>
         async (...args) => {
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
+
+            const { directoryPath } = getState()[name];
+
+            assert(directoryPath !== undefined);
 
             const { operation, objects } = params;
 
@@ -51,7 +53,8 @@ const privateThunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    objects,
+                    directoryPath,
+                    objects_ref: objects,
                     ignoreOperationId: operationId
                 })
             );
@@ -59,36 +62,37 @@ const privateThunks = {
         },
     waitForNoOngoingOperation:
         (params: {
-            objects: {
-                directoryPath: string;
-                object: { kind: "file" | "directory"; basename: string };
-            }[];
+            directoryPath: string;
+            objects_ref: { kind: "file" | "directory"; basename: string }[];
             ignoreOperationId?: string;
         }) =>
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
-            const { objects, ignoreOperationId } = params;
+            const { directoryPath, objects_ref, ignoreOperationId } = params;
 
             const { ongoingOperations } = getState()[name];
 
             const relevantOperationIds = ongoingOperations
+                .filter(
+                    ongoingOperation =>
+                        pathRelative(directoryPath, ongoingOperation.directoryPath) === ""
+                )
                 .filter(
                     ignoreOperationId === undefined
                         ? () => true
                         : ongoingOperation =>
                               ongoingOperation.operationId !== ignoreOperationId
                 )
-                .filter(ongoingOperation => {
-                    for (const { directoryPath, object } of objects) {
-                        const object_matching = ongoingOperation.objects.find(
-                            entry =>
-                                pathRelative(directoryPath, entry.directoryPath) === "" &&
-                                entry.object.kind === object.kind &&
-                                entry.object.basename === object.basename
+                .filter(({ objects }) => {
+                    for (const object_ref of objects_ref) {
+                        const object_match = objects.find(
+                            object =>
+                                object.kind === object_ref.kind &&
+                                object.basename === object_ref.basename
                         );
 
-                        if (object_matching === undefined) {
+                        if (object_match === undefined) {
                             continue;
                         }
 
@@ -148,13 +152,11 @@ const privateThunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    objects: [
+                    directoryPath: pathJoin(directoryPath, "..") + "/",
+                    objects_ref: [
                         {
-                            object: {
-                                kind: "directory",
-                                basename: pathBasename(directoryPath)
-                            },
-                            directoryPath: pathJoin(directoryPath, "..") + "/"
+                            kind: "directory",
+                            basename: pathBasename(directoryPath)
                         }
                     ]
                 })
@@ -505,10 +507,9 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const operationId = await dispatch(
-                privateThunks.createOperation({
+                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
                     operation: "modifyPolicy",
-                    objects: [{ ...object, policy }],
-                    directoryPath
+                    objects: [{ ...object, policy }]
                 })
             );
             const s3Client = await dispatch(
@@ -546,8 +547,7 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    operationId,
-                    objects: [object]
+                    operationId
                 })
             );
 
@@ -568,6 +568,7 @@ export const thunks = {
             dispatch(
                 actions.bucketPolicyModified({
                     bucketPolicy: modifiedBucketPolicy,
+                    kind,
                     basename,
                     policy
                 })
@@ -598,25 +599,43 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const operationId = await dispatch(
-                privateThunks.createOperation({
+                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
                     objects: [
-                        {
-                            kind: (() => {
-                                switch (params.createWhat) {
-                                    case "file":
-                                        return "file";
-                                    case "new empty directory":
-                                        return "directory";
-                                }
-                            })(),
-                            basename: params.basename,
-                            policy: "private",
-                            size: undefined,
-                            lastModified: undefined,
-                            canChangePolicy: false
-                        }
+                        (() => {
+                            switch (params.createWhat) {
+                                case "new empty directory":
+                                    return id<S3Object.Directory>({
+                                        kind: "directory",
+                                        basename: params.basename,
+                                        policy: "private",
+                                        canChangePolicy: false
+                                    });
+                                case "file":
+                                    if (
+                                        params.directoryRelativePath === "." ||
+                                        params.directoryRelativePath === ""
+                                    ) {
+                                        return id<S3Object.File>({
+                                            kind: "file",
+                                            basename: params.basename,
+                                            policy: "private",
+                                            size: undefined,
+                                            lastModified: undefined,
+                                            canChangePolicy: false
+                                        });
+                                    } else {
+                                        return id<S3Object.Directory>({
+                                            kind: "directory",
+                                            basename: params.directoryRelativePath
+                                                .replace(/^\.\//, "")
+                                                .split("/")[0],
+                                            policy: "private",
+                                            canChangePolicy: false
+                                        });
+                                    }
+                            }
+                        })()
                     ],
-                    directoryPath,
                     operation: "create"
                 })
             );
@@ -665,38 +684,57 @@ export const thunks = {
             };
 
             //TODO policy can be public if uploaded inside public directory
-            const completedObject = await (async () => {
-                switch (params.createWhat) {
-                    case "file": {
+
+            switch (params.createWhat) {
+                case "file":
+                    {
+                        const directoryPath_uploadedFile = pathJoin(
+                            directoryPath,
+                            params.directoryRelativePath
+                        );
+
                         dispatch(
                             actions.fileUploadStarted({
                                 basename: params.basename,
-                                directoryPath,
+                                directoryPath: directoryPath_uploadedFile,
                                 size: params.blob.size
                             })
                         );
                         const uploadResult = await uploadFileAndLogCommand({
-                            path: pathJoin(directoryPath, params.basename),
+                            path: pathJoin(directoryPath_uploadedFile, params.basename),
                             blob: params.blob,
                             onUploadProgress: ({ uploadPercent }) =>
                                 dispatch(
                                     actions.uploadProgressUpdated({
                                         basename: params.basename,
-                                        directoryPath,
+                                        directoryPath: directoryPath_uploadedFile,
                                         uploadPercent
                                     })
                                 )
                         });
-                        return {
-                            kind: "file",
-                            basename: uploadResult.basename,
-                            size: uploadResult.size,
-                            lastModified: uploadResult.lastModified,
-                            policy: "private",
-                            canChangePolicy: false
-                        } satisfies S3Object.File;
+
+                        update_local_metadata: {
+                            if (
+                                pathRelative(
+                                    directoryPath_uploadedFile,
+                                    directoryPath
+                                ) !== ""
+                            ) {
+                                break update_local_metadata;
+                            }
+
+                            dispatch(
+                                actions.fileUploadCompleted({
+                                    basename: params.basename,
+                                    lastModified: uploadResult.lastModified,
+                                    size: uploadResult.size
+                                })
+                            );
+                        }
                     }
-                    case "new empty directory": {
+                    break;
+                case "new empty directory":
+                    {
                         await uploadFileAndLogCommand({
                             path: pathJoin(directoryPath, params.basename, ".keep"),
                             blob: new Blob(["This file tells that a directory exists"], {
@@ -704,20 +742,14 @@ export const thunks = {
                             }),
                             onUploadProgress: () => {}
                         });
-
-                        return {
-                            kind: "directory",
-                            basename: params.basename,
-                            policy: "private",
-                            canChangePolicy: false
-                        } satisfies S3Object.Directory;
                     }
-                }
-            })();
+                    break;
+                default:
+                    assert<Equals<typeof params, never>>;
+            }
 
             dispatch(
                 actions.operationCompleted({
-                    objects: [completedObject],
                     operationId
                 })
             );
@@ -742,10 +774,9 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const operationId = await dispatch(
-                privateThunks.createOperation({
+                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
                     operation: "delete",
-                    objects: [s3Object],
-                    directoryPath
+                    objects: [s3Object]
                 })
             );
 
@@ -828,7 +859,6 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    objects: [s3Object],
                     operationId
                 })
             );
@@ -847,10 +877,9 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const operationId = await dispatch(
-                privateThunks.createOperation({
+                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
                     operation: "delete",
-                    objects: s3Objects,
-                    directoryPath
+                    objects: s3Objects
                 })
             );
 
@@ -918,8 +947,7 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    operationId,
-                    objects: s3Objects
+                    operationId
                 })
             );
         },
@@ -1090,9 +1118,7 @@ export const thunks = {
             const operationId = await dispatch(
                 privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
                     operation: "downloading",
-                    // NOTE: Here in theory we should also lock all the sub files being downloaded
-                    // but hey...
-                    objects: s3Objects.map(object => ({ object, directoryPath }))
+                    objects: s3Objects
                 })
             );
 

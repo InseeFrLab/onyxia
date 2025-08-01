@@ -60,7 +60,7 @@ const FileExplorer = withLoginEnforced((props: Props) => {
     const onCreateNewEmptyDirectory = useConstCallback(
         ({ basename }: Param0<ExplorerProps["onCreateNewEmptyDirectory"]>) =>
             fileExplorer.create({
-                createWhat: "directory",
+                createWhat: "new empty directory",
                 basename
             })
     );
@@ -149,9 +149,10 @@ const FileExplorer = withLoginEnforced((props: Props) => {
 
     const onRequestFilesUpload = useConstCallback<ExplorerProps["onRequestFilesUpload"]>(
         ({ files }) =>
-            files.forEach(({ basename, blob }) =>
+            files.forEach(({ directoryRelativePath, basename, blob }) =>
                 fileExplorer.create({
                     createWhat: "file",
+                    directoryRelativePath,
                     basename,
                     blob
                 })

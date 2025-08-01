@@ -11,22 +11,22 @@ import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { assert, type Equals, is } from "tsafe/assert";
+import { assert, is } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { declareComponentKeys } from "i18nifty";
 import { Deferred } from "evt/tools/Deferred";
+import { join as pathJoin } from "pathe";
 
 export type Props = {
     className?: string;
     onRequestFilesUpload: (params: {
         files: {
-            fileRelativePath: string;
+            directoryRelativePath: string;
+            basename: string;
             blob: Blob;
         }[];
     }) => void;
 };
-
-assert<Equals<Props["onRequestFilesUpload"], InputFileProps["onRequestFilesUpload"]>>;
 
 export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const [isDragHover, setIsDragHover] = useState(false);
@@ -77,7 +77,8 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                 directoryRelativePath: string;
             }): Promise<
                 {
-                    fileRelativePath: string;
+                    directoryRelativePath: string;
+                    basename: string;
                     blob: Blob;
                 }[]
             > {
@@ -97,7 +98,8 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 
                     return [
                         {
-                            fileRelativePath: `${directoryRelativePath}/${entry.name}`,
+                            directoryRelativePath,
+                            basename: entry.name,
                             blob
                         }
                     ];
@@ -106,7 +108,10 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                 if (entry.isDirectory) {
                     assert(is<FileSystemDirectoryEntry>(entry));
 
-                    const directoryRelativePath_next = `${directoryRelativePath}/${entry.name}`;
+                    const directoryRelativePath_next = pathJoin(
+                        directoryRelativePath,
+                        entry.name
+                    );
 
                     const dEntries_next = new Deferred<FileSystemEntry[]>();
 
@@ -146,14 +151,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                 )
             ).flat();
 
-            files.forEach(
-                file =>
-                    (file.fileRelativePath = file.fileRelativePath.replace(/^\.\//, ""))
-            );
-
-            onRequestFilesUpload({
-                files
-            });
+            onRequestFilesUpload({ files });
         }
     );
 
@@ -185,7 +183,15 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
             </div>
             <InputFile
                 evtAction={evtInputFileAction}
-                onRequestFilesUpload={onRequestFilesUpload}
+                onRequestFilesUpload={({ files }) =>
+                    onRequestFilesUpload({
+                        files: files.map(({ basename, blob }) => ({
+                            directoryRelativePath: ".",
+                            basename,
+                            blob
+                        }))
+                    })
+                }
             />
         </div>
     );

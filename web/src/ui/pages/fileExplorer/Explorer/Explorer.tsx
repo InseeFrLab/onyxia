@@ -95,6 +95,7 @@ export type ExplorerProps = {
     }[];
     onRequestFilesUpload: (params: {
         files: {
+            directoryRelativePath: string;
             basename: string;
             blob: Blob;
         }[];

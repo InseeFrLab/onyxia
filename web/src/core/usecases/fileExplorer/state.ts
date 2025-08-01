@@ -15,10 +15,8 @@ export type State = {
     ongoingOperations: {
         operationId: string;
         operation: "create" | "delete" | "modifyPolicy" | "downloading";
-        objects: {
-            directoryPath: string;
-            object: S3Object;
-        }[];
+        directoryPath: string;
+        objects: S3Object[];
     }[];
     s3FilesBeingUploaded: {
         directoryPath: string;
@@ -149,18 +147,14 @@ export const { reducer, actions } = createUsecaseActions({
             // Properly restore state when navigating back to
             // a directory with ongoing operations.
             state.ongoingOperations
-                .map(({ objects, operation }) =>
-                    objects.map(({ directoryPath, object }) => ({
-                        operation,
-                        directoryPath,
-                        object
-                    }))
-                )
-                .flat()
                 .filter(
                     ({ directoryPath: directoryPath_object }) =>
                         pathRelative(directoryPath, directoryPath_object) === ""
                 )
+                .map(({ operation, directoryPath, objects }) =>
+                    objects.map(object => ({ operation, object, directoryPath }))
+                )
+                .flat()
                 .forEach(({ operation, object }) => {
                     switch (operation) {
                         case "delete":
@@ -199,10 +193,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     operationId: string;
-                    objects: {
-                        object: S3Object;
-                        directoryPath: string;
-                    }[];
+                    objects: S3Object[];
                     operation: "create" | "delete" | "modifyPolicy" | "downloading";
                 };
             }
@@ -211,24 +202,18 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(state.directoryPath !== undefined);
 
+            const { directoryPath } = state;
+
             state.ongoingOperations.push({
                 operationId,
                 operation,
+                directoryPath,
                 objects
             });
 
-            const { directoryPath } = state;
-
-            const objects_here = objects
-                .filter(
-                    ({ directoryPath: directoryPath_object }) =>
-                        pathRelative(directoryPath, directoryPath_object) === ""
-                )
-                .map(({ object }) => object);
-
             switch (payload.operation) {
                 case "delete":
-                    objects_here.forEach(object => {
+                    objects.forEach(object => {
                         removeIfPresent(state.objects, {
                             kind: object.kind,
                             basename: object.basename
@@ -237,7 +222,18 @@ export const { reducer, actions } = createUsecaseActions({
                     break;
                 case "create":
                     //Optimistic update
-                    state.objects.push(...objects_here);
+                    for (const object of objects) {
+                        const index = state.objects.findIndex(
+                            object_i =>
+                                object_i.kind === object.kind &&
+                                object_i.basename === object.basename
+                        );
+                        if (index !== -1) {
+                            state.objects[index] = object;
+                        } else {
+                            state.objects.push(object);
+                        }
+                    }
                     break;
                 case "modifyPolicy":
                 case "downloading":
@@ -269,6 +265,35 @@ export const { reducer, actions } = createUsecaseActions({
             assert(ongoingOperation !== undefined);
 
             ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
+        },
+        fileUploadCompleted: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    basename: string;
+                    size: number | undefined;
+                    lastModified: Date | undefined;
+                };
+            }
+        ) => {
+            const { basename, size, lastModified } = payload;
+
+            assert(state.directoryPath !== undefined);
+
+            const object = state.objects
+                .map(object =>
+                    object.kind === "file" && object.basename === basename
+                        ? object
+                        : undefined
+                )
+                .filter(object => object !== undefined)[0];
+
+            assert(object !== undefined);
+
+            object.size = size;
+            object.lastModified = lastModified;
         },
         commandLogIssued: (
             state,
