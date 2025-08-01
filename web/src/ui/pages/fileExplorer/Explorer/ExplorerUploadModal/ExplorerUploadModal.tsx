@@ -22,6 +22,7 @@ export type ExplorerUploadModalProps = {
     }[];
     onRequestFilesUpload: (params: {
         files: {
+            directoryRelativePath: string;
             basename: string;
             blob: Blob;
         }[];

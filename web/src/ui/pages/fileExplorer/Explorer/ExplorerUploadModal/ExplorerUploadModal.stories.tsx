@@ -29,6 +29,6 @@ export const Default: Story = {
                 uploadPercent: 75
             }
         ],
-        onFileSelected: action("File selected")
+        onRequestFilesUpload: action("onRequestFileUpload")
     }
 };

@@ -8,6 +8,7 @@ import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
+import { relative as pathRelative } from "pathe";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -115,11 +116,29 @@ const currentWorkingDirectoryView = createSelector(
         if (directoryPath === undefined) {
             return null;
         }
-        const items = objects
+        const items = [
+            ...objects,
+            ...ongoingOperations
+                .filter(
+                    ongoingOperation =>
+                        ongoingOperation.operation === "create" &&
+                        pathRelative(directoryPath, ongoingOperation.directoryPath) == ""
+                )
+                .map(ongoingOperation => ongoingOperation.objects)
+                .flat()
+                .filter(
+                    object =>
+                        objects.find(
+                            object_i =>
+                                object_i.kind === object.kind &&
+                                object_i.basename === object.basename
+                        ) === undefined
+                )
+        ]
             .map((object): CurrentWorkingDirectoryView.Item => {
                 const isBeingDeleted = ongoingOperations.some(
                     op =>
-                        op.directoryPath === directoryPath &&
+                        pathRelative(op.directoryPath, directoryPath) === "" &&
                         op.operation === "delete" &&
                         op.objects.some(
                             ongoingObject => ongoingObject.basename === object.basename
@@ -128,7 +147,7 @@ const currentWorkingDirectoryView = createSelector(
 
                 const isPolicyChanging = ongoingOperations.some(
                     op =>
-                        op.directoryPath === directoryPath &&
+                        pathRelative(op.directoryPath, directoryPath) === "" &&
                         op.operation === "modifyPolicy" &&
                         op.objects.some(
                             ongoingObject => ongoingObject.basename === object.basename
@@ -137,7 +156,7 @@ const currentWorkingDirectoryView = createSelector(
 
                 const isBeingCreated = ongoingOperations.some(
                     op =>
-                        op.directoryPath === directoryPath &&
+                        pathRelative(op.directoryPath, directoryPath) === "" &&
                         op.operation === "create" &&
                         op.objects.some(
                             ongoingObject => ongoingObject.basename === object.basename
@@ -170,7 +189,8 @@ const currentWorkingDirectoryView = createSelector(
                                                   o.basename === object.basename &&
                                                   o.directoryPath === directoryPath
                                           );
-                                          return uploadEntry?.uploadPercent ?? 0;
+                                          assert(uploadEntry !== undefined);
+                                          return uploadEntry.uploadPercent;
                                       })()
                                   }
                                 : {

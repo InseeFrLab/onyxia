@@ -1,9 +1,8 @@
 import { id } from "tsafe/id";
-import { relative as pathRelative } from "pathe";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
-import type { WritableDraft } from "clean-architecture/immer";
 import type { S3BucketPolicy, S3Object } from "core/ports/S3Client";
+import { relative as pathRelative } from "pathe";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -13,9 +12,9 @@ export type State = {
     objects: S3Object[];
     isNavigationOngoing: boolean;
     ongoingOperations: {
-        directoryPath: string;
         operationId: string;
         operation: "create" | "delete" | "modifyPolicy" | "downloading";
+        directoryPath: string;
         objects: S3Object[];
     }[];
     s3FilesBeingUploaded: {
@@ -143,25 +142,6 @@ export const { reducer, actions } = createUsecaseActions({
                 state.bucketPolicy = bucketPolicy;
             }
             state.isBucketPolicyAvailable = isBucketPolicyAvailable;
-            // Properly restore state when navigating back to
-            // a directory with ongoing operations.
-            state.ongoingOperations
-                .filter(o => pathRelative(o.directoryPath, directoryPath) === "")
-                .forEach(o => {
-                    switch (o.operation) {
-                        case "delete":
-                            o.objects.forEach(object => {
-                                removeIfPresent(state.objects, {
-                                    kind: object.kind,
-                                    basename: object.basename
-                                });
-                            });
-                            break;
-                        case "create":
-                            state.objects.push(...o.objects);
-                            break;
-                    }
-                });
         },
         operationStarted: (
             state,
@@ -179,30 +159,14 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(state.directoryPath !== undefined);
 
-            state.ongoingOperations.push({
-                directoryPath: state.directoryPath,
-                operationId,
-                objects,
-                operation
-            });
+            const { directoryPath } = state;
 
-            switch (payload.operation) {
-                case "delete":
-                    objects.forEach(object => {
-                        removeIfPresent(state.objects, {
-                            kind: object.kind,
-                            basename: object.basename
-                        });
-                    });
-                    break;
-                case "create":
-                    //Optimistic update
-                    state.objects.push(...objects);
-                    break;
-                case "modifyPolicy":
-                case "downloading":
-                    break;
-            }
+            state.ongoingOperations.push({
+                operationId,
+                operation,
+                directoryPath,
+                objects
+            });
         },
         operationCompleted: (
             state,
@@ -211,11 +175,10 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     operationId: string;
-                    objects: S3Object[];
                 };
             }
         ) => {
-            const { operationId, objects } = payload;
+            const { operationId } = payload;
 
             assert(state.directoryPath !== undefined);
 
@@ -229,21 +192,39 @@ export const { reducer, actions } = createUsecaseActions({
 
             ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
 
-            if (
-                pathRelative(state.directoryPath, ongoingOperation.directoryPath) !== ""
-            ) {
-                return;
-            }
+            assert(
+                pathRelative(ongoingOperation.directoryPath, state.directoryPath) === ""
+            );
 
             switch (ongoingOperation.operation) {
                 case "create":
-                    state.objects = state.objects.map(
-                        obj =>
-                            objects.find(
-                                o => o.basename === obj.basename && o.kind === obj.kind
-                            ) ?? obj
+                    state.objects.push(
+                        ...ongoingOperation.objects.filter(
+                            object_created_i =>
+                                state.objects.find(
+                                    object_i =>
+                                        object_i.kind === object_created_i.kind &&
+                                        object_i.basename === object_created_i.basename
+                                ) === undefined
+                        )
                     );
                     break;
+                case "delete":
+                    state.objects = state.objects.filter(
+                        object_i =>
+                            ongoingOperation.objects.find(
+                                object_deleted_i =>
+                                    object_deleted_i.kind === object_i.kind &&
+                                    object_deleted_i.basename === object_i.basename
+                            ) === undefined
+                    );
+                    break;
+                case "downloading":
+                    break;
+                case "modifyPolicy":
+                    break;
+                default:
+                    assert<Equals<typeof ongoingOperation.operation, never>>;
             }
         },
         commandLogIssued: (
@@ -322,21 +303,24 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    bucketPolicy: S3BucketPolicy;
-                    policy: "public" | "private";
+                    kind: "file" | "directory";
                     basename: string;
+                    policy: "public" | "private";
+                    bucketPolicy: S3BucketPolicy;
                 };
             }
         ) => {
-            state.objects = state.objects.map(o =>
-                o.basename === payload.basename
-                    ? {
-                          ...o,
-                          policy: payload.policy
-                      }
-                    : o
-            );
-            state.bucketPolicy = payload.bucketPolicy;
+            const { bucketPolicy, policy, basename, kind } = payload;
+
+            {
+                const object = state.objects.find(
+                    object => object.kind === kind && object.basename === basename
+                );
+                assert(object !== undefined);
+                object.policy = policy;
+            }
+
+            state.bucketPolicy = bucketPolicy;
         },
         shareOpened: (
             state,
@@ -416,19 +400,3 @@ export const { reducer, actions } = createUsecaseActions({
         }
     }
 });
-
-function removeIfPresent(
-    object: WritableDraft<{
-        kind: "file" | "directory";
-        basename: string;
-    }>[],
-    item: { kind: "file" | "directory"; basename: string }
-): void {
-    const index = object.findIndex(
-        item_i => item_i.kind === item.kind && item_i.basename === item.basename
-    );
-
-    assert(index >= 0);
-
-    object.splice(index, 1);
-}

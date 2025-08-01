@@ -59,16 +59,8 @@ const FileExplorer = withLoginEnforced((props: Props) => {
 
     const onCreateNewEmptyDirectory = useConstCallback(
         ({ basename }: Param0<ExplorerProps["onCreateNewEmptyDirectory"]>) =>
-            fileExplorer.create({
-                createWhat: "directory",
+            fileExplorer.createNewEmptyDirectory({
                 basename
-            })
-    );
-
-    const onDeleteItem = useConstCallback(
-        (params: Param0<ExplorerProps["onDeleteItem"]>) =>
-            fileExplorer.delete({
-                s3Object: params.item
             })
     );
 
@@ -149,13 +141,9 @@ const FileExplorer = withLoginEnforced((props: Props) => {
 
     const onRequestFilesUpload = useConstCallback<ExplorerProps["onRequestFilesUpload"]>(
         ({ files }) =>
-            files.forEach(({ basename, blob }) =>
-                fileExplorer.create({
-                    createWhat: "file",
-                    basename,
-                    blob
-                })
-            )
+            fileExplorer.uploadFiles({
+                files
+            })
     );
 
     if (!isCurrentWorkingDirectoryLoaded) {
@@ -192,7 +180,6 @@ const FileExplorer = withLoginEnforced((props: Props) => {
                 changePolicy={fileExplorer.changePolicy}
                 onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}
-                onDeleteItem={onDeleteItem}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}
                 pathMinDepth={pathMinDepth}

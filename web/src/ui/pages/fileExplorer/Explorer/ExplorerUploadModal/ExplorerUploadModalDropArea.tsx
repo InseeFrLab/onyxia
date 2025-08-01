@@ -11,21 +11,22 @@ import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, is } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { declareComponentKeys } from "i18nifty";
+import { Deferred } from "evt/tools/Deferred";
+import { join as pathJoin } from "pathe";
 
 export type Props = {
     className?: string;
     onRequestFilesUpload: (params: {
         files: {
+            directoryRelativePath: string;
             basename: string;
             blob: Blob;
         }[];
     }) => void;
 };
-
-assert<Equals<Props["onRequestFilesUpload"], InputFileProps["onRequestFilesUpload"]>>;
 
 export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const [isDragHover, setIsDragHover] = useState(false);
@@ -43,7 +44,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const onBrowseFileClick = useConstCallback(() => evtInputFileAction.post("TRIGGER"));
 
     const callbackFactory = useCallbackFactory(
-        (
+        async (
             [callbackId]: ["drop" | "dragEnter" | "dragLeave" | "dragOver"],
             [event]: [DragEvent<HTMLDivElement>]
         ) => {
@@ -71,12 +72,86 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 
             assert(event.type === "drop");
 
-            onRequestFilesUpload({
-                files: Object.values(event.dataTransfer.files).map(file => ({
-                    basename: file.name,
-                    blob: file
-                }))
-            });
+            async function traverse(params: {
+                entry: FileSystemEntry;
+                directoryRelativePath: string;
+            }): Promise<
+                {
+                    directoryRelativePath: string;
+                    basename: string;
+                    blob: Blob;
+                }[]
+            > {
+                const { entry, directoryRelativePath } = params;
+
+                if (entry.isFile) {
+                    assert(is<FileSystemFileEntry>(entry));
+
+                    const dBlob = new Deferred<Blob>();
+
+                    entry.file(
+                        file => dBlob.resolve(file),
+                        error => dBlob.reject(error)
+                    );
+
+                    const blob = await dBlob.pr;
+
+                    return [
+                        {
+                            directoryRelativePath,
+                            basename: entry.name,
+                            blob
+                        }
+                    ];
+                }
+
+                if (entry.isDirectory) {
+                    assert(is<FileSystemDirectoryEntry>(entry));
+
+                    const directoryRelativePath_next = pathJoin(
+                        directoryRelativePath,
+                        entry.name
+                    );
+
+                    const dEntries_next = new Deferred<FileSystemEntry[]>();
+
+                    entry.createReader().readEntries(
+                        entries => dEntries_next.resolve(entries),
+                        error => dEntries_next.reject(error)
+                    );
+
+                    const entries_next = await dEntries_next.pr;
+
+                    return (
+                        await Promise.all(
+                            entries_next.map(entry =>
+                                traverse({
+                                    directoryRelativePath: directoryRelativePath_next,
+                                    entry: entry
+                                })
+                            )
+                        )
+                    ).flat();
+                }
+
+                return [];
+            }
+
+            const files = (
+                await Promise.all(
+                    Array.from(event.dataTransfer.items)
+                        .map(item => item.webkitGetAsEntry())
+                        .filter(entry => entry !== null)
+                        .map(entry =>
+                            traverse({
+                                directoryRelativePath: ".",
+                                entry
+                            })
+                        )
+                )
+            ).flat();
+
+            onRequestFilesUpload({ files });
         }
     );
 
@@ -108,7 +183,15 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
             </div>
             <InputFile
                 evtAction={evtInputFileAction}
-                onRequestFilesUpload={onRequestFilesUpload}
+                onRequestFilesUpload={({ files }) =>
+                    onRequestFilesUpload({
+                        files: files.map(({ basename, blob }) => ({
+                            directoryRelativePath: ".",
+                            basename,
+                            blob
+                        }))
+                    })
+                }
             />
         </div>
     );
