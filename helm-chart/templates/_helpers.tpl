@@ -16,6 +16,11 @@ Expand the name of the chart.
 {{- end -}}
 
 
+{{- define "onyxia.onboarding.name" -}}
+{{- printf "%s-%s" (include "onyxia.name" .) .Values.onboarding.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -43,6 +48,10 @@ If release name contains chart name it will be used as a full name.
 {{- printf "%s-%s" (include "onyxia.fullname" .) .Values.api.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "onyxia.onboarding.fullname" -}}
+{{- printf "%s-%s" (include "onyxia.fullname" .) .Values.onboarding.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}
@@ -56,6 +65,10 @@ Create chart name and version as used by the chart label.
 
 {{- define "onyxia.web.chart" -}}
 {{- printf "onyxia-web" -}}
+{{- end -}}
+
+{{- define "onyxia.onboarding.chart" -}}
+{{- printf "onyxia-onboarding" -}}
 {{- end -}}
 
 
@@ -88,6 +101,15 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
+{{- define "onyxia.onboarding.labels" -}}
+helm.sh/chart: {{ include "onyxia.onboarding.chart" . }}
+{{ include "onyxia.onboarding.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
 {{/*Selector labels*/}}
 {{- define "onyxia.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "onyxia.name" . }}
@@ -102,6 +124,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{- define "onyxia.web.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "onyxia.web.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{- define "onyxia.onboarding.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "onyxia.onboarding.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
@@ -120,5 +147,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
     {{ default (include "onyxia.web.fullname" .) .Values.web.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.web.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{- define "onyxia.onboarding.serviceAccountName" -}}
+{{- if .Values.onboarding.serviceAccount.create -}}
+    {{ default (include "onyxia.onboarding.fullname" .) .Values.onboarding.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.onboarding.serviceAccount.name }}
 {{- end -}}
 {{- end -}}

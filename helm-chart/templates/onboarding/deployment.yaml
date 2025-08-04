@@ -1,0 +1,113 @@
+{{- if .Values.onboarding.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onyxia.onboarding.fullname" . }}
+  labels:
+    {{- include "onyxia.onboarding.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.onboarding.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "onyxia.onboarding.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include "onyxia.onboarding.configmap" . | sha256sum }}
+      labels:
+        {{- include "onyxia.onboarding.selectorLabels" . | nindent 8 }}
+{{- with .Values.onboarding.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+    {{- with .Values.onboarding.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.onboarding.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "onyxia.onboarding.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.onboarding.serviceAccount.automount }}
+      securityContext:
+        {{- toYaml .Values.onboarding.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.onboarding.securityContext | nindent 12 }}
+          image: "{{ .Values.onboarding.image.repository }}:{{ .Values.onboarding.image.tag }}"
+          imagePullPolicy: {{ .Values.onboarding.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "onyxia.onboarding.name" . }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.onboarding.containerPort }}
+              protocol: TCP
+          {{- if .Values.onboarding.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.onboarding.livenessProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.onboarding.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.onboarding.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.onboarding.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.onboarding.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.onboarding.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.onboarding.readinessProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.onboarding.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.onboarding.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.onboarding.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.onboarding.readinessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.onboarding.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.onboarding.startupProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.onboarding.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.onboarding.startupProbe.periodSeconds }}
+            successThreshold: {{ .Values.onboarding.startupProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.onboarding.startupProbe.timeoutSeconds }}
+        {{- end }}
+          resources:
+            {{- toYaml .Values.onboarding.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /env.yaml
+              subPath: env.yaml
+              readOnly: true
+            {{- if .Values.onboarding.extraVolumeMounts }}
+            {{ toYaml .Values.onboarding.extraVolumeMounts | nindent 12 }}
+            {{- end }}
+      {{- with .Values.onboarding.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.onboarding.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.onboarding.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ template "onyxia.onboarding.name" . }}
+            items:
+              - key: env.yaml
+                path: env.yaml
+        {{- if .Values.onboarding.extraVolumes }}
+        {{ toYaml .Values.onboarding.extraVolumes | nindent 8 }}
+        {{- end }}
+      {{- if .Values.onboarding.priorityClassName }}
+      priorityClassName: "{{ .Values.onboarding.priorityClassName }}"
+      {{- end }}
+{{- end }}

@@ -1,0 +1,124 @@
+{{- define "onyxia.onboarding.configmap" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "onyxia.onboarding.name" . }}
+  labels:
+    app: {{ template "onyxia.onboarding.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  env.yaml: |
+{{- $fromApiEnv := dict }}
+{{- $mappings := dict
+    "authentication.mode"      (list "authenticationMode")
+    "oidc.issuer-uri"          (list "oidc" "issuerURI")
+    "oidc.clientID"            (list "oidc" "clientID")
+    "oidc.username-claim"      (list "oidc" "usernameClaim")
+    "oidc.groups-claim"        (list "oidc" "groupsClaim")
+    "oidc.roles-claim"         (list "oidc" "rolesClaim")
+    "oidc.audience"            (list "oidc" "audience")
+    "oidc.skip-tls-verify"     (list "oidc" "skipTLSVerify")
+}}
+
+{{- $api := .Values.api | default dict }}
+{{- $apiEnv := get $api "env" | default dict }}
+{{- range $flatKey, $goPath := $mappings }}
+  {{- $val := get $apiEnv $flatKey | default nil }}
+  {{- if not (eq $val nil) }}
+    {{- $ref := $fromApiEnv }}
+    {{- range $i, $part := $goPath }}
+      {{- if eq (add1 $i) (len $goPath) }}
+        {{- $_ := set $ref $part $val }}
+      {{- else }}
+        {{- if not (hasKey $ref $part) }}
+          {{- $_ := set $ref $part (dict) }}
+        {{- end }}
+        {{- $ref = get $ref $part }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $regionEnv := dict }}
+
+{{- $regions := get $api "regions" | default list }}
+{{- if and (gt (len $regions) 0) (hasKey (index $regions 0) "services") }}
+  {{- $services := get (index $regions 0) "services" | default dict }}
+  {{- $onboardingRegionEnv := dict }}
+  {{- if hasKey $services "namespacePrefix" }}
+    {{- $_ := set $onboardingRegionEnv "namespacePrefix" $services.namespacePrefix }}
+  {{- end }}
+  {{- if hasKey $services "groupNamespacePrefix" }}
+    {{- $_ := set $onboardingRegionEnv "groupNamespacePrefix" $services.groupNamespacePrefix }}
+  {{- end }}
+  {{- if hasKey $services "namespaceLabels" }}
+    {{- $_ := set $onboardingRegionEnv "namespaceLabels" $services.namespaceLabels }}
+  {{- end }}
+  {{- $annotationsEnv := dict }}
+    {{- if hasKey $services "namespaceAnnotations" }}
+      {{- $_ := set $annotationsEnv "static" $services.namespaceAnnotations }}
+    {{- end }}
+
+    {{- $hasDynamic := hasKey $services "namespaceAnnotationsDynamic" }}
+    {{- if $hasDynamic }}
+      {{- $dyn := dict }}
+      {{- $_ := set $dyn "last-login-timestamp" true }}
+      {{- $userAttrs := (get $services.namespaceAnnotationsDynamic "userAttributes") | default list }}
+      {{- $_ := set $dyn "userAttributes" $userAttrs }}
+      {{- $_ := set $annotationsEnv "dynamic" $dyn }}
+    {{- end }}
+
+    {{- if or (hasKey $annotationsEnv "static") (hasKey $annotationsEnv "dynamic") }}
+      {{- $_ := set $onboardingRegionEnv "annotations" (dict
+          "enabled" true
+          "static" (get $annotationsEnv "static")
+          "dynamic" (get $annotationsEnv "dynamic")
+      ) }}
+    {{- end }}
+
+  {{- if hasKey $services "quotas" }}
+    {{- $quotas := get $services "quotas" }}
+    {{- $quotasEnv := dict }}
+
+    {{- range $k := list "userEnabled" "groupEnabled" "user" "group" "roles" }}
+      {{- if hasKey $quotas $k }}
+        {{- $_ := set $quotasEnv $k (get $quotas $k) }}
+      {{- end }}
+    {{- end }}
+
+    {{- if gt (len $quotasEnv) 0 }}
+      {{- $_ := set $quotasEnv "enabled" true }}
+      {{- $_ := set $onboardingRegionEnv "quotas" $quotasEnv }}
+    {{- end }}
+  {{- end }}
+
+  {{- if gt (len $onboardingRegionEnv) 0 }}
+    {{- $_ := set $regionEnv "onboarding" $onboardingRegionEnv }}
+  {{- end }}
+  
+{{- end }}
+
+{{- $mergedApiRegionEnv := deepCopy $fromApiEnv }}
+{{- range $k, $v := $regionEnv }}
+  {{- $_ := set $mergedApiRegionEnv $k $v }}
+{{- end }}
+
+{{- $finalEnv := deepCopy $mergedApiRegionEnv }}
+{{- if .Values.onboarding.env }}
+  {{- range $k, $v := .Values.onboarding.env }}
+    {{- if and (eq $k "onboarding") (hasKey $finalEnv "onboarding") }}
+      {{- range $subk, $subv := $v }}
+        {{- $_ := set $finalEnv.onboarding $subk $subv }}
+      {{- end }}
+    {{- else }}
+      {{- $_ := set $finalEnv $k $v }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{ $finalEnv | toYaml | indent 4 }}
+{{- end }}
+
+{{- include "onyxia.onboarding.configmap" .}}
