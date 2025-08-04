@@ -319,7 +319,7 @@ onboarding:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-onboarding
-    tag: ""
+    tag: "0.1.10"
     pullPolicy: IfNotPresent
 
   hostAliases: []
