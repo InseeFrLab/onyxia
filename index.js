@@ -1682,7 +1682,7 @@ const pipelineAsync = (0, util_1.promisify)(stream_1.pipeline);
 function installHelm() {
     return __awaiter(this, void 0, void 0, function* () {
         // Determine the version you want to install
-        const helmVersion = 'v3.7.0';
+        const helmVersion = 'v3.18.4';
         // Download Helm binary
         const downloadUrl = `https://get.helm.sh/helm-${helmVersion}-linux-amd64.tar.gz`;
         const response = yield (0, node_fetch_1.default)(downloadUrl);
