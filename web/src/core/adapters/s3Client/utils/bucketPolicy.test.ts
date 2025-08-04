@@ -9,14 +9,14 @@ import type { S3BucketPolicy } from "core/ports/S3Client";
 describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
     const bucketArn = "bucketArn";
 
-    describe("File (StringEquals)", () => {
+    describe("File", () => {
         it("removes single file prefix, leaving no statement", () => {
             const objectName = "objectName";
             const statements: S3BucketPolicy["Statement"] = [
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": [objectName]
                         }
                     },
@@ -37,7 +37,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": [objectName, "objectName2"]
                         }
                     },
@@ -51,7 +51,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     ...statements[0],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": ["objectName2"]
                         }
                     }
@@ -68,7 +68,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": ["objectName1", "objectName2"]
                         }
                     },
@@ -93,7 +93,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": [objectName, "objectName2"]
                         }
                     },
@@ -104,7 +104,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": ["otherDir"]
                         }
                     },
@@ -118,7 +118,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     ...statements[0],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": ["objectName2"]
                         }
                     }
@@ -137,7 +137,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": [objectName]
                         },
                         NumericEquals: {
@@ -230,11 +230,8 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
-                            "s3:prefix": ["file.txt"]
-                        },
                         StringLike: {
-                            "s3:prefix": ["folder/*"]
+                            "s3:prefix": ["folder/*", "file.txt"]
                         }
                     },
                     Effect: "Allow",
@@ -247,7 +244,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     ...statements[0],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": ["file.txt"]
                         }
                     }
@@ -272,7 +269,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringEquals: {
+                        StringLike: {
                             "s3:prefix": ["objectName"]
                         }
                     },
@@ -297,8 +294,8 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
                 {
                     Action: ["s3:ListBucket"],
                     Condition: {
-                        StringLike: {
-                            "s3:prefix": ["objectName"]
+                        StringNotEquals: {
+                            "s3:prefix": [objectName]
                         }
                     },
                     Effect: "Allow",
@@ -317,7 +314,7 @@ describe(symToStr({ removeObjectNameFromListBucketCondition }), () => {
 describe(symToStr({ addObjectNameToListBucketCondition }), () => {
     const bucketArn = "arn:aws:s3:::my-bucket";
 
-    it("adds a StringEquals condition when none exist", () => {
+    it("adds a StringLike condition when none exist", () => {
         const result = addObjectNameToListBucketCondition(null, bucketArn, "file.txt");
 
         const expected: S3BucketPolicy["Statement"] = [
@@ -327,7 +324,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file.txt"]
                     }
                 }
@@ -357,7 +354,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
         expect(result).toStrictEqual(expected);
     });
 
-    it("adds new prefix to existing StringEquals array", () => {
+    it("adds new prefix to existing StringLike array", () => {
         const statements: S3BucketPolicy["Statement"] = [
             {
                 Effect: "Allow",
@@ -365,7 +362,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file1.txt"]
                     }
                 }
@@ -385,7 +382,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file1.txt", "file2.txt"]
                     }
                 }
@@ -395,7 +392,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
         expect(result).toStrictEqual(expected);
     });
 
-    it("adds new prefix to existing StringEquals string", () => {
+    it("adds new prefix to existing StringLike string", () => {
         const statements: S3BucketPolicy["Statement"] = [
             {
                 Effect: "Allow",
@@ -403,7 +400,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": "file1.txt"
                     }
                 }
@@ -423,7 +420,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file1.txt", "file2.txt"]
                     }
                 }
@@ -433,7 +430,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
         expect(result).toStrictEqual(expected);
     });
 
-    it("updates StringLike without affecting existing StringEquals", () => {
+    it("updates StringLike without affecting existing StringLike", () => {
         const statements: S3BucketPolicy["Statement"] = [
             {
                 Effect: "Allow",
@@ -441,7 +438,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file.txt"]
                     }
                 }
@@ -457,11 +454,8 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
-                        "s3:prefix": ["file.txt"]
-                    },
                     StringLike: {
-                        "s3:prefix": ["dir/*"]
+                        "s3:prefix": ["file.txt", "dir/*"]
                     }
                 }
             }
@@ -478,7 +472,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file.txt"]
                     }
                 }
@@ -542,7 +536,7 @@ describe(symToStr({ addObjectNameToListBucketCondition }), () => {
                 Action: ["s3:ListBucket"],
                 Resource: [bucketArn],
                 Condition: {
-                    StringEquals: {
+                    StringLike: {
                         "s3:prefix": ["file.txt"]
                     }
                 }

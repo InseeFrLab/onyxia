@@ -234,7 +234,7 @@ const removeKey = <T extends Record<string, any>, K extends keyof T>(
 };
 
 function getConditionKeyAndPrefix(objectName: string): {
-    conditionKey: "StringLike" | "StringEquals";
+    conditionKey: "StringLike";
     objectPrefix: string;
 } {
     if (objectName.endsWith("/")) {
@@ -245,7 +245,7 @@ function getConditionKeyAndPrefix(objectName: string): {
     }
 
     return {
-        conditionKey: "StringEquals",
+        conditionKey: "StringLike",
         objectPrefix: objectName
     };
 }
