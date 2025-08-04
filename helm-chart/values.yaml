@@ -374,12 +374,12 @@ onboarding:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
     rules:
-      - apiGroups: [""]
-        resources: ["namespaces"]
-        verbs: ["create", "patch"]
-      - apiGroups: [""]
-        resources: ["resourcequotas"]
-        verbs: ["get", "create", "update"]
+      - apiGroups: [ "" ]
+        resources: [ "namespaces" ]
+        verbs: [ "create", "patch" ]
+      - apiGroups: [ "" ]
+        resources: [ "resourcequotas" ]
+        verbs: [ "get", "create", "update" ]
 
   clusterRoleBinding:
     # If true, a ClusterRoleBinding will be created
