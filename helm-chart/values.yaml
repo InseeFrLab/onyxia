@@ -314,7 +314,7 @@ api:
     automountServiceAccountToken: true
 
 onboarding:
-  enabled: true
+  enabled: false
   name: onboarding
   replicaCount: 1
   image:
