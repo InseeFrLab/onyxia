@@ -30,7 +30,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 4.54.0
+    tag: 4.53.1
     pullPolicy: IfNotPresent
 
   ## Pod priority settings
@@ -99,7 +99,7 @@ api:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-api
-    tag: v4.8.0
+    tag: v4.7.0
     pullPolicy: IfNotPresent
   contextPath: /api
 
@@ -374,12 +374,12 @@ onboarding:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
     rules:
-      - apiGroups: [ "" ]
-        resources: [ "namespaces" ]
-        verbs: [ "create", "patch" ]
-      - apiGroups: [ "" ]
-        resources: [ "resourcequotas" ]
-        verbs: [ "get", "create", "update" ]
+      - apiGroups: [""]
+        resources: ["namespaces"]
+        verbs: ["create", "patch"]
+      - apiGroups: [""]
+        resources: ["resourcequotas"]
+        verbs: ["get", "create", "update"]
 
   clusterRoleBinding:
     # If true, a ClusterRoleBinding will be created
