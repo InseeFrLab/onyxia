@@ -1,4 +1,4 @@
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import { Evt } from "evt";
 import { Zip, ZipPassThrough } from "fflate/browser";
 import type { Thunks } from "core/bootstrap";
@@ -11,26 +11,8 @@ import type { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { relative as pathRelative } from "pathe";
 import { id } from "tsafe/id";
-
-export type ExplorersCreateParams =
-    | ExplorersCreateParams.Directory
-    | ExplorersCreateParams.File;
-
-export declare namespace ExplorersCreateParams {
-    export type Common = {
-        basename: string;
-    };
-
-    export type Directory = Common & {
-        createWhat: "new empty directory";
-    };
-
-    export type File = Common & {
-        createWhat: "file";
-        directoryRelativePath: string;
-        blob: Blob;
-    };
-}
+import { isAmong } from "tsafe/isAmong";
+import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 
 const privateThunks = {
     startOperationWhenAllConflictingOperationHaveCompleted:
@@ -437,6 +419,52 @@ const privateThunks = {
                         ? `${s3Objects[0].basename}.zip`
                         : `onyxia-download-${new Date().toISOString()}.zip`
             };
+        },
+    uploadFileAndLogCommand:
+        (params: {
+            path: string;
+            blob: Blob;
+            onUploadProgress: (params: { uploadPercent: number }) => void;
+        }) =>
+        async (...args) => {
+            const [dispatch] = args;
+
+            const { path, blob, onUploadProgress } = params;
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc cp ${pathJoin(".", pathBasename(path))} ${pathJoin(
+                        "s3",
+                        path
+                    )}`
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const uploadResult = await s3Client.uploadFile({
+                path,
+                blob,
+                onUploadProgress: ({ uploadPercent }) => {
+                    onUploadProgress({ uploadPercent });
+
+                    dispatch(
+                        actions.commandLogResponseReceived({
+                            cmdId,
+                            resp: `... ${uploadPercent}% of ${blob.size} Bytes uploaded`
+                        })
+                    );
+                }
+            });
+            return uploadResult;
         }
 } satisfies Thunks;
 
@@ -587,9 +615,18 @@ export const thunks = {
                 privateThunks.navigate({ directoryPath, doListAgainIfSamePath: true })
             );
         },
-    create:
-        (params: ExplorersCreateParams) =>
+
+    uploadFiles:
+        (params: {
+            files: {
+                directoryRelativePath: string;
+                basename: string;
+                blob: Blob;
+            }[];
+        }) =>
         async (...args) => {
+            const { files } = params;
+
             const [dispatch, getState] = args;
 
             const state = getState()[name];
@@ -600,153 +637,130 @@ export const thunks = {
 
             const operationId = await dispatch(
                 privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
-                    objects: [
-                        (() => {
-                            switch (params.createWhat) {
-                                case "new empty directory":
-                                    return id<S3Object.Directory>({
-                                        kind: "directory",
-                                        basename: params.basename,
-                                        policy: "private",
-                                        canChangePolicy: false
-                                    });
-                                case "file":
-                                    if (
-                                        params.directoryRelativePath === "." ||
-                                        params.directoryRelativePath === ""
-                                    ) {
-                                        return id<S3Object.File>({
-                                            kind: "file",
-                                            basename: params.basename,
-                                            policy: "private",
-                                            size: undefined,
-                                            lastModified: undefined,
-                                            canChangePolicy: false
-                                        });
-                                    } else {
-                                        return id<S3Object.Directory>({
-                                            kind: "directory",
-                                            basename: params.directoryRelativePath
-                                                .replace(/^\.\//, "")
-                                                .split("/")[0],
-                                            policy: "private",
-                                            canChangePolicy: false
-                                        });
-                                    }
-                            }
-                        })()
-                    ],
-                    operation: "create"
+                    operation: "create",
+                    objects: files
+                        .map(file =>
+                            isAmong([".", ""], file.directoryRelativePath)
+                                ? id<S3Object.File>({
+                                      kind: "file",
+                                      basename: file.basename,
+                                      policy: "private",
+                                      size: undefined,
+                                      lastModified: undefined,
+                                      canChangePolicy: false
+                                  })
+                                : id<S3Object.Directory>({
+                                      kind: "directory",
+                                      basename: file.directoryRelativePath
+                                          .replace(/^\.\//, "")
+                                          .split("/")[0],
+                                      policy: "private",
+                                      canChangePolicy: false
+                                  })
+                        )
+                        .reduce(
+                            ...removeDuplicates<S3Object>(
+                                (object1, object2) =>
+                                    object1.kind === "directory" &&
+                                    object2.kind === "directory" &&
+                                    object1.basename === object2.basename
+                            )
+                        )
                 })
             );
 
-            const uploadFileAndLogCommand = async (params: {
-                path: string;
-                blob: Blob;
-                onUploadProgress: (params: { uploadPercent: number }) => void;
-            }) => {
-                const { path, blob, onUploadProgress } = params;
+            await Promise.all(
+                files.map(async file => {
+                    //TODO policy can be public if uploaded inside public directory
+                    const directoryPath_uploadedFile = pathJoin(
+                        directoryPath,
+                        file.directoryRelativePath
+                    );
 
-                const cmdId = Date.now();
+                    dispatch(
+                        actions.fileUploadStarted({
+                            basename: file.basename,
+                            directoryPath: directoryPath_uploadedFile,
+                            size: file.blob.size
+                        })
+                    );
 
-                dispatch(
-                    actions.commandLogIssued({
-                        cmdId,
-                        cmd: `mc cp ${pathJoin(".", pathBasename(path))} ${pathJoin(
-                            "s3",
-                            path
-                        )}`
-                    })
-                );
-
-                const s3Client = await dispatch(
-                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-                ).then(r => {
-                    assert(r !== undefined);
-                    return r.s3Client;
-                });
-
-                const uploadResult = await s3Client.uploadFile({
-                    path,
-                    blob,
-                    onUploadProgress: ({ uploadPercent }) => {
-                        onUploadProgress({ uploadPercent });
-
-                        dispatch(
-                            actions.commandLogResponseReceived({
-                                cmdId,
-                                resp: `... ${uploadPercent}% of ${blob.size} Bytes uploaded`
-                            })
-                        );
-                    }
-                });
-                return uploadResult;
-            };
-
-            //TODO policy can be public if uploaded inside public directory
-
-            switch (params.createWhat) {
-                case "file":
-                    {
-                        const directoryPath_uploadedFile = pathJoin(
-                            directoryPath,
-                            params.directoryRelativePath
-                        );
-
-                        dispatch(
-                            actions.fileUploadStarted({
-                                basename: params.basename,
-                                directoryPath: directoryPath_uploadedFile,
-                                size: params.blob.size
-                            })
-                        );
-                        const uploadResult = await uploadFileAndLogCommand({
-                            path: pathJoin(directoryPath_uploadedFile, params.basename),
-                            blob: params.blob,
+                    const uploadResult = await dispatch(
+                        privateThunks.uploadFileAndLogCommand({
+                            path: pathJoin(directoryPath_uploadedFile, file.basename),
+                            blob: file.blob,
                             onUploadProgress: ({ uploadPercent }) =>
                                 dispatch(
                                     actions.uploadProgressUpdated({
-                                        basename: params.basename,
+                                        basename: file.basename,
                                         directoryPath: directoryPath_uploadedFile,
                                         uploadPercent
                                     })
                                 )
-                        });
+                        })
+                    );
 
-                        update_local_metadata: {
-                            if (
-                                pathRelative(
-                                    directoryPath_uploadedFile,
-                                    directoryPath
-                                ) !== ""
-                            ) {
-                                break update_local_metadata;
-                            }
-
-                            dispatch(
-                                actions.fileUploadCompleted({
-                                    basename: params.basename,
-                                    lastModified: uploadResult.lastModified,
-                                    size: uploadResult.size
-                                })
-                            );
+                    update_local_metadata: {
+                        if (
+                            pathRelative(directoryPath_uploadedFile, directoryPath) !== ""
+                        ) {
+                            break update_local_metadata;
                         }
+
+                        dispatch(
+                            actions.fileUploadCompleted({
+                                basename: file.basename,
+                                lastModified: uploadResult.lastModified,
+                                size: uploadResult.size
+                            })
+                        );
                     }
-                    break;
-                case "new empty directory":
-                    {
-                        await uploadFileAndLogCommand({
-                            path: pathJoin(directoryPath, params.basename, ".keep"),
-                            blob: new Blob(["This file tells that a directory exists"], {
-                                type: "text/plain"
-                            }),
-                            onUploadProgress: () => {}
-                        });
-                    }
-                    break;
-                default:
-                    assert<Equals<typeof params, never>>;
-            }
+                })
+            );
+
+            dispatch(
+                actions.operationCompleted({
+                    operationId
+                })
+            );
+        },
+
+    createNewEmptyDirectory:
+        (params: { basename: string }) =>
+        async (...args) => {
+            const { basename } = params;
+
+            const [dispatch, getState] = args;
+
+            const state = getState()[name];
+
+            const { directoryPath } = state;
+
+            assert(directoryPath !== undefined);
+
+            const operationId = await dispatch(
+                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
+                    operation: "create",
+                    objects: [
+                        id<S3Object.Directory>({
+                            kind: "directory",
+                            basename: basename,
+                            policy: "private",
+                            canChangePolicy: false
+                        })
+                    ]
+                })
+            );
+
+            await dispatch(
+                privateThunks.uploadFileAndLogCommand({
+                    path: pathJoin(directoryPath, params.basename, ".keep"),
+                    blob: new Blob(["This file tells that a directory exists"], {
+                        type: "text/plain"
+                    }),
+                    onUploadProgress: () => {}
+                })
+            );
 
             dispatch(
                 actions.operationCompleted({
