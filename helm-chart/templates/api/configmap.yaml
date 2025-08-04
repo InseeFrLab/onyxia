@@ -1,7 +1,8 @@
+{{- define "onyxia.api.configmap" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "onyxia.fullname" . }}
+  name: {{ template "onyxia.api.fullname" . }}
   labels:
     app: {{ template "onyxia.name" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -23,4 +24,6 @@ data:
 {{- if .Values.api.schemas.enabled }}
   external.schema.directory: {{ printf "%s%s/" .Values.api.schemas.rootPath .Values.api.schemas.subPathDefault | quote }}
   role.schema.directory: {{ printf "%s%s/" .Values.api.schemas.rootPath .Values.api.schemas.subPathRole | quote }}
+{{- end}}
 {{- end }}
+{{- include "onyxia.api.configmap" . }}

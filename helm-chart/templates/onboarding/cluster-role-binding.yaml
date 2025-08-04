@@ -1,0 +1,25 @@
+{{- if .Values.onboarding.clusterRoleBinding.create }}
+{{- $clusterRoleName := "" }}
+{{- if .Values.onboarding.clusterRole.create }}
+  {{- $clusterRoleName = .Values.onboarding.clusterRole.name | default (include "onyxia.onboarding.fullname" .) }}
+{{- else if .Values.onboarding.clusterRoleBinding.clusterRoleName }}
+  {{- $clusterRoleName = .Values.onboarding.clusterRoleBinding.clusterRoleName }}
+{{- else }}
+  {{- fail "onboarding.clusterRoleBinding.clusterRoleName is required when onboarding.clusterRole.create is false" }}
+{{- end }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.onboarding.clusterRoleBinding.name | default (include "onyxia.onboarding.fullname" .) }}
+  labels:
+    {{- include "onyxia.onboarding.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $clusterRoleName }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "onyxia.onboarding.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+

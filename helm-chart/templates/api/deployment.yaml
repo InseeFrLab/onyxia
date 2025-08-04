@@ -12,14 +12,14 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include "onyxia.api.configmap" . | sha256sum }}
       labels:
         {{- include "onyxia.api.selectorLabels" . | nindent 8 }}
 {{- with .Values.api.podLabels }}
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
-    {{- with .Values.hostAliases }}
+    {{- with .Values.api.hostAliases }}
       hostAliases:
         {{- toYaml . | nindent 8 }}
     {{- end }}
@@ -38,7 +38,7 @@ spec:
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
           envFrom:
             - configMapRef:
-                name: {{ template "onyxia.fullname" . }}
+                name: {{ template "onyxia.api.fullname" . }}
           imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           ports:
             - name: http
