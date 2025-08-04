@@ -37,7 +37,7 @@ jobs:
         with:
           action_name: checkout
           sub_directory: helm-chart
-      - uses: azure/setup-helm@v4.2.0
+      - uses: azure/setup-helm@v4
       - run: helm lint .
 
   prepare_release:
