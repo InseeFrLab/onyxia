@@ -1,8 +1,6 @@
 import { id } from "tsafe/id";
-import { relative as pathRelative } from "pathe";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
-import type { WritableDraft } from "clean-architecture/immer";
 import type { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 
 //All explorer paths are expected to be absolute (start with /)
@@ -143,48 +141,6 @@ export const { reducer, actions } = createUsecaseActions({
                 state.bucketPolicy = bucketPolicy;
             }
             state.isBucketPolicyAvailable = isBucketPolicyAvailable;
-
-            // Properly restore state when navigating back to
-            // a directory with ongoing operations.
-            state.ongoingOperations
-                .filter(
-                    ({ directoryPath: directoryPath_object }) =>
-                        pathRelative(directoryPath, directoryPath_object) === ""
-                )
-                .map(({ operation, directoryPath, objects }) =>
-                    objects.map(object => ({ operation, object, directoryPath }))
-                )
-                .flat()
-                .forEach(({ operation, object }) => {
-                    switch (operation) {
-                        case "delete":
-                            removeIfPresent(state.objects, {
-                                kind: object.kind,
-                                basename: object.basename
-                            });
-                            break;
-                        case "create":
-                            state.objects.push(object);
-                            break;
-                        case "downloading":
-                            break;
-                        case "modifyPolicy":
-                            {
-                                const index = state.objects.findIndex(
-                                    object_i =>
-                                        object_i.basename === object.basename &&
-                                        object_i.kind === object.kind
-                                );
-
-                                assert(index !== 1);
-
-                                state.objects[index] = object;
-                            }
-                            break;
-                        default:
-                            assert<Equals<typeof operation, never>>;
-                    }
-                });
         },
         operationStarted: (
             state,
@@ -210,37 +166,6 @@ export const { reducer, actions } = createUsecaseActions({
                 directoryPath,
                 objects
             });
-
-            switch (payload.operation) {
-                case "delete":
-                    objects.forEach(object => {
-                        removeIfPresent(state.objects, {
-                            kind: object.kind,
-                            basename: object.basename
-                        });
-                    });
-                    break;
-                case "create":
-                    //Optimistic update
-                    for (const object of objects) {
-                        const index = state.objects.findIndex(
-                            object_i =>
-                                object_i.kind === object.kind &&
-                                object_i.basename === object.basename
-                        );
-                        if (index !== -1) {
-                            state.objects[index] = object;
-                        } else {
-                            state.objects.push(object);
-                        }
-                    }
-                    break;
-                case "modifyPolicy":
-                case "downloading":
-                    break;
-                default:
-                    assert<Equals<typeof payload.operation, never>>;
-            }
         },
         operationCompleted: (
             state,
@@ -468,19 +393,3 @@ export const { reducer, actions } = createUsecaseActions({
         }
     }
 });
-
-function removeIfPresent(
-    object: WritableDraft<{
-        kind: "file" | "directory";
-        basename: string;
-    }>[],
-    item: { kind: "file" | "directory"; basename: string }
-): void {
-    const index = object.findIndex(
-        item_i => item_i.kind === item.kind && item_i.basename === item.basename
-    );
-
-    assert(index >= 0);
-
-    object.splice(index, 1);
-}
