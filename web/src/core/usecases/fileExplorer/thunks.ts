@@ -708,7 +708,7 @@ export const thunks = {
                         }
 
                         dispatch(
-                            actions.fileUploadCompleted({
+                            actions.metadataOfFileBeingUploadedUpdated({
                                 basename: file.basename,
                                 lastModified: uploadResult.lastModified,
                                 size: uploadResult.size

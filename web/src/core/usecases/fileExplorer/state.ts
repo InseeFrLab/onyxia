@@ -1,7 +1,8 @@
 import { id } from "tsafe/id";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import type { S3BucketPolicy, S3Object } from "core/ports/S3Client";
+import { relative as pathRelative } from "pathe";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -190,8 +191,43 @@ export const { reducer, actions } = createUsecaseActions({
             assert(ongoingOperation !== undefined);
 
             ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
+
+            assert(
+                pathRelative(ongoingOperation.directoryPath, state.directoryPath) === ""
+            );
+
+            switch (ongoingOperation.operation) {
+                case "create":
+                    state.objects.push(
+                        ...ongoingOperation.objects.filter(
+                            object_created_i =>
+                                state.objects.find(
+                                    object_i =>
+                                        object_i.kind === object_created_i.kind &&
+                                        object_i.basename === object_created_i.basename
+                                ) === undefined
+                        )
+                    );
+                    break;
+                case "delete":
+                    state.objects = state.objects.filter(
+                        object_i =>
+                            ongoingOperation.objects.find(
+                                object_deleted_i =>
+                                    object_deleted_i.kind === object_i.kind &&
+                                    object_deleted_i.basename === object_i.basename
+                            ) === undefined
+                    );
+                    break;
+                case "downloading":
+                    break;
+                case "modifyPolicy":
+                    break;
+                default:
+                    assert<Equals<typeof ongoingOperation.operation, never>>;
+            }
         },
-        fileUploadCompleted: (
+        metadataOfFileBeingUploadedUpdated: (
             state,
             {
                 payload
@@ -205,9 +241,18 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { basename, size, lastModified } = payload;
 
-            assert(state.directoryPath !== undefined);
+            const { directoryPath } = state;
 
-            const object = state.objects
+            assert(directoryPath !== undefined);
+
+            const object = state.ongoingOperations
+                .filter(
+                    ongoingOperation =>
+                        ongoingOperation.operation === "create" &&
+                        pathRelative(ongoingOperation.directoryPath, directoryPath) === ""
+                )
+                .map(({ objects }) => objects)
+                .flat()
                 .map(object =>
                     object.kind === "file" && object.basename === basename
                         ? object
