@@ -644,8 +644,8 @@ export const thunks = {
                                       kind: "file",
                                       basename: file.basename,
                                       policy: "private",
-                                      size: undefined,
-                                      lastModified: undefined,
+                                      size: file.blob.size,
+                                      lastModified: new Date(),
                                       canChangePolicy: false
                                   })
                                 : id<S3Object.Directory>({
