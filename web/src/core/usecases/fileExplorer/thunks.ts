@@ -450,7 +450,7 @@ const privateThunks = {
                 return r.s3Client;
             });
 
-            const uploadResult = await s3Client.uploadFile({
+            await s3Client.uploadFile({
                 path,
                 blob,
                 onUploadProgress: ({ uploadPercent }) => {
@@ -464,7 +464,6 @@ const privateThunks = {
                     );
                 }
             });
-            return uploadResult;
         }
 } satisfies Thunks;
 
@@ -685,7 +684,7 @@ export const thunks = {
                         })
                     );
 
-                    const uploadResult = await dispatch(
+                    await dispatch(
                         privateThunks.uploadFileAndLogCommand({
                             path: pathJoin(directoryPath_uploadedFile, file.basename),
                             blob: file.blob,
@@ -699,22 +698,6 @@ export const thunks = {
                                 )
                         })
                     );
-
-                    update_local_metadata: {
-                        if (
-                            pathRelative(directoryPath_uploadedFile, directoryPath) !== ""
-                        ) {
-                            break update_local_metadata;
-                        }
-
-                        dispatch(
-                            actions.metadataOfFileBeingUploadedUpdated({
-                                basename: file.basename,
-                                lastModified: uploadResult.lastModified,
-                                size: uploadResult.size
-                            })
-                        );
-                    }
                 })
             );
 
@@ -769,114 +752,6 @@ export const thunks = {
             );
         },
 
-    /**
-     * Assert:
-     * The file or directory we are deleting is present in the directory
-     * currently listed.
-     */
-    delete:
-        (params: { s3Object: S3Object }) =>
-        async (...args) => {
-            const { s3Object } = params;
-
-            const [dispatch, getState] = args;
-
-            const state = getState()[name];
-
-            const { directoryPath } = state;
-
-            assert(directoryPath !== undefined);
-
-            const operationId = await dispatch(
-                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
-                    operation: "delete",
-                    objects: [s3Object]
-                })
-            );
-
-            const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-            ).then(r => {
-                assert(r !== undefined);
-                return r.s3Client;
-            });
-
-            const deleteFileAndLogCommand = async (filePath: string) => {
-                const cmdId = Date.now() - Math.random();
-
-                dispatch(
-                    actions.commandLogIssued({
-                        cmdId,
-                        cmd: `mc rm ${pathJoin("s3", filePath)}`
-                    })
-                );
-
-                await s3Client.deleteFile({ path: filePath });
-
-                dispatch(
-                    actions.commandLogResponseReceived({
-                        cmdId,
-                        resp: `Removed \`${pathJoin("s3", filePath)}\``
-                    })
-                );
-            };
-
-            switch (s3Object.kind) {
-                case "directory":
-                    {
-                        const { crawl } = crawlFactory({
-                            list: async ({ directoryPath }) => {
-                                const { objects } = await s3Client.listObjects({
-                                    path: directoryPath
-                                });
-
-                                return {
-                                    fileBasenames: objects
-                                        .filter(object => object.kind === "file")
-                                        .map(object => object.basename),
-                                    directoryBasenames: objects
-                                        .filter(object => object.kind === "directory")
-                                        .map(object => object.basename)
-                                };
-                            }
-                        });
-
-                        const directoryToDeletePath = pathJoin(
-                            directoryPath,
-                            s3Object.basename
-                        );
-
-                        const { filePaths } = await crawl({
-                            directoryPath: directoryToDeletePath
-                        });
-
-                        await Promise.all(
-                            filePaths
-                                .map(filePathRelative =>
-                                    pathJoin(directoryToDeletePath, filePathRelative)
-                                )
-                                .map(deleteFileAndLogCommand)
-                        );
-                    }
-                    break;
-                case "file":
-                    {
-                        const fileToDeletePath = pathJoin(
-                            directoryPath,
-                            s3Object.basename
-                        );
-
-                        await deleteFileAndLogCommand(fileToDeletePath);
-                    }
-                    break;
-            }
-
-            dispatch(
-                actions.operationCompleted({
-                    operationId
-                })
-            );
-        },
     bulkDelete:
         (params: { s3Objects: S3Object[] }) =>
         async (...args): Promise<void> => {

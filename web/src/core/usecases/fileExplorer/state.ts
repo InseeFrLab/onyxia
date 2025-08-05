@@ -227,44 +227,6 @@ export const { reducer, actions } = createUsecaseActions({
                     assert<Equals<typeof ongoingOperation.operation, never>>;
             }
         },
-        metadataOfFileBeingUploadedUpdated: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    basename: string;
-                    size: number | undefined;
-                    lastModified: Date | undefined;
-                };
-            }
-        ) => {
-            const { basename, size, lastModified } = payload;
-
-            const { directoryPath } = state;
-
-            assert(directoryPath !== undefined);
-
-            const object = state.ongoingOperations
-                .filter(
-                    ongoingOperation =>
-                        ongoingOperation.operation === "create" &&
-                        pathRelative(ongoingOperation.directoryPath, directoryPath) === ""
-                )
-                .map(({ objects }) => objects)
-                .flat()
-                .map(object =>
-                    object.kind === "file" && object.basename === basename
-                        ? object
-                        : undefined
-                )
-                .filter(object => object !== undefined)[0];
-
-            assert(object !== undefined);
-
-            object.size = size;
-            object.lastModified = lastModified;
-        },
         commandLogIssued: (
             state,
             {

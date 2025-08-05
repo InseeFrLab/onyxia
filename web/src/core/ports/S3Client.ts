@@ -51,7 +51,7 @@ export type S3Client = {
         blob: Blob;
         path: string;
         onUploadProgress: (params: { uploadPercent: number }) => void;
-    }) => Promise<S3Object.File>;
+    }) => Promise<void>;
 
     deleteFile: (params: { path: string }) => Promise<void>;
 

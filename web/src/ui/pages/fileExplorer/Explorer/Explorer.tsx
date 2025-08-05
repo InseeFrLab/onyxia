@@ -71,7 +71,6 @@ export type ExplorerProps = {
         kind: Item["kind"];
     }) => void;
     onRefresh: () => void;
-    onDeleteItem: (params: { item: Item }) => void;
     onDownloadItems: (params: { items: Item[] }) => void;
     onDeleteItems: (params: { items: Item[] }) => void;
     onCreateNewEmptyDirectory: (params: { basename: string }) => void;
@@ -125,7 +124,6 @@ export const Explorer = memo((props: ExplorerProps) => {
         evtAction,
         onNavigate,
         onRefresh,
-        onDeleteItem,
         onDeleteItems,
         onCreateNewEmptyDirectory,
         onCopyPath,
@@ -326,7 +324,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             }
 
-            onDeleteItem({ item });
+            onDeleteItems({ items: [item] });
         }
     );
 

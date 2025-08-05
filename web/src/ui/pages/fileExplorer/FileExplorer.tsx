@@ -64,13 +64,6 @@ const FileExplorer = withLoginEnforced((props: Props) => {
             })
     );
 
-    const onDeleteItem = useConstCallback(
-        (params: Param0<ExplorerProps["onDeleteItem"]>) =>
-            fileExplorer.delete({
-                s3Object: params.item
-            })
-    );
-
     const onDownloadItems = useConstCallback(
         async (params: Param0<ExplorerProps["onDownloadItems"]>) => {
             const { items } = params;
@@ -187,7 +180,6 @@ const FileExplorer = withLoginEnforced((props: Props) => {
                 changePolicy={fileExplorer.changePolicy}
                 onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}
-                onDeleteItem={onDeleteItem}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}
                 pathMinDepth={pathMinDepth}

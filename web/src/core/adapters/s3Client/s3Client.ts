@@ -583,21 +583,6 @@ export function createS3Client(
             });
 
             await upload.done();
-
-            const headObjectCommand = new (
-                await import("@aws-sdk/client-s3")
-            ).HeadObjectCommand({ Bucket: bucketName, Key: objectName });
-
-            const metadata = await awsS3Client.send(headObjectCommand);
-
-            return {
-                kind: "file",
-                basename: objectName,
-                size: metadata.ContentLength,
-                lastModified: metadata.LastModified,
-                policy: "private",
-                canChangePolicy: true
-            } satisfies S3Object.File;
         },
         deleteFile: async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
