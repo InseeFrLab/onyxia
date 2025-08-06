@@ -121,4 +121,6 @@ data:
 {{ $finalEnv | toYaml | indent 4 }}
 {{- end }}
 
-{{- include "onyxia.onboarding.configmap" .}}
+{{- if .Values.onboarding.enabled }}
+{{- include "onyxia.onboarding.configmap" . }}
+{{- end }}

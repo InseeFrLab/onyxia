@@ -1,4 +1,4 @@
-{{- if .Values.onboarding.clusterRoleBinding.create }}
+{{- if and .Values.onboarding.enabled .Values.onboarding.clusterRoleBinding.create }}
 {{- $clusterRoleName := "" }}
 {{- if .Values.onboarding.clusterRole.create }}
   {{- $clusterRoleName = .Values.onboarding.clusterRole.name | default (include "onyxia.onboarding.fullname" .) }}
