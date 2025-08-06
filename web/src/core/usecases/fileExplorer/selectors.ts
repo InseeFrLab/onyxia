@@ -187,9 +187,15 @@ const currentWorkingDirectoryView = createSelector(
                                           const uploadEntry = s3FilesBeingUploaded.find(
                                               o =>
                                                   o.basename === object.basename &&
-                                                  o.directoryPath === directoryPath
+                                                  pathRelative(
+                                                      o.directoryPath,
+                                                      directoryPath
+                                                  ) === ""
                                           );
-                                          assert(uploadEntry !== undefined);
+
+                                          if (uploadEntry === undefined) {
+                                              return 0;
+                                          }
                                           return uploadEntry.uploadPercent;
                                       })()
                                   }
