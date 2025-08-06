@@ -23,7 +23,7 @@ jobs:
           sub_directory: web
       - uses: actions/setup-node@v4.1.0
       # Install dependencies with caching
-      - uses: bahmutov/npm-install@v1.10.4
+      - uses: bahmutov/npm-install@v1
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: yarn test
@@ -97,7 +97,7 @@ jobs:
           sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: actions/setup-node@v4.1.0
       # Install dependencies with caching
-      - uses: bahmutov/npm-install@v1.10.4
+      - uses: bahmutov/npm-install@v1
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: yarn build-keycloak-theme
