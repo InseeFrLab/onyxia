@@ -9,10 +9,7 @@ import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
 import { join as pathJoin, relative as pathRelative } from "pathe";
-import {
-    type S3FilesBeingUploaded,
-    getUploadProgress
-} from "./decoupledLogic/uploadProgress";
+import { getUploadProgress } from "./decoupledLogic/uploadProgress";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -107,32 +104,22 @@ const currentWorkingDirectoryView = createSelector(
                 )
         ]
             .map((object): CurrentWorkingDirectoryView.Item => {
-                const isBeingDeleted = ongoingOperations.some(
-                    op =>
-                        pathRelative(op.directoryPath, directoryPath) === "" &&
-                        op.operation === "delete" &&
-                        op.objects.some(
-                            ongoingObject => ongoingObject.basename === object.basename
-                        )
-                );
+                const { isBeingDeleted, isPolicyChanging, isBeingCreated } = (() => {
+                    const operation = ongoingOperations.find(
+                        op =>
+                            pathRelative(op.directoryPath, directoryPath) === "" &&
+                            op.objects.find(
+                                ongoingObject =>
+                                    ongoingObject.basename === object.basename
+                            ) !== undefined
+                    )?.operation;
 
-                const isPolicyChanging = ongoingOperations.some(
-                    op =>
-                        pathRelative(op.directoryPath, directoryPath) === "" &&
-                        op.operation === "modifyPolicy" &&
-                        op.objects.some(
-                            ongoingObject => ongoingObject.basename === object.basename
-                        )
-                );
-
-                const isBeingCreated = ongoingOperations.some(
-                    op =>
-                        pathRelative(op.directoryPath, directoryPath) === "" &&
-                        op.operation === "create" &&
-                        op.objects.some(
-                            ongoingObject => ongoingObject.basename === object.basename
-                        )
-                );
+                    return {
+                        isBeingDeleted: operation === "delete",
+                        isPolicyChanging: operation === "modifyPolicy",
+                        isBeingCreated: operation === "create"
+                    };
+                })();
 
                 const common: CurrentWorkingDirectoryView.Item.Common = {
                     basename: object.basename,
