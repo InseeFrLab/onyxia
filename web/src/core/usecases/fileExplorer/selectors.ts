@@ -8,52 +8,24 @@ import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
-import { relative as pathRelative } from "pathe";
+import { join as pathJoin, relative as pathRelative } from "pathe";
+import {
+    type S3FilesBeingUploaded,
+    getUploadProgress
+} from "./decoupledLogic/uploadProgress";
 
 const state = (rootState: RootState): State => rootState[name];
 
-type UploadProgress = {
-    s3FilesBeingUploaded: State["s3FilesBeingUploaded"];
-    overallProgress: {
-        completedFileCount: number;
-        remainingFileCount: number;
-        totalFileCount: number;
-        uploadPercent: number;
-    };
-};
 const isDownloadPreparing = createSelector(
     createSelector(state, state => state.ongoingOperations),
     (ongoingOperations): boolean =>
         ongoingOperations.some(operation => operation.operation === "downloading")
 );
 
-const uploadProgress = createSelector(state, (state): UploadProgress => {
-    const { s3FilesBeingUploaded } = state;
-
-    const completedFileCount = s3FilesBeingUploaded.map(
-        ({ uploadPercent }) => uploadPercent === 100
-    ).length;
-
-    const totalSize = s3FilesBeingUploaded
-        .map(({ size }) => size)
-        .reduce((prev, curr) => prev + curr, 0);
-
-    const uploadedSize = s3FilesBeingUploaded
-        .map(({ size, uploadPercent }) => (size * uploadPercent) / 100)
-        .reduce((prev, curr) => prev + curr, 0);
-
-    const uploadPercent = totalSize === 0 ? 100 : (uploadedSize / totalSize) * 100;
-
-    return {
-        s3FilesBeingUploaded,
-        overallProgress: {
-            completedFileCount,
-            remainingFileCount: s3FilesBeingUploaded.length - completedFileCount,
-            totalFileCount: s3FilesBeingUploaded.length,
-            uploadPercent
-        }
-    };
-});
+const uploadProgress = createSelector(
+    createSelector(state, state => state.s3FilesBeingUploaded),
+    s3FilesBeingUploaded => getUploadProgress(s3FilesBeingUploaded)
+);
 
 const commandLogsEntries = createSelector(
     state,
@@ -77,25 +49,24 @@ export namespace CurrentWorkingDirectoryView {
             canChangePolicy: boolean;
             isBeingDeleted: boolean;
             isPolicyChanging: boolean;
-        };
+        } & (
+            | {
+                  isBeingCreated: false;
+              }
+            | {
+                  isBeingCreated: true;
+                  uploadPercent: number;
+              }
+        );
 
         export type File = Common & {
             kind: "file";
             size: number | undefined;
             lastModified: Date | undefined;
-        } & (
-                | {
-                      isBeingCreated: false;
-                  }
-                | {
-                      isBeingCreated: true;
-                      uploadPercent: number;
-                  }
-            );
+        };
 
         export type Directory = Common & {
             kind: "directory";
-            isBeingCreated: boolean;
         };
     }
 }
@@ -163,13 +134,52 @@ const currentWorkingDirectoryView = createSelector(
                         )
                 );
 
-                const common = {
+                const common: CurrentWorkingDirectoryView.Item.Common = {
                     basename: object.basename,
                     policy: object.policy,
                     canChangePolicy: object.canChangePolicy,
                     isBeingDeleted,
-                    isPolicyChanging
-                } satisfies CurrentWorkingDirectoryView.Item.Common;
+                    isPolicyChanging,
+                    ...(!isBeingCreated
+                        ? {
+                              isBeingCreated: false
+                          }
+                        : {
+                              isBeingCreated: true,
+                              uploadPercent: (() => {
+                                  const fileOrDirectoryPath = pathJoin(
+                                      directoryPath,
+                                      object.basename
+                                  );
+
+                                  const s3FilesBeingUploaded_relevant =
+                                      s3FilesBeingUploaded.filter(o => {
+                                          const filePath_i = pathJoin(
+                                              o.directoryPath,
+                                              o.basename
+                                          );
+
+                                          if (
+                                              pathRelative(
+                                                  fileOrDirectoryPath,
+                                                  filePath_i
+                                              ).startsWith("..")
+                                          ) {
+                                              return false;
+                                          }
+
+                                          return true;
+                                      });
+
+                                  if (s3FilesBeingUploaded_relevant.length === 0) {
+                                      return 0;
+                                  }
+
+                                  return getUploadProgress(s3FilesBeingUploaded_relevant)
+                                      .overallProgress.uploadPercent;
+                              })()
+                          })
+                };
 
                 switch (object.kind) {
                     case "file": {
@@ -179,36 +189,13 @@ const currentWorkingDirectoryView = createSelector(
                             kind: "file",
                             ...common,
                             size,
-                            lastModified,
-                            ...(isBeingCreated
-                                ? {
-                                      isBeingCreated: true,
-                                      uploadPercent: (() => {
-                                          const uploadEntry = s3FilesBeingUploaded.find(
-                                              o =>
-                                                  o.basename === object.basename &&
-                                                  pathRelative(
-                                                      o.directoryPath,
-                                                      directoryPath
-                                                  ) === ""
-                                          );
-
-                                          if (uploadEntry === undefined) {
-                                              return 0;
-                                          }
-                                          return uploadEntry.uploadPercent;
-                                      })()
-                                  }
-                                : {
-                                      isBeingCreated: false
-                                  })
+                            lastModified
                         });
                     }
                     case "directory":
                         return id<CurrentWorkingDirectoryView.Item.Directory>({
                             kind: "directory",
-                            ...common,
-                            isBeingCreated
+                            ...common
                         });
                 }
             })

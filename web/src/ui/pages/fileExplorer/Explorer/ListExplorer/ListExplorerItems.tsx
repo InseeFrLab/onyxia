@@ -94,38 +94,23 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                     ...GRID_CHECKBOX_SELECTION_COL_DEF,
                     maxWidth: 50,
                     renderCell: params => {
-                        if (params.row.isBeingCreated)
+                        if (params.row.isBeingCreated) {
                             return (
                                 <div className={classes.circularProgressInnerWrapper}>
-                                    {(() => {
-                                        const item = params.row;
-                                        switch (item.kind) {
-                                            case "directory":
-                                                return <CircularProgress size={32} />;
-                                            case "file":
-                                                return (
-                                                    <>
-                                                        <CircularProgress size={32} />
-                                                        <div
-                                                            className={
-                                                                classes.percentageWrapper
-                                                            }
-                                                        >
-                                                            <Text
-                                                                typo="caption"
-                                                                className={
-                                                                    classes.textUploadProgress
-                                                                }
-                                                            >
-                                                                {item.uploadPercent}%
-                                                            </Text>
-                                                        </div>
-                                                    </>
-                                                );
-                                        }
-                                    })()}
+                                    <>
+                                        <CircularProgress size={32} />
+                                        <div className={classes.percentageWrapper}>
+                                            <Text
+                                                typo="caption"
+                                                className={classes.textUploadProgress}
+                                            >
+                                                {params.row.uploadPercent}%
+                                            </Text>
+                                        </div>
+                                    </>
                                 </div>
                             );
+                        }
 
                         assert(GRID_CHECKBOX_SELECTION_COL_DEF.renderCell !== undefined);
 

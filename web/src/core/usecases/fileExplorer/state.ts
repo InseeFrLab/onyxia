@@ -3,6 +3,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import type { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 import { relative as pathRelative } from "pathe";
+import type { S3FilesBeingUploaded } from "./decoupledLogic/uploadProgress";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -17,12 +18,7 @@ export type State = {
         directoryPath: string;
         objects: S3Object[];
     }[];
-    s3FilesBeingUploaded: {
-        directoryPath: string;
-        basename: string;
-        size: number;
-        uploadPercent: number;
-    }[];
+    s3FilesBeingUploaded: S3FilesBeingUploaded;
     commandLogsEntries: {
         cmdId: number;
         cmd: string;
