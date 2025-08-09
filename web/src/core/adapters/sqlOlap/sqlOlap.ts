@@ -36,6 +36,15 @@ export const createDuckDbSqlOlap = (params: {
 
     const prArrowTableApi = createArrowTableApi();
 
+    const getHttpUrlWithoutRedirect = memoize(
+        async (httpUrl: string) => {
+            const response = await fetch(httpUrl);
+
+            return response.url;
+        },
+        { promise: true }
+    );
+
     const sqlOlap: SqlOlap = {
         getConfiguredAsyncDuckDb: (() => {
             let hasCustomExtensionRepositoryBeenSetup = false;
@@ -112,6 +121,10 @@ export const createDuckDbSqlOlap = (params: {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
             const conn = await db.connect();
 
+            if (sourceUrl.startsWith("http")) {
+                sourceUrl = await getHttpUrlWithoutRedirect(sourceUrl);
+            }
+
             const sqlQuery = `SELECT * FROM ${(() => {
                 switch (fileType) {
                     case "csv":
@@ -139,6 +152,10 @@ export const createDuckDbSqlOlap = (params: {
                 async (sourceUrl: string, fileType: "parquet" | "json" | "csv") => {
                     if (fileType !== "parquet") {
                         return undefined;
+                    }
+
+                    if (sourceUrl.startsWith("http")) {
+                        sourceUrl = await getHttpUrlWithoutRedirect(sourceUrl);
                     }
 
                     const db = await sqlOlap.getConfiguredAsyncDuckDb();

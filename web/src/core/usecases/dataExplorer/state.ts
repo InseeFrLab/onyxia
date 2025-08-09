@@ -27,9 +27,6 @@ export type State = {
               rows: any[];
               columns: Column[];
               rowCount: number | undefined;
-              sourceUrl: string;
-              fileType: SupportedFileType;
-              sourceType: "s3" | "http";
           }
         | undefined;
 };

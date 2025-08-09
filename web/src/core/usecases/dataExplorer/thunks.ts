@@ -11,6 +11,7 @@ import memoize from "memoizee";
 import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
 
 const privateThunks = {
+    /*
     resolveFileSource:
         (params: { sourceUrl: string }) =>
         async (...args) => {
@@ -52,6 +53,7 @@ const privateThunks = {
                 s3Client
             };
         },
+    */
     performQuery:
         (params: {
             queryParams: {
@@ -180,69 +182,74 @@ const privateThunks = {
                 })
             );
         },
-    inferFileTypeAndGetDirectFileDownloadUrl:
+    inferFileType:
         (params: { sourceUrl: string }) =>
-        async (
-            ...args
-        ): Promise<
-            | { outcome: "error"; reason: "unsupported file type" | "can't fetch file" }
-            | {
-                  outcome: "success";
-                  fileType: SupportedFileType;
-                  responseUrl: string;
-                  sourceType: "http" | "s3";
-              }
-        > => {
+        async (...args): Promise<{ fileType: SupportedFileType | undefined }> => {
             const { sourceUrl } = params;
-            const [dispatch] = args;
+            const [dispatch, , { oidc }] = args;
 
             const partialFetch = memoize(
-                async () => {
-                    const fileSource = await dispatch(
-                        privateThunks.resolveFileSource({ sourceUrl })
-                    );
+                async (): Promise<{
+                    contentType: string | undefined;
+                    getFirstBytes: () => Promise<ArrayBuffer>;
+                }> => {
+                    const protocol = (() => {
+                        if (sourceUrl.startsWith("http")) {
+                            return "http";
+                        }
 
-                    switch (fileSource.kind) {
+                        if (sourceUrl.startsWith("s3://")) {
+                            return "s3";
+                        }
+
+                        assert(false, "unsupported protocol");
+                    })();
+
+                    switch (protocol) {
                         case "http": {
-                            const response = await fetch(fileSource.url, {
+                            const response = await fetch(sourceUrl, {
                                 method: "GET",
                                 headers: { Range: "bytes=0-15" }
                             });
 
-                            if (response instanceof Error || !response.ok) {
-                                return {
-                                    getContentType: () => undefined,
-                                    getFirstBytes: () => undefined,
-                                    responseUrl: fileSource.url,
-                                    sourceType: fileSource.kind
-                                };
-                            }
-
                             return {
-                                getContentType: () =>
-                                    response?.headers.get("Content-Type") ?? undefined,
-                                getFirstBytes: async () => {
-                                    if (!response || !response.ok) return undefined;
+                                contentType:
+                                    response.headers.get("Content-Type") ?? undefined,
+                                getFirstBytes: () => {
+                                    if (!response.ok) {
+                                        throw new Error(`Can't fetch ${sourceUrl}`);
+                                    }
                                     return response.arrayBuffer();
-                                },
-                                responseUrl: response.url,
-                                sourceType: fileSource.kind
+                                }
                             };
                         }
 
                         case "s3": {
-                            const result = await fileSource.s3Client.getFileContent({
-                                path: fileSource.path,
+                            if (!oidc.isUserLoggedIn) {
+                                oidc.login({ doesCurrentHrefRequiresAuth: true });
+                                await new Promise(() => {});
+                            }
+
+                            const s3Client = (
+                                await dispatch(
+                                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                                )
+                            )?.s3Client;
+
+                            if (s3Client === undefined) {
+                                const message = "No S3 client available";
+                                alert(message);
+                                throw new Error(message);
+                            }
+
+                            const s3File = await s3Client.getFile({
+                                path: sourceUrl,
                                 range: "bytes=0-15"
                             });
 
-                            const buffer = await streamToArrayBuffer(result.stream);
-
                             return {
-                                getContentType: () => result.contentType ?? undefined,
-                                getFirstBytes: async () => buffer,
-                                responseUrl: sourceUrl,
-                                sourceType: fileSource.kind
+                                contentType: s3File.contentType,
+                                getFirstBytes: () => streamToArrayBuffer(s3File.stream)
                             };
                         }
                     }
@@ -254,7 +261,7 @@ const privateThunks = {
                 sourceUrl,
                 getContentType: async () => {
                     const result = await partialFetch();
-                    return result.getContentType();
+                    return result.contentType;
                 },
                 getFirstBytes: async () => {
                     const result = await partialFetch();
@@ -262,24 +269,7 @@ const privateThunks = {
                 }
             });
 
-            const result = await partialFetch();
-
-            if (result === undefined) {
-                return { outcome: "error", reason: "can't fetch file" };
-            }
-
-            if (fileType === undefined) {
-                return { outcome: "error", reason: "unsupported file type" };
-            }
-
-            const { responseUrl, sourceType } = result;
-
-            return {
-                outcome: "success",
-                fileType,
-                responseUrl,
-                sourceType
-            };
+            return { fileType };
         },
     updateDataSource:
         (params: {
@@ -438,14 +428,33 @@ export const thunks = {
             const [dispatch, ,] = args;
             dispatch(actions.selectedRowIndexSet({ selectedRowIndex }));
         },
-    getDownloadUrlAndFilename:
+    getMaterialToDownloadFileToDisk:
         () =>
-        async (...args): Promise<{ fileDownloadUrl: string; filename: string }> => {
+        async (
+            ...args
+        ): Promise<
+            | { type: "stream"; stream: ReadableStream; suggestedFileBasename: string }
+            | { type: "http url"; url: string }
+        > => {
             const [dispatch, getState] = args;
 
-            const { data } = getState()[name];
+            const { queryParams } = getState()[name];
 
-            assert(data !== undefined, "Data is not available");
+            assert(queryParams !== undefined);
+
+            const { sourceUrl } = queryParams;
+
+            const protocol = (() => {
+                if (sourceUrl.startsWith("http")) {
+                    return "http";
+                }
+
+                if (sourceUrl.startsWith("s3://")) {
+                    return "s3";
+                }
+
+                assert(false);
+            })();
 
             if (data.sourceType === "http") {
                 return {

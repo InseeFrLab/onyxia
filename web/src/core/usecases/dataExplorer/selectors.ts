@@ -5,50 +5,56 @@ import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-const columns = createSelector(
-    createSelector(state, state => state.data),
-    data => {
-        if (data === undefined) {
-            return undefined;
+const main = createSelector(
+    state,
+    createSelector(
+        createSelector(state, state => state.data?.rows),
+        createSelector(state, state => state.queryParams?.rowsPerPage),
+        createSelector(state, state => state.queryParams?.page),
+        (rows, rowsPerPage, page) => {
+            if (rows === undefined) {
+                return undefined;
+            }
+            assert(rowsPerPage !== undefined);
+            assert(page !== undefined);
+
+            return rows.map((row, i) => ({
+                id: i + rowsPerPage * (page - 1),
+                ...row
+            }));
+        }
+    ),
+
+    (state, rows) => {
+        const { error, isQuerying, queryParams, extraRestorableStates, data } = state;
+
+        if (error !== undefined) {
+            return { error, isQuerying, queryParams };
         }
 
-        return data.columns;
+        if (rows === undefined) {
+            return {
+                isQuerying,
+                queryParams,
+                rows: undefined
+            };
+        }
+
+        assert(extraRestorableStates !== undefined);
+        assert(queryParams !== undefined);
+        assert(data !== undefined);
+
+        return {
+            isQuerying,
+            queryParams,
+            extraRestorableStates,
+            rows,
+            rowCount: data.rowCount,
+            columns: data.columns
+        };
     }
 );
 
-const main = createSelector(state, columns, (state, columns) => {
-    const { isQuerying, queryParams, error, data, extraRestorableStates } = state;
-
-    if (error !== undefined) {
-        return { isQuerying, error, queryParams };
-    }
-
-    if (data === undefined) {
-        return {
-            isQuerying,
-            rows: undefined,
-            queryParams
-        };
-    }
-
-    assert(queryParams !== undefined);
-    assert(queryParams.rowsPerPage !== undefined);
-    assert(queryParams.page !== undefined);
-    assert(extraRestorableStates !== undefined);
-    assert(columns !== undefined);
-
-    const { rowsPerPage, page } = queryParams;
-    return {
-        isQuerying,
-        rows: data.rows.map((row, i) => ({
-            id: i + rowsPerPage * (page - 1),
-            ...row
-        })),
-        rowCount: data.rowCount,
-        queryParams,
-        extraRestorableStates,
-        columns
-    };
-});
-
 export const selectors = { main };
+
+export const privateSelectors = (() => {})();

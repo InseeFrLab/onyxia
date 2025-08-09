@@ -62,7 +62,7 @@ export type S3Client = {
         validityDurationSecond: number;
     }) => Promise<string>;
 
-    getFileContent: (params: { path: string; range?: string }) => Promise<{
+    getFile: (params: { path: string; range?: string }) => Promise<{
         stream: ReadableStream;
         lastModified: Date | undefined;
         size: number | undefined;

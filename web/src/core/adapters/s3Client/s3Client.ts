@@ -644,7 +644,7 @@ export function createS3Client(
             return downloadUrl;
         },
 
-        getFileContent: async ({ path, range }) => {
+        getFile: async ({ path, range }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { getAwsS3Client } = await prApi;
@@ -656,7 +656,9 @@ export function createS3Client(
                 new GetObjectCommand({
                     Bucket: bucketName,
                     Key: objectName,
-                    ...(range !== undefined ? { Range: range } : {})
+                    ...(range !== undefined ? { Range: range } : {}),
+                    //@ts-expect-error: It works anyway
+                    ChecksumMode: "DISABLED"
                 })
             );
 
