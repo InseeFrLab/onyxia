@@ -37,7 +37,7 @@ export async function createOidc<AutoLogin extends boolean>(
         issuerUri,
         clientId,
         scopes: scope_spaceSeparated?.split(" "),
-        transformUrlBeforeRedirect_next: ({ authorizationUrl, isSilent }) => {
+        transformUrlBeforeRedirect: ({ authorizationUrl, isSilent }) => {
             if (audience !== undefined) {
                 authorizationUrl = addOrUpdateSearchParam({
                     url: authorizationUrl,
@@ -97,27 +97,11 @@ export async function createOidc<AutoLogin extends boolean>(
         },
         idleSessionLifetimeInSeconds,
         homeUrl: import.meta.env.BASE_URL,
-        debugLogs: enableDebugLogs
+        debugLogs: enableDebugLogs,
+        autoLogin
     });
 
-    // TODO: On next oidc-spa major, just return oidc directly
-    // getTokens will be async.
-    // Do not forget to directly assign autoLogin to the create function.
-
-    if (!oidc.isUserLoggedIn) {
-        if (autoLogin) {
-            await oidc.login({ doesCurrentHrefRequiresAuth: true });
-            // NOTE: Never
-        }
-
-        //@ts-expect-error: We know what we are doing
-        return oidc;
-    }
-
-    return {
-        ...oidc,
-        getTokens: () => oidc.getTokens_next()
-    };
+    return oidc;
 }
 
 export function mergeOidcParams(params: {
