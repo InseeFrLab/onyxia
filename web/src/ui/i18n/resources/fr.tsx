@@ -543,6 +543,7 @@ export const translations: Translations<"fr"> = {
             "Fonctionnalités spécifiques à cette instance d'Onyxia",
         dataExplorer: "Explorateur de Données",
         fileExplorer: "Explorateur de Fichiers",
+        dataCollection: "Explorateur de Collections",
         sqlOlapShell: "Coquille SQL OLAP"
     },
     AutoLogoutCountdown: {
@@ -1184,6 +1185,30 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             return `${count} élément${plural} sélectionnée${plural}`;
         },
         "label rows per page": "Éléments par page"
+    },
+    DatasetCard: {
+        publishedOn: "Publié le",
+        datasetPage: "Page du jeu de données",
+        license: "Licence :",
+        format: "Format",
+        size: "Taille",
+        distributions: "Distributions",
+        visualize: "Visualiser",
+        unknown: "Inconnu"
+    },
+    DataCollection: {
+        "page header help title":
+            "Entrez simplement l'URL https:// de votre schema jsonld dcat",
+        "page header title": "Catalogue de données",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Entrez simplement l'URL <code>https://</code> d'un catalogue de données
+                pour le prévisualiser.
+                <br />
+                Vous ne savez pas par où commencer ? Essayez ce{" "}
+                <MuiLink {...demoCatalogLink}>catalogue de démonstration</MuiLink> !
+            </>
+        )
     }
     /* spell-checker: enable */
 };

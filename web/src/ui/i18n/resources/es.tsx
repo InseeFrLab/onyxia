@@ -540,6 +540,7 @@ export const translations: Translations<"en"> = {
         "divider: onyxia instance specific features":
             "Funciones específicas de la instancia de Onyxia",
         dataExplorer: "Explorador de datos",
+        dataCollection: "Explorador de colecciones",
         fileExplorer: "Explorador de archivos",
         sqlOlapShell: "SQL Olap Shell"
     },
@@ -1174,6 +1175,30 @@ export const translations: Translations<"en"> = {
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Columnas"
+    },
+    DatasetCard: {
+        publishedOn: "Publicado el",
+        datasetPage: "Página del conjunto de datos",
+        license: "Licencia:",
+        format: "Formato",
+        size: "Tamaño",
+        distributions: "Distribuciones",
+        visualize: "Visualizar",
+        unknown: "Desconocido"
+    },
+    DataCollection: {
+        "page header help title":
+            "Introduce simplemente la URL https:// de tu esquema DCAT JSON-LD",
+        "page header title": "Catálogo de datos",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Introduce simplemente la URL <code>https://</code> de un catálogo de datos
+                para previsualizarlo.
+                <br />
+                ¿No sabes por dónde empezar? ¡Prueba este{" "}
+                <MuiLink {...demoCatalogLink}>catálogo de demostración</MuiLink>!
+            </>
+        )
     }
     /* spell-checker: enable */
 };

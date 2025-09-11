@@ -86,6 +86,8 @@ export type ComponentKey =
     | import("ui/pages/myServices/Quotas/CircularUsage").I18n
     | import("ui/pages/myServices/Quotas/Quotas").I18n
     | import("ui/pages/dataExplorer/Page").I18n
+    | import("ui/pages/dataCollection/DatasetCard").I18n
+    | import("ui/pages/dataCollection/Page").I18n
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
     | import("ui/shared/formattedDate/type").I18n

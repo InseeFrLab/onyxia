@@ -23,6 +23,7 @@ import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as projectManagement from "./projectManagement";
 import * as viewQuotas from "./viewQuotas";
+import * as dataCollection from "./dataCollection";
 
 export const usecases = {
     autoLogoutCountdown,
@@ -49,5 +50,6 @@ export const usecases = {
     sqlOlapShell,
     dataExplorer,
     projectManagement,
-    viewQuotas
+    viewQuotas,
+    dataCollection
 };

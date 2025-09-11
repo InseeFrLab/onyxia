@@ -529,6 +529,7 @@ export const translations: Translations<"en"> = {
         "divider: external services features": "External services features",
         "divider: onyxia instance specific features": "Onyxia instance specific features",
         dataExplorer: "Data Explorer",
+        dataCollection: "Data Collection",
         fileExplorer: "File Explorer",
         sqlOlapShell: "SQL Olap Shell"
     },
@@ -1158,5 +1159,28 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Columns"
+    },
+    DatasetCard: {
+        publishedOn: "Published on",
+        datasetPage: "Dataset page",
+        license: "License:",
+        format: "Format",
+        size: "Size",
+        distributions: "Distributions",
+        visualize: "Visualize",
+        unknown: "Unknown"
+    },
+    DataCollection: {
+        "page header help title":
+            "Simply enter the https:// URL of your DCAT JSON-LD schema",
+        "page header title": "Data catalog",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Just enter the <code>https://</code> URL of a data catalog to preview it.
+                <br />
+                Not sure where to start? Try this{" "}
+                <MuiLink {...demoCatalogLink}>demo catalog</MuiLink>!
+            </>
+        )
     }
 };
