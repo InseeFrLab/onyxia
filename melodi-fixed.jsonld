@@ -1,0 +1,3724 @@
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/"
+  },
+  "@graph": [
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/8b0887f4-ecfb-4675-9e50-5b357b38c8f5",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_AGREGATS",
+      "dct:title": "Produit Intérieur Brut (PIB) et grands agrégats économiques",
+      "dct:description": "Le produit intérieur brut (PIB) est le principal agrégat mesurant l'activité économique. Il correspond à la somme des valeurs ajoutées brutes nouvellement créées par les unités productrices résidentes une année donnée, évaluées au prix du marché. Il donne une mesure des richesses nouvelles créées chaque année par le système productif et permet des comparaisons internationales. Le produit intérieur brut est publié à prix courants et en volume aux prix de l'année précédente chaînés. Son évolution en volume (c'est-à-dire hors effet de prix) mesure la croissance économique.\n\nLes grands agrégats économiques associés au PIB sont le revenu national brut (RNB), la capacité ou le besoin de financement de la Nation, les grandes composantes de l'équilibre entre les éléments de l'offre (PIB, importations) et de la demande (consommation, investissement, exportations), la ventilation des facteurs de production (emploi, stock de capital) par secteurs institutionnels (entreprises, ménages, administrations publiques considérés comme producteurs de richesses) et la valeur ajoutée brute qu'ils génèrent.\n\nLes données annuelles des grands agrégats économiques associés au PIB suivent les concepts et méthodes des comptes nationaux en base 2020 (première publication fin mai 2024) et font partie des données à forte valeur désignées par Eurostat (HVD). ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_AGREGATS",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-06-10T15:39:49",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/043ca334-4db4-498d-b8ec-167d090a838e",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/043ca334-4db4-498d-b8ec-167d090a838e",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_AGREGATS_CSV_FR",
+      "dct:title": "Produit Intérieur Brut (PIB) et grands agrégats économiques",
+      "dct:description": "Produit Intérieur Brut (PIB) et grands agrégats économiques",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_AGREGATS/DD_CNA_AGREGATS_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 1895856,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/379d47a1-1e91-49cc-9275-22b210e37932",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_APU",
+      "dct:title": "Comptes des administrations publiques",
+      "dct:description": "Le secteur institutionnel des administrations publiques se décompose en trois sous-secteurs : l'administration publique centrale (S1311), les administrations publiques locales (S1313), et les administrations de sécurité sociale (S1314). Les données propres aux administrations publiques comprennent la dette et le déficit public au sens de Maastricht, les dépenses et recettes des administrations publiques, ainsi que les dépenses des administrations publiques ventilées par fonctions (nomenclature internationale COFOG - Classification of the Functions of Government).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_APU",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-12-18T17:25:43",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/e6507098-19c2-44f1-ae7f-22977b0f5f9f",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/e6507098-19c2-44f1-ae7f-22977b0f5f9f",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_APU_CSV_FR",
+      "dct:title": "Comptes des administrations publiques",
+      "dct:description": "Comptes des administrations publiques",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_APU/DD_CNA_APU_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 543172,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/a85dab6c-ef0f-4caa-9763-c7f8c840e216",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_BRANCHES",
+      "dct:title": "Activité des branches de l'économie",
+      "dct:description": "Données annuelles sur l'activité des branches qui est retracée par les comptes de production et d'exploitation. Le compte de production décrit la relation entre la production et la consommation intermédiaire nécessaire à cette production. Il a pour solde la valeur ajoutée brute qui mesure la richesse créée lors du processus de production.\n\nLe compte d'exploitation décrit comment la valeur ajoutée brute couvre la rémunération versée aux salariés et les impôts sur la production. Il a pour solde l'excédent brut d'exploitation et le revenu mixte brut qui mesurent le profit d'exploitation des branches.\n\nLe rapprochement de la valeur ajoutée brute et des effectifs des branches permet de calculer la productivité apparente du travail. Celui des salaires et traitements et des effectifs (ou du nombre d'heures travaillées) permet de calculer le salaire moyen par tête (ou le salaire horaire moyen).\n\nL'emploi (STO=EMP) est mesuré en effectifs ( personnes physiques avec UNIT_MEASURE=PS ou en équivalent temps plein FT) ou en nombre d'heures travaillées (UNIT_MEASURE=HW). \n\nCe jeu de données donne le chiffre clé du Tableau de Bord de l’Économie Française sur la répartition de la valeur ajoutée par branche  https://www.insee.fr/fr/outil-interactif/5367857/details/10_ECC/11_ECO/11B_Figure2\n\nLes données annuelles sur l'activité des branches suivent les concepts et méthodes des comptes nationaux en base 2020 (première publication fin mai 2024) et sont inclues dans les jeux de données annuelles à forte valeur (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_BRANCHES",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/a73be128-e6a4-4980-a578-a3259e68e7bb",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/a73be128-e6a4-4980-a578-a3259e68e7bb",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_BRANCHES_CSV_FR",
+      "dct:title": "Activité des branches de l'économie",
+      "dct:description": "Activité des branches de l'économie",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_BRANCHES/DD_CNA_BRANCHES_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 3551601,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/cb0e67e3-4b03-4246-b506-0c21854c7778",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_CONSO_MENAGES_COICOP",
+      "dct:title": "Consommation des ménages par fonction",
+      "dct:description": "Données annuelles de consommation finale effective des ménages par fonction selon la nomenclature COICOP (Classification of Individual Consumption by Purpose). \n\nLa consommation finale effective des ménages inclut tous les biens et les services consommés par les ménages résidents pour la satisfaction directe de leurs besoins individuels, que ces biens et services aient fait l'objet d'une dépense directe des ménages ou qu'ils aient été financés par des administrations publiques ou des ISBLSM.\n",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_CONSO_MENAGES_COICOP",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/b9ad5ddf-aca3-4436-9312-10acfeb71b7b",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/b9ad5ddf-aca3-4436-9312-10acfeb71b7b",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_CONSO_MENAGES_COICOP_CSV_FR",
+      "dct:title": "Consommation des ménages par fonction",
+      "dct:description": "Consommation des ménages par fonction",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_CONSO_MENAGES_COICOP/DD_CNA_CONSO_MENAGES_COICOP_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2120825,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/51022673-ea6c-43d4-a4b0-71bcc9f3f419",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_CONSO_MENAGES_PRODUITS",
+      "dct:title": "Consommation des ménages par produit",
+      "dct:description": "Données annuelles de consommation finale effective des ménages par produit aux niveau 38 et 88 postes, ainsi qu'au niveau inférieur. Contient également la consommation finale effective des ménages par durabilité.\n",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_CONSO_MENAGES_PRODUITS",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2023-12-15T09:00:31",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/8a9eb3d2-8026-44bd-b313-789debf64618",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/8a9eb3d2-8026-44bd-b313-789debf64618",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_CONSO_MENAGES_PRODUITS_CSV_FR",
+      "dct:title": "Consommation des ménages par produit",
+      "dct:description": "Consommation des ménages par produit",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_CONSO_MENAGES_PRODUITS/DD_CNA_CONSO_MENAGES_PRODUITS_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 8906047,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/e355cc89-f37a-43e3-a8aa-30fb7266170a",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_PATRIMOINE",
+      "dct:title": "Comptes de patrimoine",
+      "dct:description": "Le patrimoine national représente les encours d’actifs financiers et non-financiers, nets des passifs financiers, évalués au prix de marché en fin d’année.  Les actifs sont acquis par les agents économiques grâce à leur épargne ou en contractant des dettes. Les actifs non-financiers sont des biens corporels ou incorporels sur lesquels des droits de propriété peuvent être exercés. Les actifs financiers sont quant à eux des actifs économiques qui se présentent sous forme de moyens de paiement ou de créances financières. Les passifs financiers sont des dettes.\n\nLe compte financier enregistre l'accumulation de richesse financière des secteurs institutionnels (ménages, entreprises, etc.) : il décrit, par type d’instruments financiers (prêts, actions, obligations, etc.), les variations d’actifs et de passifs financiers. \n\nLe compte de patrimoine décrit les encours d’actifs et de passifs de fin d’année des différents secteurs institutionnels, ainsi que les variations de patrimoine d’une année à l’autre (accumulation de richesse non financière, accumulation de richesse financière, autres changements de volume, réévaluations). \n\nCertaines de ces données de patrimoine font partie des données à forte valeur désignées par Eurostat (HVD). ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_PATRIMOINE",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-12-17T18:09:19",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/d134fa78-1f46-4a53-81f3-1acac61bc8b9",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/d134fa78-1f46-4a53-81f3-1acac61bc8b9",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_PATRIMOINE_CSV_FR",
+      "dct:title": "Comptes de patrimoine",
+      "dct:description": "Comptes de patrimoine",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_PATRIMOINE/DD_CNA_PATRIMOINE_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2075472,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/bbbe96c3-0c9d-4b9f-8ad0-62449b96b0ba",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_CNA_TEE",
+      "dct:title": "Tableau économique d'ensemble",
+      "dct:description": "Le tableau économique d'ensemble (TEE), synthétise l'ensemble des opérations relatives aux secteurs institutionnels (entreprises, administrations publiques, ménages, etc.) et permet de décrire séquentiellement la production, la valeur ajoutée, l'excédent d'exploitation et le revenu mixte, le revenu disponible, l'épargne, la capacité ou le besoin de financement et la formation du patrimoine.\n\nCertaines des données du tableau économique d'ensemble font partie des données à forte valeur désignées par Eurostat (HVD). ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_TEE",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-12-18T17:25:53",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1949-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/2598e678-ef00-459c-84dc-864132740a85",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/2598e678-ef00-459c-84dc-864132740a85",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_CNA_TEE_CSV_FR",
+      "dct:title": "Tableau économique d'ensemble",
+      "dct:description": "Tableau économique d'ensemble",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_CNA_TEE/DD_CNA_TEE_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 3667467,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/dc58c7ab-4e19-48b9-b6ed-db7f7a45c600",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_EEC_ANNUEL",
+      "dct:title": "Activité, emploi et chômage - résultats annuels 2024",
+      "dct:description": "Les données sont généralement détaillées par sexe, âge, diplôme et la profession et catégorie socio-professionnelle (PCS). Les caractéristiques d’emploi abordent le type de contrat, le secteur d’activité, le sous-emploi et le temps de travail (temps complet ou partiel mais aussi travail le soir, la nuit, le samedi ou le dimanche). Le jeu de données contient aussi des données détaillées par statut d'immigration (immigré ou pas, descendant d'immigré). \nPlusieurs taux sont disponibles comme le taux d'activité, le taux d'emploi ou le taux de chômage. ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_EEC_ANNUEL",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-06-27T10:55:35",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2024-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/7f787cc0-4e48-49a3-99ee-b599db574557",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/7f787cc0-4e48-49a3-99ee-b599db574557",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_EEC_ANNUEL_2024_CSV_FR",
+      "dct:title": "Activité, emploi et chômage - résultats annuels 2024",
+      "dct:description": "Activité, emploi et chômage - résultats annuels 2024",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_EEC_ANNUEL/DD_EEC_ANNUEL_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 155232,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/25baaf1f-61cf-4d50-9124-1477afca2aa4",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DD_EEC_SERIES",
+      "dct:title": "Activité, emploi et chômage - séries longues",
+      "dct:description": "Les données sont détaillées par sexe, âge, diplôme et catégorie socio-professionnelle (PCS). Pour l’emploi, les données sont détaillées par type de contrat, composante du sous-emploi, temps de travail (temps complet ou partiel). Plusieurs indicateurs en taux sont disponibles : taux d'activité, taux d'emploi ou taux de chômage. \n\nCe jeu de données regroupe notamment les données annuelles de forte valeur (High Value Dataset ou HVD statistiques) désignées par Eurostat sur les sujets suivants : l'emploi , le chômage et la main d’œuvre potentielle.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_EEC_SERIES",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2023-12-15T10:34:50",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1975-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/6cd0d190-1b2b-4934-a89b-6eb6526a06c5",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/6cd0d190-1b2b-4934-a89b-6eb6526a06c5",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DD_EEC_SERIES_CSV_FR",
+      "dct:title": "Activité, emploi et chômage - séries longues",
+      "dct:description": "Activité, emploi et chômage - séries longues",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DD_EEC_SERIES/DD_EEC_SERIES_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 515457,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/2a434f7a-48e5-419d-9e0a-49a57201e7dc",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ANTIPOL",
+      "dct:title": "Enquête annuelle sur les investissements pour protéger l'environnement (Antipol)",
+      "dct:description": "Les montants sont détaillés par domaines environnementaux (eau, déchet, énergie, protection du climat, protection des sols, etc.) et déclinées par secteur d'activité, tranches d'effectifs et région d'implantation de l'établissement. Tous les 3 ans, des données sur les montants des dépenses courantes (coûts d'entretien des installations pour la protection de l'environnement, gestion des déchets, management environnemental) sont également disponibles. \n\nLe champ de l’enquête regroupe les établissements industriels de plus de 20 salariés.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://www.insee.fr/fr/metadonnees/source/serie/s1232",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2024-10-10T11:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2007-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/f36ed0bd-f742-4f8d-a1ca-392c3cc37b21",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/f36ed0bd-f742-4f8d-a1ca-392c3cc37b21",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ANTIPOL_CSV_FR",
+      "dct:title": "Enquête annuelle sur les investissements pour protéger l'environnement (Antipol)",
+      "dct:description": "Enquête annuelle sur les investissements pour protéger l'environnement (Antipol)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ANTIPOL/DS_ANTIPOL_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 14907,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/e0d4ab75-c84c-49a1-83b8-357fa465d36f",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_BPE",
+      "dct:title": "Dénombrement des équipements (commerce, sport, services, santé…)",
+      "dct:description": "Dénombrement des équipements par type d'équipement et par niveau géographique au 1er janvier de l'année. Les domaines proposés sont les suivants : services pour les particuliers, commerces, enseignement, santé et action sociale, transports et déplacements, sports, loisirs et culture, tourisme.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_BPE",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-07-09T11:36:55",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2024-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/8377c693-ddad-45c4-9c9c-d05ed6783091",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/8377c693-ddad-45c4-9c9c-d05ed6783091",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_BPE_2024_CSV_FR",
+      "dct:title": "Dénombrement des équipements (commerce, sport, services, santé…)",
+      "dct:description": "Dénombrement des équipements (commerce, sport, services, santé…)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_BPE/DS_BPE_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 13413554,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/a4f06b88-b943-4b9b-89d6-ecf8f0052b55",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_BTS_SAL_EQTP_SEX_AGE",
+      "dct:title": "Salaires dans le secteur privé selon le sexe et l'âge (base communale)",
+      "dct:description": "Le champ correspond aux salariés du privé, y compris bénéficiaires de contrats aidés et de contrats de professionnalisation ; hors apprentis, stagiaires, salariés agricoles et salariés des particuliers employeurs.\nLes données sur les salaires au lieu de travail sont ventilées selon le sexe et l'âge, et détaillées par territoire : commune, arrondissement municipal, arrondissement, aire d'attraction des villes 2020, bassin de vie 2022, établissement public de coopération intercommunal, unité urbaine 2020, zone d'emploi 2020, département, région, France hors Mayotte.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_BTS_SAL_EQTP_SEX_AGE",
+      "dcat:keyword": [
+        "Statistiques",
+        "Salaires"
+      ],
+      "dct:issued": "2025-07-28T14:48:10",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2022-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/c2e0957a-b137-4935-83c9-7de2c280db43",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/c2e0957a-b137-4935-83c9-7de2c280db43",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_BTS_SAL_EQTP_SEX_AGE_2023_CSV_FR",
+      "dct:title": "Salaires dans le secteur privé selon le sexe et l'âge (base communale)",
+      "dct:description": "Salaires dans le secteur privé selon le sexe et l'âge (base communale)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_BTS_SAL_EQTP_SEX_AGE/DS_BTS_SAL_EQTP_SEX_AGE_2023_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 5216982,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/da4e75c1-aedf-464c-82ca-df9c6205a05b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_BTS_SAL_EQTP_SEX_PCS",
+      "dct:title": "Salaires dans le secteur privé selon le sexe et la catégorie socioprofessionnelle (base communale)",
+      "dct:description": "Le champ correspond aux salariés du privé, y compris bénéficiaires de contrats aidés et de contrats de professionnalisation ; hors apprentis, stagiaires, salariés agricoles et salariés des particuliers employeurs.\nLes données sur les salaires au lieu de travail sont ventilées selon le sexe et la catégorie socioprofessionnelle (hors agriculture), et détaillées par territoire : commune, arrondissement municipal, arrondissement, aire d'attraction des villes 2020, bassin de vie 2022, établissement public de coopération intercommunal, unité urbaine 2020, zone d'emploi 2020, département, région, France hors Mayotte.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_BTS_SAL_EQTP_SEX_PCS",
+      "dcat:keyword": [
+        "Statistiques",
+        "Salaires"
+      ],
+      "dct:issued": "2025-07-28T14:48:10",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2022-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/6e7effa9-aa56-4d09-b564-e92f464a65b1",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/6e7effa9-aa56-4d09-b564-e92f464a65b1",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_BTS_SAL_EQTP_SEX_PCS_2023_CSV_FR",
+      "dct:title": "Salaires dans le secteur privé selon le sexe et la catégorie socioprofessionnelle (base communale)",
+      "dct:description": "Salaires dans le secteur privé selon le sexe et la catégorie socioprofessionnelle (base communale)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_BTS_SAL_EQTP_SEX_PCS/DS_BTS_SAL_EQTP_SEX_PCS_2023_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 4395755,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/ed29ec90-87d4-499f-a40d-435b890c93f4",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_COMPTES_REGIONAUX",
+      "dct:title": "Comptes régionaux annuels",
+      "dct:description": "Les comptes régionaux sont établis en base 2020 en cohérence avec les comptes nationaux et en conformité avec le Système Européen des Comptes 2010 (SEC2010). Les comptes régionaux sont cohérents avec les comptes nationaux annuels. Ils correspondent au champ de la comptabilité nationale et couvrent le territoire économique de la France, à savoir la France métropolitaine, les régions ultra-périphériques ou RUP (Guadeloupe incluant Saint-Martin, Martinique, Guyane, Réunion, Mayotte) ainsi que le territoire extrarégional français ou hors-territoire (cas des ambassades, bases militaires ou scientifiques, etc...).\n\nAu niveau régional, seuls les départements français d'outre-mer disposent d'un système complet et autonome de comptes. Ils sont établis par les services de l'Insee dans les DOM, selon une méthodologie qui leur est propre. Les comptes des régions métropolitaines sont établis à partir des comptes nationaux, selon une méthodologie dite « descendante ». Pour chaque poste détaillé, la donnée métropolitaine est calculée en enlevant à la donnée nationale les valeurs des DOM (et éventuellement du hors-territoire) ; puis elle est ventilée entre les régions de métropole, en fonction d'une clé de répartition.\n\nPour la métropole, l'estimation des valeurs ajoutées régionales des branches marchandes (hors agriculture et finances) repose, en base 2020 sur l'utilisation du fichier FARE issu du processus Élaboration des Statistiques ANnuelles d'Entreprises (Esane) et de FLORES (Fichier LOcalisé des Rémunérations et de l’Emploi Salarié), tandis que les branches non marchandes (et la partie non marchande des branches principalement non marchandes, telles que la santé et l'enseignement) ainsi que l'agriculture, les activités financières et d'assurance et les loyers imputés font l'objet de traitements spécifiques ; car la source Esane ne couvre pas ces champs d'activité.\nLa structure régionale des valeurs ajoutées de la métropole en valeur ainsi déterminée est appliquée au PIB de la métropole à prix courants (PIB national moins les PIB des DOM, moins le « hors territoire ») pour en déduire les PIB des régions métropolitaines à prix courants sur ce champ.\nLes PIB des régions métropolitaines « en volume » sont obtenus à partir du PIB national en volume après déduction des PIB des DOM en volume, et du PIB du « hors territoire ». On utilise la structure régionale des VA en valeur comme clé de répartition. Ils doivent être utilisés avec prudence car ils ne découlent pas du calcul d'un indice de prix régional.\n\nLa séquence complète des comptes des ménages décrit la formation, la redistribution et l'utilisation du revenu des ménages. Pour les régions métropolitaines, sont estimés de façon détaillée :\n    • le compte d'affectation des revenus primaires, dont le solde est le revenu primaire ; \n    • le compte de distribution secondaire des revenus, dont le solde est le revenu disponible brut. \nPropres à chaque donnée, les clés de répartition sont choisies pour refléter autant que possible l’agrégat à estimer. Leur calcul mobilise de très nombreuses sources, statistiques et administratives.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_COMPTES_REGIONAUX",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2025-04-07T14:48:57",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2000-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/f6522fb6-cb0c-42b1-a0db-388fd7afe2f9",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/f6522fb6-cb0c-42b1-a0db-388fd7afe2f9",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_COMPTES_REGIONAUX_CSV_FR",
+      "dct:title": "Comptes régionaux annuels",
+      "dct:description": "Comptes régionaux annuels",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_COMPTES_REGIONAUX/DS_COMPTES_REGIONAUX_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 1715692,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/53489db4-e893-401f-9663-5566f01a537c",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_DERA_PRIVE_ANNUEL",
+      "dct:title": "Salaires dans le secteur privé par catégorie socioprofessionnelle détaillée",
+      "dct:description": "Les salaires nets en équivalent temps plein (EQTP) sont ventilées par catégorie socioprofessionnelle détaillée, sexe, secteur d'activité, tranche d'âge, temps de travail et taille d'entreprise. Les effectifs mesurés en EQTP sont également disponibles pour chacune des catégories.\nChamp : France hors Mayotte, salariés du privé, y compris bénéficiaires de contrats aidés et de contrats de professionnalisation ; hors apprentis, stagiaires, salariés agricoles et salariés des particuliers employeurs.\nCertaines professions peuvent être exercées à la fois en tant que salariés du privé ou que salariés du public (par exemple médecin) ou encore en tant que non-salariés (par exemple avocat) ; pour ces professions, seuls les salariés exerçant dans le privé ont été pris en compte. Les professions majoritairement exercées dans le public (comme professeurs des écoles) ont par ailleurs été exclues du champ.\nCes données peuvent également être consultées dans l'outil de datavisualisation sur les salaires.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_DERA_PRIVE_ANNUEL",
+      "dcat:keyword": [
+        "Statistiques",
+        "Salaires"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/c7fbfb6b-55a8-498c-8b2e-f187b079cfb0",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/c7fbfb6b-55a8-498c-8b2e-f187b079cfb0",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_DERA_PRIVE_ANNUEL_CSV_FR",
+      "dct:title": "Salaires dans le secteur privé par catégorie socioprofessionnelle détaillée",
+      "dct:description": "Salaires dans le secteur privé par catégorie socioprofessionnelle détaillée",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_DERA_PRIVE_ANNUEL/DS_DERA_PRIVE_ANNUEL_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 364101,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/6fd83ca9-b119-44a3-ac41-e210cade8a4b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_DERA_PRIVE_SERIES_LONGUES",
+      "dct:title": "Séries longues de salaires dans le secteur privé",
+      "dct:description": "Les séries longues de salaires sont ventilées par sexe, secteur d'activité, catégorie socioprofessionnelle, tranche d'âge et temps de travail. En plus de la moyenne, plusieurs statistiques sur la distribution des salaires sont disponibles.  Les salaires peuvent être exprimés en euros constants, en indice base 100 en 1996 ou en évolution en euros constants par rapport à l'année précédente. \nChamp : France hors Mayotte, salariés du privé, y compris bénéficiaires de contrats aidés et de contrats de professionnalisation, y compris apprentis et stagiaires ; hors salariés agricoles et salariés des particuliers employeurs.\nCes données peuvent également être consultées dans l'outil de datavisualisation sur les salaires.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_DERA_PRIVE_SERIES_LONGUES",
+      "dcat:keyword": [
+        "Statistiques",
+        "Salaires"
+      ],
+      "dct:issued": "2025-01-23T11:19:04",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1951-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/24fe2234-1fde-43b7-a4e7-41dd4c5b9d4e",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/24fe2234-1fde-43b7-a4e7-41dd4c5b9d4e",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_DERA_PRIVE_SERIES_LONGUES_CSV_FR",
+      "dct:title": "Séries longues de salaires dans le secteur privé",
+      "dct:description": "Séries longues de salaires dans le secteur privé",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_DERA_PRIVE_SERIES_LONGUES/DS_DERA_PRIVE_SERIES_LONGUES_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 131111,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/610357a7-8423-4a31-b970-96ebbc320782",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_DEVDUR",
+      "dct:title": "Indicateurs d'objectifs de développement durable",
+      "dct:description": "L’Assemblée générale de l’Organisation des Nations unies (ONU) a adopté 17 objectifs de développement durable (ODD), déclinés en 169 cibles pour la période 2015-2030. Ces objectifs et cibles constituent pour les États une feuille de route commune de la transition vers un développement durable.Trois buts essentiels sont poursuivis : lutter contre les inégalités, l'exclusion et les injustices ; faire face au défi climatique ; mettre fin à l'extrême pauvreté.\n\nLa France a décidé d’engager un travail d’appropriation afin de définir un ensemble d’indicateurs majeurs adapté à ses priorités et spécificités nationales, qui permettent, via des données statistiques, de suivre les politiques publiques françaises concourant aux ODD.\n\nÀ l'issue d'une concertation menée sous l'égide du Conseil national de l’Information statistique (Cnis) a été proposé mi-2018 une liste de 98 indicateurs qui constituent le cadre national pour le suivi des progrès de la France dans l’atteinte des 17 ODD.  Parmi les indicateurs retenus, on trouve notamment l’ensemble des indicateurs de richesse nationale.\n\nLe jeu de données publié ici contient ainsi les données de ces 98 indicateurs.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_DEVDUR",
+      "dcat:keyword": [
+        "Statistiques",
+        "Objectif de développement durable",
+        "Indicateur de richesse nationale",
+        "ODD",
+        "HVD"
+      ],
+      "dct:issued": "2024-08-01T11:18:42",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1975-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/bd81d578-6e16-486f-afe6-73378e175761",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/bd81d578-6e16-486f-afe6-73378e175761",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_DEVDUR_CSV_FR",
+      "dct:title": "Indicateurs d'objectifs de développement durable",
+      "dct:description": "Indicateurs d'objectifs de développement durable",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_DEVDUR/DS_DEVDUR_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 97592,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/668ae563-26d5-43ad-9614-e62eff8b17e9",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_EC_DECES",
+      "dct:title": "Nombre de décès",
+      "dct:description": "La disponibilité des indicateurs décès varie des deux aux dix dernières années. Outre le nombre de décès quotidien, mensuel et annuel, d’autres indicateurs tels que le nombre de décès cumulés depuis le 1er janvier, le nombre moyen de décès par jour au cours des sept derniers jours ou par mois sont également disponibles. Certains indicateurs sont ventilés par lieu de décès ou par sexe et âge. \nLes décès sont dénombrés selon leur date de survenue et ventilés selon le département ou la région de résidence du défunt.\nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS_FR) indique s’il s’agit de données provisoires et susceptibles d’être révisées (PROV) ou définitives (D).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_EC_DECES",
+      "dcat:keyword": [
+        "Statistiques",
+        "Décès",
+        "Mortalité"
+      ],
+      "dct:issued": "2025-02-28T11:07:50",
+      "dct:accrualPeriodicity": "monthly",
+      "dct:temporal": "2015-01-01/2025-06-30",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/2a7083ac-d804-4ecd-ae69-d12f9efb5c38",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_EC_NAIS",
+      "dct:title": "Nombre de naissances",
+      "dct:description": "Les indicateurs mensuels des naissances sont disponibles sur les cinq dernières années et les indicateurs annuels sur les dix dernières années. Les indicateurs disponibles sont les suivants : nombre de naissances vivantes, nombre de naissances cumulées depuis le 1er janvier et nombre moyen de naissances par jour.\nLes naissances sont dénombrées selon leur date de survenue et ventilées selon le département ou la région de résidence de la mère.\nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS_FR) indique s’il s’agit de données provisoires et susceptibles d’être révisées (PROV) ou définitives (D).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_EC_NAIS",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-02-27T09:23:33",
+      "dct:accrualPeriodicity": "monthly",
+      "dct:temporal": "2015-01-01/2025-07-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/698ca5a9-e147-4afe-adae-a60e9938bb12",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ELECTORAL",
+      "dct:title": "Caractéristiques du corps électoral",
+      "dct:description": "Caractéristiques des électeurs inscrits sur une liste électorale selon différents critères tels que le type de liste électorale, le sexe et l'âge. La disponibilité des données aux différents niveaux géographiques (communal, départemental , régional et France entière y compris les collectivités d'outre mer hors Nouvelle-Calédonie) dépend de l'indicateur. Quelques données sont disponibles sur plusieurs millésimes antérieurs à l'année courante. Les données sur les électeurs sont extraites à la clôture des inscriptions de l'élection mentionnée dans le jeu de données. La date d'extraction est renseignée dans la variable Période (TIME_PERIOD). \nDes indicateurs complémentaires tels que le nombre de mandants et le taux de procurations sont également disponibles au niveau départemental pour le niveau géographique le plus fin. Les données sur les procurations correspondent aux procurations valables le jour de l'élection (et valables à au moins un tour de l'élection concernée si cette dernière comporte deux tours). La date de l'élection est renseignée dans la variable Période (si l'élection comporte deux tours, la date renseignée sera celle du second tour).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ELECTORAL",
+      "dcat:keyword": [
+        "Statistiques",
+        "Électeurs"
+      ],
+      "dct:issued": "2024-10-08T13:24:37",
+      "dct:accrualPeriodicity": "irregular",
+      "dct:temporal": "2019-04-14/2024-07-07",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/cc85962d-fe90-492c-baff-6f210783638f",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/cc85962d-fe90-492c-baff-6f210783638f",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ELECTORAL_CSV_FR",
+      "dct:title": "Caractéristiques du corps électoral",
+      "dct:description": "Caractéristiques du corps électoral",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ELECTORAL/DS_ELECTORAL_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 1348089,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/a40ca3ed-9684-46d2-9868-ce7175efcf1f",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ENQPAT_DET",
+      "dct:title": "Détention et montants du patrimoine des ménages",
+      "dct:description": "Données sur la détention de patrimoine selon les grands types d’actifs et de passifs (immobilier, financier, professionnel, résiduel et endettement) ainsi que sur les montants moyens de patrimoine, ventilées selon différents critères tels que l’âge, la profession et catégorie socio-professionnelle, le dixième de revenu disponible, le dixième de patrimoine brut, le type de ménage et la taille de l’unité urbaine.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ENQPAT_DET",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2024-10-16T09:10:01",
+      "dct:accrualPeriodicity": "irregular",
+      "dct:temporal": "1998-01-01/2021-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/48cc3638-46fe-4572-960d-af5d2e797161",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/48cc3638-46fe-4572-960d-af5d2e797161",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ENQPAT_DET_CSV_FR",
+      "dct:title": "Détention et montants du patrimoine des ménages",
+      "dct:description": "Détention et montants du patrimoine des ménages",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ENQPAT_DET/DS_ENQPAT_DET_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 34208,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/02e9b879-3df2-4509-99f0-d00c0abfa539",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ENQPAT_TRANSM",
+      "dct:title": "Transmissions intergénérationnelles",
+      "dct:description": "Les données sur les transmissions intergénérationnelles reçues ou versées tout au long de la vie des individus : héritages, donations et aides financières, sont ventilées selon différents critères tels que l'âge, la profession et catégorie socio-professionnelle, le revenu disponible, le patrimoine brut, la période, etc.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ENQPAT_TRANSM",
+      "dcat:keyword": [
+        "Statistiques",
+        "Patrimoine"
+      ],
+      "dct:issued": "2024-11-13T15:23:51",
+      "dct:accrualPeriodicity": "irregular",
+      "dct:temporal": "2021-01-01/2021-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/98b34904-723f-459c-aadd-cbb875eca092",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/98b34904-723f-459c-aadd-cbb875eca092",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ENQPAT_TRANSM_CSV_FR",
+      "dct:title": "Transmissions intergénérationnelles",
+      "dct:description": "Transmissions intergénérationnelles",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ENQPAT_TRANSM/DS_ENQPAT_TRANSM_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 8682,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/b7968a57-5065-4a81-a796-3c3ce4da1a77",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ERFS_CHAMP_CONST_SL",
+      "dct:title": "Indicateurs de pauvreté et de niveau de vie (séries longues à champ constant)",
+      "dct:description": "Les indicateurs sont calculés au niveau de l'individu.\nLes indicateurs de pauvreté sont les seuils et taux de pauvreté ainsi que le nombre de personnes pauvres (au seuil de 60 %).\nLes indicateurs de niveau de vie sont la médiane et la moyenne, le 1er et 9e décile ainsi que le rapport interdécile (D9/D1).\n\nLe champ comporte les individus vivant en France métropolitaine, appartenant aux ménages ordinaires dont le revenu déclaré est positif ou nul et dont la personne de référence n'est pas étudiante.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ERFS_CHAMP_CONST_SL",
+      "dcat:keyword": [
+        "Statistiques",
+        "Niveau de vie",
+        "Taux de pauvreté"
+      ],
+      "dct:issued": "2025-04-14T12:12:28",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1970-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/3f616a4b-6679-48e5-bfaf-e4fbcdce3db6",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/3f616a4b-6679-48e5-bfaf-e4fbcdce3db6",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ERFS_CHAMP_CONST_SL_2022_CSV_FR",
+      "dct:title": "Indicateurs de pauvreté et de niveau de vie (séries longues à champ constant)",
+      "dct:description": "Indicateurs de pauvreté et de niveau de vie (séries longues à champ constant)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ERFS_CHAMP_CONST_SL/DS_ERFS_CHAMP_CONST_SL_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2869,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/b1f2f873-d7f4-466a-8eb4-0eff1b392e0b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ERFS_INDIVIDU",
+      "dct:title": "Indicateurs de pauvreté et de niveau de vie (au niveau des individus pour le dernier millésime disponible)",
+      "dct:description": "Les indicateurs sont calculés au niveau des individus.\nLes indicateurs de pauvreté sont le taux de pauvreté et le nombre de personnes pauvres.\nLes indicateurs de niveau de vie sont la médiane, la moyenne.\nLes indicateurs sur les retraités et les revenus d'activité sont la moyenne et la médiane des revenus ainsi que le nombre de personnes.  \n\nLe champ comporte les individus vivant en France métropolitaine, appartenant aux ménages ordinaires dont le revenu déclaré est positif ou nul et dont la personne de référence n'est pas étudiante.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ERFS_INDIVIDU",
+      "dcat:keyword": [
+        "Statistiques",
+        "Niveau de vie",
+        "Taux de pauvreté"
+      ],
+      "dct:issued": "2025-04-14T09:43:28",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2022-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/bee4b77f-df3b-4c52-ae33-9917b52d9855",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/bee4b77f-df3b-4c52-ae33-9917b52d9855",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ERFS_INDIVIDU_2022_CSV_FR",
+      "dct:title": "Indicateurs de pauvreté et de niveau de vie (au niveau des individus pour le dernier millésime disponible)",
+      "dct:description": "Indicateurs de pauvreté et de niveau de vie (au niveau des individus pour le dernier millésime disponible)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ERFS_INDIVIDU/DS_ERFS_INDIVIDU_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 5705,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/939d3e28-d7c4-40cf-a358-3b18ec22164b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ERFS_INDIVIDU_SL",
+      "dct:title": "Indicateurs de niveau de vie et de pauvreté (pour les individus en série longue)",
+      "dct:description": "Les indicateurs sont calculés au niveau de l'individu.\nLes indicateurs de pauvreté sont le seuil, le taux de pauvreté, l'intensité de la pauvreté et le nombre de personnes pauvres.\nLes indicateurs de niveau de vie avant et après redistribution sont la moyenne, la médiane, le 1er et le 9e décile ainsi que le rapport interdécile (D9/D1).\nCertains indicateurs sont calculés sur des sous-population (actifs, 18 ans et plus, retraités) et d'autres ventilés par statut d’emploi, âge, sexe et catégorie socioprofessionnelle.\n\nLe champ comporte les individus vivant en France métropolitaine, appartenant aux ménages ordinaires dont le revenu déclaré est positif ou nul et dont la personne de référence n'est pas étudiante.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ERFS_INDIVIDU_SL",
+      "dcat:keyword": [
+        "Statistiques",
+        "Niveau de vie",
+        "Taux de pauvreté"
+      ],
+      "dct:issued": "2025-04-14T09:43:02",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1996-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/88e8a573-2847-497d-bdff-07c73af6023c",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/88e8a573-2847-497d-bdff-07c73af6023c",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ERFS_INDIVIDU_SL_2022_CSV_FR",
+      "dct:title": "Indicateurs de niveau de vie et de pauvreté (pour les individus en série longue)",
+      "dct:description": "Indicateurs de niveau de vie et de pauvreté (pour les individus en série longue)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ERFS_INDIVIDU_SL/DS_ERFS_INDIVIDU_SL_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 27080,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/8a9527c7-a728-4ce3-b55c-2941752efc6e",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ERFS_MENAGE",
+      "dct:title": "Indicateurs de revenu disponible (au niveau des ménages pour le dernier millésime disponible)",
+      "dct:description": "Les indicateurs sont calculés au niveau du ménage.\nII y a le nombre de ménages, des indicateurs sur le revenu disponible (1er et 9e décile, médiane, moyenne) ainsi que la décomposition du revenu disponible (part des revenus d'activités, des retraites ou pensions, des revenus du patrimoine, des prestations sociales et des impôts directs).\n\nLe champ comprend les ménages ordinaires de France métropolitaine dont le revenu déclaré est positif ou nul et dont la personne de référence n'est pas étudiante.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ERFS_MENAGE",
+      "dcat:keyword": [
+        "Statistiques",
+        "Revenu disponible"
+      ],
+      "dct:issued": "2025-04-14T09:42:28",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2022-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/e1fa67f8-b21a-438c-a230-2f8f1c1ef37b",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/e1fa67f8-b21a-438c-a230-2f8f1c1ef37b",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ERFS_MENAGE_2022_CSV_FR",
+      "dct:title": "Indicateurs de revenu disponible (au niveau des ménages pour le dernier millésime disponible)",
+      "dct:description": "Indicateurs de revenu disponible (au niveau des ménages pour le dernier millésime disponible)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ERFS_MENAGE/DS_ERFS_MENAGE_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 4232,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/417f75cf-6ade-41b8-a9d0-2b79d8a0edbb",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ERFS_MENAGE_SL",
+      "dct:title": "Indicateurs de revenu disponible et de pauvreté (pour les ménages en série longue)",
+      "dct:description": "Les indicateurs sont calculés au niveau du ménage.\nLes indicateurs sur le revenu disponible du ménage sont la moyenne, la médiane ainsi que le 1er et le 9e décile.\nIl y a aussi le nombre de ménages pauvres (au seuil de 60 %) et le nombre de ménages.\nCertains indicateurs sont calculés sur des sous-population pour la personne de référence (actifs, 18 ans et plus, retraités).\n\nLe champ comprend les ménages ordinaires de France métropolitaine dont le revenu déclaré est positif ou nul et dont la personne de référence n'est pas étudiante.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ERFS_MENAGE_SL",
+      "dcat:keyword": [
+        "Statistiques",
+        "Revenu disponible",
+        "Taux de pauvreté"
+      ],
+      "dct:issued": "2025-04-14T09:41:49",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1996-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/af8e2e56-e0d3-4151-ae35-e31dadab162b",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/af8e2e56-e0d3-4151-ae35-e31dadab162b",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ERFS_MENAGE_SL_2022_CSV_FR",
+      "dct:title": "Indicateurs de revenu disponible et de pauvreté (pour les ménages en série longue)",
+      "dct:description": "Indicateurs de revenu disponible et de pauvreté (pour les ménages en série longue)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ERFS_MENAGE_SL/DS_ERFS_MENAGE_SL_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 11108,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/1c2446be-5fe7-4727-a1f0-df7a61daec5f",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ESTIMATION_POPULATION",
+      "dct:title": "Les estimations de population",
+      "dct:description": "Données sur la population au 1er janvier selon le sexe et le groupe d’âges, l'âge moyen et médian selon le sexe, ainsi que la part de la population des 65 ans ou plus sur la population des 20 à 65 ans. \nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS_FR) indique s’il s’agit de données provisoires et susceptibles d’être révisées (PROV) ou définitives (D).\nLes données sur les indicateurs de population sont inclues dans les jeux de données à forte valeur désignées par Eurostat (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ESTIMATION_POPULATION",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD",
+        "Beta"
+      ],
+      "dct:issued": "2024-06-06T14:52:40",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1990-01-01/2025-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/397afd6c-7494-4e76-865b-1a7939f58784",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/397afd6c-7494-4e76-865b-1a7939f58784",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ESTIMATION_POPULATION_CSV_FR",
+      "dct:title": "Les estimations de population",
+      "dct:description": "Les estimations de population",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ESTIMATION_POPULATION/DS_ESTIMATION_POPULATION_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2109173,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/8d614b6f-c090-4b5c-896a-b76200ae156e",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ETAT_CIVIL_DECES_COMMUNES",
+      "dct:title": "Nombre de décès par commune",
+      "dct:description": "Ces données sont annuelles et détaillées par territoire (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France et France métropolitaine).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ETAT_CIVIL_DECES_COMMUNES",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2008-01-01/2024-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/8970a202-458d-4055-ade5-913e67ad4fd5",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ETAT_CIVIL_NAIS_COMMUNES",
+      "dct:title": "Nombre de naissances par commune",
+      "dct:description": "Ces données sont annuelles et détaillées par territoire (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France et France métropolitaine).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ETAT_CIVIL_NAIS_COMMUNES",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2008-01-01/2024-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/e84212a7-f1cd-4ab6-bafb-5d7ca8e12f4a",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FECONDITE",
+      "dct:title": "Fécondité",
+      "dct:description": "Données annuelles sur le taux brut de natalité, les taux de fécondité par âge de la mère et l’indicateur conjoncturel de fécondité. \nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS_FR) indique s’il s’agit de données provisoires et susceptibles d’être révisées (PROV) ou définitives (D).\nLes données sur les indicateurs de fécondité sont incluses dans les jeux de données à forte valeur désignées par Eurostat (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FECONDITE",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-06-06T14:56:52",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1901-01-01/2024-12-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/edd0936a-aafe-4c65-9de6-8ccbe04c4c96",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/edd0936a-aafe-4c65-9de6-8ccbe04c4c96",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_FECONDITE_CSV_FR",
+      "dct:title": "Fécondité",
+      "dct:description": "Fécondité",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_FECONDITE/DS_FECONDITE_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 184783,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/de58c428-4c44-4873-a2bb-4583896b12a6",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FILOSOFI_CC",
+      "dct:title": "Principaux indicateurs sur la pauvreté en 2021 : niveau de vie, taux de pauvreté, part des ménages imposés et décomposition du revenu disponible",
+      "dct:description": "- Nombre de ménages fiscaux, de personnes et d’unités de consommation\n- Part des ménages imposés\n- Indicateurs de distribution du niveau de vie : médiane, 1er et 9e déciles, rapport interdécile\n- Décomposition du revenu disponible (part des revenus d'activité, des retraites ou pension, des revenus du patrimoine, prestations sociales et des impôts directs)\n- Taux de pauvreté à 60 % du niveau de vie médian de la France métropolitaine\n\nLe champ couvert est celui de l'ensemble des ménages fiscaux ordinaires. La part des ménages fiscaux imposés est calculée sur le champ des ménages dont le revenu déclaré est positif ou nul. Les autres indicateurs sont calculés sur le champ des ménages dont le revenu disponible est positif ou nul.\nLes résultats couvrent la France métropolitaine, la Martinique et La Réunion.\n\nLes données sont disponibles aux échelons géographiques suivants : France métropolitaine, région, département, arrondissement, établissement public de coopération intercommunale (EPCI), établissement public territorial (EPT), collectivité territoriale à compétences départementales (CTCD), commune, arrondissement municipal, aire d’attraction des villes 2020, bassin de vie 2022, unité urbaine 2020, zone d’emploi 2020.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Niveau de vie",
+        "Taux de pauvreté"
+      ],
+      "dct:issued": "2025-06-03T17:00:41",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2021-01-01/2021-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/9b4a926a-f4c5-4a15-8698-f3ff62bb3d00",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/9b4a926a-f4c5-4a15-8698-f3ff62bb3d00",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_FILOSOFI_CC_2021_CSV_FR",
+      "dct:title": "Niveau de vie, taux de pauvreté, part des ménages imposés et décomposition du revenu disponible",
+      "dct:description": "Niveau de vie, taux de pauvreté, part des ménages imposés et décomposition du revenu disponible",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_FILOSOFI_CC/DS_FILOSOFI_CC_2021_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 5064436,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/93bba6c8-bb2e-47f6-95e3-55e609c3f470",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FLORES_A17",
+      "dct:title": "Nombre d'établissements et effectifs salariés en 17 grands secteurs",
+      "dct:description": "Les données sur le nombre d'établissements et les effectifs salariés sont disponibles par secteur d'activité en 17 grands secteurs (A17), tranche d'effectifs et à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France).\n\nChamp : établissements employeurs durant l'année et actifs la dernière semaine de décembre hors secteur de la défense et hors particuliers employeurs. Les effectifs salariés correspondent ici aux postes présents durant la dernière semaine de décembre.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FLORES_A17",
+      "dcat:keyword": [
+        "Statistiques",
+        "Etablissement"
+      ],
+      "dct:issued": "2025-06-02T09:01:40",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_FLORES_A17_2023_CSV_FR",
+      "dct:title": "Nombre d'établissements et effectifs salariés en 17 grands secteurs",
+      "dct:description": "Nombre d'établissements et effectifs salariés en 17 grands secteurs",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_FLORES_A17/DS_FLORES_A17_2023_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 19062789,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/02b9a286-d7ce-49b1-8090-4b8d11193f91",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FLORES_A38",
+      "dct:title": "Nombre d'établissements et effectifs salariés en 38 grands secteurs",
+      "dct:description": "Les données sur le nombre d'établissements et les effectifs salariés sont disponibles par secteur d'activité en 38 grands secteurs (A38), tranche d'effectifs et à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France).\n\nChamp : établissements employeurs durant l'année et actifs la dernière semaine de décembre hors secteur de la défense et hors particuliers employeurs. Les effectifs salariés correspondent ici aux postes présents durant la dernière semaine de décembre.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FLORES_A38",
+      "dcat:keyword": [
+        "Statistiques",
+        "Etablissement"
+      ],
+      "dct:issued": "2025-06-02T09:03:32",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/da0ded8e-ef34-4cf5-ba60-58590c2c0676",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FLORES_A5",
+      "dct:title": "Nombre d'établissements et effectifs salariés en 5 grands secteurs",
+      "dct:description": "Les données sur le nombre d'établissements et les effectifs salariés sont disponibles par secteur d'activité en cinq grands secteurs (A5), tranche d'effectifs et à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France).\n\nChamp : établissements employeurs durant l'année et actifs la dernière semaine de décembre hors secteur de la défense et hors particuliers employeurs. Les effectifs salariés correspondent ici aux postes présents durant la dernière semaine de décembre.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FLORES_A5",
+      "dcat:keyword": [
+        "Statistiques",
+        "Etablissement"
+      ],
+      "dct:issued": "2025-06-02T09:01:06",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/e6b4ebd3-0f35-45e0-a5c6-8e6e40efd03d",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FLORES_A88",
+      "dct:title": "Nombre d'établissements et effectifs salariés en 88 grands secteurs",
+      "dct:description": "Les données sur le nombre d'établissements et les effectifs salariés sont disponibles par secteur d'activité en 88 grands secteurs (A88) et à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France).\n\nChamp : établissements employeurs durant l'année et actifs la dernière semaine de décembre hors secteur de la défense et hors particuliers employeurs. Les effectifs salariés correspondent ici aux postes présents durant la dernière semaine de décembre.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FLORES_A88",
+      "dcat:keyword": [
+        "Statistiques",
+        "Etablissement"
+      ],
+      "dct:issued": "2025-06-02T09:04:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/907aeb0b-6cc0-4e19-a821-501280c584b4",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FLORES_ECONOMIC_SPHERE",
+      "dct:title": "Nombre d'établissements selon les sphères de l'économie",
+      "dct:description": "Les données sur le nombre d'établissements sont disponibles selon les sphères de l'économie (productive ou présentielle) et à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France).\n\nChamp : établissements employeurs durant l'année et actifs la dernière semaine de décembre hors secteur de la défense et hors particuliers employeurs. Les effectifs salariés correspondent ici aux postes présents durant la dernière semaine de décembre.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FLORES_ECONOMIC_SPHERE",
+      "dcat:keyword": [
+        "Statistiques",
+        "Etablissement"
+      ],
+      "dct:issued": "2025-06-02T09:05:10",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/bd49b42f-3ec4-4700-9995-0ef91e26d4ff",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_FLORES_PE",
+      "dct:title": "Nombre de particuliers employeurs d'assistantes maternelles et d'autres salariés",
+      "dct:description": "Les données sur le nombre de particuliers employeurs d'assistantes maternelles et d'autres salariés sont disponibles à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaines 2020, zone d'emploi 2020, France). Les données ne sont pas disponibles pour les arrondissements municipaux.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FLORES_PE",
+      "dcat:keyword": [
+        "Statistiques",
+        "Etablissement"
+      ],
+      "dct:issued": "2025-06-02T09:04:45",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2023-01-01/2023-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/aeb20bf7-bf33-4b7e-b303-8647890dff58",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_ICA",
+      "dct:title": "Indicateur d’activité et de chiffre d’affaires",
+      "dct:description": "Ce jeu de données contient l’ensemble des indices (mensuels) de chiffres d’affaires. Ces indices couvrent les secteurs suivants : l’industrie, la construction, le commerce et les services. Il contient également les indices de volumes associés aux services (indices de production dans les services) et au commerce (indices de volume des ventes dans le commerce). \nPour chaque indice, sont disponibles en plus des données brutes, les données corrigées des variations saisonnières et des jours ouvrables (CVS-CJO).\nPour l’industrie manufacturière (divisions 10 à 33 de la NAF rev. 2), en plus des indices tout marchés, sont disponibles également des indices pour le marché intérieur et pour le marché extérieur.\n\nCe jeu de données contient notamment les indices de volume des ventes dans le commerce, désignées par Eurostat comme des données à forte valeur (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_ICA",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-08-09T11:19:58",
+      "dct:accrualPeriodicity": "monthly",
+      "dct:temporal": "1999-01-01/2025-06-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/d77c4a18-1d5a-46e1-be6e-4f52c0e27b89",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/d77c4a18-1d5a-46e1-be6e-4f52c0e27b89",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_ICA_CSV_FR",
+      "dct:title": "Indicateur d’activité et de chiffre d’affaires",
+      "dct:description": "Indicateur d’activité et de chiffre d’affaires",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_ICA/DS_ICA_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 6397781,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/ae0d1846-6f8e-43aa-aa1c-4cf21182d90b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_IPCH_A",
+      "dct:title": "Indice des prix à la consommation harmonisés annuels",
+      "dct:description": "L'indice des prix à la consommation harmonisé (IPCH) est l'indicateur permettant d'apprécier le respect du critère de convergence portant sur la stabilité des prix, dans le cadre du traité de l'Union européenne (UE), traité de Maastricht. Pour la France, le territoire national économique comprend la France métropolitaine et les départements d'outre-mer (Dom), à l'exclusion des autres territoires  de l'outre-mer. Cet indice est conçu expressément à des fins de comparaison internationale. Les méthodes utilisées par les États membres de l'Union européenne pour calculer leur indice de prix national peuvent être  différentes. Elles ne permettent donc pas de comparer correctement la hausse des prix de ces pays. C'est pourquoi, les indices de prix à la consommation harmonisés sont calculés avec des méthodes et un contenu assurant une meilleure comparabilité. La différence essentielle avec l'indice des prix à la consommation national français tient dans le traitement de la protection sociale et de l'enseignement. En effet, dans l'IPCH, seule la part à la charge du consommateur (après remboursement) est prise en compte.\n\nLes données de l'indice des prix à la consommation sont inclues dans les jeux de données annuelles à forte valeur (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_IPCH_A",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1996-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/37bd99d3-411c-4263-9ebd-86d202fe5497",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/37bd99d3-411c-4263-9ebd-86d202fe5497",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_IPCH_A_CSV_FR",
+      "dct:title": "Indice des prix à la consommation harmonisés annuels",
+      "dct:description": "Indice des prix à la consommation harmonisés annuels",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_IPCH_A/DS_IPCH_A_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 79775,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/117c32e5-a4f4-4fd4-b95b-8fb8f157fd44",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_IPCH_M",
+      "dct:title": "Indice des prix à la consommation harmonisés mensuels",
+      "dct:description": "L'indice des prix à la consommation harmonisé (IPCH) est l'indicateur permettant d'apprécier le respect du critère de convergence portant sur la stabilité des prix, dans le cadre du traité de l'Union européenne (UE), traité de Maastricht. Pour la France, le territoire national économique comprend la France métropolitaine et les départements d'outre-mer (Dom), à l'exclusion des autres territoires  de l'outre-mer. Cet indice est conçu expressément à des fins de comparaison internationale. Les méthodes utilisées par les États membres de l'Union européenne pour calculer leur indice de prix national peuvent être  différentes. Elles ne permettent donc pas de comparer correctement la hausse des prix de ces pays. C'est pourquoi, les indices de prix à la consommation harmonisés sont calculés avec des méthodes et un contenu assurant une meilleure comparabilité. La différence essentielle avec l'indice des prix à la consommation national français tient dans le traitement de la protection sociale et de l'enseignement. En effet, dans l'IPCH, seule la part à la charge du consommateur (après remboursement) est prise en compte.\n\nLes données de l'indice des prix à la consommation sont inclues dans les jeux de données mensuels à forte valeur (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_IPCH_M",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "monthly",
+      "dct:temporal": "1996-01-01/2025-07-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/494da0ed-1700-43f5-93e0-6a78010f5742",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/494da0ed-1700-43f5-93e0-6a78010f5742",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_IPCH_M_CSV_FR",
+      "dct:title": "Indice des prix à la consommation harmonisés mensuels",
+      "dct:description": "Indice des prix à la consommation harmonisés mensuels",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_IPCH_M/DS_IPCH_M_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 881621,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/08eb995f-ed6f-4a85-b20f-4b0a2ce469b4",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_MORTALITE",
+      "dct:title": "Mortalité",
+      "dct:description": "Données annuelles sur le taux brut de mortalité, le taux de mortalité infantile et l’espérance de vie à divers âges. \nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS_FR) indique s’il s’agit de données provisoires et susceptibles d’être révisées (PROV) ou définitives (D).\nLes données sur les indicateurs de mortalité sont incluses dans les jeux de données à forte valeur désignées par Eurostat (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_MORTALITE",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-06-06T14:57:53",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1901-01-01/2024-12-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/e369505b-3918-45af-9fc2-f1c5bbf16cf4",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/e369505b-3918-45af-9fc2-f1c5bbf16cf4",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_MORTALITE_CSV_FR",
+      "dct:title": "Mortalité",
+      "dct:description": "Mortalité",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_MORTALITE/DS_MORTALITE_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 426045,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/c322eb4d-ec91-4723-8804-ea62e492612b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_POPULATIONS_REFERENCE",
+      "dct:title": "Populations de référence",
+      "dct:description": "La loi du 27 février 2002 relative à la démocratie de proximité fixe comme premier objectif du recensement de la population la publication tous les ans des chiffres des populations de référence (ou populations légales) : population municipale, population comptée à part et population totale. Ces chiffres sont calculés pour la France, toutes ses communes et circonscriptions administratives. La responsabilité du calcul des populations de référence est confiée à l'Insee. ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_POPULATIONS_REFERENCE",
+      "dcat:keyword": [
+        "Statistiques",
+        "population",
+        "population municipale ",
+        "population comptée à part",
+        "population totale",
+        "populations légales",
+        "population de référence"
+      ],
+      "dct:issued": "2024-12-03T16:14:21",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/f4065f87-a476-4ef8-8369-765c1d9f8468",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/f4065f87-a476-4ef8-8369-765c1d9f8468",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_POPULATIONS_REFERENCE_CSV_FR",
+      "dct:title": "Populations de référence",
+      "dct:description": "Populations de référence",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_POPULATIONS_REFERENCE/DS_POPULATIONS_REFERENCE_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2169700,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/b33bf252-58a2-406b-9f0f-858842e978f8",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_ACTIVITE_PRINC",
+      "dct:title": "Caractéristiques de l'emploi",
+      "dct:description": "Les données sont détaillées pour la population de 15 ans ou plus ayant un emploi selon le sexe et pour la population âgés de 15 à 64 ans selon l'âge, le sexe, la condition d'emploi et la durée de travail. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_ACTIVITE_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Population active"
+      ],
+      "dct:issued": "2025-06-11T11:34:08",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/0ab28fc6-bfe5-4dc9-9b54-71fe69244792",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_DIPLOMES_PRINC",
+      "dct:title": "Diplômes et Formation ",
+      "dct:description": "Les données sont détaillées pour la population non scolarisée, âgée de 15 ans ou plus par sexe et le diplôme le plus élevé obtenu. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_DIPLOMES_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "diplômes",
+        "formation"
+      ],
+      "dct:issued": "2025-06-13T11:26:16",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/ae72afd3-a5b2-459a-b9d4-28d23e22d00e",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/ae72afd3-a5b2-459a-b9d4-28d23e22d00e",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_DIPLOMES_PRINC_2022_CSV_FR",
+      "dct:title": "Diplômes et Formation ",
+      "dct:description": "Diplômes et Formation ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_DIPLOMES_PRINC/DS_RP_DIPLOMES_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 25341742,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/8efc3945-3478-4c73-8b5e-834ed181a2b3",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_EDUCATION",
+      "dct:title": "Éducation - Scolarisation",
+      "dct:description": "Les données sont détaillées pour la population scolarisée âgée de 2 ans ou plus selon l'âge et le sexe. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EDUCATION",
+      "dcat:keyword": [
+        "Statistiques",
+        "Education",
+        "scolarisation"
+      ],
+      "dct:issued": "2025-06-13T11:25:59",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/c1747184-0b21-4bc4-8129-41a1c7de94ef",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/c1747184-0b21-4bc4-8129-41a1c7de94ef",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_EDUCATION_2022_CSV_FR",
+      "dct:title": "Éducation - Scolarisation",
+      "dct:description": "Éducation - Scolarisation",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_EDUCATION/DS_RP_EDUCATION_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 62188042,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/b8e3a658-6310-421d-ade5-027f588e6d08",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_EMPLOI_LR_COMP",
+      "dct:title": "Population active et chômage",
+      "dct:description": "Les données sont détaillées pour la population active résidente de 15 à 64 ans selon la catégorie socioprofessionnelle. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP",
+      "dcat:keyword": [
+        "Statistiques",
+        "Emploi au lieu de résidence"
+      ],
+      "dct:issued": "2025-06-12T08:26:54",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/2e1fe6d6-9df0-4b59-8763-d5ac058a3017",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/2e1fe6d6-9df0-4b59-8763-d5ac058a3017",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_EMPLOI_LR_COMP_2022_CSV_FR",
+      "dct:title": "Population active et chômage",
+      "dct:description": "Population active et chômage",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_EMPLOI_LR_COMP/DS_RP_EMPLOI_LR_COMP_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 18437278,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/6bc7bcfc-d685-4708-9be8-ab738986f151",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_EMPLOI_LR_PRINC",
+      "dct:title": "Population active et chômage",
+      "dct:description": "Les données sont détaillées pour la population active résidente des 15 à 64 ans selon l’âge et le sexe ; caractéristiques des chômeurs âgés de 15 à 64 ans selon l'âge et le diplôme. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Emploi au lieu de résidence"
+      ],
+      "dct:issued": "2025-06-12T08:22:25",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/68279e10-4fba-482e-bede-c7865fe8b524",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/68279e10-4fba-482e-bede-c7865fe8b524",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_EMPLOI_LR_PRINC_2022_CSV_FR",
+      "dct:title": "Population active et chômage",
+      "dct:description": "Population active et chômage",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_EMPLOI_LR_PRINC/DS_RP_EMPLOI_LR_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 100207138,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/612cef0e-b4a6-4dcf-b195-fb71e63d0142",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_EMPLOI_LT_COMP",
+      "dct:title": "Emploi au lieu de travail",
+      "dct:description": "Les données sont détaillées pour les emplois au lieu de travail selon le secteur d'activité, le sexe et le statut d'emploi ; les emplois au lieu de travail par la catégorie socioprofessionnelle. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LT_COMP",
+      "dcat:keyword": [
+        "Statistiques",
+        "Emploi au lieu de travail"
+      ],
+      "dct:issued": "2025-06-12T08:40:45",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/32a57d7b-b6e0-4760-9d67-96ae44536570",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_EMPLOI_LT_PRINC",
+      "dct:title": "Emploi au lieu de travail",
+      "dct:description": "Les données sont détaillées pour les emplois au lieu de travail de la population active occupée selon le statut d'emploi par sexe ou par temps de travail. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LT_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Emploi au lieu de travail"
+      ],
+      "dct:issued": "2025-06-12T08:39:21",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/09b488a6-0438-4b12-a6d1-11684ec34734",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_FAMILLE_COMP",
+      "dct:title": "Famille",
+      "dct:description": "Les données détaillent le nombre de familles selon leur type ou selon le nombre d'enfants ; zoom sur les couples avec enfants. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_FAMILLE_COMP",
+      "dcat:keyword": [
+        "Statistiques",
+        "Ménage",
+        "Famille"
+      ],
+      "dct:issued": "2025-06-12T16:39:20",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/770f5e1c-d04f-4942-ae83-469eb355c04f",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/770f5e1c-d04f-4942-ae83-469eb355c04f",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_FAMILLE_COMP_2022_CSV_FR",
+      "dct:title": "Famille",
+      "dct:description": "Famille",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_FAMILLE_COMP/DS_RP_FAMILLE_COMP_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 11569794,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/b74708bf-602c-4817-b90f-aba39dc03f44",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_LOGEMENT_COMPL",
+      "dct:title": "Logements",
+      "dct:description": "Les données détaillent les résidences principales selon leur état d'occupation (dans la norme, sur-occupé, sous-occupé) à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_LOGEMENT_COMPL",
+      "dcat:keyword": [
+        "Statistiques",
+        "Logement"
+      ],
+      "dct:issued": "2025-06-13T11:23:57",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/49ebecb0-daf7-4470-b244-76203bf1a928",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/49ebecb0-daf7-4470-b244-76203bf1a928",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_LOGEMENT_COMPL_2022_CSV_FR",
+      "dct:title": "Logements",
+      "dct:description": "Logements",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_LOGEMENT_COMPL/DS_RP_LOGEMENT_COMPL_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 7155305,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/76dd8649-2ad4-4c47-879c-f521b23ee713",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_LOGEMENT_DOM_PRINC",
+      "dct:title": "Logements dans les départements d'Outre-mer (DOM) ",
+      "dct:description": "La feuille de logement dans les DOM varie de celle de métropole notamment pour le type de logement et les aspects de confort des résidences principales. Les données détaillent d'une part, les logements selon leur type (Maisons ou immeubles en dur ou en bois, etc.) et le confort des résidences principales selon la présence de l'électricité, de l'eau chaude, d'un chauffe-eau solaire, d'une pièce climatisée ou du tout-à-l'égout.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_LOGEMENT_DOM_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Logement"
+      ],
+      "dct:issued": "2025-06-13T11:23:39",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/64b91e13-c308-4438-8346-4b094a0e475d",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/64b91e13-c308-4438-8346-4b094a0e475d",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_LOGEMENT_DOM_PRINC_2022_CSV_FR",
+      "dct:title": "Logements dans les départements d'Outre-mer (DOM) ",
+      "dct:description": "Logements dans les départements d'Outre-mer (DOM) ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_LOGEMENT_DOM_PRINC/DS_RP_LOGEMENT_DOM_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 170643,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/f8c0d0bd-f3ce-4759-bfa7-01ad2c6aa59c",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_LOGEMENT_PRINC",
+      "dct:title": "Logements",
+      "dct:description": "Les données détaillent le nombre de logements selon la catégorie ou selon le type de logement, le nombre de résidences principales selon le type de logement et le nombre de pièces ou la période d'achèvement. Elles détaillent également le statut d'occupation de ces résidences principales, l'équipement automobile, l'ancienneté d'emménagement. Les données sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_LOGEMENT_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Logement"
+      ],
+      "dct:issued": "2025-06-13T11:23:18",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/f8c0d0bd-f3ce-4759-bfa7-122212c6aa59c",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/f8c0d0bd-f3ce-4759-bfa7-122212c6aa59c",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_LOGEMENT_PRINC_2022_CSV_FR",
+      "dct:title": "Logements",
+      "dct:description": "Logements",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_LOGEMENT_PRINC/DS_RP_LOGEMENT_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 92698117,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/4bd342a8-4dda-4acd-969e-6a3d5a60c5f6",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_MENAGES_COMP",
+      "dct:title": "Ménages",
+      "dct:description": "Les données détaillent le nombre de ménages et le nombre de personnes qui les composent selon le type de ménages ou selon le groupe socioprofessionnel actuel ou antérieur de la personne de référence. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_MENAGES_COMP",
+      "dcat:keyword": [
+        "Statistiques",
+        "Ménage"
+      ],
+      "dct:issued": "2025-06-17T10:45:30",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/f71916b4-6040-4d69-89b8-03a6779569c6",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/f71916b4-6040-4d69-89b8-03a6779569c6",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_MENAGES_COMP_2022_CSV_FR",
+      "dct:title": "Ménages",
+      "dct:description": "Ménages",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_MENAGES_COMP/DS_RP_MENAGES_COMP_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 35947089,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/e31d946a-68ce-41cb-9856-ff27511dfe0d",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_MENAGES_PRINC",
+      "dct:title": "Ménages et couple",
+      "dct:description": "Les données détaillent la population et la population des ménages âgée de 15 ans ou plus selon l'âge et la vie en couple ou le nombre de personnes vivant seules, ainsi que le statut conjugal des personnes âgées de 15 ans ou plus. Les données sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_MENAGES_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Ménage",
+        "Couple"
+      ],
+      "dct:issued": "2025-06-17T10:39:49",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/5da48631-b314-4782-89dd-581c819e820d",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/5da48631-b314-4782-89dd-581c819e820d",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_MENAGES_PRINC_2022_CSV_FR",
+      "dct:title": "Ménages et couple",
+      "dct:description": "Ménages et couple",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_MENAGES_PRINC/DS_RP_MENAGES_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 42977342,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/6562c152-e8a1-40e3-9d07-55df21c2e922",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_MIGRES_PRINC",
+      "dct:title": "Migrations résidentielles ",
+      "dct:description": "Les données détaillent le lieu de résidence antérieure de la population âgée de 1 an selon l’âge. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_MIGRES_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Migrations résidentielles "
+      ],
+      "dct:issued": "2025-06-17T10:49:06",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/e9a19cf8-02cf-4dfa-84c1-17d80f1cd29e",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/e9a19cf8-02cf-4dfa-84c1-17d80f1cd29e",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_MIGRES_PRINC_2022_CSV_FR",
+      "dct:title": "Migrations résidentielles ",
+      "dct:description": "Migrations résidentielles ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_MIGRES_PRINC/DS_RP_MIGRES_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 21296342,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/f6266815-3e3f-4f5c-8cc9-f3e32a4eb9f4",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_NAVETTES_PRINC",
+      "dct:title": "Déplacements domicile-travail",
+      "dct:description": "Les données détaillent la population des 15 ans ou plus ayant un emploi selon leur lieu de travail, ainsi que le mode transport utilisé pour aller travailler. Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_NAVETTES_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Population active",
+        "Emploi",
+        "Navettes domicile-travail"
+      ],
+      "dct:issued": "2025-06-11T11:37:17",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/43e1d430-29ce-465d-b6f4-ec6d8cde5355",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_POPULATION_COMP",
+      "dct:title": "Population",
+      "dct:description": "Les données sont détaillées par sexe, âge (en 3 tranches d'âge) et catégorie socio-professionnelle (PCS). Elles sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_POPULATION_COMP",
+      "dcat:keyword": [
+        "Statistiques",
+        "Population"
+      ],
+      "dct:issued": "2025-06-17T10:36:46",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/c4ab705c-536e-491a-8be8-516c9730dc60",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/c4ab705c-536e-491a-8be8-516c9730dc60",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_POPULATION_COMP_2022_CSV_FR",
+      "dct:title": "Population",
+      "dct:description": "Population",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_POPULATION_COMP/DS_RP_POPULATION_COMP_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 92604586,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/78b659c3-33d5-4804-a5a2-26de75c363b2",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_POPULATION_PRINC",
+      "dct:title": "Population",
+      "dct:description": "Les données détaillent la population selon le sexe et l'âge (en 7 tranches d'âge) et sont fournies à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_POPULATION_PRINC",
+      "dcat:keyword": [
+        "Statistiques",
+        "Population"
+      ],
+      "dct:issued": "2025-06-17T10:15:05",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2011-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/2c265f5c-7d6f-46f7-bef3-8144a8c4e306",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/2c265f5c-7d6f-46f7-bef3-8144a8c4e306",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_POPULATION_PRINC_2022_CSV_FR",
+      "dct:title": "Population",
+      "dct:description": "Population",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_POPULATION_PRINC/DS_RP_POPULATION_PRINC_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 40079532,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/1fab209f-1f0b-44d2-ad7d-3e3db47a9bec",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_RP_SERIE_HISTORIQUE",
+      "dct:title": "Série historique du recensement de la population ",
+      "dct:description": "Les données des séries historiques détaillent sur un temps long, les populations municipales, les indicateurs démographiques tels que le taux de natalité et de mortalité, ainsi que les composantes de la variation de population ; elles détaillent également le nombre de logements selon la catégorie et l'évolution de la taille des ménages. Elles sont fournies à différents niveaux géographiques (commune, département, établissement public de coopération, etc.) de France hors Mayotte.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_SERIE_HISTORIQUE",
+      "dcat:keyword": [
+        "Statistiques",
+        "Population",
+        "Logement",
+        "Données historiques"
+      ],
+      "dct:issued": "2025-06-17T10:55:32",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "1968-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/a3fee2d0-ec44-4f05-9f92-e8284de2b551",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/a3fee2d0-ec44-4f05-9f92-e8284de2b551",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_RP_SERIE_HISTORIQUE_2022_CSV_FR",
+      "dct:title": "Série historique du recensement de la population ",
+      "dct:description": "Série historique du recensement de la population ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_RP_SERIE_HISTORIQUE/DS_RP_SERIE_HISTORIQUE_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 21312400,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/58ef61cf-52cd-411c-8def-54cd35333cf6",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_CREA_DEP_REG_NAT",
+      "dct:title": "Créations d'entreprises et d'établissements au niveau départemental, régional et national par secteur d'activité (A21) et forme légale",
+      "dct:description": "Les données sont détaillées selon le secteur d’activité (A21 hors agriculture) et la forme légale (Entreprise individuelle, SAS, SARL et autres). ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_CREA_DEP_REG_NAT",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-04-24T15:57:59",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2012-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/6d30e384-cb26-4f4a-99c5-a7d398709e55",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/6d30e384-cb26-4f4a-99c5-a7d398709e55",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_CREA_DEP_REG_NAT_2024_CSV_FR",
+      "dct:title": "Créations d'entreprises et d'établissements au niveau départemental, régional et national par secteur d'activité (A21) et forme légale",
+      "dct:description": "Créations d'entreprises et d'établissements au niveau départemental, régional et national par secteur d'activité (A21) et forme légale",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_CREA_DEP_REG_NAT/DS_SIDE_CREA_DEP_REG_NAT_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 389062870,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/790bdcdb-d113-4b8d-9513-8a405324bffe",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_CREA_EI",
+      "dct:title": "Créations d'entreprises individuelles (unités légales) ",
+      "dct:description": "Au niveau national les données sont disponibles par secteur d'activité (A21 agrégé) et forme légale, selon l'âge ou le sexe. Au niveau départemental et régional, les données sont disponibles par forme légale, selon l'âge ou le sexe. ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_CREA_EI",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-04-24T15:58:09",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2012-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/88487695-32d4-4425-83f2-8c3bf1faacdc",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/88487695-32d4-4425-83f2-8c3bf1faacdc",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_CREA_EI_2024_CSV_FR",
+      "dct:title": "Créations d'entreprises individuelles (unités légales) ",
+      "dct:description": "Créations d'entreprises individuelles (unités légales) ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_CREA_EI/DS_SIDE_CREA_EI_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2092107,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/24e8cbfe-32be-4bc0-8481-acaf235749b5",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_CREA_ENT_COM",
+      "dct:title": "Créations d'entreprises au niveau communal et supra communal par secteur d'activité (A10) et forme légale",
+      "dct:description": "Les données sont disponibles pour tous les territoires (Aires d'attraction des villes 2020, Arrondissement, Arrondissement municipal, Bassins de vie 2022, Commune, Département, Etablissement public de coopération intercommunal, France, Région, Unités urbaines 2020, Zones d'emploi 2020) et réparties selon le secteur d’activité (A10 hors agriculture) et la forme légale (Entreprise individuelle, SAS, SARL et autres)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_CREA_ENT_COM",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-04-24T15:58:23",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2012-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/b1ebddd6-df67-4966-955a-0085e8f7740f",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/b1ebddd6-df67-4966-955a-0085e8f7740f",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_CREA_ENT_COM_2024_CSV_FR",
+      "dct:title": "Créations d'entreprises au niveau communal et supra communal par secteur d'activité (A10) et forme légale",
+      "dct:description": "Créations d'entreprises au niveau communal et supra communal par secteur d'activité (A10) et forme légale",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_CREA_ENT_COM/DS_SIDE_CREA_ENT_COM_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 114808180,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/3cf09b2d-c5ed-4c04-a1a2-f5d710735de8",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_CREA_ENT_DEP_REG_NAT_CJ",
+      "dct:title": "Créations d'entreprises au niveau départemental, régional et national par forme légale détaillée",
+      "dct:description": "Les données de créations sont réparties selon la forme légale détaillée (Micro-entrepreneurs, entreprise individuelle hors micro-entrepreneur, SAS, SARL et autres). ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_CREA_ENT_DEP_REG_NAT_CJ",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-04-24T15:58:48",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2012-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/eeedb1f1-9828-476f-a2f8-1e34ae474841",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/eeedb1f1-9828-476f-a2f8-1e34ae474841",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_CREA_ENT_DEP_REG_NAT_CJ_2024_CSV_FR",
+      "dct:title": "Créations d'entreprises au niveau départemental, régional et national par forme légale détaillée",
+      "dct:description": "Créations d'entreprises au niveau départemental, régional et national par forme légale détaillée",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_CREA_ENT_DEP_REG_NAT_CJ/DS_SIDE_CREA_ENT_DEP_REG_NAT_CJ_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 62236,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/32845aa5-6839-499e-9fa8-8f841872c1ce",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_CREA_ETAB_COM",
+      "dct:title": "Créations d'établissements au niveau communal et supra communal par secteur d'activité (A10) et forme légale",
+      "dct:description": "Les données de créations sont disponibles pour tous les territoires ((Aires d'attraction des villes 2020, Arrondissement, Arrondissement municipal, Bassins de vie 2022, Commune, Département, Etablissement public de coopération intercommunal, France, Région, Unités urbaines 2020, Zones d'emploi 2020) et réparties selon le secteur d’activité (A10 hors agriculture) et la forme légale du siège (Entreprise individuelle, SAS, SARL et autres). ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_CREA_ETAB_COM",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-04-24T15:59:03",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2012-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/c8b96de0-78a4-4b09-b9ac-5b701ac7725d",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/c8b96de0-78a4-4b09-b9ac-5b701ac7725d",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_CREA_ETAB_COM_2024_CSV_FR",
+      "dct:title": "Créations d'établissements au niveau communal et supra communal par secteur d'activité (A10) et forme légale",
+      "dct:description": "Créations d'établissements au niveau communal et supra communal par secteur d'activité (A10) et forme légale",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_CREA_ETAB_COM/DS_SIDE_CREA_ETAB_COM_2024_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 118032422,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/1f4e9e43-8ecc-49fe-a168-3aa8b034d282",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_EQDEMO_A10",
+      "dct:title": "Équations démographiques des unités légales et des établissements (A10)",
+      "dct:description": "Les équations démographiques sont disponibles pour les unités légales et les établissements. Elles sont détaillées selon le secteur d'activité (A10 hors agriculture) et la forme légale (3 catégories) au niveau géographique France, ou bien indépendamment par région (secteur d'activité ou forme légale).\nPour chacune des observations contenues dans le jeu de données, le statut de l’observation indique si la donnée est manquante (OBS_STATUS = O). Les données sont également soumises au secret statistique et certaines régions ne sont pas diffusées (CONF_STATUS = C).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_EQDEMO_A10",
+      "dcat:keyword": [
+        "Statistiques",
+        "Entreprises"
+      ],
+      "dct:issued": "2025-03-26T17:05:23",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2014-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/a6965545-2cfe-4073-82a7-04b2576e3373",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/a6965545-2cfe-4073-82a7-04b2576e3373",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_EQDEMO_A10_2022_CSV_FR",
+      "dct:title": "Équations démographiques des unités légale et des établissements (A10)",
+      "dct:description": "Équations démographiques des unités légale et des établissements (A10)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_EQDEMO_A10/DS_SIDE_EQDEMO_A10_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 306870,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/4dd07ac3-1795-4e70-9956-165273afd3ab",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_EQDEMO_A21",
+      "dct:title": "Équations démographiques des unités légales et des établissements (A21)",
+      "dct:description": "Les équations démographiques sont disponibles pour les unités légales et les établissements. Elles sont détaillées selon le secteur d'activité (A21 hors agriculture) ou la forme légale, au niveau géographique France. L'ensemble est également disponible par région.\nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS) indique si la donnée est manquante (O) ou non.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_EQDEMO_A21",
+      "dcat:keyword": [
+        "Statistiques",
+        "Entreprises"
+      ],
+      "dct:issued": "2025-03-26T17:05:38",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2014-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/92544eaf-6f19-4739-a8d1-afa12e2c587a",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/92544eaf-6f19-4739-a8d1-afa12e2c587a",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_EQDEMO_A21_2022_CSV_FR",
+      "dct:title": "Équations démographiques des unités légale et des établissements (A21)",
+      "dct:description": "Équations démographiques des unités légale et des établissements (A21)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_EQDEMO_A21/DS_SIDE_EQDEMO_A21_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 60796,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/34fd658c-724c-4876-ae62-1cb2a4fc8042",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_STOCKS_A21",
+      "dct:title": "Stocks d'unités légales et d'établissements par activité (A21) et forme légale",
+      "dct:description": "Les unités légales sont comptabilisées selon leur secteur d'activité (A21 hors agriculture), pour les années 2014 à 2022, par forme légale et tranche d'effectif salarié. Elles sont disponibles à différents niveaux géographiques (département, région,  France).\nL'activité est détaillée à un niveau plus fin (APE) pour le niveau national dans le fichier csv présent sous l'onglet \"Données\". \nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS) indique si la donnée est manquante (O) ou non, et le statut de confidentialité (CONF_STATUS) indique si la donnée est confidentielle (C) ou non.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_STOCKS_A21",
+      "dcat:keyword": [
+        "Statistiques",
+        "Entreprises"
+      ],
+      "dct:issued": "2025-03-26T16:50:12",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2014-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/e78e8061-234b-4ac9-8874-66e215d2ebfb",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/e78e8061-234b-4ac9-8874-66e215d2ebfb",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_STOCKS_A21_2022_CSV_FR",
+      "dct:title": "Stocks d'unités légales et d'établissements par activité (A21)",
+      "dct:description": "Stocks d'unités légales et d'établissements par activité (A21)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_STOCKS_A21/DS_SIDE_STOCKS_A21_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 6875788,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/37adaca8-a508-45c0-adbf-cd6570814c99",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_STOCKS_EI",
+      "dct:title": "Stocks d'unités légales et d'établissements des entreprises individuelles par activité (A21)",
+      "dct:description": "Les données sont détaillées selon le secteur d'activité (A21 hors agriculture), la forme légale et le sexe, pour les années 2014 à 2022. Elles sont disponibles à différents niveaux géographiques (département, région, France).\nL'activité est détaillée à un niveau plus fin (APE) par sexe, pour le niveau national, dans le fichier csv présent sous l'onglet \"Données\". \nPour chacune des observations contenues dans le jeu de données, le statut de l’observation (OBS_STATUS) indique si la donnée est manquante (O) ou non, et le statut de confidentialité (CONF_STATUS) indique si la donnée est confidentielle (C) ou non.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_STOCKS_EI",
+      "dcat:keyword": [
+        "Statistiques",
+        "Entreprises"
+      ],
+      "dct:issued": "2025-03-26T16:50:27",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2014-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/2cf2d5b2-1a86-4573-8ef7-80788295355c",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/2cf2d5b2-1a86-4573-8ef7-80788295355c",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_STOCKS_EI_2022_CSV_FR",
+      "dct:title": "Stocks d'unités légales et d'établissements des entreprises individuelles par activité (A21)",
+      "dct:description": "Stocks d'unités légales et d'établissements des entreprises individuelles par activité (A21)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_STOCKS_EI/DS_SIDE_STOCKS_EI_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 2646612,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/b57de69e-6372-4b98-9111-c88235d038cf",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_STOCKS_ET_COM",
+      "dct:title": "Stocks d'établissements par activité (A10)",
+      "dct:description": "Les données sur les établissements sont comptabilisées selon leur secteur d'activité (A10 hors agriculture), pour les années 2014 à 2022. Elles sont disponibles à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_STOCKS_ET_COM",
+      "dcat:keyword": [
+        "Statistiques",
+        "Entreprises"
+      ],
+      "dct:issued": "2025-03-26T16:50:42",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2014-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/55acadd3-cfa9-467d-b674-92cee56102ee",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/55acadd3-cfa9-467d-b674-92cee56102ee",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_STOCKS_ET_COM_2022_CSV_FR",
+      "dct:title": "Stocks d'établissements par activité (A10)",
+      "dct:description": "Stocks d'établissements par activité (A10)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_STOCKS_ET_COM/DS_SIDE_STOCKS_ET_COM_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 19015988,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/83c92e3b-8c49-4a91-a1d4-bd08f9c8702c",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SIDE_STOCKS_UL_COM",
+      "dct:title": "Stocks d'unités légales par activité (A10)",
+      "dct:description": "Les unités légales sont comptabilisées selon leur secteur d'activité (A10 hors agriculture), pour les années 2014 à 2022. Elles sont disponibles à différents niveaux géographiques (commune, arrondissement municipal, arrondissement, département, région, établissement public de coopération intercommunal, unité urbaines 2020, aire d'attraction des villes 2020, bassin de vie 2022, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SIDE_STOCKS_UL_COM",
+      "dcat:keyword": [
+        "Statistiques",
+        "Entreprises"
+      ],
+      "dct:issued": "2025-03-26T16:51:07",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2014-01-01/2022-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/5b0ce3bb-6999-403b-be55-f982e5aa0057",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/5b0ce3bb-6999-403b-be55-f982e5aa0057",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SIDE_STOCKS_UL_COM_2022_CSV_FR",
+      "dct:title": "Stocks d'unités légales par activité (A10)",
+      "dct:description": "Stocks d'unités légales par activité (A10)",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SIDE_STOCKS_UL_COM/DS_SIDE_STOCKS_UL_COM_2022_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 19011420,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/ccb41058-45cd-4477-903f-e3cb58a339f7",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SRCV_CONFIANCE",
+      "dct:title": "Conditions de vie : confiance envers les autres",
+      "dct:description": "Données annuelles sur le niveau de confiance envers les personnes inconnues. Celui-ci est évalué sur une échelle allant de 0 (pas du tout confiance) à 10 (totalement confiance). Ces indicateurs sont déclinés selon le sexe, l'âge, le diplôme, la profession et catégorie socio-professionnelle (PCS), le niveau de vie du ménage, la composition de la famille, la situation vis-à-vis de l'emploi, la nationalité, la note donnée à l'état de santé en général et le nombre de difficultés matérielles rencontrées dans le ménage.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SRCV_CONFIANCE",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2024-11-27T10:14:19",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2020-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/17e1b3a7-c769-4068-9bc4-3273079e8413",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/17e1b3a7-c769-4068-9bc4-3273079e8413",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SRCV_CONFIANCE_CSV_FR",
+      "dct:title": "Conditions de vie : confiance envers les autres",
+      "dct:description": "Conditions de vie : confiance envers les autres",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SRCV_CONFIANCE/DS_SRCV_CONFIANCE_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 4130,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/a4a7f9b9-a5c0-4345-9dda-7ebe9d87440a",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SRCV_PMS",
+      "dct:title": "Privations matérielles et sociales",
+      "dct:description": "Données annuelles sur la privation matérielle et sociale. L'indicateur européen de privation matérielle et sociale mesure la part de la population se trouvant dans l’incapacité de couvrir les dépenses liées à au moins cinq éléments de la vie courante sur les 13 considérés comme souhaitables, voire nécessaires, pour avoir un niveau de vie acceptable. Il est décliné selon l'âge, le sexe, le niveau de vie du ménage, la composition de la famille, le diplôme, la catégorie socioprofessionnelle, la situation vis-à-vis de l'emploi, et la note donnée à l'état de santé en général.\nLes données annuelles sur la privation matérielle et sociale sont inclues dans les jeux de données à forte valeur désignées par Eurostat (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SRCV_PMS",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2024-12-10T12:45:56",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2020-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/216b66e5-02e6-44db-b43b-90a7f8089250",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/216b66e5-02e6-44db-b43b-90a7f8089250",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SRCV_PMS_CSV_FR",
+      "dct:title": "Privations matérielles et sociales",
+      "dct:description": "Privations matérielles et sociales",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SRCV_PMS/DS_SRCV_PMS_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 35933,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/057a22da-bfa3-40c4-8764-25fe31a5620a",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_SRCV_SATISFACTION",
+      "dct:title": "Conditions de vie : niveau de satisfaction",
+      "dct:description": "Données annuelles sur la satisfaction subjective des personnes. Sur une échelle allant de 0 (pas du tout satisfait) à 10 (entièrement satisfait), la satisfaction est évaluée dans trois domaines : la vie en général, les relations sociales, le travail. Ces indicateurs sont notamment déclinés selon le sexe, l'âge, le niveau de vie du ménage, le diplôme, la profession et catégorie socio-professionnelle (PCS), la situation vis-à-vis de l'emploi, la nationalité, la composition de la famille, la note donnée à l'état de santé en général, la limitation des activités courantes et le nombre de difficultés matérielles rencontrées dans le ménage. ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_SRCV_SATISFACTION",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2024-11-27T10:14:28",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2010-01-01/2023-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/1c292b0a-daa7-4835-b7d0-aa9f5bfeab84",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/1c292b0a-daa7-4835-b7d0-aa9f5bfeab84",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_SRCV_SATISFACTION_CSV_FR",
+      "dct:title": "Conditions de vie : niveau de satisfaction",
+      "dct:description": "Conditions de vie : niveau de satisfaction",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_SRCV_SATISFACTION/DS_SRCV_SATISFACTION_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 44530,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/e3ecbe83-3c84-4a50-98cb-236b6261293b",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_TICM_EQUIPEMENT",
+      "dct:title": "Équipement des ménages en internet ",
+      "dct:description": "Données annuelles sur le taux d'équipement des ménages en Internet à domicile et également en haut débit fixe ou mobile, déclinées par sexe, âge et catégorie socio-professionnelle (PCS).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_TICM_EQUIPEMENT",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2024-11-15T10:15:00",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2009-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/fe5f6fb9-d7a1-41fc-8988-189d64441d98",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/fe5f6fb9-d7a1-41fc-8988-189d64441d98",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_TICM_EQUIPEMENT_CSV_FR",
+      "dct:title": "Équipement des ménages en internet ",
+      "dct:description": "Équipement des ménages en internet ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_TICM_EQUIPEMENT/DS_TICM_EQUIPEMENT_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 8119,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/decb7ef6-6c9a-4a38-8e33-eabb4d5056cd",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_TICM_PRATIQUES",
+      "dct:title": "Pratiques en ligne des personnes ",
+      "dct:description": "Données annuelles sur les pratiques en ligne des personnes dont l'usage d'internet, la consultation d'un compte bancaire en ligne, les posts sur les réseaux sociaux, l'achat ou la vente en ligne.",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_TICM_PRATIQUES",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2024-11-15T10:15:09",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2009-01-01/2024-01-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/ed0e8891-8ea5-4ec4-b8bf-67349ca188e4",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/ed0e8891-8ea5-4ec4-b8bf-67349ca188e4",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_TICM_PRATIQUES_CSV_FR",
+      "dct:title": "Pratiques en ligne des personnes ",
+      "dct:description": "Pratiques en ligne des personnes ",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_TICM_PRATIQUES/DS_TICM_PRATIQUES_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 39732,
+      "dcat:mime": "text/csv"
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/acc4fa69-d5f8-44c3-a8b8-b04cbc80675c",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_TOUR_CAP",
+      "dct:title": "Capacités d'hébergements touristiques",
+      "dct:description": "Les données sur le nombre d'établissements d'hébergement touristiques sont détaillées avec le nombre de chambres, de lits ou d'emplacements de campings. Ces données sont annuelles et disponibles par type d'hébergement (hôtels, campings et autres hébergements), nombre d'étoiles et à différents niveaux géographiques (commune, aire d'attraction des villes 2020, arrondissement, arrondissement municipal, bassin de vie 2022, département, établissement public de coopération intercommunal, région, unité urbaine 2020, zone d'emploi 2020, France).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_TOUR_CAP",
+      "dcat:keyword": [
+        "Statistiques"
+      ],
+      "dct:issued": "2025-06-16T14:14:55",
+      "dct:accrualPeriodicity": "annual",
+      "dct:temporal": "2025-01-01/2025-01-01",
+      "dcat:distribution": [],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/jeuDeDonnees/0358c849-72f9-4e8e-bdb8-377d4d863781",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "DS_TOUR_FREQ",
+      "dct:title": "Fréquentation des hébergements touristiques ",
+      "dct:description": "Données portant sur la fréquentation des hébergements touristiques selon le nombre de nuitées, arrivées, durées de séjour des touristes pour les hôtels, campings et autres hébergements touristiques. Les indicateurs disponibles varient selon la fréquence (annuelle, trimestrielle ou mensuelle). \nCe jeu de données contient des données à forte valeur «flux touristiques en Europe» désignées par Eurostat (HVD).",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:landingPage": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_TOUR_FREQ",
+      "dcat:keyword": [
+        "Statistiques",
+        "HVD"
+      ],
+      "dct:issued": "2023-11-29T16:37:00",
+      "dct:accrualPeriodicity": "quarterly",
+      "dct:temporal": "2011-01-01/2025-06-01",
+      "dcat:distribution": [
+        {
+          "@id": "http://id.insee.fr/catalogues/distribution/603c966a-1d2d-4e4b-8916-669888470f97",
+          "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+        }
+      ],
+      "dcat:contactPoint": {
+        "@id": "https://portail-api.insee.fr/user/contact",
+        "@type": [
+          "http://www.w3.org/2006/vcard/ns#Organization"
+        ],
+        "http://www.w3.org/2006/vcard/ns#fn": [
+          {
+            "@value": "Contact pour le portail des API"
+          }
+        ],
+        "http://www.w3.org/2006/vcard/ns#hasEmail": [
+          {
+            "@value": "support-apim@insee.fr"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "http://id.insee.fr/catalogues/distribution/603c966a-1d2d-4e4b-8916-669888470f97",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "DS_TOUR_FREQ_CSV_FR",
+      "dct:title": "Fréquentation des hébergements touristiques",
+      "dct:description": "Fréquentation des hébergements touristiques",
+      "dct:license": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+      "dcat:downloadURL": "https://api.insee.fr/melodi/file/DS_TOUR_FREQ/DS_TOUR_FREQ_CSV_FR",
+      "dcat:mediaType": "text/csv",
+      "dcat:filesize": 1433775,
+      "dcat:mime": "text/csv"
+    }
+  ]
+}

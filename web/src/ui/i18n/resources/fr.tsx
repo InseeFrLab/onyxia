@@ -543,6 +543,7 @@ export const translations: Translations<"fr"> = {
             "Fonctionnalités spécifiques à cette instance d'Onyxia",
         dataExplorer: "Explorateur de Données",
         fileExplorer: "Explorateur de Fichiers",
+        dataCollection: "Explorateur de Collections",
         sqlOlapShell: "Coquille SQL OLAP"
     },
     AutoLogoutCountdown: {
@@ -1184,6 +1185,16 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             return `${count} élément${plural} sélectionnée${plural}`;
         },
         "label rows per page": "Éléments par page"
+    },
+    DatasetCard: {
+        publishedOn: "Publié le",
+        datasetPage: "Page du jeu de données",
+        license: "Licence :",
+        format: "Format",
+        size: "Taille",
+        distributions: "Distributions",
+        visualize: "Visualiser",
+        unknown: "Inconnu"
     }
     /* spell-checker: enable */
 };

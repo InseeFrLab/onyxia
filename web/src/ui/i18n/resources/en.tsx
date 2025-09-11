@@ -529,6 +529,7 @@ export const translations: Translations<"en"> = {
         "divider: external services features": "External services features",
         "divider: onyxia instance specific features": "Onyxia instance specific features",
         dataExplorer: "Data Explorer",
+        dataCollection: "Data Collection",
         fileExplorer: "File Explorer",
         sqlOlapShell: "SQL Olap Shell"
     },
@@ -1158,5 +1159,15 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Columns"
+    },
+    DatasetCard: {
+        publishedOn: "Published on",
+        datasetPage: "Dataset page",
+        license: "License:",
+        format: "Format",
+        size: "Size",
+        distributions: "Distributions",
+        visualize: "Visualize",
+        unknown: "Unknown"
     }
 };

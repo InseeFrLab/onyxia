@@ -540,6 +540,7 @@ export const translations: Translations<"en"> = {
         "divider: onyxia instance specific features":
             "Funciones específicas de la instancia de Onyxia",
         dataExplorer: "Explorador de datos",
+        dataCollection: "Explorador de colecciones",
         fileExplorer: "Explorador de archivos",
         sqlOlapShell: "SQL Olap Shell"
     },
