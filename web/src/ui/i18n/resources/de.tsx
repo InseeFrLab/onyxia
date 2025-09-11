@@ -537,6 +537,7 @@ export const translations: Translations<"de"> = {
             "Funktionen spezifisch für diese Onyxia-Instanz",
         dataExplorer: "Daten-Explorer",
         fileExplorer: "Datei-Explorer",
+        dataCollection: "Sammlungs-Explorer",
         sqlOlapShell: "SQL OLAP-Shell"
     },
     AutoLogoutCountdown: {

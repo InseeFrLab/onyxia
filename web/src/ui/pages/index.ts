@@ -12,6 +12,7 @@ import * as document from "./document";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as fileExplorer from "./fileExplorerEntry";
+import * as dataCollection from "./dataCollection";
 
 import { objectKeys } from "tsafe/objectKeys";
 import type { UnionToIntersection } from "tsafe";
@@ -31,7 +32,8 @@ export const pages = {
     document,
     sqlOlapShell,
     dataExplorer,
-    fileExplorer
+    fileExplorer,
+    dataCollection
 };
 
 export const routeDefs = {} as UnionToIntersection<

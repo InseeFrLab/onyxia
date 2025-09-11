@@ -1,0 +1,244 @@
+{
+  "@graph": [
+    {
+      "@id": "_:b0",
+      "@type": "spdx:Checksum",
+      "spdx:algorithm": {
+        "@id": "spdx:checksumAlgorithm_sha1"
+      },
+      "spdx:checksumValue": "f077562914af1e34fa0c67f6ddfd0ff09da7759b"
+    },
+    {
+      "@id": "_:b1",
+      "@type": "spdx:Checksum",
+      "spdx:algorithm": {
+        "@id": "spdx:checksumAlgorithm_sha1"
+      },
+      "spdx:checksumValue": "c357ed3978506be570ebf693325f9e5df7cef92e"
+    },
+    {
+      "@id": "http://data.europa.eu/88u/distribution/a0b17c9b-aeac-45a2-bd91-b81c65a37de4",
+      "dct:license": {
+        "@id": "https://www.etalab.gouv.fr/wp-content/uploads/2014/05/Licence_Ouverte.pdf"
+      },
+      "dcat:byteSize": {
+        "@value": "119972139",
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      "dct:rights": "Licence Ouverte / Open Licence",
+      "dcat:downloadURL": {
+        "@id": "https://static.data.gouv.fr/resources/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques/20250910-044131/consolidation-etalab-schema-irve-statique-v-2.3.1-20250910.csv"
+      },
+      "dct:modified": {
+        "@value": "2025-09-10T04:41:38.112",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "dct:description": "None",
+      "@type": "dcat:Distribution",
+      "dct:identifier": "2729b192-40ab-4454-904d-735084dca3a3",
+      "dcat:mediaType": "text/csv",
+      "dct:title": "Consolidation de la v2.3.1 du schéma - 20250910",
+      "dcat:accessURL": {
+        "@id": "https://www.data.gouv.fr/api/1/datasets/r/2729b192-40ab-4454-904d-735084dca3a3"
+      },
+      "spdx:checksum": {
+        "@id": "_:b2"
+      },
+      "dct:issued": {
+        "@value": "2024-04-29T10:14:03.568",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "dct:format": "csv"
+    },
+    {
+      "@id": "_:b2",
+      "spdx:algorithm": {
+        "@id": "spdx:checksumAlgorithm_sha1"
+      },
+      "spdx:checksumValue": "f077562914af1e34fa0c67f6ddfd0ff09da7759b",
+      "@type": "spdx:Checksum"
+    },
+    {
+      "@id": "http://data.europa.eu/88u/distribution/ab947772-d970-4179-93b5-087baa990554",
+      "dct:modified": {
+        "@value": "2025-09-10T04:41:48.006",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "spdx:checksum": {
+        "@id": "_:b0"
+      },
+      "@type": "dcat:Distribution",
+      "dct:issued": {
+        "@value": "2024-02-08T15:47:38.841",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "dcat:downloadURL": {
+        "@id": "https://static.data.gouv.fr/resources/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques/20250910-044141/consolidation-etalab-schema-irve-statique-v-2.3.1-20250910.csv"
+      },
+      "dct:description": "None",
+      "dct:rights": "Licence Ouverte / Open Licence",
+      "dcat:byteSize": {
+        "@value": "119972139",
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      "dct:format": "csv",
+      "dcat:mediaType": "text/csv",
+      "dcat:accessURL": {
+        "@id": "https://www.data.gouv.fr/api/1/datasets/r/eb76d20a-8501-400e-b336-d85724de5435"
+      },
+      "dct:title": "Consolidation de la dernière version à date du schéma (v2.3.1) - 20250910",
+      "dct:license": {
+        "@id": "https://www.etalab.gouv.fr/wp-content/uploads/2014/05/Licence_Ouverte.pdf"
+      },
+      "dct:identifier": "eb76d20a-8501-400e-b336-d85724de5435"
+    },
+    {
+      "@id": "_:b3",
+      "spdx:checksumValue": "5b6affe485bc7992ffe2f2316f1e055055f8e18a",
+      "spdx:algorithm": {
+        "@id": "spdx:checksumAlgorithm_sha1"
+      },
+      "@type": "spdx:Checksum"
+    },
+    {
+      "@id": "http://data.europa.eu/88u/dataset/5448d3e0c751df01f85d0572",
+      "dcat:keyword": [
+        "localisation",
+        "electrique",
+        "irve",
+        "geolocalisation",
+        "borne-de-recharge",
+        "etalab-schema-irve-consolidation",
+        "vehicule",
+        "transport",
+        "recharge",
+        "vehicule-electrique",
+        "vehicules",
+        "bornes-de-recharge",
+        "bornes"
+      ],
+      "dcat:landingPage": {
+        "@id": "https://www.data.gouv.fr/datasets/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques/"
+      },
+      "dct:description": "Aménageurs, collectivités, producteurs de données : [retrouvez ici la documentation complète pour référencer vos bornes](https://doc.transport.data.gouv.fr/producteurs/infrastructures-de-recharge-de-vehicules-electriques-irve).\n\n## Contexte\n\nDans le but de constituer un répertoire national des Infrastructures de recharge pour véhicules électriques (IRVE), ouvert et accessible à tous, les collectivités locales porteuses d’un projet d’installation d’IRVE doivent, au fur et à mesure de la mise en service des stations, publier sur la plateforme data.gouv.fr les données statiques relatives à la localisation et aux caractéristiques techniques de ces installations selon les modalités définies dans l’[arrêté du 4 mai 2021](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043475441).\nL'équipe data.gouv.fr consolide l'ensemble des jeux de données produits par les différents acteurs territoriaux sur un jeu de donnée consolidé. Celui-ci a pour objectif d'être le plus exhaustif possible et ambitionne de regrouper l'ensemble des bornes IRVE françaises.\n\n## Versions\n\nUne nouvelle version du [schéma de données](https://schema.data.gouv.fr/etalab/schema-irve-statique/latest.html) a été publiée le 17 octobre 2022 (v2.1.0). Elle simplifie la version 2.0.3 en rendant certains champs facultatifs.\nLa version v1.0.3 du schéma n'est plus consolidée mais reste historisée dans ce jeu de données.\n\n## Consolidation\n\nPour que vos données soient intégrées à la base nationale consolidée, vous devez au préalable [produire](https://doc.transport.data.gouv.fr/producteurs/infrastructures-de-recharge-de-vehicules-electriques-irve/produire-ses-donnees) et [publier](https://doc.transport.data.gouv.fr/producteurs/infrastructures-de-recharge-de-vehicules-electriques-irve/publier-ses-donnees-sur-data.gouv.fr) votre propre jeu de données conformément au schéma de données. Le processus de consolidation est consultable [ici](https://github.com/datagouv/datagouvfr_data_pipelines/tree/main/schema/scripts/schemas_consolidation) (NB : il concerne l'ensemble des schémas de données, pas seulement le [schéma IRVE](https://schema.data.gouv.fr/etalab/schema-irve-statique/latest.html), bien que celui-ci ait un traitement supplémentaire).\n\nSi vous ne trouvez pas vos données dans la base consolidée, c'est qu'elles contiennent probablement des erreurs par rapport au schéma attendu.\n\nPour disposer du rapport d'erreur, vous pouvez utiliser l'outil [Validata](https://validata.fr/table-schema?schema_name=schema-datagouvfr.etalab%2Fschema-irve-statique).\n\nPour  plus d'information sur le process de la production des données à leur consolidation, rendez-vous [ici](https://doc.transport.data.gouv.fr/producteurs/infrastructures-de-recharge-de-vehicules-electriques-irve)\n\n![De la production de vos données à leur consolidation dans la base nationale](https://3621920706-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LYbYk9lnsDJecXtCHYd-887967055%2Fuploads%2FuXx8uuq34Xu5oHFr1Js0%2Fimage.png?alt=media\\&token=92ff2df0-df5c-4810-a764-15e8a2a4d546 \"entrez le titre de l'image ici\")\n",
+      "dcat:distribution": [
+        {
+          "@id": "http://data.europa.eu/88u/distribution/ab947772-d970-4179-93b5-087baa990554"
+        },
+        {
+          "@id": "http://data.europa.eu/88u/distribution/ef849c46-c6eb-441e-a0d6-ffe6e026c4d2"
+        },
+        {
+          "@id": "http://data.europa.eu/88u/distribution/a0b17c9b-aeac-45a2-bd91-b81c65a37de4"
+        },
+        {
+          "@id": "http://data.europa.eu/88u/distribution/9f399d86-e93c-4623-b2e7-4b07419bcf40"
+        }
+      ],
+      "dct:title": "Fichier consolidé des Bornes de Recharge pour Véhicules Électriques",
+      "dct:accrualPeriodicity": {
+        "@id": "http://purl.org/cld/freq/daily"
+      },
+      "dct:publisher": {
+        "@id": "https://www.data.gouv.fr/organizations/646b7187b50b2a93b1ae3d45/"
+      },
+      "dct:issued": {
+        "@value": "2014-10-23T12:09:36.538",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "@type": "dcat:Dataset",
+      "dct:identifier": "5448d3e0c751df01f85d0572",
+      "dct:modified": {
+        "@value": "2025-09-10T04:43:20.087",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "skos:altLabel": "IRVE"
+    },
+    {
+      "@id": "https://www.data.gouv.fr/organizations/646b7187b50b2a93b1ae3d45/",
+      "foaf:name": "data.gouv.fr",
+      "@type": "foaf:Organization",
+      "foaf:homepage": {
+        "@id": "https://www.data.gouv.fr/"
+      },
+      "rdfs:label": "data.gouv.fr"
+    },
+    {
+      "@id": "http://data.europa.eu/88u/distribution/ef849c46-c6eb-441e-a0d6-ffe6e026c4d2",
+      "dct:title": "Export au format geojson (v2.3.1)",
+      "dct:description": "None",
+      "dcat:accessURL": {
+        "@id": "https://www.data.gouv.fr/api/1/datasets/r/7eee8f09-5d1b-4f48-a304-5e99e8da1e26"
+      },
+      "dct:identifier": "7eee8f09-5d1b-4f48-a304-5e99e8da1e26",
+      "dcat:byteSize": {
+        "@value": "453149190",
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      "dct:format": "geojson",
+      "dct:modified": {
+        "@value": "2025-09-10T04:42:16.837",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "@type": "dcat:Distribution",
+      "spdx:checksum": {
+        "@id": "_:b3"
+      },
+      "dct:rights": "Licence Ouverte / Open Licence",
+      "dcat:downloadURL": {
+        "@id": "https://static.data.gouv.fr/resources/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques/20250910-044153/consolidation-etalab-schema-irve-statique-v-2.3.1-20250910.geojson"
+      },
+      "dct:license": {
+        "@id": "https://www.etalab.gouv.fr/wp-content/uploads/2014/05/Licence_Ouverte.pdf"
+      },
+      "dct:issued": {
+        "@value": "2022-07-26T09:44:37.366",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "dcat:mediaType": "application/geo+json"
+    },
+    {
+      "@id": "http://data.europa.eu/88u/distribution/9f399d86-e93c-4623-b2e7-4b07419bcf40",
+      "dct:issued": {
+        "@value": "2021-06-04T19:42:36.639",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "@type": "dcat:Distribution",
+      "dcat:downloadURL": {
+        "@id": "https://static.data.gouv.fr/resources/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques/20250910-044319/ref-table-etalab-schema-irve-statique.csv"
+      },
+      "dcat:mediaType": "text/csv",
+      "dct:modified": {
+        "@value": "2025-09-10T04:43:20.085",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      "dcat:byteSize": {
+        "@value": "1374594",
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      "spdx:checksum": {
+        "@id": "_:b1"
+      },
+      "dcat:accessURL": {
+        "@id": "https://www.data.gouv.fr/api/1/datasets/r/41b0514d-956d-4e42-80ef-1dcf88cc74e9"
+      },
+      "dct:license": {
+        "@id": "https://www.etalab.gouv.fr/wp-content/uploads/2014/05/Licence_Ouverte.pdf"
+      },
+      "dct:identifier": "41b0514d-956d-4e42-80ef-1dcf88cc74e9",
+      "dct:format": "csv",
+      "dct:rights": "Licence Ouverte / Open Licence",
+      "dct:description": "None",
+      "dct:title": "Documentation sur la consolidation - 20250910"
+    }
+  ],
+  "@context": {
+    "dct": "http://purl.org/dc/terms/",
+    "spdx": "http://spdx.org/rdf/terms#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "foaf": "http://xmlns.com/foaf/0.1/"
+  }
+}
