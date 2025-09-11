@@ -14,6 +14,7 @@ import * as document from "./document";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as fileExplorer from "./fileExplorerEntry";
+import * as dataCollection from "./dataCollection";
 
 export const pages = {
     account,
@@ -29,7 +30,8 @@ export const pages = {
     document,
     sqlOlapShell,
     dataExplorer,
-    fileExplorer
+    fileExplorer,
+    dataCollection
 };
 
 export const { routeDefs } = mergeRouteDefs({ pages });

@@ -494,6 +494,7 @@ export const translations: Translations<"zh-CN"> = {
         "divider: onyxia instance specific features": "Onyxia实例特定功能",
         dataExplorer: "数据浏览器",
         fileExplorer: "文件浏览器",
+        dataCollection: "集合浏览器",
         sqlOlapShell: "SQL OLAP 外壳"
     },
     AutoLogoutCountdown: {

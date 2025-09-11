@@ -70,7 +70,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/AutoInjectSwitch").I18n
     | import("ui/pages/myService/Page").I18n
     | import("ui/pages/myService/PodLogsTab").I18n
-    | import("ui/pages/myService/MyServiceButtonBar").I18n
+    | import("ui/pages/my:Service/MyServiceButtonBar").I18n
     | import("ui/pages/myServices/Page").I18n
     | import("ui/pages/myServices/ClusterEventsDialog").I18n
     | import("ui/pages/myServices/MyServicesConfirmDeleteDialog").I18n
@@ -86,6 +86,7 @@ export type ComponentKey =
     | import("ui/pages/myServices/Quotas/CircularUsage").I18n
     | import("ui/pages/myServices/Quotas/Quotas").I18n
     | import("ui/pages/dataExplorer/Page").I18n
+    | import("ui/pages/dataCollection/DatasetCard").I18n
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
     | import("ui/shared/formattedDate/type").I18n
