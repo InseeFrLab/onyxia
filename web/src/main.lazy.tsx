@@ -1,8 +1,19 @@
 /* eslint-disable react-refresh/only-export-components */
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
-const App = lazy(() => import("ui/App"));
-const AppWithoutScreenScaler = lazy(() => import("ui/App/App"));
+import { enableScreenScaler } from "screen-scaler";
+import {
+    OnyxiaUi,
+    targetWindowInnerWidth,
+    loadThemedFavicon,
+    injectCustomFontFaceIfNotAlreadyDone
+} from "ui/theme";
+import { Evt } from "evt";
+import { useRerenderOnStateChange } from "evt/hooks";
+
+loadThemedFavicon();
+// NOTE: We do that only to showcase the app with an other font with the URL.
+injectCustomFontFaceIfNotAlreadyDone();
 
 {
     const version = import.meta.env.WEB_VERSION;
@@ -15,14 +26,35 @@ const AppWithoutScreenScaler = lazy(() => import("ui/App/App"));
     );
 }
 
+const evtIsPortraitOrientation = Evt.create<boolean | undefined>(undefined);
+
+if (import.meta.env.SCREEN_SCALER !== "false") {
+    enableScreenScaler({
+        rootDivId: "root",
+        targetWindowInnerWidth: ({ zoomFactor, isPortraitOrientation }) => {
+            evtIsPortraitOrientation.state = isPortraitOrientation;
+
+            return isPortraitOrientation
+                ? undefined
+                : targetWindowInnerWidth * zoomFactor;
+        }
+    });
+}
+
+const App = lazy(() => import("ui/App"));
+
+function Root() {
+    useRerenderOnStateChange(evtIsPortraitOrientation);
+
+    return (
+        <Suspense>
+            <App isPortraitOrientation={evtIsPortraitOrientation.state} />
+        </Suspense>
+    );
+}
+
 createRoot(document.getElementById("root")!).render(
-    <Suspense>
-        {import.meta.env.SCREEN_SCALER !== "false" ? (
-            /** Default case */
-            <App />
-        ) : (
-            /** For debugging cases that might be related to the screen scaler */
-            <AppWithoutScreenScaler />
-        )}
-    </Suspense>
+    <OnyxiaUi>
+        <Root />
+    </OnyxiaUi>
 );

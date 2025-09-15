@@ -3,17 +3,12 @@ import { tss } from "tss";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
-import { useSplashScreen, useDarkMode } from "onyxia-ui";
+import { useDarkMode } from "onyxia-ui";
 import { env, injectEnvsTransferableToKeycloakTheme } from "env";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCore } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang, I18nFetchingSuspense } from "ui/i18n";
-import {
-    OnyxiaUi,
-    loadThemedFavicon,
-    injectCustomFontFaceIfNotAlreadyDone
-} from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
@@ -21,10 +16,7 @@ import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { injectOnyxiaInstancePublicUrl } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
-
-loadThemedFavicon();
-// NOTE: We do that only to showcase the app with an other font with the URL.
-injectCustomFontFaceIfNotAlreadyDone();
+import { useSplashScreen } from "onyxia-ui";
 
 const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
@@ -48,47 +40,43 @@ const { CoreProvider } = createCoreProvider({
 });
 
 type Props = {
-    className?: string;
-    ScreenScalerOutOfRangeFallbackProvider?: (props: {
-        fallback: JSX.Element;
-        children: JSX.Element;
-    }) => JSX.Element;
+    isPortraitOrientation: boolean | undefined;
 };
 
-export default function App(props: Props) {
-    const {
-        className,
-        ScreenScalerOutOfRangeFallbackProvider = ({ children }) => <>{children}</>
-    } = props;
+export function App(props: Props) {
+    const { isPortraitOrientation } = props;
+
+    if (isPortraitOrientation === true) {
+        return <PortraitModeFallback />;
+    }
+
     return (
         <RouteProvider>
             <I18nFetchingSuspense>
-                <OnyxiaUi>
-                    <ScreenScalerOutOfRangeFallbackProvider
-                        fallback={<ScreenScalerOutOfRangeFallback />}
-                    >
-                        <CoreProvider>
-                            <ContextualizedApp className={className} />
-                        </CoreProvider>
-                    </ScreenScalerOutOfRangeFallbackProvider>
-                </OnyxiaUi>
+                <CoreProvider>
+                    <AppContextualized
+                        isScreenScalerEnabled={isPortraitOrientation !== undefined}
+                    />
+                </CoreProvider>
             </I18nFetchingSuspense>
         </RouteProvider>
     );
 }
 
-function ScreenScalerOutOfRangeFallback() {
+function PortraitModeFallback() {
     const { hideRootSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        hideRootSplashScreen();
+        return () => {
+            hideRootSplashScreen();
+        };
     }, []);
 
     return <PortraitModeUnsupported />;
 }
 
-function ContextualizedApp(props: { className?: string }) {
-    const { className } = props;
+function AppContextualized(props: { isScreenScalerEnabled: boolean }) {
+    const { isScreenScalerEnabled } = props;
 
     useSyncDarkModeWithValueInProfile();
 
@@ -96,12 +84,12 @@ function ContextualizedApp(props: { className?: string }) {
         ref: globalAlertRef,
         domRect: { height: globalAlertHeight }
     } = useDomRect();
-    const { cx, classes } = useStyles({ globalAlertHeight });
+    const { classes } = useStyles({ globalAlertHeight, isScreenScalerEnabled });
     const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
     return (
         <>
-            <div className={cx(classes.root, className)}>
+            <div className={classes.root}>
                 {env.GLOBAL_ALERT !== undefined && (
                     <GlobalAlert
                         ref={globalAlertRef}
@@ -124,15 +112,15 @@ function ContextualizedApp(props: { className?: string }) {
 
 const useStyles = tss
     .withName({ App })
-    .withParams<{ globalAlertHeight: number }>()
-    .create(({ theme, globalAlertHeight }) => {
+    .withParams<{ globalAlertHeight: number; isScreenScalerEnabled: boolean }>()
+    .create(({ theme, globalAlertHeight, isScreenScalerEnabled }) => {
         const footerHeight = 32;
 
         const rootRightLeftMargin = theme.spacing(4);
 
         return {
             root: {
-                height: "100vh",
+                height: isScreenScalerEnabled ? "100%" : "100vh",
                 display: "flex",
                 flexDirection: "column",
                 margin: `0 ${rootRightLeftMargin}px`,

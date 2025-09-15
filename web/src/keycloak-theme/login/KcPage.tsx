@@ -1,16 +1,10 @@
-import { Suspense, lazy } from "react";
+import { lazy } from "react";
 import type { ClassKey } from "keycloakify/login";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 import type { KcContext } from "./KcContext";
 import { useI18n } from "./i18n";
-import { loadThemedFavicon } from "keycloak-theme/login/theme";
 import { tss } from "tss";
-import { OnyxiaUi } from "keycloak-theme/login/theme";
 import { env } from "env";
-import { injectCustomFontFaceIfNotAlreadyDone } from "ui/theme/injectCustomFontFaceIfNotAlreadyDone";
-
-injectCustomFontFaceIfNotAlreadyDone();
-loadThemedFavicon();
 
 const DefaultTemplate = lazy(() => import("keycloakify/login/Template"));
 const Template = lazy(() => import("./Template"));
@@ -29,14 +23,6 @@ type Props = {
 };
 
 export default function KcApp(props: Props) {
-    return (
-        <OnyxiaUi>
-            <ContextualizedKcApp {...props} />
-        </OnyxiaUi>
-    );
-}
-
-function ContextualizedKcApp(props: Props) {
     const { kcContext } = props;
 
     //kcContext.realm.internationalizationEnabled = false;
@@ -49,73 +35,64 @@ function ContextualizedKcApp(props: Props) {
 
     const { i18n } = useI18n({ kcContext });
 
-    return (
-        <Suspense>
-            {(() => {
-                switch (kcContext.pageId) {
-                    case "login.ftl":
-                        return (
-                            <Login
-                                kcContext={kcContext}
-                                i18n={i18n}
-                                Template={Template}
-                                doUseDefaultCss={false}
-                            />
-                        );
-                    case "register.ftl":
-                        return (
-                            <Register
-                                kcContext={kcContext}
-                                i18n={i18n}
-                                UserProfileFormFields={UserProfileFormFields}
-                                doMakeUserConfirmPassword={doMakeUserConfirmPassword}
-                                Template={Template}
-                                doUseDefaultCss={false}
-                            />
-                        );
-                    case "terms.ftl":
-                        return (
-                            <Terms
-                                kcContext={kcContext}
-                                i18n={i18n}
-                                Template={Template}
-                                doUseDefaultCss={false}
-                            />
-                        );
-                    case "idp-review-user-profile.ftl":
-                        return (
-                            <IdpReviewUserProfile
-                                kcContext={kcContext}
-                                i18n={i18n}
-                                UserProfileFormFields={UserProfileFormFields}
-                                Template={Template}
-                                doMakeUserConfirmPassword={doMakeUserConfirmPassword}
-                                doUseDefaultCss={false}
-                            />
-                        );
-                    default:
-                        //setBrowserColorSchemeToLight();
-                        return (
-                            <DefaultPage
-                                kcContext={kcContext}
-                                i18n={i18n}
-                                Template={DefaultTemplate}
-                                doUseDefaultCss={true}
-                                UserProfileFormFields={DefaultUserProfileFormFields}
-                                doMakeUserConfirmPassword={doMakeUserConfirmPassword}
-                                classes={{
-                                    ...defaultPageClasses,
-                                    kcFormCardClass: cx(
-                                        defaultPageClasses.kcFormCardClass,
-                                        "card-pf"
-                                    )
-                                }}
-                            />
-                        );
-                }
-            })()}
-        </Suspense>
-    );
+    switch (kcContext.pageId) {
+        case "login.ftl":
+            return (
+                <Login
+                    kcContext={kcContext}
+                    i18n={i18n}
+                    Template={Template}
+                    doUseDefaultCss={false}
+                />
+            );
+        case "register.ftl":
+            return (
+                <Register
+                    kcContext={kcContext}
+                    i18n={i18n}
+                    UserProfileFormFields={UserProfileFormFields}
+                    doMakeUserConfirmPassword={doMakeUserConfirmPassword}
+                    Template={Template}
+                    doUseDefaultCss={false}
+                />
+            );
+        case "terms.ftl":
+            return (
+                <Terms
+                    kcContext={kcContext}
+                    i18n={i18n}
+                    Template={Template}
+                    doUseDefaultCss={false}
+                />
+            );
+        case "idp-review-user-profile.ftl":
+            return (
+                <IdpReviewUserProfile
+                    kcContext={kcContext}
+                    i18n={i18n}
+                    UserProfileFormFields={UserProfileFormFields}
+                    Template={Template}
+                    doMakeUserConfirmPassword={doMakeUserConfirmPassword}
+                    doUseDefaultCss={false}
+                />
+            );
+        default:
+            //setBrowserColorSchemeToLight();
+            return (
+                <DefaultPage
+                    kcContext={kcContext}
+                    i18n={i18n}
+                    Template={DefaultTemplate}
+                    doUseDefaultCss={true}
+                    UserProfileFormFields={DefaultUserProfileFormFields}
+                    doMakeUserConfirmPassword={doMakeUserConfirmPassword}
+                    classes={{
+                        ...defaultPageClasses,
+                        kcFormCardClass: cx(defaultPageClasses.kcFormCardClass, "card-pf")
+                    }}
+                />
+            );
+    }
 }
 
 const doMakeUserConfirmPassword = false;

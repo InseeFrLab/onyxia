@@ -1,9 +1,23 @@
+/* eslint-disable react-refresh/only-export-components */
+import { StrictMode, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { assert } from "tsafe/assert";
-import KcLoginThemePage from "keycloak-theme/login/KcPage";
+import { OnyxiaUi, loadThemedFavicon } from "keycloak-theme/login/theme";
+import { injectCustomFontFaceIfNotAlreadyDone } from "ui/theme/injectCustomFontFaceIfNotAlreadyDone";
+
+injectCustomFontFaceIfNotAlreadyDone();
+loadThemedFavicon();
 
 assert(window.kcContext !== undefined);
 
+const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPage"));
+
 createRoot(document.getElementById("root")!).render(
-    <KcLoginThemePage kcContext={window.kcContext} />
+    <StrictMode>
+        <OnyxiaUi>
+            <Suspense>
+                <KcLoginThemePage kcContext={window.kcContext} />
+            </Suspense>
+        </OnyxiaUi>
+    </StrictMode>
 );

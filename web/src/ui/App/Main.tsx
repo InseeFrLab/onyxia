@@ -1,10 +1,10 @@
-import { useEffect, Suspense, memo } from "react";
+import { Suspense, memo, useEffect } from "react";
 import { tss } from "tss";
 import { useRoute } from "ui/routes";
-import { useSplashScreen } from "onyxia-ui";
 import { keyframes } from "tss-react";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
+import { useSplashScreen } from "onyxia-ui";
 
 type Props = {
     className?: string;
