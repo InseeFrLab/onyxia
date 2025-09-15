@@ -1,6 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
-import { fetchAndFrameCatalog } from "./decoupledLogic/jsonld";
+import { fetchCatalogAndConvertInDatasets } from "./decoupledLogic/jsonld";
 
 export const thunks = {
     initialize:
@@ -34,7 +34,6 @@ export const thunks = {
 
             const state = getState()[name];
 
-            console.log(state);
             const isSameSourceUrl =
                 state.queryParams && state.queryParams.sourceUrl === sourceUrl;
 
@@ -53,8 +52,9 @@ export const thunks = {
             );
 
             try {
-                const framed = await fetchAndFrameCatalog(sourceUrl);
-                dispatch(actions.querySucceeded({ rawCatalog: framed }));
+                const datasets = await fetchCatalogAndConvertInDatasets(sourceUrl);
+
+                dispatch(actions.querySucceeded({ datasets }));
             } catch (error) {
                 console.error("Erreur JSON-LD :", error);
                 dispatch(actions.queryFailed({ error: String(error) }));
