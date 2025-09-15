@@ -1,6 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
-import type { JsonLdDocument } from "jsonld";
 export const name = "dataCollection" as const;
 
 export type State = {
@@ -12,22 +11,42 @@ export type State = {
               page: number | undefined;
           }
         | undefined;
-    rawCatalog: JsonLdDocument | undefined;
     error: string | undefined;
+    datasets: State.Dataset[] | undefined;
 };
+
+export namespace State {
+    export type Dataset = {
+        id: string;
+        title: string;
+        description: string | undefined;
+        keywords: string[] | undefined;
+        issuedDate: string | undefined;
+        landingPageUrl: string | undefined;
+        licenseUrl: string | undefined;
+        distributions: Distribution[];
+    };
+
+    export type Distribution = {
+        id: string;
+        format: string | undefined;
+        downloadUrl: string | undefined;
+        accessUrl: string | undefined;
+        sizeInBytes?: number;
+    };
+}
 
 export const { actions, reducer } = createUsecaseActions({
     name,
     initialState: id<State>({
         isQuerying: false,
         queryParams: undefined,
-        rawCatalog: undefined,
-        error: undefined
+        error: undefined,
+        datasets: undefined
     }),
     reducers: {
         restoreState: state => {
             state.isQuerying = false;
-            state.rawCatalog = undefined;
             state.error = undefined;
             state.queryParams = undefined;
         },
@@ -53,13 +72,13 @@ export const { actions, reducer } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    rawCatalog: JsonLdDocument;
+                    datasets: State.Dataset[];
                 };
             }
         ) => {
-            const { rawCatalog } = payload;
+            const { datasets } = payload;
             state.isQuerying = false;
-            state.rawCatalog = rawCatalog;
+            state.datasets = datasets;
         },
         queryFailed: (state, { payload }: { payload: { error: string } }) => {
             const { error } = payload;
