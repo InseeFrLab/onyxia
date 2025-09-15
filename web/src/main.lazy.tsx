@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { enableScreenScaler } from "screen-scaler";
 import {
@@ -54,7 +54,9 @@ function Root() {
 }
 
 createRoot(document.getElementById("root")!).render(
-    <OnyxiaUi>
-        <Root />
-    </OnyxiaUi>
+    <StrictMode>
+        <OnyxiaUi>
+            <Root />
+        </OnyxiaUi>
+    </StrictMode>
 );
