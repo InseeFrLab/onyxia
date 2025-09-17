@@ -125,7 +125,7 @@ const useStyles = tss
             },
             globalAlert: {
                 position: "absolute",
-                width: theme.windowInnerWidth,
+                width: `calc(100% + 2*${rootRightLeftMargin}px)`,
                 left: -rootRightLeftMargin
             },
             header: {
