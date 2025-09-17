@@ -3,19 +3,13 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { declareComponentKeys } from "i18nifty";
 
-export type Props = {
-    className?: string;
-};
-
-export default function Page404(props: Props) {
-    const { className } = props;
-
+export default function Page404() {
     const { t } = useTranslation({ Page404 });
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <Text typo="display heading">{t("not found")} 😥</Text>
         </div>
     );

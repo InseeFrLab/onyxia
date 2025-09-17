@@ -36,13 +36,7 @@ import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-export type Props = {
-    className?: string;
-};
-
-const MyServices = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const MyServices = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -132,7 +126,7 @@ const MyServices = withLoginEnforced((props: Props) => {
         domRect: { height: bellowHeaderHeight }
     } = useDomRect({ ref: belowHeaderRef });
 
-    const { classes, cx } = useStyles({
+    const { classes } = useStyles({
         isSavedConfigsExtended,
         commandBarTop,
         isCommandBarEnabled,
@@ -305,7 +299,7 @@ const MyServices = withLoginEnforced((props: Props) => {
 
     return (
         <>
-            <div className={cx(classes.root, className)}>
+            <div className={classes.root}>
                 <PageHeader
                     mainIcon={customIcons.servicesSvgUrl}
                     title={t("text1")}

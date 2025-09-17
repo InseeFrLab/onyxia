@@ -15,17 +15,17 @@ export const Main = memo((props: Props) => {
 
     const route = useRoute();
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     return (
-        <main className={className}>
+        <main key={route.name || ""} className={cx(classes.root, className)}>
             <Suspense fallback={<SuspenseFallback />}>
                 {(() => {
                     for (const pageName of objectKeys(pages)) {
                         const page = pages[pageName];
 
                         if (page.routeGroup.has(route)) {
-                            return <page.LazyComponent className={classes.page} />;
+                            return <page.LazyComponent />;
                         }
                     }
 
@@ -49,7 +49,7 @@ function SuspenseFallback() {
 }
 
 const useStyles = tss.withName({ Main }).create({
-    page: {
+    root: {
         animation: `${keyframes`
             0% {
                 opacity: 0;

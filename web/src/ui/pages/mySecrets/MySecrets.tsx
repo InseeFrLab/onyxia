@@ -23,12 +23,7 @@ import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-export type Props = {
-    className?: string;
-};
-
-const MySecrets = withLoginEnforced((props: Props) => {
-    const { className } = props;
+const MySecrets = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -149,7 +144,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
         }
     );
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -229,7 +224,7 @@ const MySecrets = withLoginEnforced((props: Props) => {
     }
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 mainIcon={customIcons.secretsSvgUrl}
                 title={t("page title - my secrets")}

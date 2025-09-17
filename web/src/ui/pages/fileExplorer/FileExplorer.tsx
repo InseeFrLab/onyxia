@@ -18,13 +18,7 @@ import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import { useTranslation } from "ui/i18n";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-export type Props = {
-    className?: string;
-};
-
-const FileExplorer = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const FileExplorer = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -94,7 +88,7 @@ const FileExplorer = withLoginEnforced((props: Props) => {
         }
     );
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -153,7 +147,7 @@ const FileExplorer = withLoginEnforced((props: Props) => {
     }
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 mainIcon={customIcons.filesSvgUrl}
                 title={t("page title - file explorer")}

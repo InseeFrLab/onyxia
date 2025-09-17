@@ -36,13 +36,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 import { getIsAtomic } from "core/tools/Stringifyable";
 
-export type Props = {
-    className?: string;
-};
-
-const Launcher = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const Launcher = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -356,7 +350,7 @@ const Launcher = withLoginEnforced((props: Props) => {
         zState: z.boolean()
     });
 
-    const { classes, cx } = useStyles({
+    const { classes } = useStyles({
         isCommandBarEnabled: commandLogsEntries !== undefined,
         isDataEditorModeEnabled,
         hasForm: helmValuesSchema_forDataTextEditor !== undefined
@@ -372,7 +366,7 @@ const Launcher = withLoginEnforced((props: Props) => {
 
     return (
         <>
-            <div ref={ref_root} className={cx(classes.root, className)}>
+            <div ref={ref_root} className={classes.root}>
                 {commandLogsEntries !== undefined && (
                     <CommandBar
                         classes={{

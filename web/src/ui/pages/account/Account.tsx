@@ -21,13 +21,7 @@ const AccountStorageTab = lazy(() => import("./AccountStorageTab"));
 const AccountUserInterfaceTab = lazy(() => import("./AccountUserInterfaceTab"));
 const AccountVaultTab = lazy(() => import("./AccountVaultTab"));
 
-export type Props = {
-    className?: string;
-};
-
-const Account = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const Account = withLoginEnforced(() => {
     const route = getRoute();
     assert(routeGroup.has(route));
 
@@ -57,10 +51,10 @@ const Account = withLoginEnforced((props: Props) => {
         routes.account({ tabId }).push()
     );
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 mainIcon={customIcons.accountSvgUrl}
                 title={t("text1")}

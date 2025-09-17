@@ -15,13 +15,7 @@ import { id } from "tsafe/id";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 import { useCoreState } from "core";
 
-type Props = {
-    className?: string;
-};
-
-export default function Home(props: Props) {
-    const { className } = props;
-
+export default function Home() {
     useConst(() => {
         if (env.DISABLE_HOMEPAGE) {
             routes.catalog().replace();
@@ -30,7 +24,7 @@ export default function Home(props: Props) {
 
     const backgroundUrl = useThemedImageUrl(env.BACKGROUND_ASSET);
 
-    const { classes, cx } = useStyles({
+    const { classes } = useStyles({
         backgroundUrl,
         hasLogo: env.HOMEPAGE_LOGO !== undefined
     });
@@ -168,7 +162,7 @@ export default function Home(props: Props) {
     }, [t, isFileExplorerEnabled]);
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
                     {env.HOMEPAGE_LOGO !== undefined && (

@@ -21,13 +21,7 @@ import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { supportedFileTypes } from "core/usecases/dataExplorer/decoupledLogic/SupportedFileType";
 
-export type Props = {
-    className?: string;
-};
-
-export default function DataExplorer(props: Props) {
-    const { className } = props;
-
+export default function DataExplorer() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -133,7 +127,7 @@ export default function DataExplorer(props: Props) {
         });
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 classes={{
                     helpMiddle: classes.pageHeaderHelpMiddle
@@ -198,7 +192,7 @@ export default function DataExplorer(props: Props) {
                         }
 
                         return (
-                            <div className={cx(classes.initializing, className)}>
+                            <div className={classes.initializing}>
                                 <CircularProgress size={70} />
                             </div>
                         );
@@ -208,7 +202,7 @@ export default function DataExplorer(props: Props) {
                     assert(queryParams.rowsPerPage !== undefined);
 
                     return (
-                        <div className={cx(classes.dataGridWrapper, className)}>
+                        <div className={classes.dataGridWrapper}>
                             <CustomDataGrid
                                 apiRef={apiRef}
                                 shouldAddCopyToClipboardInCell

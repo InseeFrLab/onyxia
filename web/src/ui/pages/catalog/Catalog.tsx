@@ -21,13 +21,7 @@ import { CatalogChartCard } from "./CatalogChartCard";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { customIcons, getIconUrlByName } from "lazy-icons";
 
-export type Props = {
-    className?: string;
-};
-
-export default function Catalog(props: Props) {
-    const { className } = props;
-
+export default function Catalog() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -74,7 +68,7 @@ export default function Catalog(props: Props) {
         }
     );
 
-    const { classes, cx, css } = useStyles({
+    const { classes, css } = useStyles({
         filteredCardCount: filteredCharts?.length ?? 0
     });
 
@@ -101,7 +95,7 @@ export default function Catalog(props: Props) {
     }
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 classes={{
                     title: css({ paddingBottom: 3 }),

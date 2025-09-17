@@ -11,13 +11,7 @@ import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
 import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-type Props = {
-    className?: string;
-};
-
-const SqlOlapShell = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const SqlOlapShell = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -28,27 +22,25 @@ const SqlOlapShell = withLoginEnforced((props: Props) => {
         sqlOlapShell.initialize();
     }, []);
 
-    const { cx, classes } = useStyles();
+    const { classes } = useStyles();
 
     if (!isReady) {
         return (
-            <div className={cx(classes.initializing, className)}>
+            <div className={classes.initializing}>
                 <CircularProgress size={70} />
             </div>
         );
     }
 
-    return <ReadySqlOlapShell {...props} />;
+    return <ReadySqlOlapShell />;
 });
 
 export default SqlOlapShell;
 
-function ReadySqlOlapShell(params: Props) {
-    const { className } = params;
-
+function ReadySqlOlapShell() {
     const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
 
-    const { cx, classes } = useStyles();
+    const { classes } = useStyles();
 
     const isEmbeddedByElement = useConst(() => new WeakMap<HTMLElement, true>());
 
@@ -75,7 +67,7 @@ function ReadySqlOlapShell(params: Props) {
     }, [containerElement]);
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <div ref={setContainerElement} />;
         </div>
     );

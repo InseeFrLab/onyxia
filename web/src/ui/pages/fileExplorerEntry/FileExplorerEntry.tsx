@@ -10,22 +10,17 @@ import type { Link } from "type-route";
 import { S3Entries } from "./S3Entries/S3Entries";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-type Props = {
-    className?: string;
-};
-
-export const FileExplorerMaybeDisabled = withLoginEnforced((props: Props) => {
+export const FileExplorerMaybeDisabled = withLoginEnforced(() => {
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
     if (!isFileExplorerEnabled) {
         return <FileExplorerDisabledDialog />;
     }
-    return <FileExplorerEntry {...props} />;
+    return <FileExplorerEntry />;
 });
 export default FileExplorerMaybeDisabled;
 
-function FileExplorerEntry(props: Props) {
-    const { className } = props;
-    const { classes, cx } = useStyles();
+function FileExplorerEntry() {
+    const { classes } = useStyles();
 
     const { t } = useTranslation({ FileExplorer: FileExplorerEntry });
 
@@ -85,7 +80,7 @@ function FileExplorerEntry(props: Props) {
     }));
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 mainIcon={customIcons.filesSvgUrl}
                 title={t("page title - file explorer")}

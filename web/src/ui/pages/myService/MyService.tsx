@@ -16,13 +16,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-export type Props = {
-    className?: string;
-};
-
-const MyService = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const MyService = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -69,7 +63,7 @@ const MyService = withLoginEnforced((props: Props) => {
         return isCommandBarExpanded ? true : isCommandBarEnabled;
     })();
 
-    const { cx, classes, theme } = useStyles({ isCommandBarEnabled });
+    const { classes, theme } = useStyles({ isCommandBarEnabled });
 
     const {
         ref: contentWrapperRef,
@@ -77,7 +71,7 @@ const MyService = withLoginEnforced((props: Props) => {
     } = useDomRect();
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <div className={classes.headerWrapper}>
                 <PageHeader
                     mainIcon={customIcons.servicesSvgUrl}

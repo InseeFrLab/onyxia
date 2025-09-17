@@ -4,20 +4,14 @@ import { useRoute } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe";
 
-export type Props = {
-    className?: string;
-};
-
-export default function Document(props: Props) {
-    const { className } = props;
-
+export default function Document() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <LocalizedMarkdown className={classes.markdown} urlSourceOnly>
                 {route.params.source}
             </LocalizedMarkdown>

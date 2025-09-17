@@ -13,13 +13,7 @@ import { useCoreState } from "core";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-export type Props = {
-    className?: string;
-};
-
-const ProjectSettings = withLoginEnforced((props: Props) => {
-    const { className } = props;
-
+const ProjectSettings = withLoginEnforced(() => {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -31,10 +25,10 @@ const ProjectSettings = withLoginEnforced((props: Props) => {
         "doesUserBelongToSomeGroupProject"
     );
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={classes.root}>
             <PageHeader
                 mainIcon={customIcons.accountSvgUrl}
                 title={t("page header title")}
