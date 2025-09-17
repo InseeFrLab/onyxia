@@ -14,6 +14,9 @@ import { assert, type Equals } from "tsafe/assert";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
+const Page = withLoginEnforced(Account);
+export default Page;
+
 const AccountGitTab = lazy(() => import("./AccountGitTab"));
 const AccountKubernetesTab = lazy(() => import("./AccountKubernetesTab"));
 const AccountProfileTab = lazy(() => import("./AccountProfileTab"));
@@ -21,7 +24,7 @@ const AccountStorageTab = lazy(() => import("./AccountStorageTab"));
 const AccountUserInterfaceTab = lazy(() => import("./AccountUserInterfaceTab"));
 const AccountVaultTab = lazy(() => import("./AccountVaultTab"));
 
-const Account = withLoginEnforced(() => {
+function Account() {
     const route = getRoute();
     assert(routeGroup.has(route));
 
@@ -92,9 +95,7 @@ const Account = withLoginEnforced(() => {
             </Tabs>
         </div>
     );
-});
-
-export default Account;
+}
 
 const { i18n } = declareComponentKeys<
     AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"

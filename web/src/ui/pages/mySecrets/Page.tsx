@@ -23,7 +23,10 @@ import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-const MySecrets = withLoginEnforced(() => {
+const Page = withLoginEnforced(MySecrets);
+export default Page;
+
+function MySecrets() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -310,9 +313,7 @@ const MySecrets = withLoginEnforced(() => {
             />
         </div>
     );
-});
-
-export default MySecrets;
+}
 
 const { i18n } = declareComponentKeys<
     | "page title - my secrets"

@@ -4,7 +4,10 @@ import { useRoute } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe";
 
-export default function Document() {
+const Page = Document;
+export default Page;
+
+function Document() {
     const route = useRoute();
     assert(routeGroup.has(route));
 

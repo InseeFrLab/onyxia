@@ -3,7 +3,10 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { declareComponentKeys } from "i18nifty";
 
-export default function Page404() {
+const Page = Page404;
+export default Page;
+
+function Page404() {
     const { t } = useTranslation({ Page404 });
 
     const { classes } = useStyles();

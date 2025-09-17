@@ -11,7 +11,10 @@ import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
 import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-const SqlOlapShell = withLoginEnforced(() => {
+const Page = withLoginEnforced(SqlOlapShell);
+export default Page;
+
+function SqlOlapShell() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -33,9 +36,7 @@ const SqlOlapShell = withLoginEnforced(() => {
     }
 
     return <ReadySqlOlapShell />;
-});
-
-export default SqlOlapShell;
+}
 
 function ReadySqlOlapShell() {
     const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);

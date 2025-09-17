@@ -16,7 +16,10 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-const MyService = withLoginEnforced(() => {
+const Page = withLoginEnforced(MyService);
+export default Page;
+
+function MyService() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -147,9 +150,7 @@ const MyService = withLoginEnforced(() => {
             })()}
         </div>
     );
-});
-
-export default MyService;
+}
 
 const { i18n } = declareComponentKeys<{
     K: "page title";

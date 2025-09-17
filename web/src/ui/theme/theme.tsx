@@ -35,6 +35,8 @@ const {
           }
 });
 
+export { evtTheme };
+
 pluginSystemInitTheme({
     evtTheme: Evt.loosenType(evtTheme),
     css,

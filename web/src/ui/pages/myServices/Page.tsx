@@ -36,7 +36,10 @@ import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-const MyServices = withLoginEnforced(() => {
+const Page = withLoginEnforced(MyServices);
+export default Page;
+
+function MyServices() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -392,9 +395,7 @@ const MyServices = withLoginEnforced(() => {
             />
         </>
     );
-});
-
-export default MyServices;
+}
 
 function useCommandBarPositioning() {
     const {

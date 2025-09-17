@@ -13,7 +13,10 @@ import { useCoreState } from "core";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-const ProjectSettings = withLoginEnforced(() => {
+const Page = withLoginEnforced(ProjectSettings);
+export default Page;
+
+function ProjectSettings() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -64,9 +67,7 @@ const ProjectSettings = withLoginEnforced(() => {
             </Tabs>
         </div>
     );
-});
-
-export default ProjectSettings;
+}
 
 const { i18n } = declareComponentKeys<
     | TabId

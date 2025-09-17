@@ -10,14 +10,16 @@ import type { Link } from "type-route";
 import { S3Entries } from "./S3Entries/S3Entries";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-export const FileExplorerMaybeDisabled = withLoginEnforced(() => {
+const Page = withLoginEnforced(FileExplorerMaybeDisabled);
+export default Page;
+
+function FileExplorerMaybeDisabled() {
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
     if (!isFileExplorerEnabled) {
         return <FileExplorerDisabledDialog />;
     }
     return <FileExplorerEntry />;
-});
-export default FileExplorerMaybeDisabled;
+}
 
 function FileExplorerEntry() {
     const { classes } = useStyles();

@@ -36,7 +36,10 @@ import RadioGroup from "@mui/material/RadioGroup";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 import { getIsAtomic } from "core/tools/Stringifyable";
 
-const Launcher = withLoginEnforced(() => {
+const Page = withLoginEnforced(Launcher);
+export default Page;
+
+function Launcher() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -554,9 +557,7 @@ const Launcher = withLoginEnforced(() => {
             />
         </>
     );
-});
-
-export default Launcher;
+}
 
 const { i18n } = declareComponentKeys<
     | {

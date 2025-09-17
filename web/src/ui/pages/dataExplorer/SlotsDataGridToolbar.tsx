@@ -4,7 +4,7 @@ import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
-import DataExplorer from "./DataExplorer";
+import DataExplorer from "./Page";
 import { useCore } from "core";
 import { BaseBar } from "onyxia-ui/BaseBar";
 import { CustomDataGridToolbarDensitySelector } from "ui/shared/Datagrid/CustomDataGridToolbarDensitySelector";

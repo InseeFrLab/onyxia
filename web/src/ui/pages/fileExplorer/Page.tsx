@@ -18,7 +18,10 @@ import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import { useTranslation } from "ui/i18n";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
-const FileExplorer = withLoginEnforced(() => {
+const Page = withLoginEnforced(FileExplorer);
+export default Page;
+
+function FileExplorer() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -194,9 +197,7 @@ const FileExplorer = withLoginEnforced(() => {
             />
         </div>
     );
-});
-
-export default FileExplorer;
+}
 
 const useStyles = tss.withName({ FileExplorer }).create({
     root: {

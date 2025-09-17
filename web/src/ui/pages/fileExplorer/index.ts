@@ -1,3 +1,3 @@
-import { lazy } from "react";
+import { lazy, memo } from "react";
 export * from "./route";
-export const LazyComponent = lazy(() => import("./FileExplorer"));
+export const LazyComponent = memo(lazy(() => import("./Page")));

@@ -1,3 +1,3 @@
-import { lazy } from "react";
+import { lazy, memo } from "react";
 export * from "./route";
-export const LazyComponent = lazy(() => import("./MySecrets"));
+export const LazyComponent = memo(lazy(() => import("./Page")));
