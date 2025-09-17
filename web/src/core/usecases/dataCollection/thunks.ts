@@ -25,11 +25,11 @@ export const thunks = {
         async (...args) => {
             const { sourceUrl } = params;
 
-            console.log(sourceUrl);
             const [dispatch, getState] = args;
 
             if (sourceUrl === "") {
                 dispatch(actions.restoreState());
+                return;
             }
 
             const state = getState()[name];
@@ -51,13 +51,16 @@ export const thunks = {
                 })
             );
 
-            try {
-                const datasets = await fetchCatalogAndConvertInDatasets(sourceUrl);
+            let datasets;
 
-                dispatch(actions.querySucceeded({ datasets }));
+            try {
+                datasets = await fetchCatalogAndConvertInDatasets(sourceUrl);
             } catch (error) {
                 console.error("Erreur JSON-LD :", error);
                 dispatch(actions.queryFailed({ error: String(error) }));
+                return;
             }
+
+            dispatch(actions.querySucceeded({ datasets }));
         }
 } satisfies Thunks;

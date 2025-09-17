@@ -5,7 +5,6 @@ import {
     Typography,
     Chip,
     Box,
-    Button,
     Link as MuiLink
 } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
@@ -13,10 +12,14 @@ import { routes } from "ui/routes";
 import { declareComponentKeys } from "i18nifty";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
+import { Button } from "onyxia-ui/Button";
+
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
+import type { LocalizedString } from "ui/i18n";
+import { useResolveLocalizedString } from "ui/i18n";
 
 export type Distribution = {
     id: string;
@@ -28,9 +31,9 @@ export type Distribution = {
 
 export type Dataset = {
     id: string;
-    title: string;
-    description: string | undefined;
-    keywords: string[];
+    title: LocalizedString;
+    description: LocalizedString | undefined;
+    keywords: LocalizedString[] | undefined;
     issuedDate: string | undefined;
     landingPageUrl: string | undefined;
     licenseUrl: string | undefined;
@@ -42,7 +45,7 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
         id,
         title,
         description,
-        keywords,
+        keywords = [],
         issuedDate,
         landingPageUrl,
         licenseUrl,
@@ -51,6 +54,7 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
 
     const { classes, css } = useStyles();
     const { t } = useTranslation({ DatasetCard });
+    const { resolveLocalizedString } = useResolveLocalizedString();
 
     return (
         <Card>
@@ -58,13 +62,26 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
                 avatar={<Icon icon={getIconUrlByName("Folder")} size="large" />}
                 title={
                     <Typography variant="h6" component="div">
-                        {title ?? id}
+                        {resolveLocalizedString(title ?? id)}
                     </Typography>
                 }
                 subheader={
                     <>
                         {issuedDate &&
                             `${t("publishedOn")} ${new Date(issuedDate).toLocaleDateString()}`}
+
+                        {licenseUrl && (
+                            <Text typo="body 2">
+                                {t("license")}{" "}
+                                <MuiLink
+                                    href={licenseUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {licenseUrl}
+                                </MuiLink>
+                            </Text>
+                        )}
 
                         {landingPageUrl && (
                             <a
@@ -92,29 +109,22 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
             <div className={classes.content}>
                 {keywords.length > 0 && (
                     <div className={classes.keywoardsWrapper}>
-                        {keywords.map((kw, i) => (
-                            <Chip
-                                key={i}
-                                label={kw}
-                                size="small"
-                                className={classes.keywordsChip}
-                            />
-                        ))}
+                        {keywords.map(kw => {
+                            const strKeyword = resolveLocalizedString(kw);
+                            return (
+                                <Chip
+                                    key={strKeyword}
+                                    label={strKeyword}
+                                    size="small"
+                                    className={classes.keywordsChip}
+                                />
+                            );
+                        })}
                     </div>
                 )}
-                {description && <Text typo="body 2">{description}</Text>}
 
-                {licenseUrl && (
-                    <Text typo="caption">
-                        {t("license")}{" "}
-                        <MuiLink
-                            href={licenseUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {licenseUrl}
-                        </MuiLink>
-                    </Text>
+                {description && (
+                    <Text typo="body 1">{resolveLocalizedString(description)}</Text>
                 )}
             </div>
             <CardContent>
@@ -146,8 +156,8 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
                                     </div>
                                     {dist.downloadUrl && (
                                         <Button
-                                            variant="contained"
-                                            size="small"
+                                            variant="primary"
+                                            // size="small"
                                             onClick={() => {
                                                 routes
                                                     .dataExplorer({
