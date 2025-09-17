@@ -17,6 +17,8 @@ import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { injectOnyxiaInstancePublicUrl } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useSplashScreen } from "onyxia-ui";
+import { evtIsScreenScalerOutOfBound } from "screen-scaler";
+import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 
 const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
@@ -39,14 +41,10 @@ const { CoreProvider } = createCoreProvider({
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG
 });
 
-type Props = {
-    isPortraitOrientation: boolean | undefined;
-};
+export function App() {
+    useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
 
-export function App(props: Props) {
-    const { isPortraitOrientation } = props;
-
-    if (isPortraitOrientation === true) {
+    if (evtIsScreenScalerOutOfBound.state === true) {
         return <PortraitModeFallback />;
     }
 
@@ -54,9 +52,7 @@ export function App(props: Props) {
         <RouteProvider>
             <I18nFetchingSuspense>
                 <CoreProvider>
-                    <AppContextualized
-                        isScreenScalerEnabled={isPortraitOrientation !== undefined}
-                    />
+                    <AppContextualized />
                 </CoreProvider>
             </I18nFetchingSuspense>
         </RouteProvider>
@@ -75,10 +71,11 @@ function PortraitModeFallback() {
     return <PortraitModeUnsupported />;
 }
 
-function AppContextualized(props: { isScreenScalerEnabled: boolean }) {
-    const { isScreenScalerEnabled } = props;
-
+function AppContextualized() {
     useSyncDarkModeWithValueInProfile();
+    useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
+
+    const isScreenScalerEnabled = evtIsScreenScalerOutOfBound.state !== undefined;
 
     const {
         ref: globalAlertRef,

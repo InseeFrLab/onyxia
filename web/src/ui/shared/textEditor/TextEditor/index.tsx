@@ -1,10 +1,8 @@
 import { Suspense, lazy, type ReactNode } from "react";
-import type { GLOBAL_NAME as OF_TYPE_SCREEN_SCALER_GLOBAL_NAME } from "screen-scaler";
+import { evtIsScreenScalerOutOfBound } from "screen-scaler";
+import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import type { Extension } from "@uiw/react-codemirror";
 import { assert, type Equals } from "tsafe/assert";
-
-const SCREEN_SCALER_GLOBAL_NAME: typeof OF_TYPE_SCREEN_SCALER_GLOBAL_NAME =
-    "__screenScaler";
 
 const TextEditorWithoutScreenScaler = lazy(() => import("./TextEditor"));
 const TextEditorWithScreenScaler = lazy(() => import("./TextEditorWithScreenScaler"));
@@ -29,11 +27,13 @@ export type Props = {
 export function TextEditor(props: Props) {
     const { fallback, ...rest } = props;
 
-    const isScreenScalerAvailable = SCREEN_SCALER_GLOBAL_NAME in window;
+    useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
+
+    const isScreenScalerEnabled = evtIsScreenScalerOutOfBound.state !== undefined;
 
     return (
         <Suspense>
-            {isScreenScalerAvailable ? (
+            {isScreenScalerEnabled ? (
                 <TextEditorWithScreenScaler {...rest} />
             ) : (
                 <TextEditorWithoutScreenScaler {...rest} />

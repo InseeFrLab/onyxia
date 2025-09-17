@@ -29,5 +29,22 @@ if (import.meta.env.DEV) {
         return;
     }
 
+    enable_screen_scaler: {
+        if (import.meta.env.SCREEN_SCALER === "false") {
+            break enable_screen_scaler;
+        }
+
+        const [{ enableScreenScaler }, { targetWindowInnerWidth }] = await Promise.all([
+            import("screen-scaler"),
+            import("ui/theme/targetWindowInnerWidth")
+        ]);
+
+        enableScreenScaler({
+            rootDivId: "root",
+            getTargetWindowInnerWidth: ({ zoomFactor, isPortraitOrientation }) =>
+                isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
+        });
+    }
+
     import("main.lazy");
 })();
