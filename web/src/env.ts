@@ -1200,6 +1200,15 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
+        envName: "SAMPLE_DATACOLLECTION_URL",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
+    },
+
+    {
         envName: "QUOTA_WARNING_THRESHOLD",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue, envName }) => {

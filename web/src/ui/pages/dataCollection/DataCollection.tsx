@@ -10,6 +10,9 @@ import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { DatasetCard } from "./DatasetCard";
 import { tss } from "tss";
+import type { Link } from "type-route";
+import { useTranslation } from "ui/i18n";
+import { env } from "env";
 
 type Props = {
     route: PageRoute;
@@ -21,6 +24,7 @@ export default function DataCollection(props: Props) {
 
     const { classes, cx, css } = useStyles();
 
+    const { t } = useTranslation({ DataCollection });
     const { datasets, queryParams, error, isQuerying } = useCoreState(
         "dataCollection",
         "main"
@@ -29,9 +33,7 @@ export default function DataCollection(props: Props) {
 
     useEffect(() => {
         dataCollection.initialize({
-            sourceUrl: route.params.source,
-            rowsPerPage: route.params.rowsPerPage,
-            page: route.params.page
+            sourceUrl: route.params.source
         });
     }, [route.params.source]);
 
@@ -53,11 +55,14 @@ export default function DataCollection(props: Props) {
         <div className={cx(css({ height: "100%", overflow: "hidden" }, className))}>
             <div className={css({ overflow: "auto", height: "100%" })}>
                 <PageHeader
-                    title="Data Collection"
                     mainIcon={getIconUrlByName("FolderSpecial")}
-                    helpContent={
-                        "Entrez simplement l'URL https:// de votre schema jsonld dcat"
-                    }
+                    title={t("page header title")}
+                    helpTitle={t("page header help title")}
+                    helpContent={t("page header help content", {
+                        demoCatalogLink: routes[route.name]({
+                            source: env.SAMPLE_DATACOLLECTION_URL
+                        }).link
+                    })}
                 />
                 <UrlInput
                     className={classes.urlInput}
@@ -104,7 +109,15 @@ const useStyles = tss.withName({ DataCollection }).create(({ theme }) => ({
     }
 }));
 
-const { i18n } = declareComponentKeys<"page header title" | "page header help title">()({
+const { i18n } = declareComponentKeys<
+    | "page header title"
+    | "page header help title"
+    | {
+          K: "page header help content";
+          P: { demoCatalogLink: Link };
+          R: JSX.Element;
+      }
+>()({
     DataCollection
 });
 
