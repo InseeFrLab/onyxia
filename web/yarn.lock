@@ -6061,10 +6061,10 @@ oniguruma-to-es@0.7.0:
     regex "^5.0.2"
     regex-recursion "^4.3.0"
 
-onyxia-ui@^6.7.2:
-  version "6.7.2"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.7.2.tgz#0485f70821bb353ee27abc41d21acfad6f479dc5"
-  integrity sha512-PqOpWpL4r9uzckvfV0/KZLP2zut4NMXPDbYvbnizxIU2Gl9XCLOuMNR0SF1/jdXtLHGMqrzidPoKt47njM+53g==
+onyxia-ui@^6.7.3:
+  version "6.7.3"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.7.3.tgz#749edd5e2845f818abbe07952f45f1eba5e31f81"
+  integrity sha512-s9HZQYsycnoCaVRkjSVqORNJK8NIE/tD3VLfDDNqX9E1iAmfKJjTYH4HFuYJA7+Bu8+VvWtLRzHEs5ZkT1JhHA==
   dependencies:
     "@mui/icons-material" "^6.1.7"
     "@types/memoizee" "^0.4.11"
