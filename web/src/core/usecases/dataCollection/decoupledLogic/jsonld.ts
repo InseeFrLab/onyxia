@@ -1,14 +1,21 @@
 import { z } from "zod";
 import jsonld, { type JsonLdDocument } from "jsonld";
 import type { State } from "../state";
+import {
+    zLocalizedArrayInput,
+    zLocalizedInput,
+    toLocalizedString,
+    toLocalizedStringList
+} from "./ldLocalized";
 
 export function catalogToDatasets(framed: JsonLdDocument) {
-    const { "@graph": graph } = FramedCatalogSchema.parse(framed);
+    const { "@graph": graph } = zFramedCatalogSchema.parse(framed);
 
+    // we should early return or do not failed if framed contain only context and no informations (graph is empty after parsing)
     return graph.map(d => {
         const distributions = (d["dcat:distribution"] ?? []).map(distrib => {
-            const mediaType = distrib["dcat:mediaType"] ?? undefined;
-            const format = mediaType ?? distrib?.["dct:format"] ?? undefined;
+            const format =
+                distrib["dcat:mediaType"] ?? distrib?.["dct:format"] ?? undefined;
 
             const byteSize = distrib["dcat:byteSize"];
             const fileSize = distrib["dcat:filesize"];
@@ -28,11 +35,14 @@ export function catalogToDatasets(framed: JsonLdDocument) {
             } satisfies State.Distribution;
         });
 
+        const titleLs = d["dct:title"] ?? d["@id"];
+        const descriptionLs = d["dct:description"];
+
         return {
             id: d["@id"],
-            title: d["dct:title"] ?? d["@id"],
-            description: d["dct:description"],
-            keywords: d["dcat:keyword"] ?? [],
+            title: titleLs,
+            description: descriptionLs,
+            keywords: d["dcat:keyword"],
             issuedDate: d["dct:issued"],
             landingPageUrl: d["dcat:landingPage"],
             licenseUrl: d["dct:license"],
@@ -47,14 +57,21 @@ export async function fetchCatalogAndConvertInDatasets(sourceUrl: string) {
         throw new Error(`Erreur HTTP ${res.status} : ${res.statusText}`);
     }
     const raw = await res.json();
-    const framed = await jsonld.frame(raw, {
-        "@context": raw["@context"],
+
+    const compated = await jsonld.compact(raw, {
+        ...raw["@context"],
+        dcat: "http://www.w3.org/ns/dcat#",
+        dct: "http://purl.org/dc/terms/"
+    });
+
+    const framed = await jsonld.frame(compated, {
+        "@context": compated["@context"],
         "@type": "dcat:Dataset",
         "dcat:distribution": { "@type": "dcat:Distribution" }
     });
 
-    console.log("framed", framed);
-
+    console.log(framed);
+    //return undefined;
     return catalogToDatasets(framed);
 }
 
@@ -62,17 +79,19 @@ export async function fetchCatalogAndConvertInDatasets(sourceUrl: string) {
 //   "foo" -> "foo"
 //   { "@value": "foo" } -> "foo"
 //   undefined -> undefined
-const LiteralString = z
+const zLiteralStringBase = z
     .union([z.string(), z.object({ "@value": z.string() })])
     .transform(v => (typeof v === "string" ? v : v["@value"]))
-    .optional();
+    .pipe(z.string());
+
+const zLiteralString = zLiteralStringBase.optional();
 
 //   LiteralNumber accepts number | string | {"@value": number|string}
 //   123 -> 123
 //   "123" -> 123
 //   { "@value": "123" } -> 123
 //   { "@value": 123 } -> 123
-const LiteralNumber = z
+const zLiteralNumber = z
     .union([
         z.number(),
         z.string(),
@@ -90,66 +109,67 @@ const LiteralNumber = z
 //   "https://example.org/x" -> "https://example.org/x"
 //   { "@id": "https://example.org/x" } -> "https://example.org/x"
 //   undefined -> undefined
-const ResourceId = z
+const zResourceIdBase = z
     .union([z.string(), z.object({ "@id": z.string() })])
     .transform(v => (typeof v === "string" ? v : v["@id"]))
+    .pipe(z.string());
+
+const zResourceId = zResourceIdBase.optional();
+
+const zLiteralOrResourceId = z
+    .union([zLiteralStringBase, zResourceIdBase])
+    .transform(v => v)
     .optional();
 
-// OneOrMany helper: T | T[] -> T[] (or [] if undefined)
-const OneOrMany = <T extends z.ZodTypeAny>(schema: T) =>
-    z
-        .union([schema, z.array(schema)])
-        .transform(v => (Array.isArray(v) ? v : v !== undefined ? [v] : []));
+const zLocalizedOptional = z
+    .union([zLocalizedInput, z.undefined(), z.null()])
+    .transform(v => (v == null ? undefined : toLocalizedString(v)));
 
-// Examples:
-//   "Statistiques" -> ["Statistiques"]
-//   [{ "@value": "A" }, "B"] -> ["A", "B"]
-//   undefined -> []
-const KeywordsSchema = OneOrMany(LiteralString)
-    .transform(arr => arr.filter((x): x is string => typeof x === "string"))
-    .optional();
+const zLocalizedArrayOptional = z
+    .union([zLocalizedArrayInput, z.undefined(), z.null()])
+    .transform(v => (v == null ? undefined : toLocalizedStringList(v)));
 
-const DistributionNodeSchema = z
+const zDistributionNodeSchema = z
     .object({
         "@id": z.string(),
         "@type": z.union([z.string(), z.array(z.string())]).optional(),
-        "dct:identifier": LiteralString,
-        "dct:title": LiteralString,
-        "dct:description": LiteralString,
-        "dct:license": ResourceId,
-        "dcat:downloadURL": ResourceId,
-        "dcat:accessURL": ResourceId,
-        "dcat:mediaType": LiteralString,
-        "dct:format": LiteralString,
+        "dct:identifier": zLiteralString,
+        "dct:title": zLocalizedOptional,
+        "dct:description": zLocalizedOptional,
+        "dct:license": zResourceId,
+        "dcat:downloadURL": zResourceId,
+        "dcat:accessURL": zResourceId,
+        "dcat:mediaType": zLiteralOrResourceId,
+        "dct:format": zLiteralOrResourceId,
         "dcat:filesize": z.number().optional(),
-        "dcat:byteSize": LiteralNumber.optional(),
-        "dct:issued": LiteralString,
-        "dct:modified": LiteralString
+        "dcat:byteSize": zLiteralNumber.optional(),
+        "dct:issued": zLiteralString,
+        "dct:modified": zLiteralString
     })
     .passthrough();
 
-const DatasetNodeSchema = z
+const zDatasetNodeSchema = z
     .object({
         "@id": z.string(),
         "@type": z.union([z.string(), z.array(z.string())]).optional(),
-        "dct:title": LiteralString,
-        "dct:description": LiteralString,
-        "dct:issued": LiteralString,
-        "dct:modified": LiteralString,
-        "dcat:landingPage": ResourceId,
-        "dct:license": ResourceId,
-        "dcat:keyword": KeywordsSchema,
+        "dct:title": zLocalizedOptional,
+        "dct:description": zLocalizedOptional,
+        "dct:issued": zLiteralString,
+        "dct:modified": zLiteralString,
+        "dcat:landingPage": zResourceId,
+        "dct:license": zResourceId,
+        "dcat:keyword": zLocalizedArrayOptional,
         "dcat:distribution": z
-            .union([z.null(), DistributionNodeSchema, z.array(DistributionNodeSchema)])
+            .union([z.null(), zDistributionNodeSchema, z.array(zDistributionNodeSchema)])
             .transform(v => (v === null ? [] : Array.isArray(v) ? v : [v]))
             .optional()
     })
     .passthrough();
 
-const FramedCatalogSchema = z.preprocess(
+const zFramedCatalogSchema = z.preprocess(
     obj =>
         obj && typeof obj === "object" && "@graph" in (obj as Record<string, unknown>)
             ? obj
             : { "@graph": [obj] },
-    z.object({ "@graph": z.array(DatasetNodeSchema) })
+    z.object({ "@graph": z.array(zDatasetNodeSchema) })
 );

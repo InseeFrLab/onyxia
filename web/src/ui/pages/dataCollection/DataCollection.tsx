@@ -19,7 +19,7 @@ type Props = {
 export default function DataCollection(props: Props) {
     const { className, route } = props;
 
-    const { classes, css } = useStyles();
+    const { classes, cx, css } = useStyles();
 
     const { datasets, queryParams, error, isQuerying } = useCoreState(
         "dataCollection",
@@ -50,23 +50,24 @@ export default function DataCollection(props: Props) {
     }, [queryParams]);
 
     return (
-        <div className={className}>
-            <PageHeader
-                title="Data Collection"
-                mainIcon={getIconUrlByName("FolderSpecial")}
-                helpContent={
-                    "Entrez simplement l'URL https:// de votre schema jsonld dcat"
-                }
-            />
-            <UrlInput
-                className={classes.urlInput}
-                onUrlChange={value => {
-                    dataCollection.updateSourceUrl({ sourceUrl: value });
-                }}
-                url={queryParams === undefined ? "" : queryParams.sourceUrl}
-                getIsValidUrl={() => true}
-            />
-            <div className={css({ height: "100vh", overflowY: "auto" })}>
+        <div className={cx(css({ height: "100%", overflow: "hidden" }, className))}>
+            <div className={css({ overflow: "auto", height: "100%" })}>
+                <PageHeader
+                    title="Data Collection"
+                    mainIcon={getIconUrlByName("FolderSpecial")}
+                    helpContent={
+                        "Entrez simplement l'URL https:// de votre schema jsonld dcat"
+                    }
+                />
+                <UrlInput
+                    className={classes.urlInput}
+                    onUrlChange={value => {
+                        dataCollection.updateSourceUrl({ sourceUrl: value });
+                    }}
+                    url={queryParams === undefined ? "" : queryParams.sourceUrl}
+                    getIsValidUrl={() => true}
+                />
+
                 {(() => {
                     if (error !== undefined) {
                         return <Alert severity="error">{error}</Alert>;
@@ -78,6 +79,7 @@ export default function DataCollection(props: Props) {
 
                     if (datasets === undefined) return null;
 
+                    console.log("datasets", datasets);
                     return (
                         <div className={classes.datasets}>
                             {datasets.map(dataset => (

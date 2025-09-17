@@ -1,5 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
+import type { LocalizedString } from "ui/i18n";
 export const name = "dataCollection" as const;
 
 export type State = {
@@ -18,9 +19,9 @@ export type State = {
 export namespace State {
     export type Dataset = {
         id: string;
-        title: string;
-        description: string | undefined;
-        keywords: string[] | undefined;
+        title: LocalizedString;
+        description: LocalizedString | undefined;
+        keywords: LocalizedString[] | undefined;
         issuedDate: string | undefined;
         landingPageUrl: string | undefined;
         licenseUrl: string | undefined;
@@ -49,6 +50,7 @@ export const { actions, reducer } = createUsecaseActions({
             state.isQuerying = false;
             state.error = undefined;
             state.queryParams = undefined;
+            state.datasets = undefined;
         },
         queryStarted: (
             state,
