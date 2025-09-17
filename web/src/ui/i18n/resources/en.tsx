@@ -1169,5 +1169,18 @@ Feel free to explore and take charge of your Kubernetes deployments!
         distributions: "Distributions",
         visualize: "Visualize",
         unknown: "Unknown"
+    },
+    DataCollection: {
+        "page header help title":
+            "Simply enter the https:// URL of your DCAT JSON-LD schema",
+        "page header title": "Data catalog",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Just enter the <code>https://</code> URL of a data catalog to preview it.
+                <br />
+                Not sure where to start? Try this{" "}
+                <MuiLink {...demoCatalogLink}>demo catalog</MuiLink>!
+            </>
+        )
     }
 };

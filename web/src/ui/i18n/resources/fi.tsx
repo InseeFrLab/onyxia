@@ -1163,6 +1163,29 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Sarakkeet"
+    },
+    DatasetCard: {
+        publishedOn: "Julkaistu",
+        datasetPage: "Aineistosivu",
+        license: "Lisenssi:",
+        format: "Muoto",
+        size: "Koko",
+        distributions: "Jakelut",
+        visualize: "Visualisoi",
+        unknown: "Tuntematon"
+    },
+    DataCollection: {
+        "page header help title": "Syötä vain DCAT JSON-LD -skeemasi https://-osoite",
+        "page header title": "Tietoluettelo",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Syötä vain tietoluettelon <code>https://</code>-URL-osoite nähdäksesi
+                esikatselun.
+                <br />
+                Etkö tiedä, mistä aloittaa? Kokeile tätä{" "}
+                <MuiLink {...demoCatalogLink}>demoluetteloa</MuiLink>!
+            </>
+        )
     }
     /* spell-checker: enable */
 };

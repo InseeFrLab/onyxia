@@ -1174,6 +1174,30 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             return `${count} item${plural} geselecteerd`;
         },
         "label rows per page": "Items per pagina"
+    },
+    DatasetCard: {
+        publishedOn: "Gepubliceerd op",
+        datasetPage: "Datasetpagina",
+        license: "Licentie:",
+        format: "Formaat",
+        size: "Grootte",
+        distributions: "Distributies",
+        visualize: "Visualiseren",
+        unknown: "Onbekend"
+    },
+    DataCollection: {
+        "page header help title":
+            "Voer gewoon de https://-URL van je DCAT JSON-LD-schema in",
+        "page header title": "Datacatalogus",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Voer eenvoudig de <code>https://</code>-URL van een datacatalogus in om
+                een voorbeeld te bekijken.
+                <br />
+                Weet je niet waar je moet beginnen? Probeer deze{" "}
+                <MuiLink {...demoCatalogLink}>democatalogus</MuiLink>!
+            </>
+        )
     }
     /* spell-checker: enable */
 };

@@ -1172,6 +1172,30 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Colonne"
+    },
+    DatasetCard: {
+        publishedOn: "Pubblicato il",
+        datasetPage: "Pagina del dataset",
+        license: "Licenza:",
+        format: "Formato",
+        size: "Dimensione",
+        distributions: "Distribuzioni",
+        visualize: "Visualizza",
+        unknown: "Sconosciuto"
+    },
+    DataCollection: {
+        "page header help title":
+            "Inserisci semplicemente l'URL https:// del tuo schema DCAT JSON-LD",
+        "page header title": "Catalogo dati",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Inserisci semplicemente l'URL <code>https://</code> di un catalogo dati
+                per visualizzarne l'anteprima.
+                <br />
+                Non sai da dove iniziare? Prova questo{" "}
+                <MuiLink {...demoCatalogLink}>catalogo dimostrativo</MuiLink>!
+            </>
+        )
     }
     /* spell-checker: enable */
 };

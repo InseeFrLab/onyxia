@@ -1195,6 +1195,20 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         distributions: "Distributions",
         visualize: "Visualiser",
         unknown: "Inconnu"
+    },
+    DataCollection: {
+        "page header help title":
+            "Entrez simplement l'URL https:// de votre schema jsonld dcat",
+        "page header title": "Catalogue de données",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Entrez simplement l'URL <code>https://</code> d'un catalogue de données
+                pour le prévisualiser.
+                <br />
+                Vous ne savez pas par où commencer ? Essayez ce{" "}
+                <MuiLink {...demoCatalogLink}>catalogue de démonstration</MuiLink> !
+            </>
+        )
     }
     /* spell-checker: enable */
 };
