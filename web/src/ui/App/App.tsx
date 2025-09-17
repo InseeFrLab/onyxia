@@ -2,11 +2,9 @@ import { useEffect } from "react";
 import { tss } from "tss";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
-import { useDarkMode } from "onyxia-ui";
 import { env, injectEnvsTransferableToKeycloakTheme } from "env";
 import { RouteProvider } from "ui/routes";
-import { createCoreProvider, useCoreState, useCore } from "core";
+import { createCoreProvider, useCoreState } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang, I18nFetchingSuspense } from "ui/i18n";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
@@ -72,7 +70,6 @@ function PortraitModeFallback() {
 }
 
 function AppContextualized() {
-    useSyncDarkModeWithValueInProfile();
     useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
 
     const isScreenScalerEnabled = evtIsScreenScalerOutOfBound.state !== undefined;
@@ -159,37 +156,3 @@ const useStyles = tss
             }
         };
     });
-
-/**
- * This hook to two things:
- * - It sets whether or not the dark mode is enabled based on
- * the value stored in user configs.
- * - Each time the dark mode it changed it changes the value in
- * user configs.
- */
-function useSyncDarkModeWithValueInProfile() {
-    const { userConfigs } = useCore().functions;
-
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
-
-    const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
-
-    const userConfigsIsDarkModeEnabled = useCoreState("userConfigs", "isDarkModeEnabled");
-
-    useEffect(() => {
-        if (userConfigsIsDarkModeEnabled !== undefined && env.DARK_MODE === undefined) {
-            setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
-        }
-    }, []);
-
-    useEffectOnValueChange(() => {
-        if (!isUserLoggedIn) {
-            return;
-        }
-
-        userConfigs.changeValue({
-            key: "isDarkModeEnabled",
-            value: isDarkModeEnabled
-        });
-    }, [isDarkModeEnabled]);
-}

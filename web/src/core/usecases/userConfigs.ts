@@ -10,7 +10,6 @@ import {
 } from "clean-architecture";
 import * as userAuthentication from "./userAuthentication";
 import { join as pathJoin } from "pathe";
-import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 /*
@@ -27,7 +26,6 @@ export type UserConfigs = Id<
         gitCredentialCacheDuration: number;
         isBetaModeEnabled: boolean;
         isDevModeEnabled: boolean;
-        isDarkModeEnabled: boolean;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
         doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: boolean;
@@ -150,7 +148,6 @@ export const protectedThunks = {
                 gitCredentialCacheDuration: 0,
                 isBetaModeEnabled: false,
                 isDevModeEnabled: false,
-                isDarkModeEnabled: getIsDarkModeEnabledOsDefault(),
                 githubPersonalAccessToken: null,
                 doDisplayMySecretsUseInServiceDialog: true,
                 doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: true,
@@ -215,17 +212,6 @@ export const selectors = (() => {
         return userConfigs as UserConfigs;
     });
 
-    // NOTE: This will not crash even if the user is not logged in.
-    const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
-        const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
-
-        if (!isUserLoggedIn) {
-            return undefined;
-        }
-
-        return userConfigs(rootState).isDarkModeEnabled;
-    };
-
     const isVaultEnabled = createSelector(
         deploymentRegionManagement.selectors.currentDeploymentRegion,
         deploymentRegion => deploymentRegion.vault !== undefined
@@ -234,7 +220,6 @@ export const selectors = (() => {
     return {
         userConfigs,
         userConfigsWithUpdateProgress: state,
-        isDarkModeEnabled,
         isVaultEnabled
     };
 })();
