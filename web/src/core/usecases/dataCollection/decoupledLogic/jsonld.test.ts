@@ -117,7 +117,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
         expect(d2).toMatchObject({ id: "d2", format: "csv", sizeInBytes: 10 });
     });
 
-    it("defaults keywords to [] when absent and distribution undefined", () => {
+    it("normalizes mediaType and format when provided as @id objects", () => {
         const framed = {
             "@context": {
                 dcat: "http://www.w3.org/ns/dcat#",
@@ -125,19 +125,32 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
             },
             "@graph": [
                 {
-                    "@id": "dataset:no-k",
+                    "@id": "dataset:ids",
                     "@type": "dcat:Dataset",
-                    "dct:title": "NoK"
-                    // no keywords, no distribution
+                    "dct:title": "IDs",
+                    "dcat:distribution": [
+                        {
+                            "@id": "d1",
+                            "@type": "dcat:Distribution",
+                            "dcat:mediaType": { "@id": "http://media/type" }
+                        },
+                        {
+                            "@id": "d2",
+                            "@type": "dcat:Distribution",
+                            "dct:format": { "@id": "http://format/type" }
+                        }
+                    ]
                 }
             ]
         } as const;
 
         const res = catalogToDatasets(framed as any);
         expect(res).toHaveLength(1);
-        expect(res[0].keywords).toEqual([]);
-        expect(res[0].distributions).toEqual([]);
+        const [d1, d2] = res[0].distributions;
+        expect(d1).toMatchObject({ id: "d1", format: "http://media/type" });
+        expect(d2).toMatchObject({ id: "d2", format: "http://format/type" });
     });
+
     it("maps single distribution object and keyword array", () => {
         const framed = {
             "@context": {
@@ -205,5 +218,44 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
         expect(res).toHaveLength(1);
         expect(res[0].keywords).toEqual(["K1", "K2"]);
         expect(res[0].distributions).toEqual([]);
+    });
+
+    it("normalizes localized titles, descriptions and keyword inputs", () => {
+        const framed = {
+            "@context": {
+                dcat: "http://www.w3.org/ns/dcat#",
+                dct: "http://purl.org/dc/terms/"
+            },
+            "@graph": [
+                {
+                    "@id": "dataset:localized",
+                    "@type": "dcat:Dataset",
+                    "dct:title": [
+                        { "@language": "fr", "@value": "Jeu de données" },
+                        { "@language": "en", "@value": "Dataset" }
+                    ],
+                    "dct:description": {
+                        fr: "Description FR",
+                        en: "Description EN"
+                    },
+                    "dcat:keyword": [
+                        [
+                            { "@language": "fr", "@value": "mot" },
+                            { "@language": "en", "@value": "word" }
+                        ],
+                        { "@value": "plain" }
+                    ],
+                    "dcat:distribution": []
+                }
+            ]
+        } as const;
+
+        const [dataset] = catalogToDatasets(framed as any);
+        expect(dataset.title).toEqual({ fr: "Jeu de données", en: "Dataset" });
+        expect(dataset.description).toEqual({
+            fr: "Description FR",
+            en: "Description EN"
+        });
+        expect(dataset.keywords).toEqual([{ fr: "mot", en: "word" }, "plain"]);
     });
 });
