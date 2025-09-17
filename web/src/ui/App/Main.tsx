@@ -22,16 +22,10 @@ export const Main = memo((props: Props) => {
             <Suspense fallback={<SuspenseFallback />}>
                 {(() => {
                     for (const pageName of objectKeys(pages)) {
-                        //We must be able to replace "home" by any other page and get no type error.
-                        const page = pages[pageName as "home"];
+                        const page = pages[pageName];
 
                         if (page.routeGroup.has(route)) {
-                            return (
-                                <page.LazyComponent
-                                    className={classes.page}
-                                    route={route}
-                                />
-                            );
+                            return <page.LazyComponent className={classes.page} />;
                         }
                     }
 

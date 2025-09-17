@@ -2,7 +2,8 @@ import { Suspense, lazy } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import { type AccountTabId, accountTabIds } from "./accountTabIds";
 import { useMemo } from "react";
-import { routes } from "ui/routes";
+import { routes, getRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { useTranslation } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -10,7 +11,6 @@ import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { useCore } from "core";
 import { assert, type Equals } from "tsafe/assert";
-import type { PageRoute } from "./route";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
@@ -22,12 +22,14 @@ const AccountUserInterfaceTab = lazy(() => import("./AccountUserInterfaceTab"));
 const AccountVaultTab = lazy(() => import("./AccountVaultTab"));
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const Account = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = getRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ Account });
 

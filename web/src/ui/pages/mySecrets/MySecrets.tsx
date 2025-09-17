@@ -6,7 +6,8 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useCoreState, useCore } from "core";
 import { SecretsExplorer, type SecretsExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
-import { routes } from "ui/routes";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
@@ -17,19 +18,19 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
-import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const MySecrets = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ MySecrets });
 

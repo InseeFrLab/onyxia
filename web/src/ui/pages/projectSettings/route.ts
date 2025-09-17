@@ -1,11 +1,4 @@
-import {
-    createRouter,
-    defineRoute,
-    param,
-    noMatch,
-    createGroup,
-    type Route
-} from "type-route";
+import { createRouter, defineRoute, param, noMatch, createGroup } from "type-route";
 import type { ValueSerializer } from "type-route";
 import { id } from "tsafe/id";
 import { tabIds, type TabId } from "./tabIds";
@@ -30,5 +23,3 @@ export const routeDefs = {
 };
 
 export const routeGroup = createGroup(Object.values(createRouter(routeDefs).routes));
-
-export type PageRoute = Route<typeof routeGroup>;

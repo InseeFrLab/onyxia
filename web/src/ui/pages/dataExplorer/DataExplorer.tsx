@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss";
-import type { PageRoute } from "./route";
-import { routes } from "ui/routes";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
@@ -22,12 +22,14 @@ import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { supportedFileTypes } from "core/usecases/dataExplorer/decoupledLogic/SupportedFileType";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 export default function DataExplorer(props: Props) {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { dataExplorer } = useCore().functions;
     const { t } = useTranslation({ DataExplorer });

@@ -5,10 +5,10 @@ import { useCoreState, useCore } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useConst } from "powerhooks/useConst";
-import type { PageRoute } from "./route";
+import { routes, useRoute, getPreviousRouteName } from "ui/routes";
+import { routeGroup } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
-import { routes, getPreviousRouteName } from "ui/routes";
 import { env } from "env";
 import { assert, type Equals } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
@@ -37,12 +37,14 @@ import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 import { getIsAtomic } from "core/tools/Stringifyable";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const Launcher = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ Launcher });
 

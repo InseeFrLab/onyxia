@@ -8,7 +8,6 @@ import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import { env } from "env";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
-import type { PageRoute } from "./route";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
@@ -17,7 +16,6 @@ import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 import { useCoreState } from "core";
 
 type Props = {
-    route: PageRoute;
     className?: string;
 };
 

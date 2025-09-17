@@ -12,12 +12,12 @@ import {
 import { type ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreState, useCore } from "core";
-import { routes } from "ui/routes";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { declareComponentKeys } from "i18nifty";
-import type { PageRoute } from "./route";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useDomRect } from "powerhooks/useDomRect";
 import {
@@ -37,12 +37,14 @@ import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const MyServices = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ MyServices });
     const { t: tCatalogLauncher } = useTranslation("Launcher");

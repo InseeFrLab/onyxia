@@ -3,19 +3,23 @@ import { useState, useEffect } from "react";
 import { useConst } from "powerhooks/useConst";
 import { tss } from "tss";
 import { useCoreState, useCore } from "core";
-import type { PageRoute } from "./route";
+import { useRoute } from "ui/routes";
+import { routeGroup } from "./route";
+import { assert } from "tsafe";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
 import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const SqlOlapShell = withLoginEnforced((props: Props) => {
     const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const isReady = useCoreState("sqlOlapShell", "isReady");
     const { sqlOlapShell } = useCore().functions;

@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import type { PageRoute } from "./route";
+import { routes, useRoute } from "ui/routes";
+import { assert } from "tsafe";
+import { routeGroup } from "./route";
 import { customIcons } from "lazy-icons";
-import { routes } from "ui/routes";
 import { MyServiceButtonBar } from "./MyServiceButtonBar";
 import { Tabs } from "onyxia-ui/Tabs";
 import { useCore, useCoreState } from "core";
@@ -16,12 +17,14 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const MyService = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ MyService });
 

@@ -5,12 +5,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useCoreState, useCore } from "core";
 import { Explorer, type ExplorerProps } from "./Explorer";
-import { routes } from "ui/routes";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
 import { useConst } from "powerhooks/useConst";
-import type { PageRoute } from "./route";
 import { assert } from "tsafe/assert";
 import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
@@ -19,12 +19,14 @@ import { useTranslation } from "ui/i18n";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const FileExplorer = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ FileExplorer });
 

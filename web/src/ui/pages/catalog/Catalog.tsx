@@ -5,8 +5,8 @@ import { tss } from "tss";
 import { useCoreState, useCore } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
-import type { PageRoute } from "./route";
-import { routes } from "ui/routes";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { breakpointsValues } from "onyxia-ui";
 import { Text } from "onyxia-ui/Text";
 import { useEvt } from "evt/hooks";
@@ -22,12 +22,14 @@ import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { customIcons, getIconUrlByName } from "lazy-icons";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 export default function Catalog(props: Props) {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ Catalog });
 

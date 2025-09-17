@@ -1,14 +1,18 @@
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { tss } from "tss";
-import type { PageRoute } from "./route";
+import { useRoute } from "ui/routes";
+import { routeGroup } from "./route";
+import { assert } from "tsafe";
 
 export type Props = {
     className?: string;
-    route: PageRoute;
 };
 
 export default function Document(props: Props) {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { classes, cx } = useStyles();
 

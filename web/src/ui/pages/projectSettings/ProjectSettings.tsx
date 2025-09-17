@@ -2,24 +2,26 @@ import { Tabs } from "onyxia-ui/Tabs";
 import { type TabId, tabIds } from "./tabIds";
 import { ProjectSettingsSecurityInfosTab } from "./ProjectSettingsSecurityInfosTab";
 import { ProjectSettingsS3ConfigTab } from "./ProjectSettingsS3ConfigTab";
-import { routes } from "ui/routes";
 import { useTranslation } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { assert, type Equals } from "tsafe/assert";
-import type { PageRoute } from "./route";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { useCoreState } from "core";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 
 export type Props = {
-    route: PageRoute;
     className?: string;
 };
 
 const ProjectSettings = withLoginEnforced((props: Props) => {
-    const { className, route } = props;
+    const { className } = props;
+
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
     const { t } = useTranslation({ ProjectSettings });
 
