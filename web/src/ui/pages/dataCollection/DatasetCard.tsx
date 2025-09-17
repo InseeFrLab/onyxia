@@ -1,13 +1,8 @@
-import {
-    Card,
-    CardHeader,
-    CardContent,
-    Typography,
-    Chip,
-    Box,
-    Link as MuiLink
-} from "@mui/material";
-import PublicIcon from "@mui/icons-material/Public";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import MuiLink from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { declareComponentKeys } from "i18nifty";
 import { tss } from "tss";
@@ -61,9 +56,9 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
             <CardHeader
                 avatar={<Icon icon={getIconUrlByName("Folder")} size="large" />}
                 title={
-                    <Typography variant="h6" component="div">
+                    <Text typo="object heading">
                         {resolveLocalizedString(title ?? id)}
-                    </Typography>
+                    </Text>
                 }
                 subheader={
                     <>
@@ -157,7 +152,6 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
                                     {dist.downloadUrl && (
                                         <Button
                                             variant="primary"
-                                            // size="small"
                                             onClick={() => {
                                                 routes
                                                     .dataExplorer({

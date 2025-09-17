@@ -4,13 +4,9 @@ import { fetchCatalogAndConvertInDatasets } from "./decoupledLogic/jsonld";
 
 export const thunks = {
     initialize:
-        (params: {
-            sourceUrl: string | undefined;
-            rowsPerPage: number | undefined;
-            page: number | undefined;
-        }) =>
+        (params: { sourceUrl: string | undefined }) =>
         async (...args) => {
-            const { sourceUrl, page, rowsPerPage } = params;
+            const { sourceUrl } = params;
 
             const [dispatch] = args;
 
