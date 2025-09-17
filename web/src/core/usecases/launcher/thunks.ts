@@ -621,7 +621,7 @@ export const protectedThunks = {
                     email: user.email,
                     password: servicePassword,
                     ip: !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
-                    darkMode: userConfigs.isDarkModeEnabled,
+                    darkMode: paramsOfBootstrapCore.getIsDarkModeEnabled(),
                     lang: paramsOfBootstrapCore.getCurrentLang(),
                     decodedIdToken,
                     accessToken,

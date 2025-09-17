@@ -17,6 +17,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { useSplashScreen } from "onyxia-ui";
 import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
+import { evtTheme } from "ui/theme";
 
 const { CoreProvider } = createCoreProvider({
     apiUrl: env.ONYXIA_API_URL,
@@ -36,7 +37,8 @@ const { CoreProvider } = createCoreProvider({
     quotaCriticalThresholdPercent: env.QUOTA_CRITICAL_THRESHOLD * 100,
     isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED,
     enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
-    disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG
+    disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
+    getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled
 });
 
 export function App() {

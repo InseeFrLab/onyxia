@@ -29,6 +29,7 @@ export type ParamsOfBootstrapCore = {
     isAuthGloballyRequired: boolean;
     enableOidcDebugLogs: boolean;
     disableDisplayAllCatalog: boolean;
+    getIsDarkModeEnabled: () => boolean;
 };
 
 export type Context = {
