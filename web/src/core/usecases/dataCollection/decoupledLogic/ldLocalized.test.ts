@@ -1,5 +1,48 @@
 import { describe, expect, it } from "vitest";
-import { toLocalizedString, toLocalizedStringList } from "./ldLocalized";
+import {
+    zLangValue,
+    toLocalizedString,
+    toLocalizedStringList,
+    zLocalizedInput
+} from "./ldLocalized";
+
+describe("zLangValue", () => {
+    it("accepts translation tagged languages", () => {
+        expect(() =>
+            zLangValue.parse({
+                "@language": "fr-t-en",
+                "@value": "Bonjour"
+            })
+        ).not.toThrow();
+    });
+
+    it("rejects translation tags with identical source and target", () => {
+        expect(() =>
+            zLangValue.parse({
+                "@language": "fr-t-fr",
+                "@value": "Bonjour"
+            })
+        ).toThrow();
+    });
+
+    it("reject translation same langue", () => {
+        expect(() =>
+            zLangValue.parse({
+                "@language": "fr-t-fr",
+                "@value": "Bonjour"
+            })
+        ).toThrow();
+    });
+
+    it("rejects unsupported languages", () => {
+        expect(() =>
+            zLangValue.parse({
+                "@language": "zz",
+                "@value": "Unknown"
+            })
+        ).toThrow();
+    });
+});
 
 describe("toLocalizedString", () => {
     it("returns the input when it is already a string", () => {
@@ -19,6 +62,24 @@ describe("toLocalizedString", () => {
                 { "@language": "zz", "@value": "Should be dropped" }
             ])
         ).toEqual({ fr: "Bonjour", en: "Hello" });
+    });
+
+    it("normalizes translation tags to their supported target", () => {
+        expect(
+            toLocalizedString([
+                { "@language": "fr-t-en", "@value": "Bonjour" },
+                { "@language": "en", "@value": "Hello" }
+            ])
+        ).toEqual({ fr: "Bonjour", en: "Hello" });
+    });
+
+    it("accepts translation tags through the zod schema", () => {
+        expect(() =>
+            zLocalizedInput.parse([
+                { "@language": "fr-t-en", "@value": "Bonjour" },
+                { "@language": "en", "@value": "Hello" }
+            ])
+        ).not.toThrow();
     });
 
     it("accepts language maps unchanged", () => {

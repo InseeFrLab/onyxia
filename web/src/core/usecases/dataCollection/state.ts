@@ -1,6 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
-import type { LocalizedString } from "ui/i18n";
 export const name = "dataCollection" as const;
 
 export type State = {
