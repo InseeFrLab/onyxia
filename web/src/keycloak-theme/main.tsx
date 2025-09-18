@@ -14,7 +14,7 @@ const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPage"));
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <OnyxiaUi>
+        <OnyxiaUi darkMode={window.kcContext.darkMode === false ? false : undefined}>
             <Suspense>
                 <KcLoginThemePage kcContext={window.kcContext} />
             </Suspense>
