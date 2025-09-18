@@ -1,7 +1,10 @@
-import type { DeploymentRegion, OidcParams_Partial } from "core/ports/OnyxiaApi";
+import type {
+    DeploymentRegion,
+    LocalizedString,
+    OidcParams_Partial
+} from "core/ports/OnyxiaApi";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import type { LocalizedString } from "ui/i18n";
 import memoizee from "memoizee";
 
 export type DeploymentRegion_S3ConfigLike = {
@@ -114,7 +117,7 @@ export async function resolveS3AdminBookmarks(params: {
                                                 title: substituteLocalizedString({
                                                     localizedString: entry.title,
                                                     match
-                                                }) as LocalizedString,
+                                                }),
                                                 description: substituteLocalizedString({
                                                     localizedString: entry.description,
                                                     match

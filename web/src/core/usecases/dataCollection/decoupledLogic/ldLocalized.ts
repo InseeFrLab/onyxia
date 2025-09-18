@@ -1,12 +1,44 @@
 import { z } from "zod";
-import type { LocalizedString } from "ui/i18n";
-import { zLanguage, languages } from "ui/i18n/z";
+import {
+    type Language,
+    type LocalizedString,
+    languages,
+    zLanguage
+} from "core/ports/OnyxiaApi";
 
-export const zLangValue = z.object({ "@language": zLanguage, "@value": z.string() });
+function isLanguage(x: string): x is Language {
+    return (languages as readonly string[]).includes(x);
+}
+
+const languageTranslationTags = languages.flatMap(target =>
+    languages
+        .filter(source => source !== target)
+        .map(source => `${target}-t-${source}` as const)
+) as readonly `${Language}-t-${Language}`[];
+
+export const zLanguage_BCP47 = z.enum([
+    ...languages,
+    ...languageTranslationTags
+] as const);
+
+export const normalizeLang = (lang: string): Language | undefined => {
+    const translationBase = lang.split("-t-")[0];
+    if (isLanguage(translationBase)) {
+        return translationBase;
+    }
+
+    const [primary] = lang.split("-");
+    return primary !== undefined && isLanguage(primary) ? primary : undefined;
+};
+
+export const zLangValue = z.object({
+    "@language": zLanguage_BCP47,
+    "@value": z.string()
+});
 
 export const zLocalizedInput = z.union([
-    z.string(),
-    z.object({ "@value": z.string() }),
+    z.string(), //value not localized
+    z.object({ "@value": z.string() }), //Not localized
     z.array(zLangValue),
     z.record(zLanguage, z.string())
 ]);
@@ -19,11 +51,11 @@ export function toLocalizedString(input: LdLocalizedInput): LocalizedString {
     }
 
     if (Array.isArray(input)) {
-        const allowed = new Set(languages);
-        const rec: Record<string, string> = {};
+        const rec: Partial<Record<Language, string>> = {};
         for (const { "@language": lang, "@value": value } of input) {
-            if (allowed.has(lang)) {
-                rec[lang] = value;
+            const normalizedLang = normalizeLang(lang);
+            if (normalizedLang !== undefined) {
+                rec[normalizedLang] = value;
             }
         }
         return rec;
@@ -38,7 +70,7 @@ export function toLocalizedString(input: LdLocalizedInput): LocalizedString {
 
 export function toLocalizedStringList(input: LdLocalizedArrayInput): LocalizedString[] {
     const items = Array.isArray(input) ? input : [input];
-    return items.map(v => toLocalizedString(v));
+    return items.map(value => toLocalizedString(value));
 }
 
 type LdLocalizedInput = z.infer<typeof zLocalizedInput>;
