@@ -1,10 +1,10 @@
-import { Suspense, memo, useEffect } from "react";
+import { Suspense, memo } from "react";
 import { tss } from "tss";
 import { useRoute } from "ui/routes";
 import { keyframes } from "tss-react";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
-import { useSplashScreen } from "onyxia-ui";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type Props = {
     className?: string;
@@ -19,7 +19,13 @@ export const Main = memo((props: Props) => {
 
     return (
         <main key={route.name || ""} className={cx(classes.root, className)}>
-            <Suspense fallback={<SuspenseFallback />}>
+            <Suspense
+                fallback={
+                    <div className={classes.suspenseFallback}>
+                        <CircularProgress />
+                    </div>
+                }
+            >
                 {(() => {
                     for (const pageName of objectKeys(pages)) {
                         const page = pages[pageName];
@@ -36,18 +42,6 @@ export const Main = memo((props: Props) => {
     );
 });
 
-function SuspenseFallback() {
-    const { hideRootSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        return () => {
-            hideRootSplashScreen();
-        };
-    }, []);
-
-    return null;
-}
-
 const useStyles = tss.withName({ Main }).create({
     root: {
         animation: `${keyframes`
@@ -58,5 +52,11 @@ const useStyles = tss.withName({ Main }).create({
                 opacity: 1;
             }
             `} 400ms`
+    },
+    suspenseFallback: {
+        display: "flex",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center"
     }
 });
