@@ -22,17 +22,7 @@ assert<Equals<(typeof languages)[number], Language>>();
 export const zLanguage = (() => {
     type TargetType = Language;
 
-    const zTargetType = z.union([
-        z.literal("en"),
-        z.literal("fr"),
-        z.literal("zh-CN"),
-        z.literal("no"),
-        z.literal("fi"),
-        z.literal("nl"),
-        z.literal("it"),
-        z.literal("es"),
-        z.literal("de")
-    ]);
+    const zTargetType = z.enum(languages);
 
     assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
 

@@ -70,8 +70,6 @@ export async function fetchCatalogAndConvertInDatasets(sourceUrl: string) {
         "dcat:distribution": { "@type": "dcat:Distribution" }
     });
 
-    console.log(framed);
-    //return undefined;
     return catalogToDatasets(framed);
 }
 

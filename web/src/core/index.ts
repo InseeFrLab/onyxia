@@ -8,7 +8,7 @@ export an API more adapted to our new front. (But we don't plan to leave React)
 
 import { createReactApi } from "clean-architecture/react";
 import { bootstrapCore } from "./bootstrap";
-export type { Language } from "./ports/OnyxiaApi";
+export { type Language, type LocalizedString } from "./ports/OnyxiaApi";
 
 export const { triggerCoreBootstrap, useCoreState, getCoreSync, getCore } =
     createReactApi({
