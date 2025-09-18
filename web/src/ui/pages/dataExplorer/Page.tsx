@@ -21,7 +21,10 @@ import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { supportedFileTypes } from "core/usecases/dataExplorer/decoupledLogic/SupportedFileType";
 
-export default function DataExplorer() {
+const Page = DataExplorer;
+export default Page;
+
+function DataExplorer() {
     const route = useRoute();
     assert(routeGroup.has(route));
 

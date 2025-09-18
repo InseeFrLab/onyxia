@@ -11,9 +11,13 @@ import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
 import { useCoreState } from "core";
 import { getIconUrlByName, customIcons } from "lazy-icons";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(ProjectSettings);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: ProjectSettings
+});
 export default Page;
 
 function ProjectSettings() {

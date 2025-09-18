@@ -34,9 +34,13 @@ import {
 } from "./ClusterEventsSnackbar";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(MyServices);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: MyServices
+});
 export default Page;
 
 function MyServices() {
@@ -82,6 +86,20 @@ function MyServices() {
     const lastClusterEvent = useCoreState("clusterEventsMonitor", "lastClusterEvent");
 
     const evtClusterEventsDialogOpen = useConst(() => Evt.create<void>());
+
+    useEvt(ctx => {
+        evtClusterEventsMonitor.attach(
+            action => action.actionName === "display notification",
+            ctx,
+            ({ message, severity }) => {
+                evtClusterEventsSnackbarAction.post({
+                    action: "show notification",
+                    message,
+                    severity
+                });
+            }
+        );
+    }, []);
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
@@ -288,20 +306,6 @@ function MyServices() {
     const evtClusterEventsSnackbarAction = useConst(() =>
         Evt.create<UnpackEvt<ClusterEventsSnackbarProps["evtAction"]>>()
     );
-
-    useEvt(ctx => {
-        evtClusterEventsMonitor.attach(
-            action => action.actionName === "display notification",
-            ctx,
-            ({ message, severity }) => {
-                evtClusterEventsSnackbarAction.post({
-                    action: "show notification",
-                    message,
-                    severity
-                });
-            }
-        );
-    }, []);
 
     return (
         <>

@@ -14,9 +14,13 @@ import { CommandBar } from "ui/shared/CommandBar";
 import { useEvt } from "evt/hooks";
 import { useDomRect } from "powerhooks/useDomRect";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(MyService);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: MyService
+});
 export default Page;
 
 function MyService() {

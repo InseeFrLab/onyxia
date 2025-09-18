@@ -315,7 +315,7 @@ export const translations: Translations<"fr"> = {
         "reset helper dialogs helper text":
             "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
     },
-    FileExplorer: {
+    FileExplorerEntry: {
         "page title - file explorer": "Explorateur de fichiers",
         "what this page is used for - file explorer":
             "Stocker ici vos fichiers de données.",

@@ -16,16 +16,20 @@ import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import { useTranslation } from "ui/i18n";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(FileExplorer);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: FileExplorer
+});
 export default Page;
 
 function FileExplorer() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
-    const { t } = useTranslation({ FileExplorer });
+    const { t } = useTranslation("FileExplorerEntry");
 
     const {
         isCurrentWorkingDirectoryLoaded,
