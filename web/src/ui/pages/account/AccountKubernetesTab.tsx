@@ -13,7 +13,7 @@ import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useFromNow } from "ui/shared/formattedDate";
 import { getIconUrlByName } from "lazy-icons";
 
@@ -28,7 +28,9 @@ const AccountKubernetesTab = memo((props: Props) => {
 
     const { classes, theme } = useStyles();
 
-    const { k8sCodeSnippets } = useCore().functions;
+    const {
+        functions: { k8sCodeSnippets }
+    } = getCoreSync();
 
     const {
         isReady,

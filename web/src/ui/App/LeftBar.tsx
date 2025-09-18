@@ -6,7 +6,7 @@ import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
 import { useRoute, routes, useUrlToLink } from "ui/routes";
 import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
@@ -20,7 +20,9 @@ type Props = {
 export const LeftBar = memo((props: Props) => {
     const { className } = props;
 
-    const { secretExplorer } = useCore().functions;
+    const {
+        functions: { secretExplorer }
+    } = getCoreSync();
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");

@@ -11,7 +11,7 @@ import {
 } from "./MyServicesRestorableConfigs";
 import { type ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
@@ -46,11 +46,20 @@ function MyServices() {
     const { t } = useTranslation({ MyServices });
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
-    /* prettier-ignore */
-    const { serviceManagement, restorableConfigManagement, k8sCodeSnippets, clusterEventsMonitor } = useCore().functions;
-    /* prettier-ignore */
+    const {
+        functions: {
+            serviceManagement,
+            restorableConfigManagement,
+            k8sCodeSnippets,
+            clusterEventsMonitor
+        },
+        evts: { evtClusterEventsMonitor }
+    } = getCoreSync();
 
-    const restorableConfigs = useCoreState("restorableConfigManagement", "restorableConfigs");
+    const restorableConfigs = useCoreState(
+        "restorableConfigManagement",
+        "restorableConfigs"
+    );
     const {
         isUpdating,
         services,
@@ -276,29 +285,23 @@ function MyServices() {
         evtClusterEventsDialogOpen.post();
     });
 
-    const { evtClusterEventsMonitor } = useCore().evts;
-
     const evtClusterEventsSnackbarAction = useConst(() =>
         Evt.create<UnpackEvt<ClusterEventsSnackbarProps["evtAction"]>>()
     );
 
-    useEvt(
-        ctx => {
-            evtClusterEventsMonitor.$attach(
-                action =>
-                    action.actionName === "display notification" ? [action] : null,
-                ctx,
-                ({ message, severity }) => {
-                    evtClusterEventsSnackbarAction.post({
-                        action: "show notification",
-                        message,
-                        severity
-                    });
-                }
-            );
-        },
-        [evtClusterEventsMonitor]
-    );
+    useEvt(ctx => {
+        evtClusterEventsMonitor.attach(
+            action => action.actionName === "display notification",
+            ctx,
+            ({ message, severity }) => {
+                evtClusterEventsSnackbarAction.post({
+                    action: "show notification",
+                    message,
+                    severity
+                });
+            }
+        );
+    }, []);
 
     return (
         <>

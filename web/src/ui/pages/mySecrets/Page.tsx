@@ -3,7 +3,7 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { SecretsExplorer, type SecretsExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
 import { routes, useRoute } from "ui/routes";
@@ -45,24 +45,22 @@ function MySecrets() {
 
     const secretEditorState = useCoreState("secretsEditor", "main");
 
-    const { secretExplorer, secretsEditor, userConfigs } = useCore().functions;
+    const {
+        functions: { secretExplorer, secretsEditor, userConfigs },
+        evts: { evtSecretExplorer }
+    } = getCoreSync();
 
-    const { evtSecretExplorer } = useCore().evts;
-
-    useEvt(
-        ctx => {
-            evtSecretExplorer.attach(
-                event => event.action === "reset path",
-                ctx,
-                () =>
-                    routes[route.name]({
-                        ...route.params,
-                        path: undefined
-                    }).replace()
-            );
-        },
-        [evtSecretExplorer]
-    );
+    useEvt(ctx => {
+        evtSecretExplorer.attach(
+            event => event.action === "reset path",
+            ctx,
+            () =>
+                routes[route.name]({
+                    ...route.params,
+                    path: undefined
+                }).replace()
+        );
+    }, []);
 
     useEffect(() => {
         if (route.params.path === undefined) {

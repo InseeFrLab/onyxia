@@ -7,7 +7,7 @@ import { routeGroup } from "./route";
 import { customIcons } from "lazy-icons";
 import { MyServiceButtonBar } from "./MyServiceButtonBar";
 import { Tabs } from "onyxia-ui/Tabs";
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { PodLogsTab } from "./PodLogsTab";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { CommandBar } from "ui/shared/CommandBar";
@@ -25,7 +25,10 @@ function MyService() {
 
     const { t } = useTranslation({ MyService });
 
-    const { serviceDetails } = useCore().functions;
+    const {
+        functions: { serviceDetails },
+        evts: { evtServiceDetails }
+    } = getCoreSync();
 
     useEffect(() => {
         const { setInactive } = serviceDetails.setActive({
@@ -35,20 +38,15 @@ function MyService() {
         return () => setInactive();
     }, [route.params.helmReleaseName]);
 
-    const { evtServiceDetails } = useCore().evts;
-
-    useEvt(
-        ctx => {
-            evtServiceDetails.attach(
-                ({ actionName }) => actionName === "redirect away",
-                ctx,
-                () => {
-                    routes.myServices().replace();
-                }
-            );
-        },
-        [evtServiceDetails]
-    );
+    useEvt(ctx => {
+        evtServiceDetails.attach(
+            ({ actionName }) => actionName === "redirect away",
+            ctx,
+            () => {
+                routes.myServices().replace();
+            }
+        );
+    }, []);
 
     const {
         isReady,

@@ -1,4 +1,4 @@
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { Button } from "onyxia-ui/Button";
 import { FormFieldGroupComponent } from "ui/pages/launcher/RootFormComponent/FormFieldGroupComponent";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
@@ -18,7 +18,9 @@ import { useConst } from "powerhooks/useConst";
 import { Deferred } from "evt/tools/Deferred";
 
 export default function UserProfileForm() {
-    const { userProfileForm } = useCore().functions;
+    const {
+        functions: { userProfileForm }
+    } = getCoreSync();
 
     const { rootForm, isThereThingsToSave } = useCoreState("userProfileForm", "main");
 

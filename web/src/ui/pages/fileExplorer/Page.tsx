@@ -3,7 +3,7 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { useEffect } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { Explorer, type ExplorerProps } from "./Explorer";
 import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
@@ -45,7 +45,9 @@ function FileExplorer() {
         evtIsSnackbarOpen.state = isDownloadPreparing;
     }, [isDownloadPreparing]);
 
-    const { fileExplorer } = useCore().functions;
+    const {
+        functions: { fileExplorer }
+    } = getCoreSync();
 
     useEffect(() => {
         fileExplorer.initialize({

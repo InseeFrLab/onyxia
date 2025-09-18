@@ -10,6 +10,6 @@ import { createReactApi } from "clean-architecture/react";
 import { bootstrapCore } from "./bootstrap";
 export type { Language } from "./ports/OnyxiaApi";
 
-export const { createCoreProvider, useCoreState, useCore } = createReactApi({
+export const { triggerCoreBootstrap, useCoreState, getCoreSync } = createReactApi({
     bootstrapCore
 });

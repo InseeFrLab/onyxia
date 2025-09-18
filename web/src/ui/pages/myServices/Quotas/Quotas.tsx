@@ -1,4 +1,4 @@
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useEffect } from "react";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { tss } from "tss";
@@ -29,7 +29,9 @@ export function Quotas(props: Props) {
 
     const { cx, classes, theme } = useStyles();
 
-    const { viewQuotas } = useCore().functions;
+    const {
+        functions: { viewQuotas }
+    } = getCoreSync();
 
     useEffect(() => {
         const { setInactive } = viewQuotas.setActive();

@@ -1,7 +1,7 @@
 import { memo, Suspense, lazy } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingField } from "ui/shared/SettingField";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { declareComponentKeys } from "i18nifty";
@@ -31,7 +31,9 @@ export const AccountProfileTab = memo((props: Props) => {
 
     assert(isUserLoggedIn);
 
-    const { userAuthentication, userProfileForm } = useCore().functions;
+    const {
+        functions: { userAuthentication, userProfileForm }
+    } = getCoreSync();
 
     return (
         <div className={className}>

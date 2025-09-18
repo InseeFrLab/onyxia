@@ -2,7 +2,7 @@ import "xterm/css/xterm.css";
 import { useState, useEffect } from "react";
 import { useConst } from "powerhooks/useConst";
 import { tss } from "tss";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useRoute } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe";
@@ -19,7 +19,9 @@ function SqlOlapShell() {
     assert(routeGroup.has(route));
 
     const isReady = useCoreState("sqlOlapShell", "isReady");
-    const { sqlOlapShell } = useCore().functions;
+    const {
+        functions: { sqlOlapShell }
+    } = getCoreSync();
 
     useEffect(() => {
         sqlOlapShell.initialize();
@@ -45,7 +47,9 @@ function ReadySqlOlapShell() {
 
     const isEmbeddedByElement = useConst(() => new WeakMap<HTMLElement, true>());
 
-    const { sqlOlapShell } = useCore().functions;
+    const {
+        functions: { sqlOlapShell }
+    } = getCoreSync();
 
     useEffect(() => {
         if (containerElement === null) {

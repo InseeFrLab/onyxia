@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { tss } from "tss";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { routes, useRoute } from "ui/routes";
@@ -34,7 +34,10 @@ export default function Catalog() {
         "main"
     );
 
-    const { evtCatalog } = useCore().evts;
+    const {
+        evts: { evtCatalog },
+        functions: { catalog }
+    } = getCoreSync();
 
     useEvt(
         ctx =>
@@ -46,8 +49,6 @@ export default function Catalog() {
             ),
         [evtCatalog]
     );
-
-    const { catalog } = useCore().functions;
 
     useEffect(() => {
         catalog.changeSelectedCatalogId({ catalogId: route.params.catalogId });
