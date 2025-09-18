@@ -312,7 +312,7 @@ export const translations: Translations<"de"> = {
         "reset helper dialogs helper text":
             "Die Hilfsdialoge zurücksetzen, die Sie aufgefordert haben, nicht mehr anzuzeigen"
     },
-    FileExplorer: {
+    FileExplorerEntry: {
         "page title - file explorer": "Datei-Explorer",
         "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
         "help content": ({ accountTabLink, docHref }) => (

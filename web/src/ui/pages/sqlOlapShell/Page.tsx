@@ -9,9 +9,13 @@ import { assert } from "tsafe";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
 import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(SqlOlapShell);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: SqlOlapShell
+});
 export default Page;
 
 function SqlOlapShell() {

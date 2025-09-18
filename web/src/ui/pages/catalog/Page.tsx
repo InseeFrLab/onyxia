@@ -21,7 +21,10 @@ import { CatalogChartCard } from "./CatalogChartCard";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { customIcons, getIconUrlByName } from "lazy-icons";
 
-export default function Catalog() {
+const Page = Catalog;
+export default Page;
+
+function Catalog() {
     const route = useRoute();
     assert(routeGroup.has(route));
 

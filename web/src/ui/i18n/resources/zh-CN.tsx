@@ -277,7 +277,7 @@ export const translations: Translations<"zh-CN"> = {
         reset: "重置",
         "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
     },
-    FileExplorer: {
+    FileExplorerEntry: {
         "page title - file explorer": "文件资源管理器",
         "what this page is used for - file explorer": "在此处存储您的数据.",
         "help content": ({ accountTabLink, docHref }) => (

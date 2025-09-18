@@ -15,7 +15,10 @@ import { id } from "tsafe/id";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 import { useCoreState } from "core";
 
-export default function Home() {
+const Page = Home;
+export default Page;
+
+function Home() {
     useConst(() => {
         if (env.DISABLE_HOMEPAGE) {
             routes.catalog().replace();

@@ -8,23 +8,27 @@ import { useCoreState } from "core";
 import { FileExplorerDisabledDialog } from "./FileExplorerDisabledDialog";
 import type { Link } from "type-route";
 import { S3Entries } from "./S3Entries/S3Entries";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(FileExplorerMaybeDisabled);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: FileExplorerEntry
+});
 export default Page;
 
-function FileExplorerMaybeDisabled() {
+function FileExplorerEntry() {
     const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
     if (!isFileExplorerEnabled) {
         return <FileExplorerDisabledDialog />;
     }
-    return <FileExplorerEntry />;
+    return <FileExplorerEntry_enabled />;
 }
 
-function FileExplorerEntry() {
+function FileExplorerEntry_enabled() {
     const { classes } = useStyles();
 
-    const { t } = useTranslation({ FileExplorer: FileExplorerEntry });
+    const { t } = useTranslation({ FileExplorerEntry });
 
     const indexedS3Locations = useCoreState("s3ConfigManagement", "indexedS3Locations");
 
@@ -127,5 +131,5 @@ const { i18n } = declareComponentKeys<
           P: { type: "project" | "personal" };
           R: string;
       }
->()({ FileExplorer: FileExplorerEntry });
+>()({ FileExplorerEntry });
 export type I18n = typeof i18n;

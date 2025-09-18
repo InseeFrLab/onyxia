@@ -308,7 +308,7 @@ export const translations: Translations<"fi"> = {
         "reset helper dialogs helper text":
             "Nollaa ohjeviestit, joista on pyydetty, ettei niitä näytetä uudelleen"
     },
-    FileExplorer: {
+    FileExplorerEntry: {
         "page title - file explorer": "Tiedostoselain",
         "what this page is used for - file explorer":
             "Täällä voit selata S3 Bucket -tiedostojasi.",

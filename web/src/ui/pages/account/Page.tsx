@@ -12,9 +12,13 @@ import { declareComponentKeys } from "i18nifty";
 import { getCoreSync } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { getIconUrlByName, customIcons } from "lazy-icons";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(Account);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: Account
+});
 export default Page;
 
 const AccountGitTab = lazy(() => import("./AccountGitTab"));

@@ -312,7 +312,7 @@ export const translations: Translations<"en"> = {
         "reset helper dialogs helper text":
             "Restablecer ventanas de mensajes que se han solicitado no mostrar nuevamente"
     },
-    FileExplorer: {
+    FileExplorerEntry: {
         "page title - file explorer": "Explorador de archivos",
         "what this page is used for - file explorer":
             "Aquí puedes explorar tus Buckets de S3.",

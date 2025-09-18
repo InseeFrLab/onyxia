@@ -21,9 +21,13 @@ import type { Link } from "type-route";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(MySecrets);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: MySecrets
+});
 export default Page;
 
 function MySecrets() {

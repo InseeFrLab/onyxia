@@ -310,7 +310,7 @@ export const translations: Translations<"it"> = {
         "reset helper dialogs helper text":
             "Ripristinare le finestre di messaggi che hai richiesto di non mostrare più"
     },
-    FileExplorer: {
+    FileExplorerEntry: {
         "page title - file explorer": "Esplora file",
         "what this page is used for - file explorer": "Archivia qui i tuoi file di dati.",
         "help content": ({ accountTabLink, docHref }) => (
@@ -384,8 +384,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

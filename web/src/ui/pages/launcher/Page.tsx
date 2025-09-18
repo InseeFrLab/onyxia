@@ -33,10 +33,14 @@ import { z } from "zod";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import { withLoginEnforced } from "ui/shared/withLoginEnforced";
 import { getIsAtomic } from "core/tools/Stringifyable";
+import { withLoader } from "ui/tools/withLoader";
+import { enforceLogin } from "ui/shared/enforceLogin";
 
-const Page = withLoginEnforced(Launcher);
+const Page = withLoader({
+    loader: enforceLogin,
+    Component: Launcher
+});
 export default Page;
 
 function Launcher() {
