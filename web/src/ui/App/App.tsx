@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { tss } from "tss";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -14,7 +13,6 @@ import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { injectOnyxiaInstancePublicUrl } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
-import { useSplashScreen } from "onyxia-ui";
 import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
@@ -53,9 +51,6 @@ export function App() {
 
 function AppContextualized() {
     useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
-    const isScreenScalerEnabled = evtIsScreenScalerOutOfBound.state !== undefined;
-    const isScreenScalerOutOfBound =
-        isScreenScalerEnabled && evtIsScreenScalerOutOfBound.state;
 
     const {
         ref: globalAlertRef,
@@ -63,11 +58,11 @@ function AppContextualized() {
     } = useDomRect();
     const { classes } = useStyles({
         globalAlertHeight,
-        isScreenScalerEnabled
+        isScreenScalerEnabled: evtIsScreenScalerOutOfBound.state !== undefined
     });
 
-    if (isScreenScalerOutOfBound) {
-        return <PortraitModeFallback />;
+    if (evtIsScreenScalerOutOfBound.state === true) {
+        return <PortraitModeUnsupported />;
     }
 
     return (
@@ -145,15 +140,3 @@ const useStyles = tss
             }
         };
     });
-
-function PortraitModeFallback() {
-    const { hideRootSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        return () => {
-            hideRootSplashScreen();
-        };
-    }, []);
-
-    return <PortraitModeUnsupported />;
-}
