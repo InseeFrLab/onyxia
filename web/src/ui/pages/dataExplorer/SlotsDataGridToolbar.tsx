@@ -5,7 +5,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import DataExplorer from "./Page";
-import { useCore } from "core";
+import { getCoreSync } from "core";
 import { BaseBar } from "onyxia-ui/BaseBar";
 import { CustomDataGridToolbarDensitySelector } from "ui/shared/Datagrid/CustomDataGridToolbarDensitySelector";
 import { CustomDataGridToolbarColumnsButton } from "ui/shared/Datagrid/CustomDataGridToolbarColumnsButton";
@@ -54,14 +54,15 @@ function DownloadButton() {
     const { t } = useTranslation({ DataExplorer });
 
     const {
-        dataExplorer: { getDownloadUrlAndFilename }
-    } = useCore().functions;
+        functions: { dataExplorer }
+    } = getCoreSync();
 
     return (
         <ButtonBarButton
             startIcon={getIconUrlByName("Download")}
             onClick={async () => {
-                const { fileDownloadUrl, filename } = await getDownloadUrlAndFilename();
+                const { fileDownloadUrl, filename } =
+                    await dataExplorer.getDownloadUrlAndFilename();
 
                 triggerBrowserDownload({
                     url: fileDownloadUrl,

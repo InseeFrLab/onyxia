@@ -1,5 +1,5 @@
 import { useEffect, type ComponentType, type FC } from "react";
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { tss } from "tss";
 
@@ -7,7 +7,9 @@ export function withLoginEnforced<Props extends Record<string, unknown>>(
     Component: ComponentType<Props>
 ): FC<Props> {
     function ComponentWithLoginEnforced(props: Props) {
-        const { userAuthentication } = useCore().functions;
+        const {
+            functions: { userAuthentication }
+        } = getCoreSync();
         const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
         useEffect(() => {

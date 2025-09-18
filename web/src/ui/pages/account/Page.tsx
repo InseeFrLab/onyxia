@@ -9,7 +9,7 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
-import { useCore } from "core";
+import { getCoreSync } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoginEnforced } from "ui/shared/withLoginEnforced";
@@ -30,7 +30,9 @@ function Account() {
 
     const { t } = useTranslation({ Account });
 
-    const { s3CodeSnippets, k8sCodeSnippets, vaultCredentials } = useCore().functions;
+    const {
+        functions: { s3CodeSnippets, k8sCodeSnippets, vaultCredentials }
+    } = getCoreSync();
 
     const tabs = useMemo(
         () =>

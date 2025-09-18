@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { SettingField } from "ui/shared/SettingField";
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 export type Props = {
@@ -10,7 +10,9 @@ export type Props = {
 export const ProjectSettingsSecurityInfosTab = memo((props: Props) => {
     const { className } = props;
 
-    const { projectManagement } = useCore().functions;
+    const {
+        functions: { projectManagement }
+    } = getCoreSync();
 
     const servicePassword = useCoreState("projectManagement", "servicePassword");
     const groupProjectName = useCoreState("projectManagement", "groupProjectName");

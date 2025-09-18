@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation, useResolveLocalizedString, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useConst } from "powerhooks/useConst";
@@ -93,7 +93,10 @@ function Launcher() {
         infoAmountInHelmValues
     } = useCoreState("launcher", "main");
 
-    const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
+    const {
+        functions: { launcher, restorableConfigManagement, k8sCodeSnippets },
+        evts: { evtLauncher }
+    } = getCoreSync();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -166,8 +169,6 @@ function Launcher() {
         }).replace();
     }, [restorableConfig]);
 
-    const { evtLauncher } = useCore().evts;
-
     useEvt(
         ctx =>
             evtLauncher
@@ -180,8 +181,8 @@ function Launcher() {
                     event => event.eventName === "launchStarted",
                     () => showSplashScreen({ enableTransparency: true })
                 )
-                .$attach(
-                    event => (event.eventName === "launchCompleted" ? [event] : null),
+                .attach(
+                    event => event.eventName === "launchCompleted",
                     ({ helmReleaseName }) => {
                         hideSplashScreen();
                         routes
@@ -189,7 +190,7 @@ function Launcher() {
                             .push();
                     }
                 ),
-        [evtLauncher]
+        []
     );
 
     const onRequestCancel = useConstCallback(() =>

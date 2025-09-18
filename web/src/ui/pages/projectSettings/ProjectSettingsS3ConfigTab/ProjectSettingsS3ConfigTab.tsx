@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { S3ConfigDialogs, type S3ConfigDialogsProps } from "./S3ConfigDialogs";
 import { useConst } from "powerhooks/useConst";
 import { Evt, type UnpackEvt } from "evt";
@@ -45,7 +45,9 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
         "projectManagement",
         "canInjectPersonalInfos"
     );
-    const { s3ConfigManagement } = useCore().functions;
+    const {
+        functions: { s3ConfigManagement }
+    } = getCoreSync();
 
     const { classes, css, theme } = useStyles();
 

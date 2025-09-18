@@ -4,7 +4,7 @@ import { Button } from "onyxia-ui/Button";
 import type { NonPostableEvt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type MaybeAcknowledgeConfigVolatilityDialogProps = {
@@ -61,7 +61,9 @@ export const MaybeAcknowledgeConfigVolatilityDialog = memo(
             setOpenState(undefined);
         };
 
-        const { userConfigs } = useCore().functions;
+        const {
+            functions: { userConfigs }
+        } = getCoreSync();
 
         const { t } = useTranslation({ MaybeAcknowledgeConfigVolatilityDialog });
 

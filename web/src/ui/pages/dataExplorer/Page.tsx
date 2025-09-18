@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss";
 import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
-import { useCore, useCoreState } from "core";
+import { getCoreSync, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert } from "tsafe/assert";
@@ -25,7 +25,9 @@ export default function DataExplorer() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
-    const { dataExplorer } = useCore().functions;
+    const {
+        functions: { dataExplorer }
+    } = getCoreSync();
     const { t } = useTranslation({ DataExplorer });
 
     const apiRef = useGridApiRef();

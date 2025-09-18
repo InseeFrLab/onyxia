@@ -10,7 +10,7 @@ import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
 import { useFromNow } from "ui/shared/formattedDate";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import Select from "@mui/material/Select";
@@ -51,7 +51,9 @@ const AccountStorageTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountStorageTab });
 
-    const { s3CodeSnippets } = useCore().functions;
+    const {
+        functions: { s3CodeSnippets }
+    } = getCoreSync();
 
     useEffect(() => {
         s3CodeSnippets.refresh({ doForceRenewToken: false });

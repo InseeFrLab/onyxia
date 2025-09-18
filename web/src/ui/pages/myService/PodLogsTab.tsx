@@ -3,7 +3,7 @@ import Pagination from "@mui/material/Pagination";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { LoadingDots } from "ui/shared/LoadingDots";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
@@ -25,7 +25,9 @@ function ActualPodLogsTab(props: Props) {
 
     const { classes, cx } = useStyles();
 
-    const { podLogs } = useCore().functions;
+    const {
+        functions: { podLogs }
+    } = getCoreSync();
 
     useEffect(() => {
         const { setInactive } = podLogs.setActive({

@@ -4,7 +4,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { type SelectChangeEvent } from "@mui/material/Select";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { assert } from "tsafe/assert";
 
 type Props = {
@@ -15,7 +15,9 @@ type Props = {
 export function RegionSelect(props: Props) {
     const { className, tRegion } = props;
 
-    const { deploymentRegionManagement } = useCore().functions;
+    const {
+        functions: { deploymentRegionManagement }
+    } = getCoreSync();
     const availableDeploymentRegionIds = useCoreState(
         "deploymentRegionManagement",
         "availableDeploymentRegionIds"

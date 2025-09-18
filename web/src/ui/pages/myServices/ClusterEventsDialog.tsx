@@ -3,7 +3,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
-import { useCoreState, useCore } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { fromNow } from "ui/shared/formattedDate";
 import { tss } from "tss";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
@@ -29,7 +29,9 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
         [evtOpen]
     );
 
-    const { clusterEventsMonitor } = useCore().functions;
+    const {
+        functions: { clusterEventsMonitor }
+    } = getCoreSync();
 
     const onClose = () => {
         clusterEventsMonitor.resetNotificationCount();

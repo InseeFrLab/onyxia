@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { env, injectEnvsTransferableToKeycloakTheme } from "env";
 import { RouteProvider } from "ui/routes";
-import { createCoreProvider, useCoreState } from "core";
+import { triggerCoreBootstrap } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang, I18nFetchingSuspense } from "ui/i18n";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
@@ -19,7 +19,7 @@ import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
 
-const { CoreProvider } = createCoreProvider({
+triggerCoreBootstrap({
     apiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
     transformBeforeRedirectForKeycloakTheme: ({ authorizationUrl }) => {
@@ -42,46 +42,33 @@ const { CoreProvider } = createCoreProvider({
 });
 
 export function App() {
-    useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
-
-    if (evtIsScreenScalerOutOfBound.state === true) {
-        return <PortraitModeFallback />;
-    }
-
     return (
         <RouteProvider>
             <I18nFetchingSuspense>
-                <CoreProvider>
-                    <AppContextualized />
-                </CoreProvider>
+                <AppContextualized />
             </I18nFetchingSuspense>
         </RouteProvider>
     );
 }
 
-function PortraitModeFallback() {
-    const { hideRootSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        return () => {
-            hideRootSplashScreen();
-        };
-    }, []);
-
-    return <PortraitModeUnsupported />;
-}
-
 function AppContextualized() {
     useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
-
     const isScreenScalerEnabled = evtIsScreenScalerOutOfBound.state !== undefined;
+    const isScreenScalerOutOfBound =
+        isScreenScalerEnabled && evtIsScreenScalerOutOfBound.state;
 
     const {
         ref: globalAlertRef,
         domRect: { height: globalAlertHeight }
     } = useDomRect();
-    const { classes } = useStyles({ globalAlertHeight, isScreenScalerEnabled });
-    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
+    const { classes } = useStyles({
+        globalAlertHeight,
+        isScreenScalerEnabled
+    });
+
+    if (isScreenScalerOutOfBound) {
+        return <PortraitModeFallback />;
+    }
 
     return (
         <>
@@ -101,7 +88,7 @@ function AppContextualized() {
                 </section>
                 <Footer className={classes.footer} />
             </div>
-            {isUserLoggedIn && <AutoLogoutCountdown />}
+            <AutoLogoutCountdown />
         </>
     );
 }
@@ -158,3 +145,15 @@ const useStyles = tss
             }
         };
     });
+
+function PortraitModeFallback() {
+    const { hideRootSplashScreen } = useSplashScreen();
+
+    useEffect(() => {
+        return () => {
+            hideRootSplashScreen();
+        };
+    }, []);
+
+    return <PortraitModeUnsupported />;
+}

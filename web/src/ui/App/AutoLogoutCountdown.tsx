@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useCore, useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { alpha } from "@mui/material/styles";
@@ -12,12 +12,24 @@ type Props = {
     className?: string;
 };
 
-export function AutoLogoutCountdown(props: Props) {
+export function AutoLogoutCountdown() {
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
+
+    if (!isUserLoggedIn) {
+        return null;
+    }
+
+    return <AutoLogoutCountdown_userLoggedIn />;
+}
+
+function AutoLogoutCountdown_userLoggedIn(props: Props) {
     const { className } = props;
 
     const { t } = useTranslation({ AutoLogoutCountdown });
 
-    const { autoLogoutCountdown } = useCore().functions;
+    const {
+        functions: { autoLogoutCountdown }
+    } = getCoreSync();
 
     useEffect(() => {
         const { setInactive } = autoLogoutCountdown.setActive({
