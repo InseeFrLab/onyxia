@@ -1,6 +1,5 @@
 import { id } from "tsafe";
 import {
-    createRouter,
     defineRoute,
     createGroup,
     param,
@@ -32,4 +31,4 @@ export const routeDefs = {
     )
 };
 
-export const routeGroup = createGroup(Object.values(createRouter(routeDefs).routes));
+export const routeGroup = createGroup(routeDefs);

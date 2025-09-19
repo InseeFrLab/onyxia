@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { createRouter as createRouter_base, type Link, type Route } from "type-route";
+import { createRouter, type Link, type Route } from "type-route";
 import { routeDefs, routerOpts } from "ui/pages";
 import { pluginSystemInitRouter } from "pluginSystem";
 import { type LocalizedString, resolveLocalizedString, useLang } from "ui/i18n";
@@ -9,44 +9,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 
 export type { Link };
 
-function createAppRouter() {
-    return createRouter_base(routerOpts, routeDefs);
-}
-
-type AppRouter = ReturnType<typeof createAppRouter>;
-
-const GLOBAL_CONTEXT_KEY = "__onyxia.routes.globalContext";
-
-declare global {
-    interface Window {
-        [GLOBAL_CONTEXT_KEY]: {
-            appRouter: AppRouter | undefined;
-        };
-    }
-}
-
-window[GLOBAL_CONTEXT_KEY] ??= {
-    appRouter: undefined
-};
-
-const globalContext = window[GLOBAL_CONTEXT_KEY];
-
-export const { RouteProvider, useRoute, routes, session } = (globalContext.appRouter ??=
-    createAppRouter());
+export const { RouteProvider, useRoute, getRoute, routes, session } = createRouter(
+    routerOpts,
+    routeDefs
+);
 
 pluginSystemInitRouter({ routes, session });
-
-export const { getRoute } = (() => {
-    let route_current = session.getInitialRoute();
-
-    session.listen(route => (route_current = route));
-
-    function getRoute() {
-        return route_current;
-    }
-
-    return { getRoute };
-})();
 
 export function useUrlToLink() {
     const lang = useLang();

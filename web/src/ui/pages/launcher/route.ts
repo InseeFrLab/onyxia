@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { createRouter, defineRoute, param, createGroup } from "type-route";
+import { defineRoute, param, createGroup } from "type-route";
 import type { QueryStringSerializer } from "type-route";
 import { partition } from "evt/tools/reducers/partition";
 import { assert, type Equals } from "tsafe/assert";
@@ -189,4 +189,4 @@ export const routeDefs = {
     )
 };
 
-export const routeGroup = createGroup(Object.values(createRouter(routeDefs).routes));
+export const routeGroup = createGroup(routeDefs);
