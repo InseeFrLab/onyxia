@@ -6,15 +6,12 @@ import MuiLink from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { declareComponentKeys } from "i18nifty";
 import { tss } from "tss";
-import { useTranslation } from "ui/i18n";
 import { Button } from "onyxia-ui/Button";
-
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
-import type { LocalizedString } from "ui/i18n";
-import { useResolveLocalizedString } from "ui/i18n";
+import { useTranslation, useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { Markdown } from "ui/shared/Markdown";
 
 export type Distribution = {
