@@ -76,7 +76,7 @@
         "screen-scaler": "^2.0.0",
         "tsafe": "^1.8.5",
         "tss-react": "^4.9.18",
-        "type-route": "^1.1.0",
+        "type-route": "1.1.0",
         "xterm": "^5.3.0",
         "xterm-addon-fit": "^0.8.0",
         "xterm-addon-web-links": "^0.9.0",

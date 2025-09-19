@@ -7259,7 +7259,7 @@ type-fest@^2.19.0:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.19.0.tgz#88068015bb33036a598b952e55e9311a60fd3a9b"
   integrity sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==
 
-type-route@^1.1.0:
+type-route@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/type-route/-/type-route-1.1.0.tgz#26c657e55a43590ff3c1568459998cbfc02fd6a7"
   integrity sha512-MgM/N+R8wp2oMYZZvBerFvK1j8CloGnhnsgf2ZTarFJ9PUXiNwLTCR3SkN0Mj95IdNee00v9q2iBNlkB106I7w==
