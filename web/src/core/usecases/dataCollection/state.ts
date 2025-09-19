@@ -1,5 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
+import type { JsonLdDocument } from "jsonld";
 import { id } from "tsafe/id";
 export const name = "dataCollection" as const;
 
@@ -13,7 +14,8 @@ export type State = {
           }
         | undefined;
     error: string | undefined;
-    datasets: State.Dataset[] | undefined;
+    rawCatalog: JsonLdDocument | undefined;
+    framedCatalog: JsonLdDocument | undefined;
 };
 
 export namespace State {
@@ -43,14 +45,16 @@ export const { actions, reducer } = createUsecaseActions({
         isQuerying: false,
         queryParams: undefined,
         error: undefined,
-        datasets: undefined
+        rawCatalog: undefined,
+        framedCatalog: undefined
     }),
     reducers: {
         restoreState: state => {
             state.isQuerying = false;
             state.error = undefined;
             state.queryParams = undefined;
-            state.datasets = undefined;
+            state.rawCatalog = undefined;
+            state.framedCatalog = undefined;
         },
         queryStarted: (
             state,
@@ -74,13 +78,15 @@ export const { actions, reducer } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    datasets: State.Dataset[];
+                    rawCatalog: JsonLdDocument;
+                    framedCatalog: JsonLdDocument;
                 };
             }
         ) => {
-            const { datasets } = payload;
+            const { rawCatalog, framedCatalog } = payload;
             state.isQuerying = false;
-            state.datasets = datasets;
+            state.rawCatalog = rawCatalog;
+            state.framedCatalog = framedCatalog;
         },
         queryFailed: (state, { payload }: { payload: { error: string } }) => {
             const { error } = payload;

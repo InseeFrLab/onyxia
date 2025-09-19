@@ -1,5 +1,5 @@
 import { z } from "zod";
-import jsonld, { type JsonLdDocument } from "jsonld";
+import jsonld from "jsonld";
 import type { State } from "../state";
 import {
     zLocalizedArrayInput,
@@ -8,11 +8,58 @@ import {
     toLocalizedStringList
 } from "./ldLocalized";
 
-export function catalogToDatasets(framed: JsonLdDocument) {
-    const { "@graph": graph } = zFramedCatalogSchema.parse(framed);
+export async function fetchCatalogDocuments(sourceUrl: string) {
+    const res = await fetch(sourceUrl);
+    if (!res.ok) {
+        throw new Error(`Erreur HTTP ${res.status} : ${res.statusText}`);
+    }
 
-    // we should early return or do not failed if framed contain only context and no informations (graph is empty after parsing)
-    return graph.map(d => {
+    const rawCatalog = await res.json();
+
+    const compactedCatalog = await jsonld.compact(rawCatalog, {
+        ...(rawCatalog["@context"] ?? {}),
+        dcat: "http://www.w3.org/ns/dcat#",
+        dct: "http://purl.org/dc/terms/"
+    });
+
+    const framedCatalog = await jsonld.frame(compactedCatalog, {
+        "@context": (compactedCatalog as any)["@context"],
+        "@type": "dcat:Dataset",
+        "dcat:distribution": { "@type": "dcat:Distribution" }
+    });
+
+    return {
+        rawCatalog,
+        compactedCatalog,
+        framedCatalog
+    };
+}
+
+export function catalogToDatasets(framedCatalog: unknown): {
+    datasets: State.Dataset[] | undefined;
+    parsingError: string | undefined;
+} {
+    if (framedCatalog == null) {
+        return { datasets: undefined, parsingError: undefined };
+    }
+
+    const parsed = zFramedCatalogSchema.safeParse(framedCatalog);
+
+    if (!parsed.success) {
+        const parsingError =
+            parsed.error.issues
+                .map(issue => {
+                    const path = issue.path.join(".") || "<root>";
+                    return `${path}: ${issue.message}`;
+                })
+                .join("; ") || parsed.error.message;
+
+        return { datasets: undefined, parsingError };
+    }
+
+    const { "@graph": graph } = parsed.data;
+
+    const datasets = graph.map(d => {
         const distributions = (d["dcat:distribution"] ?? []).map(distrib => {
             const format =
                 distrib["dcat:mediaType"] ?? distrib?.["dct:format"] ?? undefined;
@@ -49,28 +96,8 @@ export function catalogToDatasets(framed: JsonLdDocument) {
             distributions
         } satisfies State.Dataset;
     });
-}
 
-export async function fetchCatalogAndConvertInDatasets(sourceUrl: string) {
-    const res = await fetch(sourceUrl);
-    if (!res.ok) {
-        throw new Error(`Erreur HTTP ${res.status} : ${res.statusText}`);
-    }
-    const raw = await res.json();
-
-    const compated = await jsonld.compact(raw, {
-        ...raw["@context"],
-        dcat: "http://www.w3.org/ns/dcat#",
-        dct: "http://purl.org/dc/terms/"
-    });
-
-    const framed = await jsonld.frame(compated, {
-        "@context": compated["@context"],
-        "@type": "dcat:Dataset",
-        "dcat:distribution": { "@type": "dcat:Distribution" }
-    });
-
-    return catalogToDatasets(framed);
+    return { datasets, parsingError: undefined };
 }
 
 //   LiteralString:
