@@ -1,11 +1,11 @@
 import { PageHeader } from "onyxia-ui/PageHeader";
-import type { PageRoute } from "./route";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys } from "i18nifty";
 import { UrlInput } from "../dataExplorer/UrlInput";
 import { useEffect } from "react";
-import { useCore, useCoreState } from "core";
-import { routes } from "ui/routes";
+import { getCoreSync, useCoreState } from "core";
+import { routes, useRoute } from "ui/routes";
+import { routeGroup } from "./route";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { DatasetCard } from "./DatasetCard";
@@ -13,23 +13,23 @@ import { tss } from "tss";
 import type { Link } from "type-route";
 import { useTranslation } from "ui/i18n";
 import { env } from "env";
+import { assert } from "tsafe/assert";
 
-type Props = {
-    route: PageRoute;
-    className?: string;
-};
+export default function DataCollection() {
+    const route = useRoute();
+    assert(routeGroup.has(route));
 
-export default function DataCollection(props: Props) {
-    const { className, route } = props;
-
-    const { classes, cx, css } = useStyles();
+    const { classes, css } = useStyles();
 
     const { t } = useTranslation({ DataCollection });
     const { datasets, queryParams, error, isQuerying } = useCoreState(
         "dataCollection",
         "main"
     );
-    const { dataCollection } = useCore().functions;
+
+    const {
+        functions: { dataCollection }
+    } = getCoreSync();
 
     useEffect(() => {
         dataCollection.initialize({
@@ -52,7 +52,7 @@ export default function DataCollection(props: Props) {
     }, [queryParams]);
 
     return (
-        <div className={cx(css({ height: "100%", overflow: "hidden" }, className))}>
+        <div className={css({ height: "100%", overflow: "hidden" })}>
             <div className={css({ overflow: "auto", height: "100%" })}>
                 <PageHeader
                     mainIcon={getIconUrlByName("FolderSpecial")}
