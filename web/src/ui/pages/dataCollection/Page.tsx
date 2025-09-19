@@ -81,12 +81,15 @@ export default function DataCollection() {
                     }
 
                     if (isQuerying) {
-                        return <CircularProgress size={70} />;
+                        return (
+                            <div className={classes.initializing}>
+                                <CircularProgress size={70} />
+                            </div>
+                        );
                     }
 
                     if (datasets === undefined) return null;
 
-                    console.log("datasets", datasets);
                     return (
                         <div className={classes.datasets}>
                             {datasets.map(dataset => (
@@ -103,6 +106,12 @@ export default function DataCollection() {
 const useStyles = tss.withName({ DataCollection }).create(({ theme }) => ({
     urlInput: {
         marginBottom: theme.spacing(4)
+    },
+    initializing: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%"
     },
     datasets: {
         display: "flex",
