@@ -37,16 +37,21 @@ export async function fetchCatalogDocuments(sourceUrl: string) {
 
 export function catalogToDatasets(framedCatalog: unknown): {
     datasets: State.Dataset[] | undefined;
-    parsingError: string | undefined;
+    parsingErrors: string[] | undefined;
 } {
     if (framedCatalog == null) {
-        return { datasets: undefined, parsingError: undefined };
+        return { datasets: undefined, parsingErrors: undefined };
     }
 
     const parsed = zFramedCatalogSchema.safeParse(framedCatalog);
 
     if (!parsed.success) {
-        return { datasets: undefined, parsingError: parsed.error.toString() };
+        const parsingErrors = parsed.error.issues.map(({ path, message }) => {
+            const formattedPath = path.length === 0 ? "<root>" : path.join(".");
+            return `${formattedPath}: ${message}`;
+        });
+
+        return { datasets: undefined, parsingErrors };
     }
 
     const { "@graph": graph } = parsed.data;
@@ -89,7 +94,7 @@ export function catalogToDatasets(framedCatalog: unknown): {
         } satisfies State.Dataset;
     });
 
-    return { datasets, parsingError: undefined };
+    return { datasets, parsingErrors: undefined };
 }
 
 //   LiteralString:
