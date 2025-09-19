@@ -9,7 +9,7 @@ import {
 } from "./ldLocalized";
 
 export async function fetchCatalogDocuments(sourceUrl: string) {
-    const res = await fetch(sourceUrl);
+    const res = await fetch(sourceUrl, { redirect: "follow" });
     if (!res.ok) {
         throw new Error(`Erreur HTTP ${res.status} : ${res.statusText}`);
     }
@@ -23,7 +23,7 @@ export async function fetchCatalogDocuments(sourceUrl: string) {
     });
 
     const framedCatalog = await jsonld.frame(compactedCatalog, {
-        "@context": (compactedCatalog as any)["@context"],
+        "@context": compactedCatalog["@context"],
         "@type": "dcat:Dataset",
         "dcat:distribution": { "@type": "dcat:Distribution" }
     });
@@ -46,15 +46,7 @@ export function catalogToDatasets(framedCatalog: unknown): {
     const parsed = zFramedCatalogSchema.safeParse(framedCatalog);
 
     if (!parsed.success) {
-        const parsingError =
-            parsed.error.issues
-                .map(issue => {
-                    const path = issue.path.join(".") || "<root>";
-                    return `${path}: ${issue.message}`;
-                })
-                .join("; ") || parsed.error.message;
-
-        return { datasets: undefined, parsingError };
+        return { datasets: undefined, parsingError: parsed.error.toString() };
     }
 
     const { "@graph": graph } = parsed.data;
@@ -62,7 +54,7 @@ export function catalogToDatasets(framedCatalog: unknown): {
     const datasets = graph.map(d => {
         const distributions = (d["dcat:distribution"] ?? []).map(distrib => {
             const format =
-                distrib["dcat:mediaType"] ?? distrib?.["dct:format"] ?? undefined;
+                distrib["dcat:mediaType"] ?? distrib["dct:format"] ?? undefined;
 
             const byteSize = distrib["dcat:byteSize"];
             const fileSize = distrib["dcat:filesize"];

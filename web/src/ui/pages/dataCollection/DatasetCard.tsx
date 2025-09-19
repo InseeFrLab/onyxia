@@ -15,6 +15,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import type { LocalizedString } from "ui/i18n";
 import { useResolveLocalizedString } from "ui/i18n";
+import { Markdown } from "ui/shared/Markdown";
 
 export type Distribution = {
     id: string;
@@ -119,7 +120,7 @@ export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
                 )}
 
                 {description && (
-                    <Text typo="body 1">{resolveLocalizedString(description)}</Text>
+                    <Markdown>{resolveLocalizedString(description)}</Markdown>
                 )}
             </div>
             <CardContent>
