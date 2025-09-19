@@ -5,6 +5,7 @@ import {
     toLocalizedStringList,
     zLocalizedInput
 } from "./ldLocalized";
+import { type Language } from "core/ports/OnyxiaApi";
 
 describe("zLangValue", () => {
     it("accepts translation tagged languages", () => {
@@ -17,15 +18,6 @@ describe("zLangValue", () => {
     });
 
     it("rejects translation tags with identical source and target", () => {
-        expect(() =>
-            zLangValue.parse({
-                "@language": "fr-t-fr",
-                "@value": "Bonjour"
-            })
-        ).toThrow();
-    });
-
-    it("reject translation same langue", () => {
         expect(() =>
             zLangValue.parse({
                 "@language": "fr-t-fr",
@@ -94,28 +86,19 @@ describe("toLocalizedString", () => {
 
 describe("toLocalizedStringList", () => {
     it("wraps a single value", () => {
-        expect(toLocalizedStringList("unique")).toEqual(["unique"]);
+        expect(toLocalizedStringList(["unique"])).toEqual(["unique"]);
     });
 
-    it("normalizes a mix of supported inputs", () => {
-        expect(
-            toLocalizedStringList([
-                "plain",
-                { "@value": "wrapped" },
-                [
-                    { "@language": "fr", "@value": "mot" },
-                    { "@language": "en", "@value": "word" }
-                ],
-                {
-                    fr: "Carte",
-                    en: "Map"
-                }
-            ])
-        ).toEqual([
-            "plain",
-            "wrapped",
+    it("groups repeated language values into separate localized entries", () => {
+        const input: { "@language": Language; "@value": string }[] = [
+            { "@language": "fr", "@value": "mot" },
+            { "@language": "en", "@value": "word" },
+            { "@language": "fr", "@value": "mots" },
+            { "@language": "en", "@value": "words" }
+        ];
+        expect(toLocalizedStringList(input)).toEqual([
             { fr: "mot", en: "word" },
-            { fr: "Carte", en: "Map" }
+            { fr: "mots", en: "words" }
         ]);
     });
 });

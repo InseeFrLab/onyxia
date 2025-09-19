@@ -14,7 +14,7 @@ const languageTranslationTags = languages.flatMap(target =>
     languages
         .filter(source => source !== target)
         .map(source => `${target}-t-${source}` as const)
-) as readonly `${Language}-t-${Language}`[];
+);
 
 export const zLanguage_BCP47 = z.enum([
     ...languages,
@@ -35,15 +35,21 @@ export const zLangValue = z.object({
     "@language": zLanguage_BCP47,
     "@value": z.string()
 });
+type LangValue = z.infer<typeof zLangValue>;
 
 export const zLocalizedInput = z.union([
-    z.string(), //value not localized
-    z.object({ "@value": z.string() }), //Not localized
+    z.string(),
+    z.object({ "@value": z.string() }),
     z.array(zLangValue),
     z.record(zLanguage, z.string())
 ]);
 
-export const zLocalizedArrayInput = z.union([zLocalizedInput, z.array(zLocalizedInput)]);
+export const zLocalizedArrayInput = z.union([
+    z.array(zLangValue), //needs to be at top to avoid conflict with other schema
+    z.string().array(),
+    z.object({ "@value": z.string() }).array(),
+    z.record(zLanguage, z.string()).array()
+]);
 
 export function toLocalizedString(input: LdLocalizedInput): LocalizedString {
     if (typeof input === "string") {
@@ -68,9 +74,49 @@ export function toLocalizedString(input: LdLocalizedInput): LocalizedString {
     return input;
 }
 
+const isLangValue = (value: unknown): value is LangValue =>
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as Record<string, unknown>)["@language"] === "string" &&
+    typeof (value as Record<string, unknown>)["@value"] === "string";
+
+const groupLangValues = (values: LangValue[]): LocalizedString[] => {
+    // 1. Group values by normalized language
+    const groups = values.reduce<Map<Language, string[]>>(
+        (acc, { "@language": lang, "@value": value }) => {
+            const normalized = normalizeLang(lang);
+            if (!normalized) return acc;
+            acc.set(normalized, [...(acc.get(normalized) ?? []), value]);
+            return acc;
+        },
+        new Map()
+    );
+
+    if (groups.size === 0) return [];
+
+    const entries = [...groups.entries()];
+    const numberOfValues = Math.max(...entries.map(([, items]) => items.length));
+
+    // 3. Build the result by aligning items at the same index across languages
+    // We can't be sure translation are well aligned
+    return Array.from({ length: numberOfValues }, (_, index) => {
+        const record = entries.reduce<Partial<Record<Language, string>>>(
+            (acc, [lang, items]) => {
+                const item = items[index];
+                return item !== undefined ? { ...acc, [lang]: item } : acc;
+            },
+            {}
+        );
+        return Object.keys(record).length > 0 ? record : undefined;
+    }).filter(r => r !== undefined);
+};
+
 export function toLocalizedStringList(input: LdLocalizedArrayInput): LocalizedString[] {
-    const items = Array.isArray(input) ? input : [input];
-    return items.map(value => toLocalizedString(value));
+    if (input.every(isLangValue)) {
+        return groupLangValues(input);
+    }
+
+    return input.map(value => toLocalizedString(value));
 }
 
 type LdLocalizedInput = z.infer<typeof zLocalizedInput>;

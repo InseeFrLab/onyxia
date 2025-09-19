@@ -3,6 +3,12 @@ import { catalogToDatasets } from "./jsonld";
 import type { JsonLdDocument } from "jsonld";
 
 describe("catalogToDatasets (framed JSON-LD)", () => {
+    it("returns undefined datasets when framed catalog missing", () => {
+        const { datasets, parsingError } = catalogToDatasets(undefined);
+        expect(datasets).toBeUndefined();
+        expect(parsingError).toBeUndefined();
+    });
+
     it("handles null distribution and string keyword", () => {
         const framed = {
             "@context": {
@@ -22,11 +28,12 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "dcat:distribution": null
                 }
             ]
-        } as const;
+        } satisfies JsonLdDocument;
 
-        const res = catalogToDatasets(framed as any);
-        expect(res).toHaveLength(1);
-        expect(res[0]).toMatchObject({
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).toHaveLength(1);
+        expect(datasets![0]).toMatchObject({
             id: "dataset:1",
             title: "Titre",
             description: "Desc",
@@ -61,9 +68,10 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
             ]
         } satisfies JsonLdDocument;
 
-        const res = catalogToDatasets(framed);
-        expect(res).toHaveLength(1);
-        const ds = res[0];
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).toHaveLength(1);
+        const ds = datasets![0];
         expect(ds.id).toBe("dataset:single");
         expect(ds.title).toBe("dataset:single"); // fallback to @id
         expect(ds.landingPageUrl).toBe("https://lp");
@@ -108,11 +116,12 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     ]
                 }
             ]
-        } as const;
+        } satisfies JsonLdDocument;
 
-        const res = catalogToDatasets(framed as any);
-        expect(res).toHaveLength(1);
-        const [d1, d2] = res[0].distributions;
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).toHaveLength(1);
+        const [d1, d2] = datasets?.[0].distributions ?? [];
         expect(d1).toMatchObject({ id: "d1", format: "application/json" });
         expect(d2).toMatchObject({ id: "d2", format: "csv", sizeInBytes: 10 });
     });
@@ -142,11 +151,12 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     ]
                 }
             ]
-        } as const;
+        } satisfies JsonLdDocument;
 
-        const res = catalogToDatasets(framed as any);
-        expect(res).toHaveLength(1);
-        const [d1, d2] = res[0].distributions;
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).toHaveLength(1);
+        const [d1, d2] = datasets?.[0].distributions ?? [];
         expect(d1).toMatchObject({ id: "d1", format: "http://media/type" });
         expect(d2).toMatchObject({ id: "d2", format: "http://format/type" });
     });
@@ -177,12 +187,13 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     }
                 }
             ]
-        } as const;
+        } satisfies JsonLdDocument;
 
-        const res = catalogToDatasets(framed as any);
-        expect(res).toHaveLength(1);
-        expect(res[0].keywords).toEqual(["A", "B"]);
-        expect(res[0].distributions).toEqual([
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).toHaveLength(1);
+        expect(datasets?.[0].keywords).toEqual(["A", "B"]);
+        expect(datasets?.[0].distributions).toEqual([
             {
                 id: "dist:1",
                 format: "text/csv",
@@ -212,12 +223,13 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "dcat:distribution": []
                 }
             ]
-        } as const;
+        } satisfies JsonLdDocument;
 
-        const res = catalogToDatasets(framed as any);
-        expect(res).toHaveLength(1);
-        expect(res[0].keywords).toEqual(["K1", "K2"]);
-        expect(res[0].distributions).toEqual([]);
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).toHaveLength(1);
+        expect(datasets?.[0].keywords).toEqual(["K1", "K2"]);
+        expect(datasets?.[0].distributions).toEqual([]);
     });
 
     it("normalizes localized titles, descriptions and keyword inputs", () => {
@@ -239,23 +251,42 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                         en: "Description EN"
                     },
                     "dcat:keyword": [
-                        [
-                            { "@language": "fr", "@value": "mot" },
-                            { "@language": "en", "@value": "word" }
-                        ],
-                        { "@value": "plain" }
+                        { "@language": "fr", "@value": "mot" },
+                        { "@language": "en", "@value": "word" },
+                        { "@language": "fr", "@value": "mots" },
+                        { "@language": "en", "@value": "words" }
                     ],
                     "dcat:distribution": []
                 }
             ]
-        } as const;
+        } satisfies JsonLdDocument;
 
-        const [dataset] = catalogToDatasets(framed as any);
+        const { datasets, parsingError } = catalogToDatasets(framed);
+        expect(parsingError).toBeUndefined();
+        expect(datasets).not.toBeUndefined();
+        const dataset = datasets![0];
         expect(dataset.title).toEqual({ fr: "Jeu de données", en: "Dataset" });
         expect(dataset.description).toEqual({
             fr: "Description FR",
             en: "Description EN"
         });
-        expect(dataset.keywords).toEqual([{ fr: "mot", en: "word" }, "plain"]);
+        expect(dataset.keywords).toEqual([
+            { fr: "mot", en: "word" },
+            { fr: "mots", en: "words" }
+        ]);
+    });
+
+    it("surfaces zod parsing errors", () => {
+        const malformed = {
+            "@graph": [
+                {
+                    "@id": 123 // invalid: should be string
+                }
+            ]
+        } as unknown as JsonLdDocument;
+
+        const { datasets, parsingError } = catalogToDatasets(malformed);
+        expect(datasets).toBeUndefined();
+        expect(parsingError).toBeTruthy();
     });
 });
