@@ -1,5 +1,5 @@
-import { useContext, createContext, useEffect, type ReactNode } from "react";
-import { createRouter, type Link, type Route } from "type-route";
+import { useEffect } from "react";
+import { createRouter as createRouter_base, type Link, type Route } from "type-route";
 import { routeDefs, routerOpts } from "ui/pages";
 import { pluginSystemInitRouter } from "pluginSystem";
 import { type LocalizedString, resolveLocalizedString, useLang } from "ui/i18n";
@@ -9,42 +9,32 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 
 export type { Link };
 
-const {
-    RouteProvider: RouteProvider_base,
-    useRoute: useRoute_base,
-    routes,
-    session
-} = createRouter(routerOpts, routeDefs);
+function createAppRouter() {
+    return createRouter_base(routerOpts, routeDefs);
+}
 
-export { routes, session };
+type AppRouter = ReturnType<typeof createAppRouter>;
+
+const GLOBAL_CONTEXT_KEY = "__onyxia.routes.globalContext";
+
+declare global {
+    interface Window {
+        [GLOBAL_CONTEXT_KEY]: {
+            appRouter: AppRouter | undefined;
+        };
+    }
+}
+
+window[GLOBAL_CONTEXT_KEY] ??= {
+    appRouter: undefined
+};
+
+const globalContext = window[GLOBAL_CONTEXT_KEY];
+
+export const { RouteProvider, useRoute, routes, session } = (globalContext.appRouter ??=
+    createAppRouter());
 
 pluginSystemInitRouter({ routes, session });
-
-export const { RouteProvider, useRoute } = (() => {
-    const contextIsProvided = createContext(false);
-
-    function RouteProvider(props: { children: ReactNode }) {
-        const { children } = props;
-
-        return (
-            <contextIsProvided.Provider value={true}>
-                <RouteProvider_base>{children}</RouteProvider_base>
-            </contextIsProvided.Provider>
-        );
-    }
-
-    const useRoute: typeof useRoute_base = () => {
-        const isProvided = useContext(contextIsProvided);
-        if (!isProvided) {
-            console.log("HMR, reload");
-            window.location.reload();
-            throw new Promise<never>(() => {});
-        }
-        return useRoute_base();
-    };
-
-    return { RouteProvider, useRoute };
-})();
 
 export const { getRoute } = (() => {
     let route_current = session.getInitialRoute();
