@@ -6,25 +6,31 @@ import { catalogToDatasets } from "./decoupledLogic/jsonld";
 const state = (rootState: RootState) => rootState[name];
 
 const main = createSelector(state, state => {
-    const { queryParams, error, isQuerying, rawCatalog, framedCatalog } = state;
+    const { queryParams, errors, isQuerying, framedCatalog } = state;
 
-    if (rawCatalog === undefined) {
+    if (framedCatalog === undefined) {
         return {
             isQuerying,
             queryParams,
-            error
+            errors
         };
     }
 
-    const { datasets, parsingError } = catalogToDatasets(framedCatalog);
+    const { datasets, parsingErrors } = catalogToDatasets(framedCatalog);
+
+    if (parsingErrors !== undefined) {
+        return {
+            isQuerying,
+            queryParams,
+            errors: parsingErrors
+        };
+    }
 
     return {
         isQuerying,
         queryParams,
-        error,
         datasets,
-        parsingError,
-        rawCatalog
+        parsingErrors
     };
 });
 

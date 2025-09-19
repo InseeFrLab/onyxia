@@ -22,7 +22,7 @@ export default function DataCollection() {
     const { classes, css } = useStyles();
 
     const { t } = useTranslation({ DataCollection });
-    const { datasets, queryParams, error, isQuerying, parsingError } = useCoreState(
+    const { datasets, queryParams, errors, isQuerying } = useCoreState(
         "dataCollection",
         "main"
     );
@@ -74,10 +74,20 @@ export default function DataCollection() {
                 />
 
                 {(() => {
-                    const combinedError = error ?? parsingError;
-
-                    if (combinedError !== undefined) {
-                        return <Alert severity="error">{combinedError}</Alert>;
+                    if (errors !== undefined) {
+                        return (
+                            <Alert severity="error">
+                                {errors.length > 1 ? (
+                                    <ul>
+                                        {errors.map(error => (
+                                            <li key={error}>{error}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    errors[0]
+                                )}
+                            </Alert>
+                        );
                     }
 
                     if (isQuerying) {

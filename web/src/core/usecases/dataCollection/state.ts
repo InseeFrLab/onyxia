@@ -13,8 +13,7 @@ export type State = {
               page: number | undefined;
           }
         | undefined;
-    error: string | undefined;
-    rawCatalog: JsonLdDocument | undefined;
+    errors: string[] | undefined;
     framedCatalog: JsonLdDocument | undefined;
 };
 
@@ -44,16 +43,14 @@ export const { actions, reducer } = createUsecaseActions({
     initialState: id<State>({
         isQuerying: false,
         queryParams: undefined,
-        error: undefined,
-        rawCatalog: undefined,
+        errors: undefined,
         framedCatalog: undefined
     }),
     reducers: {
         restoreState: state => {
             state.isQuerying = false;
-            state.error = undefined;
+            state.errors = undefined;
             state.queryParams = undefined;
-            state.rawCatalog = undefined;
             state.framedCatalog = undefined;
         },
         queryStarted: (
@@ -68,7 +65,7 @@ export const { actions, reducer } = createUsecaseActions({
         ) => {
             const { queryParams } = payload;
             state.queryParams = queryParams;
-            state.error = undefined;
+            state.errors = undefined;
             state.isQuerying = true;
         },
 
@@ -78,20 +75,18 @@ export const { actions, reducer } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    rawCatalog: JsonLdDocument;
                     framedCatalog: JsonLdDocument;
                 };
             }
         ) => {
-            const { rawCatalog, framedCatalog } = payload;
+            const { framedCatalog } = payload;
             state.isQuerying = false;
-            state.rawCatalog = rawCatalog;
             state.framedCatalog = framedCatalog;
         },
-        queryFailed: (state, { payload }: { payload: { error: string } }) => {
-            const { error } = payload;
+        queryFailed: (state, { payload }: { payload: { errors: string[] } }) => {
+            const { errors } = payload;
             state.isQuerying = false;
-            state.error = error;
+            state.errors = errors;
         },
         queryCanceled: state => {
             state.isQuerying = false;

@@ -48,13 +48,11 @@ export const thunks = {
             );
 
             try {
-                const { rawCatalog, framedCatalog } =
-                    await fetchCatalogDocuments(sourceUrl);
+                const { framedCatalog } = await fetchCatalogDocuments(sourceUrl);
 
-                dispatch(actions.querySucceeded({ rawCatalog, framedCatalog }));
+                dispatch(actions.querySucceeded({ framedCatalog }));
             } catch (error) {
-                console.error("Erreur JSON-LD :", error);
-                dispatch(actions.queryFailed({ error: String(error) }));
+                dispatch(actions.queryFailed({ errors: [String(error)] }));
                 return;
             }
         }

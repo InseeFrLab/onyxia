@@ -46,9 +46,14 @@ export const zLocalizedInput = z.union([
 
 export const zLocalizedArrayInput = z.union([
     z.array(zLangValue), //needs to be at top to avoid conflict with other schema
-    z.string().array(),
-    z.object({ "@value": z.string() }).array(),
-    z.record(zLanguage, z.string()).array()
+    zLocalizedInput,
+    z
+        .union([
+            z.string(),
+            z.object({ "@value": z.string() }),
+            z.record(zLanguage, z.string())
+        ])
+        .array()
 ]);
 
 export function toLocalizedString(input: LdLocalizedInput): LocalizedString {
@@ -112,8 +117,12 @@ const groupLangValues = (values: LangValue[]): LocalizedString[] => {
 };
 
 export function toLocalizedStringList(input: LdLocalizedArrayInput): LocalizedString[] {
+    if (!Array.isArray(input)) {
+        return [toLocalizedString(input)];
+    }
+
     if (input.every(isLangValue)) {
-        return groupLangValues(input);
+        return groupLangValues(input as LangValue[]);
     }
 
     return input.map(value => toLocalizedString(value));
