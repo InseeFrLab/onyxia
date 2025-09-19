@@ -1,6 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
-import { fetchCatalogAndConvertInDatasets } from "./decoupledLogic/jsonld";
+import { fetchCatalogDocuments } from "./decoupledLogic/jsonld";
 
 export const thunks = {
     initialize:
@@ -47,16 +47,15 @@ export const thunks = {
                 })
             );
 
-            let datasets;
-
             try {
-                datasets = await fetchCatalogAndConvertInDatasets(sourceUrl);
+                const { rawCatalog, framedCatalog } =
+                    await fetchCatalogDocuments(sourceUrl);
+
+                dispatch(actions.querySucceeded({ rawCatalog, framedCatalog }));
             } catch (error) {
                 console.error("Erreur JSON-LD :", error);
                 dispatch(actions.queryFailed({ error: String(error) }));
                 return;
             }
-
-            dispatch(actions.querySucceeded({ datasets }));
         }
 } satisfies Thunks;
