@@ -18,7 +18,6 @@ export const {
     useLang,
     $lang,
     useResolveLocalizedString,
-    I18nFetchingSuspense,
     getTranslation,
     $readyLang
 } = createI18nApi<ComponentKey>()(
