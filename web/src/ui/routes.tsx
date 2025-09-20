@@ -9,7 +9,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 
 export type { Link };
 
-export const { RouteProvider, useRoute, getRoute, routes, session } = createRouter(
+export const { routes, getRoute, useRoute, session } = createRouter(
     routerOpts,
     routeDefs
 );

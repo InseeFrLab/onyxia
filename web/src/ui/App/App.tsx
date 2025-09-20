@@ -2,7 +2,6 @@ import { tss } from "tss";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { env, injectEnvsTransferableToKeycloakTheme } from "env";
-import { RouteProvider } from "ui/routes";
 import { triggerCoreBootstrap } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
@@ -40,14 +39,6 @@ triggerCoreBootstrap({
 });
 
 export function App() {
-    return (
-        <RouteProvider>
-            <AppContextualized />
-        </RouteProvider>
-    );
-}
-
-function AppContextualized() {
     useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
 
     const {

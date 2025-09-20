@@ -1,3 +1,5 @@
+import { type RouterOpts, mergeRouteDefs } from "type-route";
+
 import * as account from "./account";
 import * as catalog from "./catalog";
 import * as launcher from "./launcher";
@@ -12,10 +14,6 @@ import * as document from "./document";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as fileExplorer from "./fileExplorerEntry";
-
-import { objectKeys } from "tsafe/objectKeys";
-import type { UnionToIntersection } from "tsafe";
-import type { RouterOpts } from "type-route";
 
 export const pages = {
     account,
@@ -34,13 +32,7 @@ export const pages = {
     fileExplorer
 };
 
-export const routeDefs = {} as UnionToIntersection<
-    (typeof pages)[keyof typeof pages]["routeDefs"]
->;
-
-objectKeys(pages).forEach(pageName =>
-    Object.assign(routeDefs, pages[pageName].routeDefs)
-);
+export const { routeDefs } = mergeRouteDefs({ pages });
 
 export const routerOpts = {
     queryStringSerializer: launcher.queryStringSerializer
