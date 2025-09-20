@@ -12,25 +12,31 @@ loadThemedFavicon();
 const App = lazy(() => import("ui/App"));
 
 export function Root() {
+    return (
+        <OnyxiaUi>
+            <Suspense fallback={<SplashScreen />}>
+                <AppWrapper />
+            </Suspense>
+        </OnyxiaUi>
+    );
+}
+
+function AppWrapper() {
     const { hideRootSplashScreen } = useSplashScreen();
 
     useEffect(() => {
         hideRootSplashScreen();
     }, []);
 
-    return (
-        <OnyxiaUi>
-            <Suspense fallback={<SplashScreen />}>
-                <App />
-            </Suspense>
-        </OnyxiaUi>
-    );
+    return <App />;
 }
 
 function SplashScreen() {
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
+    const { showSplashScreen, hideSplashScreen, hideRootSplashScreen } =
+        useSplashScreen();
 
     useEffect(() => {
+        hideRootSplashScreen();
         showSplashScreen({ enableTransparency: false });
 
         return () => {
