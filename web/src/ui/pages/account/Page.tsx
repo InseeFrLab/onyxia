@@ -2,7 +2,7 @@ import { Suspense, lazy } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import { type AccountTabId, accountTabIds } from "./accountTabIds";
 import { useMemo } from "react";
-import { routes, getRoute } from "ui/routes";
+import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
 import { useTranslation } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
@@ -29,7 +29,7 @@ const AccountUserInterfaceTab = lazy(() => import("./AccountUserInterfaceTab"));
 const AccountVaultTab = lazy(() => import("./AccountVaultTab"));
 
 function Account() {
-    const route = getRoute();
+    const route = useRoute();
     assert(routeGroup.has(route));
 
     const { t } = useTranslation({ Account });
