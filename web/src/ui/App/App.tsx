@@ -5,7 +5,7 @@ import { env, injectEnvsTransferableToKeycloakTheme } from "env";
 import { RouteProvider } from "ui/routes";
 import { triggerCoreBootstrap } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { evtLang, I18nFetchingSuspense } from "ui/i18n";
+import { evtLang } from "ui/i18n";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
@@ -42,9 +42,7 @@ triggerCoreBootstrap({
 export function App() {
     return (
         <RouteProvider>
-            <I18nFetchingSuspense>
-                <AppContextualized />
-            </I18nFetchingSuspense>
+            <AppContextualized />
         </RouteProvider>
     );
 }

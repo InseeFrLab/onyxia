@@ -4873,10 +4873,10 @@ husky@^9.1.7:
   resolved "https://registry.yarnpkg.com/husky/-/husky-9.1.7.tgz#d46a38035d101b46a70456a850ff4201344c0b2d"
   integrity sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==
 
-i18nifty@^3.2.6:
-  version "3.2.6"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.2.6.tgz#eb4caf4df2dfd6b02fdff100695563c9983cb9b6"
-  integrity sha512-5u3orvOrzpOwzBXegvuHBMeiSWvCjUcVzZKp9Iw2826GeqJ0F/0XoRlScbcG6wZ9i8b6h3ZuWYRb0Svx/uL8mQ==
+i18nifty@4.0.0-rc.2:
+  version "4.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-4.0.0-rc.2.tgz#539ea61e4967c52458cb57932e480126a80f8582"
+  integrity sha512-NmG07Ejb/yTMd05cTbFxB2JkVfd18PeY0+dVThrQ44HvujcKSeE0xdxraPo0sFAkA9gxYAk79+ovPuxbDOjGHA==
   dependencies:
     powerhooks "^2.0.1"
     tsafe "^1.8.5"
