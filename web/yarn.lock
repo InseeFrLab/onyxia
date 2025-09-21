@@ -1793,7 +1793,7 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
-"@reduxjs/toolkit@^1.9.6":
+"@reduxjs/toolkit@1.9.7":
   version "1.9.7"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.9.7.tgz#7fc07c0b0ebec52043f8cb43510cf346405f78a6"
   integrity sha512-t7v8ZPxhhKgOKtU+uyJT13lu4vL7az5aFi4IdoDs/eS548edn2M8Ik9h8fxgvMjGoAUVFSt6ZC1P5cWmQ014QQ==
@@ -3628,12 +3628,12 @@ ci-info@^3.7.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.9.0.tgz#4279a62028a7b1f262f3473fc9605f5e218c59b4"
   integrity sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==
 
-clean-architecture@^5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-5.0.3.tgz#31b0041a2405b972218d94d0289fb4123b3e5194"
-  integrity sha512-WKzF8429IjE7Uob5JAqKlSEvIASlm8mI1YMR1c1JO+ZwBXHfM8nX+My011W+BFraUEvr1BDZNMFEi/ae6k91EA==
+clean-architecture@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-6.0.3.tgz#315f957b90fe1a8dcdf6034a5a90147a1794fb3b"
+  integrity sha512-7PijjDvBpT9a1WeGTCJGbFnMy0a2RiJ8AN4rCXZX7ZtnJGz4505Km0JT1o8eoJggE15CLMtcy9JmAvqA271hNQ==
   dependencies:
-    "@reduxjs/toolkit" "^1.9.6"
+    "@reduxjs/toolkit" "1.9.7"
     minimal-polyfills "^2.2.3"
     tsafe "^1.8.10"
 
