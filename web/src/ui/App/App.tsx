@@ -4,7 +4,7 @@ import { Header } from "./Header";
 import { env, injectEnvsTransferableToKeycloakTheme } from "env";
 import { triggerCoreBootstrap } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { evtLang } from "ui/i18n";
+import { evtLang, useLang } from "ui/i18n";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
@@ -50,13 +50,15 @@ export function App() {
         isScreenScalerEnabled: evtIsScreenScalerOutOfBound.state !== undefined
     });
 
+    const { lang } = useLang();
+
     if (evtIsScreenScalerOutOfBound.state === true) {
         return <PortraitModeUnsupported />;
     }
 
     return (
         <>
-            <div className={classes.root}>
+            <div key={lang} className={classes.root}>
                 {env.GLOBAL_ALERT !== undefined && (
                     <GlobalAlert
                         ref={globalAlertRef}
