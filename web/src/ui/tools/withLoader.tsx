@@ -21,9 +21,7 @@ export function withLoader<Props extends Record<string, unknown>>(params: {
         useEffect(() => {
             let isActive = true;
 
-            assert(prLoaded !== undefined);
-
-            prLoaded.then(() => {
+            (prLoaded ??= loader()).then(() => {
                 if (!isActive) {
                     return;
                 }
