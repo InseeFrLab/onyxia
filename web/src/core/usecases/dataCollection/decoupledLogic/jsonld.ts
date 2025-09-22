@@ -17,7 +17,6 @@ export async function fetchCatalogDocuments(sourceUrl: string) {
     const rawCatalog = await res.json();
 
     const compactedCatalog = await jsonld.compact(rawCatalog, {
-        ...(rawCatalog["@context"] ?? {}),
         dcat: "http://www.w3.org/ns/dcat#",
         dct: "http://purl.org/dc/terms/"
     });
@@ -30,7 +29,6 @@ export async function fetchCatalogDocuments(sourceUrl: string) {
 
     return {
         rawCatalog,
-        compactedCatalog,
         framedCatalog
     };
 }
