@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <%
 const { ENABLED_LANGUAGES } = import.meta.env;
-const lang = ENABLED_LANGUAGES === "" ? "en" : ENABLED_LANGUAGES.split(",")[0].trim();
+
+const enabledLanguages = ENABLED_LANGUAGES === "" ? "all" : ENABLED_LANGUAGES.split(",").map(s=>s.trim());
+
+const languageToSetAsHtmlAttr = (enabledLanguages === "all" || enabledLanguages.length !== 1) ? undefined : enabledLanguages[0];
+
+const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${languageToSetAsHtmlAttr}"`;
 %>
-<html lang="<%= lang %>">
+<html <%= langAttrAndValue %>>
 <head>
 
 	<meta charset="utf-8" />
