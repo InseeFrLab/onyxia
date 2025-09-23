@@ -82,56 +82,79 @@ const lang = ENABLED_LANGUAGES === "" ? "en" : ENABLED_LANGUAGES.split(",")[0].t
     <meta name="keycloakify-ignore-end">
     <style><%= fontFaceRules %></style>
 
-    <script data-script-purpose="set background color early">
-        /*
-        This is a way to get the correct background color as soon as possible,
-        even before the JavaScript bundle is evaluated.
-        It is to prevent a white flash when the user has dark mode enabled.
-        It is very implementation dependent and can easily break...
-        if it does no big deal.
-        */
-        (function () {
-        
-            var isDarkModeEnabled = /true/.test((function () {
+    <!-- 
+    NOTE: This is an optimization to avoid having a white flash
+    while the main app bundle is being downloaded and evaluated
+    -->
+    <script data-script-purpose="Set dark/light mode ASAP">
+    {
+        const isDarkModeEnabled = /true/.test(
+            (() => {
 
                 {
-                    var envValue = "<%= import.meta.env.DARK_MODE %>";
+                    const envValue = "<%= import.meta.env.DARK_MODE %>";
 
                     if(envValue !== ""){
                         return envValue;
                     }
                 }
-            
-                var key = "powerhooks_useGlobalState_isDarkModeEnabled";
-                var value = null;
-            
+
+                // string | null
+                let value = null;
+
                 try {
-                    value = (new URLSearchParams(location.search)).get(key);
-                } catch (_) { }
-            
+                    value = new URLSearchParams(location.search).get("theme");
+                } catch(_) {}
+
+                if (value === "light") {
+                    return "true";
+                }
+
+                if (value === "dark") {
+                    return "false";
+                }
+
+                value = null;
+
+                const POWERHOOKS_KEY =
+                    "powerhooks_useGlobalState_isDarkModeEnabled";
+
+                try {
+                    value = new URLSearchParams(location.search).get(
+                        POWERHOOKS_KEY,
+                    );
+                } catch(_) {}
+
                 if (value !== null) {
                     return value;
                 }
-            
+
                 try {
-                    value = localStorage.getItem(key);
-                } catch (_) { }
-            
+                    value = localStorage.getItem(POWERHOOKS_KEY);
+                } catch(_) {}
+
                 if (value !== null) {
                     return value;
                 }
-            
+
                 try {
-                    value = window.matchMedia("(prefers-color-scheme: dark)").matches ? "true" : "false";
-                } catch (_) { }
-            
+                    value = window.matchMedia("(prefers-color-scheme: dark)")
+                        .matches
+                        ? "true"
+                        : "false";
+                } catch(_) {}
+
                 if (value !== null) {
                     return value;
                 }
-            
+
                 return "false";
-            
-            })());
+            })(),
+        );
+
+        console.log(`isDarkModeEnabled: ${isDarkModeEnabled}`);
+
+        {
 
             <%
                 const PALETTE_OVERRIDE = import.meta.env.PALETTE_OVERRIDE;
@@ -163,13 +186,15 @@ const lang = ENABLED_LANGUAGES === "" ? "en" : ENABLED_LANGUAGES.split(",")[0].t
                 });
             %>
 
-            var backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
+            const backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
+
+            console.log({ backgroundColor });
             
             document.documentElement.style.backgroundColor = backgroundColor;
             
             while (true) {
             
-                var element = document.querySelector("meta[name=theme-color]");
+                const element = document.querySelector("meta[name=theme-color]");
             
                 if (element === null) {
                 	break;
@@ -181,10 +206,44 @@ const lang = ENABLED_LANGUAGES === "" ? "en" : ENABLED_LANGUAGES.split(",")[0].t
             
             document.head.insertAdjacentHTML(
                 "beforeend",
-                '<meta name="theme-color" content="' + backgroundColor + '">',
+                `<meta name="theme-color" content="${backgroundColor}">`,
             );
-        
-        })();
+
+        }
+
+        {
+            const id = "root-color-scheme";
+
+            remove_existing_element: {
+                const element = document.getElementById(id);
+
+                if (element === null) {
+                    break remove_existing_element;
+                }
+
+                element.remove();
+            }
+
+            const element = document.createElement("style");
+
+            element.id = id;
+
+            element.innerHTML = `
+				:root {
+					color-scheme: ${isDarkModeEnabled ? "dark" : "light"}
+				}
+		    `;
+
+            document.getElementsByTagName("head")[0].appendChild(element);
+        }
+
+        // To enable custom css stylesheets to target a specific theme
+        document.documentElement.setAttribute(
+            "theme",
+            isDarkModeEnabled ? "dark" : "light",
+        );
+
+    }
     </script>
 
     <%= import.meta.env.CUSTOM_HTML_HEAD %>
