@@ -35,6 +35,40 @@ const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${l
     <meta name="keycloakify-ignore-end">
 
 	<%
+    const faviconLink = (()=>{
+
+        const envValue = import.meta.env.FAVICON || import.meta.env.HEADER_LOGO;
+
+        const href= typeof envValue === "string" ? envValue : envValue.light;
+
+        const type = (()=>{
+
+            const extension = href.split("?")[0].split(".").pop();
+
+            if( extension === "svg" ){
+                return "svg+xml";
+            }
+
+            if( extension === "png" || extension === "ico" ){
+                return extension;
+            }
+
+            return undefined;
+
+
+        })();
+
+        if( type === undefined ){
+            return "";
+        }
+
+        return `<link rel="icon" type="image/${type}" href="${href}">`;
+
+    })();
+    %>
+    <%= faviconLink %>
+
+	<%
     const FONT = JSON5.parse(import.meta.env.FONT);
     const { fontFamily, dirUrl } = FONT;
     const fontWeights = [400, 500, 600, 700];
