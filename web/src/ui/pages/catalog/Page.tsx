@@ -72,7 +72,7 @@ function Catalog() {
         }
     );
 
-    const { classes, css } = useStyles({
+    const { classes, css, theme } = useStyles({
         filteredCardCount: filteredCharts?.length ?? 0
     });
 
@@ -102,6 +102,7 @@ function Catalog() {
         <div className={classes.root}>
             <PageHeader
                 classes={{
+                    root: css({ marginBottom: 0, marginLeft: theme.spacing(1) }),
                     title: css({ paddingBottom: 3 }),
                     helpTitle: css({ display: "none" }),
                     helpIcon: css({ display: "none" })
@@ -251,7 +252,8 @@ const useStyles = tss
         },
         bodyWrapper: {
             flex: 1,
-            overflow: "hidden"
+            overflow: "hidden",
+            paddingTop: theme.spacing(3)
         },
         body: {
             height: "100%",
@@ -259,18 +261,22 @@ const useStyles = tss
             flexDirection: "column"
         },
         catalogSwitcher: {
-            display: "flex",
-            marginBottom: theme.spacing(3)
+            display: "flex"
         },
         searchBar: {
-            marginBottom: theme.spacing(3)
+            marginBottom: theme.spacing(3),
+            marginLeft: theme.spacing(2)
         },
         searchResults: {
             marginBottom: theme.spacing(3)
         },
         cardsWrapper: {
             flex: 1,
-            overflow: "auto"
+            overflow: "auto",
+            paddingTop: theme.spacing(3),
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(3),
+            borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
         },
         cards: {
             ...(filteredCardCount === 0
