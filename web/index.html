@@ -191,8 +191,6 @@ const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${l
             })(),
         );
 
-        console.log(`isDarkModeEnabled: ${isDarkModeEnabled}`);
-
         {
 
             <%
@@ -226,8 +224,6 @@ const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${l
             %>
 
             const backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
-
-            console.log({ backgroundColor });
             
             document.documentElement.style.backgroundColor = backgroundColor;
             
