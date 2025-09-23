@@ -222,7 +222,9 @@ const useStyles = tss
             overflow: "auto",
             backgroundColor: "transparent",
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(3)
         },
         hero: {
             flex: 1,
@@ -258,7 +260,7 @@ const useStyles = tss
             borderTop: `1px solid ${theme.colors.useCases.typography.textPrimary}`,
             display: "flex",
             ...theme.spacing.topBottom("padding", 4),
-            paddingBottom: theme.spacing(1),
+            paddingBottom: theme.spacing(3),
             "& > *": {
                 flex: 1
             },
