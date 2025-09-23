@@ -8,18 +8,16 @@ import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { DatasetCard } from "./DatasetCard";
 import { tss } from "tss";
 import type { Link } from "type-route";
 import { useTranslation } from "ui/i18n";
 import { env } from "env";
 import { assert } from "tsafe/assert";
+import { DatasetListVirtualized } from "./DatasetListVirtualized";
 
 export default function DataCollection() {
     const route = useRoute();
     assert(routeGroup.has(route));
-
-    const { classes, css } = useStyles();
 
     const { t } = useTranslation({ DataCollection });
     const { datasets, queryParams, errors, isQuerying } = useCoreState(
@@ -30,6 +28,8 @@ export default function DataCollection() {
     const {
         functions: { dataCollection }
     } = getCoreSync();
+
+    const { classes, css } = useStyles();
 
     useEffect(() => {
         dataCollection.initialize({
@@ -52,63 +52,56 @@ export default function DataCollection() {
     }, [queryParams]);
 
     return (
-        <div className={css({ height: "100%", overflow: "hidden" })}>
-            <div className={css({ overflow: "auto", height: "100%" })}>
-                <PageHeader
-                    mainIcon={getIconUrlByName("FolderSpecial")}
-                    title={t("page header title")}
-                    helpTitle={t("page header help title")}
-                    helpContent={t("page header help content", {
-                        demoCatalogLink: routes[route.name]({
-                            source: env.SAMPLE_DATACOLLECTION_URL
-                        }).link
-                    })}
-                />
-                <UrlInput
-                    className={classes.urlInput}
-                    onUrlChange={value => {
-                        dataCollection.updateSourceUrl({ sourceUrl: value });
-                    }}
-                    url={queryParams === undefined ? "" : queryParams.sourceUrl}
-                    getIsValidUrl={() => true}
-                />
-
-                {(() => {
-                    if (errors !== undefined) {
-                        return (
-                            <Alert severity="error">
-                                {errors.length > 1 ? (
-                                    <ul>
-                                        {errors.map(error => (
-                                            <li key={error}>{error}</li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    errors[0]
-                                )}
-                            </Alert>
-                        );
-                    }
-
-                    if (isQuerying) {
-                        return (
-                            <div className={classes.initializing}>
-                                <CircularProgress size={70} />
-                            </div>
-                        );
-                    }
-
-                    if (datasets === undefined) return null;
-
+        <div
+            className={css({ height: "100%", display: "flex", flexDirection: "column" })}
+        >
+            <PageHeader
+                mainIcon={getIconUrlByName("FolderSpecial")}
+                title={t("page header title")}
+                helpTitle={t("page header help title")}
+                helpContent={t("page header help content", {
+                    demoCatalogLink: routes[route.name]({
+                        source: env.SAMPLE_DATACOLLECTION_URL
+                    }).link
+                })}
+            />
+            <UrlInput
+                className={classes.urlInput}
+                onUrlChange={value => {
+                    dataCollection.updateSourceUrl({ sourceUrl: value });
+                }}
+                url={queryParams === undefined ? "" : queryParams.sourceUrl}
+                getIsValidUrl={() => true}
+            />
+            {(() => {
+                if (errors !== undefined) {
                     return (
-                        <div className={classes.datasets}>
-                            {datasets.map(dataset => (
-                                <DatasetCard key={dataset.id} dataset={dataset} />
-                            ))}
+                        <Alert severity="error">
+                            {errors.length > 1 ? (
+                                <ul>
+                                    {errors.map(error => (
+                                        <li key={error}>{error}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                errors[0]
+                            )}
+                        </Alert>
+                    );
+                }
+
+                if (isQuerying) {
+                    return (
+                        <div className={classes.initializing}>
+                            <CircularProgress size={70} />
                         </div>
                     );
-                })()}
-            </div>
+                }
+
+                if (datasets === undefined) return null;
+
+                return <DatasetListVirtualized datasets={datasets} />;
+            })()}
         </div>
     );
 }
@@ -122,11 +115,6 @@ const useStyles = tss.withName({ DataCollection }).create(({ theme }) => ({
         justifyContent: "center",
         alignItems: "center",
         height: "100%"
-    },
-    datasets: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(3)
     }
 }));
 

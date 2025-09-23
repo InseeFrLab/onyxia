@@ -13,6 +13,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { useTranslation, useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { Markdown } from "ui/shared/Markdown";
+import { forwardRef, memo, type CSSProperties } from "react";
 
 export type Distribution = {
     id: string;
@@ -33,143 +34,159 @@ export type Dataset = {
     distributions: Distribution[];
 };
 
-export const DatasetCard = ({ dataset }: { dataset: Dataset }) => {
-    const {
-        id,
-        title,
-        description,
-        keywords = [],
-        issuedDate,
-        landingPageUrl,
-        licenseUrl,
-        distributions
-    } = dataset;
+type Props = {
+    className?: string;
+    dataset: Dataset;
+    style?: CSSProperties;
+} & React.HTMLAttributes<HTMLDivElement>;
+export const DatasetCard = memo(
+    forwardRef<HTMLDivElement, Props>((props, ref) => {
+        const {
+            className,
+            dataset: {
+                id,
+                title,
+                description,
+                keywords = [],
+                issuedDate,
+                landingPageUrl,
+                licenseUrl,
+                distributions
+            },
+            style,
+            ...rest
+        } = props;
 
-    const { classes, css } = useStyles();
-    const { t } = useTranslation({ DatasetCard });
-    const { resolveLocalizedString } = useResolveLocalizedString();
+        const { classes, css } = useStyles();
+        const { t } = useTranslation({ DatasetCard });
+        const { resolveLocalizedString } = useResolveLocalizedString();
 
-    return (
-        <Card>
-            <CardHeader
-                avatar={<Icon icon={getIconUrlByName("Folder")} size="large" />}
-                title={
-                    <Text typo="object heading">
-                        {resolveLocalizedString(title ?? id)}
-                    </Text>
-                }
-                subheader={
-                    <>
-                        {issuedDate &&
-                            `${t("publishedOn")} ${new Date(issuedDate).toLocaleDateString()}`}
-
-                        {licenseUrl && (
-                            <Text typo="body 2">
-                                {t("license")}{" "}
-                                <MuiLink
-                                    href={licenseUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {licenseUrl}
-                                </MuiLink>
-                            </Text>
-                        )}
-
-                        {landingPageUrl && (
-                            <a
-                                href={landingPageUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className={classes.landingPageUrl}
-                            >
-                                <Text typo="body 2">
-                                    {t("datasetPage")}
-                                    <Icon
-                                        icon={getIconUrlByName("OpenInNew")}
-                                        className={css({
-                                            fontSize: "inherit",
-                                            width: "0.7em",
-                                            height: "0.7em"
-                                        })}
-                                    />
-                                </Text>
-                            </a>
-                        )}
-                    </>
-                }
-            />
-            <div className={classes.content}>
-                {keywords.length > 0 && (
-                    <div className={classes.keywoardsWrapper}>
-                        {keywords.map(kw => {
-                            const strKeyword = resolveLocalizedString(kw);
-                            return (
-                                <Chip
-                                    key={strKeyword}
-                                    label={strKeyword}
-                                    size="small"
-                                    className={classes.keywordsChip}
-                                />
-                            );
-                        })}
-                    </div>
-                )}
-
-                {description && (
-                    <Markdown>{resolveLocalizedString(description)}</Markdown>
-                )}
-            </div>
-            <CardContent>
-                {distributions.length > 0 && (
-                    <>
-                        <Text className={classes.distributionTitle} typo="label 1">
-                            {t("distributions")}
+        return (
+            <Card ref={ref} className={className} style={style} {...rest}>
+                <CardHeader
+                    avatar={<Icon icon={getIconUrlByName("Folder")} size="large" />}
+                    title={
+                        <Text typo="object heading">
+                            {resolveLocalizedString(title ?? id)}
                         </Text>
-                        <div className={classes.distributionList}>
-                            {distributions.map(dist => (
-                                <div key={dist.id} className={classes.distributionBox}>
-                                    <div>
-                                        <Text typo="body 2">
-                                            {t("format")}: {dist.format ?? t("unknown")}
-                                        </Text>
+                    }
+                    subheader={
+                        <>
+                            {issuedDate &&
+                                `${t("publishedOn")} ${new Date(issuedDate).toLocaleDateString()}`}
 
-                                        {dist.sizeInBytes !== undefined && (
-                                            <Text typo="caption">
-                                                {t("size")}:{" "}
-                                                {(() => {
-                                                    const { value, unit } =
-                                                        fileSizePrettyPrint({
-                                                            bytes: dist.sizeInBytes
-                                                        });
-                                                    return `${value} ${unit}`;
-                                                })()}
+                            {licenseUrl && (
+                                <Text typo="body 2">
+                                    {t("license")}{" "}
+                                    <MuiLink
+                                        href={licenseUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {licenseUrl}
+                                    </MuiLink>
+                                </Text>
+                            )}
+
+                            {landingPageUrl && (
+                                <a
+                                    href={landingPageUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className={classes.landingPageUrl}
+                                >
+                                    <Text typo="body 2">
+                                        {t("datasetPage")}
+                                        <Icon
+                                            icon={getIconUrlByName("OpenInNew")}
+                                            className={css({
+                                                fontSize: "inherit",
+                                                width: "0.7em",
+                                                height: "0.7em"
+                                            })}
+                                        />
+                                    </Text>
+                                </a>
+                            )}
+                        </>
+                    }
+                />
+                <div className={classes.content}>
+                    {keywords.length > 0 && (
+                        <div className={classes.keywoardsWrapper}>
+                            {keywords.map(kw => {
+                                const strKeyword = resolveLocalizedString(kw);
+                                return (
+                                    <Chip
+                                        key={strKeyword}
+                                        label={strKeyword}
+                                        size="small"
+                                        className={classes.keywordsChip}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {description && (
+                        <Markdown>{resolveLocalizedString(description)}</Markdown>
+                    )}
+                </div>
+                <CardContent>
+                    {distributions.length > 0 && (
+                        <>
+                            <Text className={classes.distributionTitle} typo="label 1">
+                                {t("distributions")}
+                            </Text>
+                            <div className={classes.distributionList}>
+                                {distributions.map(dist => (
+                                    <div
+                                        key={dist.id}
+                                        className={classes.distributionBox}
+                                    >
+                                        <div>
+                                            <Text typo="body 2">
+                                                {t("format")}:{" "}
+                                                {dist.format ?? t("unknown")}
                                             </Text>
+
+                                            {dist.sizeInBytes !== undefined && (
+                                                <Text typo="caption">
+                                                    {t("size")}:{" "}
+                                                    {(() => {
+                                                        const { value, unit } =
+                                                            fileSizePrettyPrint({
+                                                                bytes: dist.sizeInBytes
+                                                            });
+                                                        return `${value} ${unit}`;
+                                                    })()}
+                                                </Text>
+                                            )}
+                                        </div>
+                                        {dist.downloadUrl && (
+                                            <Button
+                                                variant="primary"
+                                                onClick={() => {
+                                                    routes
+                                                        .dataExplorer({
+                                                            source: dist.downloadUrl
+                                                        })
+                                                        .push();
+                                                }}
+                                            >
+                                                {t("visualize")}
+                                            </Button>
                                         )}
                                     </div>
-                                    {dist.downloadUrl && (
-                                        <Button
-                                            variant="primary"
-                                            onClick={() => {
-                                                routes
-                                                    .dataExplorer({
-                                                        source: dist.downloadUrl
-                                                    })
-                                                    .push();
-                                            }}
-                                        >
-                                            {t("visualize")}
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </>
-                )}
-            </CardContent>
-        </Card>
-    );
-};
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
+        );
+    })
+);
 
 const useStyles = tss.withName({ DatasetCard }).create(({ theme }) => ({
     content: {
