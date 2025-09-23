@@ -62,7 +62,7 @@ const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${l
             return "";
         }
 
-        return `<link rel="icon" type="image/${type}" href="${href}">`;
+        return '<link rel="icon" type="image/' + type +'" href="' + href + '">';
 
     })();
     %>
@@ -241,7 +241,7 @@ const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${l
             
             document.head.insertAdjacentHTML(
                 "beforeend",
-                `<meta name="theme-color" content="${backgroundColor}">`,
+                '<meta name="theme-color" content="' + backgroundColor + '">',
             );
 
         }
@@ -263,11 +263,11 @@ const langAttrAndValue = languageToSetAsHtmlAttr === undefined ? "" : `lang="${l
 
             element.id = id;
 
-            element.innerHTML = `
-				:root {
-					color-scheme: ${isDarkModeEnabled ? "dark" : "light"}
-				}
-		    `;
+            element.innerHTML = [
+                ":root {",
+                "   color-scheme: " + (isDarkModeEnabled ? "dark" : "light"),
+                "}"
+            ].join("\n");
 
             document.getElementsByTagName("head")[0].appendChild(element);
         }
