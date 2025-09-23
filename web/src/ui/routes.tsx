@@ -10,7 +10,10 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 export type { Link };
 
 export const { routes, getRoute, useRoute, session } = createRouter(
-    routerOpts,
+    {
+        ...routerOpts,
+        baseUrl: import.meta.env.BASE_URL
+    },
     routeDefs
 );
 
