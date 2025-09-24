@@ -1,6 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
-import type { JsonLdDocument } from "jsonld";
+import type { NodeObject } from "jsonld";
 import { id } from "tsafe/id";
 export const name = "dataCollection" as const;
 
@@ -9,12 +9,10 @@ export type State = {
     queryParams:
         | {
               sourceUrl: string;
-              rowsPerPage: number | undefined;
-              page: number | undefined;
           }
         | undefined;
     errors: string[] | undefined;
-    framedCatalog: JsonLdDocument | undefined;
+    framedCatalog: NodeObject | undefined;
 };
 
 export namespace State {
@@ -67,6 +65,7 @@ export const { actions, reducer } = createUsecaseActions({
             state.queryParams = queryParams;
             state.errors = undefined;
             state.isQuerying = true;
+            state.framedCatalog = undefined;
         },
 
         querySucceeded: (
@@ -75,7 +74,7 @@ export const { actions, reducer } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    framedCatalog: JsonLdDocument;
+                    framedCatalog: NodeObject;
                 };
             }
         ) => {
@@ -91,23 +90,6 @@ export const { actions, reducer } = createUsecaseActions({
         queryCanceled: state => {
             state.isQuerying = false;
             state.queryParams = undefined;
-        },
-
-        paginationChanged: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    page: number | undefined;
-                    rowsPerPage: number | undefined;
-                };
-            }
-        ) => {
-            if (state.queryParams === undefined) return;
-
-            state.queryParams.page = payload.page;
-            state.queryParams.rowsPerPage = payload.rowsPerPage;
         }
     }
 });

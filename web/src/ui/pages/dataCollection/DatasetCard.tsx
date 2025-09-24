@@ -39,6 +39,7 @@ type Props = {
     dataset: Dataset;
     style?: CSSProperties;
 } & React.HTMLAttributes<HTMLDivElement>;
+
 export const DatasetCard = memo(
     forwardRef<HTMLDivElement, Props>((props, ref) => {
         const {
@@ -59,6 +60,7 @@ export const DatasetCard = memo(
 
         const { classes, css } = useStyles();
         const { t } = useTranslation({ DatasetCard });
+
         const { resolveLocalizedString } = useResolveLocalizedString();
 
         return (

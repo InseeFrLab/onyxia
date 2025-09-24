@@ -3,9 +3,46 @@ import {
     zLangValue,
     toLocalizedString,
     toLocalizedStringList,
-    zLocalizedInput
+    zLocalizedInput,
+    groupLangValues,
+    type LangValue
 } from "./ldLocalized";
 import { type Language } from "core/ports/OnyxiaApi";
+
+describe("groupLangValues", () => {
+    it("should group by index and merge identical values", () => {
+        const input: LangValue[] = [
+            { "@language": "fr", "@value": "mot" },
+            { "@language": "en", "@value": "word" },
+            { "@language": "fr", "@value": "plural" },
+            { "@language": "en", "@value": "xxx" },
+            { "@language": "fr", "@value": "xxx" },
+            { "@language": "it", "@value": "yyy" }
+        ];
+
+        const output = groupLangValues(input);
+
+        expect(output).toEqual([
+            { fr: "xxx", en: "xxx" },
+            { fr: "mot", en: "word", it: "yyy" },
+            { fr: "plural" }
+        ]);
+    });
+
+    it("should handle empty input", () => {
+        expect(groupLangValues([])).toEqual([]);
+    });
+
+    it("should merge multiple identical values across languages", () => {
+        const input: LangValue[] = [
+            { "@language": "fr", "@value": "same" },
+            { "@language": "en", "@value": "same" },
+            { "@language": "it", "@value": "same" }
+        ];
+
+        expect(groupLangValues(input)).toEqual([{ fr: "same", en: "same", it: "same" }]);
+    });
+});
 
 describe("zLangValue", () => {
     it("accepts translation tagged languages", () => {
@@ -99,6 +136,23 @@ describe("toLocalizedStringList", () => {
         expect(toLocalizedStringList(input)).toEqual([
             { fr: "mot", en: "word" },
             { fr: "mots", en: "words" }
+        ]);
+    });
+
+    it("groups repeated language values into separate localized entries even if it's not ", () => {
+        const input: { "@language": Language; "@value": string }[] = [
+            { "@language": "fr", "@value": "mot" },
+            { "@language": "en", "@value": "word" },
+            { "@language": "fr", "@value": "plural" },
+            { "@language": "en", "@value": "xxx" },
+            { "@language": "fr", "@value": "xxx" },
+            { "@language": "it", "@value": "yyy" }
+        ];
+
+        expect(toLocalizedStringList(input)).toEqual([
+            { fr: "xxx", en: "xxx" },
+            { fr: "mot", en: "word", it: "yyy" },
+            { fr: "plural" }
         ]);
     });
 });
