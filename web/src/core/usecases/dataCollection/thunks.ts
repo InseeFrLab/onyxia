@@ -43,17 +43,16 @@ export const thunks = {
 
             dispatch(
                 actions.queryStarted({
-                    queryParams: { sourceUrl, page: undefined, rowsPerPage: undefined }
+                    queryParams: { sourceUrl }
                 })
             );
+            const result = await fetchCatalogDocuments(sourceUrl);
 
-            try {
-                const { framedCatalog } = await fetchCatalogDocuments(sourceUrl);
-
-                dispatch(actions.querySucceeded({ framedCatalog }));
-            } catch (error) {
-                dispatch(actions.queryFailed({ errors: [String(error)] }));
+            if (!result.isSuccess) {
+                dispatch(actions.queryFailed({ errors: [result.errorMessage] }));
                 return;
             }
+
+            dispatch(actions.querySucceeded({ framedCatalog: result.framedCatalog }));
         }
 } satisfies Thunks;

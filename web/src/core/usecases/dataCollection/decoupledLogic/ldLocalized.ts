@@ -35,7 +35,7 @@ export const zLangValue = z.object({
     "@language": zLanguage_BCP47,
     "@value": z.string()
 });
-type LangValue = z.infer<typeof zLangValue>;
+export type LangValue = z.infer<typeof zLangValue>;
 
 export const zLocalizedInput = z.union([
     z.string(),
@@ -79,13 +79,15 @@ export function toLocalizedString(input: LdLocalizedInput): LocalizedString {
     return input;
 }
 
+type LocalizedMap = Partial<Record<Language, string>>;
+
 const isLangValue = (value: unknown): value is LangValue =>
     typeof value === "object" &&
     value !== null &&
     typeof (value as Record<string, unknown>)["@language"] === "string" &&
     typeof (value as Record<string, unknown>)["@value"] === "string";
 
-const groupLangValues = (values: LangValue[]): LocalizedString[] => {
+export const groupLangValues = (values: LangValue[]): LocalizedString[] => {
     // 1. Group values by normalized language
     const groups = values.reduce<Map<Language, string[]>>(
         (acc, { "@language": lang, "@value": value }) => {
@@ -99,21 +101,44 @@ const groupLangValues = (values: LangValue[]): LocalizedString[] => {
 
     if (groups.size === 0) return [];
 
+    const results: LocalizedMap[] = [];
+
+    // Step 2: Extract values that are exactly the same across multiple languages
+    const valueToLangs = new Map<string, Language[]>();
+    for (const [lang, items] of groups) {
+        for (const val of items) {
+            valueToLangs.set(val, [...(valueToLangs.get(val) ?? []), lang]);
+        }
+    }
+
+    for (const [val, langs] of valueToLangs) {
+        if (langs.length > 1) {
+            const rec: LocalizedMap = {};
+            langs.forEach(lang => {
+                rec[lang] = val;
+                // Remove this value from its language group to avoid reusing it
+                const arr = groups.get(lang);
+                if (arr) {
+                    const idx = arr.indexOf(val);
+                    if (idx >= 0) arr.splice(idx, 1);
+                }
+            });
+            results.push(rec);
+        }
+    }
+
+    // Step 3: Align the remaining values by their index
     const entries = [...groups.entries()];
     const numberOfValues = Math.max(...entries.map(([, items]) => items.length));
 
-    // 3. Build the result by aligning items at the same index across languages
-    // We can't be sure translation are well aligned
-    return Array.from({ length: numberOfValues }, (_, index) => {
-        const record = entries.reduce<Partial<Record<Language, string>>>(
-            (acc, [lang, items]) => {
-                const item = items[index];
-                return item !== undefined ? { ...acc, [lang]: item } : acc;
-            },
-            {}
-        );
-        return Object.keys(record).length > 0 ? record : undefined;
-    }).filter(r => r !== undefined);
+    const alignedRecords = Array.from({ length: numberOfValues }, (_, index) =>
+        entries.reduce<LocalizedMap>((acc, [lang, items]) => {
+            const item = items[index];
+            return item !== undefined ? { ...acc, [lang]: item } : acc;
+        }, {})
+    ).filter(r => Object.keys(r).length > 0);
+
+    return [...results, ...alignedRecords];
 };
 
 export function toLocalizedStringList(input: LdLocalizedArrayInput): LocalizedString[] {

@@ -7,44 +7,87 @@ import {
     toLocalizedString,
     toLocalizedStringList
 } from "./ldLocalized";
+import { assert, id } from "tsafe";
 
-export async function fetchCatalogDocuments(sourceUrl: string) {
-    const res = await fetch(sourceUrl, { redirect: "follow" });
-    if (!res.ok) {
-        throw new Error(`Erreur HTTP ${res.status} : ${res.statusText}`);
+export async function fetchCatalogDocuments(
+    sourceUrl: string
+): Promise<
+    | { isSuccess: true; framedCatalog: jsonld.NodeObject }
+    | { isSuccess: false; errorMessage: string }
+> {
+    const res = await fetch(sourceUrl, { redirect: "follow" }).catch(error => {
+        assert(error instanceof Error);
+        return error;
+    });
+
+    if (res instanceof Error) {
+        return { isSuccess: false, errorMessage: res.message };
     }
 
-    const rawCatalog = await res.json();
+    if (!res.ok) {
+        return { isSuccess: false, errorMessage: "Fetch failed" };
+    }
 
-    const compactedCatalog = await jsonld.compact(rawCatalog, {
-        dcat: "http://www.w3.org/ns/dcat#",
-        dct: "http://purl.org/dc/terms/"
-    });
+    const jsonLdDocument = await res.json().then(
+        jsonLdDocument => jsonLdDocument as jsonld.JsonLdDocument,
+        error => {
+            assert(error instanceof Error);
+            return error;
+        }
+    );
 
-    const framedCatalog = await jsonld.frame(compactedCatalog, {
-        "@context": compactedCatalog["@context"],
-        "@type": "dcat:Dataset",
-        "dcat:distribution": { "@type": "dcat:Distribution" }
-    });
+    if (jsonLdDocument instanceof Error) {
+        return {
+            isSuccess: false,
+            errorMessage: jsonLdDocument.message
+        };
+    }
+
+    let compactedCatalog: jsonld.NodeObject;
+
+    try {
+        compactedCatalog = await jsonld.compact(jsonLdDocument, {
+            dcat: "http://www.w3.org/ns/dcat#",
+            dct: "http://purl.org/dc/terms/"
+        });
+    } catch (error) {
+        assert(error instanceof Error);
+        return { isSuccess: false, errorMessage: error.message };
+    }
+
+    let framedCatalog: jsonld.NodeObject;
+
+    try {
+        framedCatalog = await jsonld.frame(compactedCatalog, {
+            "@context": compactedCatalog["@context"],
+            "@type": "dcat:Dataset",
+            "dcat:distribution": { "@type": "dcat:Distribution" }
+        });
+    } catch (error) {
+        assert(error instanceof Error);
+        return { isSuccess: false, errorMessage: error.message };
+    }
 
     return {
-        rawCatalog,
+        isSuccess: true,
         framedCatalog
     };
 }
 
-export function catalogToDatasets(framedCatalog: unknown): {
-    datasets: State.Dataset[] | undefined;
-    parsingErrors: string[] | undefined;
-} {
-    if (framedCatalog == null) {
-        return { datasets: undefined, parsingErrors: undefined };
-    }
+export function catalogToDatasets(framedCatalog: jsonld.NodeObject):
+    | {
+          datasets: undefined;
+          parsingErrors: string[];
+      }
+    | { datasets: State.Dataset[]; parsingErrors: undefined } {
+    const {
+        success,
+        data: framedCatalog_parsed,
+        error
+    } = zFramedCatalogSchema.safeParse(framedCatalog);
 
-    const parsed = zFramedCatalogSchema.safeParse(framedCatalog);
-
-    if (!parsed.success) {
-        const parsingErrors = parsed.error.issues.map(({ path, message }) => {
+    if (!success) {
+        const parsingErrors = error.issues.map(({ path, message }) => {
             const formattedPath = path.length === 0 ? "<root>" : path.join(".");
             return `${formattedPath}: ${message}`;
         });
@@ -52,7 +95,7 @@ export function catalogToDatasets(framedCatalog: unknown): {
         return { datasets: undefined, parsingErrors };
     }
 
-    const { "@graph": graph } = parsed.data;
+    const { "@graph": graph } = framedCatalog_parsed;
 
     const datasets = graph.map(d => {
         const distributions = (d["dcat:distribution"] ?? []).map(distrib => {
@@ -68,19 +111,19 @@ export function catalogToDatasets(framedCatalog: unknown): {
                       ? fileSize
                       : byteSize;
 
-            return {
+            return id<State.Distribution>({
                 id: distrib["@id"],
                 format,
                 downloadUrl: distrib["dcat:downloadURL"],
                 accessUrl: distrib["dcat:accessURL"],
                 sizeInBytes: sizeInBytes ?? undefined
-            } satisfies State.Distribution;
+            });
         });
 
         const titleLs = d["dct:title"] ?? d["@id"];
         const descriptionLs = d["dct:description"];
 
-        return {
+        return id<State.Dataset>({
             id: d["@id"],
             title: titleLs,
             description: descriptionLs,
@@ -89,7 +132,7 @@ export function catalogToDatasets(framedCatalog: unknown): {
             landingPageUrl: d["dcat:landingPage"],
             licenseUrl: d["dct:license"],
             distributions
-        } satisfies State.Dataset;
+        });
     });
 
     return { datasets, parsingErrors: undefined };

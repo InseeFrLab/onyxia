@@ -29,8 +29,7 @@ const main = createSelector(state, state => {
     return {
         isQuerying,
         queryParams,
-        datasets,
-        parsingErrors
+        datasets
     };
 });
 

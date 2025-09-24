@@ -45,9 +45,7 @@ export default function DataCollection() {
 
         routes[route.name]({
             ...route.params,
-            source: queryParams?.sourceUrl,
-            page: queryParams.page,
-            rowsPerPage: queryParams.rowsPerPage
+            source: queryParams.sourceUrl
         }).replace();
     }, [queryParams]);
 
