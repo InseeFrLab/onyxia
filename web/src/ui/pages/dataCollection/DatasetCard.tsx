@@ -13,7 +13,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { useTranslation, useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { Markdown } from "ui/shared/Markdown";
-import { forwardRef, memo, type CSSProperties } from "react";
+import { forwardRef, memo } from "react";
 
 export type Distribution = {
     id: string;
@@ -35,9 +35,7 @@ export type Dataset = {
 };
 
 type Props = {
-    className?: string;
     dataset: Dataset;
-    style?: CSSProperties;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const DatasetCard = memo(
@@ -54,17 +52,16 @@ export const DatasetCard = memo(
                 licenseUrl,
                 distributions
             },
-            style,
             ...rest
         } = props;
 
-        const { classes, css } = useStyles();
+        const { classes, cx, css } = useStyles();
         const { t } = useTranslation({ DatasetCard });
 
         const { resolveLocalizedString } = useResolveLocalizedString();
 
         return (
-            <Card ref={ref} className={className} style={style} {...rest}>
+            <Card ref={ref} className={cx(classes.root, className)} {...rest}>
                 <CardHeader
                     avatar={<Icon icon={getIconUrlByName("Folder")} size="large" />}
                     title={
@@ -133,68 +130,80 @@ export const DatasetCard = memo(
                     {description && (
                         <Markdown>{resolveLocalizedString(description)}</Markdown>
                     )}
-                </div>
-                <CardContent>
-                    {distributions.length > 0 && (
-                        <>
-                            <Text className={classes.distributionTitle} typo="label 1">
-                                {t("distributions")}
-                            </Text>
-                            <div className={classes.distributionList}>
-                                {distributions.map(dist => (
-                                    <div
-                                        key={dist.id}
-                                        className={classes.distributionBox}
-                                    >
-                                        <div>
-                                            <Text typo="body 2">
-                                                {t("format")}:{" "}
-                                                {dist.format ?? t("unknown")}
-                                            </Text>
 
-                                            {dist.sizeInBytes !== undefined && (
-                                                <Text typo="caption">
-                                                    {t("size")}:{" "}
-                                                    {(() => {
-                                                        const { value, unit } =
-                                                            fileSizePrettyPrint({
-                                                                bytes: dist.sizeInBytes
-                                                            });
-                                                        return `${value} ${unit}`;
-                                                    })()}
+                    <div>
+                        {distributions.length > 0 && (
+                            <>
+                                <Text
+                                    className={classes.distributionTitle}
+                                    typo="label 1"
+                                >
+                                    {t("distributions")}
+                                </Text>
+                                <div className={classes.distributionList}>
+                                    {distributions.map(dist => (
+                                        <div
+                                            key={dist.id}
+                                            className={classes.distributionBox}
+                                        >
+                                            <div>
+                                                <Text typo="body 2">
+                                                    {t("format")}:{" "}
+                                                    {dist.format ?? t("unknown")}
                                                 </Text>
+
+                                                {dist.sizeInBytes !== undefined && (
+                                                    <Text typo="caption">
+                                                        {t("size")}:{" "}
+                                                        {(() => {
+                                                            const { value, unit } =
+                                                                fileSizePrettyPrint({
+                                                                    bytes: dist.sizeInBytes
+                                                                });
+                                                            return `${value} ${unit}`;
+                                                        })()}
+                                                    </Text>
+                                                )}
+                                            </div>
+                                            {dist.downloadUrl && (
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={() => {
+                                                        routes
+                                                            .dataExplorer({
+                                                                source: dist.downloadUrl
+                                                            })
+                                                            .push();
+                                                    }}
+                                                >
+                                                    {t("visualize")}
+                                                </Button>
                                             )}
                                         </div>
-                                        {dist.downloadUrl && (
-                                            <Button
-                                                variant="primary"
-                                                onClick={() => {
-                                                    routes
-                                                        .dataExplorer({
-                                                            source: dist.downloadUrl
-                                                        })
-                                                        .push();
-                                                }}
-                                            >
-                                                {t("visualize")}
-                                            </Button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </CardContent>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
             </Card>
         );
     })
 );
 
 const useStyles = tss.withName({ DatasetCard }).create(({ theme }) => ({
-    content: {
-        paddingLeft: theme.spacing(4),
-        paddingRight: theme.spacing(4)
+    root: {
+        borderRadius: 8,
+        boxShadow: theme.shadows[1],
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        "&:hover": {
+            boxShadow: theme.shadows[6]
+        },
+        display: "flex",
+        flexDirection: "column"
     },
+    content: { padding: theme.spacing(4) },
+
     landingPageUrl: {
         display: "flex",
         color: theme.colors.useCases.typography.textPrimary,
