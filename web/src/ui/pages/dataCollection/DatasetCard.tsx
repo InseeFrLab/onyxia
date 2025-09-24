@@ -1,6 +1,5 @@
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import MuiLink from "@mui/material/Link";
 import { routes } from "ui/routes";
