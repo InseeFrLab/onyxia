@@ -1,100 +1,59 @@
 import "xterm/css/xterm.css";
-import { useState, useEffect } from "react";
-import { useConst } from "powerhooks/useConst";
 import { tss } from "tss";
-import { useCoreState, getCoreSync } from "core";
-import { useRoute } from "ui/routes";
-import { routeGroup } from "./route";
-import { assert } from "tsafe";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
-import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
-import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
+import { getCoreSync } from "core";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
+import { useStyles as useTheme } from "tss";
 
 const Page = withLoader({
-    loader: enforceLogin,
+    loader: async () => {
+        await enforceLogin();
+        await getCoreSync().functions.sqlOlapShell.load();
+    },
     Component: SqlOlapShell
 });
 export default Page;
 
 function SqlOlapShell() {
-    const route = useRoute();
-    assert(routeGroup.has(route));
-
-    const isReady = useCoreState("sqlOlapShell", "isReady");
-    const {
-        functions: { sqlOlapShell }
-    } = getCoreSync();
-
-    useEffect(() => {
-        sqlOlapShell.initialize();
-    }, []);
-
-    const { classes } = useStyles();
-
-    if (!isReady) {
-        return (
-            <div className={classes.initializing}>
-                <CircularProgress size={70} />
-            </div>
-        );
-    }
-
-    return <ReadySqlOlapShell />;
-}
-
-function ReadySqlOlapShell() {
-    const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
-
-    const { classes } = useStyles();
-
-    const isEmbeddedByElement = useConst(() => new WeakMap<HTMLElement, true>());
+    const { theme } = useTheme();
+    const backgroundColor = theme.colors.palette.dark.light;
+    const { classes } = useStyles({ backgroundColor });
 
     const {
         functions: { sqlOlapShell }
     } = getCoreSync();
-
-    useEffect(() => {
-        if (containerElement === null) {
-            return;
-        }
-
-        if (isEmbeddedByElement.has(containerElement)) {
-            return;
-        }
-
-        const db = sqlOlapShell.getDb();
-
-        duckdbWasmShell.embed({
-            shellModule: shellBgWasmUrl,
-            container: containerElement,
-            resolveDatabase: async () => db
-        });
-
-        isEmbeddedByElement.set(containerElement, true);
-    }, [containerElement]);
 
     return (
         <div className={classes.root}>
-            <div ref={setContainerElement} />;
+            <div
+                key={backgroundColor}
+                className={classes.duckDbWasmShell}
+                ref={element =>
+                    sqlOlapShell.setDuckDbWasmShellPlaceholderElement({
+                        placeholderElement: element,
+                        backgroundColor
+                    })
+                }
+            />
         </div>
     );
 }
 
-const useStyles = tss.withName({ SqlOlapShell }).create(({ theme }) => ({
-    initializing: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100%"
-    },
-    root: {
-        height: "100%",
-        overflow: "hidden",
-        padding: "16px 0 0 20px",
-        backgroundColor: "#333333",
-        borderRadius: 10,
-        boxShadow: theme.shadows[1]
-    }
-}));
+const useStyles = tss
+    .withName({ SqlOlapShell })
+    .withParams<{
+        backgroundColor: string;
+    }>()
+    .create(({ theme, backgroundColor }) => ({
+        root: {
+            height: "100%",
+            overflow: "hidden",
+            backgroundColor,
+            paddingLeft: theme.spacing(3),
+            paddingTop: theme.spacing(3),
+            borderRadius: theme.spacing(2)
+        },
+        duckDbWasmShell: {
+            height: "100%"
+        }
+    }));
