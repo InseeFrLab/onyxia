@@ -1,54 +1,80 @@
 import type { State as RootState } from "core/bootstrap";
+import type { State, RouteParams } from "./state";
 import { createSelector } from "clean-architecture";
-import { name } from "./state";
-import { assert } from "tsafe/assert";
+import { name, ROUTE_PARAMS_DEFAULTS } from "./state";
+import { objectEntries, objectFromEntries } from "tsafe";
+import type { Column } from "core/ports/SqlOlap";
 
 const state = (rootState: RootState) => rootState[name];
 
-const columns = createSelector(
-    createSelector(state, state => state.data),
-    data => {
-        if (data === undefined) {
+const queryRequest = createSelector(
+    createSelector(state, state => state.routeParams.source),
+    createSelector(state, state => state.routeParams.page),
+    createSelector(state, state => state.routeParams.rowsPerPage),
+    (source, page, rowPerPage): State.QueryRequest | undefined => {
+        if (source === undefined) {
             return undefined;
         }
 
-        return data.columns;
+        try {
+            new URL(source);
+        } catch {
+            return undefined;
+        }
+
+        return {
+            source,
+            page: page ?? ROUTE_PARAMS_DEFAULTS.page,
+            rowsPerPage: rowPerPage ?? ROUTE_PARAMS_DEFAULTS.rowsPerPage
+        };
     }
 );
 
-const main = createSelector(state, columns, (state, columns) => {
-    const { isQuerying, queryParams, error, data, extraRestorableStates } = state;
+export const protectedSelectors = {
+    queryRequest,
+    routeParams_defaultsAsUndefined: createSelector(
+        createSelector(state, state => state.routeParams),
+        (routeParams): RouteParams => {
+            return objectFromEntries(
+                objectEntries(ROUTE_PARAMS_DEFAULTS).map(([key, defaultValue]) => [
+                    key,
+                    (() => {
+                        const value = routeParams[key];
+                        return defaultValue === value ? undefined : value;
+                    })()
+                ])
+            );
+        }
+    )
+};
 
-    if (error !== undefined) {
-        return { isQuerying, error, queryParams };
-    }
+export type View = View.NoData | View.WithData;
 
-    if (data === undefined) {
-        return {
-            isQuerying,
-            rows: undefined,
-            queryParams
-        };
-    }
-
-    assert(queryParams !== undefined);
-    assert(queryParams.rowsPerPage !== undefined);
-    assert(queryParams.page !== undefined);
-    assert(extraRestorableStates !== undefined);
-    assert(columns !== undefined);
-
-    const { rowsPerPage, page } = queryParams;
-    return {
-        isQuerying,
-        rows: data.rows.map((row, i) => ({
-            id: i + rowsPerPage * (page - 1),
-            ...row
-        })),
-        rowCount: data.rowCount,
-        queryParams,
-        extraRestorableStates,
-        columns
+export namespace View {
+    type Common = {
+        urlBarText: string;
     };
-});
 
-export const selectors = { main };
+    export type NoData = Common & {
+        isQuerying: boolean;
+        rowsPerPage?: never;
+        page?: never;
+        data?: never;
+    };
+
+    export type WithData = Common & {
+        isQuerying: false;
+        rowsPerPage: number;
+        page: number;
+        columnVisibility: Record<string, boolean> | undefined;
+        data: {
+            rows: any[];
+            columns: Column[];
+            rowCount: number | undefined;
+        };
+    };
+}
+
+const view = createSelector();
+
+export const selectors = {};

@@ -1,40 +1,41 @@
 import { createUsecaseActions } from "clean-architecture";
 import type { Column } from "core/ports/SqlOlap";
-import { assert } from "tsafe/assert";
-import { id } from "tsafe/id";
+import { id, assert, type Equals } from "tsafe";
 import type { SupportedFileType } from "./decoupledLogic/SupportedFileType";
+import {
+    createObjectThatThrowsIfAccessed,
+    isObjectThatThrowIfAccessed
+} from "clean-architecture";
 
 export const name = "dataExplorer";
 
+export type RouteParams = {
+    source: string | undefined;
+    rowsPerPage: number | undefined;
+    page: number | undefined;
+    selectedRow: number | undefined;
+    columnVisibility: Record<string, boolean> | undefined;
+};
+
+export const ROUTE_PARAMS_DEFAULTS = {
+    source: "",
+    rowsPerPage: 25,
+    page: 1,
+    selectedRow: undefined,
+    columnVisibility: undefined
+} satisfies RouteParams;
+
 export type State = {
-    isQuerying: boolean;
-    queryParams:
+    routeParams: RouteParams;
+    query:
         | {
-              sourceUrl: string;
-              rowsPerPage: number;
-              page: number;
-          }
-        | undefined;
-    extraRestorableStates:
-        | {
-              selectedRowIndex: number | undefined;
-              columnVisibility: Record<string, boolean>;
-          }
-        | undefined;
-    error: State.Error | undefined;
-    data:
-        | {
-              rows: any[];
-              columns: Column[];
-              rowCount: number | undefined;
-              sourceUrl: string;
-              fileType: SupportedFileType;
-              sourceType: "s3" | "http";
+              request: State.QueryRequest;
+              response: State.QueryResponse | undefined;
           }
         | undefined;
 };
 
-namespace State {
+export namespace State {
     export type Error =
         | {
               isWellKnown: false;
@@ -44,129 +45,115 @@ namespace State {
               isWellKnown: true;
               reason: "unsupported file type" | "can't fetch file";
           };
+
+    export type QueryRequest = {
+        source: string;
+        rowsPerPage: number;
+        page: number;
+    };
+
+    export type QueryResponse = QueryResponse.Success | QueryResponse.Failed;
+
+    export namespace QueryResponse {
+        export type Success = {
+            isSuccess: true;
+            data: {
+                rows: any[];
+                columns: Column[];
+                rowCount: number | undefined;
+                sourceUrl: string;
+                fileType: SupportedFileType;
+                sourceType: "s3" | "http";
+            };
+        };
+
+        export type Failed = {
+            isSuccess: false;
+            error: State.Error;
+        };
+    }
 }
 
 export const { actions, reducer } = createUsecaseActions({
     name,
-    initialState: id<State>({
-        isQuerying: false,
-        queryParams: undefined,
-        extraRestorableStates: undefined,
-        error: undefined,
-        data: undefined
-    }),
+    initialState: createObjectThatThrowsIfAccessed<State>(),
     reducers: {
-        extraRestorableStateSet: (
-            state,
-            {
-                payload
-            }: { payload: { extraRestorableStates: State["extraRestorableStates"] } }
-        ) => {
-            const { extraRestorableStates } = payload;
-            state.extraRestorableStates = extraRestorableStates;
-        },
-        selectedRowIndexSet: (
+        routeParamsSet: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    selectedRowIndex: NonNullable<
-                        State["extraRestorableStates"]
-                    >["selectedRowIndex"];
+                    routeParams: RouteParams | undefined;
                 };
             }
         ) => {
-            const { selectedRowIndex } = payload;
-            assert(state.extraRestorableStates !== undefined);
-            state.extraRestorableStates.selectedRowIndex = selectedRowIndex;
+            const { routeParams } = payload;
+
+            if (isObjectThatThrowIfAccessed(state)) {
+                state = id<State>({
+                    routeParams: {
+                        source: undefined,
+                        rowsPerPage: undefined,
+                        page: undefined,
+                        selectedRow: undefined,
+                        columnVisibility: undefined
+                    },
+                    query: undefined,
+                    urlBarCurrentText: ""
+                });
+            }
+
+            if (routeParams !== undefined) {
+                state.routeParams = routeParams;
+            }
+
+            return state;
         },
-        columnVisibilitySet: (
+        urlBarTextUpdated: (state, { payload }: { payload: { urlBarText: string } }) => {
+            const { urlBarText } = payload;
+
+            state.routeParams.source = urlBarText;
+        },
+        pageUpdated: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    columnVisibility: NonNullable<
-                        State["extraRestorableStates"]
-                    >["columnVisibility"];
+                    direction: "next" | "previous";
                 };
             }
         ) => {
-            const { columnVisibility } = payload;
-            assert(state.extraRestorableStates !== undefined);
-            state.extraRestorableStates.columnVisibility = columnVisibility;
+            const { direction } = payload;
+
+            let newPage = state.routeParams.page ?? ROUTE_PARAMS_DEFAULTS.page;
+
+            switch (direction) {
+                case "next":
+                    newPage++;
+                    break;
+                case "previous":
+                    newPage--;
+                    break;
+                default:
+                    assert<Equals<typeof direction, never>>;
+            }
+
+            state.routeParams.page = newPage;
         },
-        queryStarted: (
+        queryResponseSet: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    queryParams: NonNullable<State["queryParams"]>;
+                    query: NonNullable<State["query"]>;
                 };
             }
         ) => {
-            const { queryParams } = payload;
-            state.error = undefined;
-            state.isQuerying = true;
-            state.queryParams = queryParams;
-        },
-        querySucceeded: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    rows: any[];
-                    columns: Column[];
-                    rowCount: number | undefined;
-                    fileType: SupportedFileType;
-                    sourceUrl: string;
-                    sourceType: "s3" | "http";
-                    extraRestorableStates:
-                        | {
-                              selectedRowIndex: number | undefined;
-                              columnVisibility: Record<string, boolean>;
-                          }
-                        | undefined;
-                };
-            }
-        ) => {
-            const {
-                rowCount,
-                rows,
-                sourceUrl,
-                columns,
-                fileType,
-                sourceType,
-                extraRestorableStates
-            } = payload;
-            state.isQuerying = false;
-            state.data = {
-                rowCount,
-                rows,
-                columns,
-                sourceUrl,
-                fileType,
-                sourceType
-            };
-            state.extraRestorableStates = extraRestorableStates;
-        },
-        queryCanceled: state => {
-            state.isQuerying = false;
-            state.queryParams = undefined;
-        },
-        queryFailed: (state, { payload }: { payload: { error: State.Error } }) => {
-            const { error } = payload;
-            state.isQuerying = false;
-            state.error = error;
-        },
-        restoreState: state => {
-            state.queryParams = undefined;
-            state.extraRestorableStates = undefined;
-            state.data = undefined;
-            state.error = undefined;
+            const { query } = payload;
+            state.query = query;
         }
     }
 });
