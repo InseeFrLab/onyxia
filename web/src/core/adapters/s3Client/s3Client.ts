@@ -606,20 +606,24 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            await awsS3Client.send(
-                new (await import("@aws-sdk/client-s3")).DeleteObjectsCommand({
-                    Bucket: bucketName,
-                    Delete: {
-                        Objects: paths.map(path => {
-                            const { objectName } =
-                                bucketNameAndObjectNameFromS3Path(path);
-                            return {
-                                Key: objectName
-                            };
-                        })
-                    }
-                })
-            );
+            const { DeleteObjectsCommand } = await import("@aws-sdk/client-s3");
+
+            const objects = paths.map(path => {
+                const { objectName } = bucketNameAndObjectNameFromS3Path(path);
+                return { Key: objectName };
+            });
+
+            try {
+                await awsS3Client.send(
+                    new DeleteObjectsCommand({
+                        Bucket: bucketName,
+                        Delete: { Objects: objects }
+                    })
+                );
+            } catch (err) {
+                console.warn("Bulk delete failed, falling back to single deletes:", err);
+                await Promise.all(paths.map(path => s3Client.deleteFile({ path })));
+            }
         },
         getFileDownloadUrl: async ({ path, validityDurationSecond }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
