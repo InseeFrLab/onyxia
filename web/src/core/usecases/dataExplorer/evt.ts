@@ -36,7 +36,10 @@ export const createEvt = (({ evtAction, getState }) => {
                     switch (actionName) {
                         case "queryResponseSet":
                         case "urlBarTextUpdated":
+                        case "rowsPerPageUpdated":
                             return "replace" as const;
+                        case "pageUpdated":
+                            return "push";
                     }
                 })(),
                 routeParams
