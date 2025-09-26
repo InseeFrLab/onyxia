@@ -606,19 +606,18 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
+            const { DeleteObjectsCommand } = await import("@aws-sdk/client-s3");
+
+            const objects = paths.map(path => {
+                const { objectName } = bucketNameAndObjectNameFromS3Path(path);
+                return { Key: objectName };
+            });
+
             try {
                 await awsS3Client.send(
-                    new (await import("@aws-sdk/client-s3")).DeleteObjectsCommand({
+                    new DeleteObjectsCommand({
                         Bucket: bucketName,
-                        Delete: {
-                            Objects: paths.map(path => {
-                                const { objectName } =
-                                    bucketNameAndObjectNameFromS3Path(path);
-                                return {
-                                    Key: objectName
-                                };
-                            })
-                        }
+                        Delete: { Objects: objects }
                     })
                 );
             } catch (err) {
