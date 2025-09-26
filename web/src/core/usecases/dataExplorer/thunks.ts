@@ -41,7 +41,14 @@ export const thunks = {
         (...args) => {
             const { direction } = params;
             const [dispatch] = args;
-            dispatch(actions.urlBarTextUpdated({ urlBarText }));
+            dispatch(actions.pageUpdated({ direction }));
+        },
+    updateRowsPerPage:
+        (params: { rowsPerPage: number }) =>
+        (...args) => {
+            const { rowsPerPage } = params;
+            const [dispatch] = args;
+            dispatch(actions.rowsPerPageUpdated({ rowsPerPage }));
         }
 } satisfies Thunks;
 

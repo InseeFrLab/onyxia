@@ -23,13 +23,13 @@ export const ROUTE_PARAMS_DEFAULTS = {
     page: 1,
     selectedRow: undefined,
     columnVisibility: undefined
-} satisfies RouteParams;
+} satisfies RouteParams & Record<keyof RouteParams, unknown>;
 
 export type State = {
     routeParams: RouteParams;
     query:
         | {
-              request: State.QueryRequest;
+              request: State.QueryRequest.Brand;
               response: State.QueryResponse | undefined;
           }
         | undefined;
@@ -46,11 +46,17 @@ export namespace State {
               reason: "unsupported file type" | "can't fetch file";
           };
 
-    export type QueryRequest = {
+    export type QueryRequest = QueryRequest.Brand & {
         source: string;
         rowsPerPage: number;
         page: number;
     };
+
+    export namespace QueryRequest {
+        export type Brand = {
+            brand: "__queryRequest";
+        };
+    }
 
     export type QueryResponse = QueryResponse.Success | QueryResponse.Failed;
 
@@ -58,7 +64,7 @@ export namespace State {
         export type Success = {
             isSuccess: true;
             data: {
-                rows: any[];
+                rows: Record<string, unknown>[];
                 columns: Column[];
                 rowCount: number | undefined;
                 sourceUrl: string;
@@ -99,8 +105,7 @@ export const { actions, reducer } = createUsecaseActions({
                         selectedRow: undefined,
                         columnVisibility: undefined
                     },
-                    query: undefined,
-                    urlBarCurrentText: ""
+                    query: undefined
                 });
             }
 
@@ -113,7 +118,17 @@ export const { actions, reducer } = createUsecaseActions({
         urlBarTextUpdated: (state, { payload }: { payload: { urlBarText: string } }) => {
             const { urlBarText } = payload;
 
-            state.routeParams.source = urlBarText;
+            if (state.routeParams.source === urlBarText) {
+                return;
+            }
+
+            state.routeParams = {
+                source: urlBarText,
+                columnVisibility: undefined,
+                page: undefined,
+                rowsPerPage: undefined,
+                selectedRow: undefined
+            };
         },
         pageUpdated: (
             state,
@@ -141,6 +156,14 @@ export const { actions, reducer } = createUsecaseActions({
             }
 
             state.routeParams.page = newPage;
+        },
+        rowsPerPageUpdated: (
+            state,
+            { payload }: { payload: { rowsPerPage: number } }
+        ) => {
+            const { rowsPerPage } = payload;
+
+            state.routeParams.rowsPerPage = rowsPerPage;
         },
         queryResponseSet: (
             state,
