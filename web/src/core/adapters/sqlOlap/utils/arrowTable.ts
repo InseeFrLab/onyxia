@@ -1,12 +1,12 @@
 import type { Table, DataType, Vector } from "apache-arrow";
-import type { Column } from "core/ports/SqlOlap";
+import type { SqlOlap } from "core/ports/SqlOlap";
 import { assert } from "tsafe/assert";
 
 export async function createArrowTableApi() {
     const { Type, Int, Decimal, Time } = await import("apache-arrow");
 
     function arrowTableToJsData(params: { table: Table<any> }): {
-        columns: Column[];
+        columns: SqlOlap.ReturnTypeOfGetRows.Success.Column[];
         rows: Record<string, any>[];
     } {
         const columns = arrowTableToColumns({ table: params.table });
@@ -14,7 +14,9 @@ export async function createArrowTableApi() {
         return { columns, rows };
     }
     // Helper function to map Arrow DataType to a user-friendly Column.type
-    const getColumnType = (type: DataType): Column["type"] => {
+    const getColumnType = (
+        type: DataType
+    ): SqlOlap.ReturnTypeOfGetRows.Success.Column["type"] => {
         switch (type.typeId) {
             case Type.Int: {
                 assert(type instanceof Int);
@@ -114,7 +116,7 @@ export async function createArrowTableApi() {
 
     const convertVector = (params: {
         vector: Vector<any>;
-        expectedType: Column["type"];
+        expectedType: SqlOlap.ReturnTypeOfGetRows.Success.Column["type"];
         dataType: DataType;
     }) => {
         const { vector, expectedType, dataType } = params;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
 import { getIconUrlByName } from "lazy-icons";
@@ -10,19 +10,33 @@ type Props = {
     className?: string;
     url: string;
     onUrlChange: (value: string) => void;
-    getIsValidUrl: (url: string) => boolean;
 };
 
 export function UrlInput(props: Props) {
-    const { className, url, onUrlChange, getIsValidUrl } = props;
+    const { className, url, onUrlChange } = props;
 
     const { t } = useTranslation({ UrlInput });
     const [urlBeingTyped, setUrlBeingTyped] = useState(url);
 
-    const isLoadable =
-        urlBeingTyped !== url && (urlBeingTyped === "" || getIsValidUrl(urlBeingTyped));
+    const hasActionButton = useMemo(() => {
+        if (urlBeingTyped === url) {
+            return false;
+        }
 
-    const { classes, cx } = useStyles({ isLoadable });
+        if (urlBeingTyped === "") {
+            return true;
+        }
+
+        try {
+            new URL(urlBeingTyped);
+        } catch {
+            return false;
+        }
+
+        return true;
+    }, [urlBeingTyped]);
+
+    const { classes, cx } = useStyles({ hasActionButton });
 
     useEffectOnValueChange(() => {
         setUrlBeingTyped(url);
@@ -38,17 +52,17 @@ export function UrlInput(props: Props) {
                     onSearchChange={setUrlBeingTyped}
                     placeholder="Data source"
                     restorableSearch={url}
-                    onKeyPress={key => {
-                        if (key !== "Enter") {
-                            return;
-                        }
+                    onKeyPress={
+                        !hasActionButton
+                            ? undefined
+                            : key => {
+                                  if (key !== "Enter") {
+                                      return;
+                                  }
 
-                        if (!isLoadable) {
-                            return;
-                        }
-
-                        onButtonClick();
-                    }}
+                                  onButtonClick();
+                              }
+                    }
                 />
             </div>
             <Button
@@ -68,8 +82,8 @@ export function UrlInput(props: Props) {
 
 const useStyles = tss
     .withName({ UrlInput })
-    .withParams<{ isLoadable: boolean }>()
-    .create(({ theme, isLoadable }) => ({
+    .withParams<{ hasActionButton: boolean }>()
+    .create(({ theme, hasActionButton }) => ({
         root: {
             display: "flex"
         },
@@ -77,7 +91,7 @@ const useStyles = tss
             flex: 1
         },
         loadButton: {
-            visibility: isLoadable ? "visible" : "hidden",
+            visibility: hasActionButton ? "visible" : "hidden",
             marginLeft: theme.spacing(4)
         }
     }));

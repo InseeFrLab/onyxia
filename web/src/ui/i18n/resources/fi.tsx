@@ -1010,7 +1010,12 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "resize table": "Muuta taulukon kokoa",
         "unsupported file type": ({ supportedFileTypes }) =>
             `Tuettua tiedostomuotoa ei tunnistettu. Tuetut tyypit ovat: ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "Tietotiedostoa ei voida hakea"
+        "no s3 client":
+            "S3-asiakasta ei ole määritetty. Siirry asetuksiin ja ota sellainen käyttöön Explorerissa.",
+        "unsupported protocol":
+            "URL ei ole tuettu. Tuetut protokollat ovat https:// ja s3://.",
+        "https fetch error": "HTTPS-tiedostoa ei voitu noutaa.",
+        "query error": "DuckDB-kyselyvirhe."
     },
     UrlInput: {
         load: "Lataa",

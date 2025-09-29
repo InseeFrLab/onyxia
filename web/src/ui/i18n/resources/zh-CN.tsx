@@ -952,7 +952,10 @@ ${
         "resize table": "调整大小",
         "unsupported file type": ({ supportedFileTypes }) =>
             `不支持的数据格式。支持的类型有：${supportedFileTypes.join(", ")}。`,
-        "can't fetch file": "无法获取数据文件"
+        "no s3 client": "未配置 S3 客户端。请前往设置中为资源管理器启用一个。",
+        "unsupported protocol": "不支持的 URL。支持的协议为 https:// 和 s3://。",
+        "https fetch error": "无法获取 HTTPS 文件。",
+        "query error": "DuckDB 查询错误。"
     },
     UrlInput: {
         load: "加载",

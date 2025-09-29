@@ -1021,7 +1021,12 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "resize table": "Formaat wijzigen",
         "unsupported file type": ({ supportedFileTypes }) =>
             `Niet-ondersteund gegevensformaat. Ondersteunde typen zijn: ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "Kan gegevensbestand niet ophalen"
+        "no s3 client":
+            "Geen S3-client geconfigureerd. Ga naar instellingen om er een voor de verkenner in te schakelen.",
+        "unsupported protocol":
+            "Niet-ondersteunde URL. Ondersteunde protocollen zijn https:// en s3://.",
+        "https fetch error": "Kan HTTPS-bestand niet ophalen.",
+        "query error": "DuckDB-queryfout."
     },
     UrlInput: {
         load: "Laden",

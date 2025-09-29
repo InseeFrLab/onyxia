@@ -1006,7 +1006,12 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "resize table": "Resize",
         "unsupported file type": ({ supportedFileTypes }) =>
             `Unsupported data format. Supported types are: ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "Can't fetch data file"
+        "no s3 client":
+            "No S3 client configured. Go to settings to enable one for the explorer.",
+        "unsupported protocol":
+            "Unsupported URL. Supported protocols are https:// and s3://.",
+        "https fetch error": "Unable to fetch the HTTPS file.",
+        "query error": "DuckDB query error."
     },
     UrlInput: {
         load: "Load",

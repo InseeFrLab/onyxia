@@ -10,39 +10,59 @@ import duckdbBrowserCoiWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser
 import duckdbBrowserCoiPThreadWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-coi.pthread.worker.js?url";
 import duckdbCoiWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-coi.wasm?url";
 
-import { assert } from "tsafe/assert";
+import { assert, type Equals, type ReturnType, id, isAmong } from "tsafe";
 import memoize from "memoizee";
-import { same } from "evt/tools/inDepth/same";
-import type { ReturnType } from "tsafe";
 import { createArrowTableApi } from "./utils/arrowTable";
+import { inferFileType } from "./utils/inferFileType";
+import type { S3Client } from "core/ports/S3Client";
+import { Deferred } from "evt/tools/Deferred";
+import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
 
 export const createDuckDbSqlOlap = (params: {
-    getS3Config: () => Promise<
+    getS3Client: () => Promise<
         | {
+              errorCause: "need login" | "no s3 client";
+              s3Client?: never;
+              s3_endpoint?: never;
+              s3_url_style?: never;
+          }
+        | {
+              errorCause?: never;
+              s3Client: S3Client;
               s3_endpoint: string;
               s3_url_style: "path" | "vhost";
-              credentials:
-                  | {
-                        s3_access_key_id: string;
-                        s3_secret_access_key: string;
-                        s3_session_token: string | undefined;
-                    }
-                  | undefined;
           }
-        | undefined
     >;
 }): SqlOlap => {
-    const { getS3Config } = params;
+    const { getS3Client } = params;
 
     const prArrowTableApi = createArrowTableApi();
+
+    const getHttpUrlWithoutRedirect = memoize(
+        async (httpUrl: string) => {
+            let response: Response;
+
+            try {
+                response = await fetch(httpUrl);
+            } catch {
+                return undefined;
+            }
+
+            return response.url;
+        },
+        { promise: true }
+    );
 
     const sqlOlap: SqlOlap = {
         getConfiguredAsyncDuckDb: (() => {
             let hasCustomExtensionRepositoryBeenSetup = false;
-            let currentS3Config: ReturnType<typeof getS3Config> = undefined;
+
+            const prDb = getAsyncDuckDb();
+
+            let s3FeatureStatus: SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb.S3FeatureStatus;
 
             return async () => {
-                const db = await getAsyncDuckDb();
+                const db = await prDb;
 
                 let conn:
                     | import("@duckdb/duckdb-wasm").AsyncDuckDBConnection
@@ -61,56 +81,181 @@ export const createDuckDbSqlOlap = (params: {
                 }
 
                 setup_s3: {
-                    const s3Config = await getS3Config();
+                    const { errorCause, s3Client, s3_endpoint /*s3_url_style*/ } =
+                        await getS3Client();
 
-                    if (s3Config === undefined) {
+                    if (errorCause !== undefined) {
+                        s3FeatureStatus =
+                            id<SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb.S3FeatureStatus.NotCapable>(
+                                {
+                                    isS3Capable: false,
+                                    reason: errorCause
+                                }
+                            );
                         break setup_s3;
                     }
-
-                    if (same(s3Config, currentS3Config)) {
-                        break setup_s3;
-                    }
-
-                    currentS3Config = s3Config;
-
-                    const {
-                        s3_endpoint,
-                        //s3_url_style,
-                        credentials
-                    } = s3Config;
 
                     if (conn === undefined) {
                         conn = await db.connect();
                     }
+
+                    const tokens = await s3Client.getToken({ doForceRenew: false });
 
                     await conn.query(
                         [
                             `SET s3_endpoint = '${s3_endpoint}';`,
                             // https://github.com/duckdb/duckdb-wasm/issues/1207
                             //`SET s3_url_style = '${s3_url_style}';`
-                            ...(credentials === undefined
+                            ...(tokens === undefined
                                 ? []
                                 : [
-                                      `SET s3_access_key_id = '${credentials.s3_access_key_id}';`,
-                                      `SET s3_secret_access_key = '${credentials.s3_secret_access_key}';`,
-                                      ...(credentials.s3_session_token === undefined
+                                      `SET s3_access_key_id = '${tokens.accessKeyId}';`,
+                                      `SET s3_secret_access_key = '${tokens.secretAccessKey}';`,
+                                      ...(tokens.sessionToken === undefined
                                           ? []
                                           : [
-                                                `SET s3_session_token = '${credentials.s3_session_token}';`
+                                                `SET s3_session_token = '${tokens.sessionToken}';`
                                             ])
                                   ])
                         ].join("\n")
                     );
+
+                    s3FeatureStatus = {
+                        isS3Capable: true
+                    };
                 }
 
                 await conn?.close();
 
-                return db;
+                return id<SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb>({
+                    db,
+                    s3FeatureStatus
+                });
             };
         })(),
-        getRows: async ({ sourceUrl, fileType, rowsPerPage, page }) => {
-            const db = await sqlOlap.getConfiguredAsyncDuckDb();
-            const conn = await db.connect();
+        inferFileType: ({ sourceUrl }) => {
+            const dOut = new Deferred<SqlOlap.ReturnTypeOfInferType>();
+
+            const { protocol: sourceUrlProtocol } = new URL(sourceUrl);
+
+            assert(isAmong(["https:", "s3:"], sourceUrlProtocol));
+
+            const partialFetch = memoize(
+                async () => {
+                    switch (sourceUrlProtocol) {
+                        case "https:": {
+                            const response = await fetch(sourceUrl, {
+                                method: "GET",
+                                headers: { Range: "bytes=0-15" }
+                            }).catch(error => {
+                                assert(error instanceof Error);
+                                dOut.resolve({ errorCause: "https fetch error" });
+                                return new Promise<never>(() => {});
+                            });
+
+                            if (!response.ok) {
+                                dOut.resolve({ errorCause: "https fetch error" });
+                                return new Promise<never>(() => {});
+                            }
+
+                            return {
+                                getContentType: () =>
+                                    response.headers.get("Content-Type") ?? undefined,
+                                getFirstBytes: async () => {
+                                    try {
+                                        return response.arrayBuffer();
+                                    } catch {
+                                        dOut.resolve({ errorCause: "https fetch error" });
+                                        return new Promise<never>(() => {});
+                                    }
+                                }
+                            };
+                        }
+                        case "s3:": {
+                            const { errorCause: errorCause_getS3Client, s3Client } =
+                                await getS3Client();
+
+                            if (errorCause_getS3Client !== undefined) {
+                                dOut.resolve({ errorCause: errorCause_getS3Client });
+                                return new Promise<never>(() => {});
+                            }
+
+                            const result = await s3Client.getFileContent({
+                                path: sourceUrl.replace(/^s3:\/\//, ""),
+                                range: "bytes=0-15"
+                            });
+
+                            const buffer = await streamToArrayBuffer(result.stream);
+
+                            return {
+                                getContentType: () => result.contentType ?? undefined,
+                                getFirstBytes: async () => buffer
+                            };
+                        }
+                        default:
+                            assert<Equals<typeof sourceUrlProtocol, never>>(false);
+                    }
+                },
+                { promise: true }
+            );
+
+            inferFileType({
+                sourceUrl,
+                getContentType: async () => {
+                    const result = await partialFetch();
+                    return result.getContentType();
+                },
+                getFirstBytes: async () => {
+                    const result = await partialFetch();
+                    return result.getFirstBytes();
+                }
+            }).then(fileType => {
+                if (fileType === undefined) {
+                    dOut.resolve({
+                        errorCause: "unsupported file type"
+                    });
+                    return;
+                }
+                dOut.resolve(
+                    id<SqlOlap.ReturnTypeOfInferType.Success>({
+                        fileType,
+                        sourceUrlProtocol
+                    })
+                );
+            });
+
+            return dOut.pr;
+        },
+        getRows: async ({ sourceUrl, rowsPerPage, page }) => {
+            const {
+                errorCause: errorCause_inferFileType,
+                fileType,
+                sourceUrlProtocol
+            } = await sqlOlap.inferFileType({ sourceUrl });
+
+            if (errorCause_inferFileType !== undefined) {
+                return id<SqlOlap.ReturnTypeOfGetRows.Failed>({
+                    errorCause: errorCause_inferFileType
+                });
+            }
+
+            const { db, s3FeatureStatus } = await sqlOlap.getConfiguredAsyncDuckDb();
+
+            if (sourceUrlProtocol === "s3:" && !s3FeatureStatus.isS3Capable) {
+                return id<SqlOlap.ReturnTypeOfGetRows.Failed>({
+                    errorCause: s3FeatureStatus.reason
+                });
+            }
+
+            if (sourceUrlProtocol === "https:") {
+                const sourceUrl_noRedirect = await getHttpUrlWithoutRedirect(sourceUrl);
+                if (sourceUrl_noRedirect === undefined) {
+                    return id<SqlOlap.ReturnTypeOfGetRows.Failed>({
+                        errorCause: "https fetch error"
+                    });
+                }
+                sourceUrl = sourceUrl_noRedirect;
+            }
 
             const sqlQuery = `SELECT * FROM ${(() => {
                 switch (fileType) {
@@ -123,40 +268,96 @@ export const createDuckDbSqlOlap = (params: {
                 }
             })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
 
+            const conn = await db.connect();
             const stmt = await conn.prepare(sqlQuery);
-            const res = await stmt.query();
+
+            let res: ReturnType<(typeof stmt)["query"]>;
+
+            try {
+                res = await stmt.query();
+            } catch {
+                return id<SqlOlap.ReturnTypeOfGetRows.Failed>({
+                    errorCause: "query error"
+                });
+            } finally {
+                conn.close();
+            }
 
             const { arrowTableToJsData } = await prArrowTableApi;
 
             const { columns, rows } = arrowTableToJsData({ table: res });
 
-            await conn.close();
-
-            return { rows, columns };
+            return id<SqlOlap.ReturnTypeOfGetRows.Success>({ rows, columns });
         },
         getRowCount: (() => {
             const getRowCount_memo = memoize(
-                async (sourceUrl: string, fileType: "parquet" | "json" | "csv") => {
-                    if (fileType !== "parquet") {
-                        return undefined;
+                async (sourceUrl: string) => {
+                    const {
+                        errorCause: errorCause_inferFileType,
+                        fileType,
+                        sourceUrlProtocol
+                    } = await sqlOlap.inferFileType({ sourceUrl });
+
+                    if (errorCause_inferFileType !== undefined) {
+                        return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
+                            errorCause: errorCause_inferFileType
+                        });
                     }
 
-                    const db = await sqlOlap.getConfiguredAsyncDuckDb();
+                    if (fileType !== "parquet") {
+                        return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
+                            errorCause: "not file type allowing querying row count"
+                        });
+                    }
 
-                    const conn = await db.connect();
+                    const { db, s3FeatureStatus } =
+                        await sqlOlap.getConfiguredAsyncDuckDb();
+
+                    if (sourceUrlProtocol === "s3:" && !s3FeatureStatus.isS3Capable) {
+                        return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
+                            errorCause: s3FeatureStatus.reason
+                        });
+                    }
+
+                    if (sourceUrlProtocol === "https:") {
+                        const sourceUrl_noRedirect =
+                            await getHttpUrlWithoutRedirect(sourceUrl);
+                        if (sourceUrl_noRedirect === undefined) {
+                            return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
+                                errorCause: "https fetch error"
+                            });
+                        }
+                        sourceUrl = sourceUrl_noRedirect;
+                    }
 
                     const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
 
-                    return conn
-                        .prepare(query)
-                        .then(stmt => stmt.query())
-                        .then(res => res.toArray()[0]["v"])
-                        .finally(() => conn.close());
+                    const conn = await db.connect();
+                    const stmt = await conn.prepare(query);
+
+                    let res: ReturnType<(typeof stmt)["query"]>;
+
+                    try {
+                        res = await stmt.query();
+                    } catch {
+                        return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
+                            errorCause: "query error"
+                        });
+                    } finally {
+                        conn.close();
+                    }
+                    const rowCount = res.toArray()[0]["v"];
+
+                    assert(typeof rowCount === "number");
+
+                    return id<SqlOlap.ReturnTypeOfGetRowCount.Success>({
+                        rowCount
+                    });
                 },
                 { promise: true, max: 1 }
             );
 
-            return ({ sourceUrl, fileType }) => getRowCount_memo(sourceUrl, fileType);
+            return ({ sourceUrl }) => getRowCount_memo(sourceUrl);
         })()
     };
 

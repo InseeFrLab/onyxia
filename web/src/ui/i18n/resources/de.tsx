@@ -1021,7 +1021,12 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "resize table": undefined,
         "unsupported file type": ({ supportedFileTypes }) =>
             `Nicht unterstütztes Datenformat. Unterstützte Typen sind: ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "Daten-Datei kann nicht abgerufen werden"
+        "no s3 client":
+            "Kein S3-Client konfiguriert. Gehe zu den Einstellungen, um einen für den Explorer zu aktivieren.",
+        "unsupported protocol":
+            "Nicht unterstützte URL. Unterstützte Protokolle sind https:// und s3://.",
+        "https fetch error": "HTTPS-Datei konnte nicht abgerufen werden.",
+        "query error": "DuckDB-Abfragefehler."
     },
     UrlInput: {
         load: "Laden",

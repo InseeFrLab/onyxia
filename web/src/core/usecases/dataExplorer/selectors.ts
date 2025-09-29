@@ -1,9 +1,10 @@
 import type { State as RootState } from "core/bootstrap";
-import type { State, RouteParams } from "./state";
+import type { RouteParams } from "./state";
 import { createSelector } from "clean-architecture";
 import { name, ROUTE_PARAMS_DEFAULTS } from "./state";
 import { objectKeys, id } from "tsafe";
-import type { Column } from "core/ports/SqlOlap";
+import type { SqlOlap } from "core/ports/SqlOlap";
+import type { QueryRequest, QueryResponse } from "./decoupledLogic/performQuery";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -11,7 +12,7 @@ const queryRequest = createSelector(
     createSelector(state, state => state.routeParams.source),
     createSelector(state, state => state.routeParams.page),
     createSelector(state, state => state.routeParams.rowsPerPage),
-    (source, page, rowPerPage): State.QueryRequest | undefined => {
+    (source, page, rowPerPage): QueryRequest | undefined => {
         if (source === undefined) {
             return undefined;
         }
@@ -23,7 +24,6 @@ const queryRequest = createSelector(
         }
 
         return {
-            brand: "__queryRequest",
             source,
             page: page ?? ROUTE_PARAMS_DEFAULTS.page,
             rowsPerPage: rowPerPage ?? ROUTE_PARAMS_DEFAULTS.rowsPerPage
@@ -51,91 +51,101 @@ export const protectedSelectors = {
     )
 };
 
-export type View = View.NoDataGrid | View.WithDataGrid;
+export type View = {
+    urlBarText: string;
+    isQuerying: boolean;
+    dataGridView: View.DataGridView | undefined;
+};
 
 export namespace View {
-    export type Common = {
-        urlBarText: string;
-    };
+    export type DataGridView = DataGridView.Errored | DataGridView.NotErrored;
 
-    export type NoDataGrid = Common & {
-        dataGridView: undefined;
-        isQuerying: boolean;
-    };
+    export namespace DataGridView {
+        export type Errored = {
+            isErrored: true;
+            errorCause: QueryResponse.Failed["errorCause"];
+        };
 
-    export type WithDataGrid = Common & {
-        dataGridView: WithDataGrid.DataGridView;
-        isQuerying: false;
-    };
-
-    export namespace WithDataGrid {
-        export type DataGridView = DataGridView.Errored | DataGridView.NotErrored;
-
-        export namespace DataGridView {
-            export type Errored = {
-                isErrored: true;
-                error: State.Error;
-            };
-
-            export type NotErrored = {
-                isErrored: false;
-                rowsPerPage: number;
-                page: number;
-                columnVisibility: Record<string, boolean> | undefined;
-                rows: any[];
-                columns: Column[];
-                rowCount: number | undefined;
-            };
-        }
+        export type NotErrored = {
+            isErrored: false;
+            rowsPerPage: number;
+            page: number;
+            columnVisibility: Record<string, boolean> | undefined;
+            rows: Record<string, unknown>[];
+            rowIdByRowIndex: Record<number, string>;
+            columns: SqlOlap.ReturnTypeOfGetRows.Success.Column[];
+            rowCount: number | undefined;
+            selectedRowIndex: number | undefined;
+        };
     }
 }
 
-const view = createSelector(
-    createSelector(state, state => state.routeParams),
-    createSelector(state, queryRequest, (state, queryRequest) => {
-        if (state.query === undefined) {
-            return null;
+const dataGridView = createSelector(
+    createSelector(queryRequest, queryRequest => queryRequest?.source),
+    createSelector(state, state => state.completedQuery),
+    createSelector(
+        state,
+        state =>
+            state.routeParams.columnVisibility ?? ROUTE_PARAMS_DEFAULTS.columnVisibility
+    ),
+    createSelector(
+        state,
+        state => state.routeParams.selectedRow ?? ROUTE_PARAMS_DEFAULTS.selectedRow
+    ),
+    (
+        queryRequestSource,
+        completedQuery,
+        columnVisibility,
+        selectedRow
+    ): View.DataGridView | undefined => {
+        if (completedQuery === undefined) {
+            return undefined;
         }
-        if (state.query.request !== queryRequest) {
-            return null;
-        }
-        return state.query.response;
-    }),
-    (routeParams, queryResponse): View => {
-        const common = id<View.Common>({
-            urlBarText: routeParams.source ?? ROUTE_PARAMS_DEFAULTS.source
-        });
 
-        if (queryResponse === null || queryResponse === undefined) {
-            return id<View.NoDataGrid>({
-                ...common,
-                dataGridView: undefined,
-                isQuerying: queryResponse === undefined
+        if (completedQuery.request.source !== queryRequestSource) {
+            return undefined;
+        }
+
+        const { request, response } = completedQuery;
+
+        if (!response.isSuccess) {
+            return id<View.DataGridView.Errored>({
+                isErrored: true,
+                errorCause: response.errorCause
             });
         }
 
-        return id<View.WithDataGrid>({
-            ...common,
-            dataGridView: queryResponse.isSuccess
-                ? id<View.WithDataGrid.DataGridView.NotErrored>({
-                      isErrored: false,
-                      rowsPerPage:
-                          routeParams.rowsPerPage ?? ROUTE_PARAMS_DEFAULTS.rowsPerPage,
-                      page: routeParams.page ?? ROUTE_PARAMS_DEFAULTS.page,
-                      columnVisibility:
-                          routeParams.columnVisibility ??
-                          ROUTE_PARAMS_DEFAULTS.columnVisibility,
-                      rows: queryResponse.data.rows,
-                      columns: queryResponse.data.columns,
-                      rowCount: queryResponse.data.rowCount
-                  })
-                : id<View.WithDataGrid.DataGridView.Errored>({
-                      isErrored: true,
-                      error: queryResponse.error
-                  }),
-            isQuerying: false
+        const rowsPerPage = request.rowsPerPage;
+        const page = request.page;
+
+        return id<View.DataGridView.NotErrored>({
+            isErrored: false,
+            rowsPerPage,
+            page: request.page,
+            columnVisibility,
+            rows: response.data.rows,
+            rowIdByRowIndex: Object.fromEntries(
+                response.data.rows.map((_, i) => [i, `${i + rowsPerPage * (page - 1)}`])
+            ),
+            columns: response.data.columns,
+            rowCount: response.data.rowCount,
+            selectedRowIndex: selectedRow
         });
     }
+);
+
+const view = createSelector(
+    createSelector(
+        state,
+        state => state.routeParams.source ?? ROUTE_PARAMS_DEFAULTS.source
+    ),
+    createSelector(state, state => state.ongoingQueryRequest !== undefined),
+    dataGridView,
+    (urlBarText, isQuerying, dataGridView): View => ({
+        urlBarText,
+        isQuerying,
+        dataGridView
+    })
 );
 
 export const selectors = { view };

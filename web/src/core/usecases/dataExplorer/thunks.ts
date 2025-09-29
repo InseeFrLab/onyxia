@@ -3,6 +3,9 @@ import { actions, name, type RouteParams } from "./state";
 import { protectedSelectors } from "./selectors";
 import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
+import { same } from "evt/tools/inDepth/same";
+import { performQuery } from "./decoupledLogic/performQuery";
+import { assert } from "tsafe";
 
 export const thunks = {
     load:
@@ -36,19 +39,26 @@ export const thunks = {
             const [dispatch] = args;
             dispatch(actions.urlBarTextUpdated({ urlBarText }));
         },
-    updatePage:
-        (params: { direction: "next" | "previous" }) =>
+    updatePaginationModel:
+        (params: { page: number; rowsPerPage: number }) =>
         (...args) => {
-            const { direction } = params;
+            const { page, rowsPerPage } = params;
             const [dispatch] = args;
-            dispatch(actions.pageUpdated({ direction }));
+            dispatch(actions.paginationModelUpdated({ page, rowsPerPage }));
         },
-    updateRowsPerPage:
-        (params: { rowsPerPage: number }) =>
+    updateSelectedRowIndex:
+        (params: { selectedRowIndex: number }) =>
         (...args) => {
-            const { rowsPerPage } = params;
+            const { selectedRowIndex } = params;
             const [dispatch] = args;
-            dispatch(actions.rowsPerPageUpdated({ rowsPerPage }));
+            dispatch(actions.selectedRowIndexUpdated({ selectedRowIndex }));
+        },
+    updateColumnVisibility:
+        (params: { columnVisibility: Record<string, boolean> }) =>
+        (...args) => {
+            const { columnVisibility } = params;
+            const [dispatch] = args;
+            dispatch(actions.columnVisibilityUpdated({ columnVisibility }));
         }
 } satisfies Thunks;
 
@@ -58,7 +68,7 @@ const privateThunks = {
     subscribeToEventAction:
         () =>
         (...args) => {
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch, getState, { evtAction, oidc, sqlOlap }] = args;
 
             if (hasSubscribedToEvtAction) {
                 return;
@@ -71,39 +81,33 @@ const privateThunks = {
                 .pipe(action => action.usecaseName === name)
                 .pipe(() => [protectedSelectors.queryRequest(getState())])
                 .pipe(queryRequest => queryRequest !== undefined)
-                .pipe(onlyIfChanged({ areEqual: (a, b) => a === b }))
+                .pipe(onlyIfChanged())
                 .attach(async queryRequest => {
+                    const getShouldAbort = () =>
+                        !same(queryRequest, protectedSelectors.queryRequest(getState()));
+
                     await waitForDebounce();
 
-                    if (queryRequest !== protectedSelectors.queryRequest(getState())) {
+                    if (getShouldAbort()) {
                         return;
                     }
 
-                    dispatch(
-                        actions.queryResponseSet({
-                            query: { request: queryRequest, response: undefined }
-                        })
-                    );
+                    dispatch(actions.queryStarted({ queryRequest }));
 
-                    // TODO: Actually perform the query
-                    const response = await Promise.resolve({
-                        isSuccess: false,
-                        error: {
-                            isWellKnown: false,
-                            message: "not implemented yet"
-                        }
-                    } as const);
-
-                    if (queryRequest !== protectedSelectors.queryRequest(getState())) {
-                        return;
-                    }
+                    const queryResponse = await performQuery({
+                        getShouldAbort,
+                        login: () => {
+                            assert(!oidc.isUserLoggedIn);
+                            return oidc.login({ doesCurrentHrefRequiresAuth: false });
+                        },
+                        queryRequest,
+                        sqlOlap
+                    });
 
                     dispatch(
-                        actions.queryResponseSet({
-                            query: {
-                                request: queryRequest,
-                                response
-                            }
+                        actions.queryCompleted({
+                            queryRequest,
+                            queryResponse
                         })
                     );
                 });

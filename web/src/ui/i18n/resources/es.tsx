@@ -1022,7 +1022,12 @@ export const translations: Translations<"en"> = {
         "resize table": "Redimensionar",
         "unsupported file type": ({ supportedFileTypes }) =>
             `Formato de datos no compatible. Los tipos compatibles son: ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "No se puede obtener el archivo de datos"
+        "no s3 client":
+            "No hay cliente S3 configurado. Ve a la configuración para habilitar uno en el explorador.",
+        "unsupported protocol":
+            "URL no compatible. Los protocolos admitidos son https:// y s3://.",
+        "https fetch error": "No se pudo obtener el archivo HTTPS.",
+        "query error": "Error de consulta en DuckDB."
     },
     UrlInput: {
         load: "Cargar",
