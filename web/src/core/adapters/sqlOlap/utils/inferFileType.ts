@@ -1,4 +1,9 @@
-import { type SupportedFileType, getIsSupportedFileType } from "./SupportedFileType";
+export const supportedFileTypes = ["parquet", "csv", "json"] as const;
+
+export type SupportedFileType = (typeof supportedFileTypes)[number];
+
+export const getIsSupportedFileType = (ext: string): ext is SupportedFileType =>
+    supportedFileTypes.some(validType => validType === ext);
 
 function inferFileType_fromExtension(sourceUrl: string): SupportedFileType | undefined {
     let pathname: string;

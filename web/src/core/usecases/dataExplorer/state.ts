@@ -1,20 +1,20 @@
 import { createUsecaseActions } from "clean-architecture";
-import type { Column } from "core/ports/SqlOlap";
-import { id, assert, type Equals } from "tsafe";
-import type { SupportedFileType } from "./decoupledLogic/SupportedFileType";
+import { id, assert } from "tsafe";
 import {
     createObjectThatThrowsIfAccessed,
     isObjectThatThrowIfAccessed
 } from "clean-architecture";
+import { same } from "evt/tools/inDepth/same";
+import type { QueryRequest, QueryResponse } from "./decoupledLogic/performQuery";
 
 export const name = "dataExplorer";
 
 export type RouteParams = {
-    source: string | undefined;
-    rowsPerPage: number | undefined;
-    page: number | undefined;
-    selectedRow: number | undefined;
-    columnVisibility: Record<string, boolean> | undefined;
+    source?: string;
+    rowsPerPage?: number;
+    page?: number;
+    selectedRow?: number;
+    columnVisibility?: Record<string, boolean>;
 };
 
 export const ROUTE_PARAMS_DEFAULTS = {
@@ -23,62 +23,18 @@ export const ROUTE_PARAMS_DEFAULTS = {
     page: 1,
     selectedRow: undefined,
     columnVisibility: undefined
-} satisfies RouteParams & Record<keyof RouteParams, unknown>;
+} as const satisfies RouteParams & Record<keyof RouteParams, unknown>;
 
 export type State = {
     routeParams: RouteParams;
-    query:
+    ongoingQueryRequest: QueryRequest | undefined;
+    completedQuery:
         | {
-              request: State.QueryRequest.Brand;
-              response: State.QueryResponse | undefined;
+              request: QueryRequest;
+              response: QueryResponse;
           }
         | undefined;
 };
-
-export namespace State {
-    export type Error =
-        | {
-              isWellKnown: false;
-              message: string;
-          }
-        | {
-              isWellKnown: true;
-              reason: "unsupported file type" | "can't fetch file";
-          };
-
-    export type QueryRequest = QueryRequest.Brand & {
-        source: string;
-        rowsPerPage: number;
-        page: number;
-    };
-
-    export namespace QueryRequest {
-        export type Brand = {
-            brand: "__queryRequest";
-        };
-    }
-
-    export type QueryResponse = QueryResponse.Success | QueryResponse.Failed;
-
-    export namespace QueryResponse {
-        export type Success = {
-            isSuccess: true;
-            data: {
-                rows: Record<string, unknown>[];
-                columns: Column[];
-                rowCount: number | undefined;
-                sourceUrl: string;
-                fileType: SupportedFileType;
-                sourceType: "s3" | "http";
-            };
-        };
-
-        export type Failed = {
-            isSuccess: false;
-            error: State.Error;
-        };
-    }
-}
 
 export const { actions, reducer } = createUsecaseActions({
     name,
@@ -98,14 +54,9 @@ export const { actions, reducer } = createUsecaseActions({
 
             if (isObjectThatThrowIfAccessed(state)) {
                 state = id<State>({
-                    routeParams: {
-                        source: undefined,
-                        rowsPerPage: undefined,
-                        page: undefined,
-                        selectedRow: undefined,
-                        columnVisibility: undefined
-                    },
-                    query: undefined
+                    routeParams: {},
+                    ongoingQueryRequest: undefined,
+                    completedQuery: undefined
                 });
             }
 
@@ -130,53 +81,70 @@ export const { actions, reducer } = createUsecaseActions({
                 selectedRow: undefined
             };
         },
-        pageUpdated: (
+        paginationModelUpdated: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    direction: "next" | "previous";
+                    page: number;
+                    rowsPerPage: number;
                 };
             }
         ) => {
-            const { direction } = payload;
+            const { page, rowsPerPage } = payload;
 
-            let newPage = state.routeParams.page ?? ROUTE_PARAMS_DEFAULTS.page;
-
-            switch (direction) {
-                case "next":
-                    newPage++;
-                    break;
-                case "previous":
-                    newPage--;
-                    break;
-                default:
-                    assert<Equals<typeof direction, never>>;
-            }
-
-            state.routeParams.page = newPage;
-        },
-        rowsPerPageUpdated: (
-            state,
-            { payload }: { payload: { rowsPerPage: number } }
-        ) => {
-            const { rowsPerPage } = payload;
-
+            state.routeParams.page = page;
             state.routeParams.rowsPerPage = rowsPerPage;
+            state.routeParams.selectedRow = undefined;
         },
-        queryResponseSet: (
+        columnVisibilityUpdated: (
+            state,
+            { payload }: { payload: { columnVisibility: Record<string, boolean> } }
+        ) => {
+            const { columnVisibility } = payload;
+            state.routeParams.columnVisibility = columnVisibility;
+        },
+        selectedRowIndexUpdated: (
+            state,
+            { payload }: { payload: { selectedRowIndex: number | undefined } }
+        ) => {
+            const { selectedRowIndex } = payload;
+            state.routeParams.selectedRow = selectedRowIndex;
+        },
+        queryStarted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    query: NonNullable<State["query"]>;
+                    queryRequest: QueryRequest;
                 };
             }
         ) => {
-            const { query } = payload;
-            state.query = query;
+            const { queryRequest } = payload;
+            state.ongoingQueryRequest = queryRequest;
+        },
+        queryCompleted: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    queryRequest: QueryRequest;
+                    queryResponse: QueryResponse;
+                };
+            }
+        ) => {
+            const { queryRequest, queryResponse } = payload;
+
+            assert(same(state.ongoingQueryRequest, queryRequest));
+
+            state.completedQuery = {
+                request: queryRequest,
+                response: queryResponse
+            };
+            state.ongoingQueryRequest = undefined;
         }
     }
 });

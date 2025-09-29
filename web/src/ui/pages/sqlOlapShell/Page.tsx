@@ -1,6 +1,6 @@
 import "xterm/css/xterm.css";
 import { tss } from "tss";
-import { getCoreSync } from "core";
+import { getCoreSync, getCore } from "core";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
 import { useStyles as useTheme } from "tss";
@@ -8,7 +8,10 @@ import { useStyles as useTheme } from "tss";
 const Page = withLoader({
     loader: async () => {
         await enforceLogin();
-        await getCoreSync().functions.sqlOlapShell.load();
+
+        const core = await getCore();
+
+        await core.functions.sqlOlapShell.load();
     },
     Component: SqlOlapShell
 });

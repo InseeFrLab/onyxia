@@ -17,7 +17,7 @@ export const thunks = {
         async (...args) => {
             const [, , { sqlOlap }] = args;
 
-            const [db, duckdbWasmShell] = await Promise.all([
+            const [{ db }, duckdbWasmShell] = await Promise.all([
                 sqlOlap.getConfiguredAsyncDuckDb(),
                 import("@duckdb/duckdb-wasm-shell")
             ]);

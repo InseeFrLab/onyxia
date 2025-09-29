@@ -1013,7 +1013,12 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "resize table": "Endre størrelse",
         "unsupported file type": ({ supportedFileTypes }) =>
             `Ikke støttet dataformat. Støttede typer er: ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "Kan ikke hente datafilen"
+        "no s3 client":
+            "Ingen S3-klient konfigurert. Gå til innstillinger for å aktivere en for utforskeren.",
+        "unsupported protocol":
+            "URL støttes ikke. Støttede protokoller er https:// og s3://.",
+        "https fetch error": "Kunne ikke hente HTTPS-fil.",
+        "query error": "DuckDB-spørringsfeil."
     },
     UrlInput: {
         load: "Last",

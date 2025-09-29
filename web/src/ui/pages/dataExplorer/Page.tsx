@@ -1,135 +1,71 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { tss } from "tss";
-import { routes, useRoute } from "ui/routes";
+import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
-import { getCoreSync, useCoreState } from "core";
+import { getCoreSync, useCoreState, getCore } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert } from "tsafe/assert";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
-import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
 import { env } from "env";
-import { autosizeOptions, CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
-import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
-import { exclude } from "tsafe/exclude";
-import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
-import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
-import { supportedFileTypes } from "core/usecases/dataExplorer/decoupledLogic/SupportedFileType";
+import { supportedFileTypes } from "core/adapters/sqlOlap/utils/inferFileType";
+import { withLoader } from "ui/tools/withLoader";
+import { useEvt } from "evt/hooks/useEvt";
+import type { QueryResponse } from "core/usecases/dataExplorer/decoupledLogic/performQuery";
 
-const Page = DataExplorer;
+const Page = withLoader({
+    loader,
+    Component: DataExplorer
+});
 export default Page;
 
-function DataExplorer() {
-    const route = useRoute();
+async function loader() {
+    const core = await getCore();
+
+    const route = getRoute();
     assert(routeGroup.has(route));
 
+    core.functions.dataExplorer.load({
+        routeParams: route.params
+    });
+}
+
+function DataExplorer() {
     const {
-        functions: { dataExplorer }
+        functions: { dataExplorer },
+        evts: { evtDataExplorer }
     } = getCoreSync();
+
+    useEvt(ctx => {
+        evtDataExplorer
+            .pipe(ctx)
+            .pipe(action => action.actionName === "updateRoute")
+            .attach(({ routeParams, method }) =>
+                routes.dataExplorer(routeParams)[method]()
+            );
+    }, []);
+
+    useEffect(
+        () =>
+            session.listen(route => {
+                if (routeGroup.has(route)) {
+                    dataExplorer.notifyRouteParamsExternallyUpdated({
+                        routeParams: route.params
+                    });
+                }
+            }),
+        []
+    );
+
+    const { urlBarText, isQuerying, dataGridView } = useCoreState("dataExplorer", "view");
+
     const { t } = useTranslation({ DataExplorer });
 
-    const apiRef = useGridApiRef();
-
-    useEffect(() => {
-        dataExplorer.initialize({
-            sourceUrl: route.params.source,
-            rowsPerPage: route.params.rowsPerPage,
-            page: route.params.page,
-            selectedRowIndex: route.params.selectedRow,
-            columnVisibility: route.params.columnVisibility
-        });
-    }, [route.params.source]);
-
-    const [isVirtualizationEnabled, setIsVirtualizationEnabled] = useState(true);
-
-    useOnOpenBrowserSearch(() => {
-        console.log(
-            "Disabling data grid virtualization to allow search on all loaded rows"
-        );
-        setIsVirtualizationEnabled(false);
-    });
-
-    const {
-        queryParams,
-        extraRestorableStates,
-        rows,
-        columns,
-        rowCount,
-        error,
-        isQuerying
-    } = useCoreState("dataExplorer", "main");
-
-    const modifiedColumns = useMemo(() => {
-        if (columns === undefined) return undefined;
-        return columns.map(
-            column =>
-                ({
-                    field: column.name,
-                    sortable: false,
-                    renderHeader: () => (
-                        <Text typo="body 1">
-                            {column.name}
-                            <Text
-                                typo="caption"
-                                className={classes.dataGridColumnHeaderType}
-                            >
-                                {column.displayType}
-                            </Text>
-                        </Text>
-                    ),
-                    headerAlign: "left",
-                    type: (() => {
-                        switch (column.type) {
-                            case "binary":
-                            case "time":
-                                return "string";
-                            default:
-                                return column.type;
-                        }
-                    })(),
-                    align: ["bigint", "number"].includes(column.type) ? "right" : "left"
-                }) satisfies GridColDef
-        );
-    }, [columns]);
-
-    useEffect(() => {
-        if (columns) {
-            apiRef.current.autosizeColumns(autosizeOptions);
-        }
-    }, [columns]);
-
-    useEffect(() => {
-        if (queryParams === undefined) {
-            routes[route.name]().replace();
-            return;
-        }
-
-        const { selectedRowIndex: selectedRow, columnVisibility } =
-            extraRestorableStates || {};
-
-        routes[route.name]({
-            ...route.params,
-            source: queryParams.sourceUrl,
-            page: queryParams.page,
-            rowsPerPage: queryParams.rowsPerPage,
-            selectedRow,
-            columnVisibility
-        }).replace();
-    }, [queryParams, extraRestorableStates]);
-
-    const { classes, cx } = useStyles();
-
-    // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
-    const { childrenClassName: dataGridPanelWrapperRefClassName } =
-        useApplyClassNameToParent({
-            parentSelector: ".MuiDataGrid-panel",
-            className: classes.dataGridPanel
-        });
+    const { classes } = useStyles();
 
     return (
         <div className={classes.root}>
@@ -141,131 +77,58 @@ function DataExplorer() {
                 title={t("page header title")}
                 helpTitle={t("page header help title")}
                 helpContent={t("page header help content", {
-                    demoParquetFileLink: routes[route.name]({
+                    demoParquetFileLink: routes.dataExplorer({
                         source: env.SAMPLE_DATASET_URL
                     }).link
                 })}
                 helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={{
                     behavior: "controlled",
-                    isCollapsed: rows !== undefined
+                    isCollapsed: dataGridView !== undefined
                 }}
                 helpCollapseParams={{
                     behavior: "controlled",
-                    isCollapsed: rows !== undefined
+                    isCollapsed: dataGridView !== undefined
                 }}
             />
             <UrlInput
                 className={classes.urlInput}
-                onUrlChange={value => {
-                    dataExplorer.updateDataSource({ sourceUrl: value });
+                onUrlChange={url => {
+                    dataExplorer.updateUrlBarText({ urlBarText: url });
                 }}
-                // NOTE: So that we show the URL in the search bar while it's being queried
-                url={queryParams === undefined ? "" : queryParams.sourceUrl}
-                getIsValidUrl={url =>
-                    dataExplorer.getIsValidSourceUrl({
-                        sourceUrl: url
-                    })
-                }
+                url={urlBarText}
             />
             <div className={classes.mainArea}>
                 {(() => {
-                    if (error !== undefined) {
-                        return (
-                            <Alert className={classes.errorAlert} severity="error">
-                                {(() => {
-                                    if (!error.isWellKnown) {
-                                        return error.message;
-                                    }
-
-                                    switch (error.reason) {
-                                        case "unsupported file type":
-                                            return t(error.reason, {
-                                                supportedFileTypes
-                                            });
-                                        case "can't fetch file":
-                                            return t(error.reason);
-                                    }
-                                })()}
-                            </Alert>
-                        );
-                    }
-
-                    if (rows === undefined || modifiedColumns === undefined) {
-                        if (!isQuerying) {
-                            return null;
-                        }
-
-                        return (
+                    if (dataGridView === undefined) {
+                        return !isQuerying ? null : (
                             <div className={classes.initializing}>
                                 <CircularProgress size={70} />
                             </div>
                         );
                     }
 
-                    assert(queryParams.page !== undefined);
-                    assert(queryParams.rowsPerPage !== undefined);
+                    if (dataGridView.isErrored) {
+                        const { errorCause } = dataGridView;
+                        return (
+                            <Alert className={classes.errorAlert} severity="error">
+                                {(() => {
+                                    switch (errorCause) {
+                                        case "unsupported file type":
+                                            return t("unsupported file type", {
+                                                supportedFileTypes
+                                            });
+                                        default:
+                                            return t(errorCause);
+                                    }
+                                })()}
+                            </Alert>
+                        );
+                    }
 
                     return (
                         <div className={classes.dataGridWrapper}>
-                            <CustomDataGrid
-                                apiRef={apiRef}
-                                shouldAddCopyToClipboardInCell
-                                classes={{
-                                    panelWrapper: cx(
-                                        dataGridPanelWrapperRefClassName,
-                                        classes.dataGridPanelWrapper
-                                    ),
-                                    panelFooter: classes.dataGridPanelFooter,
-                                    menu: classes.dataGridMenu
-                                }}
-                                slots={{ toolbar: SlotsDataGridToolbar }}
-                                disableVirtualization={!isVirtualizationEnabled}
-                                columnVisibilityModel={
-                                    extraRestorableStates.columnVisibility
-                                }
-                                onColumnVisibilityModelChange={columnVisibilityModel =>
-                                    dataExplorer.updateColumnVisibility({
-                                        columnVisibility: columnVisibilityModel
-                                    })
-                                }
-                                onRowSelectionModelChange={rowSelectionModel => {
-                                    const selectedRowIndex = rowSelectionModel[0];
-
-                                    assert(
-                                        typeof selectedRowIndex === "number" ||
-                                            selectedRowIndex === undefined
-                                    );
-
-                                    dataExplorer.updateRowSelected({ selectedRowIndex });
-                                }}
-                                rowSelectionModel={[
-                                    extraRestorableStates.selectedRowIndex ?? undefined
-                                ].filter(exclude(undefined))}
-                                rows={rows}
-                                columns={modifiedColumns}
-                                disableColumnMenu
-                                loading={isQuerying}
-                                paginationMode="server"
-                                rowCount={rowCount ?? 999999999}
-                                pageSizeOptions={(() => {
-                                    const pageSizeOptions = [25, 50, 100];
-                                    assert(
-                                        pageSizeOptions.includes(queryParams.rowsPerPage)
-                                    );
-                                    return pageSizeOptions;
-                                })()}
-                                paginationModel={{
-                                    page: queryParams.page - 1,
-                                    pageSize: queryParams.rowsPerPage
-                                }}
-                                onPaginationModelChange={({ page, pageSize }) => {
-                                    dataExplorer.updatePaginationModel({
-                                        page: page + 1,
-                                        rowsPerPage: pageSize
-                                    });
-                                }}
-                            />
+                            <DataExplorer />
                         </div>
                     );
                 })()}
@@ -273,6 +136,7 @@ function DataExplorer() {
         </div>
     );
 }
+
 const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
     root: {
         height: "100%",
@@ -306,39 +170,6 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         height: "100%",
         overflowY: "hidden",
         overflowX: "auto"
-    },
-    dataGridPanel: {
-        overflow: "hidden",
-        borderRadius: 8,
-        boxShadow: theme.shadows[1],
-        "&:hover": {
-            boxShadow: theme.shadows[6]
-        }
-    },
-    dataGridPanelWrapper: {
-        backgroundColor: theme.colors.useCases.surfaces.surface1,
-        padding: theme.spacing(2)
-    },
-    dataGridPanelFooter: {
-        "& .MuiButton-root": {
-            textTransform: "unset"
-        }
-    },
-    dataGridMenu: {
-        "& .MuiMenuItem-root": {
-            "&.Mui-selected": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
-            },
-            "& svg": {
-                color: theme.colors.useCases.typography.textPrimary
-            },
-            "&:hover": {
-                backgroundColor: theme.colors.palette.focus.light
-            }
-        }
-    },
-    dataGridColumnHeaderType: {
-        fontStyle: "italic"
     }
 }));
 
@@ -355,6 +186,6 @@ const { i18n } = declareComponentKeys<
     | "download file"
     | "resize table"
     | { K: "unsupported file type"; P: { supportedFileTypes: readonly string[] } }
-    | "can't fetch file"
+    | Exclude<QueryResponse.Failed["errorCause"], "unsupported file type">
 >()({ DataExplorer });
 export type I18n = typeof i18n;

@@ -1032,7 +1032,12 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "resize table": "Redimensionner",
         "unsupported file type": ({ supportedFileTypes }) =>
             `Format de données non pris en charge. Les types pris en charge sont : ${supportedFileTypes.join(", ")}.`,
-        "can't fetch file": "Impossible de récupérer le fichier de données"
+        "no s3 client":
+            "Aucun client S3 configuré. Allez dans les paramètres pour en activer un pour l’explorateur.",
+        "unsupported protocol":
+            "URL non prise en charge. Les protocoles supportés sont https:// et s3://.",
+        "https fetch error": "Impossible de récupérer le fichier HTTPS.",
+        "query error": "Erreur de requête DuckDB."
     },
     UrlInput: {
         load: "Charger",

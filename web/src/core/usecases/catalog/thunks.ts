@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { waitForDebounceFactory } from "core/tools/waitForDebounce";
+import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "clean-architecture";
 import { actions, allCatalog, name, type State } from "./state";
 import { assert, is } from "tsafe/assert";
@@ -156,7 +156,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => {
-    const { waitForDebounce } = waitForDebounceFactory({ delay: 200 });
+    const { waitForDebounce } = createWaitForDebounce({ delay: 200 });
 
     const getFlexSearch = memoize(
         (

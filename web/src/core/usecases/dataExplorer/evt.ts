@@ -3,6 +3,7 @@ import { Evt } from "evt";
 import { name, type RouteParams } from "./state";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { protectedSelectors } from "./selectors";
+import { assert } from "tsafe";
 
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
@@ -20,25 +21,24 @@ export const createEvt = (({ evtAction, getState }) => {
                     protectedSelectors.routeParams_defaultsAsUndefined(getState())
             }
         ])
-        .pipe(
-            onlyIfChanged({
-                areEqual: (a, b) => a.routeParams === b.routeParams
-            })
-        )
+        .pipe(onlyIfChanged())
         .attach(({ actionName, routeParams }) => {
             if (actionName === "routeParamsSet") {
                 return;
             }
 
+            assert(actionName !== "queryStarted");
+            assert(actionName !== "queryCompleted");
+
             evtOut.post({
                 actionName: "updateRoute",
                 method: (() => {
                     switch (actionName) {
-                        case "queryResponseSet":
+                        case "columnVisibilityUpdated":
+                        case "selectedRowIndexUpdated":
                         case "urlBarTextUpdated":
-                        case "rowsPerPageUpdated":
                             return "replace" as const;
-                        case "pageUpdated":
+                        case "paginationModelUpdated":
                             return "push";
                     }
                 })(),
