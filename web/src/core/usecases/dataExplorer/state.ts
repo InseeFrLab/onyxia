@@ -2,33 +2,39 @@ import { createUsecaseActions } from "clean-architecture";
 import type { Column } from "core/ports/SqlOlap";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import type { SupportedFileType } from "./decoupledLogic/SupportedFileType";
 
 export const name = "dataExplorer";
 
 export type State = {
     isQuerying: boolean;
-    queryParams:
+    params:
         | {
-              sourceUrl: string;
-              rowsPerPage: number;
-              page: number;
+              queryParams: {
+                  sourceUrl: string;
+                  rowsPerPage: number;
+                  page: number;
+              };
+              extraRestorableStates: {
+                  selectedRowIndex: number | undefined;
+                  columnVisibility: Record<string, boolean>;
+              };
           }
         | undefined;
-    extraRestorableStates:
+    result:
         | {
-              selectedRowIndex: number | undefined;
-              columnVisibility: Record<string, boolean>;
+              isErrored: false;
+              data:
+                  | {
+                        rows: any[];
+                        columns: Column[];
+                        rowCount: number | undefined;
+                    }
+                  | undefined;
           }
-        | undefined;
-    error: State.Error | undefined;
-    data:
         | {
-              rows: any[];
-              columns: Column[];
-              rowCount: number | undefined;
-          }
-        | undefined;
+              isErrored: true;
+              error: State.Error;
+          };
 };
 
 namespace State {
@@ -47,67 +53,28 @@ export const { actions, reducer } = createUsecaseActions({
     name,
     initialState: id<State>({
         isQuerying: false,
-        queryParams: undefined,
-        extraRestorableStates: undefined,
-        error: undefined,
-        data: undefined
+        params: undefined,
+        result: { isErrored: false, data: undefined }
     }),
     reducers: {
-        extraRestorableStateSet: (
-            state,
-            {
-                payload
-            }: { payload: { extraRestorableStates: State["extraRestorableStates"] } }
-        ) => {
-            const { extraRestorableStates } = payload;
-            state.extraRestorableStates = extraRestorableStates;
-        },
-        selectedRowIndexSet: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    selectedRowIndex: NonNullable<
-                        State["extraRestorableStates"]
-                    >["selectedRowIndex"];
-                };
-            }
-        ) => {
-            const { selectedRowIndex } = payload;
-            assert(state.extraRestorableStates !== undefined);
-            state.extraRestorableStates.selectedRowIndex = selectedRowIndex;
-        },
-        columnVisibilitySet: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    columnVisibility: NonNullable<
-                        State["extraRestorableStates"]
-                    >["columnVisibility"];
-                };
-            }
-        ) => {
-            const { columnVisibility } = payload;
-            assert(state.extraRestorableStates !== undefined);
-            state.extraRestorableStates.columnVisibility = columnVisibility;
-        },
         queryStarted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    queryParams: NonNullable<State["queryParams"]>;
+                    params: NonNullable<State["params"]>;
                 };
             }
         ) => {
-            const { queryParams } = payload;
-            state.error = undefined;
-            state.isQuerying = true;
-            state.queryParams = queryParams;
+            const { params } = payload;
+
+            state.params = params;
+            state.result = {
+                isErrored: false,
+                // TODO: Here be more precise
+                data: undefined
+            };
         },
         querySucceeded: (
             state,
@@ -118,9 +85,6 @@ export const { actions, reducer } = createUsecaseActions({
                     rows: any[];
                     columns: Column[];
                     rowCount: number | undefined;
-                    fileType: SupportedFileType;
-                    sourceUrl: string;
-                    sourceType: "s3" | "http";
                     extraRestorableStates:
                         | {
                               selectedRowIndex: number | undefined;
@@ -130,23 +94,12 @@ export const { actions, reducer } = createUsecaseActions({
                 };
             }
         ) => {
-            const {
-                rowCount,
-                rows,
-                sourceUrl,
-                columns,
-                fileType,
-                sourceType,
-                extraRestorableStates
-            } = payload;
+            const { rowCount, rows, columns, extraRestorableStates } = payload;
             state.isQuerying = false;
             state.data = {
                 rowCount,
                 rows,
-                columns,
-                sourceUrl,
-                fileType,
-                sourceType
+                columns
             };
             state.extraRestorableStates = extraRestorableStates;
         },

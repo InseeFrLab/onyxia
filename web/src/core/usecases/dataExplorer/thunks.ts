@@ -9,51 +9,11 @@ import { inferFileType } from "./decoupledLogic/inferFileType";
 import type { SupportedFileType } from "./decoupledLogic/SupportedFileType";
 import memoize from "memoizee";
 import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
+import { privateSelectors } from "./selectors";
+import { basename as pathBasename } from "pathe";
+import { getUrlProtocol } from "./decoupledLogic/getUrlProtocol";
 
 const privateThunks = {
-    /*
-    resolveFileSource:
-        (params: { sourceUrl: string }) =>
-        async (...args) => {
-            const [dispatch, , { oidc }] = args;
-
-            const { sourceUrl } = params;
-
-            if (sourceUrl.startsWith("https://")) {
-                return {
-                    kind: "http" as const,
-                    url: sourceUrl
-                };
-            }
-
-            const s3path = sourceUrl.replace(/^s3:\/\//, "");
-            assert(s3path !== sourceUrl, "Unsupported protocol");
-
-            if (!oidc.isUserLoggedIn) {
-                oidc.login({ doesCurrentHrefRequiresAuth: true });
-                await new Promise(() => {});
-            }
-
-            const s3Client = (
-                await dispatch(
-                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-                )
-            )?.s3Client;
-
-            if (s3Client === undefined) {
-                alert("No S3 client available");
-                await new Promise<never>(() => {});
-                assert(false);
-            }
-
-            return {
-                kind: "s3" as const,
-                url: sourceUrl,
-                path: s3path,
-                s3Client
-            };
-        },
-    */
     performQuery:
         (params: {
             queryParams: {
@@ -371,13 +331,11 @@ export const thunks = {
     getIsValidSourceUrl: (params: { sourceUrl: string }) => () => {
         const { sourceUrl } = params;
 
-        if (!sourceUrl.startsWith("s3://") && !sourceUrl.startsWith("https://")) {
-            return false;
-        }
+        const protocol = getUrlProtocol(sourceUrl);
 
-        return true;
+        return protocol !== undefined;
     },
-    updateDataSource:
+    changeSourceUrl:
         (params: { sourceUrl: string }) =>
         async (...args) => {
             const { sourceUrl } = params;
@@ -394,8 +352,8 @@ export const thunks = {
                 })
             );
         },
-    updatePaginationModel:
-        (params: { rowsPerPage: number; page: number }) =>
+    changePage:
+        (params: { page: number; rowsPerPage: number }) =>
         (...args) => {
             const { rowsPerPage, page } = params;
             const [dispatch, getState] = args;
@@ -418,14 +376,14 @@ export const thunks = {
         (params: { columnVisibility: Record<string, boolean> }) =>
         (...args) => {
             const { columnVisibility } = params;
-            const [dispatch, ,] = args;
+            const [dispatch] = args;
             dispatch(actions.columnVisibilitySet({ columnVisibility }));
         },
     updateRowSelected:
         (params: { selectedRowIndex: number }) =>
         (...args) => {
             const { selectedRowIndex } = params;
-            const [dispatch, ,] = args;
+            const [dispatch] = args;
             dispatch(actions.selectedRowIndexSet({ selectedRowIndex }));
         },
     getMaterialToDownloadFileToDisk:
@@ -438,54 +396,42 @@ export const thunks = {
         > => {
             const [dispatch, getState] = args;
 
-            const { queryParams } = getState()[name];
+            const queryParams = privateSelectors.queryParams(getState());
 
-            assert(queryParams !== undefined);
+            assert(queryParams !== null);
 
-            const { sourceUrl } = queryParams;
+            const protocol = getUrlProtocol(queryParams.sourceUrl);
 
-            const protocol = (() => {
-                if (sourceUrl.startsWith("http")) {
-                    return "http";
-                }
+            assert(protocol !== undefined);
 
-                if (sourceUrl.startsWith("s3://")) {
-                    return "s3";
-                }
+            switch (protocol) {
+                case "http":
+                    return {
+                        type: "http url",
+                        url: queryParams.sourceUrl
+                    };
+                case "s3":
+                    {
+                        const s3Client = (
+                            await dispatch(
+                                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                            )
+                        )?.s3Client;
 
-                assert(false);
-            })();
+                        assert(s3Client !== undefined, "S3 client is not available");
 
-            if (data.sourceType === "http") {
-                return {
-                    fileDownloadUrl: data.sourceUrl,
-                    filename: ""
-                };
+                        const { stream } = await s3Client.getFileContentStream({
+                            path: queryParams.sourceUrl
+                        });
+
+                        return {
+                            type: "stream",
+                            suggestedFileBasename: pathBasename(queryParams.sourceUrl),
+                            stream
+                        };
+                    }
+                    break;
             }
-
-            const s3Client = (
-                await dispatch(
-                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-                )
-            )?.s3Client;
-
-            assert(s3Client !== undefined, "S3 client is not available");
-
-            const result = await s3Client.getFileContent({ path: data.sourceUrl });
-            const buffer = await streamToArrayBuffer(result.stream);
-
-            const blob = new Blob([buffer]);
-            const blobUrl = URL.createObjectURL(blob);
-
-            const baseFilename = (() => {
-                const lastPart = data.sourceUrl.split("/").pop();
-                return lastPart?.split(".")[0] ?? "data";
-            })();
-
-            return {
-                fileDownloadUrl: blobUrl,
-                filename: `${baseFilename}.${data.fileType}`
-            };
         }
 } satisfies Thunks;
 

@@ -644,7 +644,7 @@ export function createS3Client(
             return downloadUrl;
         },
 
-        getFile: async ({ path, range }) => {
+        getFileContentStream: async ({ path, range }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { getAwsS3Client } = await prApi;

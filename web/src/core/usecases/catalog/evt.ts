@@ -1,4 +1,3 @@
-import "minimal-polyfills/Object.fromEntries";
 import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
 import { name } from "./state";
