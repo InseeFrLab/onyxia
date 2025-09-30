@@ -4,6 +4,7 @@ import { name, type RouteParams } from "./state";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { protectedSelectors } from "./selectors";
 import { assert } from "tsafe";
+import { same } from "evt/tools/inDepth/same";
 
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
@@ -21,7 +22,11 @@ export const createEvt = (({ evtAction, getState }) => {
                     protectedSelectors.routeParams_defaultsAsUndefined(getState())
             }
         ])
-        .pipe(onlyIfChanged())
+        .pipe(
+            onlyIfChanged({
+                areEqual: (a, b) => same(a.routeParams, b.routeParams)
+            })
+        )
         .attach(({ actionName, routeParams }) => {
             if (actionName === "routeParamsSet") {
                 return;
