@@ -43,7 +43,7 @@ export function DataGrid(params: { className?: string }) {
                     field: column.name,
                     sortable: false,
                     renderHeader: () => (
-                        <Text typo="body 1">
+                        <Text typo="body 1" htmlComponent="span">
                             {column.name}
                             <Text
                                 typo="caption"
