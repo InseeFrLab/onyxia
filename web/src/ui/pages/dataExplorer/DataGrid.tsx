@@ -93,6 +93,8 @@ export function DataGrid(params: { className?: string }) {
             className: classes.dataGridPanel
         });
 
+    // NOTE: Here it's important to have useConstCallback, MUI do not
+    // always call the last reference of the callback.
     const getRowId = useConstCallback((row: Record<string, unknown>) => {
         const rowIndex = rows.indexOf(row);
         assert(rowIndex !== -1);
