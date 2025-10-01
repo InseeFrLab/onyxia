@@ -9,6 +9,7 @@ import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { id } from "tsafe/id";
+import { useConstCallback } from "powerhooks/useConstCallback";
 
 export function DataGrid(params: { className?: string }) {
     const { className } = params;
@@ -92,6 +93,14 @@ export function DataGrid(params: { className?: string }) {
             className: classes.dataGridPanel
         });
 
+    const getRowId = useConstCallback((row: Record<string, unknown>) => {
+        const rowIndex = rows.indexOf(row);
+        assert(rowIndex !== -1);
+        const rowId = rowIdByRowIndex[rowIndex];
+        assert(rowId !== undefined);
+        return rowId;
+    });
+
     return (
         <CustomDataGrid
             apiRef={apiRef}
@@ -124,13 +133,7 @@ export function DataGrid(params: { className?: string }) {
             }}
             rowSelectionModel={selectedRowIndex === undefined ? [] : [selectedRowIndex]}
             rows={rows}
-            getRowId={(row: Record<string, unknown>) => {
-                const rowIndex = rows.indexOf(row);
-                assert(rowIndex !== -1);
-                const rowId = rowIdByRowIndex[rowIndex];
-                assert(rowId !== undefined);
-                return rowId;
-            }}
+            getRowId={getRowId}
             columns={modifiedColumns}
             disableColumnMenu
             loading={isQuerying}
