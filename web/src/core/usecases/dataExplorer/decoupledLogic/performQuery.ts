@@ -74,8 +74,8 @@ export async function performQuery(params: {
         columns
     } = await sqlOlap.getRows({
         sourceUrl: queryRequest.source,
-        page: 0,
-        rowsPerPage: 2
+        page: queryRequest.page,
+        rowsPerPage: queryRequest.rowsPerPage
     });
 
     if (getShouldAbort()) {
