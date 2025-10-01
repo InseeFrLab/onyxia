@@ -16,6 +16,7 @@ import { supportedFileTypes } from "core/adapters/sqlOlap/utils/inferFileType";
 import { withLoader } from "ui/tools/withLoader";
 import { useEvt } from "evt/hooks/useEvt";
 import type { QueryResponse } from "core/usecases/dataExplorer/decoupledLogic/performQuery";
+import { DataGrid } from "./DataGrid";
 
 const Page = withLoader({
     loader,
@@ -128,7 +129,7 @@ function DataExplorer() {
 
                     return (
                         <div className={classes.dataGridWrapper}>
-                            <DataExplorer />
+                            <DataGrid />
                         </div>
                     );
                 })()}
