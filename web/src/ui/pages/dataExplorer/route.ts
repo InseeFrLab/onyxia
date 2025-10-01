@@ -8,7 +8,7 @@ export const routeDefs = {
             source: param.query.optional.string,
             rowsPerPage: param.query.optional.number,
             page: param.query.optional.number,
-            selectedRow: param.query.optional.number,
+            selectedRow: param.query.optional.string,
             columnVisibility: param.query.optional.ofType(
                 id<ValueSerializer<Record<string, boolean>>>({
                     parse: raw => JSON.parse(raw),

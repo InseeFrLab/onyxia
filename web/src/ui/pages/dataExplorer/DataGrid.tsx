@@ -28,7 +28,7 @@ export function DataGrid(params: { className?: string }) {
         rows,
         rowIdByRowIndex,
         columnVisibility,
-        selectedRowIndex,
+        selectedRowId,
         rowCount,
         page,
         rowsPerPage
@@ -123,15 +123,13 @@ export function DataGrid(params: { className?: string }) {
                 })
             }
             onRowSelectionModelChange={rowSelectionModel => {
-                const selectedRowIndex = rowSelectionModel[0];
+                const selectedRowId = rowSelectionModel[0];
 
-                assert(
-                    typeof selectedRowIndex === "number" || selectedRowIndex === undefined
-                );
+                assert(typeof selectedRowId === "string" || selectedRowId === undefined);
 
-                dataExplorer.updateSelectedRowIndex({ selectedRowIndex });
+                dataExplorer.updateSelectedRowId({ selectedRowId });
             }}
-            rowSelectionModel={selectedRowIndex === undefined ? [] : [selectedRowIndex]}
+            rowSelectionModel={selectedRowId === undefined ? [] : [selectedRowId]}
             rows={rows}
             getRowId={getRowId}
             columns={modifiedColumns}

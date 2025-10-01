@@ -13,7 +13,7 @@ export type RouteParams = {
     source?: string;
     rowsPerPage?: number;
     page?: number;
-    selectedRow?: number;
+    selectedRow?: string;
     columnVisibility?: Record<string, boolean>;
 };
 
@@ -105,12 +105,12 @@ export const { actions, reducer } = createUsecaseActions({
             const { columnVisibility } = payload;
             state.routeParams.columnVisibility = columnVisibility;
         },
-        selectedRowIndexUpdated: (
+        selectedRowIdUpdated: (
             state,
-            { payload }: { payload: { selectedRowIndex: number | undefined } }
+            { payload }: { payload: { selectedRowId: string | undefined } }
         ) => {
-            const { selectedRowIndex } = payload;
-            state.routeParams.selectedRow = selectedRowIndex;
+            const { selectedRowId } = payload;
+            state.routeParams.selectedRow = selectedRowId;
         },
         queryStarted: (
             state,

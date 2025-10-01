@@ -75,7 +75,7 @@ export namespace View {
             rowIdByRowIndex: Record<number, string>;
             columns: SqlOlap.ReturnTypeOfGetRows.Success.Column[];
             rowCount: number | undefined;
-            selectedRowIndex: number | undefined;
+            selectedRowId: number | undefined;
         };
     }
 }
@@ -129,7 +129,7 @@ const dataGridView = createSelector(
             ),
             columns: response.data.columns,
             rowCount: response.data.rowCount,
-            selectedRowIndex: selectedRow
+            selectedRowId: selectedRow
         });
     }
 );
