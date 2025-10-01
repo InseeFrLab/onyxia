@@ -30,9 +30,13 @@ async function loader() {
     const route = getRoute();
     assert(routeGroup.has(route));
 
-    core.functions.dataExplorer.load({
+    const { routeParams_toRestore } = core.functions.dataExplorer.load({
         routeParams: route.params
     });
+
+    if (routeParams_toRestore !== undefined) {
+        routes.dataExplorer(routeParams_toRestore).replace();
+    }
 }
 
 function DataExplorer() {
