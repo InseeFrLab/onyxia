@@ -40,7 +40,7 @@ export const createEvt = (({ evtAction, getState }) => {
                 method: (() => {
                     switch (actionName) {
                         case "columnVisibilityUpdated":
-                        case "selectedRowIndexUpdated":
+                        case "selectedRowIdUpdated":
                         case "urlBarTextUpdated":
                             return "replace" as const;
                         case "paginationModelUpdated":

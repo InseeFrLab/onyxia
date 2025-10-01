@@ -53,12 +53,12 @@ export const thunks = {
             const [dispatch] = args;
             dispatch(actions.paginationModelUpdated({ page, rowsPerPage }));
         },
-    updateSelectedRowIndex:
-        (params: { selectedRowIndex: number }) =>
+    updateSelectedRowId:
+        (params: { selectedRowId: string }) =>
         (...args) => {
-            const { selectedRowIndex } = params;
+            const { selectedRowId } = params;
             const [dispatch] = args;
-            dispatch(actions.selectedRowIndexUpdated({ selectedRowIndex }));
+            dispatch(actions.selectedRowIdUpdated({ selectedRowId }));
         },
     updateColumnVisibility:
         (params: { columnVisibility: Record<string, boolean> }) =>
