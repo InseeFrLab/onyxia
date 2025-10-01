@@ -1,7 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { actions, name, type RouteParams } from "./state";
 import { protectedSelectors } from "./selectors";
-import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { same } from "evt/tools/inDepth/same";
 import { performQuery } from "./decoupledLogic/performQuery";
@@ -83,8 +82,6 @@ const privateThunks = {
             }
             hasSubscribedToEvtAction = true;
 
-            const { waitForDebounce } = createWaitForDebounce({ delay: 500 });
-
             evtAction
                 .pipe(action => action.usecaseName === name)
                 .pipe(() => [protectedSelectors.queryRequest(getState())])
@@ -93,12 +90,6 @@ const privateThunks = {
                 .attach(async queryRequest => {
                     const getShouldAbort = () =>
                         !same(queryRequest, protectedSelectors.queryRequest(getState()));
-
-                    await waitForDebounce();
-
-                    if (getShouldAbort()) {
-                        return;
-                    }
 
                     dispatch(actions.queryStarted({ queryRequest }));
 
@@ -111,8 +102,6 @@ const privateThunks = {
                         queryRequest,
                         sqlOlap
                     });
-
-                    console.log("After perform query");
 
                     dispatch(
                         actions.queryCompleted({
