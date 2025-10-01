@@ -75,7 +75,7 @@ export namespace View {
             rowIdByRowIndex: Record<number, string>;
             columns: SqlOlap.ReturnTypeOfGetRows.Success.Column[];
             rowCount: number | undefined;
-            selectedRowId: number | undefined;
+            selectedRowId: string | undefined;
         };
     }
 }
