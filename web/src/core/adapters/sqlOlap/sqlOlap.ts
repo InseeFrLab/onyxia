@@ -163,7 +163,7 @@ export const createDuckDbSqlOlap = (params: {
                                     response.headers.get("Content-Type") ?? undefined,
                                 getFirstBytes: async () => {
                                     try {
-                                        return response.arrayBuffer();
+                                        return await response.arrayBuffer();
                                     } catch {
                                         dOut.resolve({ errorCause: "https fetch error" });
                                         return new Promise<never>(() => {});
