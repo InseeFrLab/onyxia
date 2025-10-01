@@ -13,17 +13,25 @@ export const thunks = {
         (...args) => {
             const { routeParams } = params;
 
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
 
             dispatch(privateThunks.subscribeToEventAction());
+
+            const doRestoreState = !routeParams.source;
 
             dispatch(
                 actions.routeParamsSet({
                     // NOTE: If we have no specified source on the route at the loader
                     // page, restore the current state if any.
-                    routeParams: routeParams.source ? routeParams : undefined
+                    routeParams: doRestoreState ? undefined : routeParams
                 })
             );
+
+            const routeParams_toRestore = doRestoreState
+                ? protectedSelectors.routeParams_defaultsAsUndefined(getState())
+                : undefined;
+
+            return { routeParams_toRestore };
         },
     notifyRouteParamsExternallyUpdated:
         (params: { routeParams: RouteParams }) =>
@@ -103,6 +111,8 @@ const privateThunks = {
                         queryRequest,
                         sqlOlap
                     });
+
+                    console.log("After perform query");
 
                     dispatch(
                         actions.queryCompleted({
