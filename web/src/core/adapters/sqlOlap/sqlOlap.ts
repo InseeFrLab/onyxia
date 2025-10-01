@@ -391,10 +391,10 @@ const getAsyncDuckDb = memoize(
             new Worker(bundle.mainWorker)
         );
 
-        await db.instantiate(bundle.mainModule, bundle.pthreadWorker, progress =>
-            console.log(
-                `Loading DuckDB: ${~~((progress.bytesLoaded / progress.bytesTotal) * 100)}%`
-            )
+        await db.instantiate(
+            bundle.mainModule,
+            bundle.pthreadWorker
+            //progress => console.log( `Loading DuckDB: ${~~((progress.bytesLoaded / progress.bytesTotal) * 100)}%`)
         );
 
         return db;
