@@ -537,6 +537,7 @@ export const translations: Translations<"de"> = {
             "Funktionen spezifisch für diese Onyxia-Instanz",
         dataExplorer: "Daten-Explorer",
         fileExplorer: "Datei-Explorer",
+        dataCollection: "Sammlungs-Explorer",
         sqlOlapShell: "SQL OLAP-Shell"
     },
     AutoLogoutCountdown: {
@@ -1173,6 +1174,30 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Spalten"
+    },
+    DatasetCard: {
+        publishedOn: "Veröffentlicht am",
+        datasetPage: "Datensatzseite",
+        license: "Lizenz:",
+        format: "Format",
+        size: "Größe",
+        distributions: "Distributionen",
+        visualize: "Visualisieren",
+        unknown: "Unbekannt"
+    },
+    DataCollection: {
+        "page header help title":
+            "Geben Sie einfach die https://-URL Ihres DCAT JSON-LD-Schemas ein",
+        "page header title": "Datenkatalog",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Geben Sie einfach die <code>https://</code>-URL eines Datenkatalogs ein,
+                um ihn in der Vorschau anzuzeigen.
+                <br />
+                Sie wissen nicht, wo Sie anfangen sollen? Probieren Sie diesen{" "}
+                <MuiLink {...demoCatalogLink}>Demokatalog</MuiLink>!
+            </>
+        )
     }
     /* spell-checker: enable */
 };

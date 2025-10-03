@@ -108,6 +108,13 @@ export const LeftBar = memo((props: Props) => {
                     availability: isFileExplorerEnabled ? "available" : "not visible"
                 },
                 {
+                    itemId: "dataCollection",
+                    icon: getIconUrlByName("FolderSpecial"),
+                    label: "Data Collection",
+                    link: routes.dataCollection().link,
+                    availability: isDevModeEnabled ? "available" : "not visible"
+                },
+                {
                     itemId: "sqlOlapShell",
                     icon: getIconUrlByName("Terminal"),
                     label: t("sqlOlapShell"),
@@ -159,6 +166,8 @@ export const LeftBar = memo((props: Props) => {
                         return "sqlOlapShell";
                     case "dataExplorer":
                         return "dataExplorer";
+                    case "dataCollection":
+                        return "dataCollection";
                     case "page404":
                         return null;
                     case "document":
@@ -187,6 +196,7 @@ const { i18n } = declareComponentKeys<
     | "myFiles"
     | "fileExplorer"
     | "dataExplorer"
+    | "dataCollection"
     | "sqlOlapShell"
     | "divider: services features"
     | "divider: external services features"

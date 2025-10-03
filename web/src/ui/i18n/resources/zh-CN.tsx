@@ -494,6 +494,7 @@ export const translations: Translations<"zh-CN"> = {
         "divider: onyxia instance specific features": "Onyxia实例特定功能",
         dataExplorer: "数据浏览器",
         fileExplorer: "文件浏览器",
+        dataCollection: "集合浏览器",
         sqlOlapShell: "SQL OLAP 外壳"
     },
     AutoLogoutCountdown: {
@@ -1101,6 +1102,28 @@ ${
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "列"
+    },
+    DatasetCard: {
+        publishedOn: "发布于",
+        datasetPage: "数据集页面",
+        license: "许可证：",
+        format: "格式",
+        size: "大小",
+        distributions: "分发",
+        visualize: "可视化",
+        unknown: "未知"
+    },
+    DataCollection: {
+        "page header help title": "只需输入您的 DCAT JSON-LD 模式的 https:// URL",
+        "page header title": "数据目录",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                只需输入数据目录的 <code>https://</code> URL 即可进行预览。
+                <br />
+                不知道从哪里开始？试试这个{" "}
+                <MuiLink {...demoCatalogLink}>演示目录</MuiLink>！
+            </>
+        )
     }
     /* spell-checker: enable */
 };

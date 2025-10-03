@@ -535,6 +535,7 @@ export const translations: Translations<"no"> = {
             "Onyxia-instansspesifikke funksjoner",
         dataExplorer: "Datautforsker",
         fileExplorer: "Filutforsker",
+        dataCollection: "Samlingseksplorer",
         sqlOlapShell: "SQL OLAP-Skall"
     },
     AutoLogoutCountdown: {
@@ -1165,6 +1166,30 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     },
     CustomDataGridToolbarColumnsButton: {
         toolbarColumnsLabel: "Kolonner"
+    },
+    DatasetCard: {
+        publishedOn: "Publisert",
+        datasetPage: "Datasett-side",
+        license: "Lisens:",
+        format: "Format",
+        size: "Størrelse",
+        distributions: "Distribusjoner",
+        visualize: "Visualiser",
+        unknown: "Ukjent"
+    },
+    DataCollection: {
+        "page header help title":
+            "Skriv bare inn https://-URL-en til DCAT JSON-LD-skjemaet ditt",
+        "page header title": "Datakatalog",
+        "page header help content": ({ demoCatalogLink }) => (
+            <>
+                Skriv ganske enkelt inn <code>https://</code>-URL-en til en datakatalog
+                for å forhåndsvise den.
+                <br />
+                Usikker på hvor du skal begynne? Prøv denne{" "}
+                <MuiLink {...demoCatalogLink}>demokatalogen</MuiLink>!
+            </>
+        )
     }
     /* spell-checker: enable */
 };
