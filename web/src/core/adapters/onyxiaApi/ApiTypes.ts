@@ -281,7 +281,6 @@ export namespace ApiTypes {
         clientID: string;
         extraQueryParams?: string;
         scope?: string;
-        audience?: string;
         idleSessionLifetimeInSeconds?: number | string;
     };
 }

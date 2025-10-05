@@ -171,7 +171,6 @@ export function createOnyxiaApi(params: {
                                   data.oidcConfiguration.extraQueryParams || undefined,
                               scope_spaceSeparated:
                                   data.oidcConfiguration.scope || undefined,
-                              audience: data.oidcConfiguration.audience || undefined,
                               idleSessionLifetimeInSeconds: (() => {
                                   const value =
                                       data.oidcConfiguration.idleSessionLifetimeInSeconds;
@@ -1069,7 +1068,6 @@ function apiTypesOidcConfigurationToOidcParams_Partial(
         clientId: oidcConfiguration?.clientID || undefined,
         extraQueryParams_raw: oidcConfiguration?.extraQueryParams || undefined,
         scope_spaceSeparated: oidcConfiguration?.scope || undefined,
-        audience: oidcConfiguration?.audience || undefined,
         idleSessionLifetimeInSeconds: (() => {
             const value = oidcConfiguration?.idleSessionLifetimeInSeconds;
 
