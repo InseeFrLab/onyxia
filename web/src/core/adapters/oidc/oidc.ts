@@ -24,7 +24,6 @@ export async function createOidc<AutoLogin extends boolean>(
         issuerUri,
         clientId,
         scope_spaceSeparated,
-        audience,
         transformBeforeRedirectForKeycloakTheme,
         getCurrentLang,
         extraQueryParams_raw,
@@ -38,15 +37,6 @@ export async function createOidc<AutoLogin extends boolean>(
         clientId,
         scopes: scope_spaceSeparated?.split(" "),
         transformUrlBeforeRedirect: ({ authorizationUrl, isSilent }) => {
-            if (audience !== undefined) {
-                authorizationUrl = addOrUpdateSearchParam({
-                    url: authorizationUrl,
-                    name: "audience",
-                    value: audience,
-                    encodeMethod: "www-form"
-                });
-            }
-
             add_extraQueryParams_raw: {
                 if (extraQueryParams_raw === undefined) {
                     break add_extraQueryParams_raw;
