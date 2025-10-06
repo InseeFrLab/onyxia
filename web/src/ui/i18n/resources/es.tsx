@@ -1198,7 +1198,13 @@ export const translations: Translations<"en"> = {
                 ¿No sabes por dónde empezar? ¡Prueba este{" "}
                 <MuiLink {...demoCatalogLink}>catálogo de demostración</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "No se pudo obtener el recurso HTTPS.",
+        "invalid json response": "La respuesta no es un JSON válido.",
+        "json-ld compact error": "No se pudo compactar la respuesta JSON-LD.",
+        "json-ld frame error": "No se pudo crear el frame de la respuesta JSON-LD.",
+        "datasets parsing error":
+            "No se pudieron analizar los conjuntos de datos del catálogo."
     }
     /* spell-checker: enable */
 };

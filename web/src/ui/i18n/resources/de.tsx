@@ -1197,7 +1197,14 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                 Sie wissen nicht, wo Sie anfangen sollen? Probieren Sie diesen{" "}
                 <MuiLink {...demoCatalogLink}>Demokatalog</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "Die HTTPS-Ressource konnte nicht abgerufen werden.",
+        "invalid json response": "Die Antwort ist kein gültiges JSON.",
+        "json-ld compact error":
+            "Die JSON-LD-Antwort konnte nicht kompakt verarbeitet werden.",
+        "json-ld frame error": "Die JSON-LD-Antwort konnte nicht gerahmt werden.",
+        "datasets parsing error":
+            "Die Datensätze des Katalogs konnten nicht analysiert werden."
     }
     /* spell-checker: enable */
 };

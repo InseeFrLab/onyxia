@@ -1197,7 +1197,13 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 Weet je niet waar je moet beginnen? Probeer deze{" "}
                 <MuiLink {...demoCatalogLink}>democatalogus</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "De HTTPS-resource kon niet worden opgehaald.",
+        "invalid json response": "De response is geen geldige JSON.",
+        "json-ld compact error": "De JSON-LD-response kon niet worden gecompacteerd.",
+        "json-ld frame error": "De JSON-LD-response kon niet worden geframed.",
+        "datasets parsing error":
+            "De datasets uit de catalogus konden niet worden geparseerd."
     }
     /* spell-checker: enable */
 };

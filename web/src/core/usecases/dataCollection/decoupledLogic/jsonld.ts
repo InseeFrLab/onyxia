@@ -1,6 +1,5 @@
 import { z } from "zod";
 import jsonld from "jsonld";
-import type { State } from "../state";
 import {
     zLocalizedArrayInput,
     zLocalizedInput,
@@ -8,12 +7,22 @@ import {
     toLocalizedStringList
 } from "./ldLocalized";
 import { assert, id } from "tsafe";
+import type { QueryResponse } from "./performQuery";
+import type { View } from "../selectors";
 
-export async function fetchCatalogDocuments(
-    sourceUrl: string
-): Promise<
-    | { isSuccess: true; framedCatalog: jsonld.NodeObject }
-    | { isSuccess: false; errorMessage: string }
+export async function fetchCatalogDocuments(sourceUrl: string): Promise<
+    | {
+          isSuccess: true;
+          framedCatalog: jsonld.NodeObject;
+          errorMessage?: never;
+          errorCause?: never;
+      }
+    | {
+          isSuccess: false;
+          errorCause: QueryResponse.Failed["errorCause"];
+          errorMessage: string;
+          framedCatalog?: never;
+      }
 > {
     const res = await fetch(sourceUrl, { redirect: "follow" }).catch(error => {
         assert(error instanceof Error);
@@ -21,11 +30,19 @@ export async function fetchCatalogDocuments(
     });
 
     if (res instanceof Error) {
-        return { isSuccess: false, errorMessage: res.message };
+        return {
+            isSuccess: false,
+            errorCause: "https fetch error",
+            errorMessage: res.message
+        };
     }
 
     if (!res.ok) {
-        return { isSuccess: false, errorMessage: "Fetch failed" };
+        return {
+            isSuccess: false,
+            errorCause: "https fetch error",
+            errorMessage: `${res.status} ${res.statusText}`
+        };
     }
 
     const jsonLdDocument = await res.json().then(
@@ -39,6 +56,7 @@ export async function fetchCatalogDocuments(
     if (jsonLdDocument instanceof Error) {
         return {
             isSuccess: false,
+            errorCause: "invalid json response",
             errorMessage: jsonLdDocument.message
         };
     }
@@ -52,7 +70,11 @@ export async function fetchCatalogDocuments(
         });
     } catch (error) {
         assert(error instanceof Error);
-        return { isSuccess: false, errorMessage: error.message };
+        return {
+            isSuccess: false,
+            errorCause: "json-ld compact error",
+            errorMessage: error.message
+        };
     }
 
     let framedCatalog: jsonld.NodeObject;
@@ -65,7 +87,11 @@ export async function fetchCatalogDocuments(
         });
     } catch (error) {
         assert(error instanceof Error);
-        return { isSuccess: false, errorMessage: error.message };
+        return {
+            isSuccess: false,
+            errorCause: "json-ld frame error",
+            errorMessage: error.message
+        };
     }
 
     return {
@@ -74,12 +100,7 @@ export async function fetchCatalogDocuments(
     };
 }
 
-export function catalogToDatasets(framedCatalog: jsonld.NodeObject):
-    | {
-          datasets: undefined;
-          parsingErrors: string[];
-      }
-    | { datasets: State.Dataset[]; parsingErrors: undefined } {
+export function catalogToDatasets(framedCatalog: jsonld.NodeObject) {
     const {
         success,
         data: framedCatalog_parsed,
@@ -111,7 +132,7 @@ export function catalogToDatasets(framedCatalog: jsonld.NodeObject):
                       ? fileSize
                       : byteSize;
 
-            return id<State.Distribution>({
+            return id<View.CatalogView.Distribution>({
                 id: distrib["@id"],
                 format,
                 downloadUrl: distrib["dcat:downloadURL"],
@@ -123,7 +144,7 @@ export function catalogToDatasets(framedCatalog: jsonld.NodeObject):
         const titleLs = d["dct:title"] ?? d["@id"];
         const descriptionLs = d["dct:description"];
 
-        return id<State.Dataset>({
+        return id<View.CatalogView.Dataset>({
             id: d["@id"],
             title: titleLs,
             description: descriptionLs,
@@ -166,7 +187,8 @@ const zLiteralNumber = z
             : typeof v === "string"
               ? Number(v)
               : Number(v["@value"])
-    );
+    )
+    .refine(n => Number.isFinite(n), { message: "Invalid numeric literal" });
 
 //   ResourceId:
 //   "https://example.org/x" -> "https://example.org/x"

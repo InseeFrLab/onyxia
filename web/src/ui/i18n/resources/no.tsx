@@ -1189,7 +1189,12 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                 Usikker på hvor du skal begynne? Prøv denne{" "}
                 <MuiLink {...demoCatalogLink}>demokatalogen</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "Kunne ikke hente HTTPS-ressursen.",
+        "invalid json response": "Svaret er ikke gyldig JSON.",
+        "json-ld compact error": "Klarte ikke å komprimere JSON-LD-responsen.",
+        "json-ld frame error": "Klarte ikke å frame JSON-LD-responsen.",
+        "datasets parsing error": "Kunne ikke tolke datasett fra katalogen."
     }
     /* spell-checker: enable */
 };

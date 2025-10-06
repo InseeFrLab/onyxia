@@ -1181,6 +1181,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 Not sure where to start? Try this{" "}
                 <MuiLink {...demoCatalogLink}>demo catalog</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "Unable to fetch the HTTPS resource.",
+        "invalid json response": "The response is not valid JSON.",
+        "json-ld compact error": "Failed to compact the JSON-LD response.",
+        "json-ld frame error": "Failed to frame the JSON-LD response.",
+        "datasets parsing error": "Unable to parse datasets from the catalog."
     }
 };
