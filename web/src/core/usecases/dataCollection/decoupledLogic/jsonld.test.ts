@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { catalogToDatasets } from "./jsonld";
-import jsonld from "jsonld";
+import type { NodeObject } from "jsonld";
 
 describe("catalogToDatasets (framed JSON-LD)", () => {
     it("handles null distribution and string keyword", () => {
@@ -22,7 +22,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "dcat:distribution": null
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
@@ -60,7 +60,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "dct:format": "text/csv"
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
@@ -110,7 +110,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     ]
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
         expect(datasets).toHaveLength(1);
@@ -144,7 +144,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     ]
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
@@ -180,7 +180,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     }
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
@@ -216,7 +216,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "dcat:distribution": []
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
@@ -252,7 +252,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "dcat:distribution": []
                 }
             ]
-        } satisfies jsonld.NodeObject;
+        } satisfies NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(framed);
         expect(parsingErrors).toBeUndefined();
@@ -276,7 +276,7 @@ describe("catalogToDatasets (framed JSON-LD)", () => {
                     "@id": 123 // invalid: should be string
                 }
             ]
-        } as any as jsonld.NodeObject;
+        } as any as NodeObject;
 
         const { datasets, parsingErrors } = catalogToDatasets(malformed);
         expect(datasets).toBeUndefined();
