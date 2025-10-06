@@ -1185,7 +1185,12 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                 Etkö tiedä, mistä aloittaa? Kokeile tätä{" "}
                 <MuiLink {...demoCatalogLink}>demoluetteloa</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "HTTPS-resurssia ei voitu hakea.",
+        "invalid json response": "Vastaus ei ole kelvollista JSONia.",
+        "json-ld compact error": "JSON-LD-vastausta ei voitu tiivistää.",
+        "json-ld frame error": "JSON-LD-vastausta ei voitu kehystää.",
+        "datasets parsing error": "Katalogin datasettejä ei voitu jäsentää."
     }
     /* spell-checker: enable */
 };

@@ -384,8 +384,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },
@@ -1195,7 +1196,12 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                 Non sai da dove iniziare? Prova questo{" "}
                 <MuiLink {...demoCatalogLink}>catalogo dimostrativo</MuiLink>!
             </>
-        )
+        ),
+        "https fetch error": "Impossibile recuperare la risorsa HTTPS.",
+        "invalid json response": "La risposta non è un JSON valido.",
+        "json-ld compact error": "Impossibile compattare la risposta JSON-LD.",
+        "json-ld frame error": "Impossibile applicare il frame alla risposta JSON-LD.",
+        "datasets parsing error": "Impossibile analizzare i dataset del catalogo."
     }
     /* spell-checker: enable */
 };

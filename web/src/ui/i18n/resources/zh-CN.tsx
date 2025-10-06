@@ -1123,7 +1123,12 @@ ${
                 不知道从哪里开始？试试这个{" "}
                 <MuiLink {...demoCatalogLink}>演示目录</MuiLink>！
             </>
-        )
+        ),
+        "https fetch error": "无法获取 HTTPS 资源。",
+        "invalid json response": "响应不是有效的 JSON。",
+        "json-ld compact error": "无法压缩 JSON-LD 响应。",
+        "json-ld frame error": "无法对 JSON-LD 响应进行框架处理。",
+        "datasets parsing error": "无法解析目录中的数据集。"
     }
     /* spell-checker: enable */
 };

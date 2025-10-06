@@ -34,7 +34,7 @@ export function UrlInput(props: Props) {
         }
 
         return true;
-    }, [urlBeingTyped]);
+    }, [url, urlBeingTyped]);
 
     const { classes, cx } = useStyles({ hasActionButton });
 

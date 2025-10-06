@@ -1,95 +1,110 @@
-import { createUsecaseActions } from "clean-architecture";
-import type { LocalizedString } from "core/ports/OnyxiaApi";
-import type { NodeObject } from "jsonld";
+import {
+    createObjectThatThrowsIfAccessed,
+    createUsecaseActions,
+    isObjectThatThrowIfAccessed
+} from "clean-architecture";
+import { same } from "evt/tools/inDepth/same";
 import { id } from "tsafe/id";
+import type { QueryRequest, QueryResponse } from "./decoupledLogic/performQuery";
+import { assert } from "tsafe";
+
 export const name = "dataCollection" as const;
 
-export type State = {
-    isQuerying: boolean;
-    queryParams:
-        | {
-              sourceUrl: string;
-          }
-        | undefined;
-    errors: string[] | undefined;
-    framedCatalog: NodeObject | undefined;
+export type RouteParams = {
+    source?: string;
 };
 
-export namespace State {
-    export type Dataset = {
-        id: string;
-        title: LocalizedString;
-        description: LocalizedString | undefined;
-        keywords: LocalizedString[] | undefined;
-        issuedDate: string | undefined;
-        landingPageUrl: string | undefined;
-        licenseUrl: string | undefined;
-        distributions: Distribution[];
-    };
+export const ROUTE_PARAMS_DEFAULTS = {
+    source: ""
+} as const satisfies RouteParams & Record<keyof RouteParams, unknown>;
 
-    export type Distribution = {
-        id: string;
-        format: string | undefined;
-        downloadUrl: string | undefined;
-        accessUrl: string | undefined;
-        sizeInBytes?: number;
-    };
-}
+export type State = {
+    routeParams: RouteParams;
+    ongoingQueryRequest: QueryRequest | undefined;
+    completedQuery:
+        | {
+              request: QueryRequest;
+              response: QueryResponse;
+          }
+        | undefined;
+};
 
 export const { actions, reducer } = createUsecaseActions({
     name,
-    initialState: id<State>({
-        isQuerying: false,
-        queryParams: undefined,
-        errors: undefined,
-        framedCatalog: undefined
-    }),
+    initialState: createObjectThatThrowsIfAccessed<State>(),
     reducers: {
-        restoreState: state => {
-            state.isQuerying = false;
-            state.errors = undefined;
-            state.queryParams = undefined;
-            state.framedCatalog = undefined;
+        routeParamsSet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    routeParams: RouteParams | undefined;
+                };
+            }
+        ) => {
+            const { routeParams } = payload;
+
+            if (isObjectThatThrowIfAccessed(state)) {
+                state = id<State>({
+                    routeParams: {},
+                    ongoingQueryRequest: undefined,
+                    completedQuery: undefined
+                });
+            }
+
+            if (routeParams !== undefined) {
+                state.routeParams = routeParams;
+            }
+
+            return state;
         },
+        catalogUrlUpdated: (state, { payload }: { payload: { url: string } }) => {
+            const { url } = payload;
+
+            if (state.routeParams.source === url) {
+                return;
+            }
+
+            state.routeParams = {
+                source: url
+            };
+        },
+
         queryStarted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    queryParams: NonNullable<State["queryParams"]>;
+                    queryRequest: QueryRequest;
                 };
             }
         ) => {
-            const { queryParams } = payload;
-            state.queryParams = queryParams;
-            state.errors = undefined;
-            state.isQuerying = true;
-            state.framedCatalog = undefined;
+            const { queryRequest } = payload;
+            state.ongoingQueryRequest = queryRequest;
         },
 
-        querySucceeded: (
+        queryCompleted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    framedCatalog: NodeObject;
+                    queryRequest: QueryRequest;
+                    queryResponse: QueryResponse;
                 };
             }
         ) => {
-            const { framedCatalog } = payload;
-            state.isQuerying = false;
-            state.framedCatalog = framedCatalog;
-        },
-        queryFailed: (state, { payload }: { payload: { errors: string[] } }) => {
-            const { errors } = payload;
-            state.isQuerying = false;
-            state.errors = errors;
-        },
-        queryCanceled: state => {
-            state.isQuerying = false;
-            state.queryParams = undefined;
+            const { queryRequest, queryResponse } = payload;
+
+            assert(same(state.ongoingQueryRequest, queryRequest));
+
+            state.completedQuery = {
+                request: queryRequest,
+                response: queryResponse
+            };
+            state.ongoingQueryRequest = undefined;
         }
     }
 });

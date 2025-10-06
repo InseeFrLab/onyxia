@@ -1208,7 +1208,13 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 Vous ne savez pas par où commencer ? Essayez ce{" "}
                 <MuiLink {...demoCatalogLink}>catalogue de démonstration</MuiLink> !
             </>
-        )
+        ),
+        "https fetch error": "Impossible de récupérer la ressource HTTPS.",
+        "invalid json response": "La réponse n'est pas un JSON valide.",
+        "json-ld compact error": "Impossible de compacter la réponse JSON-LD.",
+        "json-ld frame error": "Impossible de structurer la réponse JSON-LD.",
+        "datasets parsing error":
+            "Impossible d'analyser les jeux de données du catalogue."
     }
     /* spell-checker: enable */
 };
