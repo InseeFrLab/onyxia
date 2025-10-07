@@ -1200,7 +1200,7 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
-        envName: "SAMPLE_DATACOLLECTION_URL",
+        envName: "SAMPLE_DATA_COLLECTION_URL",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");

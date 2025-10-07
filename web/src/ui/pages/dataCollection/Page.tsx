@@ -87,7 +87,7 @@ function DataCollection() {
                 helpTitle={t("page header help title")}
                 helpContent={t("page header help content", {
                     demoCatalogLink: routes.dataCollection({
-                        source: env.SAMPLE_DATACOLLECTION_URL
+                        source: env.SAMPLE_DATA_COLLECTION_URL
                     }).link
                 })}
             />
