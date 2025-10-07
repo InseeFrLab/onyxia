@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { DatasetCard, type Dataset } from "./DatasetCard";
+import { DatasetCard } from "./DatasetCard";
 import { tss } from "tss";
 
 type Props = {
-    datasets: Dataset[];
+    datasets: React.ComponentProps<typeof DatasetCard>["dataset"][];
 };
 export function DatasetListVirtualized(props: Props) {
     const { datasets } = props;
