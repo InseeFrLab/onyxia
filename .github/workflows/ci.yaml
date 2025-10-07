@@ -21,6 +21,8 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
@@ -38,9 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          path: helm-chart
+          ref: ${{ github.ref }}
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4
-      - run: helm lint helm-chart/.
+      - run: helm lint .
 
   prepare_release:
     needs:
