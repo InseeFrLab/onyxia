@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
+          cache-dependency-path: web/yarn.lock
 
       - run: yarn test
       - run: yarn build
@@ -31,6 +32,9 @@ jobs:
 
   test_helm-chart:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: helm-chart
     steps:
       - uses: actions/checkout@v5
         with:
