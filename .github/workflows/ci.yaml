@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
-          cache-dependency-path: web/yarn.lock
+          cache-dependency-path: yarn.lock
       - run: yarn install --frozen-lockfile
       - run: yarn test
       - run: yarn build
@@ -35,9 +35,6 @@ jobs:
 
   test_helm-chart:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: helm-chart
     steps:
       - uses: actions/checkout@v5
         with:
@@ -84,7 +81,7 @@ jobs:
       - uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           push: true
-          context: web
+          context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
           platforms: "${{ needs.prepare_release.outputs.new_chart_version != '' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}"
           cache-from: type=gha
