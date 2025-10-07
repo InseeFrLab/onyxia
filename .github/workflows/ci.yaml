@@ -17,15 +17,12 @@ jobs:
   test_web:
     runs-on: ubuntu-latest
     steps:
-      - uses: InseeFrLab/onyxia@gh-actions
+      - uses: actions/checkout@v5
         with:
-          action_name: checkout
-          sub_directory: web
-      - uses: actions/setup-node@v4.1.0
-      # Install dependencies with caching
-      - uses: bahmutov/npm-install@e5fe105da2400070b5345aeb71fcb1ef5d4b2d1f
-        env:
-          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+          path: web
+      - uses: actions/setup-node@v5
+        with:
+          cache: "yarn"
       - run: yarn test
       - run: yarn build
       - run: npx keycloakify build
@@ -33,10 +30,9 @@ jobs:
   test_helm-chart:
     runs-on: ubuntu-latest
     steps:
-      - uses: InseeFrLab/onyxia@gh-actions
+      - uses: actions/checkout@v5
         with:
-          action_name: checkout
-          sub_directory: helm-chart
+          path: helm-chart
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4
       - run: helm lint .
 
@@ -65,11 +61,10 @@ jobs:
     needs: prepare_release
     if: needs.prepare_release.outputs.new_web_docker_image_tags != ''
     steps:
-      - uses: InseeFrLab/onyxia@gh-actions
+      - uses: actions/checkout@v5
         with:
-          action_name: checkout
-          sub_directory: web
-          sha: ${{needs.prepare_release.outputs.target_commit}}
+          path: web
+          ref: ${{needs.prepare_release.outputs.target_commit}}
       - uses: docker/setup-qemu-action@v3.0.0
       - uses: docker/setup-buildx-action@v3.0.0
       - uses: docker/login-action@v3.0.0
@@ -90,16 +85,13 @@ jobs:
     needs: prepare_release
     if: needs.prepare_release.outputs.new_chart_version != ''
     steps:
-      - uses: InseeFrLab/onyxia@gh-actions
+      - uses: actions/checkout@v5
         with:
-          action_name: checkout
-          sub_directory: web
-          sha: ${{needs.prepare_release.outputs.target_commit}}
-      - uses: actions/setup-node@v4.1.0
-      # Install dependencies with caching
-      - uses: bahmutov/npm-install@e5fe105da2400070b5345aeb71fcb1ef5d4b2d1f
-        env:
-          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+          path: web
+          ref: ${{needs.prepare_release.outputs.target_commit}}
+      - uses: actions/setup-node@v5
+        with:
+          cache: "yarn"
       - run: yarn build-keycloak-theme
         env:
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
