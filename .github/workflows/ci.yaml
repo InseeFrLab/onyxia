@@ -16,14 +16,14 @@ permissions:
 jobs:
   test_web:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v5
-        with:
-          path: web
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
-          cache-dependency-path: web/yarn.lock
 
       - run: yarn test
       - run: yarn build
