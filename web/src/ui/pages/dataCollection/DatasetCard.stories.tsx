@@ -1,4 +1,4 @@
-import { DatasetCard, type Dataset } from "./DatasetCard";
+import { DatasetCard } from "./DatasetCard";
 import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
@@ -10,7 +10,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const mockDataset = {
+const mockDataset: React.ComponentProps<typeof DatasetCard>["dataset"] = {
     id: "dataset-123",
     title: "Comptes des administrations publiques",
     description:
@@ -28,7 +28,7 @@ const mockDataset = {
             accessUrl: undefined
         }
     ]
-} satisfies Dataset;
+};
 
 export const Default: Story = {
     args: {
