@@ -14,7 +14,13 @@ import { useTranslation, useResolveLocalizedString, type LocalizedString } from 
 import { Markdown } from "ui/shared/Markdown";
 import { forwardRef, memo } from "react";
 
-export type Distribution = {
+type Props = {
+    className?: string;
+    dataset: Dataset;
+    ["data-index"]?: number;
+};
+
+type Distribution = {
     id: string;
     format: string | undefined;
     downloadUrl: string | undefined;
@@ -22,7 +28,7 @@ export type Distribution = {
     sizeInBytes?: number;
 };
 
-export type Dataset = {
+type Dataset = {
     id: string;
     title: LocalizedString;
     description: LocalizedString | undefined;
@@ -32,10 +38,6 @@ export type Dataset = {
     licenseUrl: string | undefined;
     distributions: Distribution[];
 };
-
-type Props = {
-    dataset: Dataset;
-} & React.HTMLAttributes<HTMLDivElement>;
 
 export const DatasetCard = memo(
     forwardRef<HTMLDivElement, Props>((props, ref) => {
@@ -51,7 +53,7 @@ export const DatasetCard = memo(
                 licenseUrl,
                 distributions
             },
-            ...rest
+            "data-index": dataIndex
         } = props;
 
         const { classes, cx, css } = useStyles();
@@ -60,7 +62,11 @@ export const DatasetCard = memo(
         const { resolveLocalizedString } = useResolveLocalizedString();
 
         return (
-            <Card ref={ref} className={cx(classes.root, className)} {...rest}>
+            <Card
+                ref={ref}
+                className={cx(classes.root, className)}
+                data-index={dataIndex}
+            >
                 <CardHeader
                     avatar={<Icon icon={getIconUrlByName("Folder")} size="large" />}
                     title={
