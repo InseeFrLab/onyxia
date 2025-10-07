@@ -26,8 +26,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
-          cache-dependency-path: web/yarn.lock
-
+          cache-dependency-path: yarn.lock
+      - run: yarn install --frozen-lockfile
       - run: yarn test
       - run: yarn build
       - run: npx keycloakify build
