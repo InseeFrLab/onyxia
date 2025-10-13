@@ -23,8 +23,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
-          cache-dependency-path: web/yarn.lock
-
       - run: yarn test
       - run: yarn build
       - run: npx keycloakify build
@@ -36,7 +34,7 @@ jobs:
         with:
           path: helm-chart
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4
-      - run: helm lint helm-chart/.
+      - run: helm lint .
 
   prepare_release:
     needs:
@@ -94,7 +92,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
-          cache-dependency-path: web/yarn.lock
       - run: yarn build-keycloak-theme
         env:
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
