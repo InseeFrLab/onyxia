@@ -21,9 +21,7 @@ export type DeploymentRegion = {
     initScriptUrl: string;
     s3Configs: DeploymentRegion.S3Config[];
     s3ConfigCreationFormDefaults:
-        | (Pick<DeploymentRegion.S3Config, "url" | "pathStyleAccess" | "region"> & {
-              workingDirectory: DeploymentRegion.S3Config["workingDirectory"] | undefined;
-          })
+        | Pick<DeploymentRegion.S3Config, "url" | "pathStyleAccess" | "region">
         | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
@@ -121,43 +119,27 @@ export namespace DeploymentRegion {
                 | undefined;
             oidcParams: OidcParams_Partial;
         };
-        workingDirectory:
-            | {
-                  bucketMode: "shared";
-                  bucketName: string;
-                  prefix: string;
-                  prefixGroup: string;
-              }
-            | {
-                  bucketMode: "multi";
-                  bucketNamePrefix: string;
-                  bucketNamePrefixGroup: string;
-              };
-        bookmarkedDirectories: S3Config.BookmarkedDirectory[];
+        bookmarks: S3Config.Bookmark[];
     };
 
     export namespace S3Config {
-        export type BookmarkedDirectory =
-            | BookmarkedDirectory.Static
-            | BookmarkedDirectory.Dynamic;
-
-        export namespace BookmarkedDirectory {
-            export type Common = {
-                fullPath: string;
-                title: LocalizedString;
-                description: LocalizedString | undefined;
-                tags: LocalizedString[] | undefined;
-            };
-
-            export type Static = Common & {
-                claimName: undefined;
-            };
-
-            export type Dynamic = Common & {
-                claimName: string;
-                includedClaimPattern: string | undefined;
-                excludedClaimPattern: string | undefined;
-            };
-        }
+        export type Bookmark = {
+            bucket: string;
+            keyPrefix: string;
+            title: LocalizedString;
+            description: LocalizedString;
+            tags: LocalizedString[];
+        } & (
+            | {
+                  claimName: undefined;
+                  includedClaimPattern?: never;
+                  excludedClaimPattern?: never;
+              }
+            | {
+                  claimName: string;
+                  includedClaimPattern: string | undefined;
+                  excludedClaimPattern: string | undefined;
+              }
+        );
     }
 }

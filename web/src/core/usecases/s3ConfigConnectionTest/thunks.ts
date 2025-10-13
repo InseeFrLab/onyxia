@@ -8,18 +8,13 @@ export const thunks = {} satisfies Thunks;
 
 export const protectedThunks = {
     testS3Connection:
-        (params: {
-            paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts;
-            workingDirectoryPath: string;
-        }) =>
+        (params: { paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts }) =>
         async (...args) => {
-            const { paramsOfCreateS3Client, workingDirectoryPath } = params;
+            const { paramsOfCreateS3Client } = params;
 
             const [dispatch] = args;
 
-            dispatch(
-                actions.testStarted({ paramsOfCreateS3Client, workingDirectoryPath })
-            );
+            dispatch(actions.testStarted({ paramsOfCreateS3Client }));
 
             const result = await (async () => {
                 const { createS3Client } = await import("core/adapters/s3Client");
@@ -31,9 +26,8 @@ export const protectedThunks = {
                 const s3Client = createS3Client(paramsOfCreateS3Client, getOidc);
 
                 try {
-                    await s3Client.listObjects({
-                        path: workingDirectoryPath
-                    });
+                    console.log("Find a way to test only s3 credential", s3Client);
+                    throw new Error("TODO: Not implemented yet");
                 } catch (error) {
                     return {
                         isSuccess: false as const,
@@ -47,7 +41,6 @@ export const protectedThunks = {
             dispatch(
                 actions.testCompleted({
                     paramsOfCreateS3Client,
-                    workingDirectoryPath,
                     result
                 })
             );

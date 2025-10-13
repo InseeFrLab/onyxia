@@ -1,11 +1,14 @@
-import type { ResolvedAdminBookmark } from "./decoupledLogic/resolveS3AdminBookmarks";
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
+import type { S3Profile } from "./decoupledLogic/s3Profiles";
 
 type State = {
-    resolvedAdminBookmarks: ResolvedAdminBookmark[];
+    resolvedTemplatedBookmarks: {
+        correspondingS3ConfigIndexInRegion: number;
+        bookmarks: S3Profile.Bookmark[];
+    }[];
 };
 
 export const name = "s3ConfigManagement";
@@ -20,14 +23,14 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    resolvedAdminBookmarks: ResolvedAdminBookmark[];
+                    resolvedTemplatedBookmarks: State["resolvedTemplatedBookmarks"];
                 };
             }
         ) => {
-            const { resolvedAdminBookmarks } = payload;
+            const { resolvedTemplatedBookmarks } = payload;
 
             const state: State = {
-                resolvedAdminBookmarks
+                resolvedTemplatedBookmarks
             };
 
             return state;

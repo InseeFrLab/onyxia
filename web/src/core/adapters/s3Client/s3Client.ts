@@ -52,7 +52,6 @@ export namespace ParamsOfCreateS3Client {
                   roleSessionName: string;
               }
             | undefined;
-        nameOfBucketToCreateIfNotExist: string | undefined;
     };
 }
 
@@ -250,51 +249,6 @@ export function createS3Client(
 
             return { getAwsS3Client };
         })();
-
-        create_bucket: {
-            if (!params.isStsEnabled) {
-                break create_bucket;
-            }
-
-            const { nameOfBucketToCreateIfNotExist } = params;
-
-            if (nameOfBucketToCreateIfNotExist === undefined) {
-                break create_bucket;
-            }
-
-            const { awsS3Client } = await getAwsS3Client();
-
-            const { CreateBucketCommand, BucketAlreadyExists, BucketAlreadyOwnedByYou } =
-                await import("@aws-sdk/client-s3");
-
-            try {
-                await awsS3Client.send(
-                    new CreateBucketCommand({
-                        Bucket: nameOfBucketToCreateIfNotExist
-                    })
-                );
-            } catch (error) {
-                assert(is<Error>(error));
-
-                if (
-                    !(error instanceof BucketAlreadyExists) &&
-                    !(error instanceof BucketAlreadyOwnedByYou)
-                ) {
-                    console.log(
-                        "An unexpected error occurred while creating the bucket, we ignore it:",
-                        error
-                    );
-                    break create_bucket;
-                }
-
-                console.log(
-                    [
-                        `The above network error is expected we tried creating the `,
-                        `bucket ${nameOfBucketToCreateIfNotExist} in case it didn't exist but it did.`
-                    ].join(" ")
-                );
-            }
-        }
 
         return { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client };
     })();

@@ -12,7 +12,7 @@ import { updateDefaultS3ConfigsAfterPotentialDeletion } from "./decoupledLogic/u
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
-import { resolveS3AdminBookmarks } from "./decoupledLogic/resolveS3AdminBookmarks";
+import { resolveTemplatedBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
 import { actions } from "./state";
 
 export const thunks = {
@@ -33,8 +33,7 @@ export const thunks = {
 
             await dispatch(
                 s3ConfigConnectionTest.protectedThunks.testS3Connection({
-                    paramsOfCreateS3Client: s3Config.paramsOfCreateS3Client,
-                    workingDirectoryPath: s3Config.workingDirectoryPath
+                    paramsOfCreateS3Client: s3Config.paramsOfCreateS3Client
                 })
             );
         },
@@ -313,41 +312,60 @@ export const protectedThunks = {
         async (...args) => {
             const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
 
-            const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
-
-            if (oidcParams === undefined) {
-                dispatch(actions.initialized({ resolvedAdminBookmarks: [] }));
-                return;
-            }
             const deploymentRegion =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
-            const { resolvedAdminBookmarks } = await resolveS3AdminBookmarks({
-                deploymentRegion_s3Configs: deploymentRegion.s3Configs,
-                getDecodedIdToken: async ({ oidcParams_partial }) => {
-                    const { createOidc, mergeOidcParams } = await import(
-                        "core/adapters/oidc"
-                    );
+            const resolvedTemplatedBookmarks = await Promise.all(
+                deploymentRegion.s3Configs.map(async (s3Config, s3ConfigIndex) => {
+                    const {
+                        bookmarks,
+                        sts: { oidcParams: oidcParams_partial }
+                    } = s3Config;
 
-                    const oidc = await createOidc({
-                        ...mergeOidcParams({
-                            oidcParams,
-                            oidcParams_partial
-                        }),
-                        autoLogin: true,
-                        transformBeforeRedirectForKeycloakTheme:
-                            paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                        getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                        enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
-                    });
+                    const getDecodedIdToken = async () => {
+                        const { createOidc, mergeOidcParams } = await import(
+                            "core/adapters/oidc"
+                        );
 
-                    const { decodedIdToken } = await oidc.getTokens();
+                        const { oidcParams } =
+                            await onyxiaApi.getAvailableRegionsAndOidcParams();
 
-                    return decodedIdToken;
-                }
-            });
+                        assert(oidcParams !== undefined);
 
-            dispatch(actions.initialized({ resolvedAdminBookmarks }));
+                        const oidc = await createOidc({
+                            ...mergeOidcParams({
+                                oidcParams,
+                                oidcParams_partial
+                            }),
+                            autoLogin: true,
+                            transformBeforeRedirectForKeycloakTheme:
+                                paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
+                            getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
+                            enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                        });
+
+                        const { decodedIdToken } = await oidc.getTokens();
+
+                        return decodedIdToken;
+                    };
+
+                    return {
+                        correspondingS3ConfigIndexInRegion: s3ConfigIndex,
+                        bookmarks: (
+                            await Promise.all(
+                                bookmarks.map(bookmark =>
+                                    resolveTemplatedBookmark({
+                                        bookmark_region: bookmark,
+                                        getDecodedIdToken
+                                    })
+                                )
+                            )
+                        ).flat()
+                    };
+                })
+            );
+
+            dispatch(actions.initialized({ resolvedTemplatedBookmarks }));
         }
 } satisfies Thunks;
 

@@ -10,12 +10,10 @@ type State = {
 
 export type OngoingConfigTest = {
     paramsOfCreateS3Client: ParamsOfCreateS3Client;
-    workingDirectoryPath: string;
 };
 
 export type ConfigTestResult = {
     paramsOfCreateS3Client: ParamsOfCreateS3Client;
-    workingDirectoryPath: string;
     result:
         | {
               isSuccess: true;
@@ -43,20 +41,17 @@ export const { actions, reducer } = createUsecaseActions({
                 payload: State["ongoingConfigTests"][number];
             }
         ) => {
-            const { paramsOfCreateS3Client, workingDirectoryPath } = payload;
+            const { paramsOfCreateS3Client } = payload;
 
             if (
                 state.ongoingConfigTests.find(e =>
-                    same(e, { paramsOfCreateS3Client, workingDirectoryPath })
+                    same(e, { paramsOfCreateS3Client })
                 ) !== undefined
             ) {
                 return;
             }
 
-            state.ongoingConfigTests.push({
-                paramsOfCreateS3Client,
-                workingDirectoryPath
-            });
+            state.ongoingConfigTests.push({ paramsOfCreateS3Client });
         },
         testCompleted: (
             state,
@@ -66,11 +61,11 @@ export const { actions, reducer } = createUsecaseActions({
                 payload: State["configTestResults"][number];
             }
         ) => {
-            const { paramsOfCreateS3Client, workingDirectoryPath, result } = payload;
+            const { paramsOfCreateS3Client, result } = payload;
 
             remove_from_ongoing: {
                 const entry = state.ongoingConfigTests.find(e =>
-                    same(e, { paramsOfCreateS3Client, workingDirectoryPath })
+                    same(e, { paramsOfCreateS3Client })
                 );
 
                 if (entry === undefined) {
@@ -84,10 +79,8 @@ export const { actions, reducer } = createUsecaseActions({
             }
 
             remove_existing_result: {
-                const entry = state.configTestResults.find(
-                    e =>
-                        same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
-                        e.workingDirectoryPath === workingDirectoryPath
+                const entry = state.configTestResults.find(e =>
+                    same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
                 );
 
                 if (entry === undefined) {
@@ -99,7 +92,6 @@ export const { actions, reducer } = createUsecaseActions({
 
             state.configTestResults.push({
                 paramsOfCreateS3Client,
-                workingDirectoryPath,
                 result
             });
         }

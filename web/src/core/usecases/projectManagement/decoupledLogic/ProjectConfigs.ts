@@ -24,7 +24,6 @@ export namespace ProjectConfigs {
         friendlyName: string;
         url: string;
         region: string | undefined;
-        workingDirectoryPath: string;
         pathStyleAccess: boolean;
         credentials:
             | {
@@ -108,7 +107,6 @@ const zS3Config = (() => {
         friendlyName: z.string(),
         url: z.string(),
         region: z.union([z.string(), z.undefined()]),
-        workingDirectoryPath: z.string(),
         pathStyleAccess: z.boolean(),
         credentials: z.union([zS3Credentials, z.undefined()])
     });
