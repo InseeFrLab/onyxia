@@ -152,17 +152,13 @@ export function createS3Client(
                             );
                         }
 
-                        const out = {
+                        return {
                             accessKeyId: credentials.AccessKeyId,
                             secretAccessKey: credentials.SecretAccessKey,
                             sessionToken: credentials.SessionToken,
                             expirationTime: credentials.Expiration.getTime(),
                             acquisitionTime: now
                         };
-
-                        console.log(out);
-
-                        return out;
                     },
                     returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
                 });
