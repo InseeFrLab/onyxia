@@ -1,4 +1,3 @@
-import axios from "axios";
 import type { S3BucketPolicy, S3Client, S3Object } from "core/ports/S3Client";
 import {
     getNewlyRequestedOrCachedTokenFactory,
@@ -113,81 +112,57 @@ export function createS3Client(
                         )}`
                     }),
                     requestNewToken: async () => {
+                        const { STSClient, AssumeRoleWithWebIdentityCommand } =
+                            await import("@aws-sdk/client-sts");
+
+                        const now = Date.now();
+
                         // NOTE: We renew the OIDC access token because it's expiration time
                         // cap the duration of the token we will request to minio so we want it
                         // as fresh as possible.
                         await oidc.renewTokens();
+                        const { accessToken: webIdentityToken } = await oidc.getTokens();
 
-                        const now = Date.now();
+                        // STS client: points either to AWS STS or MinIO’s STS endpoint
+                        const sts = new STSClient({
+                            region: params.region ?? "us-east-1",
+                            endpoint: params.stsUrl ?? params.url
+                            // Important: AssumeRoleWithWebIdentity should be unsigned; the SDK handles this.
+                            // Do NOT provide AWS credentials here.
+                            // If your STS implementation requires querystring-style requests, the SDK will handle that too.
+                        });
 
-                        const { data } = await axios
-                            .create({
-                                baseURL: params.stsUrl ?? params.url,
-                                headers: {
-                                    Accept: "*/*"
-                                }
-                            })
-                            .post<string>(
-                                "/?" +
-                                    Object.entries({
-                                        Action: "AssumeRoleWithWebIdentity",
-                                        WebIdentityToken: (await oidc.getTokens())
-                                            .accessToken,
-                                        DurationSeconds:
-                                            params.durationSeconds ?? 7 * 24 * 3600,
-                                        Version: "2011-06-15",
-                                        ...(params.role === undefined
-                                            ? {}
-                                            : {
-                                                  RoleSessionName:
-                                                      params.role.roleSessionName,
-                                                  RoleArn: params.role.roleARN
-                                              })
-                                    })
-                                        .map(([key, value]) =>
-                                            value === undefined
-                                                ? undefined
-                                                : `${key}=${value}`
-                                        )
-                                        .filter(exclude(undefined))
-                                        .join("&")
+                        const cmd = new AssumeRoleWithWebIdentityCommand({
+                            WebIdentityToken: webIdentityToken,
+                            DurationSeconds: params.durationSeconds ?? 7 * 24 * 3600,
+                            RoleArn: params.role?.roleARN,
+                            RoleSessionName: params.role?.roleSessionName
+                        });
+
+                        const { Credentials: credentials } = await sts.send(cmd);
+                        if (
+                            credentials === undefined ||
+                            !credentials.AccessKeyId ||
+                            !credentials.SecretAccessKey ||
+                            !credentials.SessionToken ||
+                            !credentials.Expiration
+                        ) {
+                            throw new Error(
+                                "Invalid STS response when assuming role with web identity"
                             );
+                        }
 
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(data, "text/xml");
-                        const root = xmlDoc.getElementsByTagName(
-                            "AssumeRoleWithWebIdentityResponse"
-                        )[0];
-
-                        const credentials = root.getElementsByTagName("Credentials")[0];
-                        const accessKeyId =
-                            credentials.getElementsByTagName("AccessKeyId")[0]
-                                .childNodes[0].nodeValue;
-                        const secretAccessKey =
-                            credentials.getElementsByTagName("SecretAccessKey")[0]
-                                .childNodes[0].nodeValue;
-                        const sessionToken =
-                            credentials.getElementsByTagName("SessionToken")[0]
-                                .childNodes[0].nodeValue;
-                        const expiration =
-                            credentials.getElementsByTagName("Expiration")[0]
-                                .childNodes[0].nodeValue;
-
-                        assert(
-                            accessKeyId !== null &&
-                                secretAccessKey !== null &&
-                                sessionToken !== null &&
-                                expiration !== null,
-                            "Error parsing minio response"
-                        );
-
-                        return {
-                            accessKeyId,
-                            secretAccessKey,
-                            sessionToken,
-                            expirationTime: new Date(expiration).getTime(),
+                        const out = {
+                            accessKeyId: credentials.AccessKeyId,
+                            secretAccessKey: credentials.SecretAccessKey,
+                            sessionToken: credentials.SessionToken,
+                            expirationTime: credentials.Expiration.getTime(),
                             acquisitionTime: now
                         };
+
+                        console.log(out);
+
+                        return out;
                     },
                     returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
                 });
@@ -690,29 +665,6 @@ export function createS3Client(
 
             return head.ContentType;
         }
-
-        // "getPresignedUploadUrl": async ({ path, validityDurationSecond }) => {
-        //     const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
-
-        //     const { getAwsS3Client } = await prApi;
-
-        //     const { awsS3Client } = await getAwsS3Client();
-
-        //     const updloadUrl = await (
-        //         await import("@aws-sdk/s3-request-presigner")
-        //     ).getSignedUrl(
-        //         awsS3Client,
-        //         new (await import("@aws-sdk/client-s3")).PutObjectCommand({
-        //             "Bucket": bucketName,
-        //             "Key": objectName
-        //         }),
-        //         {
-        //             "expiresIn": validityDurationSecond
-        //         }
-        //     );
-
-        //     return updloadUrl;
-        // }
     };
 
     return s3Client;
