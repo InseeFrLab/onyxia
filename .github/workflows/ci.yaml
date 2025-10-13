@@ -16,6 +16,9 @@ permissions:
 jobs:
   test_web:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v5
         with:
@@ -32,9 +35,6 @@ jobs:
 
   test_helm-chart:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: helm-chart
     steps:
       - uses: actions/checkout@v5
         with:
