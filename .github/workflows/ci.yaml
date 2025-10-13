@@ -33,8 +33,6 @@ jobs:
       - run: yarn test
       - run: yarn build
       - run: npx keycloakify build
-        env:
-          XDG_CACHE_HOME: /home/runner/.cache/yarn
 
   test_helm-chart:
     runs-on: ubuntu-latest
