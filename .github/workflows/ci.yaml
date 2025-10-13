@@ -16,19 +16,15 @@ permissions:
 jobs:
   test_web:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
-          sparse-checkout: |
-            web
+          path: web
       - uses: actions/setup-node@v5
         with:
           cache: "yarn"
-          cache-dependency-path: web/yarn.lock
+          cache-dependency-path: yarn.lock
       - run: yarn install --frozen-lockfile
       - run: yarn test
       - run: yarn build
@@ -43,8 +39,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
-          sparse-checkout: |
-            helm-chart
+          path: helm-chart
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4
       - run: helm lint .
 
