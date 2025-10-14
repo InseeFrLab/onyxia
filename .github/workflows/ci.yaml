@@ -116,6 +116,10 @@ jobs:
       - run: yarn build-keycloak-theme
         env:
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
+      - name: Check for Keycloak JAR
+        run: |
+          echo "Checking for built JAR..."
+          find web/dist_keycloak -type f -name "*.jar" || (echo "❌ No JAR found in web/dist_keycloak" && exit 1)
       - uses: yogeshlonkar/wait-for-jobs@722e963a0bba35f55913d5372cd442f038a7c95a
         with:
           ignore-skipped: true
@@ -140,7 +144,7 @@ jobs:
           target_commitish: ${{needs.prepare_release.outputs.target_commit}}
           generate_release_notes: true
           files: |
-            web/dist_keycloak/*.jar
+            web/dist_keycloak/**/*.jar
             onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
         env:
           # NOTE: We can't use github.token because it would not trigger the dispatch workflow.
