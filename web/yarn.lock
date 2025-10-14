@@ -6037,10 +6037,10 @@ jsonld@^8.3.3:
     lru-cache "^6.0.0"
     rdf-canonize "^3.4.0"
 
-keycloakify@^11.9.8:
-  version "11.9.8"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.9.8.tgz#a86bf82980d0846fe5102edbbefa13708f15af85"
-  integrity sha512-4TueGJ6iPnAFUbTEx7sedoIb3gHEWGKqkOCXZLuK0r/gLWEOOKQXNnW8MwDBRlgAY1t8s2uS58xt3rJn3fSPug==
+keycloakify@^11.9.9:
+  version "11.9.9"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.9.9.tgz#efee9c21a28817e9acf68c78e6b2a3f7f68a4e1a"
+  integrity sha512-FUv31nHtXa3KyeoMJ6HPu1wZEhuKniEVBo2F/H8FsC71RI3SlhecTcnMq95/9IlJrZgN7GqGPHMSDNoW7CGVRg==
   dependencies:
     tsafe "^1.8.5"
 
