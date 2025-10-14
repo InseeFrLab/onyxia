@@ -29,12 +29,18 @@ jobs:
         with:
           cache: "yarn"
           cache-dependency-path: web/yarn.lock
+      - name: Cache Keycloakify
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/keycloakify
+          key: keycloakify-${{ runner.os }}
+
       - run: yarn install --frozen-lockfile
       - run: yarn test
       - run: yarn build
       - run: npx keycloakify build
         env:
-          XDG_CACHE_HOME: /home/runner/.cache/yarn
+          XDG_CACHE_HOME: /home/runner/.cache/keycloakify
 
   test_helm-chart:
     runs-on: ubuntu-latest
@@ -112,6 +118,11 @@ jobs:
         with:
           cache: "yarn"
           cache-dependency-path: web/yarn.lock
+      - name: Cache Keycloakify
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/keycloakify
+          key: keycloakify-${{ runner.os }}
       - run: yarn install --frozen-lockfile
       - run: yarn build-keycloak-theme
         env:
