@@ -64,7 +64,7 @@
         "i18nifty": "^4.0.6",
         "json5": "2.2.3",
         "jsonld": "^8.3.3",
-        "keycloakify": "^11.9.9",
+        "keycloakify": "^11.9.10",
         "memoizee": "^0.4.17",
         "minimal-polyfills": "^2.2.3",
         "mui-icons-material-lazy": "^1.0.4",
