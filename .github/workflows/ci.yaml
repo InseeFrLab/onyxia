@@ -140,7 +140,7 @@ jobs:
           target_commitish: ${{needs.prepare_release.outputs.target_commit}}
           generate_release_notes: true
           files: |
-            dist_keycloak/*.jar
+            web/dist_keycloak/*.jar
             onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
         env:
           # NOTE: We can't use github.token because it would not trigger the dispatch workflow.
