@@ -21,6 +21,7 @@ import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
+import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -289,30 +290,84 @@ export function createOnyxiaApi(params: {
                                             };
                                         })
                                         .filter(exclude(undefined))
-                                        .map(s3Config_api => ({
-                                            url: s3Config_api.URL,
-                                            pathStyleAccess:
-                                                s3Config_api.pathStyleAccess ?? true,
-                                            region: s3Config_api.region,
-                                            sts: {
-                                                url: s3Config_api.sts.URL,
-                                                durationSeconds:
-                                                    s3Config_api.sts.durationSeconds,
-                                                role: s3Config_api.sts.role,
-                                                oidcParams:
-                                                    apiTypesOidcConfigurationToOidcParams_Partial(
-                                                        s3Config_api.sts.oidcConfiguration
-                                                    )
-                                            },
-                                            workingDirectory:
-                                                s3Config_api.workingDirectory,
-                                            bookmarkedDirectories:
-                                                s3Config_api.bookmarkedDirectories ?? []
-                                        }));
+                                        .map(s3Config_api =>
+                                            id<DeploymentRegion.S3Config>({
+                                                url: s3Config_api.URL,
+                                                pathStyleAccess:
+                                                    s3Config_api.pathStyleAccess ?? true,
+                                                region: s3Config_api.region,
+                                                sts: {
+                                                    url: s3Config_api.sts.URL,
+                                                    durationSeconds:
+                                                        s3Config_api.sts.durationSeconds,
+                                                    role: s3Config_api.sts.role,
+                                                    oidcParams:
+                                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                                            s3Config_api.sts
+                                                                .oidcConfiguration
+                                                        )
+                                                },
+                                                workingDirectory:
+                                                    s3Config_api.workingDirectory,
+                                                bookmarkedDirectories:
+                                                    s3Config_api.bookmarkedDirectories ??
+                                                    []
+                                            })
+                                        );
 
                                 return {
                                     s3Configs,
-                                    s3ConfigCreationFormDefaults
+                                    s3ConfigCreationFormDefaults,
+                                    _s3Next: id<DeploymentRegion["_s3Next"]>({
+                                        s3Profiles: id<
+                                            DeploymentRegion.S3Next.S3Profile[]
+                                        >(
+                                            s3Configs.map(
+                                                ({
+                                                    url,
+                                                    pathStyleAccess,
+                                                    region,
+                                                    sts,
+                                                    bookmarkedDirectories
+                                                }) => ({
+                                                    url,
+                                                    pathStyleAccess,
+                                                    region,
+                                                    sts,
+                                                    bookmarks: bookmarkedDirectories.map(
+                                                        ({
+                                                            fullPath,
+                                                            title,
+                                                            description,
+                                                            tags,
+                                                            ...rest
+                                                        }) => {
+                                                            const {
+                                                                bucketName,
+                                                                objectName
+                                                            } =
+                                                                bucketNameAndObjectNameFromS3Path(
+                                                                    fullPath
+                                                                );
+
+                                                            return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
+                                                                {
+                                                                    bucket: bucketName,
+                                                                    keyPrefix: objectName,
+                                                                    title,
+                                                                    description,
+                                                                    tags: tags ?? [],
+                                                                    ...rest
+                                                                }
+                                                            );
+                                                        }
+                                                    )
+                                                })
+                                            )
+                                        ),
+                                        s3Profiles_defaultValuesOfCreationForm:
+                                            s3ConfigCreationFormDefaults
+                                    })
                                 };
                             })(),
                             allowedURIPatternForUserDefinedInitScript:
