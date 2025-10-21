@@ -51,6 +51,7 @@ export namespace ParamsOfCreateS3Client {
                   roleSessionName: string;
               }
             | undefined;
+        // TODO: Remove this param
         nameOfBucketToCreateIfNotExist: string | undefined;
     };
 }
@@ -222,6 +223,7 @@ export function createS3Client(
             return { getAwsS3Client };
         })();
 
+        // TODO: Remove this block
         create_bucket: {
             if (!params.isStsEnabled) {
                 break create_bucket;

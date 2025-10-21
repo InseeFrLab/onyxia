@@ -100,6 +100,7 @@ export type ApiTypes = {
                     };
 
                     /** Ok to be undefined only if sts is undefined */
+                    // NOTE: Remove in next major
                     workingDirectory?:
                         | {
                               bucketMode: "shared";
@@ -121,8 +122,8 @@ export type ApiTypes = {
                         | { claimName: undefined }
                         | {
                               claimName: string;
-                              includedClaimPattern: string;
-                              excludedClaimPattern: string;
+                              includedClaimPattern: string | undefined;
+                              excludedClaimPattern: string | undefined;
                           }
                     ))[];
                 }>;

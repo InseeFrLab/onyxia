@@ -25,6 +25,16 @@ export type DeploymentRegion = {
               workingDirectory: DeploymentRegion.S3Config["workingDirectory"] | undefined;
           })
         | undefined;
+    _s3Next: {
+        s3Profiles: DeploymentRegion.S3Next.S3Profile[];
+        s3Profiles_defaultValuesOfCreationForm:
+            | Pick<
+                  DeploymentRegion.S3Next.S3Profile,
+                  "url" | "pathStyleAccess" | "region"
+              >
+            | undefined;
+    };
+
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
         | {
@@ -158,6 +168,48 @@ export namespace DeploymentRegion {
                 includedClaimPattern: string | undefined;
                 excludedClaimPattern: string | undefined;
             };
+        }
+    }
+
+    export namespace S3Next {
+        /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */
+        export type S3Profile = {
+            url: string;
+            pathStyleAccess: boolean;
+            region: string | undefined;
+            sts: {
+                url: string | undefined;
+                durationSeconds: number | undefined;
+                role:
+                    | {
+                          roleARN: string;
+                          roleSessionName: string;
+                      }
+                    | undefined;
+                oidcParams: OidcParams_Partial;
+            };
+            bookmarks: S3Profile.Bookmark[];
+        };
+
+        export namespace S3Profile {
+            export type Bookmark = {
+                bucket: string;
+                keyPrefix: string;
+                title: LocalizedString;
+                description: LocalizedString | undefined;
+                tags: LocalizedString[];
+            } & (
+                | {
+                      claimName: undefined;
+                      includedClaimPattern?: never;
+                      excludedClaimPattern?: never;
+                  }
+                | {
+                      claimName: string;
+                      includedClaimPattern: string | undefined;
+                      excludedClaimPattern: string | undefined;
+                  }
+            );
         }
     }
 }
