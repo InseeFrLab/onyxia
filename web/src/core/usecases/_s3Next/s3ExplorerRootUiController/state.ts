@@ -18,7 +18,7 @@ export const { actions, reducer } = createUsecaseActions({
     initialState: createObjectThatThrowsIfAccessed<State>(),
     reducers: {
         routeParamsSet: (
-            state,
+            _state,
             {
                 payload
             }: {
@@ -29,7 +29,7 @@ export const { actions, reducer } = createUsecaseActions({
         ) => {
             const { routeParams } = payload;
 
-            state.routeParams = routeParams;
+            return { routeParams };
         },
         locationUpdated: (
             state,

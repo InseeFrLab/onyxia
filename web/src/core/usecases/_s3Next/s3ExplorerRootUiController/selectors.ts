@@ -8,8 +8,9 @@ import type { LocalizedString } from "core/ports/OnyxiaApi";
 const state = (rootState: RootState) => rootState[name];
 
 export const protectedSelectors = {
-    isStateInitialized: createSelector(state, state =>
-        isObjectThatThrowIfAccessed(state)
+    isStateInitialized: createSelector(
+        state,
+        state => !isObjectThatThrowIfAccessed(state)
     ),
     routeParams: createSelector(state, state => state.routeParams)
 };
