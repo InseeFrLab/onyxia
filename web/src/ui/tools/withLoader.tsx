@@ -3,7 +3,7 @@ import { use } from "./use";
 import { assert } from "tsafe";
 
 export function withLoader<Props extends Record<string, unknown>>(params: {
-    loader: () => Promise<void>;
+    loader: (props: NoInfer<Props>) => Promise<void>;
     Component: ComponentType<Props>;
     FallbackComponent?: ComponentType<Props>;
 }): FC<Props> {
@@ -15,13 +15,13 @@ export function withLoader<Props extends Record<string, unknown>>(params: {
         const [isLoaded, setIsLoaded] = useState(false);
 
         if (prLoaded === undefined) {
-            prLoaded = loader();
+            prLoaded = loader(props);
         }
 
         useEffect(() => {
             let isActive = true;
 
-            (prLoaded ??= loader()).then(() => {
+            (prLoaded ??= loader(props)).then(() => {
                 if (!isActive) {
                     return;
                 }
@@ -52,7 +52,7 @@ export function withLoader<Props extends Record<string, unknown>>(params: {
         use(
             (prLoaded ??= (async () => {
                 await Promise.resolve();
-                await loader();
+                await loader(props);
                 await Promise.resolve();
             })())
         );
