@@ -24,7 +24,7 @@ export namespace S3Profile {
     export type DefinedInRegion = Common & {
         origin: "defined in region";
         paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts;
-        bookmarks: DefinedInRegion.Bookmark[];
+        bookmarks: Bookmark[];
     };
 
     export namespace DefinedInRegion {
@@ -42,16 +42,14 @@ export namespace S3Profile {
         creationTime: number;
         paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts;
         friendlyName: string;
-        bookmarks: CreatedByUser.Bookmark[];
+        bookmarks: Bookmark[];
     };
 
-    export namespace CreatedByUser {
-        export type Bookmark = {
-            friendlyName: string;
-            bucket: string;
-            keyPrefix: string;
-        };
-    }
+    export type Bookmark = {
+        displayName: LocalizedString | undefined;
+        bucket: string;
+        keyPrefix: string;
+    };
 }
 
 export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
@@ -153,7 +151,11 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                         )
                     )
                 ),
-                bookmarks: c.bookmarks,
+                bookmarks: c.bookmarks.map(({ title, bucket, keyPrefix }) => ({
+                    displayName: title,
+                    bucket,
+                    keyPrefix
+                })),
                 paramsOfCreateS3Client,
                 credentialsTestStatus: getCredentialsTestStatus({
                     paramsOfCreateS3Client
