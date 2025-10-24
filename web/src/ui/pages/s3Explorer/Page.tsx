@@ -11,6 +11,7 @@ import Select from "@mui/material/Select";
 import { Explorer } from "./Explorer";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
+import { useEvt } from "evt/hooks";
 
 const Page = withLoader({
     loader: async () => {
@@ -38,13 +39,23 @@ function S3Explorer() {
     assert(routeGroup.has(route));
 
     const {
-        functions: { s3ExplorerRootUiController }
+        functions: { s3ExplorerRootUiController },
+        evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
     const { selectedS3ProfileId, availableS3Profiles, bookmarks, location } =
         useCoreState("s3ExplorerRootUiController", "view");
 
     const { classes } = useStyles();
+
+    useEvt(ctx => {
+        evtS3ExplorerRootUiController
+            .pipe(ctx)
+            .pipe(action => action.actionName === "updateRoute")
+            .attach(({ routeParams, method }) =>
+                routes.s3Explorer(routeParams)[method]()
+            );
+    }, []);
 
     return (
         <div>
