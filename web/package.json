@@ -17,7 +17,8 @@
         "emails-domain-accept-list-helper": "tsx scripts/emails-domain-accept-list-helper.ts",
         "test": "vitest --run",
         "storybook": "storybook dev -p 6006",
-        "prestorybook": "tsx scripts/unyamlify-env-local.ts"
+        "prestorybook": "tsx scripts/unyamlify-env-local.ts",
+        "update-duckdb-extensions": "tsx scripts/update-duckdb-extensions.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.828.0",
@@ -34,8 +35,8 @@
         "@codemirror/state": "6.4.1",
         "@codemirror/theme-one-dark": "6.1.2",
         "@codemirror/view": "6.34.1",
-        "@duckdb/duckdb-wasm": "1.29.0",
-        "@duckdb/duckdb-wasm-shell": "1.29.0",
+        "@duckdb/duckdb-wasm": "1.31.0",
+        "@duckdb/duckdb-wasm-shell": "1.31.0",
         "@emotion/cache": "^11.14.0",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
