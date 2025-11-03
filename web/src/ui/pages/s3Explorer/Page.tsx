@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useRoute, getRoute, routes } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe/assert";
@@ -9,9 +10,11 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Explorer } from "./Explorer";
-import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
 import { useEvt } from "evt/hooks";
+import { Text } from "onyxia-ui/Text";
+import MuiLink from "@mui/material/Link";
+import { SearchBar } from "onyxia-ui/SearchBar";
 
 const Page = withLoader({
     loader: async () => {
@@ -43,10 +46,12 @@ function S3Explorer() {
         evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
-    const { selectedS3ProfileId, availableS3Profiles, bookmarks, location } =
-        useCoreState("s3ExplorerRootUiController", "view");
+    const { selectedS3ProfileId, availableS3Profiles, location } = useCoreState(
+        "s3ExplorerRootUiController",
+        "view"
+    );
 
-    const { classes } = useStyles();
+    const { classes, css, theme } = useStyles();
 
     useEvt(ctx => {
         evtS3ExplorerRootUiController
@@ -58,38 +63,39 @@ function S3Explorer() {
     }, []);
 
     return (
-        <div>
-            <FormControl fullWidth>
-                <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
-                <Select
-                    labelId="select-s3Profile"
-                    value={selectedS3ProfileId}
-                    onChange={event => {
-                        s3ExplorerRootUiController.updateSelectedS3Profile({
-                            s3ProfileId: event.target.value
-                        });
-                    }}
-                >
-                    {availableS3Profiles.map(s3Profile => (
-                        <MenuItem key={s3Profile.id} value={s3Profile.id}>
-                            {s3Profile.displayName}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <div className={classes.bookmarksBar}>
-                {bookmarks.map((bookmark, i) => (
-                    <Button
-                        key={i}
-                        variant="ternary"
-                        onClick={() =>
-                            s3ExplorerRootUiController.updateLocation({
-                                bucket: bookmark.bucket,
-                                keyPrefix: bookmark.keyPrefix
-                            })
-                        }
-                    >{`s3://${bookmark.bucket}/${bookmark.keyPrefix}`}</Button>
-                ))}
+        <div className={classes.root}>
+            <div
+                style={{
+                    display: "flex",
+                    gap: theme.spacing(3)
+                }}
+            >
+                <FormControl variant="standard">
+                    <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
+                    <Select
+                        labelId="select-s3Profile"
+                        value={selectedS3ProfileId}
+                        onChange={event => {
+                            s3ExplorerRootUiController.updateSelectedS3Profile({
+                                s3ProfileId: event.target.value
+                            });
+                        }}
+                        className={css({
+                            fontSize: "small"
+                        })}
+                    >
+                        {availableS3Profiles.map(s3Profile => (
+                            <MenuItem key={s3Profile.id} value={s3Profile.id}>
+                                {s3Profile.displayName}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <BookmarkBar
+                    className={css({
+                        flex: 1
+                    })}
+                />
             </div>
 
             {(() => {
@@ -98,11 +104,18 @@ function S3Explorer() {
                 }
 
                 if (location === undefined) {
-                    return <h1>Direct navigation</h1>;
+                    return (
+                        <DirectNavigation
+                            className={css({
+                                marginTop: theme.spacing(3)
+                            })}
+                        />
+                    );
                 }
 
                 return (
                     <Explorer
+                        className={classes.explorer}
                         changeCurrentDirectory={({ directoryPath }) => {
                             const [bucket, ...rest] = directoryPath.split("/");
                             s3ExplorerRootUiController.updateLocation({
@@ -111,6 +124,10 @@ function S3Explorer() {
                             });
                         }}
                         directoryPath={`${location.bucket}/${location.keyPrefix}`}
+                        isDirectoryPathBookmarked={false}
+                        onToggleIsDirectoryPathBookmarked={() => {
+                            alert("TODO: Implement this feature");
+                        }}
                     />
                 );
             })()}
@@ -118,9 +135,106 @@ function S3Explorer() {
     );
 }
 
+function DirectNavigation(props: { className?: string }) {
+    const { className } = props;
+
+    const {
+        functions: { s3ExplorerRootUiController }
+    } = getCoreSync();
+
+    const PREFIX = "s3://";
+
+    const [search, setSearch] = useState(PREFIX);
+
+    return (
+        <SearchBar
+            className={className}
+            search={search}
+            onSearchChange={setSearch}
+            onKeyPress={keyId => {
+                switch (keyId) {
+                    case "Enter":
+                        {
+                            const directoryPath = search.slice(PREFIX.length);
+
+                            const [bucket, ...rest] = directoryPath.split("/");
+
+                            s3ExplorerRootUiController.updateLocation({
+                                bucket,
+                                keyPrefix: rest.join("/")
+                            });
+                        }
+                        break;
+                    case "Escape":
+                        setSearch(PREFIX);
+                        break;
+                }
+            }}
+        />
+    );
+}
+
+function BookmarkBar(props: { className?: string }) {
+    const { className } = props;
+
+    const { cx, css, theme } = useStyles();
+
+    const {
+        functions: { s3ExplorerRootUiController }
+    } = getCoreSync();
+
+    const { bookmarks } = useCoreState("s3ExplorerRootUiController", "view");
+
+    return (
+        <div
+            className={cx(
+                css({
+                    display: "flex",
+                    position: "relative",
+                    alignItems: "end",
+                    gap: theme.spacing(3),
+                    paddingBottom: 6
+                }),
+                className
+            )}
+        >
+            <Text
+                className={css({
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    color: theme.colors.useCases.typography.textSecondary
+                })}
+                typo="caption"
+            >
+                Bookmarks
+            </Text>
+            {bookmarks.map((bookmark, i) => (
+                <MuiLink
+                    key={i}
+                    className={css({
+                        color: theme.colors.useCases.typography.textPrimary,
+                        ...theme.typography.variants.caption.style
+                    })}
+                    href="#"
+                    onClick={() => {
+                        console.log("click");
+                        s3ExplorerRootUiController.updateLocation({
+                            bucket: bookmark.bucket,
+                            keyPrefix: bookmark.keyPrefix
+                        });
+                    }}
+                >
+                    {`s3://${bookmark.bucket}/${bookmark.keyPrefix}`}
+                </MuiLink>
+            ))}
+        </div>
+    );
+}
+
 const useStyles = tss.withName({ S3Explorer }).create(({ theme }) => ({
-    bookmarksBar: {
-        display: "inline-flex",
-        gap: theme.spacing(2)
+    root: {},
+    explorer: {
+        marginTop: theme.spacing(4)
     }
 }));
