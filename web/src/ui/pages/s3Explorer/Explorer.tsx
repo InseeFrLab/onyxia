@@ -18,10 +18,18 @@ type Props = {
     className?: string;
     directoryPath: string;
     changeCurrentDirectory: (params: { directoryPath: string }) => void;
+    isDirectoryPathBookmarked: boolean;
+    onToggleIsDirectoryPathBookmarked: () => void;
 };
 
 export function Explorer(props: Props) {
-    const { className, directoryPath, changeCurrentDirectory } = props;
+    const {
+        className,
+        directoryPath,
+        changeCurrentDirectory,
+        isDirectoryPathBookmarked,
+        onToggleIsDirectoryPathBookmarked
+    } = props;
 
     const {
         isCurrentWorkingDirectoryLoaded,
@@ -167,6 +175,8 @@ export function Explorer(props: Props) {
             }
             onDownloadItems={onDownloadItems}
             evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
+            isDirectoryPathBookmarked={isDirectoryPathBookmarked}
+            onToggleIsDirectoryPathBookmarked={onToggleIsDirectoryPathBookmarked}
         />
     );
 }
