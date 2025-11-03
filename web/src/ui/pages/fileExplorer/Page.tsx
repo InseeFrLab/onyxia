@@ -200,6 +200,8 @@ function FileExplorer() {
                 }
                 onDownloadItems={onDownloadItems}
                 evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
+                isDirectoryPathBookmarked={undefined}
+                onToggleIsDirectoryPathBookmarked={undefined}
             />
         </div>
     );
