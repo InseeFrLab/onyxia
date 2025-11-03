@@ -217,8 +217,8 @@ function BookmarkBar(props: { className?: string }) {
                         ...theme.typography.variants.caption.style
                     })}
                     href="#"
-                    onClick={() => {
-                        console.log("click");
+                    onClick={e => {
+                        e.preventDefault();
                         s3ExplorerRootUiController.updateLocation({
                             bucket: bookmark.bucket,
                             keyPrefix: bookmark.keyPrefix
