@@ -2,6 +2,7 @@ import type { Thunks } from "core/bootstrap";
 import { actions, type RouteParams } from "./state";
 import { protectedSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import { evt } from "./evt";
 
 export const thunks = {
     load:
@@ -48,6 +49,21 @@ export const thunks = {
             dispatch(actions.routeParamsSet({ routeParams: routeParams_toSet }));
 
             return { routeParams_toSet };
+        },
+    notifyRouteParamsExternallyUpdated:
+        (params: { routeParams: RouteParams }) =>
+        (...args) => {
+            const { routeParams } = params;
+            const [dispatch] = args;
+            const { routeParams_toSet } = dispatch(thunks.load({ routeParams }));
+
+            if (routeParams_toSet !== undefined) {
+                evt.post({
+                    actionName: "updateRoute",
+                    method: "replace",
+                    routeParams: routeParams_toSet
+                });
+            }
         },
     updateLocation:
         (params: { bucket: string; keyPrefix: string }) =>
