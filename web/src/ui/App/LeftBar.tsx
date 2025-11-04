@@ -125,7 +125,9 @@ export const LeftBar = memo((props: Props) => {
                     itemId: "s3Explorer",
                     icon: customIcons.filesSvgUrl,
                     label: "S3 Explorer",
-                    link: routes.s3Explorer().link,
+                    link: routes.s3Explorer({
+                        path: ""
+                    }).link,
                     availability:
                         isDevModeEnabled && isFileExplorerEnabled
                             ? "available"

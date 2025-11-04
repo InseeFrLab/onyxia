@@ -4,6 +4,7 @@ import { isObjectThatThrowIfAccessed, createSelector } from "clean-architecture"
 import { assert } from "tsafe";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
+import { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -26,7 +27,7 @@ export type View = {
         bucket: string;
         keyPrefix: string;
     }[];
-    location: { bucket: string; keyPrefix: string } | undefined;
+    s3Url_parsed: S3PrefixUrlParsed | undefined;
 };
 
 const view = createSelector(
@@ -41,7 +42,7 @@ const view = createSelector(
                 selectedS3ProfileId: undefined,
                 availableS3Profiles: [],
                 bookmarks: [],
-                location: undefined
+                s3Url_parsed: undefined
             };
         }
 
@@ -60,14 +61,10 @@ const view = createSelector(
                 displayName: s3Profile.paramsOfCreateS3Client.url
             })),
             bookmarks: s3Profile.bookmarks,
-            location:
-                routeParams.bucket === undefined
+            s3Url_parsed:
+                routeParams.path === ""
                     ? undefined
-                    : (assert(routeParams.prefix !== undefined),
-                      {
-                          bucket: routeParams.bucket,
-                          keyPrefix: routeParams.prefix
-                      })
+                    : S3PrefixUrlParsed.parse(`s3://${routeParams.path}`)
         };
     }
 );

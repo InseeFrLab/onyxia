@@ -167,7 +167,9 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const onBreadcrumbNavigate = useConstCallback(
-        ({ upCount }: Param0<BreadcrumbProps["onNavigate"]>) => {
+        ({ upCount, path }: Param0<BreadcrumbProps["onNavigate"]>) => {
+            console.log(path);
+
             onNavigate({
                 directoryPath: pathJoin(directoryPath, ...new Array(upCount).fill(".."))
             });
@@ -399,12 +401,14 @@ export const Explorer = memo((props: ExplorerProps) => {
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
                         minDepth={pathMinDepth}
-                        path={directoryPath
-                            .split("/")
-                            .filter(part => part !== "")
-                            .map((segment, i, arr) =>
-                                i === arr.length - 1 ? `${segment} /` : segment
-                            )}
+                        path={[
+                            "s3://",
+                            ...directoryPath
+                                .split("/")
+                                .filter(segment => segment !== "")
+                                .map(segment => `${segment}/`)
+                        ]}
+                        separatorChar="&#8203;"
                         isNavigationDisabled={isNavigating}
                         onNavigate={onBreadcrumbNavigate}
                         evtAction={evtBreadcrumbAction}
