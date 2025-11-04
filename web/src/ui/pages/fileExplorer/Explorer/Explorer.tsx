@@ -167,11 +167,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const onBreadcrumbNavigate = useConstCallback(
-        ({ upCount, path }: Param0<BreadcrumbProps["onNavigate"]>) => {
-            console.log(path);
+        ({ path }: Param0<BreadcrumbProps["onNavigate"]>) => {
+            assert(path.length !== 0);
+
+            const [, ...rest] = path;
 
             onNavigate({
-                directoryPath: pathJoin(directoryPath, ...new Array(upCount).fill(".."))
+                directoryPath: rest.join("")
             });
         }
     );

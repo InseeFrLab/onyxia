@@ -128,9 +128,10 @@ function S3Explorer() {
                     <Explorer
                         className={classes.explorer}
                         changeCurrentDirectory={({ directoryPath }) => {
-                            const s3Url_parsed = S3PrefixUrlParsed.parse(
-                                `s3://${directoryPath}`
-                            );
+                            const s3Url_parsed =
+                                directoryPath === ""
+                                    ? undefined
+                                    : S3PrefixUrlParsed.parse(`s3://${directoryPath}`);
 
                             s3ExplorerRootUiController.updateS3Url({
                                 s3Url_parsed
