@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useRoute, getRoute, routes } from "ui/routes";
+import { useEffect } from "react";
+import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe/assert";
 import { withLoader } from "ui/tools/withLoader";
@@ -38,9 +39,6 @@ const Page = withLoader({
 export default Page;
 
 function S3Explorer() {
-    const route = useRoute();
-    assert(routeGroup.has(route));
-
     const {
         functions: { s3ExplorerRootUiController },
         evts: { evtS3ExplorerRootUiController }
@@ -61,6 +59,18 @@ function S3Explorer() {
                 routes.s3Explorer(routeParams)[method]()
             );
     }, []);
+
+    useEffect(
+        () =>
+            session.listen(route => {
+                if (routeGroup.has(route)) {
+                    s3ExplorerRootUiController.notifyRouteParamsExternallyUpdated({
+                        routeParams: route.params
+                    });
+                }
+            }),
+        []
+    );
 
     return (
         <div className={classes.root}>
