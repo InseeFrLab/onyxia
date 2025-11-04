@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useEffect } from "react";
 import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
@@ -16,6 +16,7 @@ import { useEvt } from "evt/hooks";
 import { Text } from "onyxia-ui/Text";
 import MuiLink from "@mui/material/Link";
 import { SearchBar } from "onyxia-ui/SearchBar";
+import { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
 
 const Page = withLoader({
     loader: async () => {
@@ -44,7 +45,7 @@ function S3Explorer() {
         evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
-    const { selectedS3ProfileId, availableS3Profiles, location } = useCoreState(
+    const { selectedS3ProfileId, availableS3Profiles, s3Url_parsed } = useCoreState(
         "s3ExplorerRootUiController",
         "view"
     );
@@ -113,7 +114,7 @@ function S3Explorer() {
                     return <h1>Create a profile</h1>;
                 }
 
-                if (location === undefined) {
+                if (s3Url_parsed === undefined) {
                     return (
                         <DirectNavigation
                             className={css({
@@ -127,13 +128,17 @@ function S3Explorer() {
                     <Explorer
                         className={classes.explorer}
                         changeCurrentDirectory={({ directoryPath }) => {
-                            const [bucket, ...rest] = directoryPath.split("/");
-                            s3ExplorerRootUiController.updateLocation({
-                                bucket,
-                                keyPrefix: rest.join("/")
+                            const s3Url_parsed = S3PrefixUrlParsed.parse(
+                                `s3://${directoryPath}`
+                            );
+
+                            s3ExplorerRootUiController.updateS3Url({
+                                s3Url_parsed
                             });
                         }}
-                        directoryPath={`${location.bucket}/${location.keyPrefix}`}
+                        directoryPath={S3PrefixUrlParsed.stringify(s3Url_parsed).slice(
+                            "s3://".length
+                        )}
                         isDirectoryPathBookmarked={false}
                         onToggleIsDirectoryPathBookmarked={() => {
                             alert("TODO: Implement this feature");
@@ -152,9 +157,17 @@ function DirectNavigation(props: { className?: string }) {
         functions: { s3ExplorerRootUiController }
     } = getCoreSync();
 
-    const PREFIX = "s3://";
+    const PROTOCOL = "s3://";
 
-    const [search, setSearch] = useState(PREFIX);
+    const [search, setSearch] = useState(PROTOCOL);
+
+    const s3Url_parsed = useMemo(() => {
+        try {
+            return S3PrefixUrlParsed.parse(search);
+        } catch {
+            return undefined;
+        }
+    }, [search]);
 
     return (
         <SearchBar
@@ -165,18 +178,17 @@ function DirectNavigation(props: { className?: string }) {
                 switch (keyId) {
                     case "Enter":
                         {
-                            const directoryPath = search.slice(PREFIX.length);
+                            if (s3Url_parsed === undefined) {
+                                return;
+                            }
 
-                            const [bucket, ...rest] = directoryPath.split("/");
-
-                            s3ExplorerRootUiController.updateLocation({
-                                bucket,
-                                keyPrefix: rest.join("/")
+                            s3ExplorerRootUiController.updateS3Url({
+                                s3Url_parsed
                             });
                         }
                         break;
                     case "Escape":
-                        setSearch(PREFIX);
+                        setSearch(PROTOCOL);
                         break;
                 }
             }}
@@ -229,9 +241,11 @@ function BookmarkBar(props: { className?: string }) {
                     href="#"
                     onClick={e => {
                         e.preventDefault();
-                        s3ExplorerRootUiController.updateLocation({
-                            bucket: bookmark.bucket,
-                            keyPrefix: bookmark.keyPrefix
+                        s3ExplorerRootUiController.updateS3Url({
+                            s3Url_parsed: {
+                                bucket: bookmark.bucket,
+                                keyPrefix: bookmark.keyPrefix
+                            }
                         });
                     }}
                 >

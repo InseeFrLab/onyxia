@@ -32,7 +32,7 @@ export const createEvt = (({ evtAction, getState }) => {
                 method: (() => {
                     switch (actionName) {
                         case "routeParamsSet":
-                        case "locationUpdated":
+                        case "s3UrlUpdated":
                         case "selectedS3ProfileUpdated":
                             return "replace" as const;
                     }

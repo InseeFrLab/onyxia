@@ -1,12 +1,12 @@
 import { createUsecaseActions } from "clean-architecture";
 import { createObjectThatThrowsIfAccessed } from "clean-architecture";
+import { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
 
 export const name = "s3ExplorerRootUiController";
 
 export type RouteParams = {
     profile?: string;
-    bucket?: string;
-    prefix?: string;
+    path: string;
 };
 
 export type State = {
@@ -31,14 +31,15 @@ export const { actions, reducer } = createUsecaseActions({
 
             return { routeParams };
         },
-        locationUpdated: (
+        s3UrlUpdated: (
             state,
-            { payload }: { payload: { bucket: string; keyPrefix: string } }
+            { payload }: { payload: { s3Url_parsed: S3PrefixUrlParsed } }
         ) => {
-            const { bucket, keyPrefix } = payload;
+            const { s3Url_parsed } = payload;
 
-            state.routeParams.bucket = bucket;
-            state.routeParams.prefix = keyPrefix;
+            state.routeParams.path = S3PrefixUrlParsed.stringify(s3Url_parsed).slice(
+                "s3://".length
+            );
         },
         selectedS3ProfileUpdated: (
             state,
@@ -47,8 +48,7 @@ export const { actions, reducer } = createUsecaseActions({
             const { s3ProfileId } = payload;
 
             state.routeParams.profile = s3ProfileId;
-            state.routeParams.bucket = undefined;
-            state.routeParams.prefix = undefined;
+            state.routeParams.path = "";
         }
     }
 });
