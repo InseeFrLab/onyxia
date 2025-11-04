@@ -33,13 +33,14 @@ export const { actions, reducer } = createUsecaseActions({
         },
         s3UrlUpdated: (
             state,
-            { payload }: { payload: { s3Url_parsed: S3PrefixUrlParsed } }
+            { payload }: { payload: { s3Url_parsed: S3PrefixUrlParsed | undefined } }
         ) => {
             const { s3Url_parsed } = payload;
 
-            state.routeParams.path = S3PrefixUrlParsed.stringify(s3Url_parsed).slice(
-                "s3://".length
-            );
+            state.routeParams.path =
+                s3Url_parsed === undefined
+                    ? ""
+                    : S3PrefixUrlParsed.stringify(s3Url_parsed).slice("s3://".length);
         },
         selectedS3ProfileUpdated: (
             state,

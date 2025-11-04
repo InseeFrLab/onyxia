@@ -151,6 +151,17 @@ function FileExplorer() {
             })
     );
 
+    const onNavigate = useConstCallback<ExplorerProps["onNavigate"]>(
+        ({ directoryPath }) => {
+            if (directoryPath === "") {
+                routes.fileExplorerEntry().push();
+                return;
+            }
+
+            fileExplorer.changeCurrentDirectory({ directoryPath });
+        }
+    );
+
     if (!isCurrentWorkingDirectoryLoaded) {
         return null;
     }
@@ -183,7 +194,7 @@ function FileExplorer() {
                     currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
                 }
                 changePolicy={fileExplorer.changePolicy}
-                onNavigate={fileExplorer.changeCurrentDirectory}
+                onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}

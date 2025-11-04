@@ -65,7 +65,7 @@ export const thunks = {
             }
         },
     updateS3Url:
-        (params: { s3Url_parsed: S3PrefixUrlParsed }) =>
+        (params: { s3Url_parsed: S3PrefixUrlParsed | undefined }) =>
         (...args) => {
             const [dispatch] = args;
 
