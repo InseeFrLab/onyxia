@@ -108,6 +108,16 @@ function S3Explorer() {
                     })}
                 />
             </div>
+            {/* Not conditionally mounted to track state */}
+            <DirectNavigation
+                className={css({
+                    marginTop: theme.spacing(3),
+                    display:
+                        selectedS3ProfileId === undefined || s3UriPrefixObj !== undefined
+                            ? "none"
+                            : undefined
+                })}
+            />
 
             {(() => {
                 if (selectedS3ProfileId === undefined) {
@@ -115,13 +125,7 @@ function S3Explorer() {
                 }
 
                 if (s3UriPrefixObj === undefined) {
-                    return (
-                        <DirectNavigation
-                            className={css({
-                                marginTop: theme.spacing(3)
-                            })}
-                        />
-                    );
+                    return null;
                 }
 
                 return (
@@ -161,11 +165,20 @@ function DirectNavigation(props: { className?: string }) {
         functions: { s3ExplorerRootUiController }
     } = getCoreSync();
 
-    const PROTOCOL = "s3://";
+    const { s3UriPrefixObj } = useCoreState("s3ExplorerRootUiController", "view");
 
-    const [search, setSearch] = useState(PROTOCOL);
+    const search_external =
+        s3UriPrefixObj === undefined ? "s3://" : stringifyS3UriPrefixObj(s3UriPrefixObj);
 
-    const s3UriPrefixObj = useMemo(() => {
+    const [search, setSearch] = useState(search_external);
+
+    useEffect(() => {
+        if (search_external !== "s3://") {
+            setSearch(search_external);
+        }
+    }, [search_external]);
+
+    const s3UriPrefixObj_search = useMemo(() => {
         try {
             return parseS3UriPrefix({
                 s3UriPrefix: search,
@@ -178,6 +191,8 @@ function DirectNavigation(props: { className?: string }) {
 
     return (
         <SearchBar
+            // For gaining focus when actually appears.
+            key={s3UriPrefixObj === undefined ? "1" : "2"}
             className={className}
             search={search}
             onSearchChange={setSearch}
@@ -185,17 +200,17 @@ function DirectNavigation(props: { className?: string }) {
                 switch (keyId) {
                     case "Enter":
                         {
-                            if (s3UriPrefixObj === undefined) {
+                            if (s3UriPrefixObj_search === undefined) {
                                 return;
                             }
 
                             s3ExplorerRootUiController.updateS3Url({
-                                s3UriPrefixObj
+                                s3UriPrefixObj: s3UriPrefixObj_search
                             });
                         }
                         break;
                     case "Escape":
-                        setSearch(PROTOCOL);
+                        setSearch(search_external);
                         break;
                 }
             }}
