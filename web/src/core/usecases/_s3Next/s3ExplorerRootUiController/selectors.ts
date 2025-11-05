@@ -5,6 +5,7 @@ import { assert } from "tsafe";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { type S3UriPrefixObj, parseS3UriPrefix } from "core/tools/S3Uri";
+import { same } from "evt/tools/inDepth/same";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -27,6 +28,7 @@ export type View = {
         s3UriPrefixObj: S3UriPrefixObj;
     }[];
     s3UriPrefixObj: S3UriPrefixObj | undefined;
+    isS3UriPrefixBookmarked: boolean;
 };
 
 const view = createSelector(
@@ -41,7 +43,8 @@ const view = createSelector(
                 selectedS3ProfileId: undefined,
                 availableS3Profiles: [],
                 bookmarks: [],
-                s3UriPrefixObj: undefined
+                s3UriPrefixObj: undefined,
+                isS3UriPrefixBookmarked: false
             };
         }
 
@@ -57,6 +60,14 @@ const view = createSelector(
             "The profile in the root url does not exist in configuration"
         );
 
+        const s3UriPrefixObj =
+            routeParams.path === ""
+                ? undefined
+                : parseS3UriPrefix({
+                      s3UriPrefix: `s3://${routeParams.path}`,
+                      strict: false
+                  });
+
         return {
             selectedS3ProfileId,
             availableS3Profiles: s3Profiles.map(s3Profile => ({
@@ -64,13 +75,13 @@ const view = createSelector(
                 displayName: s3Profile.paramsOfCreateS3Client.url
             })),
             bookmarks: s3Profile.bookmarks,
-            s3UriPrefixObj:
-                routeParams.path === ""
-                    ? undefined
-                    : parseS3UriPrefix({
-                          s3UriPrefix: `s3://${routeParams.path}`,
-                          strict: false
-                      })
+            s3UriPrefixObj,
+            isS3UriPrefixBookmarked:
+                s3UriPrefixObj === undefined
+                    ? false
+                    : s3Profile.bookmarks.some(bookmark =>
+                          same(bookmark.s3UriPrefixObj, s3UriPrefixObj)
+                      )
         };
     }
 );
