@@ -17,6 +17,9 @@ import { Text } from "onyxia-ui/Text";
 import MuiLink from "@mui/material/Link";
 import { SearchBar } from "onyxia-ui/SearchBar";
 import { parseS3UriPrefix, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
+import { useResolveLocalizedString } from "ui/i18n";
+import { Icon } from "onyxia-ui/Icon";
+import { getIconUrlByName } from "lazy-icons";
 
 const Page = withLoader({
     loader: async () => {
@@ -127,7 +130,7 @@ function S3Explorer() {
                 }
 
                 if (s3UriPrefixObj === undefined) {
-                    return null;
+                    return <BookmarkPanel />;
                 }
 
                 return (
@@ -156,6 +159,69 @@ function S3Explorer() {
                     />
                 );
             })()}
+        </div>
+    );
+}
+
+function BookmarkPanel(props: { className?: string }) {
+    const { className } = props;
+
+    const { resolveLocalizedString } = useResolveLocalizedString();
+
+    const { bookmarks } = useCoreState("s3ExplorerRootUiController", "view");
+
+    const {
+        functions: { s3ExplorerRootUiController }
+    } = getCoreSync();
+
+    const { cx, css, theme } = useStyles();
+
+    return (
+        <div
+            className={cx(
+                css({
+                    padding: theme.spacing(6)
+                }),
+                className
+            )}
+        >
+            <Text
+                typo="navigation label"
+                className={css({
+                    marginBottom: theme.spacing(4)
+                })}
+            >
+                <Icon icon={getIconUrlByName("Shortcut")} />
+                Bookmarks
+            </Text>
+            {bookmarks.map((bookmark, i) => (
+                <div
+                    key={i}
+                    className={css({
+                        display: "flex",
+                        marginBottom: theme.spacing(2)
+                    })}
+                >
+                    <MuiLink
+                        key={i}
+                        href="#"
+                        onClick={e => {
+                            e.preventDefault();
+                            s3ExplorerRootUiController.updateS3Url({
+                                s3UriPrefixObj: bookmark.s3UriPrefixObj
+                            });
+                        }}
+                    >
+                        {stringifyS3UriPrefixObj(bookmark.s3UriPrefixObj)}
+                    </MuiLink>
+
+                    {bookmark.displayName !== undefined && (
+                        <Text typo="body 1">
+                            - {resolveLocalizedString(bookmark.displayName)}
+                        </Text>
+                    )}
+                </div>
+            ))}
         </div>
     );
 }
