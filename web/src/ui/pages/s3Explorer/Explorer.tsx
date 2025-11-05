@@ -7,12 +7,16 @@ import {
     type ExplorerProps as HeadlessExplorerProps
 } from "../fileExplorer/Explorer";
 import { routes } from "ui/routes";
-import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
 import { useConst } from "powerhooks/useConst";
 import { assert } from "tsafe/assert";
 import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Text } from "onyxia-ui/Text";
+import { Button } from "onyxia-ui/Button";
+import { useStyles } from "tss";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -33,6 +37,7 @@ export function Explorer(props: Props) {
 
     const {
         isCurrentWorkingDirectoryLoaded,
+        accessDenied_directoryPath,
         commandLogsEntries,
         isNavigationOngoing,
         uploadProgress,
@@ -96,16 +101,6 @@ export function Explorer(props: Props) {
         }
     );
 
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        if (currentWorkingDirectoryView === undefined) {
-            showSplashScreen({ enableTransparency: true });
-        } else {
-            hideSplashScreen();
-        }
-    }, [currentWorkingDirectoryView === undefined]);
-
     const evtExplorerAction = useConst(() =>
         Evt.create<HeadlessExplorerProps["evtAction"]>()
     );
@@ -138,8 +133,53 @@ export function Explorer(props: Props) {
         })
     );
 
+    const { cx, css, theme } = useStyles();
+
     if (!isCurrentWorkingDirectoryLoaded) {
-        return null;
+        return (
+            <div
+                className={cx(
+                    css({
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }),
+                    className
+                )}
+            >
+                {(() => {
+                    if (accessDenied_directoryPath !== undefined) {
+                        return (
+                            <div
+                                className={css({
+                                    textAlign: "center"
+                                })}
+                            >
+                                <Text typo="body 1">
+                                    You do not have read permission on s3://
+                                    {accessDenied_directoryPath}
+                                    with this S3 Profile.
+                                </Text>
+                                <Button
+                                    startIcon={getIconUrlByName("ArrowBack")}
+                                    className={css({
+                                        marginTop: theme.spacing(3),
+                                        display: "inline-block"
+                                    })}
+                                    onClick={() =>
+                                        changeCurrentDirectory({ directoryPath: "" })
+                                    }
+                                >
+                                    Go Back
+                                </Button>
+                            </div>
+                        );
+                    }
+
+                    return <CircularProgress />;
+                })()}
+            </div>
+        );
     }
 
     return (
