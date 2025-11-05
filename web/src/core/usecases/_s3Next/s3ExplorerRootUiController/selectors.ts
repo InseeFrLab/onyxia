@@ -4,7 +4,7 @@ import { isObjectThatThrowIfAccessed, createSelector } from "clean-architecture"
 import { assert } from "tsafe";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
-import { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
+import { type S3UriPrefixObj, parseS3UriPrefix } from "core/tools/S3Uri";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -24,10 +24,9 @@ export type View = {
     }[];
     bookmarks: {
         displayName: LocalizedString | undefined;
-        bucket: string;
-        keyPrefix: string;
+        s3UriPrefixObj: S3UriPrefixObj;
     }[];
-    s3Url_parsed: S3PrefixUrlParsed | undefined;
+    s3UriPrefixObj: S3UriPrefixObj | undefined;
 };
 
 const view = createSelector(
@@ -42,7 +41,7 @@ const view = createSelector(
                 selectedS3ProfileId: undefined,
                 availableS3Profiles: [],
                 bookmarks: [],
-                s3Url_parsed: undefined
+                s3UriPrefixObj: undefined
             };
         }
 
@@ -61,10 +60,13 @@ const view = createSelector(
                 displayName: s3Profile.paramsOfCreateS3Client.url
             })),
             bookmarks: s3Profile.bookmarks,
-            s3Url_parsed:
+            s3UriPrefixObj:
                 routeParams.path === ""
                     ? undefined
-                    : S3PrefixUrlParsed.parse(`s3://${routeParams.path}`)
+                    : parseS3UriPrefix({
+                          s3UriPrefix: `s3://${routeParams.path}`,
+                          strict: false
+                      })
         };
     }
 );

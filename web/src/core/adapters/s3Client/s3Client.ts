@@ -5,7 +5,7 @@ import {
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert, is } from "tsafe/assert";
 import type { Oidc } from "core/ports/Oidc";
-import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
+import { parseS3UriPrefix, getIsS3UriPrefix, parseS3Uri } from "core/tools/S3Uri";
 import { exclude } from "tsafe/exclude";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { getPolicyAttributes } from "core/tools/getPolicyAttributes";
@@ -283,22 +283,10 @@ export function createS3Client(
             return getNewlyRequestedOrCachedToken();
         },
         listObjects: async ({ path }) => {
-            const { bucketName, prefix } = (() => {
-                const { bucketName, objectName } =
-                    bucketNameAndObjectNameFromS3Path(path);
-
-                const prefix =
-                    objectName === ""
-                        ? ""
-                        : objectName.endsWith("/")
-                          ? objectName
-                          : `${objectName}/`;
-
-                return {
-                    bucketName,
-                    prefix
-                };
-            })();
+            const { bucket: bucketName, keyPrefix: prefix } = parseS3UriPrefix({
+                s3UriPrefix: `s3://${path}`,
+                strict: true
+            });
 
             const { getAwsS3Client } = await prApi;
 
@@ -471,11 +459,43 @@ export function createS3Client(
                 isBucketPolicyAvailable
             };
         },
+        // TODO: @ddecrulle Please refactor this, objectName can either be a
+        // a keyPrefix or a fully qualified key but there is multiple level of
+        // indirection, the check is done deep instead of upfront.
+        // I'm pretty sure that having a * at the end of the resourceArn when setting access right
+        // for a specific object is not what we want.
+        // When extracting things to standalone utils the contract must be clearly
+        // defined, here it is not so it only give the feeling of decoupling but
+        // in reality it's impossible to guess what addResourceArnInGetObjectStatement is doing
+        // plus naming things is hard, bad names and bad abstractions are harmful because misleading.
+        // this function is not adding anything to anything it's returning something.
+        // Plus resourceArn already encapsulate the bucketName and objectName.
+        // Here we have 4 functions that are used once, that involve implicit coupling and with misleading name.
+        // SO, if you can't abstract away in a clean way, just don't and put everything inline
+        // in closures. At least we know where we stand.
         setPathAccessPolicy: async ({ currentBucketPolicy, policy, path }) => {
             const { getAwsS3Client } = await prApi;
             const { awsS3Client } = await getAwsS3Client();
 
-            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucketName, objectName } = (() => {
+                if (getIsS3UriPrefix(`s3://${path}`)) {
+                    const s3UriPrefixObj = parseS3UriPrefix({
+                        s3UriPrefix: `s3://${path}`,
+                        strict: true
+                    });
+                    return {
+                        bucketName: s3UriPrefixObj.bucket,
+                        objectName: s3UriPrefixObj.keyPrefix
+                    };
+                }
+
+                const s3UriObj = parseS3Uri(`s3://${path}`);
+
+                return {
+                    bucketName: s3UriObj.bucket,
+                    objectName: s3UriObj.key
+                };
+            })();
 
             const resourceArn = `arn:aws:s3:::${bucketName}/${objectName}*`;
             const bucketArn = `arn:aws:s3:::${bucketName}`;
@@ -527,7 +547,7 @@ export function createS3Client(
                 import("@aws-sdk/lib-storage").then(({ Upload }) => Upload)
             ]);
 
-            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucket: bucketName, key: objectName } = parseS3Uri(`s3://${path}`);
 
             const upload = new Upload({
                 client: awsS3Client,
@@ -558,7 +578,7 @@ export function createS3Client(
             await upload.done();
         },
         deleteFile: async ({ path }) => {
-            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucket: bucketName, key: objectName } = parseS3Uri(`s3://${path}`);
 
             const { getAwsS3Client } = await prApi;
 
@@ -573,7 +593,7 @@ export function createS3Client(
         },
         deleteFiles: async ({ paths }) => {
             //bucketName is the same for all paths
-            const { bucketName } = bucketNameAndObjectNameFromS3Path(paths[0]);
+            const { bucket: bucketName } = parseS3Uri(`s3://${paths[0]}`);
 
             const { getAwsS3Client } = await prApi;
 
@@ -582,7 +602,7 @@ export function createS3Client(
             const { DeleteObjectsCommand } = await import("@aws-sdk/client-s3");
 
             const objects = paths.map(path => {
-                const { objectName } = bucketNameAndObjectNameFromS3Path(path);
+                const { key: objectName } = parseS3Uri(`s3://${path}`);
                 return { Key: objectName };
             });
 
@@ -599,7 +619,7 @@ export function createS3Client(
             }
         },
         getFileDownloadUrl: async ({ path, validityDurationSecond }) => {
-            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucket: bucketName, key: objectName } = parseS3Uri(`s3://${path}`);
 
             const { getAwsS3Client } = await prApi;
 
@@ -622,7 +642,7 @@ export function createS3Client(
         },
 
         getFileContent: async ({ path, range }) => {
-            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucket: bucketName, key: objectName } = parseS3Uri(`s3://${path}`);
 
             const { getAwsS3Client } = await prApi;
             const { awsS3Client } = await getAwsS3Client();
@@ -648,7 +668,7 @@ export function createS3Client(
         },
 
         getFileContentType: async ({ path }) => {
-            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucket: bucketName, key: objectName } = parseS3Uri(`s3://${path}`);
 
             const { getAwsS3Client } = await prApi;
 

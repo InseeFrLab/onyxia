@@ -21,7 +21,9 @@ import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
-import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
+import { decodeJwt } from "oidc-spa/tools/decodeJwt";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -188,6 +190,54 @@ export function createOnyxiaApi(params: {
                               })()
                           });
 
+                const bookmarkedDirectories_test = await (async () => {
+                    const isJoseph = await (async () => {
+                        const accessToken = await getOidcAccessToken();
+
+                        if (accessToken === undefined) {
+                            return false;
+                        }
+
+                        const { preferred_username } = decodeJwt(accessToken) as any;
+
+                        return preferred_username === "garronej";
+                    })();
+
+                    if (!isJoseph) {
+                        return [];
+                    }
+
+                    return id<
+                        ({
+                            fullPath: string;
+                            title: LocalizedString;
+                            description?: LocalizedString;
+                            tags?: LocalizedString[];
+                        } & (
+                            | { claimName?: undefined }
+                            | {
+                                  claimName: string;
+                                  includedClaimPattern?: string;
+                                  excludedClaimPattern?: string;
+                              }
+                        ))[]
+                    >([
+                        {
+                            fullPath: "$1/",
+                            title: "Personal",
+                            description: "Personal Bucket",
+                            claimName: "preferred_username"
+                        },
+                        {
+                            fullPath: "projet-$1/",
+                            title: "Group $1",
+                            description: "Shared bucket among members of project $1",
+                            claimName: "groups",
+                            excludedClaimPattern: "^USER_ONYXIA$"
+                        }
+                    ]);
+                })();
+
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion =>
                         id<DeploymentRegion>({
@@ -310,8 +360,40 @@ export function createOnyxiaApi(params: {
                                                 workingDirectory:
                                                     s3Config_api.workingDirectory,
                                                 bookmarkedDirectories:
-                                                    s3Config_api.bookmarkedDirectories ??
-                                                    []
+                                                    s3Config_api.bookmarkedDirectories?.map(
+                                                        bookmarkedDirectory_api => {
+                                                            const {
+                                                                fullPath,
+                                                                title,
+                                                                description,
+                                                                tags,
+                                                                ...rest
+                                                            } = bookmarkedDirectory_api;
+
+                                                            return id<DeploymentRegion.S3Config.BookmarkedDirectory>(
+                                                                {
+                                                                    fullPath,
+                                                                    title,
+                                                                    description,
+                                                                    tags,
+                                                                    ...(rest.claimName ===
+                                                                    undefined
+                                                                        ? {
+                                                                              claimName:
+                                                                                  undefined
+                                                                          }
+                                                                        : {
+                                                                              claimName:
+                                                                                  rest.claimName,
+                                                                              includedClaimPattern:
+                                                                                  rest.includedClaimPattern,
+                                                                              excludedClaimPattern:
+                                                                                  rest.excludedClaimPattern
+                                                                          })
+                                                                }
+                                                            );
+                                                        }
+                                                    ) ?? []
                                             })
                                         );
 
@@ -334,34 +416,49 @@ export function createOnyxiaApi(params: {
                                                     pathStyleAccess,
                                                     region,
                                                     sts,
-                                                    bookmarks: bookmarkedDirectories.map(
-                                                        ({
+                                                    bookmarks: [
+                                                        ...bookmarkedDirectories_test,
+                                                        ...bookmarkedDirectories
+                                                    ].map(bookmarkedDirectory_api => {
+                                                        const {
                                                             fullPath,
                                                             title,
                                                             description,
                                                             tags,
                                                             ...rest
-                                                        }) => {
-                                                            const {
-                                                                bucketName,
-                                                                objectName
-                                                            } =
-                                                                bucketNameAndObjectNameFromS3Path(
-                                                                    fullPath
-                                                                );
+                                                        } = bookmarkedDirectory_api;
 
-                                                            return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
-                                                                {
-                                                                    bucket: bucketName,
-                                                                    keyPrefix: objectName,
-                                                                    title,
-                                                                    description,
-                                                                    tags: tags ?? [],
-                                                                    ...rest
-                                                                }
-                                                            );
-                                                        }
-                                                    )
+                                                        const s3UriPrefix = `s3://${fullPath}`;
+
+                                                        // NOTE: Just for checking shape.
+                                                        parseS3UriPrefix({
+                                                            s3UriPrefix,
+                                                            strict: true
+                                                        });
+
+                                                        return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
+                                                            {
+                                                                s3UriPrefix,
+                                                                title,
+                                                                description,
+                                                                tags: tags ?? [],
+                                                                ...(rest.claimName ===
+                                                                undefined
+                                                                    ? {
+                                                                          claimName:
+                                                                              undefined
+                                                                      }
+                                                                    : {
+                                                                          claimName:
+                                                                              rest.claimName,
+                                                                          includedClaimPattern:
+                                                                              rest.includedClaimPattern,
+                                                                          excludedClaimPattern:
+                                                                              rest.excludedClaimPattern
+                                                                      })
+                                                            }
+                                                        );
+                                                    })
                                                 })
                                             )
                                         ),

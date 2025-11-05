@@ -31,13 +31,13 @@ After:
         {
             fullPath: "$1/",
             title: "Personal",
-            description: "Personal storage",
+            description: "Personal Bucket",
             claimName: "preferred_username"
         },
         {
             fullPath: "projet-$1/",
             title: "Group $1",
-            description: "Shared storage for project $1",
+            description: "Shared bucket among members of project $1",
             claimName: "groups",
             excludedClaimPattern: "^USER_ONYXIA$"
         },

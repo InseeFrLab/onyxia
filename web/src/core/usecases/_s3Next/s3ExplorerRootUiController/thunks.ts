@@ -3,7 +3,7 @@ import { actions, type RouteParams } from "./state";
 import { protectedSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import { evt } from "./evt";
-import type { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
+import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 export const thunks = {
     load:
@@ -65,13 +65,13 @@ export const thunks = {
             }
         },
     updateS3Url:
-        (params: { s3Url_parsed: S3PrefixUrlParsed | undefined }) =>
+        (params: { s3UriPrefixObj: S3UriPrefixObj | undefined }) =>
         (...args) => {
             const [dispatch] = args;
 
-            const { s3Url_parsed } = params;
+            const { s3UriPrefixObj } = params;
 
-            dispatch(actions.s3UrlUpdated({ s3Url_parsed }));
+            dispatch(actions.s3UrlUpdated({ s3UriPrefixObj }));
         },
     updateSelectedS3Profile:
         (params: { s3ProfileId: string }) =>

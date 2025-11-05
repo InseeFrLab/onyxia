@@ -6,6 +6,8 @@ import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe";
 import type * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
+import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
+import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 export type S3Profile = S3Profile.DefinedInRegion | S3Profile.CreatedByUser;
 
@@ -27,16 +29,6 @@ export namespace S3Profile {
         bookmarks: Bookmark[];
     };
 
-    export namespace DefinedInRegion {
-        export type Bookmark = {
-            title: LocalizedString;
-            description: LocalizedString | undefined;
-            tags: LocalizedString[];
-            bucket: string;
-            keyPrefix: string;
-        };
-    }
-
     export type CreatedByUser = Common & {
         origin: "created by user (or group project member)";
         creationTime: number;
@@ -47,15 +39,14 @@ export namespace S3Profile {
 
     export type Bookmark = {
         displayName: LocalizedString | undefined;
-        bucket: string;
-        keyPrefix: string;
+        s3UriPrefixObj: S3UriPrefixObj;
     };
 }
 
 export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
     fromVault: projectManagement.ProjectConfigs["s3"];
     fromRegion: (Omit<DeploymentRegion.S3Next.S3Profile, "bookmarks"> & {
-        bookmarks: S3Profile.DefinedInRegion.Bookmark[];
+        bookmarks: ResolvedTemplateBookmark[];
     })[];
     credentialsTestState: s3CredentialsTest.State;
 }): S3Profile[] {
@@ -151,10 +142,9 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                         )
                     )
                 ),
-                bookmarks: c.bookmarks.map(({ title, bucket, keyPrefix }) => ({
+                bookmarks: c.bookmarks.map(({ title, s3UriPrefixObj }) => ({
                     displayName: title,
-                    bucket,
-                    keyPrefix
+                    s3UriPrefixObj
                 })),
                 paramsOfCreateS3Client,
                 credentialsTestStatus: getCredentialsTestStatus({

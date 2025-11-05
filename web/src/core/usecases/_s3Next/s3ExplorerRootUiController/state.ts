@@ -1,6 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
 import { createObjectThatThrowsIfAccessed } from "clean-architecture";
-import { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
+import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 
 export const name = "s3ExplorerRootUiController";
 
@@ -33,14 +33,14 @@ export const { actions, reducer } = createUsecaseActions({
         },
         s3UrlUpdated: (
             state,
-            { payload }: { payload: { s3Url_parsed: S3PrefixUrlParsed | undefined } }
+            { payload }: { payload: { s3UriPrefixObj: S3UriPrefixObj | undefined } }
         ) => {
-            const { s3Url_parsed } = payload;
+            const { s3UriPrefixObj } = payload;
 
             state.routeParams.path =
-                s3Url_parsed === undefined
+                s3UriPrefixObj === undefined
                     ? ""
-                    : S3PrefixUrlParsed.stringify(s3Url_parsed).slice("s3://".length);
+                    : stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length);
         },
         selectedS3ProfileUpdated: (
             state,

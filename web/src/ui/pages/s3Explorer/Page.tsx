@@ -16,7 +16,7 @@ import { useEvt } from "evt/hooks";
 import { Text } from "onyxia-ui/Text";
 import MuiLink from "@mui/material/Link";
 import { SearchBar } from "onyxia-ui/SearchBar";
-import { S3PrefixUrlParsed } from "core/tools/S3PrefixUrlParsed";
+import { parseS3UriPrefix, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 
 const Page = withLoader({
     loader: async () => {
@@ -45,7 +45,7 @@ function S3Explorer() {
         evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
-    const { selectedS3ProfileId, availableS3Profiles, s3Url_parsed } = useCoreState(
+    const { selectedS3ProfileId, availableS3Profiles, s3UriPrefixObj } = useCoreState(
         "s3ExplorerRootUiController",
         "view"
     );
@@ -114,7 +114,7 @@ function S3Explorer() {
                     return <h1>Create a profile</h1>;
                 }
 
-                if (s3Url_parsed === undefined) {
+                if (s3UriPrefixObj === undefined) {
                     return (
                         <DirectNavigation
                             className={css({
@@ -128,16 +128,19 @@ function S3Explorer() {
                     <Explorer
                         className={classes.explorer}
                         changeCurrentDirectory={({ directoryPath }) => {
-                            const s3Url_parsed =
+                            const s3UriPrefixObj =
                                 directoryPath === ""
                                     ? undefined
-                                    : S3PrefixUrlParsed.parse(`s3://${directoryPath}`);
+                                    : parseS3UriPrefix({
+                                          s3UriPrefix: `s3://${directoryPath}`,
+                                          strict: false
+                                      });
 
                             s3ExplorerRootUiController.updateS3Url({
-                                s3Url_parsed
+                                s3UriPrefixObj
                             });
                         }}
-                        directoryPath={S3PrefixUrlParsed.stringify(s3Url_parsed).slice(
+                        directoryPath={stringifyS3UriPrefixObj(s3UriPrefixObj).slice(
                             "s3://".length
                         )}
                         isDirectoryPathBookmarked={false}
@@ -162,9 +165,12 @@ function DirectNavigation(props: { className?: string }) {
 
     const [search, setSearch] = useState(PROTOCOL);
 
-    const s3Url_parsed = useMemo(() => {
+    const s3UriPrefixObj = useMemo(() => {
         try {
-            return S3PrefixUrlParsed.parse(search);
+            return parseS3UriPrefix({
+                s3UriPrefix: search,
+                strict: false
+            });
         } catch {
             return undefined;
         }
@@ -179,12 +185,12 @@ function DirectNavigation(props: { className?: string }) {
                 switch (keyId) {
                     case "Enter":
                         {
-                            if (s3Url_parsed === undefined) {
+                            if (s3UriPrefixObj === undefined) {
                                 return;
                             }
 
                             s3ExplorerRootUiController.updateS3Url({
-                                s3Url_parsed
+                                s3UriPrefixObj
                             });
                         }
                         break;
@@ -243,14 +249,11 @@ function BookmarkBar(props: { className?: string }) {
                     onClick={e => {
                         e.preventDefault();
                         s3ExplorerRootUiController.updateS3Url({
-                            s3Url_parsed: {
-                                bucket: bookmark.bucket,
-                                keyPrefix: bookmark.keyPrefix
-                            }
+                            s3UriPrefixObj: bookmark.s3UriPrefixObj
                         });
                     }}
                 >
-                    {`s3://${bookmark.bucket}/${bookmark.keyPrefix}`}
+                    {stringifyS3UriPrefixObj(bookmark.s3UriPrefixObj)}
                 </MuiLink>
             ))}
         </div>
