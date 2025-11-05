@@ -181,6 +181,7 @@ export const LeftBar = memo((props: Props) => {
                     case "dataCollection":
                         return "dataCollection";
                     case "s3Explorer":
+                    case "s3Explorer_root":
                         return "s3Explorer";
                     case "page404":
                         return null;

@@ -10,6 +10,13 @@ export const routeDefs = {
             profile: param.query.optional.string
         },
         ({ path }) => `/s3/${path}`
+    ),
+    s3Explorer_root: defineRoute(
+        {
+            path: param.query.optional.string.default(""),
+            profile: param.query.optional.string
+        },
+        () => "/s3"
     )
 };
 
