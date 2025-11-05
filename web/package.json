@@ -78,7 +78,7 @@
         "react-dom": "^18.3.1",
         "run-exclusive": "^2.2.19",
         "screen-scaler": "^2.0.0",
-        "tsafe": "^1.8.5",
+        "tsafe": "^1.8.12",
         "tss-react": "^4.9.18",
         "type-route": "1.1.0",
         "xterm": "^5.3.0",
