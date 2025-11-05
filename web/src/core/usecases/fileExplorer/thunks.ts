@@ -160,10 +160,10 @@ const privateThunks = {
                 return r.s3Client;
             });
 
-            const { objects, bucketPolicy, isBucketPolicyAvailable } =
-                await s3Client.listObjects({
-                    path: directoryPath
-                });
+            //const { objects, bucketPolicy, isBucketPolicyAvailable } =
+            const listObjectResult = await s3Client.listObjects({
+                path: directoryPath
+            });
 
             if (ctx.completionStatus !== undefined) {
                 dispatch(actions.commandLogCancelled({ cmdId }));
@@ -175,21 +175,32 @@ const privateThunks = {
             dispatch(
                 actions.commandLogResponseReceived({
                     cmdId,
-                    resp: objects
-                        .map(({ kind, basename }) =>
-                            kind === "directory" ? `${basename}/` : basename
-                        )
-                        .join("\n")
+                    resp: listObjectResult.isAccessDenied
+                        ? "Access Denied"
+                        : listObjectResult.objects
+                              .map(({ kind, basename }) =>
+                                  kind === "directory" ? `${basename}/` : basename
+                              )
+                              .join("\n")
                 })
             );
 
             dispatch(
-                actions.navigationCompleted({
-                    directoryPath,
-                    objects,
-                    bucketPolicy,
-                    isBucketPolicyAvailable
-                })
+                actions.navigationCompleted(
+                    listObjectResult.isAccessDenied
+                        ? {
+                              isAccessDenied: true,
+                              directoryPath
+                          }
+                        : {
+                              isAccessDenied: false,
+                              directoryPath,
+                              objects: listObjectResult.objects,
+                              bucketPolicy: listObjectResult.bucketPolicy,
+                              isBucketPolicyAvailable:
+                                  listObjectResult.isBucketPolicyAvailable
+                          }
+                )
             );
         },
     downloadObject:
@@ -285,11 +296,13 @@ const privateThunks = {
 
                 const { crawl } = crawlFactory({
                     list: async ({ directoryPath }) => {
-                        const { objects } = await s3Client.listObjects({
+                        const listObjectResult = await s3Client.listObjects({
                             path: directoryPath
                         });
 
-                        return objects.reduce<{
+                        assert(!listObjectResult.isAccessDenied);
+
+                        return listObjectResult.objects.reduce<{
                             fileBasenames: string[];
                             directoryBasenames: string[];
                         }>(
@@ -786,9 +799,14 @@ export const thunks = {
 
                 const { crawl } = crawlFactory({
                     list: async ({ directoryPath }) => {
-                        const { objects } = await s3Client.listObjects({
+                        const listObjectsResult = await s3Client.listObjects({
                             path: directoryPath
                         });
+
+                        assert(!listObjectsResult.isAccessDenied);
+
+                        const { objects } = listObjectsResult;
+
                         return {
                             fileBasenames: objects
                                 .filter(obj => obj.kind === "file")

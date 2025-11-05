@@ -70,18 +70,20 @@ export namespace CurrentWorkingDirectoryView {
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.accessDenied_directoryPath),
     createSelector(state, state => state.objects),
     createSelector(state, state => state.ongoingOperations),
     createSelector(state, state => state.s3FilesBeingUploaded),
     createSelector(state, state => state.isBucketPolicyAvailable),
     (
         directoryPath,
+        accessDenied_directoryPath,
         objects,
         ongoingOperations,
         s3FilesBeingUploaded,
         isBucketPolicyAvailable
     ): CurrentWorkingDirectoryView | null => {
-        if (directoryPath === undefined) {
+        if (directoryPath === undefined || accessDenied_directoryPath !== undefined) {
             return null;
         }
         const items = [
@@ -303,7 +305,7 @@ const pathMinDepth = createSelector(workingDirectoryPath, workingDirectoryPath =
 });
 
 const main = createSelector(
-    createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.accessDenied_directoryPath),
     uploadProgress,
     commandLogsEntries,
     currentWorkingDirectoryView,
@@ -313,7 +315,7 @@ const main = createSelector(
     shareView,
     isDownloadPreparing,
     (
-        directoryPath,
+        accessDenied_directoryPath,
         uploadProgress,
         commandLogsEntries,
         currentWorkingDirectoryView,
@@ -323,9 +325,10 @@ const main = createSelector(
         shareView,
         isDownloadPreparing
     ) => {
-        if (directoryPath === undefined) {
+        if (currentWorkingDirectoryView === null) {
             return {
                 isCurrentWorkingDirectoryLoaded: false as const,
+                accessDenied_directoryPath,
                 isNavigationOngoing,
                 uploadProgress,
                 commandLogsEntries,
@@ -335,7 +338,6 @@ const main = createSelector(
             };
         }
 
-        assert(currentWorkingDirectoryView !== null);
         assert(shareView !== null);
 
         return {
