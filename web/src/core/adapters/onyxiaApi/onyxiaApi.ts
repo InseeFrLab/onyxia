@@ -21,7 +21,6 @@ import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
-import { decodeJwt } from "oidc-spa/tools/decodeJwt";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
@@ -191,19 +190,7 @@ export function createOnyxiaApi(params: {
                           });
 
                 const bookmarkedDirectories_test = await (async () => {
-                    const isJoseph = await (async () => {
-                        const accessToken = await getOidcAccessToken();
-
-                        if (accessToken === undefined) {
-                            return false;
-                        }
-
-                        const { preferred_username } = decodeJwt(accessToken) as any;
-
-                        return preferred_username === "garronej";
-                    })();
-
-                    if (!isJoseph) {
+                    if (!window.location.href.includes("localhost")) {
                         return [];
                     }
 
