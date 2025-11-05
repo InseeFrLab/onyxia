@@ -1,24 +1,33 @@
 import type { DeploymentRegion } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import type { LocalizedString } from "ui/i18n";
-import type { S3Profile } from "./s3Profiles";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
+import { type S3UriPrefixObj, parseS3UriPrefix } from "core/tools/S3Uri";
+
+export type ResolvedTemplateBookmark = {
+    title: LocalizedString;
+    description: LocalizedString | undefined;
+    tags: LocalizedString[];
+    s3UriPrefixObj: S3UriPrefixObj;
+};
 
 export async function resolveTemplatedBookmark(params: {
     bookmark_region: DeploymentRegion.S3Next.S3Profile.Bookmark;
     getDecodedIdToken: () => Promise<Record<string, unknown>>;
-}): Promise<S3Profile.DefinedInRegion.Bookmark[]> {
+}): Promise<ResolvedTemplateBookmark[]> {
     const { bookmark_region, getDecodedIdToken } = params;
 
     if (bookmark_region.claimName === undefined) {
         return [
-            id<S3Profile.DefinedInRegion.Bookmark>({
+            id<ResolvedTemplateBookmark>({
+                s3UriPrefixObj: parseS3UriPrefix({
+                    s3UriPrefix: bookmark_region.s3UriPrefix,
+                    strict: true
+                }),
                 title: bookmark_region.title,
                 description: bookmark_region.description,
-                tags: bookmark_region.tags,
-                bucket: bookmark_region.bucket,
-                keyPrefix: bookmark_region.keyPrefix
+                tags: bookmark_region.tags
             })
         ];
     }
@@ -108,9 +117,11 @@ export async function resolveTemplatedBookmark(params: {
                 );
             };
 
-            return id<S3Profile.DefinedInRegion.Bookmark>({
-                bucket: substituteTemplateString(bookmark_region.bucket),
-                keyPrefix: substituteTemplateString(bookmark_region.keyPrefix),
+            return id<ResolvedTemplateBookmark>({
+                s3UriPrefixObj: parseS3UriPrefix({
+                    s3UriPrefix: substituteTemplateString(bookmark_region.s3UriPrefix),
+                    strict: true
+                }),
                 title: substituteLocalizedString(bookmark_region.title),
                 description:
                     bookmark_region.description === undefined
