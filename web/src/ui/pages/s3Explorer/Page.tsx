@@ -48,12 +48,10 @@ function S3Explorer() {
         evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
-    const {
-        selectedS3ProfileId,
-        availableS3Profiles,
-        s3UriPrefixObj,
-        isS3UriPrefixBookmarked
-    } = useCoreState("s3ExplorerRootUiController", "view");
+    const { selectedS3ProfileId, s3UriPrefixObj, isS3UriPrefixBookmarked } = useCoreState(
+        "s3ExplorerRootUiController",
+        "view"
+    );
 
     const { classes, css, theme } = useStyles();
 
@@ -86,27 +84,7 @@ function S3Explorer() {
                     gap: theme.spacing(3)
                 }}
             >
-                <FormControl variant="standard">
-                    <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
-                    <Select
-                        labelId="select-s3Profile"
-                        value={selectedS3ProfileId}
-                        onChange={event => {
-                            s3ExplorerRootUiController.updateSelectedS3Profile({
-                                s3ProfileId: event.target.value
-                            });
-                        }}
-                        className={css({
-                            fontSize: "small"
-                        })}
-                    >
-                        {availableS3Profiles.map(s3Profile => (
-                            <MenuItem key={s3Profile.id} value={s3Profile.id}>
-                                {s3Profile.displayName}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                <S3ProfileSelect />
                 <BookmarkBar
                     className={css({
                         flex: 1
@@ -340,6 +318,43 @@ function BookmarkBar(props: { className?: string }) {
                 </MuiLink>
             ))}
         </div>
+    );
+}
+
+function S3ProfileSelect() {
+    const {
+        functions: { s3ExplorerRootUiController }
+    } = getCoreSync();
+
+    const { selectedS3ProfileId, availableS3Profiles } = useCoreState(
+        "s3ExplorerRootUiController",
+        "view"
+    );
+
+    const { css } = useStyles();
+
+    return (
+        <FormControl variant="standard">
+            <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
+            <Select
+                labelId="select-s3Profile"
+                value={selectedS3ProfileId}
+                onChange={event => {
+                    s3ExplorerRootUiController.updateSelectedS3Profile({
+                        s3ProfileId: event.target.value
+                    });
+                }}
+                className={css({
+                    fontSize: "small"
+                })}
+            >
+                {availableS3Profiles.map(s3Profile => (
+                    <MenuItem key={s3Profile.id} value={s3Profile.id}>
+                        {s3Profile.displayName}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
     );
 }
 
