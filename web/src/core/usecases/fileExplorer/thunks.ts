@@ -115,7 +115,8 @@ const privateThunks = {
 
             if (
                 !doListAgainIfSamePath &&
-                getState()[name].directoryPath === directoryPath
+                getState()[name].directoryPath === directoryPath &&
+                getState()[name].accessDenied_directoryPath === undefined
             ) {
                 return;
             }
