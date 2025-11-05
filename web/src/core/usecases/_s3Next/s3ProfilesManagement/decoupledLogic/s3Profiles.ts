@@ -133,15 +133,9 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
 
             return {
                 origin: "defined in region",
-                id: fnv1aHashToHex(
-                    JSON.stringify(
-                        Object.fromEntries(
-                            Object.entries(c).sort(([key1], [key2]) =>
-                                key1.localeCompare(key2)
-                            )
-                        )
-                    )
-                ),
+                id: `region-${fnv1aHashToHex(
+                    JSON.stringify([c.url, c.sts.oidcParams.clientId ?? ""])
+                )}`,
                 bookmarks: c.bookmarks.map(({ title, s3UriPrefixObj }) => ({
                     displayName: title,
                     s3UriPrefixObj
