@@ -200,13 +200,7 @@ export function getS3Configs(params: {
             .sort((a, b) => b.creationTime - a.creationTime),
         ...s3RegionConfigs.map((c, i): S3Config.FromDeploymentRegion => {
             const id = `region-${fnv1aHashToHex(
-                JSON.stringify(
-                    Object.fromEntries(
-                        Object.entries(c).sort(([key1], [key2]) =>
-                            key1.localeCompare(key2)
-                        )
-                    )
-                )
+                JSON.stringify([c.url, c.sts.oidcParams.clientId ?? ""])
             )}`;
 
             const workingDirectoryContext =
