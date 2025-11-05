@@ -51,7 +51,11 @@ const view = createSelector(
             s3Profile => s3Profile.id === selectedS3ProfileId
         );
 
-        assert(s3Profile !== undefined);
+        // TODO: Handle this case gratefully
+        assert(
+            s3Profile !== undefined,
+            "The profile in the root url does not exist in configuration"
+        );
 
         return {
             selectedS3ProfileId,
