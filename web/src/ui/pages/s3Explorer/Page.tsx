@@ -116,7 +116,7 @@ function S3Explorer() {
             {/* Not conditionally mounted to track state */}
             <DirectNavigation
                 className={css({
-                    marginTop: theme.spacing(3),
+                    marginTop: theme.spacing(5),
                     display:
                         selectedS3ProfileId === undefined || s3UriPrefixObj !== undefined
                             ? "none"
