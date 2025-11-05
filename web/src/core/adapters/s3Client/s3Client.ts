@@ -406,14 +406,26 @@ export function createS3Client(
                 let continuationToken: string | undefined;
 
                 do {
-                    const resp = await awsS3Client.send(
-                        new (await import("@aws-sdk/client-s3")).ListObjectsV2Command({
-                            Bucket: bucketName,
-                            Prefix: prefix,
-                            Delimiter: "/",
-                            ContinuationToken: continuationToken
-                        })
-                    );
+                    const listObjectsV2Command = new (
+                        await import("@aws-sdk/client-s3")
+                    ).ListObjectsV2Command({
+                        Bucket: bucketName,
+                        Prefix: prefix,
+                        Delimiter: "/",
+                        ContinuationToken: continuationToken
+                    });
+
+                    let resp: import("@aws-sdk/client-s3").ListObjectsV2CommandOutput;
+
+                    try {
+                        resp = await awsS3Client.send(listObjectsV2Command);
+                    } catch (error) {
+                        if (!String(error).includes("Access Denied")) {
+                            throw error;
+                        }
+
+                        return { isAccessDenied: true };
+                    }
 
                     Contents.push(...(resp.Contents ?? []));
 
@@ -454,6 +466,7 @@ export function createS3Client(
             );
 
             return {
+                isAccessDenied: false,
                 objects: [...directories, ...files],
                 bucketPolicy,
                 isBucketPolicyAvailable

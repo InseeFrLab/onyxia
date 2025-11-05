@@ -8,6 +8,7 @@ import type { S3FilesBeingUploaded } from "./decoupledLogic/uploadProgress";
 //All explorer paths are expected to be absolute (start with /)
 
 export type State = {
+    accessDenied_directoryPath: string | undefined;
     directoryPath: string | undefined;
     viewMode: "list" | "block";
     objects: S3Object[];
@@ -54,7 +55,8 @@ export const { reducer, actions } = createUsecaseActions({
             Statement: []
         },
         isBucketPolicyAvailable: true,
-        share: undefined
+        share: undefined,
+        accessDenied_directoryPath: undefined
     }),
     reducers: {
         fileUploadStarted: (
@@ -120,17 +122,29 @@ export const { reducer, actions } = createUsecaseActions({
             {
                 payload
             }: {
-                payload: {
-                    directoryPath: string;
-                    objects: S3Object[];
-                    bucketPolicy: S3BucketPolicy | undefined;
-                    isBucketPolicyAvailable: boolean;
-                };
+                payload:
+                    | {
+                          isAccessDenied: true;
+                          directoryPath: string;
+                      }
+                    | {
+                          isAccessDenied: false;
+                          directoryPath: string;
+                          objects: S3Object[];
+                          bucketPolicy: S3BucketPolicy | undefined;
+                          isBucketPolicyAvailable: boolean;
+                      };
             }
         ) => {
+            if (payload.isAccessDenied) {
+                state.accessDenied_directoryPath = payload.directoryPath;
+                return;
+            }
+
             const { directoryPath, objects, bucketPolicy, isBucketPolicyAvailable } =
                 payload;
 
+            state.accessDenied_directoryPath = undefined;
             state.directoryPath = directoryPath;
             state.objects = objects;
             state.isNavigationOngoing = false;
