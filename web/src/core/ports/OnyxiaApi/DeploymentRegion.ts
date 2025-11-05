@@ -193,8 +193,7 @@ export namespace DeploymentRegion {
 
         export namespace S3Profile {
             export type Bookmark = {
-                bucket: string;
-                keyPrefix: string;
+                s3UriPrefix: string;
                 title: LocalizedString;
                 description: LocalizedString | undefined;
                 tags: LocalizedString[];

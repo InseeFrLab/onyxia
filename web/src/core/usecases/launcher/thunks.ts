@@ -6,7 +6,6 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigsUsecase from "core/usecases/userConfigs";
 import * as userProfileForm from "core/usecases/userProfileForm";
-import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
 import { actions } from "./state";
@@ -19,6 +18,7 @@ import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
 import type { DeepPartial } from "core/tools/DeepPartial";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 type RestorableServiceConfig = projectManagement.ProjectConfigs.RestorableServiceConfig;
 
@@ -701,8 +701,11 @@ export const protectedThunks = {
                             ? parseUrl(s3Config.paramsOfCreateS3Client.url)
                             : {};
 
-                    const { bucketName, objectName: objectNamePrefix } =
-                        bucketNameAndObjectNameFromS3Path(s3Config.workingDirectoryPath);
+                    const { bucket: bucketName, keyPrefix: objectNamePrefix } =
+                        parseS3UriPrefix({
+                            s3UriPrefix: `s3://${s3Config.workingDirectoryPath}`,
+                            strict: false
+                        });
 
                     const s3: XOnyxiaContext["s3"] = {
                         isEnabled: true,

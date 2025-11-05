@@ -2,12 +2,12 @@ import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
-import type { S3Profile } from "./decoupledLogic/s3Profiles";
+import type { ResolvedTemplateBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
 
 type State = {
     resolvedTemplatedBookmarks: {
         correspondingS3ConfigIndexInRegion: number;
-        bookmarks: S3Profile.DefinedInRegion.Bookmark[];
+        bookmarks: ResolvedTemplateBookmark[];
     }[];
 };
 
