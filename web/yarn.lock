@@ -8097,6 +8097,11 @@ tsafe@^1.8.10:
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.8.10.tgz#98e28f0beeca4e6632a8481a300fa85dd92826c0"
   integrity sha512-2bBiNHk6Ts4LZQ4+6OxF/BtkJ8YWqo1VMbMo6qrRIZoqAwM8xuwWUx9g3C/p6cCdUmNWeOWIaiJzgO5zWy1Cdg==
 
+tsafe@^1.8.12:
+  version "1.8.12"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.8.12.tgz#68a410b4b7687ef497b1c85904b1215532335c3e"
+  integrity sha512-nFRqW0ttu/2o6XTXsHiVZWJBCOaxhVqZLg7dgs3coZNsCMPXPfwz+zPHAQA+70fNnVJLAPg1EgGIqK9Q84tvAw==
+
 tsafe@^1.8.5:
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.8.5.tgz#cdf9fa3111974ac480d7ee519f8241815e5d22ea"
