@@ -86,7 +86,6 @@ export async function createOidc<AutoLogin extends boolean>(
             return authorizationUrl;
         },
         idleSessionLifetimeInSeconds,
-        homeUrl: import.meta.env.BASE_URL,
         debugLogs: enableDebugLogs,
         autoLogin
     });
