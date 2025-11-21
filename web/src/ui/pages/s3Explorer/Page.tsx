@@ -359,7 +359,9 @@ function S3ProfileSelect() {
 }
 
 const useStyles = tss.withName({ S3Explorer }).create(({ theme }) => ({
-    root: {},
+    root: {
+        height: "100%"
+    },
     explorer: {
         marginTop: theme.spacing(4)
     }
