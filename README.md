@@ -46,6 +46,13 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Conference talks
 
 <p align="center">
+    <i>KubeCon NA 2025 - UN's Keynote</i><br>
+    <a href="https://youtu.be/TNl6ocszMyU?t=561">
+        <img src="https://github.com/user-attachments/assets/89d98c93-adde-40be-95ba-29582cbd4aef" width="420">
+    </a>
+</p>
+
+<p align="center">
     <i>New Technologies For Statistics 2025</i><br>
     <a href="https://youtu.be/AuCJbipr8rs">
         <img src="https://github.com/user-attachments/assets/d75e1ab4-c510-48ca-a9cb-c41533c216b8" width="420">
