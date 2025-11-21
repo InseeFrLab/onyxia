@@ -21,6 +21,8 @@ import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -187,6 +189,42 @@ export function createOnyxiaApi(params: {
                               })()
                           });
 
+                const bookmarkedDirectories_test = await (async () => {
+                    if (!window.location.href.includes("localhost")) {
+                        return [];
+                    }
+
+                    return id<
+                        ({
+                            fullPath: string;
+                            title: LocalizedString;
+                            description?: LocalizedString;
+                            tags?: LocalizedString[];
+                        } & (
+                            | { claimName?: undefined }
+                            | {
+                                  claimName: string;
+                                  includedClaimPattern?: string;
+                                  excludedClaimPattern?: string;
+                              }
+                        ))[]
+                    >([
+                        {
+                            fullPath: "$1/",
+                            title: "Personal",
+                            description: "Personal Bucket",
+                            claimName: "preferred_username"
+                        },
+                        {
+                            fullPath: "projet-$1/",
+                            title: "Group $1",
+                            description: "Shared bucket among members of project $1",
+                            claimName: "groups",
+                            excludedClaimPattern: "^USER_ONYXIA$"
+                        }
+                    ]);
+                })();
+
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion =>
                         id<DeploymentRegion>({
@@ -289,30 +327,131 @@ export function createOnyxiaApi(params: {
                                             };
                                         })
                                         .filter(exclude(undefined))
-                                        .map(s3Config_api => ({
-                                            url: s3Config_api.URL,
-                                            pathStyleAccess:
-                                                s3Config_api.pathStyleAccess ?? true,
-                                            region: s3Config_api.region,
-                                            sts: {
-                                                url: s3Config_api.sts.URL,
-                                                durationSeconds:
-                                                    s3Config_api.sts.durationSeconds,
-                                                role: s3Config_api.sts.role,
-                                                oidcParams:
-                                                    apiTypesOidcConfigurationToOidcParams_Partial(
-                                                        s3Config_api.sts.oidcConfiguration
-                                                    )
-                                            },
-                                            workingDirectory:
-                                                s3Config_api.workingDirectory,
-                                            bookmarkedDirectories:
-                                                s3Config_api.bookmarkedDirectories ?? []
-                                        }));
+                                        .map(s3Config_api =>
+                                            id<DeploymentRegion.S3Config>({
+                                                url: s3Config_api.URL,
+                                                pathStyleAccess:
+                                                    s3Config_api.pathStyleAccess ?? true,
+                                                region: s3Config_api.region,
+                                                sts: {
+                                                    url: s3Config_api.sts.URL,
+                                                    durationSeconds:
+                                                        s3Config_api.sts.durationSeconds,
+                                                    role: s3Config_api.sts.role,
+                                                    oidcParams:
+                                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                                            s3Config_api.sts
+                                                                .oidcConfiguration
+                                                        )
+                                                },
+                                                workingDirectory:
+                                                    s3Config_api.workingDirectory,
+                                                bookmarkedDirectories:
+                                                    s3Config_api.bookmarkedDirectories?.map(
+                                                        bookmarkedDirectory_api => {
+                                                            const {
+                                                                fullPath,
+                                                                title,
+                                                                description,
+                                                                tags,
+                                                                ...rest
+                                                            } = bookmarkedDirectory_api;
+
+                                                            return id<DeploymentRegion.S3Config.BookmarkedDirectory>(
+                                                                {
+                                                                    fullPath,
+                                                                    title,
+                                                                    description,
+                                                                    tags,
+                                                                    ...(rest.claimName ===
+                                                                    undefined
+                                                                        ? {
+                                                                              claimName:
+                                                                                  undefined
+                                                                          }
+                                                                        : {
+                                                                              claimName:
+                                                                                  rest.claimName,
+                                                                              includedClaimPattern:
+                                                                                  rest.includedClaimPattern,
+                                                                              excludedClaimPattern:
+                                                                                  rest.excludedClaimPattern
+                                                                          })
+                                                                }
+                                                            );
+                                                        }
+                                                    ) ?? []
+                                            })
+                                        );
 
                                 return {
                                     s3Configs,
-                                    s3ConfigCreationFormDefaults
+                                    s3ConfigCreationFormDefaults,
+                                    _s3Next: id<DeploymentRegion["_s3Next"]>({
+                                        s3Profiles: id<
+                                            DeploymentRegion.S3Next.S3Profile[]
+                                        >(
+                                            s3Configs.map(
+                                                ({
+                                                    url,
+                                                    pathStyleAccess,
+                                                    region,
+                                                    sts,
+                                                    bookmarkedDirectories
+                                                }) => ({
+                                                    url,
+                                                    pathStyleAccess,
+                                                    region,
+                                                    sts,
+                                                    bookmarks: [
+                                                        ...bookmarkedDirectories_test,
+                                                        ...bookmarkedDirectories
+                                                    ].map(bookmarkedDirectory_api => {
+                                                        const {
+                                                            fullPath,
+                                                            title,
+                                                            description,
+                                                            tags,
+                                                            ...rest
+                                                        } = bookmarkedDirectory_api;
+
+                                                        const s3UriPrefix = `s3://${fullPath}`;
+
+                                                        // NOTE: Just for checking shape.
+                                                        parseS3UriPrefix({
+                                                            s3UriPrefix,
+                                                            strict: true
+                                                        });
+
+                                                        return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
+                                                            {
+                                                                s3UriPrefix,
+                                                                title,
+                                                                description,
+                                                                tags: tags ?? [],
+                                                                ...(rest.claimName ===
+                                                                undefined
+                                                                    ? {
+                                                                          claimName:
+                                                                              undefined
+                                                                      }
+                                                                    : {
+                                                                          claimName:
+                                                                              rest.claimName,
+                                                                          includedClaimPattern:
+                                                                              rest.includedClaimPattern,
+                                                                          excludedClaimPattern:
+                                                                              rest.excludedClaimPattern
+                                                                      })
+                                                            }
+                                                        );
+                                                    })
+                                                })
+                                            )
+                                        ),
+                                        s3Profiles_defaultValuesOfCreationForm:
+                                            s3ConfigCreationFormDefaults
+                                    })
                                 };
                             })(),
                             allowedURIPatternForUserDefinedInitScript:

@@ -7,7 +7,6 @@ import { useCoreState, getCoreSync } from "core";
 import { Explorer, type ExplorerProps } from "./Explorer";
 import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
-import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
 import { useConst } from "powerhooks/useConst";
@@ -18,6 +17,9 @@ import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import { useTranslation } from "ui/i18n";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Text } from "onyxia-ui/Text";
+import { Button } from "onyxia-ui/Button";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -33,6 +35,7 @@ function FileExplorer() {
 
     const {
         isCurrentWorkingDirectoryLoaded,
+        accessDenied_directoryPath,
         commandLogsEntries,
         isNavigationOngoing,
         uploadProgress,
@@ -97,17 +100,7 @@ function FileExplorer() {
         }
     );
 
-    const { classes } = useStyles();
-
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        if (currentWorkingDirectoryView === undefined) {
-            showSplashScreen({ enableTransparency: true });
-        } else {
-            hideSplashScreen();
-        }
-    }, [currentWorkingDirectoryView === undefined]);
+    const { classes, cx, css } = useStyles();
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) {
@@ -151,8 +144,48 @@ function FileExplorer() {
             })
     );
 
+    const onNavigate = useConstCallback<ExplorerProps["onNavigate"]>(
+        ({ directoryPath }) => {
+            if (directoryPath === "") {
+                routes.fileExplorerEntry().push();
+                return;
+            }
+
+            fileExplorer.changeCurrentDirectory({ directoryPath });
+        }
+    );
+
     if (!isCurrentWorkingDirectoryLoaded) {
-        return null;
+        return (
+            <div
+                className={cx(
+                    classes.root,
+                    css({
+                        justifyContent: "center",
+                        alignItems: "center"
+                    })
+                )}
+            >
+                {(() => {
+                    if (accessDenied_directoryPath !== undefined) {
+                        return (
+                            <>
+                                <Text typo="body 1">
+                                    You do not have read permission on s3://
+                                    {accessDenied_directoryPath}
+                                    with this S3 Profile.
+                                </Text>
+                                <Button {...routes.fileExplorerEntry().link}>
+                                    Go Back
+                                </Button>
+                            </>
+                        );
+                    }
+
+                    return <CircularProgress />;
+                })()}
+            </div>
+        );
     }
 
     return (
@@ -183,7 +216,7 @@ function FileExplorer() {
                     currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
                 }
                 changePolicy={fileExplorer.changePolicy}
-                onNavigate={fileExplorer.changeCurrentDirectory}
+                onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}
@@ -200,6 +233,8 @@ function FileExplorer() {
                 }
                 onDownloadItems={onDownloadItems}
                 evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
+                isDirectoryPathBookmarked={undefined}
+                onToggleIsDirectoryPathBookmarked={undefined}
             />
         </div>
     );

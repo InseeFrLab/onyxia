@@ -2,14 +2,12 @@ import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import { name } from "./state";
 import { objectKeys } from "tsafe/objectKeys";
-import { assert, type Equals } from "tsafe/assert";
-import { parseS3UriPrefix } from "core/tools/S3Uri";
+import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
-import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
 import { same } from "evt/tools/inDepth/same";
-import { parseProjectS3ConfigId } from "core/usecases/s3ConfigManagement/decoupledLogic/projectS3ConfigId";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -47,7 +45,6 @@ const formValuesErrors = createSelector(formValues, formValues => {
                 if (
                     !(
                         key === "url" ||
-                        key === "workingDirectoryPath" ||
                         key === "friendlyName" ||
                         (!formValues.isAnonymous &&
                             (key === "accessKeyId" || key === "secretAccessKey"))
@@ -119,87 +116,43 @@ const formattedFormValuesUrl = createSelector(
     }
 );
 
-const formattedFormValuesWorkingDirectoryPath = createSelector(
-    isReady,
-    formValues,
-    formValuesErrors,
-    (isReady, formValues, formValuesErrors) => {
-        if (!isReady) {
-            return null;
-        }
-        assert(formValues !== null);
-        assert(formValuesErrors !== null);
-
-        if (formValuesErrors.workingDirectoryPath !== undefined) {
-            return undefined;
-        }
-
-        return (
-            formValues.workingDirectoryPath
-                .trim()
-                .replace(/\/\//g, "/") // Remove double slashes if any
-                .replace(/^\//g, "") // Ensure no leading slash
-                .replace(/\/*$/g, "") + "/"
-        ); // Enforce trailing slash
-    }
-);
-
-const action = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.action;
-});
-
 const submittableFormValuesAsProjectS3Config = createSelector(
     isReady,
     formValues,
     formattedFormValuesUrl,
-    formattedFormValuesWorkingDirectoryPath,
     isFormSubmittable,
-    action,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.s3ProfileCreationTime;
+    }),
     (
         isReady,
         formValues,
         formattedFormValuesUrl,
-        formattedFormValuesWorkingDirectoryPath,
         isFormSubmittable,
-        action
+        s3ProfileCreationTime
     ) => {
         if (!isReady) {
             return null;
         }
         assert(formValues !== null);
         assert(formattedFormValuesUrl !== null);
-        assert(formattedFormValuesWorkingDirectoryPath !== null);
-        assert(formattedFormValuesUrl !== null);
-        assert(formattedFormValuesWorkingDirectoryPath !== null);
         assert(isFormSubmittable !== null);
-        assert(action !== null);
+        assert(s3ProfileCreationTime !== null);
 
         if (!isFormSubmittable) {
             return undefined;
         }
 
         assert(formattedFormValuesUrl !== undefined);
-        assert(formattedFormValuesWorkingDirectoryPath !== undefined);
 
         return id<ProjectConfigs.S3Config>({
-            creationTime: (() => {
-                switch (action.type) {
-                    case "create new config":
-                        return action.creationTime;
-                    case "update existing config":
-                        return parseProjectS3ConfigId({ s3ConfigId: action.s3ConfigId })
-                            .creationTime;
-                }
-                assert<Equals<typeof action, never>>(false);
-            })(),
+            creationTime: s3ProfileCreationTime,
             friendlyName: formValues.friendlyName.trim(),
             url: formattedFormValuesUrl,
             region: formValues.region?.trim(),
-            workingDirectoryPath: formattedFormValuesWorkingDirectoryPath,
             pathStyleAccess: formValues.pathStyleAccess,
             credentials: (() => {
                 if (formValues.isAnonymous) {
@@ -214,7 +167,9 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                     secretAccessKey: formValues.secretAccessKey,
                     sessionToken: formValues.sessionToken
                 };
-            })()
+            })(),
+            // TODO: Delete once we move on
+            workingDirectoryPath: "mybucket/my/prefix/"
         });
     }
 );
@@ -253,16 +208,12 @@ const connectionTestStatus = createSelector(
     isReady,
     isFormSubmittable,
     paramsOfCreateS3Client,
-    formattedFormValuesWorkingDirectoryPath,
-    s3ConfigConnectionTest.protectedSelectors.configTestResults,
-    s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
+    s3CredentialsTest.protectedSelectors.credentialsTestState,
     (
         isReady,
         isFormSubmittable,
         paramsOfCreateS3Client,
-        workingDirectoryPath,
-        configTestResults,
-        ongoingConfigTests
+        credentialsTestState
     ): ConnectionTestStatus | null => {
         if (!isReady) {
             return null;
@@ -270,20 +221,16 @@ const connectionTestStatus = createSelector(
 
         assert(isFormSubmittable !== null);
         assert(paramsOfCreateS3Client !== null);
-        assert(workingDirectoryPath !== null);
 
         if (!isFormSubmittable) {
             return { status: "not tested" };
         }
 
         assert(paramsOfCreateS3Client !== undefined);
-        assert(workingDirectoryPath !== undefined);
 
         if (
-            ongoingConfigTests.find(
-                e =>
-                    same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
-                    e.workingDirectoryPath === workingDirectoryPath
+            credentialsTestState.ongoingTests.find(e =>
+                same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
             ) !== undefined
         ) {
             return { status: "test ongoing" };
@@ -291,10 +238,8 @@ const connectionTestStatus = createSelector(
 
         has_result: {
             const { result } =
-                configTestResults.find(
-                    e =>
-                        same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
-                        e.workingDirectoryPath === workingDirectoryPath
+                credentialsTestState.testResults.find(e =>
+                    same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
                 ) ?? {};
 
             if (result === undefined) {
@@ -313,28 +258,21 @@ const connectionTestStatus = createSelector(
 const urlStylesExamples = createSelector(
     isReady,
     formattedFormValuesUrl,
-    formattedFormValuesWorkingDirectoryPath,
-    (isReady, formattedFormValuesUrl, formattedFormValuesWorkingDirectoryPath) => {
+    (isReady, formattedFormValuesUrl) => {
         if (!isReady) {
             return null;
         }
 
         assert(formattedFormValuesUrl !== null);
-        assert(formattedFormValuesWorkingDirectoryPath !== null);
 
-        if (
-            formattedFormValuesUrl === undefined ||
-            formattedFormValuesWorkingDirectoryPath === undefined
-        ) {
+        if (formattedFormValuesUrl === undefined) {
             return undefined;
         }
 
         const urlObject = new URL(formattedFormValuesUrl);
 
-        const { bucket: bucketName, keyPrefix: objectNamePrefix } = parseS3UriPrefix({
-            s3UriPrefix: `s3://${formattedFormValuesWorkingDirectoryPath}`,
-            strict: false
-        });
+        const bucketName = "mybucket";
+        const objectNamePrefix = "my/object/name/prefix/";
 
         const domain = formattedFormValuesUrl
             .split(urlObject.protocol)[1]
@@ -348,14 +286,11 @@ const urlStylesExamples = createSelector(
     }
 );
 
-const isEditionOfAnExistingConfig = createSelector(isReady, action, (isReady, action) => {
-    if (!isReady) {
+const isEditionOfAnExistingConfig = createSelector(readyState, state => {
+    if (state === null) {
         return null;
     }
-
-    assert(action !== null);
-
-    return action.type === "update existing config";
+    return state.action === "Update existing S3 profile";
 });
 
 const main = createSelector(
@@ -404,8 +339,7 @@ export const privateSelectors = {
     formattedFormValuesUrl,
     submittableFormValuesAsProjectS3Config,
     formValuesErrors,
-    paramsOfCreateS3Client,
-    formattedFormValuesWorkingDirectoryPath
+    paramsOfCreateS3Client
 };
 
 export const selectors = { main };
