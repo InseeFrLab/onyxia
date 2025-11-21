@@ -135,6 +135,27 @@ export function Explorer(props: Props) {
 
     const { cx, css, theme } = useStyles();
 
+    if (
+        isCurrentWorkingDirectoryLoaded &&
+        currentWorkingDirectoryView.directoryPath !== directoryPath
+    ) {
+        return (
+            <div
+                className={cx(
+                    css({
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%"
+                    }),
+                    className
+                )}
+            >
+                <CircularProgress />
+            </div>
+        );
+    }
+
     if (!isCurrentWorkingDirectoryLoaded) {
         return (
             <div
@@ -142,7 +163,8 @@ export function Explorer(props: Props) {
                     css({
                         display: "flex",
                         justifyContent: "center",
-                        alignItems: "center"
+                        alignItems: "center",
+                        height: "100%"
                     }),
                     className
                 )}
