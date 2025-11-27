@@ -1,6 +1,6 @@
 import type { Oidc } from "core/ports/Oidc";
 import { createOidc as createOidcSpa } from "oidc-spa";
-import { parseKeycloakIssuerUri } from "oidc-spa/tools/parseKeycloakIssuerUri";
+import { isKeycloak } from "oidc-spa/keycloak";
 import type { OidcParams, OidcParams_Partial } from "core/ports/OnyxiaApi";
 import { objectKeys } from "tsafe/objectKeys";
 import {
@@ -76,7 +76,7 @@ export async function createOidc<AutoLogin extends boolean>(
                     encodeMethod: "www-form"
                 });
 
-                if (parseKeycloakIssuerUri(oidc.params.issuerUri) !== undefined) {
+                if (isKeycloak({ issuerUri })) {
                     authorizationUrl = transformBeforeRedirectForKeycloakTheme({
                         authorizationUrl
                     });
@@ -86,7 +86,6 @@ export async function createOidc<AutoLogin extends boolean>(
             return authorizationUrl;
         },
         idleSessionLifetimeInSeconds,
-        homeUrl: import.meta.env.BASE_URL,
         debugLogs: enableDebugLogs,
         autoLogin
     });
