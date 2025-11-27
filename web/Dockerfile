@@ -18,7 +18,7 @@ RUN --mount=type=cache,target=/app/node_modules/.vite \
     yarn build
 
 # Stage 2: Final Nginx runtime
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.29-alpine
 
 # Define non-root user variables
 ENV NGINX_USER_ID=101
@@ -41,18 +41,18 @@ RUN npm install --ignore-scripts -g vite-envs@`node -e 'console.log(require("/us
 # Generating /entrypoint.sh  
 # Be mindful that the entrypoint is generated a build time but the 
 # bash code is executed at container startup.
-RUN echo $'#!/bin/sh                                                                                           \n\
-cd /usr/share/nginx                                                                                            \n\
-rm -rf ./html/* ./html/.* 2>/dev/null                                                                          \n\
-cp -r ./tmp_html/. ./html/                                                                                     \n\
-if [ -n "$CUSTOM_RESOURCES" ]; then                                                                            \n\
-    wget -O ./html/custom-resources.zip "$CUSTOM_RESOURCES" --ca-certificate="$CUSTOM_RESOURCES_CA_CERTIFICATE"\n\
-    unzip -o ./html/custom-resources.zip -d ./html/custom-resources                                               \n\
-    rm ./html/custom-resources.zip                                                                             \n\
-fi                                                                                                             \n\
-cd html                                                                                                        \n\
-npx vite-envs                                                                                                  \n\
-exec nginx -g "daemon off;"                                                                                    \n\
+RUN echo $'#!/bin/sh                                                                                            \n\
+cd /usr/share/nginx                                                                                             \n\
+rm -rf ./html/* ./html/.* 2>/dev/null                                                                           \n\
+cp -r ./tmp_html/. ./html/                                                                                      \n\
+if [ -n "$CUSTOM_RESOURCES" ]; then                                                                             \n\
+    wget -O ./html/custom-resources.zip "$CUSTOM_RESOURCES" --ca-certificate="$CUSTOM_RESOURCES_CA_CERTIFICATE" \n\
+    unzip -o ./html/custom-resources.zip -d ./html/custom-resources                                             \n\
+    rm ./html/custom-resources.zip                                                                              \n\
+fi                                                                                                              \n\
+cd html                                                                                                         \n\
+npx vite-envs                                                                                                   \n\
+exec nginx -g "daemon off;"                                                                                     \n\
 ' > /usr/share/nginx/entrypoint.sh
 
 # Ensure non-root user has ownership of necessary directories
