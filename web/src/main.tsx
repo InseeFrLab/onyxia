@@ -21,7 +21,7 @@ if (import.meta.env.DEV) {
     const { oidcEarlyInit } = await import("oidc-spa/entrypoint");
 
     const { shouldLoadApp } = oidcEarlyInit({
-        safeMode: true,
+        enableTokenExfiltrationDefense: false,
         BASE_URL: import.meta.env.BASE_URL
     });
 
