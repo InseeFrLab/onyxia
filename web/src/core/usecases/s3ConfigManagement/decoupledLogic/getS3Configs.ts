@@ -1,6 +1,6 @@
 import * as projectManagement from "core/usecases/projectManagement";
 import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
-import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import { same } from "evt/tools/inDepth/same";
 import { getWorkingDirectoryPath } from "./getWorkingDirectoryPath";
@@ -108,8 +108,10 @@ export function getS3Configs(params: {
 
         out = out.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-        const { bucketName, objectName } =
-            bucketNameAndObjectNameFromS3Path(workingDirectoryPath);
+        const { bucket: bucketName, keyPrefix: objectName } = parseS3UriPrefix({
+            s3UriPrefix: `s3://${workingDirectoryPath}`,
+            strict: false
+        });
 
         out = pathStyleAccess
             ? `${out}/${bucketName}/${objectName}`
@@ -198,13 +200,7 @@ export function getS3Configs(params: {
             .sort((a, b) => b.creationTime - a.creationTime),
         ...s3RegionConfigs.map((c, i): S3Config.FromDeploymentRegion => {
             const id = `region-${fnv1aHashToHex(
-                JSON.stringify(
-                    Object.fromEntries(
-                        Object.entries(c).sort(([key1], [key2]) =>
-                            key1.localeCompare(key2)
-                        )
-                    )
-                )
+                JSON.stringify([c.url, c.sts.oidcParams.clientId ?? ""])
             )}`;
 
             const workingDirectoryContext =
