@@ -180,23 +180,35 @@ export namespace DeploymentRegion {
             sts: {
                 url: string | undefined;
                 durationSeconds: number | undefined;
-                role:
-                    | {
-                          roleARN: string;
-                          roleSessionName: string;
-                      }
-                    | undefined;
+                roles: S3Profile.StsRole[];
                 oidcParams: OidcParams_Partial;
             };
             bookmarks: S3Profile.Bookmark[];
         };
 
         export namespace S3Profile {
+            export type StsRole = {
+                roleARN: string;
+                roleSessionName: string;
+            } & (
+                | {
+                      claimName: undefined;
+                      includedClaimPattern?: never;
+                      excludedClaimPattern?: never;
+                  }
+                | {
+                      claimName: string;
+                      includedClaimPattern: string | undefined;
+                      excludedClaimPattern: string | undefined;
+                  }
+            );
+
             export type Bookmark = {
                 s3UriPrefix: string;
                 title: LocalizedString;
                 description: LocalizedString | undefined;
                 tags: LocalizedString[];
+                forStsRoleSessionNames: string[];
             } & (
                 | {
                       claimName: undefined;
