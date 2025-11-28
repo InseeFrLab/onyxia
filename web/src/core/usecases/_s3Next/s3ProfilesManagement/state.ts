@@ -3,11 +3,16 @@ import {
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
 import type { ResolvedTemplateBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
+import type { ResolvedTemplateStsRole } from "./decoupledLogic/resolveTemplatedStsRole";
 
 type State = {
     resolvedTemplatedBookmarks: {
         correspondingS3ConfigIndexInRegion: number;
         bookmarks: ResolvedTemplateBookmark[];
+    }[];
+    resolvedTemplatedStsRoles: {
+        correspondingS3ConfigIndexInRegion: number;
+        stsRoles: ResolvedTemplateStsRole[];
     }[];
 };
 
@@ -24,13 +29,15 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     resolvedTemplatedBookmarks: State["resolvedTemplatedBookmarks"];
+                    resolvedTemplatedStsRoles: State["resolvedTemplatedStsRoles"];
                 };
             }
         ) => {
-            const { resolvedTemplatedBookmarks } = payload;
+            const { resolvedTemplatedBookmarks, resolvedTemplatedStsRoles } = payload;
 
             const state: State = {
-                resolvedTemplatedBookmarks
+                resolvedTemplatedBookmarks,
+                resolvedTemplatedStsRoles
             };
 
             return state;

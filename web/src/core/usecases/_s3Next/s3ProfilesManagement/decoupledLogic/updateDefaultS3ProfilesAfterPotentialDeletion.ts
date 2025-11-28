@@ -14,16 +14,17 @@ type R = Record<
 >;
 
 export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
-    fromRegion: DeploymentRegion.S3Next.S3Profile[];
+    fromRegion: { s3Profiles: DeploymentRegion.S3Next.S3Profile[] };
     fromVault: projectManagement.ProjectConfigs["s3"];
 }): R {
     const { fromRegion, fromVault } = params;
 
     const s3Profiles = aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
-        fromRegion: fromRegion.map(s3Profile => ({
-            ...s3Profile,
-            bookmarks: []
-        })),
+        fromRegion: {
+            s3Profiles: fromRegion.s3Profiles,
+            resolvedTemplatedBookmarks: [],
+            resolvedTemplatedStsRoles: []
+        },
         fromVault,
         credentialsTestState: {
             ongoingTests: [],

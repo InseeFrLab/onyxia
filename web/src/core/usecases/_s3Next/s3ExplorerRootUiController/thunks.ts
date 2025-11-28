@@ -31,17 +31,8 @@ export const thunks = {
                 s3Profiles.find(s3Profile => s3Profile.origin === "defined in region") ??
                 s3Profiles[0];
 
-            if (s3Profile === undefined) {
-                return {
-                    routeParams_toSet: {
-                        profile: undefined,
-                        path: ""
-                    }
-                };
-            }
-
             const routeParams_toSet: RouteParams = {
-                profile: s3Profile.id,
+                profile: s3Profile === undefined ? undefined : s3Profile.id,
                 path: ""
             };
 

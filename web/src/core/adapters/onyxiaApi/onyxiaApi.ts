@@ -200,6 +200,7 @@ export function createOnyxiaApi(params: {
                             title: LocalizedString;
                             description?: LocalizedString;
                             tags?: LocalizedString[];
+                            forStsRoleSessionName?: string | string[];
                         } & (
                             | { claimName?: undefined }
                             | {
@@ -213,14 +214,16 @@ export function createOnyxiaApi(params: {
                             fullPath: "$1/",
                             title: "Personal",
                             description: "Personal Bucket",
-                            claimName: "preferred_username"
+                            claimName: "preferred_username",
+                            forStsRoleSessionName: undefined
                         },
                         {
                             fullPath: "projet-$1/",
                             title: "Group $1",
                             description: "Shared bucket among members of project $1",
                             claimName: "groups",
-                            excludedClaimPattern: "^USER_ONYXIA$"
+                            excludedClaimPattern: "^USER_ONYXIA$",
+                            forStsRoleSessionName: undefined
                         }
                     ]);
                 })();
@@ -337,7 +340,26 @@ export function createOnyxiaApi(params: {
                                                     url: s3Config_api.sts.URL,
                                                     durationSeconds:
                                                         s3Config_api.sts.durationSeconds,
-                                                    role: s3Config_api.sts.role,
+                                                    role: (() => {
+                                                        if (
+                                                            s3Config_api.sts.role ===
+                                                            undefined
+                                                        ) {
+                                                            return undefined;
+                                                        }
+
+                                                        const entry =
+                                                            s3Config_api.sts
+                                                                .role instanceof Array
+                                                                ? s3Config_api.sts.role[0]
+                                                                : s3Config_api.sts.role;
+
+                                                        return {
+                                                            roleARN: entry.roleARN,
+                                                            roleSessionName:
+                                                                entry.roleSessionName
+                                                        };
+                                                    })(),
                                                     oidcParams:
                                                         apiTypesOidcConfigurationToOidcParams_Partial(
                                                             s3Config_api.sts
@@ -384,73 +406,191 @@ export function createOnyxiaApi(params: {
                                             })
                                         );
 
+                                const s3Profiles: DeploymentRegion.S3Next.S3Profile[] =
+                                    s3Configs_api
+                                        .filter(
+                                            s3Configs_api =>
+                                                s3Configs_api.sts !== undefined
+                                        )
+                                        .map(
+                                            (
+                                                s3Config_api
+                                            ): DeploymentRegion.S3Next.S3Profile => {
+                                                return {
+                                                    url: s3Config_api.URL,
+                                                    pathStyleAccess:
+                                                        s3Config_api.pathStyleAccess ??
+                                                        true,
+                                                    region: s3Config_api.region,
+                                                    sts: (() => {
+                                                        const sts_api = s3Config_api.sts;
+
+                                                        assert(sts_api !== undefined);
+
+                                                        return {
+                                                            url: sts_api.URL,
+                                                            durationSeconds:
+                                                                sts_api.durationSeconds,
+                                                            roles: (() => {
+                                                                if (
+                                                                    sts_api.role ===
+                                                                    undefined
+                                                                ) {
+                                                                    return [];
+                                                                }
+
+                                                                const rolesArray =
+                                                                    sts_api.role instanceof
+                                                                    Array
+                                                                        ? sts_api.role
+                                                                        : [sts_api.role];
+
+                                                                return rolesArray.map(
+                                                                    (
+                                                                        role_api
+                                                                    ): DeploymentRegion.S3Next.S3Profile.StsRole => ({
+                                                                        roleARN:
+                                                                            role_api.roleARN,
+                                                                        roleSessionName:
+                                                                            role_api.roleSessionName,
+                                                                        ...(role_api.claimName ===
+                                                                        undefined
+                                                                            ? {
+                                                                                  claimName:
+                                                                                      undefined
+                                                                              }
+                                                                            : {
+                                                                                  claimName:
+                                                                                      role_api.claimName,
+                                                                                  includedClaimPattern:
+                                                                                      role_api.includedClaimPattern,
+                                                                                  excludedClaimPattern:
+                                                                                      role_api.excludedClaimPattern
+                                                                              })
+                                                                    })
+                                                                );
+                                                            })(),
+                                                            oidcParams:
+                                                                apiTypesOidcConfigurationToOidcParams_Partial(
+                                                                    sts_api.oidcConfiguration
+                                                                )
+                                                        } as any;
+                                                    })(),
+                                                    bookmarks: [
+                                                        ...bookmarkedDirectories_test,
+                                                        ...(s3Config_api.bookmarkedDirectories ??
+                                                            [])
+                                                    ].map(
+                                                        (
+                                                            bookmarkedDirectory_api
+                                                        ): DeploymentRegion.S3Next.S3Profile.Bookmark => {
+                                                            return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
+                                                                {
+                                                                    s3UriPrefix: (() => {
+                                                                        const s3UriPrefix = `s3://${bookmarkedDirectory_api.fullPath}`;
+
+                                                                        // NOTE: Just for checking shape.
+                                                                        parseS3UriPrefix({
+                                                                            s3UriPrefix,
+                                                                            strict: true
+                                                                        });
+
+                                                                        return s3UriPrefix;
+                                                                    })(),
+                                                                    title: bookmarkedDirectory_api.title,
+                                                                    description:
+                                                                        bookmarkedDirectory_api.description,
+                                                                    tags:
+                                                                        bookmarkedDirectory_api.tags ??
+                                                                        [],
+                                                                    forStsRoleSessionNames:
+                                                                        (() => {
+                                                                            const v =
+                                                                                bookmarkedDirectory_api.forStsRoleSessionName;
+
+                                                                            if (
+                                                                                v ===
+                                                                                undefined
+                                                                            ) {
+                                                                                return [];
+                                                                            }
+
+                                                                            if (
+                                                                                typeof v ===
+                                                                                "string"
+                                                                            ) {
+                                                                                return [
+                                                                                    v
+                                                                                ];
+                                                                            }
+
+                                                                            return v;
+                                                                        })(),
+                                                                    ...(bookmarkedDirectory_api.claimName ===
+                                                                    undefined
+                                                                        ? {
+                                                                              claimName:
+                                                                                  undefined
+                                                                          }
+                                                                        : {
+                                                                              claimName:
+                                                                                  bookmarkedDirectory_api.claimName,
+                                                                              includedClaimPattern:
+                                                                                  bookmarkedDirectory_api.includedClaimPattern,
+                                                                              excludedClaimPattern:
+                                                                                  bookmarkedDirectory_api.excludedClaimPattern
+                                                                          })
+                                                                }
+                                                            );
+                                                        }
+                                                    )
+                                                };
+                                            }
+                                        );
+
+                                const s3Profiles_defaultValuesOfCreationForm: DeploymentRegion["_s3Next"]["s3Profiles_defaultValuesOfCreationForm"] =
+                                    (() => {
+                                        const s3Config_api = (() => {
+                                            config_without_sts: {
+                                                const s3Config_api = s3Configs_api.find(
+                                                    s3Config_api =>
+                                                        s3Config_api.sts === undefined
+                                                );
+
+                                                if (s3Config_api === undefined) {
+                                                    break config_without_sts;
+                                                }
+
+                                                return s3Config_api;
+                                            }
+
+                                            if (s3Configs_api.length === 0) {
+                                                return undefined;
+                                            }
+
+                                            const [s3Config_api] = s3Configs_api;
+
+                                            return s3Config_api;
+                                        })();
+
+                                        if (s3Config_api === undefined) {
+                                            return undefined;
+                                        }
+
+                                        return {
+                                            url: s3Config_api.URL,
+                                            pathStyleAccess:
+                                                s3Config_api.pathStyleAccess ?? true,
+                                            region: s3Config_api.region
+                                        };
+                                    })();
+
                                 return {
                                     s3Configs,
                                     s3ConfigCreationFormDefaults,
                                     _s3Next: id<DeploymentRegion["_s3Next"]>({
-                                        s3Profiles: id<
-                                            DeploymentRegion.S3Next.S3Profile[]
-                                        >(
-                                            s3Configs.map(
-                                                ({
-                                                    url,
-                                                    pathStyleAccess,
-                                                    region,
-                                                    sts,
-                                                    bookmarkedDirectories
-                                                }) => ({
-                                                    url,
-                                                    pathStyleAccess,
-                                                    region,
-                                                    sts,
-                                                    bookmarks: [
-                                                        ...bookmarkedDirectories_test,
-                                                        ...bookmarkedDirectories
-                                                    ].map(bookmarkedDirectory_api => {
-                                                        const {
-                                                            fullPath,
-                                                            title,
-                                                            description,
-                                                            tags,
-                                                            ...rest
-                                                        } = bookmarkedDirectory_api;
-
-                                                        const s3UriPrefix = `s3://${fullPath}`;
-
-                                                        // NOTE: Just for checking shape.
-                                                        parseS3UriPrefix({
-                                                            s3UriPrefix,
-                                                            strict: true
-                                                        });
-
-                                                        return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
-                                                            {
-                                                                s3UriPrefix,
-                                                                title,
-                                                                description,
-                                                                tags: tags ?? [],
-                                                                ...(rest.claimName ===
-                                                                undefined
-                                                                    ? {
-                                                                          claimName:
-                                                                              undefined
-                                                                      }
-                                                                    : {
-                                                                          claimName:
-                                                                              rest.claimName,
-                                                                          includedClaimPattern:
-                                                                              rest.includedClaimPattern,
-                                                                          excludedClaimPattern:
-                                                                              rest.excludedClaimPattern
-                                                                      })
-                                                            }
-                                                        );
-                                                    })
-                                                })
-                                            )
-                                        ),
-                                        s3Profiles_defaultValuesOfCreationForm:
-                                            s3ConfigCreationFormDefaults
+                                        s3Profiles,
+                                        s3Profiles_defaultValuesOfCreationForm
                                     })
                                 };
                             })(),
