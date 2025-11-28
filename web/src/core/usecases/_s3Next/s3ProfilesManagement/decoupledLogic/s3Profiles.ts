@@ -7,6 +7,7 @@ import { assert, type Equals } from "tsafe";
 import type * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
+import type { ResolvedTemplateStsRole } from "./resolveTemplatedStsRole";
 import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 export type S3Profile = S3Profile.DefinedInRegion | S3Profile.CreatedByUser;
@@ -45,9 +46,17 @@ export namespace S3Profile {
 
 export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
     fromVault: projectManagement.ProjectConfigs["s3"];
-    fromRegion: (Omit<DeploymentRegion.S3Next.S3Profile, "bookmarks"> & {
-        bookmarks: ResolvedTemplateBookmark[];
-    })[];
+    fromRegion: {
+        s3Profiles: DeploymentRegion.S3Next.S3Profile[];
+        resolvedTemplatedBookmarks: {
+            correspondingS3ConfigIndexInRegion: number;
+            bookmarks: ResolvedTemplateBookmark[];
+        }[];
+        resolvedTemplatedStsRoles: {
+            correspondingS3ConfigIndexInRegion: number;
+            stsRoles: ResolvedTemplateStsRole[];
+        }[];
+    };
     credentialsTestState: s3CredentialsTest.State;
 }): S3Profile[] {
     const { fromVault, fromRegion, credentialsTestState } = params;
@@ -114,40 +123,110 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                 };
             })
             .sort((a, b) => b.creationTime - a.creationTime),
-        ...fromRegion.map((c): S3Profile.DefinedInRegion => {
-            const url = c.url;
-            const pathStyleAccess = c.pathStyleAccess;
-            const region = c.region;
+        ...fromRegion.s3Profiles
+            .map((c, index): S3Profile.DefinedInRegion[] => {
+                const resolvedTemplatedBookmarks_forThisProfile = (() => {
+                    const entry = fromRegion.resolvedTemplatedBookmarks.find(
+                        e => e.correspondingS3ConfigIndexInRegion === index
+                    );
 
-            const paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts = {
-                url,
-                pathStyleAccess,
-                isStsEnabled: true,
-                stsUrl: c.sts.url,
-                region,
-                oidcParams: c.sts.oidcParams,
-                durationSeconds: c.sts.durationSeconds,
-                role: c.sts.role,
-                nameOfBucketToCreateIfNotExist: undefined
-            };
+                    assert(entry !== undefined);
 
-            return {
-                origin: "defined in region",
-                id: `region-${fnv1aHashToHex(
-                    JSON.stringify([c.url, c.sts.oidcParams.clientId ?? ""])
-                )}`,
-                bookmarks: c.bookmarks.map(({ title, s3UriPrefixObj }) => ({
-                    displayName: title,
-                    s3UriPrefixObj
-                })),
-                paramsOfCreateS3Client,
-                credentialsTestStatus: getCredentialsTestStatus({
-                    paramsOfCreateS3Client
-                }),
-                isXOnyxiaDefault: false,
-                isExplorerConfig: false
-            };
-        })
+                    return entry.bookmarks;
+                })();
+
+                const buildFromRole = (params: {
+                    resolvedTemplatedStsRole: ResolvedTemplateStsRole | undefined;
+                }): S3Profile.DefinedInRegion => {
+                    const { resolvedTemplatedStsRole } = params;
+
+                    const paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts = {
+                        url: c.url,
+                        pathStyleAccess: c.pathStyleAccess,
+                        isStsEnabled: true,
+                        stsUrl: c.sts.url,
+                        region: c.region,
+                        oidcParams: c.sts.oidcParams,
+                        durationSeconds: c.sts.durationSeconds,
+                        role: resolvedTemplatedStsRole,
+                        nameOfBucketToCreateIfNotExist: undefined
+                    };
+
+                    return {
+                        origin: "defined in region",
+                        id: `region-${fnv1aHashToHex(
+                            JSON.stringify([c.url, c.sts.oidcParams.clientId ?? ""])
+                        )}`,
+                        bookmarks: resolvedTemplatedBookmarks_forThisProfile
+                            .filter(({ forStsRoleSessionNames }) => {
+                                if (forStsRoleSessionNames.length === 0) {
+                                    return true;
+                                }
+
+                                if (resolvedTemplatedStsRole === undefined) {
+                                    return false;
+                                }
+
+                                const getDoMatch = (params: {
+                                    stringWithWildcards: string;
+                                    candidate: string;
+                                }): boolean => {
+                                    const { stringWithWildcards, candidate } = params;
+
+                                    if (!stringWithWildcards.includes("*")) {
+                                        return stringWithWildcards === candidate;
+                                    }
+
+                                    const escapedRegex = stringWithWildcards
+                                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+                                        .replace(/\\\*/g, ".*");
+
+                                    return new RegExp(`^${escapedRegex}$`).test(
+                                        candidate
+                                    );
+                                };
+
+                                return forStsRoleSessionNames.some(stsRoleSessionName =>
+                                    getDoMatch({
+                                        stringWithWildcards: stsRoleSessionName,
+                                        candidate:
+                                            resolvedTemplatedStsRole.roleSessionName
+                                    })
+                                );
+                            })
+                            .map(({ title, s3UriPrefixObj }) => ({
+                                displayName: title,
+                                s3UriPrefixObj
+                            })),
+                        paramsOfCreateS3Client,
+                        credentialsTestStatus: getCredentialsTestStatus({
+                            paramsOfCreateS3Client
+                        }),
+                        isXOnyxiaDefault: false,
+                        isExplorerConfig: false
+                    };
+                };
+
+                const resolvedTemplatedStsRoles_forThisProfile = (() => {
+                    const entry = fromRegion.resolvedTemplatedStsRoles.find(
+                        e => e.correspondingS3ConfigIndexInRegion === index
+                    );
+
+                    assert(entry !== undefined);
+
+                    return entry.stsRoles;
+                })();
+
+                if (resolvedTemplatedStsRoles_forThisProfile.length === 0) {
+                    return [buildFromRole({ resolvedTemplatedStsRole: undefined })];
+                }
+
+                return resolvedTemplatedStsRoles_forThisProfile.map(
+                    resolvedTemplatedStsRole =>
+                        buildFromRole({ resolvedTemplatedStsRole })
+                );
+            })
+            .flat()
     ];
 
     (

@@ -90,12 +90,19 @@ export type ApiTypes = {
                     sts?: {
                         URL?: string;
                         durationSeconds?: number;
-                        role:
-                            | {
-                                  roleARN: string;
-                                  roleSessionName: string;
-                              }
-                            | undefined;
+                        role?: ArrayOrNot<
+                            {
+                                roleARN: string;
+                                roleSessionName: string;
+                            } & (
+                                | { claimName?: undefined }
+                                | {
+                                      claimName: string;
+                                      includedClaimPattern?: string;
+                                      excludedClaimPattern?: string;
+                                  }
+                            )
+                        >;
                         oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                     };
 
@@ -118,6 +125,7 @@ export type ApiTypes = {
                         title: LocalizedString;
                         description?: LocalizedString;
                         tags?: LocalizedString[];
+                        forStsRoleSessionName?: string | string[];
                     } & (
                         | { claimName?: undefined }
                         | {

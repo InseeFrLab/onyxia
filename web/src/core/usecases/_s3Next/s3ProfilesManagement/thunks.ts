@@ -10,8 +10,10 @@ import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { resolveTemplatedBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
+import { resolveTemplatedStsRole } from "./decoupledLogic/resolveTemplatedStsRole";
 import { actions } from "./state";
 import type { S3Profile } from "./decoupledLogic/s3Profiles";
+import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
 
 export const thunks = {
     testS3ProfileCredentials:
@@ -53,10 +55,12 @@ export const thunks = {
 
             {
                 const actions = updateDefaultS3ProfilesAfterPotentialDeletion({
-                    fromRegion:
-                        deploymentRegionManagement.selectors.currentDeploymentRegion(
-                            getState()
-                        )._s3Next.s3Profiles,
+                    fromRegion: {
+                        s3Profiles:
+                            deploymentRegionManagement.selectors.currentDeploymentRegion(
+                                getState()
+                            )._s3Next.s3Profiles
+                    },
                     fromVault: fromVault
                 });
 
@@ -307,49 +311,52 @@ export const protectedThunks = {
             const deploymentRegion =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
+            const getDecodedIdToken = async (params: {
+                oidcParams_partial: OidcParams_Partial;
+            }) => {
+                const { oidcParams_partial } = params;
+
+                const { createOidc, mergeOidcParams } = await import(
+                    "core/adapters/oidc"
+                );
+
+                const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+                assert(oidcParams !== undefined);
+
+                const oidc = await createOidc({
+                    ...mergeOidcParams({
+                        oidcParams,
+                        oidcParams_partial
+                    }),
+                    autoLogin: true,
+                    transformBeforeRedirectForKeycloakTheme:
+                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
+                    enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                });
+
+                const { decodedIdToken } = await oidc.getTokens();
+
+                return decodedIdToken;
+            };
+
             const resolvedTemplatedBookmarks = await Promise.all(
                 deploymentRegion._s3Next.s3Profiles.map(
                     async (s3Config, s3ConfigIndex) => {
-                        const {
-                            bookmarks,
-                            sts: { oidcParams: oidcParams_partial }
-                        } = s3Config;
-
-                        const getDecodedIdToken = async () => {
-                            const { createOidc, mergeOidcParams } = await import(
-                                "core/adapters/oidc"
-                            );
-
-                            const { oidcParams } =
-                                await onyxiaApi.getAvailableRegionsAndOidcParams();
-
-                            assert(oidcParams !== undefined);
-
-                            const oidc = await createOidc({
-                                ...mergeOidcParams({
-                                    oidcParams,
-                                    oidcParams_partial
-                                }),
-                                autoLogin: true,
-                                transformBeforeRedirectForKeycloakTheme:
-                                    paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                                getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                                enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
-                            });
-
-                            const { decodedIdToken } = await oidc.getTokens();
-
-                            return decodedIdToken;
-                        };
+                        const { bookmarks: bookmarks_region, sts } = s3Config;
 
                         return {
                             correspondingS3ConfigIndexInRegion: s3ConfigIndex,
                             bookmarks: (
                                 await Promise.all(
-                                    bookmarks.map(bookmark =>
+                                    bookmarks_region.map(bookmark =>
                                         resolveTemplatedBookmark({
                                             bookmark_region: bookmark,
-                                            getDecodedIdToken
+                                            getDecodedIdToken: () =>
+                                                getDecodedIdToken({
+                                                    oidcParams_partial: sts.oidcParams
+                                                })
                                         })
                                     )
                                 )
@@ -359,7 +366,37 @@ export const protectedThunks = {
                 )
             );
 
-            dispatch(actions.initialized({ resolvedTemplatedBookmarks }));
+            const resolvedTemplatedStsRoles = await Promise.all(
+                deploymentRegion._s3Next.s3Profiles.map(
+                    async (s3Config, s3ConfigIndex) => {
+                        const { sts } = s3Config;
+
+                        return {
+                            correspondingS3ConfigIndexInRegion: s3ConfigIndex,
+                            stsRoles: (
+                                await Promise.all(
+                                    sts.roles.map(stsRole_region =>
+                                        resolveTemplatedStsRole({
+                                            stsRole_region,
+                                            getDecodedIdToken: () =>
+                                                getDecodedIdToken({
+                                                    oidcParams_partial: sts.oidcParams
+                                                })
+                                        })
+                                    )
+                                )
+                            ).flat()
+                        };
+                    }
+                )
+            );
+
+            dispatch(
+                actions.initialized({
+                    resolvedTemplatedBookmarks,
+                    resolvedTemplatedStsRoles
+                })
+            );
         }
 } satisfies Thunks;
 

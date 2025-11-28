@@ -2,7 +2,6 @@ import { createSelector } from "clean-architecture";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
-import { assert } from "tsafe/assert";
 import {
     type S3Profile,
     aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet
@@ -15,6 +14,11 @@ const resolvedTemplatedBookmarks = createSelector(
     state => state.resolvedTemplatedBookmarks
 );
 
+const resolvedTemplatedStsRoles = createSelector(
+    (state: RootState) => state[name],
+    state => state.resolvedTemplatedStsRoles
+);
+
 const s3Profiles = createSelector(
     createSelector(
         projectManagement.protectedSelectors.projectConfig,
@@ -25,27 +29,22 @@ const s3Profiles = createSelector(
         deploymentRegion => deploymentRegion._s3Next.s3Profiles
     ),
     resolvedTemplatedBookmarks,
+    resolvedTemplatedStsRoles,
     s3CredentialsTest.protectedSelectors.credentialsTestState,
     (
         projectConfigS3,
         s3Profiles_region,
         resolvedTemplatedBookmarks,
+        resolvedTemplatedStsRoles,
         credentialsTestState
     ): S3Profile[] =>
         aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
             fromVault: projectConfigS3,
-            fromRegion: s3Profiles_region.map((s3Profile, i) => ({
-                ...s3Profile,
-                bookmarks: (() => {
-                    const entry = resolvedTemplatedBookmarks.find(
-                        entry => entry.correspondingS3ConfigIndexInRegion === i
-                    );
-
-                    assert(entry !== undefined);
-
-                    return entry.bookmarks;
-                })()
-            })),
+            fromRegion: {
+                s3Profiles: s3Profiles_region,
+                resolvedTemplatedBookmarks,
+                resolvedTemplatedStsRoles
+            },
             credentialsTestState
         })
 );
