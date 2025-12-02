@@ -214,7 +214,8 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                     secretAccessKey: formValues.secretAccessKey,
                     sessionToken: formValues.sessionToken
                 };
-            })()
+            })(),
+            bookmarks: undefined
         });
     }
 );

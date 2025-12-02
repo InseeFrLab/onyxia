@@ -5,6 +5,7 @@ import { z } from "zod";
 import { id } from "tsafe/id";
 import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefined";
 import { zStringifyableAtomic } from "core/tools/Stringifyable";
+import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 export type ProjectConfigs = {
     __modelVersion: 1;
@@ -33,7 +34,15 @@ export namespace ProjectConfigs {
                   sessionToken: string | undefined;
               }
             | undefined;
+        bookmarks: S3Config.Bookmark[] | undefined;
     };
+
+    export namespace S3Config {
+        export type Bookmark = {
+            displayName: string | undefined;
+            s3UriPrefixObj: S3UriPrefixObj;
+        };
+    }
 
     export type RestorableServiceConfig = {
         friendlyName: string;
@@ -100,6 +109,23 @@ const zS3Credentials = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
+const zS3ConfigBookmark = (() => {
+    type TargetType = ProjectConfigs.S3Config.Bookmark;
+
+    const zTargetType = z.object({
+        displayName: z.union([z.string(), z.undefined()]),
+        s3UriPrefixObj: z.object({
+            bucket: z.string(),
+            keyPrefix: z.string()
+        })
+    });
+
+    assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();
+
+    // @ts-expect-error
+    return id<z.ZodType<TargetType>>(zTargetType);
+})();
+
 const zS3Config = (() => {
     type TargetType = ProjectConfigs.S3Config;
 
@@ -110,7 +136,8 @@ const zS3Config = (() => {
         region: z.union([z.string(), z.undefined()]),
         workingDirectoryPath: z.string(),
         pathStyleAccess: z.boolean(),
-        credentials: z.union([zS3Credentials, z.undefined()])
+        credentials: z.union([zS3Credentials, z.undefined()]),
+        bookmarks: z.union([z.array(zS3ConfigBookmark), z.undefined()])
     });
 
     assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();

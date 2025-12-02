@@ -48,7 +48,7 @@ function S3Explorer() {
         evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
-    const { selectedS3ProfileId, s3UriPrefixObj, isS3UriPrefixBookmarked } = useCoreState(
+    const { selectedS3ProfileId, s3UriPrefixObj, bookmarkStatus } = useCoreState(
         "s3ExplorerRootUiController",
         "view"
     );
@@ -130,10 +130,10 @@ function S3Explorer() {
                         directoryPath={stringifyS3UriPrefixObj(s3UriPrefixObj).slice(
                             "s3://".length
                         )}
-                        isDirectoryPathBookmarked={isS3UriPrefixBookmarked}
-                        onToggleIsDirectoryPathBookmarked={() => {
-                            alert("TODO: Implement this feature");
-                        }}
+                        bookmarkStatus={bookmarkStatus}
+                        onToggleIsDirectoryPathBookmarked={
+                            s3ExplorerRootUiController.toggleIsDirectoryPathBookmarked
+                        }
                     />
                 );
             })()}

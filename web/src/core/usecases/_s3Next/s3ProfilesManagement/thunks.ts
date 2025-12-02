@@ -14,6 +14,13 @@ import { resolveTemplatedStsRole } from "./decoupledLogic/resolveTemplatedStsRol
 import { actions } from "./state";
 import type { S3Profile } from "./decoupledLogic/s3Profiles";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
+import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import { same } from "evt/tools/inDepth/same";
+import {
+    parseUserConfigsS3BookmarksStr,
+    serializeUserConfigsS3Bookmarks
+} from "./decoupledLogic/userConfigsS3Bookmarks";
+import * as userConfigs from "core/usecases/userConfigs";
 
 export const thunks = {
     testS3ProfileCredentials:
@@ -41,17 +48,17 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const fromVault = structuredClone(
+            const projectConfigs_s3 = structuredClone(
                 projectManagement.protectedSelectors.projectConfig(getState()).s3
             );
 
-            const i = fromVault.s3Configs.findIndex(
+            const i = projectConfigs_s3.s3Configs.findIndex(
                 ({ creationTime }) => creationTime === s3ProfileCreationTime
             );
 
             assert(i !== -1);
 
-            fromVault.s3Configs.splice(i, 1);
+            projectConfigs_s3.s3Configs.splice(i, 1);
 
             {
                 const actions = updateDefaultS3ProfilesAfterPotentialDeletion({
@@ -61,7 +68,9 @@ export const thunks = {
                                 getState()
                             )._s3Next.s3Profiles
                     },
-                    fromVault: fromVault
+                    fromVault: {
+                        projectConfigs_s3
+                    }
                 });
 
                 await Promise.all(
@@ -73,7 +82,7 @@ export const thunks = {
                                 return;
                             }
 
-                            fromVault[propertyName] = action.s3ProfileId;
+                            projectConfigs_s3[propertyName] = action.s3ProfileId;
                         }
                     )
                 );
@@ -82,7 +91,7 @@ export const thunks = {
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
                     key: "s3",
-                    value: fromVault
+                    value: projectConfigs_s3
                 })
             );
         },
@@ -302,7 +311,134 @@ export const protectedThunks = {
                 })
             );
         },
+    createDeleteOrUpdateBookmark:
+        (params: {
+            s3ProfileId: string;
+            s3UriPrefixObj: S3UriPrefixObj;
+            action:
+                | {
+                      type: "create or update";
+                      displayName: string | undefined;
+                  }
+                | {
+                      type: "delete";
+                  };
+        }) =>
+        async (...args) => {
+            const { s3ProfileId, s3UriPrefixObj, action } = params;
 
+            const [dispatch, getState] = args;
+
+            const s3Profiles = selectors.s3Profiles(getState());
+
+            const s3Profile = s3Profiles.find(s3Profile => s3Profile.id === s3ProfileId);
+
+            assert(s3Profile !== undefined);
+
+            switch (s3Profile.origin) {
+                case "created by user (or group project member)":
+                    {
+                        const projectConfigs_s3 = structuredClone(
+                            projectManagement.protectedSelectors.projectConfig(getState())
+                                .s3
+                        );
+
+                        const s3Config_vault = projectConfigs_s3.s3Configs.find(
+                            s3Config => s3Config.creationTime === s3Profile.creationTime
+                        );
+
+                        assert(s3Config_vault !== undefined);
+
+                        s3Config_vault.bookmarks ??= [];
+
+                        const index = s3Config_vault.bookmarks.findIndex(bookmark =>
+                            same(bookmark.s3UriPrefixObj, s3UriPrefixObj)
+                        );
+
+                        switch (action.type) {
+                            case "create or update":
+                                {
+                                    const bookmark_new = {
+                                        displayName: action.displayName,
+                                        s3UriPrefixObj
+                                    };
+
+                                    if (index === -1) {
+                                        s3Config_vault.bookmarks.push(bookmark_new);
+                                    } else {
+                                        s3Config_vault.bookmarks[index] = bookmark_new;
+                                    }
+                                }
+                                break;
+                            case "delete":
+                                {
+                                    assert(index !== -1);
+
+                                    s3Config_vault.bookmarks.splice(index, 1);
+                                }
+                                break;
+                        }
+
+                        await dispatch(
+                            projectManagement.protectedThunks.updateConfigValue({
+                                key: "s3",
+                                value: projectConfigs_s3
+                            })
+                        );
+                    }
+                    break;
+                case "defined in region":
+                    {
+                        const { s3BookmarksStr } =
+                            userConfigs.selectors.userConfigs(getState());
+
+                        const userConfigs_s3Bookmarks = parseUserConfigsS3BookmarksStr({
+                            userConfigs_s3BookmarksStr: s3BookmarksStr
+                        });
+
+                        const index = userConfigs_s3Bookmarks.findIndex(
+                            entry =>
+                                entry.s3ProfileId === s3Profile.id &&
+                                same(entry.s3UriPrefixObj, s3UriPrefixObj)
+                        );
+
+                        switch (action.type) {
+                            case "create or update":
+                                {
+                                    const bookmark_new = {
+                                        s3ProfileId: s3Profile.id,
+                                        displayName: action.displayName,
+                                        s3UriPrefixObj
+                                    };
+
+                                    if (index === -1) {
+                                        userConfigs_s3Bookmarks.push(bookmark_new);
+                                    } else {
+                                        userConfigs_s3Bookmarks[index] = bookmark_new;
+                                    }
+                                }
+                                break;
+                            case "delete":
+                                {
+                                    assert(index !== -1);
+
+                                    userConfigs_s3Bookmarks.splice(index, 1);
+                                }
+                                break;
+                        }
+
+                        await dispatch(
+                            userConfigs.thunks.changeValue({
+                                key: "s3BookmarksStr",
+                                value: serializeUserConfigsS3Bookmarks({
+                                    userConfigs_s3Bookmarks
+                                })
+                            })
+                        );
+                    }
+                    break;
+            }
+        },
     initialize:
         () =>
         async (...args) => {

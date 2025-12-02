@@ -2,6 +2,7 @@ import { createSelector } from "clean-architecture";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
+import * as userConfigs from "core/usecases/userConfigs";
 import {
     type S3Profile,
     aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet
@@ -19,6 +20,11 @@ const resolvedTemplatedStsRoles = createSelector(
     state => state.resolvedTemplatedStsRoles
 );
 
+const userConfigs_s3BookmarksStr = createSelector(
+    userConfigs.selectors.userConfigs,
+    userConfigs => userConfigs.s3BookmarksStr
+);
+
 const s3Profiles = createSelector(
     createSelector(
         projectManagement.protectedSelectors.projectConfig,
@@ -31,15 +37,20 @@ const s3Profiles = createSelector(
     resolvedTemplatedBookmarks,
     resolvedTemplatedStsRoles,
     s3CredentialsTest.protectedSelectors.credentialsTestState,
+    userConfigs_s3BookmarksStr,
     (
-        projectConfigS3,
+        projectConfigs_s3,
         s3Profiles_region,
         resolvedTemplatedBookmarks,
         resolvedTemplatedStsRoles,
-        credentialsTestState
+        credentialsTestState,
+        userConfigs_s3BookmarksStr
     ): S3Profile[] =>
         aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
-            fromVault: projectConfigS3,
+            fromVault: {
+                projectConfigs_s3,
+                userConfigs_s3BookmarksStr
+            },
             fromRegion: {
                 s3Profiles: s3Profiles_region,
                 resolvedTemplatedBookmarks,
