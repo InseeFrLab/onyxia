@@ -15,7 +15,9 @@ type R = Record<
 
 export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
     fromRegion: { s3Profiles: DeploymentRegion.S3Next.S3Profile[] };
-    fromVault: projectManagement.ProjectConfigs["s3"];
+    fromVault: {
+        projectConfigs_s3: projectManagement.ProjectConfigs["s3"];
+    };
 }): R {
     const { fromRegion, fromVault } = params;
 
@@ -25,7 +27,10 @@ export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
             resolvedTemplatedBookmarks: [],
             resolvedTemplatedStsRoles: []
         },
-        fromVault,
+        fromVault: {
+            projectConfigs_s3: fromVault.projectConfigs_s3,
+            userConfigs_s3BookmarksStr: null
+        },
         credentialsTestState: {
             ongoingTests: [],
             testResults: []
@@ -45,7 +50,7 @@ export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
         "s3ConfigId_defaultXOnyxia",
         "s3ConfigId_explorer"
     ] as const) {
-        const s3ConfigId_default = fromVault[propertyName];
+        const s3ConfigId_default = fromVault.projectConfigs_s3[propertyName];
 
         if (s3ConfigId_default === undefined) {
             continue;

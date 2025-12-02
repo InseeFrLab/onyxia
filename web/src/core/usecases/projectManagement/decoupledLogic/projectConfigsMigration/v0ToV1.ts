@@ -5,6 +5,7 @@ import { join as pathJoin } from "pathe";
 import { secretToValue, valueToSecret } from "../secretParsing";
 import YAML from "yaml";
 import { getS3Configs } from "core/usecases/s3ConfigManagement/decoupledLogic/getS3Configs";
+import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 namespace v0 {
     export type ProjectConfigs = {
@@ -89,7 +90,15 @@ export namespace v1 {
                       sessionToken: string | undefined;
                   }
                 | undefined;
+            bookmarks: S3Config.Bookmark[] | undefined;
         };
+
+        export namespace S3Config {
+            export type Bookmark = {
+                displayName: string | undefined;
+                s3UriPrefixObj: S3UriPrefixObj;
+            };
+        }
 
         export type RestorableServiceConfig = {
             friendlyName: string;
@@ -255,7 +264,8 @@ export async function v0ToV1(params: {
                             workingDirectoryPath:
                                 customS3Config_legacy.workingDirectoryPath,
                             pathStyleAccess: customS3Config_legacy.pathStyleAccess,
-                            credentials: customS3Config_legacy.credentials
+                            credentials: customS3Config_legacy.credentials,
+                            bookmarks: []
                         });
                     });
 

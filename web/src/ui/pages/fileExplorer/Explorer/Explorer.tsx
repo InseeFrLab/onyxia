@@ -45,6 +45,7 @@ import { ShareDialog } from "../ShareFile/ShareDialog";
 import type { ShareView } from "core/usecases/fileExplorer";
 import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
 import { IconButton } from "onyxia-ui/IconButton";
+import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 
 export type ExplorerProps = {
@@ -99,7 +100,15 @@ export type ExplorerProps = {
         }[];
     }) => void;
 
-    isDirectoryPathBookmarked: boolean | undefined;
+    bookmarkStatus:
+        | {
+              isBookmarked: false;
+          }
+        | {
+              isBookmarked: true;
+              isReadonly: boolean;
+          }
+        | undefined;
     onToggleIsDirectoryPathBookmarked: (() => void) | undefined;
 };
 
@@ -144,7 +153,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         onChangeShareSelectedValidityDuration,
         onDownloadItems,
         evtIsDownloadSnackbarOpen,
-        isDirectoryPathBookmarked,
+        bookmarkStatus,
         onToggleIsDirectoryPathBookmarked
     } = props;
 
@@ -423,16 +432,22 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     )}
                     {(() => {
-                        if (isDirectoryPathBookmarked === undefined) {
+                        if (bookmarkStatus === undefined) {
                             return null;
                         }
                         assert(onToggleIsDirectoryPathBookmarked !== undefined);
 
+                        const icon = getIconUrlByName(
+                            bookmarkStatus.isBookmarked ? "Star" : "StarBorder"
+                        );
+
+                        if (bookmarkStatus.isBookmarked && bookmarkStatus.isReadonly) {
+                            return <Icon icon={icon} />;
+                        }
+
                         return (
                             <IconButton
-                                icon={getIconUrlByName(
-                                    isDirectoryPathBookmarked ? "Star" : "StarBorder"
-                                )}
+                                icon={icon}
                                 onClick={onToggleIsDirectoryPathBookmarked}
                             />
                         );

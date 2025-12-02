@@ -233,7 +233,7 @@ function FileExplorer() {
                 }
                 onDownloadItems={onDownloadItems}
                 evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
-                isDirectoryPathBookmarked={undefined}
+                bookmarkStatus={undefined}
                 onToggleIsDirectoryPathBookmarked={undefined}
             />
         </div>

@@ -169,7 +169,8 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                 };
             })(),
             // TODO: Delete once we move on
-            workingDirectoryPath: "mybucket/my/prefix/"
+            workingDirectoryPath: "mybucket/my/prefix/",
+            bookmarks: []
         });
     }
 );

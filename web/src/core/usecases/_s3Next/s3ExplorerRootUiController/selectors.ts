@@ -28,7 +28,14 @@ export type View = {
         s3UriPrefixObj: S3UriPrefixObj;
     }[];
     s3UriPrefixObj: S3UriPrefixObj | undefined;
-    isS3UriPrefixBookmarked: boolean;
+    bookmarkStatus:
+        | {
+              isBookmarked: false;
+          }
+        | {
+              isBookmarked: true;
+              isReadonly: boolean;
+          };
 };
 
 const view = createSelector(
@@ -44,7 +51,9 @@ const view = createSelector(
                 availableS3Profiles: [],
                 bookmarks: [],
                 s3UriPrefixObj: undefined,
-                isS3UriPrefixBookmarked: false
+                bookmarkStatus: {
+                    isBookmarked: false
+                }
             };
         }
 
@@ -76,12 +85,28 @@ const view = createSelector(
             })),
             bookmarks: s3Profile.bookmarks,
             s3UriPrefixObj,
-            isS3UriPrefixBookmarked:
-                s3UriPrefixObj === undefined
-                    ? false
-                    : s3Profile.bookmarks.some(bookmark =>
-                          same(bookmark.s3UriPrefixObj, s3UriPrefixObj)
-                      )
+            bookmarkStatus: (() => {
+                if (s3UriPrefixObj === undefined) {
+                    return {
+                        isBookmarked: false
+                    };
+                }
+
+                const bookmark = s3Profile.bookmarks.find(bookmark =>
+                    same(bookmark.s3UriPrefixObj, s3UriPrefixObj)
+                );
+
+                if (bookmark === undefined) {
+                    return {
+                        isBookmarked: false
+                    };
+                }
+
+                return {
+                    isBookmarked: true,
+                    isReadonly: bookmark.isReadonly
+                };
+            })()
         };
     }
 );

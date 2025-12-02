@@ -2,8 +2,10 @@ import type { Thunks } from "core/bootstrap";
 import { actions, type RouteParams } from "./state";
 import { protectedSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import { selectors } from "./selectors";
 import { evt } from "./evt";
 import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import { assert } from "tsafe/assert";
 
 export const thunks = {
     load:
@@ -76,5 +78,42 @@ export const thunks = {
                     s3ProfileId
                 })
             );
-        }
+        },
+    toggleIsDirectoryPathBookmarked: (() => {
+        let isRunning = false;
+
+        return () =>
+            async (...args) => {
+                if (isRunning) {
+                    return;
+                }
+
+                isRunning = true;
+
+                const [dispatch, getState] = args;
+
+                const { selectedS3ProfileId, s3UriPrefixObj, bookmarkStatus } =
+                    selectors.view(getState());
+
+                assert(selectedS3ProfileId !== undefined);
+                assert(s3UriPrefixObj !== undefined);
+
+                await dispatch(
+                    s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
+                        s3ProfileId: selectedS3ProfileId,
+                        s3UriPrefixObj,
+                        action: bookmarkStatus.isBookmarked
+                            ? {
+                                  type: "delete"
+                              }
+                            : {
+                                  type: "create or update",
+                                  displayName: undefined
+                              }
+                    })
+                );
+
+                isRunning = false;
+            };
+    })()
 } satisfies Thunks;
