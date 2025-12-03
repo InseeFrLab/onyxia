@@ -20,6 +20,15 @@ import { parseS3UriPrefix, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 import { useResolveLocalizedString } from "ui/i18n";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
+import { S3ConfigDialogs, type S3ConfigDialogsProps } from "./S3ConfigDialogs";
+import { useConst } from "powerhooks/useConst";
+import { Evt, type UnpackEvt } from "evt";
+import {
+    MaybeAcknowledgeConfigVolatilityDialog,
+    type MaybeAcknowledgeConfigVolatilityDialogProps
+} from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
+import { Deferred } from "evt/tools/Deferred";
+import { Button } from "onyxia-ui/Button";
 
 const Page = withLoader({
     loader: async () => {
@@ -326,35 +335,98 @@ function S3ProfileSelect() {
         functions: { s3ExplorerRootUiController }
     } = getCoreSync();
 
-    const { selectedS3ProfileId, availableS3Profiles } = useCoreState(
-        "s3ExplorerRootUiController",
-        "view"
-    );
+    const { selectedS3ProfileId, selectedS3Profile_creationTime, availableS3Profiles } =
+        useCoreState("s3ExplorerRootUiController", "view");
 
     const { css } = useStyles();
 
+    const {
+        evtConfirmCustomS3ConfigDeletionDialogOpen,
+        evtAddCustomS3ConfigDialogOpen,
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen
+    } = useConst(() => ({
+        evtConfirmCustomS3ConfigDeletionDialogOpen:
+            Evt.create<
+                UnpackEvt<
+                    S3ConfigDialogsProps["evtConfirmCustomS3ConfigDeletionDialogOpen"]
+                >
+            >(),
+        evtAddCustomS3ConfigDialogOpen:
+            Evt.create<
+                UnpackEvt<S3ConfigDialogsProps["evtAddCustomS3ConfigDialogOpen"]>
+            >(),
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen:
+            Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
+    }));
+
     return (
-        <FormControl variant="standard">
-            <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
-            <Select
-                labelId="select-s3Profile"
-                value={selectedS3ProfileId}
-                onChange={event => {
-                    s3ExplorerRootUiController.updateSelectedS3Profile({
-                        s3ProfileId: event.target.value
-                    });
-                }}
-                className={css({
-                    fontSize: "small"
-                })}
-            >
-                {availableS3Profiles.map(s3Profile => (
-                    <MenuItem key={s3Profile.id} value={s3Profile.id}>
-                        {s3Profile.displayName}
+        <>
+            <FormControl variant="standard">
+                <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
+                <Select
+                    labelId="select-s3Profile"
+                    value={selectedS3ProfileId}
+                    onChange={async event => {
+                        const { value } = event.target;
+
+                        if (value === "__create__") {
+                            const dDoProceed = new Deferred<boolean>();
+
+                            evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
+                                resolve: ({ doProceed }) => dDoProceed.resolve(doProceed)
+                            });
+
+                            if (!(await dDoProceed.pr)) {
+                                return;
+                            }
+
+                            evtAddCustomS3ConfigDialogOpen.post({
+                                creationTimeOfS3ProfileToEdit: undefined
+                            });
+
+                            return;
+                        }
+                        s3ExplorerRootUiController.updateSelectedS3Profile({
+                            s3ProfileId: value
+                        });
+                    }}
+                    className={css({
+                        fontSize: "small"
+                    })}
+                >
+                    {availableS3Profiles.map(s3Profile => (
+                        <MenuItem key={s3Profile.id} value={s3Profile.id}>
+                            {s3Profile.displayName}
+                        </MenuItem>
+                    ))}
+                    <MenuItem value="__create__">
+                        <Icon icon={getIconUrlByName("Add")} />
+                        Create New S3 Profile
                     </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+                </Select>
+            </FormControl>
+            {selectedS3Profile_creationTime !== undefined && (
+                <Button
+                    startIcon={getIconUrlByName("Edit")}
+                    onClick={() => {
+                        evtAddCustomS3ConfigDialogOpen.post({
+                            creationTimeOfS3ProfileToEdit: selectedS3Profile_creationTime
+                        });
+                    }}
+                >
+                    Edit
+                </Button>
+            )}
+            <S3ConfigDialogs
+                evtConfirmCustomS3ConfigDeletionDialogOpen={
+                    evtConfirmCustomS3ConfigDeletionDialogOpen
+                }
+                evtAddCustomS3ConfigDialogOpen={evtAddCustomS3ConfigDialogOpen}
+            />
+            <MaybeAcknowledgeConfigVolatilityDialog
+                evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
+            />
+        </>
     );
 }
 
