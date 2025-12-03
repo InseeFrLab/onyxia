@@ -6,7 +6,7 @@ import { name, actions } from "./state";
 import { protectedSelectors } from "./selectors";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as s3ProfileManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import type { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { relative as pathRelative } from "pathe";
@@ -155,7 +155,7 @@ const privateThunks = {
             );
 
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -215,7 +215,7 @@ const privateThunks = {
             const { s3Object } = params;
 
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -257,7 +257,7 @@ const privateThunks = {
             const { s3Objects } = params;
 
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -458,7 +458,7 @@ const privateThunks = {
             );
 
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -554,7 +554,7 @@ export const thunks = {
                 })
             );
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -787,7 +787,7 @@ export const thunks = {
             );
 
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -888,7 +888,7 @@ export const thunks = {
             );
 
             const s3Client = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -923,8 +923,8 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
-            const { s3Client, s3Config } = await dispatch(
-                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            const { s3Client, s3Profile } = await dispatch(
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r;
@@ -940,7 +940,7 @@ export const thunks = {
                 dispatch(
                     actions.shareOpened({
                         fileBasename,
-                        url: `${s3Config.paramsOfCreateS3Client.url}/${pathJoin(directoryPath, fileBasename)}`,
+                        url: `${s3Profile.paramsOfCreateS3Client.url}/${pathJoin(directoryPath, fileBasename)}`,
                         validityDurationSecondOptions: undefined
                     })
                 );

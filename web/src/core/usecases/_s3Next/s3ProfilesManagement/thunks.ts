@@ -94,53 +94,6 @@ export const thunks = {
                     value: projectConfigs_s3
                 })
             );
-        },
-    changeIsDefault:
-        (params: {
-            s3ProfileId: string;
-            usecase: "defaultXOnyxia" | "explorer";
-            value: boolean;
-        }) =>
-        async (...args) => {
-            const { s3ProfileId, usecase, value } = params;
-
-            const [dispatch, getState] = args;
-
-            const fromVault = structuredClone(
-                projectManagement.protectedSelectors.projectConfig(getState()).s3
-            );
-
-            const propertyName = (() => {
-                switch (usecase) {
-                    case "defaultXOnyxia":
-                        return "s3ConfigId_defaultXOnyxia";
-                    case "explorer":
-                        return "s3ConfigId_explorer";
-                }
-            })();
-
-            {
-                const s3ProfileId_currentDefault = fromVault[propertyName];
-
-                if (value) {
-                    if (s3ProfileId_currentDefault === s3ProfileId) {
-                        return;
-                    }
-                } else {
-                    if (s3ProfileId_currentDefault !== s3ProfileId) {
-                        return;
-                    }
-                }
-            }
-
-            fromVault[propertyName] = value ? s3ProfileId : undefined;
-
-            await dispatch(
-                projectManagement.protectedThunks.updateConfigValue({
-                    key: "s3",
-                    value: fromVault
-                })
-            );
         }
 } satisfies Thunks;
 
@@ -438,6 +391,53 @@ export const protectedThunks = {
                     }
                     break;
             }
+        },
+    changeIsDefault:
+        (params: {
+            s3ProfileId: string;
+            usecase: "defaultXOnyxia" | "explorer";
+            value: boolean;
+        }) =>
+        async (...args) => {
+            const { s3ProfileId, usecase, value } = params;
+
+            const [dispatch, getState] = args;
+
+            const fromVault = structuredClone(
+                projectManagement.protectedSelectors.projectConfig(getState()).s3
+            );
+
+            const propertyName = (() => {
+                switch (usecase) {
+                    case "defaultXOnyxia":
+                        return "s3ConfigId_defaultXOnyxia";
+                    case "explorer":
+                        return "s3ConfigId_explorer";
+                }
+            })();
+
+            {
+                const s3ProfileId_currentDefault = fromVault[propertyName];
+
+                if (value) {
+                    if (s3ProfileId_currentDefault === s3ProfileId) {
+                        return;
+                    }
+                } else {
+                    if (s3ProfileId_currentDefault !== s3ProfileId) {
+                        return;
+                    }
+                }
+            }
+
+            fromVault[propertyName] = value ? s3ProfileId : undefined;
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    key: "s3",
+                    value: fromVault
+                })
+            );
         },
     initialize:
         () =>
