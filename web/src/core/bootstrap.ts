@@ -157,7 +157,7 @@ export async function bootstrapCore(
                 }
 
                 const result = await dispatch(
-                    usecases.s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                    usecases.s3ProfilesManagement.protectedThunks.getS3ConfigAndClientForExplorer()
                 );
 
                 if (result === undefined) {
@@ -166,12 +166,12 @@ export async function bootstrapCore(
                     };
                 }
 
-                const { s3Config, s3Client } = result;
+                const { s3Profile, s3Client } = result;
 
                 return {
                     s3Client,
-                    s3_endpoint: s3Config.paramsOfCreateS3Client.url,
-                    s3_url_style: s3Config.paramsOfCreateS3Client.pathStyleAccess
+                    s3_endpoint: s3Profile.paramsOfCreateS3Client.url,
+                    s3_url_style: s3Profile.paramsOfCreateS3Client.pathStyleAccess
                         ? "path"
                         : "vhost",
                     s3_region: s3Config.region

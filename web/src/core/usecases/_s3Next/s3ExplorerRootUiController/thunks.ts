@@ -68,10 +68,18 @@ export const thunks = {
         },
     updateSelectedS3Profile:
         (params: { s3ProfileId: string }) =>
-        (...args) => {
+        async (...args) => {
             const [dispatch] = args;
 
             const { s3ProfileId } = params;
+
+            await dispatch(
+                s3ProfilesManagement.protectedThunks.changeIsDefault({
+                    s3ProfileId,
+                    usecase: "explorer",
+                    value: true
+                })
+            );
 
             dispatch(
                 actions.selectedS3ProfileUpdated({
