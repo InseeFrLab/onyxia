@@ -19,6 +19,7 @@ export const protectedSelectors = {
 
 export type View = {
     selectedS3ProfileId: string | undefined;
+    selectedS3Profile_creationTime: number | undefined;
     availableS3Profiles: {
         id: string;
         displayName: string;
@@ -48,6 +49,7 @@ const view = createSelector(
         if (routeParams.profile === undefined) {
             return {
                 selectedS3ProfileId: undefined,
+                selectedS3Profile_creationTime: undefined,
                 availableS3Profiles: [],
                 bookmarks: [],
                 s3UriPrefixObj: undefined,
@@ -79,6 +81,10 @@ const view = createSelector(
 
         return {
             selectedS3ProfileId,
+            selectedS3Profile_creationTime:
+                s3Profile.origin !== "created by user (or group project member)"
+                    ? undefined
+                    : s3Profile.creationTime,
             availableS3Profiles: s3Profiles.map(s3Profile => ({
                 id: s3Profile.id,
                 displayName: s3Profile.paramsOfCreateS3Client.url

@@ -186,7 +186,7 @@ export const thunks = {
                 }
             }
         },
-    testConnection:
+    testCredentials:
         () =>
         async (...args) => {
             const [dispatch, getState] = args;

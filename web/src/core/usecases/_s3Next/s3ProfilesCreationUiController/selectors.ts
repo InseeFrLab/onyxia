@@ -199,13 +199,13 @@ const paramsOfCreateS3Client = createSelector(
     }
 );
 
-type ConnectionTestStatus =
+type CredentialsTestStatus =
     | { status: "test ongoing" }
     | { status: "test succeeded" }
     | { status: "test failed"; errorMessage: string }
     | { status: "not tested" };
 
-const connectionTestStatus = createSelector(
+const credentialsTestStatus = createSelector(
     isReady,
     isFormSubmittable,
     paramsOfCreateS3Client,
@@ -215,7 +215,7 @@ const connectionTestStatus = createSelector(
         isFormSubmittable,
         paramsOfCreateS3Client,
         credentialsTestState
-    ): ConnectionTestStatus | null => {
+    ): CredentialsTestStatus | null => {
         if (!isReady) {
             return null;
         }
@@ -252,7 +252,7 @@ const connectionTestStatus = createSelector(
                 : { status: "test failed", errorMessage: result.errorMessage };
         }
 
-        return { status: "not tested" } as ConnectionTestStatus;
+        return { status: "not tested" } as CredentialsTestStatus;
     }
 );
 
@@ -301,7 +301,7 @@ const main = createSelector(
     isFormSubmittable,
     urlStylesExamples,
     isEditionOfAnExistingConfig,
-    connectionTestStatus,
+    credentialsTestStatus,
     (
         isReady,
         formValues,
@@ -309,7 +309,7 @@ const main = createSelector(
         isFormSubmittable,
         urlStylesExamples,
         isEditionOfAnExistingConfig,
-        connectionTestStatus
+        credentialsTestStatus
     ) => {
         if (!isReady) {
             return {
@@ -322,7 +322,7 @@ const main = createSelector(
         assert(isFormSubmittable !== null);
         assert(urlStylesExamples !== null);
         assert(isEditionOfAnExistingConfig !== null);
-        assert(connectionTestStatus !== null);
+        assert(credentialsTestStatus !== null);
 
         return {
             isReady: true,
@@ -331,7 +331,7 @@ const main = createSelector(
             isFormSubmittable,
             urlStylesExamples,
             isEditionOfAnExistingConfig,
-            connectionTestStatus
+            credentialsTestStatus
         };
     }
 );
