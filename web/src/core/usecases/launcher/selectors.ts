@@ -7,7 +7,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as s3ConfigManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";
@@ -155,7 +155,7 @@ const chartVersion = createSelector(readyState, state => {
 });
 
 const s3ConfigSelect = createSelector(
-    s3ConfigManagement.selectors.s3Configs,
+    s3ConfigManagement.selectors.s3Profiles,
     isReady,
     projectManagement.selectors.canInjectPersonalInfos,
     createSelector(readyState, state => {
@@ -177,7 +177,7 @@ const s3ConfigSelect = createSelector(
         }
 
         const availableConfigs = s3Configs.filter(
-            config => canInjectPersonalInfos || config.origin !== "deploymentRegion"
+            config => canInjectPersonalInfos || config.origin !== "defined in region"
         );
 
         // We don't display the s3 config selector if there is no config or only one
@@ -189,9 +189,11 @@ const s3ConfigSelect = createSelector(
             options: availableConfigs.map(s3Config => ({
                 optionValue: s3Config.id,
                 label: {
-                    dataSource: s3Config.dataSource,
+                    dataSource: new URL(s3Config.paramsOfCreateS3Client.url).hostname,
                     friendlyName:
-                        s3Config.origin === "project" ? s3Config.friendlyName : undefined
+                        s3Config.origin === "created by user (or group project member)"
+                            ? s3Config.friendlyName
+                            : undefined
                 }
             })),
             selectedOptionValue: s3Config.s3ConfigId
