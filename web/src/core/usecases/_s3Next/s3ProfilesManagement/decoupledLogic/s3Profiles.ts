@@ -1,10 +1,8 @@
 import * as projectManagement from "core/usecases/projectManagement";
 import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
-import { same } from "evt/tools/inDepth/same";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe";
-import type * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
 import type { ResolvedTemplateStsRole } from "./resolveTemplatedStsRole";
@@ -18,11 +16,6 @@ export namespace S3Profile {
         id: string;
         isXOnyxiaDefault: boolean;
         isExplorerConfig: boolean;
-        credentialsTestStatus:
-            | { status: "not tested" }
-            | { status: "test ongoing" }
-            | { status: "test failed"; errorMessage: string }
-            | { status: "test succeeded" };
         bookmarks: Bookmark[];
     };
 
@@ -61,40 +54,8 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
             stsRoles: ResolvedTemplateStsRole[];
         }[];
     };
-    credentialsTestState: s3CredentialsTest.State;
 }): S3Profile[] {
-    const { fromVault, fromRegion, credentialsTestState } = params;
-
-    const getCredentialsTestStatus = (params: {
-        paramsOfCreateS3Client: ParamsOfCreateS3Client;
-    }): S3Profile["credentialsTestStatus"] => {
-        const { paramsOfCreateS3Client } = params;
-
-        if (
-            credentialsTestState.ongoingTests.find(e =>
-                same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
-            ) !== undefined
-        ) {
-            return { status: "test ongoing" };
-        }
-
-        has_result: {
-            const { result } =
-                credentialsTestState.testResults.find(e =>
-                    same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
-                ) ?? {};
-
-            if (result === undefined) {
-                break has_result;
-            }
-
-            return result.isSuccess
-                ? { status: "test succeeded" }
-                : { status: "test failed", errorMessage: result.errorMessage };
-        }
-
-        return { status: "not tested" };
-    };
+    const { fromVault, fromRegion } = params;
 
     const s3Profiles: S3Profile[] = [
         ...fromVault.projectConfigs_s3.s3Configs
@@ -126,10 +87,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                             s3UriPrefixObj,
                             isReadonly: false
                         })
-                    ),
-                    credentialsTestStatus: getCredentialsTestStatus({
-                        paramsOfCreateS3Client
-                    })
+                    )
                 };
             })
             .sort((a, b) => b.creationTime - a.creationTime),
@@ -225,9 +183,6 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                 }))
                         ],
                         paramsOfCreateS3Client,
-                        credentialsTestStatus: getCredentialsTestStatus({
-                            paramsOfCreateS3Client
-                        }),
                         isXOnyxiaDefault: false,
                         isExplorerConfig: false
                     };

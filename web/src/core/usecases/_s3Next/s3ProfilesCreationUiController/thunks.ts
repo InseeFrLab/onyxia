@@ -4,7 +4,6 @@ import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
-import * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
 
 export const thunks = {
     initialize:
@@ -185,28 +184,5 @@ export const thunks = {
                     break preset_pathStyleAccess;
                 }
             }
-        },
-    testCredentials:
-        () =>
-        async (...args) => {
-            const [dispatch, getState] = args;
-
-            const projectS3Config =
-                privateSelectors.submittableFormValuesAsProjectS3Config(getState());
-
-            assert(projectS3Config !== null);
-            assert(projectS3Config !== undefined);
-
-            await dispatch(
-                s3CredentialsTest.protectedThunks.testS3Credentials({
-                    paramsOfCreateS3Client: {
-                        isStsEnabled: false,
-                        url: projectS3Config.url,
-                        pathStyleAccess: projectS3Config.pathStyleAccess,
-                        region: projectS3Config.region,
-                        credentials: projectS3Config.credentials
-                    }
-                })
-            );
         }
 } satisfies Thunks;

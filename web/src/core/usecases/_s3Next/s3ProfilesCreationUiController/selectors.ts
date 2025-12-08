@@ -6,8 +6,6 @@ import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
-import * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
-import { same } from "evt/tools/inDepth/same";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -199,63 +197,6 @@ const paramsOfCreateS3Client = createSelector(
     }
 );
 
-type CredentialsTestStatus =
-    | { status: "test ongoing" }
-    | { status: "test succeeded" }
-    | { status: "test failed"; errorMessage: string }
-    | { status: "not tested" };
-
-const credentialsTestStatus = createSelector(
-    isReady,
-    isFormSubmittable,
-    paramsOfCreateS3Client,
-    s3CredentialsTest.protectedSelectors.credentialsTestState,
-    (
-        isReady,
-        isFormSubmittable,
-        paramsOfCreateS3Client,
-        credentialsTestState
-    ): CredentialsTestStatus | null => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(isFormSubmittable !== null);
-        assert(paramsOfCreateS3Client !== null);
-
-        if (!isFormSubmittable) {
-            return { status: "not tested" };
-        }
-
-        assert(paramsOfCreateS3Client !== undefined);
-
-        if (
-            credentialsTestState.ongoingTests.find(e =>
-                same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
-            ) !== undefined
-        ) {
-            return { status: "test ongoing" };
-        }
-
-        has_result: {
-            const { result } =
-                credentialsTestState.testResults.find(e =>
-                    same(e.paramsOfCreateS3Client, paramsOfCreateS3Client)
-                ) ?? {};
-
-            if (result === undefined) {
-                break has_result;
-            }
-
-            return result.isSuccess
-                ? { status: "test succeeded" }
-                : { status: "test failed", errorMessage: result.errorMessage };
-        }
-
-        return { status: "not tested" } as CredentialsTestStatus;
-    }
-);
-
 const urlStylesExamples = createSelector(
     isReady,
     formattedFormValuesUrl,
@@ -301,15 +242,13 @@ const main = createSelector(
     isFormSubmittable,
     urlStylesExamples,
     isEditionOfAnExistingConfig,
-    credentialsTestStatus,
     (
         isReady,
         formValues,
         formValuesErrors,
         isFormSubmittable,
         urlStylesExamples,
-        isEditionOfAnExistingConfig,
-        credentialsTestStatus
+        isEditionOfAnExistingConfig
     ) => {
         if (!isReady) {
             return {
@@ -322,7 +261,6 @@ const main = createSelector(
         assert(isFormSubmittable !== null);
         assert(urlStylesExamples !== null);
         assert(isEditionOfAnExistingConfig !== null);
-        assert(credentialsTestStatus !== null);
 
         return {
             isReady: true,
@@ -330,8 +268,7 @@ const main = createSelector(
             formValuesErrors,
             isFormSubmittable,
             urlStylesExamples,
-            isEditionOfAnExistingConfig,
-            credentialsTestStatus
+            isEditionOfAnExistingConfig
         };
     }
 );

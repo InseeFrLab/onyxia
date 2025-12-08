@@ -4,7 +4,6 @@ import * as projectManagement from "core/usecases/projectManagement";
 import { assert } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 import { createUsecaseContextApi } from "clean-architecture";
-import * as s3CredentialsTest from "core/usecases/_s3Next/s3CredentialsTest";
 import { updateDefaultS3ProfilesAfterPotentialDeletion } from "./decoupledLogic/updateDefaultS3ProfilesAfterPotentialDeletion";
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
@@ -23,24 +22,6 @@ import {
 import * as userConfigs from "core/usecases/userConfigs";
 
 export const thunks = {
-    testS3ProfileCredentials:
-        (params: { s3ProfileId: string }) =>
-        async (...args) => {
-            const { s3ProfileId } = params;
-            const [dispatch, getState] = args;
-
-            const s3Profiles = selectors.s3Profiles(getState());
-
-            const s3Profile = s3Profiles.find(s3Profile => s3Profile.id === s3ProfileId);
-
-            assert(s3Profile !== undefined);
-
-            await dispatch(
-                s3CredentialsTest.protectedThunks.testS3Credentials({
-                    paramsOfCreateS3Client: s3Profile.paramsOfCreateS3Client
-                })
-            );
-        },
     deleteS3Config:
         (params: { s3ProfileCreationTime: number }) =>
         async (...args) => {
