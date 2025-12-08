@@ -30,10 +30,6 @@ export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
         fromVault: {
             projectConfigs_s3: fromVault.projectConfigs_s3,
             userConfigs_s3BookmarksStr: null
-        },
-        credentialsTestState: {
-            ongoingTests: [],
-            testResults: []
         }
     });
 

@@ -16,7 +16,6 @@ import { tss } from "tss";
 import { useCoreState, getCoreSync } from "core";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { Text } from "onyxia-ui/Text";
-import { TestS3ConnectionButton } from "./TestS3ConnectionButton";
 import FormHelperText from "@mui/material/FormHelperText";
 import Switch from "@mui/material/Switch";
 
@@ -97,16 +96,10 @@ type ButtonsProps = {
 const Buttons = memo((props: ButtonsProps) => {
     const { onCloseCancel, onCloseSubmit } = props;
 
-    const {
-        isReady,
-        credentialsTestStatus,
-        isFormSubmittable,
-        isEditionOfAnExistingConfig
-    } = useCoreState("s3ProfilesCreationUiController", "main");
-
-    const {
-        functions: { s3ProfilesCreationUiController }
-    } = getCoreSync();
+    const { isReady, isFormSubmittable, isEditionOfAnExistingConfig } = useCoreState(
+        "s3ProfilesCreationUiController",
+        "main"
+    );
 
     const { css } = useButtonsStyles();
 
@@ -118,14 +111,6 @@ const Buttons = memo((props: ButtonsProps) => {
 
     return (
         <>
-            <TestS3ConnectionButton
-                credentialsTestStatus={credentialsTestStatus}
-                onTestConnection={
-                    !isFormSubmittable
-                        ? undefined
-                        : s3ProfilesCreationUiController.testCredentials
-                }
-            />
             <div className={css({ flex: 1 })} />
             <Button onClick={onCloseCancel} variant="secondary">
                 {t("cancel")}
