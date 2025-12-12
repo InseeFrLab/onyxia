@@ -72,7 +72,40 @@ export const TextFormField = memo((props: Props) => {
                         break check_pattern;
                     }
 
-                    if (!new RegExp(pattern).test(newValue)) {
+                    const regExp = new RegExp(pattern);
+
+                    const start_time = performance.now();
+
+                    let doesMatch: boolean | undefined;
+
+                    try {
+                        doesMatch = regExp.test(newValue);
+                    } catch (error) {
+                        assert(error instanceof Error);
+
+                        if (/too much recursion|stack|call stack/i.test(error.message)) {
+                            doesMatch = undefined;
+                        } else {
+                            throw error;
+                        }
+                    }
+
+                    if (performance.now() - start_time > 100 || doesMatch === undefined) {
+                        console.error(
+                            [
+                                "onyxia: Chart author warning",
+                                "The RegExp provided as `pattern` in values.schema.json is too expensive to be evaluated",
+                                "in a realtime form validation context and is freezing the UI.",
+                                `Problematic RegExp: ${pattern}`,
+                                "",
+                                "Please simplify this RegExp so it validates the same input without catastrophic backtracking.",
+                                "In particular, avoid nested quantifiers or ambiguous constructs",
+                                "(for example: `([…]+)+`)."
+                            ].join("\n")
+                        );
+                    }
+
+                    if (!doesMatch) {
                         return {
                             isValid: false,
                             errorMessageKey: "not matching pattern"
