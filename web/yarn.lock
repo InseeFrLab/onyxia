@@ -1305,21 +1305,21 @@
     ky-universal "^0.11.0"
     undici "^5.21.2"
 
-"@duckdb/duckdb-wasm-shell@1.31.0":
-  version "1.31.0"
-  resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm-shell/-/duckdb-wasm-shell-1.31.0.tgz#bb35161739f14a6d36870077413bd79a258a9e2f"
-  integrity sha512-BMZRliaLoJOo85OZoMgoQmG2vtpNQ07F+2Z+iuBiXfYU3O/lrrUXtVnwv/LAgIMYSb34LQpA5iEyBNVqP+a2CQ==
+"@duckdb/duckdb-wasm-shell@1.32.0":
+  version "1.32.0"
+  resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm-shell/-/duckdb-wasm-shell-1.32.0.tgz#6d21da109e37e6ce455ba2d33f0ee206cc63e1f2"
+  integrity sha512-FVNGZ/rpFG0/ZYMbdMUGs2S28tMBZGwrq3nv8gGLpq/YP8UvpYm8mfKTgxWfltMo2LS7//sZEewlgdYKzLFDzg==
   dependencies:
-    "@duckdb/duckdb-wasm" "^1.31.0"
+    "@duckdb/duckdb-wasm" "^1.32.0"
     xterm "^5.3.0"
     xterm-addon-fit "^0.8.0"
     xterm-addon-web-links "^0.9.0"
     xterm-addon-webgl "^0.16.0"
 
-"@duckdb/duckdb-wasm@1.31.0", "@duckdb/duckdb-wasm@^1.31.0":
-  version "1.31.0"
-  resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm/-/duckdb-wasm-1.31.0.tgz#bf48e84ed561048edf8c205741d1b00838f123f6"
-  integrity sha512-HcR5XFmNpi7ua0IFohO2dFDNh0LkZgnkfkiD5BDlP8SAmhhcHe+zfOPD1izpmuBxLel25LHO608NY/3RolwztQ==
+"@duckdb/duckdb-wasm@1.32.0", "@duckdb/duckdb-wasm@^1.32.0":
+  version "1.32.0"
+  resolved "https://registry.yarnpkg.com/@duckdb/duckdb-wasm/-/duckdb-wasm-1.32.0.tgz#199ebbca6c302eba7bb0a458aacd34ccf8518335"
+  integrity sha512-IewXTNYEjsZCPE9weUWgtjGxUlMRo7qhX0GF6tq/KjK8bnY+RAl4cyUdYUfcdzbyb4b9ZxPC+FOsCcxgaKFWMg==
   dependencies:
     apache-arrow "^17.0.0"
 
