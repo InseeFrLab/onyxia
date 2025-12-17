@@ -55,7 +55,7 @@ export const createDuckDbSqlOlap = (params: {
 
     const sqlOlap: SqlOlap = {
         getConfiguredAsyncDuckDb: (() => {
-            let hasCustomExtensionRepositoryBeenSetup = false;
+            let hasInit = false;
 
             const prDb = getAsyncDuckDb();
 
@@ -68,16 +68,21 @@ export const createDuckDbSqlOlap = (params: {
                     | import("@duckdb/duckdb-wasm").AsyncDuckDBConnection
                     | undefined = undefined;
 
-                setup_custom_extension_repository: {
-                    if (hasCustomExtensionRepositoryBeenSetup) {
-                        break setup_custom_extension_repository;
+                init: {
+                    if (hasInit) {
+                        break init;
                     }
 
                     conn = await db.connect();
 
                     await conn.query(
-                        `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`
+                        [
+                            "LOAD httpfs;",
+                            `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`
+                        ].join("\n")
                     );
+
+                    hasInit = true;
                 }
 
                 setup_s3: {
@@ -268,6 +273,8 @@ export const createDuckDbSqlOlap = (params: {
                 }
             })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
 
+            console.log("===>", sqlQuery);
+
             const conn = await db.connect();
             const stmt = await conn.prepare(sqlQuery);
 
@@ -331,6 +338,8 @@ export const createDuckDbSqlOlap = (params: {
                     }
 
                     const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
+
+                    console.log("xxxxx", query);
 
                     const conn = await db.connect();
                     const stmt = await conn.prepare(query);
