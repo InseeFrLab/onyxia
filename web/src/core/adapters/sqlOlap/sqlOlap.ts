@@ -25,12 +25,14 @@ export const createDuckDbSqlOlap = (params: {
               s3Client?: never;
               s3_endpoint?: never;
               s3_url_style?: never;
+              s3_region?: never;
           }
         | {
               errorCause?: never;
               s3Client: S3Client;
               s3_endpoint: string;
               s3_url_style: "path" | "vhost";
+              s3_region: string | undefined;
           }
     >;
 }): SqlOlap => {
@@ -86,7 +88,7 @@ export const createDuckDbSqlOlap = (params: {
                 }
 
                 setup_s3: {
-                    const { errorCause, s3Client, s3_endpoint /*s3_url_style*/ } =
+                    const { errorCause, s3Client, s3_endpoint, s3_url_style, s3_region } =
                         await getS3Client();
 
                     if (errorCause !== undefined) {
@@ -106,24 +108,34 @@ export const createDuckDbSqlOlap = (params: {
 
                     const tokens = await s3Client.getToken({ doForceRenew: false });
 
-                    await conn.query(
+                    const query = [
+                        "CREATE OR REPLACE SECRET onyxia_s3 (",
                         [
-                            `SET s3_endpoint = '${s3_endpoint}';`,
-                            // https://github.com/duckdb/duckdb-wasm/issues/1207
-                            //`SET s3_url_style = '${s3_url_style}';`
+                            "TYPE s3",
+                            "PROVIDER config",
+                            `ENDPOINT '${s3_endpoint
+                                .trim()
+                                .replace(/^https?:\/\//, "")
+                                .replace(/\/$/, "")}'`,
+                            `URL_STYLE '${s3_url_style}'`,
+                            `USE_SSL ${s3_endpoint.startsWith("http://") ? "false" : "true"}`,
+                            ...(s3_region === undefined ? [] : [`REGION '${s3_region}'`]),
                             ...(tokens === undefined
                                 ? []
                                 : [
-                                      `SET s3_access_key_id = '${tokens.accessKeyId}';`,
-                                      `SET s3_secret_access_key = '${tokens.secretAccessKey}';`,
+                                      `KEY_ID '${tokens.accessKeyId}'`,
+                                      `SECRET '${tokens.secretAccessKey}'`,
                                       ...(tokens.sessionToken === undefined
                                           ? []
-                                          : [
-                                                `SET s3_session_token = '${tokens.sessionToken}';`
-                                            ])
+                                          : [`SESSION_TOKEN '${tokens.sessionToken}'`])
                                   ])
-                        ].join("\n")
-                    );
+                        ]
+                            .map(part => `    ${part}`)
+                            .join(",\n"),
+                        ");"
+                    ].join("\n");
+
+                    await conn.query(query);
 
                     s3FeatureStatus = {
                         isS3Capable: true
@@ -273,8 +285,6 @@ export const createDuckDbSqlOlap = (params: {
                 }
             })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
 
-            console.log("===>", sqlQuery);
-
             const conn = await db.connect();
             const stmt = await conn.prepare(sqlQuery);
 
@@ -338,8 +348,6 @@ export const createDuckDbSqlOlap = (params: {
                     }
 
                     const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
-
-                    console.log("xxxxx", query);
 
                     const conn = await db.connect();
                     const stmt = await conn.prepare(query);

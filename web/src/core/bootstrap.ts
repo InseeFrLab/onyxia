@@ -173,7 +173,8 @@ export async function bootstrapCore(
                     s3_endpoint: s3Config.paramsOfCreateS3Client.url,
                     s3_url_style: s3Config.paramsOfCreateS3Client.pathStyleAccess
                         ? "path"
-                        : "vhost"
+                        : "vhost",
+                    s3_region: s3Config.region
                 };
             }
         })
