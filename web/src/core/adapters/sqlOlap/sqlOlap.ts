@@ -13,10 +13,11 @@ import duckdbCoiWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-coi.wasm?url";
 import { assert, type Equals, type ReturnType, id, isAmong } from "tsafe";
 import memoize from "memoizee";
 import { createArrowTableApi } from "./utils/arrowTable";
-import { inferFileType } from "./utils/inferFileType";
+import { inferFileType as inferFileType_pure } from "./utils/inferFileType";
 import type { S3Client } from "core/ports/S3Client";
 import { Deferred } from "evt/tools/Deferred";
 import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
+import { getHttpUrlWithoutRedirect } from "core/tools/getHttpUrlWithoutRedirect";
 
 export const createDuckDbSqlOlap = (params: {
     getS3Client: () => Promise<
@@ -40,37 +41,113 @@ export const createDuckDbSqlOlap = (params: {
 
     const prArrowTableApi = createArrowTableApi();
 
-    const getHttpUrlWithoutRedirect = memoize(
-        async (httpUrl: string) => {
-            const doFetch = async (init: RequestInit) => {
-                const controller = new AbortController();
-                try {
-                    const response = await fetch(httpUrl, {
-                        ...init,
-                        redirect: "follow",
-                        signal: controller.signal
-                    });
-                    // HEAD has no body; if we fall back to GET, cancel immediately to avoid downloads.
-                    response.body?.cancel();
-                    return response.url;
-                } catch {
-                    return undefined;
-                } finally {
-                    controller.abort();
-                }
-            };
+    const inferFileType = memoize((sourceUrl: string) => {
+        const dOut = new Deferred<SqlOlap.ReturnTypeOfInferType>();
 
-            // Prefer HEAD (cheap); fall back to a ranged GET if HEAD is unsupported.
-            return (
-                (await doFetch({ method: "HEAD" })) ??
-                (await doFetch({
-                    method: "GET",
-                    headers: { Range: "bytes=0-0" }
-                }))
+        const { protocol: sourceUrlProtocol } = new URL(sourceUrl);
+
+        assert(isAmong(["https:", "s3:"], sourceUrlProtocol));
+
+        const partialFetch = memoize(
+            async () => {
+                switch (sourceUrlProtocol) {
+                    case "https:": {
+                        const response = await fetch(sourceUrl, {
+                            method: "GET",
+                            redirect: "follow",
+                            headers: { Range: "bytes=0-15" }
+                        }).catch(error => {
+                            assert(error instanceof Error);
+                            dOut.resolve({ errorCause: "https fetch error" });
+                            return new Promise<never>(() => {});
+                        });
+
+                        if (!response.ok) {
+                            dOut.resolve({ errorCause: "https fetch error" });
+                            return new Promise<never>(() => {});
+                        }
+
+                        const httpUrl_withoutRedirect = response.url;
+
+                        getHttpUrlWithoutRedirect.setResult({
+                            httpUrl: sourceUrl,
+                            httpUrl_withoutRedirect
+                        });
+
+                        return {
+                            httpUrl_withoutRedirect,
+                            contentType:
+                                response.headers.get("Content-Type") ?? undefined,
+                            getFirstBytes: async () => {
+                                try {
+                                    return await response.arrayBuffer();
+                                } catch {
+                                    dOut.resolve({ errorCause: "https fetch error" });
+                                    return new Promise<never>(() => {});
+                                }
+                            }
+                        };
+                    }
+                    case "s3:": {
+                        const { errorCause: errorCause_getS3Client, s3Client } =
+                            await getS3Client();
+
+                        if (errorCause_getS3Client !== undefined) {
+                            dOut.resolve({ errorCause: errorCause_getS3Client });
+                            return new Promise<never>(() => {});
+                        }
+
+                        const result = await s3Client.getFileContent({
+                            path: sourceUrl.replace(/^s3:\/\//, ""),
+                            range: "bytes=0-15"
+                        });
+
+                        const buffer = await streamToArrayBuffer(result.stream);
+
+                        return {
+                            httpUrl_withoutRedirect: undefined,
+                            contentType: result.contentType ?? undefined,
+                            getFirstBytes: async () => buffer
+                        };
+                    }
+                    default:
+                        assert<Equals<typeof sourceUrlProtocol, never>>(false);
+                }
+            },
+            { promise: true }
+        );
+
+        inferFileType_pure({
+            sourceUrl,
+            getHttpUrlWithoutRedirect: async () => {
+                const result = await partialFetch();
+                return result.httpUrl_withoutRedirect;
+            },
+            getContentType: async () => {
+                const result = await partialFetch();
+                return result.contentType;
+            },
+            getFirstBytes: async () => {
+                const result = await partialFetch();
+                return result.getFirstBytes();
+            }
+        }).then(fileType => {
+            if (fileType === undefined) {
+                dOut.resolve({
+                    errorCause: "unsupported file type"
+                });
+                return;
+            }
+            dOut.resolve(
+                id<SqlOlap.ReturnTypeOfInferType.Success>({
+                    fileType,
+                    sourceUrlProtocol
+                })
             );
-        },
-        { promise: true }
-    );
+        });
+
+        return dOut.pr;
+    });
 
     const sqlOlap: SqlOlap = {
         getConfiguredAsyncDuckDb: (() => {
@@ -167,99 +244,7 @@ export const createDuckDbSqlOlap = (params: {
                 });
             };
         })(),
-        inferFileType: ({ sourceUrl }) => {
-            const dOut = new Deferred<SqlOlap.ReturnTypeOfInferType>();
-
-            const { protocol: sourceUrlProtocol } = new URL(sourceUrl);
-
-            assert(isAmong(["https:", "s3:"], sourceUrlProtocol));
-
-            const partialFetch = memoize(
-                async () => {
-                    switch (sourceUrlProtocol) {
-                        case "https:": {
-                            const response = await fetch(sourceUrl, {
-                                method: "GET",
-                                headers: { Range: "bytes=0-15" }
-                            }).catch(error => {
-                                assert(error instanceof Error);
-                                dOut.resolve({ errorCause: "https fetch error" });
-                                return new Promise<never>(() => {});
-                            });
-
-                            if (!response.ok) {
-                                dOut.resolve({ errorCause: "https fetch error" });
-                                return new Promise<never>(() => {});
-                            }
-
-                            return {
-                                getContentType: () =>
-                                    response.headers.get("Content-Type") ?? undefined,
-                                getFirstBytes: async () => {
-                                    try {
-                                        return await response.arrayBuffer();
-                                    } catch {
-                                        dOut.resolve({ errorCause: "https fetch error" });
-                                        return new Promise<never>(() => {});
-                                    }
-                                }
-                            };
-                        }
-                        case "s3:": {
-                            const { errorCause: errorCause_getS3Client, s3Client } =
-                                await getS3Client();
-
-                            if (errorCause_getS3Client !== undefined) {
-                                dOut.resolve({ errorCause: errorCause_getS3Client });
-                                return new Promise<never>(() => {});
-                            }
-
-                            const result = await s3Client.getFileContent({
-                                path: sourceUrl.replace(/^s3:\/\//, ""),
-                                range: "bytes=0-15"
-                            });
-
-                            const buffer = await streamToArrayBuffer(result.stream);
-
-                            return {
-                                getContentType: () => result.contentType ?? undefined,
-                                getFirstBytes: async () => buffer
-                            };
-                        }
-                        default:
-                            assert<Equals<typeof sourceUrlProtocol, never>>(false);
-                    }
-                },
-                { promise: true }
-            );
-
-            inferFileType({
-                sourceUrl,
-                getContentType: async () => {
-                    const result = await partialFetch();
-                    return result.getContentType();
-                },
-                getFirstBytes: async () => {
-                    const result = await partialFetch();
-                    return result.getFirstBytes();
-                }
-            }).then(fileType => {
-                if (fileType === undefined) {
-                    dOut.resolve({
-                        errorCause: "unsupported file type"
-                    });
-                    return;
-                }
-                dOut.resolve(
-                    id<SqlOlap.ReturnTypeOfInferType.Success>({
-                        fileType,
-                        sourceUrlProtocol
-                    })
-                );
-            });
-
-            return dOut.pr;
-        },
+        inferFileType: ({ sourceUrl }) => inferFileType(sourceUrl),
         getRows: async ({ sourceUrl, rowsPerPage, page }) => {
             const {
                 errorCause: errorCause_inferFileType,
@@ -282,7 +267,9 @@ export const createDuckDbSqlOlap = (params: {
             }
 
             if (sourceUrlProtocol === "https:") {
-                const sourceUrl_noRedirect = await getHttpUrlWithoutRedirect(sourceUrl);
+                const sourceUrl_noRedirect = await getHttpUrlWithoutRedirect({
+                    httpUrl: sourceUrl
+                });
                 if (sourceUrl_noRedirect === undefined) {
                     return id<SqlOlap.ReturnTypeOfGetRows.Failed>({
                         errorCause: "https fetch error"
@@ -354,8 +341,9 @@ export const createDuckDbSqlOlap = (params: {
                     }
 
                     if (sourceUrlProtocol === "https:") {
-                        const sourceUrl_noRedirect =
-                            await getHttpUrlWithoutRedirect(sourceUrl);
+                        const sourceUrl_noRedirect = await getHttpUrlWithoutRedirect({
+                            httpUrl: sourceUrl
+                        });
                         if (sourceUrl_noRedirect === undefined) {
                             return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
                                 errorCause: "https fetch error"
@@ -421,7 +409,7 @@ const getAsyncDuckDb = memoize(
         assert(bundle.mainWorker !== null);
 
         const db = new duckdb.AsyncDuckDB(
-            new duckdb.ConsoleLogger(),
+            new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING),
             new Worker(bundle.mainWorker)
         );
 

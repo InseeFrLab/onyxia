@@ -90,19 +90,31 @@ async function inferFileType_fromBytes(firstBytes: ArrayBuffer) {
 
 export async function inferFileType(params: {
     sourceUrl: string;
+    getHttpUrlWithoutRedirect: () => Promise<string | undefined>;
     getContentType: () => Promise<string | undefined>;
     getFirstBytes: () => Promise<ArrayBuffer | undefined>;
 }): Promise<SupportedFileType | undefined> {
-    const { sourceUrl, getContentType, getFirstBytes } = params;
+    const { sourceUrl, getHttpUrlWithoutRedirect, getContentType, getFirstBytes } =
+        params;
 
     file_extension: {
-        const fileType = inferFileType_fromExtension(sourceUrl);
+        let fileType = inferFileType_fromExtension(sourceUrl);
 
-        if (fileType === undefined) {
+        if (fileType !== undefined) {
+            return fileType;
+        }
+
+        const sourceUrl_noRedirect = await getHttpUrlWithoutRedirect();
+
+        if (sourceUrl_noRedirect === undefined) {
             break file_extension;
         }
 
-        return fileType;
+        fileType = inferFileType_fromExtension(sourceUrl_noRedirect);
+
+        if (fileType !== undefined) {
+            return fileType;
+        }
     }
 
     content_type: {
