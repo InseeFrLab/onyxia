@@ -42,15 +42,32 @@ export const createDuckDbSqlOlap = (params: {
 
     const getHttpUrlWithoutRedirect = memoize(
         async (httpUrl: string) => {
-            let response: Response;
+            const doFetch = async (init: RequestInit) => {
+                const controller = new AbortController();
+                try {
+                    const response = await fetch(httpUrl, {
+                        ...init,
+                        redirect: "follow",
+                        signal: controller.signal
+                    });
+                    // HEAD has no body; if we fall back to GET, cancel immediately to avoid downloads.
+                    response.body?.cancel();
+                    return response.url;
+                } catch {
+                    return undefined;
+                } finally {
+                    controller.abort();
+                }
+            };
 
-            try {
-                response = await fetch(httpUrl);
-            } catch {
-                return undefined;
-            }
-
-            return response.url;
+            // Prefer HEAD (cheap); fall back to a ranged GET if HEAD is unsupported.
+            return (
+                (await doFetch({ method: "HEAD" })) ??
+                (await doFetch({
+                    method: "GET",
+                    headers: { Range: "bytes=0-0" }
+                }))
+            );
         },
         { promise: true }
     );
