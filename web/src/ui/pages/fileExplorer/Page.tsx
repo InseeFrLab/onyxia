@@ -20,6 +20,11 @@ import { enforceLogin } from "ui/shared/enforceLogin";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
+import { useEvt } from "evt/hooks";
+import {
+    ConfirmBucketCreationAttemptDialog,
+    type ConfirmBucketCreationAttemptDialogProps
+} from "ui/pages/s3Explorer/ConfirmBucketCreationAttemptDialog";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -28,6 +33,37 @@ const Page = withLoader({
 export default Page;
 
 function FileExplorer() {
+    const {
+        evts: { evtFileExplorer }
+    } = getCoreSync();
+
+    const evtConfirmBucketCreationAttemptDialogOpen = useConst(() =>
+        Evt.create<ConfirmBucketCreationAttemptDialogProps["evtOpen"]>()
+    );
+
+    useEvt(ctx => {
+        evtFileExplorer.pipe(ctx).attach(
+            data => data.action === "ask confirmation for bucket creation attempt",
+            ({ bucket, createBucket }) => {
+                evtConfirmBucketCreationAttemptDialogOpen.post({
+                    bucket,
+                    createBucket
+                });
+            }
+        );
+    }, []);
+
+    return (
+        <>
+            <FileExplorer_inner />
+            <ConfirmBucketCreationAttemptDialog
+                evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
+            />
+        </>
+    );
+}
+
+function FileExplorer_inner() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -35,7 +71,7 @@ function FileExplorer() {
 
     const {
         isCurrentWorkingDirectoryLoaded,
-        accessDenied_directoryPath,
+        navigationError,
         commandLogsEntries,
         isNavigationOngoing,
         uploadProgress,
@@ -46,15 +82,15 @@ function FileExplorer() {
         isDownloadPreparing
     } = useCoreState("fileExplorer", "main");
 
+    const {
+        functions: { fileExplorer }
+    } = getCoreSync();
+
     const evtIsSnackbarOpen = useConst(() => Evt.create(isDownloadPreparing));
 
     useEffect(() => {
         evtIsSnackbarOpen.state = isDownloadPreparing;
     }, [isDownloadPreparing]);
-
-    const {
-        functions: { fileExplorer }
-    } = getCoreSync();
 
     useEffect(() => {
         fileExplorer.initialize({
@@ -167,18 +203,18 @@ function FileExplorer() {
                 )}
             >
                 {(() => {
-                    if (accessDenied_directoryPath !== undefined) {
+                    if (navigationError !== undefined) {
                         return (
-                            <>
-                                <Text typo="body 1">
-                                    You do not have read permission on s3://
-                                    {accessDenied_directoryPath}
-                                    with this S3 Profile.
-                                </Text>
+                            <div
+                                className={css({
+                                    textAlign: "center"
+                                })}
+                            >
+                                <Text typo="body 1">{navigationError.errorCase}</Text>
                                 <Button {...routes.fileExplorerEntry().link}>
                                     Go Back
                                 </Button>
-                            </>
+                            </div>
                         );
                     }
 

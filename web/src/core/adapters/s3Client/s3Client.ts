@@ -51,8 +51,6 @@ export namespace ParamsOfCreateS3Client {
                   roleSessionName: string;
               }
             | undefined;
-        // TODO: Remove this param
-        nameOfBucketToCreateIfNotExist: string | undefined;
     };
 }
 
@@ -223,52 +221,6 @@ export function createS3Client(
             return { getAwsS3Client };
         })();
 
-        // TODO: Remove this block
-        create_bucket: {
-            if (!params.isStsEnabled) {
-                break create_bucket;
-            }
-
-            const { nameOfBucketToCreateIfNotExist } = params;
-
-            if (nameOfBucketToCreateIfNotExist === undefined) {
-                break create_bucket;
-            }
-
-            const { awsS3Client } = await getAwsS3Client();
-
-            const { CreateBucketCommand, BucketAlreadyExists, BucketAlreadyOwnedByYou } =
-                await import("@aws-sdk/client-s3");
-
-            try {
-                await awsS3Client.send(
-                    new CreateBucketCommand({
-                        Bucket: nameOfBucketToCreateIfNotExist
-                    })
-                );
-            } catch (error) {
-                assert(is<Error>(error));
-
-                if (
-                    !(error instanceof BucketAlreadyExists) &&
-                    !(error instanceof BucketAlreadyOwnedByYou)
-                ) {
-                    console.log(
-                        "An unexpected error occurred while creating the bucket, we ignore it:",
-                        error
-                    );
-                    break create_bucket;
-                }
-
-                console.log(
-                    [
-                        `The above network error is expected we tried creating the `,
-                        `bucket ${nameOfBucketToCreateIfNotExist} in case it didn't exist but it did.`
-                    ].join(" ")
-                );
-            }
-        }
-
         return { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client };
     })();
 
@@ -420,11 +372,22 @@ export function createS3Client(
                     try {
                         resp = await awsS3Client.send(listObjectsV2Command);
                     } catch (error) {
-                        if (!String(error).includes("Access Denied")) {
-                            throw error;
+                        const { NoSuchBucket, S3ServiceException } = await import(
+                            "@aws-sdk/client-s3"
+                        );
+
+                        if (error instanceof NoSuchBucket) {
+                            return { isSuccess: false, errorCase: "no such bucket" };
                         }
 
-                        return { isAccessDenied: true };
+                        if (
+                            error instanceof S3ServiceException &&
+                            error.$metadata?.httpStatusCode === 403
+                        ) {
+                            return { isSuccess: false, errorCase: "access denied" };
+                        }
+
+                        throw error;
                     }
 
                     Contents.push(...(resp.Contents ?? []));
@@ -466,7 +429,7 @@ export function createS3Client(
             );
 
             return {
-                isAccessDenied: false,
+                isSuccess: true,
                 objects: [...directories, ...files],
                 bucketPolicy,
                 isBucketPolicyAvailable
@@ -695,6 +658,52 @@ export function createS3Client(
             );
 
             return head.ContentType;
+        },
+        createBucket: async ({ bucket }) => {
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            const {
+                CreateBucketCommand,
+                BucketAlreadyExists,
+                BucketAlreadyOwnedByYou,
+                S3ServiceException
+            } = await import("@aws-sdk/client-s3");
+
+            try {
+                await awsS3Client.send(
+                    new CreateBucketCommand({
+                        Bucket: bucket
+                    })
+                );
+            } catch (error) {
+                assert(is<Error>(error));
+
+                if (
+                    error instanceof S3ServiceException &&
+                    error.$metadata?.httpStatusCode === 403
+                ) {
+                    return {
+                        isSuccess: false,
+                        errorCase: "access denied",
+                        errorMessage: error.message
+                    };
+                }
+
+                if (
+                    !(error instanceof BucketAlreadyExists) &&
+                    !(error instanceof BucketAlreadyOwnedByYou)
+                ) {
+                    return {
+                        isSuccess: false,
+                        errorCase: "already exist",
+                        errorMessage: error.message
+                    };
+                }
+            }
+
+            return { isSuccess: true };
         }
     };
 

@@ -1,4 +1,4 @@
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { Evt } from "evt";
 import { Zip, ZipPassThrough } from "fflate/browser";
 import type { Thunks } from "core/bootstrap";
@@ -13,6 +13,7 @@ import { relative as pathRelative } from "pathe";
 import { id } from "tsafe/id";
 import { isAmong } from "tsafe/isAmong";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 const privateThunks = {
     startOperationWhenAllConflictingOperationHaveCompleted:
@@ -116,7 +117,7 @@ const privateThunks = {
             if (
                 !doListAgainIfSamePath &&
                 getState()[name].directoryPath === directoryPath &&
-                getState()[name].accessDenied_directoryPath === undefined
+                getState()[name].navigationError === undefined
             ) {
                 return;
             }
@@ -154,11 +155,11 @@ const privateThunks = {
                 })
             );
 
-            const s3Client = await dispatch(
+            const { s3Client, s3Profile } = await dispatch(
                 s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
-                return r.s3Client;
+                return r;
             });
 
             //const { objects, bucketPolicy, isBucketPolicyAvailable } =
@@ -176,31 +177,80 @@ const privateThunks = {
             dispatch(
                 actions.commandLogResponseReceived({
                     cmdId,
-                    resp: listObjectResult.isAccessDenied
-                        ? "Access Denied"
-                        : listObjectResult.objects
-                              .map(({ kind, basename }) =>
-                                  kind === "directory" ? `${basename}/` : basename
-                              )
-                              .join("\n")
+                    resp: (() => {
+                        if (listObjectResult.isSuccess) {
+                            return listObjectResult.objects
+                                .map(({ kind, basename }) =>
+                                    kind === "directory" ? `${basename}/` : basename
+                                )
+                                .join("\n");
+                        }
+
+                        switch (listObjectResult.errorCase) {
+                            case "access denied":
+                                return "Access Denied";
+                            case "no such bucket":
+                                return "No Such Bucket";
+                            default:
+                                assert<Equals<typeof listObjectResult.errorCase, never>>(
+                                    false
+                                );
+                        }
+                    })()
                 })
             );
 
             dispatch(
                 actions.navigationCompleted(
-                    listObjectResult.isAccessDenied
-                        ? {
-                              isAccessDenied: true,
-                              directoryPath
-                          }
-                        : {
-                              isAccessDenied: false,
-                              directoryPath,
-                              objects: listObjectResult.objects,
-                              bucketPolicy: listObjectResult.bucketPolicy,
-                              isBucketPolicyAvailable:
-                                  listObjectResult.isBucketPolicyAvailable
-                          }
+                    (() => {
+                        if (!listObjectResult.isSuccess) {
+                            switch (listObjectResult.errorCase) {
+                                case "access denied":
+                                    return {
+                                        isSuccess: false,
+                                        navigationError: {
+                                            directoryPath,
+                                            errorCase: "access denied"
+                                        }
+                                    };
+                                case "no such bucket": {
+                                    const { bucket } = parseS3UriPrefix({
+                                        s3UriPrefix: `s3://${directoryPath}`,
+                                        strict: false
+                                    });
+
+                                    const shouldAttemptToCreate =
+                                        s3Profile.bookmarks.find(
+                                            bookmark =>
+                                                bookmark.s3UriPrefixObj.bucket === bucket
+                                        ) !== undefined;
+
+                                    return {
+                                        isSuccess: false,
+                                        navigationError: {
+                                            directoryPath,
+                                            errorCase: "no such bucket",
+                                            bucket,
+                                            shouldAttemptToCreate
+                                        }
+                                    };
+                                }
+                                default:
+                                    assert<
+                                        Equals<typeof listObjectResult.errorCase, never>
+                                    >(false);
+                            }
+                        }
+
+                        return {
+                            isSuccess: true,
+                            directoryPath,
+                            objects: listObjectResult.objects,
+                            bucketPolicy: listObjectResult.bucketPolicy,
+                            isBucketPolicyAvailable:
+                                listObjectResult.isBucketPolicyAvailable
+                        };
+                    })()
                 )
             );
         },
@@ -301,7 +351,7 @@ const privateThunks = {
                             path: directoryPath
                         });
 
-                        assert(!listObjectResult.isAccessDenied);
+                        assert(listObjectResult.isSuccess);
 
                         return listObjectResult.objects.reduce<{
                             fileBasenames: string[];
@@ -478,6 +528,62 @@ const privateThunks = {
                     );
                 }
             });
+        }
+} satisfies Thunks;
+
+export const protectedThunks = {
+    createBucket:
+        (params: { bucket: string; directoryPath_toNavigateToOnSuccess: string }) =>
+        async (...args): Promise<{ isSuccess: boolean }> => {
+            const { bucket, directoryPath_toNavigateToOnSuccess } = params;
+
+            const [dispatch] = args;
+
+            const s3Client = await dispatch(
+                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc mb ${pathJoin("s3", bucket)}`
+                })
+            );
+
+            const result = await s3Client.createBucket({ bucket });
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: result.isSuccess
+                        ? `Bucket \`${pathJoin("s3", bucket)}\` created`
+                        : (() => {
+                              switch (result.errorCase) {
+                                  case "already exist":
+                                      return `Bucket \`${pathJoin("s3", bucket)}\` already exists`;
+                                  case "access denied":
+                                      return `Access denied while creating \`${pathJoin("s3", bucket)}\`: ${result.errorMessage}`;
+                                  case "unknown":
+                                      return `Failed to create \`${pathJoin("s3", bucket)}\`: ${result.errorMessage}`;
+                              }
+                          })()
+                })
+            );
+
+            if (result.isSuccess) {
+                await dispatch(
+                    thunks.changeCurrentDirectory({
+                        directoryPath: directoryPath_toNavigateToOnSuccess
+                    })
+                );
+            }
+
+            return { isSuccess: result.isSuccess };
         }
 } satisfies Thunks;
 
@@ -804,7 +910,7 @@ export const thunks = {
                             path: directoryPath
                         });
 
-                        assert(!listObjectsResult.isAccessDenied);
+                        assert(listObjectsResult.isSuccess);
 
                         const { objects } = listObjectsResult;
 

@@ -10,13 +10,18 @@ import { routes } from "ui/routes";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
 import { useConst } from "powerhooks/useConst";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useStyles } from "tss";
 import { getIconUrlByName } from "lazy-icons";
+import {
+    ConfirmBucketCreationAttemptDialog,
+    type ConfirmBucketCreationAttemptDialogProps
+} from "./ConfirmBucketCreationAttemptDialog";
+import { useEvt } from "evt/hooks";
 
 type Props = {
     className?: string;
@@ -35,6 +40,36 @@ type Props = {
 
 export function Explorer(props: Props) {
     const {
+        evts: { evtFileExplorer }
+    } = getCoreSync();
+
+    const evtConfirmBucketCreationAttemptDialogOpen = useConst(() =>
+        Evt.create<ConfirmBucketCreationAttemptDialogProps["evtOpen"]>()
+    );
+
+    useEvt(ctx => {
+        evtFileExplorer.pipe(ctx).attach(
+            data => data.action === "ask confirmation for bucket creation attempt",
+            ({ bucket, createBucket }) =>
+                evtConfirmBucketCreationAttemptDialogOpen.post({
+                    bucket,
+                    createBucket
+                })
+        );
+    }, []);
+
+    return (
+        <>
+            <Explorer_inner {...props} />
+            <ConfirmBucketCreationAttemptDialog
+                evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
+            />
+        </>
+    );
+}
+
+function Explorer_inner(props: Props) {
+    const {
         className,
         directoryPath,
         changeCurrentDirectory,
@@ -44,7 +79,7 @@ export function Explorer(props: Props) {
 
     const {
         isCurrentWorkingDirectoryLoaded,
-        accessDenied_directoryPath,
+        navigationError,
         commandLogsEntries,
         isNavigationOngoing,
         uploadProgress,
@@ -177,7 +212,7 @@ export function Explorer(props: Props) {
                 )}
             >
                 {(() => {
-                    if (accessDenied_directoryPath !== undefined) {
+                    if (navigationError !== undefined) {
                         return (
                             <div
                                 className={css({
@@ -185,9 +220,22 @@ export function Explorer(props: Props) {
                                 })}
                             >
                                 <Text typo="body 1">
-                                    You do not have read permission on s3://
-                                    {accessDenied_directoryPath}
-                                    with this S3 Profile.
+                                    {(() => {
+                                        switch (navigationError.errorCase) {
+                                            case "access denied":
+                                                return [
+                                                    "You do not have read permission on s3://",
+                                                    navigationError.directoryPath,
+                                                    "with this S3 Profile"
+                                                ].join(" ");
+                                            case "no such bucket":
+                                                return `The bucket ${navigationError.bucket} does not exist`;
+                                            default:
+                                                assert<
+                                                    Equals<typeof navigationError, never>
+                                                >(false);
+                                        }
+                                    })()}
                                 </Text>
                                 <Button
                                     startIcon={getIconUrlByName("ArrowBack")}
@@ -212,40 +260,42 @@ export function Explorer(props: Props) {
     }
 
     return (
-        <HeadlessExplorer
-            className={className}
-            onRequestFilesUpload={onRequestFilesUpload}
-            onCreateNewEmptyDirectory={onCreateNewEmptyDirectory}
-            filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
-            doShowHidden={false}
-            directoryPath={currentWorkingDirectoryView.directoryPath}
-            isNavigating={isNavigationOngoing}
-            commandLogsEntries={commandLogsEntries}
-            evtAction={evtExplorerAction}
-            items={currentWorkingDirectoryView.items}
-            isBucketPolicyFeatureEnabled={
-                currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
-            }
-            changePolicy={fileExplorer.changePolicy}
-            onNavigate={changeCurrentDirectory}
-            onRefresh={onRefresh}
-            onDeleteItems={onDeleteItems}
-            onCopyPath={onCopyPath}
-            pathMinDepth={pathMinDepth}
-            onOpenFile={onOpenFile}
-            viewMode={viewMode}
-            onViewModeChange={fileExplorer.changeViewMode}
-            shareView={shareView}
-            onShareFileOpen={fileExplorer.openShare}
-            onShareFileClose={fileExplorer.closeShare}
-            onShareRequestSignedUrl={fileExplorer.requestShareSignedUrl}
-            onChangeShareSelectedValidityDuration={
-                fileExplorer.changeShareSelectedValidityDuration
-            }
-            onDownloadItems={onDownloadItems}
-            evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
-            bookmarkStatus={bookmarkStatus}
-            onToggleIsDirectoryPathBookmarked={onToggleIsDirectoryPathBookmarked}
-        />
+        <>
+            <HeadlessExplorer
+                className={className}
+                onRequestFilesUpload={onRequestFilesUpload}
+                onCreateNewEmptyDirectory={onCreateNewEmptyDirectory}
+                filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
+                doShowHidden={false}
+                directoryPath={currentWorkingDirectoryView.directoryPath}
+                isNavigating={isNavigationOngoing}
+                commandLogsEntries={commandLogsEntries}
+                evtAction={evtExplorerAction}
+                items={currentWorkingDirectoryView.items}
+                isBucketPolicyFeatureEnabled={
+                    currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
+                }
+                changePolicy={fileExplorer.changePolicy}
+                onNavigate={changeCurrentDirectory}
+                onRefresh={onRefresh}
+                onDeleteItems={onDeleteItems}
+                onCopyPath={onCopyPath}
+                pathMinDepth={pathMinDepth}
+                onOpenFile={onOpenFile}
+                viewMode={viewMode}
+                onViewModeChange={fileExplorer.changeViewMode}
+                shareView={shareView}
+                onShareFileOpen={fileExplorer.openShare}
+                onShareFileClose={fileExplorer.closeShare}
+                onShareRequestSignedUrl={fileExplorer.requestShareSignedUrl}
+                onChangeShareSelectedValidityDuration={
+                    fileExplorer.changeShareSelectedValidityDuration
+                }
+                onDownloadItems={onDownloadItems}
+                evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
+                bookmarkStatus={bookmarkStatus}
+                onToggleIsDirectoryPathBookmarked={onToggleIsDirectoryPathBookmarked}
+            />
+        </>
     );
 }

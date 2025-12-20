@@ -4,7 +4,6 @@ import { parseS3UriPrefix } from "core/tools/S3Uri";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import { same } from "evt/tools/inDepth/same";
 import { getWorkingDirectoryPath } from "./getWorkingDirectoryPath";
-import { getWorkingDirectoryBucketToCreate } from "./getWorkingDirectoryBucket";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe/assert";
 import { getProjectS3ConfigId } from "./projectS3ConfigId";
@@ -239,11 +238,7 @@ export function getS3Configs(params: {
                 region,
                 oidcParams: c.sts.oidcParams,
                 durationSeconds: c.sts.durationSeconds,
-                role: c.sts.role,
-                nameOfBucketToCreateIfNotExist: getWorkingDirectoryBucketToCreate({
-                    workingDirectory: c.workingDirectory,
-                    context: workingDirectoryContext
-                })
+                role: c.sts.role
             };
 
             const adminBookmarks: S3Config.FromDeploymentRegion.Location.AdminBookmark[] =

@@ -116,8 +116,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                         region: c.region,
                         oidcParams: c.sts.oidcParams,
                         durationSeconds: c.sts.durationSeconds,
-                        role: resolvedTemplatedStsRole,
-                        nameOfBucketToCreateIfNotExist: undefined
+                        role: resolvedTemplatedStsRole
                     };
 
                     const id = `region-${fnv1aHashToHex(

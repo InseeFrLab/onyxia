@@ -8,7 +8,12 @@ import type { S3FilesBeingUploaded } from "./decoupledLogic/uploadProgress";
 //All explorer paths are expected to be absolute (start with /)
 
 export type State = {
-    accessDenied_directoryPath: string | undefined;
+    navigationError:
+        | {
+              errorCase: "access denied" | "no such bucket";
+              directoryPath: string;
+          }
+        | undefined;
     directoryPath: string | undefined;
     viewMode: "list" | "block";
     objects: S3Object[];
@@ -56,7 +61,7 @@ export const { reducer, actions } = createUsecaseActions({
         },
         isBucketPolicyAvailable: true,
         share: undefined,
-        accessDenied_directoryPath: undefined
+        navigationError: undefined
     }),
     reducers: {
         fileUploadStarted: (
@@ -124,11 +129,21 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload:
                     | {
-                          isAccessDenied: true;
-                          directoryPath: string;
+                          isSuccess: false;
+                          navigationError:
+                              | {
+                                    errorCase: "access denied";
+                                    directoryPath: string;
+                                }
+                              | {
+                                    errorCase: "no such bucket";
+                                    directoryPath: string;
+                                    bucket: string;
+                                    shouldAttemptToCreate: boolean;
+                                };
                       }
                     | {
-                          isAccessDenied: false;
+                          isSuccess: true;
                           directoryPath: string;
                           objects: S3Object[];
                           bucketPolicy: S3BucketPolicy | undefined;
@@ -136,15 +151,15 @@ export const { reducer, actions } = createUsecaseActions({
                       };
             }
         ) => {
-            if (payload.isAccessDenied) {
-                state.accessDenied_directoryPath = payload.directoryPath;
+            if (!payload.isSuccess) {
+                state.navigationError = payload.navigationError;
                 return;
             }
 
             const { directoryPath, objects, bucketPolicy, isBucketPolicyAvailable } =
                 payload;
 
-            state.accessDenied_directoryPath = undefined;
+            state.navigationError = undefined;
             state.directoryPath = directoryPath;
             state.objects = objects;
             state.isNavigationOngoing = false;
