@@ -20,7 +20,7 @@ export const ConfirmBucketCreationAttemptDialog = memo(
 
         const [state, setState] = useState<
             | (UnpackEvt<ConfirmBucketCreationAttemptDialogProps["evtOpen"]> & {
-                  isBucketCreationFailed: boolean;
+                  isBucketCreationSuccess: boolean | undefined;
                   isCreatingBucket: boolean;
               })
             | undefined
@@ -31,7 +31,7 @@ export const ConfirmBucketCreationAttemptDialog = memo(
                 evtOpen.attach(ctx, eventData =>
                     setState({
                         ...eventData,
-                        isBucketCreationFailed: false,
+                        isBucketCreationSuccess: undefined,
                         isCreatingBucket: false
                     })
                 );
@@ -78,18 +78,13 @@ export const ConfirmBucketCreationAttemptDialog = memo(
 
                                         const { isSuccess } = await state.createBucket();
 
-                                        if (isSuccess) {
-                                            setState(undefined);
-                                            return;
-                                        }
-
                                         setState(state => {
                                             assert(state !== undefined);
 
                                             return {
                                                 ...state,
                                                 isCreatingBucket: false,
-                                                isBucketCreationFailed: true
+                                                isBucketCreationSuccess: isSuccess
                                             };
                                         });
                                     }}
@@ -99,7 +94,9 @@ export const ConfirmBucketCreationAttemptDialog = memo(
                             </>
                         );
                     })()}
-                    isOpen={state !== undefined && !state.isBucketCreationFailed}
+                    isOpen={
+                        state !== undefined && state.isBucketCreationSuccess === undefined
+                    }
                     onClose={() => {
                         if (state === undefined) {
                             return;
@@ -113,13 +110,20 @@ export const ConfirmBucketCreationAttemptDialog = memo(
                     }}
                 />
                 <Dialog
-                    title={`Bucket creation failed`}
+                    title={state?.isBucketCreationSuccess ? "Success" : "Failed"}
+                    body={
+                        state?.isBucketCreationSuccess
+                            ? `Bucket ${state.bucket} successfully created.`
+                            : `Failed to create ${state?.bucket}.`
+                    }
                     buttons={
                         <Button autoFocus onClick={() => setState(undefined)}>
                             Ok
                         </Button>
                     }
-                    isOpen={state !== undefined && state.isBucketCreationFailed}
+                    isOpen={
+                        state !== undefined && state.isBucketCreationSuccess !== undefined
+                    }
                     onClose={() => setState(undefined)}
                 />
             </>
