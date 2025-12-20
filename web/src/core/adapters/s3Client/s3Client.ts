@@ -244,6 +244,53 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
+            const Contents: import("@aws-sdk/client-s3")._Object[] = [];
+            const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
+
+            {
+                let continuationToken: string | undefined;
+
+                do {
+                    const listObjectsV2Command = new (
+                        await import("@aws-sdk/client-s3")
+                    ).ListObjectsV2Command({
+                        Bucket: bucketName,
+                        Prefix: prefix,
+                        Delimiter: "/",
+                        ContinuationToken: continuationToken
+                    });
+
+                    let resp: import("@aws-sdk/client-s3").ListObjectsV2CommandOutput;
+
+                    try {
+                        resp = await awsS3Client.send(listObjectsV2Command);
+                    } catch (error) {
+                        const { NoSuchBucket, S3ServiceException } = await import(
+                            "@aws-sdk/client-s3"
+                        );
+
+                        if (error instanceof NoSuchBucket) {
+                            return { isSuccess: false, errorCase: "no such bucket" };
+                        }
+
+                        if (
+                            error instanceof S3ServiceException &&
+                            error.$metadata?.httpStatusCode === 403
+                        ) {
+                            return { isSuccess: false, errorCase: "access denied" };
+                        }
+
+                        throw error;
+                    }
+
+                    Contents.push(...(resp.Contents ?? []));
+
+                    CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
+
+                    continuationToken = resp.NextContinuationToken;
+                } while (continuationToken !== undefined);
+            }
+
             const { isBucketPolicyAvailable, allowedPrefix, bucketPolicy } =
                 await (async () => {
                     const { GetBucketPolicyCommand, S3ServiceException } = await import(
@@ -350,53 +397,6 @@ export function createS3Client(
                         allowedPrefix
                     };
                 })();
-
-            const Contents: import("@aws-sdk/client-s3")._Object[] = [];
-            const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
-
-            {
-                let continuationToken: string | undefined;
-
-                do {
-                    const listObjectsV2Command = new (
-                        await import("@aws-sdk/client-s3")
-                    ).ListObjectsV2Command({
-                        Bucket: bucketName,
-                        Prefix: prefix,
-                        Delimiter: "/",
-                        ContinuationToken: continuationToken
-                    });
-
-                    let resp: import("@aws-sdk/client-s3").ListObjectsV2CommandOutput;
-
-                    try {
-                        resp = await awsS3Client.send(listObjectsV2Command);
-                    } catch (error) {
-                        const { NoSuchBucket, S3ServiceException } = await import(
-                            "@aws-sdk/client-s3"
-                        );
-
-                        if (error instanceof NoSuchBucket) {
-                            return { isSuccess: false, errorCase: "no such bucket" };
-                        }
-
-                        if (
-                            error instanceof S3ServiceException &&
-                            error.$metadata?.httpStatusCode === 403
-                        ) {
-                            return { isSuccess: false, errorCase: "access denied" };
-                        }
-
-                        throw error;
-                    }
-
-                    Contents.push(...(resp.Contents ?? []));
-
-                    CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
-
-                    continuationToken = resp.NextContinuationToken;
-                } while (continuationToken !== undefined);
-            }
 
             const policyAttributes = (path: string) => {
                 return getPolicyAttributes(allowedPrefix, path);
