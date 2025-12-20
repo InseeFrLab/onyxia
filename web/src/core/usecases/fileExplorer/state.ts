@@ -162,6 +162,8 @@ export const { reducer, actions } = createUsecaseActions({
                       };
             }
         ) => {
+            state.ongoingNavigation = undefined;
+
             if (!payload.isSuccess) {
                 state.navigationError = payload.navigationError;
                 return;
@@ -173,7 +175,6 @@ export const { reducer, actions } = createUsecaseActions({
             state.navigationError = undefined;
             state.directoryPath = directoryPath;
             state.objects = objects;
-            state.ongoingNavigation = undefined;
             if (bucketPolicy) {
                 state.bucketPolicy = bucketPolicy;
             }
