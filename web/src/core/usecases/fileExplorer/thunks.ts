@@ -114,6 +114,17 @@ const privateThunks = {
 
             const [dispatch, getState, { evtAction }] = args;
 
+            {
+                const { ongoingNavigation } = getState()[name];
+
+                if (
+                    ongoingNavigation !== undefined &&
+                    ongoingNavigation.directoryPath === directoryPath
+                ) {
+                    return;
+                }
+            }
+
             if (
                 !doListAgainIfSamePath &&
                 getState()[name].directoryPath === directoryPath &&
@@ -122,7 +133,7 @@ const privateThunks = {
                 return;
             }
 
-            dispatch(actions.navigationStarted());
+            dispatch(actions.navigationStarted({ directoryPath }));
 
             const ctx = Evt.newCtx();
 
@@ -162,7 +173,6 @@ const privateThunks = {
                 return r;
             });
 
-            //const { objects, bucketPolicy, isBucketPolicyAvailable } =
             const listObjectResult = await s3Client.listObjects({
                 path: directoryPath
             });

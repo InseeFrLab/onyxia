@@ -287,7 +287,10 @@ const shareView = createSelector(
     }
 );
 
-const isNavigationOngoing = createSelector(state, state => state.isNavigationOngoing);
+const isNavigationOngoing = createSelector(
+    state,
+    state => state.ongoingNavigation !== undefined
+);
 
 const workingDirectoryPath = createSelector(
     s3ConfigManagement.selectors.s3Configs,

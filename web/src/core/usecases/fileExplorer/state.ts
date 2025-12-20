@@ -17,7 +17,11 @@ export type State = {
     directoryPath: string | undefined;
     viewMode: "list" | "block";
     objects: S3Object[];
-    isNavigationOngoing: boolean;
+    ongoingNavigation:
+        | {
+              directoryPath: string;
+          }
+        | undefined;
     ongoingOperations: {
         operationId: string;
         operation: "create" | "delete" | "modifyPolicy" | "downloading";
@@ -51,7 +55,7 @@ export const { reducer, actions } = createUsecaseActions({
         directoryPath: undefined,
         objects: [],
         viewMode: "list",
-        isNavigationOngoing: false,
+        ongoingNavigation: undefined,
         ongoingOperations: [],
         s3FilesBeingUploaded: [],
         commandLogsEntries: [],
@@ -118,9 +122,16 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.s3FilesBeingUploaded = [];
         },
-        navigationStarted: state => {
+        navigationStarted: (
+            state,
+            { payload }: { payload: { directoryPath: string } }
+        ) => {
+            const { directoryPath } = payload;
+
             assert(state.share === undefined);
-            state.isNavigationOngoing = true;
+            state.ongoingNavigation = {
+                directoryPath
+            };
         },
         navigationCompleted: (
             state,
@@ -162,7 +173,7 @@ export const { reducer, actions } = createUsecaseActions({
             state.navigationError = undefined;
             state.directoryPath = directoryPath;
             state.objects = objects;
-            state.isNavigationOngoing = false;
+            state.ongoingNavigation = undefined;
             if (bucketPolicy) {
                 state.bucketPolicy = bucketPolicy;
             }
@@ -313,7 +324,7 @@ export const { reducer, actions } = createUsecaseActions({
         workingDirectoryChanged: state => {
             state.directoryPath = undefined;
             state.objects = [];
-            state.isNavigationOngoing = false;
+            state.ongoingNavigation = undefined;
         },
         viewModeChanged: (
             state,
