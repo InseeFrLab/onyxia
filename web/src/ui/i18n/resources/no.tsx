@@ -345,6 +345,17 @@ export const translations: Translations<"no"> = {
         cancel: "Avbryt",
         "go to settings": "Gå til innstillinger"
     },
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `Bucket ${bucket} finnes ikke`,
+        "bucket does not exist body": "Vil du prøve å opprette den nå?",
+        no: "Nei",
+        yes: "Ja",
+        "success title": "Vellykket",
+        "failed title": "Feilet",
+        "success body": ({ bucket }) => `Bucket ${bucket} ble opprettet.`,
+        "failed body": ({ bucket }) => `Kunne ikke opprette ${bucket}.`,
+        ok: "Ok"
+    },
     ShareDialog: {
         title: "Del dataene dine",
         close: "Lukk",

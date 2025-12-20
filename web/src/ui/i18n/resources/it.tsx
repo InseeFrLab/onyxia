@@ -349,6 +349,17 @@ export const translations: Translations<"it"> = {
         cancel: "Annulla",
         "go to settings": "Vai alle impostazioni"
     },
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `Il bucket ${bucket} non esiste`,
+        "bucket does not exist body": "Vuoi provare a crearlo ora?",
+        no: "No",
+        yes: "Sì",
+        "success title": "Successo",
+        "failed title": "Fallito",
+        "success body": ({ bucket }) => `Bucket ${bucket} creato con successo.`,
+        "failed body": ({ bucket }) => `Creazione di ${bucket} non riuscita.`,
+        ok: "Ok"
+    },
     ShareDialog: {
         title: "Condividi i tuoi dati",
         close: "Chiudi",
@@ -384,9 +395,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

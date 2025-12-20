@@ -6,6 +6,7 @@ import { assert } from "tsafe/assert";
 import type { NonPostableEvt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type ConfirmBucketCreationAttemptDialogProps = {
     evtOpen: NonPostableEvt<{
@@ -17,6 +18,8 @@ export type ConfirmBucketCreationAttemptDialogProps = {
 export const ConfirmBucketCreationAttemptDialog = memo(
     (props: ConfirmBucketCreationAttemptDialogProps) => {
         const { evtOpen } = props;
+
+        const { t } = useTranslation({ ConfirmBucketCreationAttemptDialog });
 
         const [state, setState] = useState<
             | (UnpackEvt<ConfirmBucketCreationAttemptDialogProps["evtOpen"]> & {
@@ -42,8 +45,12 @@ export const ConfirmBucketCreationAttemptDialog = memo(
         return (
             <>
                 <Dialog
-                    title={`The ${state?.bucket} bucket does not exist`}
-                    body={`Do you want to attempt creating it now?`}
+                    title={
+                        state === undefined
+                            ? ""
+                            : t("bucket does not exist title", { bucket: state.bucket })
+                    }
+                    body={t("bucket does not exist body")}
                     buttons={(() => {
                         if (state === undefined) {
                             return null;
@@ -60,7 +67,7 @@ export const ConfirmBucketCreationAttemptDialog = memo(
                                     autoFocus
                                     variant="secondary"
                                 >
-                                    No
+                                    {t("no")}
                                 </Button>
                                 <Button
                                     autoFocus
@@ -89,7 +96,7 @@ export const ConfirmBucketCreationAttemptDialog = memo(
                                         });
                                     }}
                                 >
-                                    Yes
+                                    {t("yes")}
                                 </Button>
                             </>
                         );
@@ -110,15 +117,21 @@ export const ConfirmBucketCreationAttemptDialog = memo(
                     }}
                 />
                 <Dialog
-                    title={state?.isBucketCreationSuccess ? "Success" : "Failed"}
-                    body={
+                    title={
                         state?.isBucketCreationSuccess
-                            ? `Bucket ${state.bucket} successfully created.`
-                            : `Failed to create ${state?.bucket}.`
+                            ? t("success title")
+                            : t("failed title")
+                    }
+                    body={
+                        state === undefined
+                            ? ""
+                            : state.isBucketCreationSuccess
+                              ? t("success body", { bucket: state.bucket })
+                              : t("failed body", { bucket: state.bucket })
                     }
                     buttons={
                         <Button autoFocus onClick={() => setState(undefined)}>
-                            Ok
+                            {t("ok")}
                         </Button>
                     }
                     isOpen={
@@ -134,3 +147,17 @@ export const ConfirmBucketCreationAttemptDialog = memo(
 ConfirmBucketCreationAttemptDialog.displayName = symToStr({
     ConfirmBucketCreationAttemptDialog
 });
+
+const { i18n } = declareComponentKeys<
+    | { K: "bucket does not exist title"; P: { bucket: string } }
+    | "bucket does not exist body"
+    | "no"
+    | "yes"
+    | "success title"
+    | "failed title"
+    | { K: "success body"; P: { bucket: string } }
+    | { K: "failed body"; P: { bucket: string } }
+    | "ok"
+>()({ ConfirmBucketCreationAttemptDialog });
+
+export type I18n = typeof i18n;
