@@ -346,6 +346,17 @@ export const translations: Translations<"fi"> = {
         cancel: "Peruuta",
         "go to settings": "Siirry asetuksiin"
     },
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `Bucket ${bucket} ei ole olemassa`,
+        "bucket does not exist body": "Haluatko yrittää luoda sen nyt?",
+        no: "Ei",
+        yes: "Kyllä",
+        "success title": "Onnistui",
+        "failed title": "Epäonnistui",
+        "success body": ({ bucket }) => `Bucket ${bucket} luotiin onnistuneesti.`,
+        "failed body": ({ bucket }) => `Kohteen ${bucket} luonti epäonnistui.`,
+        ok: "Ok"
+    },
     ShareDialog: {
         title: "Jaa tietosi",
         close: "Sulje",

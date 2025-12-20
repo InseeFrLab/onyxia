@@ -355,6 +355,17 @@ export const translations: Translations<"fr"> = {
         cancel: "Annuler",
         "go to settings": "Aller aux paramètres"
     },
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `Le bucket ${bucket} n'existe pas`,
+        "bucket does not exist body": "Voulez-vous tenter de le créer maintenant ?",
+        no: "Non",
+        yes: "Oui",
+        "success title": "Succès",
+        "failed title": "Échec",
+        "success body": ({ bucket }) => `Bucket ${bucket} créé avec succès.`,
+        "failed body": ({ bucket }) => `Échec de la création de ${bucket}.`,
+        ok: "Ok"
+    },
     ShareDialog: {
         title: "Partager vos données",
         close: "Fermer",

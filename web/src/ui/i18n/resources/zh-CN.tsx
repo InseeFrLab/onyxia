@@ -312,6 +312,17 @@ export const translations: Translations<"zh-CN"> = {
         cancel: "取消",
         "go to settings": "前往设置"
     },
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `存储桶 ${bucket} 不存在`,
+        "bucket does not exist body": "要立即尝试创建吗？",
+        no: "否",
+        yes: "是",
+        "success title": "成功",
+        "failed title": "失败",
+        "success body": ({ bucket }) => `存储桶 ${bucket} 创建成功。`,
+        "failed body": ({ bucket }) => `创建 ${bucket} 失败。`,
+        ok: "确定"
+    },
     ShareDialog: {
         title: "分享您的数据",
         close: "关闭",
