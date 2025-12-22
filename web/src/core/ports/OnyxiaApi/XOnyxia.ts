@@ -115,19 +115,8 @@ export type XOnyxiaContext = {
               AWS_SESSION_TOKEN: string | undefined;
               AWS_DEFAULT_REGION: string;
               AWS_S3_ENDPOINT: string;
-              AWS_BUCKET_NAME: string;
               port: number;
               pathStyleAccess: boolean;
-              /**
-               * The user is assumed to have read/write access on every
-               * object starting with this prefix on the bucket
-               **/
-              objectNamePrefix: string;
-              /**
-               * Only for making it easier for charts editors.
-               * <AWS_BUCKET_NAME>/<objectNamePrefix>
-               * */
-              workingDirectoryPath: string;
               /**
                * If true the bucket's (directory) should be accessible without any credentials.
                * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN

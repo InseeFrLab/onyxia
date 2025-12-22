@@ -7,7 +7,6 @@ import { useCoreState, getCoreSync } from "core";
 import { Explorer, type ExplorerProps } from "./Explorer";
 import { routes, useRoute } from "ui/routes";
 import { routeGroup } from "./route";
-import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
 import { useConst } from "powerhooks/useConst";
@@ -18,6 +17,14 @@ import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 import { useTranslation } from "ui/i18n";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Text } from "onyxia-ui/Text";
+import { Button } from "onyxia-ui/Button";
+import { useEvt } from "evt/hooks";
+import {
+    ConfirmBucketCreationAttemptDialog,
+    type ConfirmBucketCreationAttemptDialogProps
+} from "ui/pages/s3Explorer/ConfirmBucketCreationAttemptDialog";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -26,6 +33,37 @@ const Page = withLoader({
 export default Page;
 
 function FileExplorer() {
+    const {
+        evts: { evtFileExplorer }
+    } = getCoreSync();
+
+    const evtConfirmBucketCreationAttemptDialogOpen = useConst(() =>
+        Evt.create<ConfirmBucketCreationAttemptDialogProps["evtOpen"]>()
+    );
+
+    useEvt(ctx => {
+        evtFileExplorer.pipe(ctx).attach(
+            data => data.action === "ask confirmation for bucket creation attempt",
+            ({ bucket, createBucket }) => {
+                evtConfirmBucketCreationAttemptDialogOpen.post({
+                    bucket,
+                    createBucket
+                });
+            }
+        );
+    }, []);
+
+    return (
+        <>
+            <FileExplorer_inner />
+            <ConfirmBucketCreationAttemptDialog
+                evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
+            />
+        </>
+    );
+}
+
+function FileExplorer_inner() {
     const route = useRoute();
     assert(routeGroup.has(route));
 
@@ -33,6 +71,7 @@ function FileExplorer() {
 
     const {
         isCurrentWorkingDirectoryLoaded,
+        navigationError,
         commandLogsEntries,
         isNavigationOngoing,
         uploadProgress,
@@ -43,15 +82,15 @@ function FileExplorer() {
         isDownloadPreparing
     } = useCoreState("fileExplorer", "main");
 
+    const {
+        functions: { fileExplorer }
+    } = getCoreSync();
+
     const evtIsSnackbarOpen = useConst(() => Evt.create(isDownloadPreparing));
 
     useEffect(() => {
         evtIsSnackbarOpen.state = isDownloadPreparing;
     }, [isDownloadPreparing]);
-
-    const {
-        functions: { fileExplorer }
-    } = getCoreSync();
 
     useEffect(() => {
         fileExplorer.initialize({
@@ -97,17 +136,7 @@ function FileExplorer() {
         }
     );
 
-    const { classes } = useStyles();
-
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        if (currentWorkingDirectoryView === undefined) {
-            showSplashScreen({ enableTransparency: true });
-        } else {
-            hideSplashScreen();
-        }
-    }, [currentWorkingDirectoryView === undefined]);
+    const { classes, cx, css } = useStyles();
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) {
@@ -151,8 +180,48 @@ function FileExplorer() {
             })
     );
 
+    const onNavigate = useConstCallback<ExplorerProps["onNavigate"]>(
+        ({ directoryPath }) => {
+            if (directoryPath === "") {
+                routes.fileExplorerEntry().push();
+                return;
+            }
+
+            fileExplorer.changeCurrentDirectory({ directoryPath });
+        }
+    );
+
     if (!isCurrentWorkingDirectoryLoaded) {
-        return null;
+        return (
+            <div
+                className={cx(
+                    classes.root,
+                    css({
+                        justifyContent: "center",
+                        alignItems: "center"
+                    })
+                )}
+            >
+                {(() => {
+                    if (navigationError !== undefined) {
+                        return (
+                            <div
+                                className={css({
+                                    textAlign: "center"
+                                })}
+                            >
+                                <Text typo="body 1">{navigationError.errorCase}</Text>
+                                <Button {...routes.fileExplorerEntry().link}>
+                                    Go Back
+                                </Button>
+                            </div>
+                        );
+                    }
+
+                    return <CircularProgress />;
+                })()}
+            </div>
+        );
     }
 
     return (
@@ -183,7 +252,7 @@ function FileExplorer() {
                     currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
                 }
                 changePolicy={fileExplorer.changePolicy}
-                onNavigate={fileExplorer.changeCurrentDirectory}
+                onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}
@@ -200,6 +269,8 @@ function FileExplorer() {
                 }
                 onDownloadItems={onDownloadItems}
                 evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
+                bookmarkStatus={undefined}
+                onToggleIsDirectoryPathBookmarked={undefined}
             />
         </div>
     );

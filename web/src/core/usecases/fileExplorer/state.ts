@@ -8,10 +8,20 @@ import type { S3FilesBeingUploaded } from "./decoupledLogic/uploadProgress";
 //All explorer paths are expected to be absolute (start with /)
 
 export type State = {
+    navigationError:
+        | {
+              errorCase: "access denied" | "no such bucket";
+              directoryPath: string;
+          }
+        | undefined;
     directoryPath: string | undefined;
     viewMode: "list" | "block";
     objects: S3Object[];
-    isNavigationOngoing: boolean;
+    ongoingNavigation:
+        | {
+              directoryPath: string;
+          }
+        | undefined;
     ongoingOperations: {
         operationId: string;
         operation: "create" | "delete" | "modifyPolicy" | "downloading";
@@ -45,7 +55,7 @@ export const { reducer, actions } = createUsecaseActions({
         directoryPath: undefined,
         objects: [],
         viewMode: "list",
-        isNavigationOngoing: false,
+        ongoingNavigation: undefined,
         ongoingOperations: [],
         s3FilesBeingUploaded: [],
         commandLogsEntries: [],
@@ -54,7 +64,8 @@ export const { reducer, actions } = createUsecaseActions({
             Statement: []
         },
         isBucketPolicyAvailable: true,
-        share: undefined
+        share: undefined,
+        navigationError: undefined
     }),
     reducers: {
         fileUploadStarted: (
@@ -111,29 +122,59 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.s3FilesBeingUploaded = [];
         },
-        navigationStarted: state => {
+        navigationStarted: (
+            state,
+            { payload }: { payload: { directoryPath: string } }
+        ) => {
+            const { directoryPath } = payload;
+
             assert(state.share === undefined);
-            state.isNavigationOngoing = true;
+            state.ongoingNavigation = {
+                directoryPath
+            };
         },
         navigationCompleted: (
             state,
             {
                 payload
             }: {
-                payload: {
-                    directoryPath: string;
-                    objects: S3Object[];
-                    bucketPolicy: S3BucketPolicy | undefined;
-                    isBucketPolicyAvailable: boolean;
-                };
+                payload:
+                    | {
+                          isSuccess: false;
+                          navigationError:
+                              | {
+                                    errorCase: "access denied";
+                                    directoryPath: string;
+                                }
+                              | {
+                                    errorCase: "no such bucket";
+                                    directoryPath: string;
+                                    bucket: string;
+                                    shouldAttemptToCreate: boolean;
+                                };
+                      }
+                    | {
+                          isSuccess: true;
+                          directoryPath: string;
+                          objects: S3Object[];
+                          bucketPolicy: S3BucketPolicy | undefined;
+                          isBucketPolicyAvailable: boolean;
+                      };
             }
         ) => {
+            state.ongoingNavigation = undefined;
+
+            if (!payload.isSuccess) {
+                state.navigationError = payload.navigationError;
+                return;
+            }
+
             const { directoryPath, objects, bucketPolicy, isBucketPolicyAvailable } =
                 payload;
 
+            state.navigationError = undefined;
             state.directoryPath = directoryPath;
             state.objects = objects;
-            state.isNavigationOngoing = false;
             if (bucketPolicy) {
                 state.bucketPolicy = bucketPolicy;
             }
@@ -284,7 +325,7 @@ export const { reducer, actions } = createUsecaseActions({
         workingDirectoryChanged: state => {
             state.directoryPath = undefined;
             state.objects = [];
-            state.isNavigationOngoing = false;
+            state.ongoingNavigation = undefined;
         },
         viewModeChanged: (
             state,

@@ -3,10 +3,9 @@ import { assert, type Equals, is } from "tsafe/assert";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as s3ConfigManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import * as userConfigsUsecase from "core/usecases/userConfigs";
 import * as userProfileForm from "core/usecases/userProfileForm";
-import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
 import { actions } from "./state";
@@ -174,9 +173,12 @@ export const thunks = {
 
                 const { s3ConfigId, s3ConfigId_default } = (() => {
                     const s3Configs = s3ConfigManagement.selectors
-                        .s3Configs(getState())
+                        .s3Profiles(getState())
                         .filter(s3Config =>
-                            doInjectPersonalInfos ? true : s3Config.origin === "project"
+                            doInjectPersonalInfos
+                                ? true
+                                : s3Config.origin ===
+                                  "created by user (or group project member)"
                         );
 
                     const s3ConfigId_default = (() => {
@@ -681,7 +683,7 @@ export const protectedThunks = {
                         }
 
                         const s3Configs =
-                            s3ConfigManagement.selectors.s3Configs(getState());
+                            s3ConfigManagement.selectors.s3Profiles(getState());
 
                         const s3Config = s3Configs.find(
                             s3Config => s3Config.id === s3ConfigId
@@ -701,21 +703,16 @@ export const protectedThunks = {
                             ? parseUrl(s3Config.paramsOfCreateS3Client.url)
                             : {};
 
-                    const { bucketName, objectName: objectNamePrefix } =
-                        bucketNameAndObjectNameFromS3Path(s3Config.workingDirectoryPath);
-
                     const s3: XOnyxiaContext["s3"] = {
                         isEnabled: true,
                         AWS_ACCESS_KEY_ID: undefined,
                         AWS_SECRET_ACCESS_KEY: undefined,
                         AWS_SESSION_TOKEN: undefined,
-                        AWS_BUCKET_NAME: bucketName,
-                        AWS_DEFAULT_REGION: s3Config.region ?? "us-east-1",
+                        AWS_DEFAULT_REGION:
+                            s3Config.paramsOfCreateS3Client.region ?? "us-east-1",
                         AWS_S3_ENDPOINT: host,
                         port,
                         pathStyleAccess: s3Config.paramsOfCreateS3Client.pathStyleAccess,
-                        objectNamePrefix,
-                        workingDirectoryPath: s3Config.workingDirectoryPath,
                         isAnonymous: false
                     };
 
@@ -723,7 +720,7 @@ export const protectedThunks = {
                         const s3Client = await dispatch(
                             s3ConfigManagement.protectedThunks.getS3ClientForSpecificConfig(
                                 {
-                                    s3ConfigId: s3Config.id
+                                    s3ProfileId: s3Config.id
                                 }
                             )
                         );

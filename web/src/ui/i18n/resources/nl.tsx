@@ -349,6 +349,17 @@ export const translations: Translations<"nl"> = {
         cancel: "Annuleren",
         "go to settings": "Ga naar instellingen"
     },
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `De bucket ${bucket} bestaat niet`,
+        "bucket does not exist body": "Wil je proberen hem nu aan te maken?",
+        no: "Nee",
+        yes: "Ja",
+        "success title": "Gelukt",
+        "failed title": "Mislukt",
+        "success body": ({ bucket }) => `Bucket ${bucket} is succesvol aangemaakt.`,
+        "failed body": ({ bucket }) => `Aanmaken van ${bucket} is mislukt.`,
+        ok: "Ok"
+    },
     ShareDialog: {
         title: "Deel je gegevens",
         close: "Sluiten",
