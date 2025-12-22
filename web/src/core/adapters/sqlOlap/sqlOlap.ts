@@ -173,8 +173,8 @@ export const createDuckDbSqlOlap = (params: {
 
                     await conn.query(
                         [
-                            "LOAD httpfs;",
-                            `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`
+                            `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`,
+                            "LOAD httpfs;"
                         ].join("\n")
                     );
 
