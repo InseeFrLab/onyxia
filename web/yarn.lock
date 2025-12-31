@@ -8358,10 +8358,10 @@ vfile@^6.0.0:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
 
-vite-envs@^4.4.11:
-  version "4.4.11"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.11.tgz#86e394cb4791dd563839b5d9931284566612ff8e"
-  integrity sha512-uJtnRYu+tB7dhmjvYDU8dgsCCGZet+O0Yh4P3HlTYGOhfqYyG/nFVEY3eZcS1/GH2hpKXTTB4NHX6v6xT5Dqzg==
+vite-envs@^4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.6.2.tgz#9a45a83d9924c5337b8828540abb7b40dd3b897b"
+  integrity sha512-g/yUtA4ef/5Ndf0a7Dz237yAmBZRuF0UY+4/lxoiGopjzJEcTGgwAbGOGrJSCEYqlBahhiWafEoTImOkGJHu+g==
 
 vite-node@2.1.6:
   version "2.1.6"
