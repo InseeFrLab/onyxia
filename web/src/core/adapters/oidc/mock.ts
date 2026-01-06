@@ -1,5 +1,5 @@
 import type { Oidc } from "core/ports/Oidc";
-import { createMockOidc } from "oidc-spa/mock";
+import { createMockOidc } from "oidc-spa/core-mock";
 
 export async function createOidc(params: {
     isUserInitiallyLoggedIn: boolean;

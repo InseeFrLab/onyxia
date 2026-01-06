@@ -1,5 +1,5 @@
 import type { Oidc } from "core/ports/Oidc";
-import { createOidc as createOidcSpa } from "oidc-spa";
+import { createOidc as createOidcSpa } from "oidc-spa/core";
 import { isKeycloak } from "oidc-spa/keycloak";
 import type { OidcParams, OidcParams_Partial } from "core/ports/OnyxiaApi";
 import { objectKeys } from "tsafe/objectKeys";
