@@ -33,17 +33,16 @@ export const thunks = {
 
             assert(oidc.isUserLoggedIn);
 
-            assert(isKeycloak({ issuerUri: oidc.params.issuerUri }));
+            assert(isKeycloak({ issuerUri: oidc.issuerUri }));
 
             const keycloakUtils = createKeycloakUtils({
-                issuerUri: oidc.params.issuerUri
+                issuerUri: oidc.issuerUri
             });
 
             window.location.href = keycloakUtils.getAccountUrl({
-                backToAppFromAccountUrl: window.location.href,
-                clientId: oidc.params.clientId,
+                clientId: oidc.clientId,
                 locale: paramsOfBootstrapCore.getCurrentLang(),
-                validRedirectUri: oidc.params.validRedirectUri
+                validRedirectUri: oidc.validRedirectUri
             });
 
             return new Promise<never>(() => {});
@@ -64,7 +63,7 @@ export const protectedThunks = {
                         : {
                               isUserLoggedIn: true,
                               user: (await onyxiaApi.getUserAndProjects()).user,
-                              isKeycloak: isKeycloak({ issuerUri: oidc.params.issuerUri })
+                              isKeycloak: isKeycloak({ issuerUri: oidc.issuerUri })
                           }
                 )
             );
