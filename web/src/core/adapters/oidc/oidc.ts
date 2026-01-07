@@ -87,7 +87,8 @@ export async function createOidc<AutoLogin extends boolean>(
         },
         idleSessionLifetimeInSeconds,
         debugLogs: enableDebugLogs,
-        autoLogin
+        autoLogin,
+        dpop: "auto"
     });
 
     return oidc;
