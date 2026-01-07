@@ -2,7 +2,7 @@
     "name": "onyxia-web",
     "homepage": "https://onyxia.sh",
     "type": "module",
-    "version": "4.57.1",
+    "version": "4.57.2",
     "license": "MIT",
     "scripts": {
         "postinstall": "yarn install-git-hooks && yarn postinstall:code-gen",
