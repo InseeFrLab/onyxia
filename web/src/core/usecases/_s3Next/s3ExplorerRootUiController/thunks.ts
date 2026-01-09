@@ -10,12 +10,34 @@ import { assert } from "tsafe/assert";
 export const thunks = {
     load:
         (params: { routeParams: RouteParams }) =>
-        (...args): { routeParams_toSet: RouteParams | undefined } => {
+        async (...args): Promise<{ routeParams_toSet: RouteParams | undefined }> => {
             const [dispatch, getState] = args;
 
             const { routeParams } = params;
 
             if (routeParams.profile !== undefined) {
+                const s3ProfileId = routeParams.profile;
+
+                {
+                    const s3Profiles =
+                        s3ProfilesManagement.selectors.s3Profiles(getState());
+
+                    if (
+                        s3Profiles.find(s3Profile => s3Profile.id === s3ProfileId) ===
+                        undefined
+                    ) {
+                        return dispatch(thunks.load({ routeParams: { path: "" } }));
+                    }
+                }
+
+                await dispatch(
+                    s3ProfilesManagement.protectedThunks.changeIsDefault({
+                        s3ProfileId,
+                        usecase: "explorer",
+                        value: true
+                    })
+                );
+
                 dispatch(actions.routeParamsSet({ routeParams }));
                 return { routeParams_toSet: undefined };
             }
@@ -27,14 +49,12 @@ export const thunks = {
                 return { routeParams_toSet: routeParams };
             }
 
-            const s3Profiles = s3ProfilesManagement.selectors.s3Profiles(getState());
-
-            const s3Profile =
-                s3Profiles.find(s3Profile => s3Profile.origin === "defined in region") ??
-                s3Profiles[0];
+            const wrap = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            );
 
             const routeParams_toSet: RouteParams = {
-                profile: s3Profile === undefined ? undefined : s3Profile.id,
+                profile: wrap === undefined ? undefined : wrap.s3Profile.id,
                 path: ""
             };
 
@@ -44,10 +64,10 @@ export const thunks = {
         },
     notifyRouteParamsExternallyUpdated:
         (params: { routeParams: RouteParams }) =>
-        (...args) => {
+        async (...args) => {
             const { routeParams } = params;
             const [dispatch] = args;
-            const { routeParams_toSet } = dispatch(thunks.load({ routeParams }));
+            const { routeParams_toSet } = await dispatch(thunks.load({ routeParams }));
 
             if (routeParams_toSet !== undefined) {
                 evt.post({

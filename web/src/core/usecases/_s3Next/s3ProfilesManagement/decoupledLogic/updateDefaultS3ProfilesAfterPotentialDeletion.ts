@@ -24,8 +24,8 @@ export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
     const s3Profiles = aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
         fromRegion: {
             s3Profiles: fromRegion.s3Profiles,
-            resolvedTemplatedBookmarks: [],
-            resolvedTemplatedStsRoles: []
+            resolvedTemplatedBookmarks: undefined,
+            resolvedTemplatedStsRoles: undefined
         },
         fromVault: {
             projectConfigs_s3: fromVault.projectConfigs_s3,

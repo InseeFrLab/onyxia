@@ -39,9 +39,10 @@ const Page = withLoader({
         const route = getRoute();
         assert(routeGroup.has(route));
 
-        const { routeParams_toSet } = core.functions.s3ExplorerRootUiController.load({
-            routeParams: route.params
-        });
+        const { routeParams_toSet } =
+            await core.functions.s3ExplorerRootUiController.load({
+                routeParams: route.params
+            });
 
         if (routeParams_toSet !== undefined) {
             routes.s3Explorer(routeParams_toSet).replace();

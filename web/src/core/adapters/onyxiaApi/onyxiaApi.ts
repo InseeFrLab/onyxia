@@ -22,7 +22,6 @@ import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
-import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -188,45 +187,6 @@ export function createOnyxiaApi(params: {
                                   return parseInt(value);
                               })()
                           });
-
-                const bookmarkedDirectories_test = await (async () => {
-                    if (!window.location.href.includes("localhost")) {
-                        return [];
-                    }
-
-                    return id<
-                        ({
-                            fullPath: string;
-                            title: LocalizedString;
-                            description?: LocalizedString;
-                            tags?: LocalizedString[];
-                            forStsRoleSessionName?: string | string[];
-                        } & (
-                            | { claimName?: undefined }
-                            | {
-                                  claimName: string;
-                                  includedClaimPattern?: string;
-                                  excludedClaimPattern?: string;
-                              }
-                        ))[]
-                    >([
-                        {
-                            fullPath: "$1/",
-                            title: "Personal",
-                            description: "Personal Bucket",
-                            claimName: "preferred_username",
-                            forStsRoleSessionName: undefined
-                        },
-                        {
-                            fullPath: "projet-$1/",
-                            title: "Group $1",
-                            description: "Shared bucket among members of project $1",
-                            claimName: "groups",
-                            excludedClaimPattern: "^USER_ONYXIA$",
-                            forStsRoleSessionName: undefined
-                        }
-                    ]);
-                })();
 
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion =>
@@ -476,11 +436,10 @@ export function createOnyxiaApi(params: {
                                                                 )
                                                         } as any;
                                                     })(),
-                                                    bookmarks: [
-                                                        ...bookmarkedDirectories_test,
-                                                        ...(s3Config_api.bookmarkedDirectories ??
-                                                            [])
-                                                    ].map(
+                                                    bookmarks: (
+                                                        s3Config_api.bookmarkedDirectories ??
+                                                        []
+                                                    ).map(
                                                         (
                                                             bookmarkedDirectory_api
                                                         ): DeploymentRegion.S3Next.S3Profile.Bookmark => {
