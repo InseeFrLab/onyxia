@@ -45,14 +45,20 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
     };
     fromRegion: {
         s3Profiles: DeploymentRegion.S3Next.S3Profile[];
-        resolvedTemplatedBookmarks: {
-            correspondingS3ConfigIndexInRegion: number;
-            bookmarks: ResolvedTemplateBookmark[];
-        }[];
-        resolvedTemplatedStsRoles: {
-            correspondingS3ConfigIndexInRegion: number;
-            stsRoles: ResolvedTemplateStsRole[];
-        }[];
+        // NOTE: The resolvedXXX can be undefined only when the function is used to
+        // the stablish the default profiles (for explorer and services)
+        resolvedTemplatedBookmarks:
+            | {
+                  correspondingS3ConfigIndexInRegion: number;
+                  bookmarks: ResolvedTemplateBookmark[];
+              }[]
+            | undefined;
+        resolvedTemplatedStsRoles:
+            | {
+                  correspondingS3ConfigIndexInRegion: number;
+                  stsRoles: ResolvedTemplateStsRole[];
+              }[]
+            | undefined;
     };
 }): S3Profile[] {
     const { fromVault, fromRegion } = params;
@@ -94,6 +100,10 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
         ...fromRegion.s3Profiles
             .map((c, index): S3Profile.DefinedInRegion[] => {
                 const resolvedTemplatedBookmarks_forThisProfile = (() => {
+                    if (fromRegion.resolvedTemplatedBookmarks === undefined) {
+                        return [];
+                    }
+
                     const entry = fromRegion.resolvedTemplatedBookmarks.find(
                         e => e.correspondingS3ConfigIndexInRegion === index
                     );
@@ -188,6 +198,10 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                 };
 
                 const resolvedTemplatedStsRoles_forThisProfile = (() => {
+                    if (fromRegion.resolvedTemplatedStsRoles === undefined) {
+                        return [];
+                    }
+
                     const entry = fromRegion.resolvedTemplatedStsRoles.find(
                         e => e.correspondingS3ConfigIndexInRegion === index
                     );

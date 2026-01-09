@@ -7,7 +7,7 @@ import { protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
 import { id } from "tsafe/id";
-import { updateDefaultS3ConfigsAfterPotentialDeletion } from "core/usecases/s3ConfigManagement/decoupledLogic/updateDefaultS3ConfigsAfterPotentialDeletion";
+import { updateDefaultS3ProfilesAfterPotentialDeletion } from "core/usecases/_s3Next/s3ProfilesManagement/decoupledLogic/updateDefaultS3ProfilesAfterPotentialDeletion";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { getProjectVaultTopDirPath_reserved } from "./decoupledLogic/projectVaultTopDirPath_reserved";
 import { secretToValue, valueToSecret } from "./decoupledLogic/secretParsing";
@@ -132,12 +132,16 @@ export const thunks = {
             await prOnboarding;
 
             maybe_update_pinned_default_s3_configs: {
-                const actions = updateDefaultS3ConfigsAfterPotentialDeletion({
-                    projectConfigsS3: projectConfigs.s3,
-                    s3RegionConfigs:
-                        deploymentRegionManagement.selectors.currentDeploymentRegion(
-                            getState()
-                        ).s3Configs
+                const actions = updateDefaultS3ProfilesAfterPotentialDeletion({
+                    fromRegion: {
+                        s3Profiles:
+                            deploymentRegionManagement.selectors.currentDeploymentRegion(
+                                getState()
+                            )._s3Next.s3Profiles
+                    },
+                    fromVault: {
+                        projectConfigs_s3: projectConfigs.s3
+                    }
                 });
 
                 let needUpdate = false;
@@ -154,7 +158,7 @@ export const thunks = {
 
                     needUpdate = true;
 
-                    projectConfigs.s3[propertyName] = action.s3ConfigId;
+                    projectConfigs.s3[propertyName] = action.s3ProfileId;
                 }
 
                 if (!needUpdate) {
