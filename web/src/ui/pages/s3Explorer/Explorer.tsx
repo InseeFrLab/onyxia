@@ -237,18 +237,40 @@ function Explorer_inner(props: Props) {
                                         }
                                     })()}
                                 </Text>
-                                <Button
-                                    startIcon={getIconUrlByName("ArrowBack")}
+                                <div
                                     className={css({
                                         marginTop: theme.spacing(3),
-                                        display: "inline-block"
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: theme.spacing(2)
                                     })}
-                                    onClick={() =>
-                                        changeCurrentDirectory({ directoryPath: "" })
-                                    }
                                 >
-                                    Go Back
-                                </Button>
+                                    <Button
+                                        startIcon={getIconUrlByName("ArrowBack")}
+                                        onClick={() =>
+                                            changeCurrentDirectory({
+                                                directoryPath: ""
+                                            })
+                                        }
+                                    >
+                                        Go Back
+                                    </Button>
+                                    {bookmarkStatus.isBookmarked &&
+                                        !bookmarkStatus.isReadonly && (
+                                            <Button
+                                                startIcon={getIconUrlByName("Delete")}
+                                                onClick={async () => {
+                                                    onToggleIsDirectoryPathBookmarked();
+                                                    changeCurrentDirectory({
+                                                        directoryPath: ""
+                                                    });
+                                                }}
+                                            >
+                                                Delete bookmark
+                                            </Button>
+                                        )}
+                                </div>
                             </div>
                         );
                     }
