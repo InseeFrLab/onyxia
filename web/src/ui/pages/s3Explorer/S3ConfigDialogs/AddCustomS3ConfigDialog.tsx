@@ -133,7 +133,7 @@ const Body = memo(() => {
     );
 
     const {
-        functions: { s3ConfigCreation }
+        functions: { s3ProfilesCreationUiController }
     } = getCoreSync();
 
     const { classes, css, theme } = useBodyStyles();
@@ -161,7 +161,7 @@ const Body = memo(() => {
                     defaultValue={formValues.friendlyName}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
+                        s3ProfilesCreationUiController.changeValue({
                             key: "friendlyName",
                             value
                         })
@@ -178,7 +178,7 @@ const Body = memo(() => {
                     defaultValue={formValues.url}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
+                        s3ProfilesCreationUiController.changeValue({
                             key: "url",
                             value
                         })
@@ -195,7 +195,7 @@ const Body = memo(() => {
                     defaultValue={formValues.region}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
+                        s3ProfilesCreationUiController.changeValue({
                             key: "region",
                             value
                         })
@@ -223,7 +223,7 @@ const Body = memo(() => {
                         aria-labelledby="path-style"
                         value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
                         onChange={(_, value) =>
-                            s3ConfigCreation.changeValue({
+                            s3ProfilesCreationUiController.changeValue({
                                 key: "pathStyleAccess",
                                 value: value === "path"
                             })
@@ -267,7 +267,7 @@ const Body = memo(() => {
                                 <Switch
                                     checked={formValues.isAnonymous}
                                     onChange={(...[, isChecked]) =>
-                                        s3ConfigCreation.changeValue({
+                                        s3ProfilesCreationUiController.changeValue({
                                             key: "isAnonymous",
                                             value: isChecked
                                         })
@@ -295,7 +295,7 @@ const Body = memo(() => {
                             defaultValue={formValues.accessKeyId ?? ""}
                             doOnlyShowErrorAfterFirstFocusLost
                             onValueBeingTypedChange={({ value }) =>
-                                s3ConfigCreation.changeValue({
+                                s3ProfilesCreationUiController.changeValue({
                                     key: "accessKeyId",
                                     value: value || undefined
                                 })
@@ -316,7 +316,7 @@ const Body = memo(() => {
                             defaultValue={formValues.secretAccessKey ?? ""}
                             doOnlyShowErrorAfterFirstFocusLost
                             onValueBeingTypedChange={({ value }) =>
-                                s3ConfigCreation.changeValue({
+                                s3ProfilesCreationUiController.changeValue({
                                     key: "secretAccessKey",
                                     value: value || undefined
                                 })
@@ -338,7 +338,7 @@ const Body = memo(() => {
                             defaultValue={formValues.sessionToken ?? ""}
                             doOnlyShowErrorAfterFirstFocusLost
                             onValueBeingTypedChange={({ value }) =>
-                                s3ConfigCreation.changeValue({
+                                s3ProfilesCreationUiController.changeValue({
                                     key: "sessionToken",
                                     value: value || undefined
                                 })
