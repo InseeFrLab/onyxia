@@ -237,7 +237,7 @@ export function createS3Client(
         listObjects: async ({ path }) => {
             const { bucket: bucketName, keyPrefix: prefix } = parseS3UriPrefix({
                 s3UriPrefix: `s3://${path}`,
-                strict: true
+                strict: false
             });
 
             const { getAwsS3Client } = await prApi;
