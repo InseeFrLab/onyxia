@@ -10,6 +10,7 @@ import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
 import { join as pathJoin, relative as pathRelative } from "pathe";
 import { getUploadProgress } from "./decoupledLogic/uploadProgress";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -70,18 +71,20 @@ export namespace CurrentWorkingDirectoryView {
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.navigationError),
     createSelector(state, state => state.objects),
     createSelector(state, state => state.ongoingOperations),
     createSelector(state, state => state.s3FilesBeingUploaded),
     createSelector(state, state => state.isBucketPolicyAvailable),
     (
         directoryPath,
+        navigationError,
         objects,
         ongoingOperations,
         s3FilesBeingUploaded,
         isBucketPolicyAvailable
     ): CurrentWorkingDirectoryView | null => {
-        if (directoryPath === undefined) {
+        if (directoryPath === undefined || navigationError !== undefined) {
             return null;
         }
         const items = [
@@ -284,7 +287,10 @@ const shareView = createSelector(
     }
 );
 
-const isNavigationOngoing = createSelector(state, state => state.isNavigationOngoing);
+const isNavigationOngoing = createSelector(
+    state,
+    state => state.ongoingNavigation !== undefined
+);
 
 const workingDirectoryPath = createSelector(
     s3ConfigManagement.selectors.s3Configs,
@@ -303,7 +309,7 @@ const pathMinDepth = createSelector(workingDirectoryPath, workingDirectoryPath =
 });
 
 const main = createSelector(
-    createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.navigationError),
     uploadProgress,
     commandLogsEntries,
     currentWorkingDirectoryView,
@@ -313,7 +319,7 @@ const main = createSelector(
     shareView,
     isDownloadPreparing,
     (
-        directoryPath,
+        navigationError,
         uploadProgress,
         commandLogsEntries,
         currentWorkingDirectoryView,
@@ -323,9 +329,29 @@ const main = createSelector(
         shareView,
         isDownloadPreparing
     ) => {
-        if (directoryPath === undefined) {
+        if (currentWorkingDirectoryView === null) {
             return {
                 isCurrentWorkingDirectoryLoaded: false as const,
+                navigationError: (() => {
+                    if (navigationError === undefined) {
+                        return undefined;
+                    }
+                    switch (navigationError.errorCase) {
+                        case "access denied":
+                            return {
+                                errorCase: navigationError.errorCase,
+                                directoryPath: navigationError.directoryPath
+                            } as const;
+                        case "no such bucket":
+                            return {
+                                errorCase: navigationError.errorCase,
+                                bucket: parseS3UriPrefix({
+                                    s3UriPrefix: `s3://${navigationError.directoryPath}`,
+                                    strict: false
+                                }).bucket
+                            } as const;
+                    }
+                })(),
                 isNavigationOngoing,
                 uploadProgress,
                 commandLogsEntries,
@@ -335,7 +361,6 @@ const main = createSelector(
             };
         }
 
-        assert(currentWorkingDirectoryView !== null);
         assert(shareView !== null);
 
         return {

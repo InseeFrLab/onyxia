@@ -3,7 +3,7 @@ import { createSelector } from "clean-architecture";
 import { name } from "./state";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert, type Equals } from "tsafe/assert";
-import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
@@ -214,7 +214,8 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                     secretAccessKey: formValues.secretAccessKey,
                     sessionToken: formValues.sessionToken
                 };
-            })()
+            })(),
+            bookmarks: undefined
         });
     }
 );
@@ -331,8 +332,10 @@ const urlStylesExamples = createSelector(
 
         const urlObject = new URL(formattedFormValuesUrl);
 
-        const { bucketName, objectName: objectNamePrefix } =
-            bucketNameAndObjectNameFromS3Path(formattedFormValuesWorkingDirectoryPath);
+        const { bucket: bucketName, keyPrefix: objectNamePrefix } = parseS3UriPrefix({
+            s3UriPrefix: `s3://${formattedFormValuesWorkingDirectoryPath}`,
+            strict: false
+        });
 
         const domain = formattedFormValuesUrl
             .split(urlObject.protocol)[1]

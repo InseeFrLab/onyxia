@@ -16,6 +16,8 @@ import * as dataExplorer from "./dataExplorer";
 import * as fileExplorer from "./fileExplorerEntry";
 import * as dataCollection from "./dataCollection";
 
+import * as s3Explorer from "./s3Explorer";
+
 export const pages = {
     account,
     catalog,
@@ -31,7 +33,8 @@ export const pages = {
     sqlOlapShell,
     dataExplorer,
     fileExplorer,
-    dataCollection
+    dataCollection,
+    s3Explorer
 };
 
 export const { routeDefs } = mergeRouteDefs({ pages });

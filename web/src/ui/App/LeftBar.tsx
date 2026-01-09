@@ -122,6 +122,18 @@ export const LeftBar = memo((props: Props) => {
                     availability: isDevModeEnabled ? "available" : "not visible"
                 },
                 {
+                    itemId: "s3Explorer",
+                    icon: customIcons.filesSvgUrl,
+                    label: "S3 Explorer",
+                    link: routes.s3Explorer({
+                        path: ""
+                    }).link,
+                    availability:
+                        isDevModeEnabled && isFileExplorerEnabled
+                            ? "available"
+                            : "not visible"
+                },
+                {
                     groupId: "custom-leftbar-links",
                     label: t("divider: onyxia instance specific features")
                 },
@@ -168,6 +180,9 @@ export const LeftBar = memo((props: Props) => {
                         return "dataExplorer";
                     case "dataCollection":
                         return "dataCollection";
+                    case "s3Explorer":
+                    case "s3Explorer_root":
+                        return "s3Explorer";
                     case "page404":
                         return null;
                     case "document":

@@ -19,10 +19,7 @@ import type { NonPostableEvt, StatefulReadonlyEvt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { ExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar, type ExplorerButtonBarProps } from "./ExplorerButtonBar";
-//TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
-import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
-import { ExplorerIcon } from "./ExplorerIcon/ExplorerIcon";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
@@ -47,6 +44,9 @@ import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
 import type { ShareView } from "core/usecases/fileExplorer";
 import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
+import { IconButton } from "onyxia-ui/IconButton";
+import { Icon } from "onyxia-ui/Icon";
+import { getIconUrlByName } from "lazy-icons";
 
 export type ExplorerProps = {
     /**
@@ -99,6 +99,17 @@ export type ExplorerProps = {
             blob: Blob;
         }[];
     }) => void;
+
+    bookmarkStatus:
+        | {
+              isBookmarked: false;
+          }
+        | {
+              isBookmarked: true;
+              isReadonly: boolean;
+          }
+        | undefined;
+    onToggleIsDirectoryPathBookmarked: (() => void) | undefined;
 };
 
 assert<
@@ -141,7 +152,9 @@ export const Explorer = memo((props: ExplorerProps) => {
         onShareRequestSignedUrl,
         onChangeShareSelectedValidityDuration,
         onDownloadItems,
-        evtIsDownloadSnackbarOpen
+        evtIsDownloadSnackbarOpen,
+        bookmarkStatus,
+        onToggleIsDirectoryPathBookmarked
     } = props;
 
     const [items] = useMemo(
@@ -163,9 +176,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const onBreadcrumbNavigate = useConstCallback(
-        ({ upCount }: Param0<BreadcrumbProps["onNavigate"]>) => {
+        ({ path }: Param0<BreadcrumbProps["onNavigate"]>) => {
+            assert(path.length !== 0);
+
+            const [, ...rest] = path;
+
             onNavigate({
-                directoryPath: pathJoin(directoryPath, ...new Array(upCount).fill(".."))
+                directoryPath: rest.join("")
             });
         }
     );
@@ -206,10 +223,6 @@ export const Explorer = memo((props: ExplorerProps) => {
             onCopyPath({ path: pathJoin(directoryPath, basename) });
         }
     );
-
-    const onGoBack = useConstCallback(() => {
-        onNavigate({ directoryPath: pathJoin(directoryPath, "..") });
-    });
 
     const evtExplorerItemsAction = useConst(() =>
         Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
@@ -396,46 +409,17 @@ export const Explorer = memo((props: ExplorerProps) => {
                     />
                 )}
 
-                {(() => {
-                    const title = (() => {
-                        let split = directoryPath.split("/");
-
-                        // remove the last element
-                        split.pop();
-
-                        // remove path min depth elements at the beginning
-                        split = split.slice(pathMinDepth + 1);
-
-                        if (split.length === 0) {
-                            return undefined;
-                        }
-
-                        return split[split.length - 1];
-                    })();
-
-                    if (title === undefined) {
-                        return null;
-                    }
-
-                    return (
-                        <DirectoryHeader
-                            title={title}
-                            onGoBack={onGoBack}
-                            subtitle={undefined}
-                            image={
-                                <ExplorerIcon
-                                    className={classes.fileOrDirectoryIcon}
-                                    iconId="directory"
-                                    hasShadow={true}
-                                />
-                            }
-                        />
-                    );
-                })()}
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
                         minDepth={pathMinDepth}
-                        path={directoryPath.split("/").filter(part => part !== "")}
+                        path={[
+                            "s3://",
+                            ...directoryPath
+                                .split("/")
+                                .filter(segment => segment !== "")
+                                .map(segment => `${segment}/`)
+                        ]}
+                        separatorChar="&#8203;"
                         isNavigationDisabled={isNavigating}
                         onNavigate={onBreadcrumbNavigate}
                         evtAction={evtBreadcrumbAction}
@@ -447,6 +431,27 @@ export const Explorer = memo((props: ExplorerProps) => {
                             className={classes.circularProgress}
                         />
                     )}
+                    {(() => {
+                        if (bookmarkStatus === undefined) {
+                            return null;
+                        }
+                        assert(onToggleIsDirectoryPathBookmarked !== undefined);
+
+                        const icon = getIconUrlByName(
+                            bookmarkStatus.isBookmarked ? "Star" : "StarBorder"
+                        );
+
+                        if (bookmarkStatus.isBookmarked && bookmarkStatus.isReadonly) {
+                            return <Icon icon={icon} />;
+                        }
+
+                        return (
+                            <IconButton
+                                icon={icon}
+                                onClick={onToggleIsDirectoryPathBookmarked}
+                            />
+                        );
+                    })()}
                 </div>
                 <div
                     className={css({
@@ -613,10 +618,6 @@ const useStyles = tss
         },
         circularProgress: {
             marginLeft: theme.spacing(2)
-        },
-        fileOrDirectoryIcon: {
-            height: "unset",
-            width: "100%"
         }
     }));
 
