@@ -360,6 +360,13 @@ export const translations: Translations<"nl"> = {
         "failed body": ({ bucket }) => `Aanmaken van ${bucket} is mislukt.`,
         ok: "Ok"
     },
+    S3ExplorerExplorer: {
+        "access denied": ({ directoryPath }) =>
+            `Je hebt geen leesrechten op s3://${directoryPath} met dit S3-profiel`,
+        "bucket does not exist": ({ bucket }) => `De bucket ${bucket} bestaat niet`,
+        "go back": "Terug",
+        "delete bookmark": "Bladwijzer verwijderen"
+    },
     ShareDialog: {
         title: "Deel je gegevens",
         close: "Sluiten",

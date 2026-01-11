@@ -323,6 +323,13 @@ export const translations: Translations<"zh-CN"> = {
         "failed body": ({ bucket }) => `创建 ${bucket} 失败。`,
         ok: "确定"
     },
+    S3ExplorerExplorer: {
+        "access denied": ({ directoryPath }) =>
+            `您没有使用此 S3 配置文件读取 s3://${directoryPath} 的权限`,
+        "bucket does not exist": ({ bucket }) => `存储桶 ${bucket} 不存在`,
+        "go back": "返回",
+        "delete bookmark": "删除书签"
+    },
     ShareDialog: {
         title: "分享您的数据",
         close: "关闭",

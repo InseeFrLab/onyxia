@@ -360,6 +360,13 @@ export const translations: Translations<"it"> = {
         "failed body": ({ bucket }) => `Creazione di ${bucket} non riuscita.`,
         ok: "Ok"
     },
+    S3ExplorerExplorer: {
+        "access denied": ({ directoryPath }) =>
+            `Non hai il permesso di lettura su s3://${directoryPath} con questo profilo S3`,
+        "bucket does not exist": ({ bucket }) => `Il bucket ${bucket} non esiste`,
+        "go back": "Indietro",
+        "delete bookmark": "Elimina segnalibro"
+    },
     ShareDialog: {
         title: "Condividi i tuoi dati",
         close: "Chiudi",
@@ -395,8 +402,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

@@ -366,6 +366,13 @@ export const translations: Translations<"fr"> = {
         "failed body": ({ bucket }) => `Échec de la création de ${bucket}.`,
         ok: "Ok"
     },
+    S3ExplorerExplorer: {
+        "access denied": ({ directoryPath }) =>
+            `Vous n'avez pas l'autorisation de lecture sur s3://${directoryPath} avec ce profil S3`,
+        "bucket does not exist": ({ bucket }) => `Le bucket ${bucket} n'existe pas`,
+        "go back": "Retour",
+        "delete bookmark": "Supprimer le favori"
+    },
     ShareDialog: {
         title: "Partager vos données",
         close: "Fermer",
