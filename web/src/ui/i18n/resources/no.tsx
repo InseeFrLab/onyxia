@@ -356,6 +356,13 @@ export const translations: Translations<"no"> = {
         "failed body": ({ bucket }) => `Kunne ikke opprette ${bucket}.`,
         ok: "Ok"
     },
+    S3ExplorerExplorer: {
+        "access denied": ({ directoryPath }) =>
+            `Du har ikke lesetilgang til s3://${directoryPath} med denne S3-profilen`,
+        "bucket does not exist": ({ bucket }) => `Bucket ${bucket} finnes ikke`,
+        "go back": "Tilbake",
+        "delete bookmark": "Slett bokmerke"
+    },
     ShareDialog: {
         title: "Del dataene dine",
         close: "Lukk",

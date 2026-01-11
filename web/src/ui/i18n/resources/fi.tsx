@@ -357,6 +357,13 @@ export const translations: Translations<"fi"> = {
         "failed body": ({ bucket }) => `Kohteen ${bucket} luonti epäonnistui.`,
         ok: "Ok"
     },
+    S3ExplorerExplorer: {
+        "access denied": ({ directoryPath }) =>
+            `Sinulla ei ole lukuoikeutta kohteeseen s3://${directoryPath} tällä S3-profiililla`,
+        "bucket does not exist": ({ bucket }) => `Bucket ${bucket} ei ole olemassa`,
+        "go back": "Takaisin",
+        "delete bookmark": "Poista kirjanmerkki"
+    },
     ShareDialog: {
         title: "Jaa tietosi",
         close: "Sulje",

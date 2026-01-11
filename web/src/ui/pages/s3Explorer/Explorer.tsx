@@ -17,6 +17,7 @@ import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useStyles } from "tss";
 import { getIconUrlByName } from "lazy-icons";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 import {
     ConfirmBucketCreationAttemptDialog,
     type ConfirmBucketCreationAttemptDialogProps
@@ -89,6 +90,8 @@ function Explorer_inner(props: Props) {
         shareView,
         isDownloadPreparing
     } = useCoreState("fileExplorer", "main");
+
+    const { t } = useTranslation("S3ExplorerExplorer");
 
     const evtIsSnackbarOpen = useConst(() => Evt.create(isDownloadPreparing));
 
@@ -223,13 +226,14 @@ function Explorer_inner(props: Props) {
                                     {(() => {
                                         switch (navigationError.errorCase) {
                                             case "access denied":
-                                                return [
-                                                    "You do not have read permission on s3://",
-                                                    navigationError.directoryPath,
-                                                    "with this S3 Profile"
-                                                ].join(" ");
+                                                return t("access denied", {
+                                                    directoryPath:
+                                                        navigationError.directoryPath
+                                                });
                                             case "no such bucket":
-                                                return `The bucket ${navigationError.bucket} does not exist`;
+                                                return t("bucket does not exist", {
+                                                    bucket: navigationError.bucket
+                                                });
                                             default:
                                                 assert<
                                                     Equals<typeof navigationError, never>
@@ -254,7 +258,7 @@ function Explorer_inner(props: Props) {
                                             })
                                         }
                                     >
-                                        Go Back
+                                        {t("go back")}
                                     </Button>
                                     {bookmarkStatus.isBookmarked &&
                                         !bookmarkStatus.isReadonly && (
@@ -267,7 +271,7 @@ function Explorer_inner(props: Props) {
                                                     });
                                                 }}
                                             >
-                                                Delete bookmark
+                                                {t("delete bookmark")}
                                             </Button>
                                         )}
                                 </div>
@@ -321,3 +325,12 @@ function Explorer_inner(props: Props) {
         </>
     );
 }
+
+const { i18n } = declareComponentKeys<
+    | { K: "access denied"; P: { directoryPath: string } }
+    | { K: "bucket does not exist"; P: { bucket: string } }
+    | "go back"
+    | "delete bookmark"
+>()("S3ExplorerExplorer");
+
+export type I18n = typeof i18n;
