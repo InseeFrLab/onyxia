@@ -152,6 +152,8 @@ function Explorer_inner(props: Props) {
 
     const onOpenFile = useConstCallback<HeadlessExplorerProps["onOpenFile"]>(
         ({ basename }) => {
+            assert(isCurrentWorkingDirectoryLoaded);
+
             //TODO use dataExplorer thunk
             if (
                 basename.endsWith(".parquet") ||
@@ -160,7 +162,7 @@ function Explorer_inner(props: Props) {
             ) {
                 routes
                     .dataExplorer({
-                        source: `s3://${directoryPath.replace(/\/$/g, "")}/${basename}`
+                        source: `s3://${currentWorkingDirectoryView.directoryPath.replace(/\/$/g, "")}/${basename}`
                     })
                     .push();
                 return;
@@ -179,27 +181,6 @@ function Explorer_inner(props: Props) {
     );
 
     const { cx, css, theme } = useStyles();
-
-    if (
-        isCurrentWorkingDirectoryLoaded &&
-        currentWorkingDirectoryView.directoryPath !== directoryPath
-    ) {
-        return (
-            <div
-                className={cx(
-                    css({
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height: "100%"
-                    }),
-                    className
-                )}
-            >
-                <CircularProgress />
-            </div>
-        );
-    }
 
     if (!isCurrentWorkingDirectoryLoaded) {
         return (
