@@ -442,7 +442,14 @@ export const Explorer = memo((props: ExplorerProps) => {
                         );
 
                         if (bookmarkStatus.isBookmarked && bookmarkStatus.isReadonly) {
-                            return <Icon icon={icon} />;
+                            return (
+                                <Icon
+                                    className={css({
+                                        margin: theme.spacing(2)
+                                    })}
+                                    icon={icon}
+                                />
+                            );
                         }
 
                         return (
