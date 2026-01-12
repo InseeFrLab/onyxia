@@ -90,8 +90,7 @@ function S3Explorer() {
         <div className={classes.root}>
             <div
                 style={{
-                    display: "flex",
-                    gap: theme.spacing(3)
+                    display: "flex"
                 }}
             >
                 <S3ProfileSelect />
@@ -433,9 +432,13 @@ function S3ProfileSelect() {
 
 const useStyles = tss.withName({ S3Explorer }).create(({ theme }) => ({
     root: {
-        height: "100%"
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "auto"
     },
     explorer: {
-        marginTop: theme.spacing(4)
+        marginTop: theme.spacing(4),
+        flex: 1
     }
 }));
