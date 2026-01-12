@@ -278,7 +278,7 @@ export const createDuckDbSqlOlap = (params: {
                 sourceUrl = sourceUrl_noRedirect;
             }
 
-            const sqlQuery = `SELECT * FROM ${(() => {
+            let sqlQuery = `SELECT * FROM ${(() => {
                 switch (fileType) {
                     case "csv":
                         return `read_csv('${sourceUrl}')`;
@@ -287,7 +287,11 @@ export const createDuckDbSqlOlap = (params: {
                     case "json":
                         return `read_json('${sourceUrl}')`;
                 }
-            })()} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`;
+            })()} LIMIT ${rowsPerPage}`;
+
+            if (page !== 1) {
+                sqlQuery += ` OFFSET ${rowsPerPage * (page - 1)}`;
+            }
 
             const conn = await db.connect();
             const stmt = await conn.prepare(sqlQuery);
