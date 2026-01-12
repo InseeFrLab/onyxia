@@ -47,6 +47,7 @@ import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
+import { keyframes } from "tss-react";
 
 export type ExplorerProps = {
     /**
@@ -424,13 +425,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                         onNavigate={onBreadcrumbNavigate}
                         evtAction={evtBreadcrumbAction}
                     />
-                    {isNavigating && (
-                        <CircularProgress
-                            color="textPrimary"
-                            size={theme.typography.rootFontSizePx}
-                            className={classes.circularProgress}
-                        />
-                    )}
                     {(() => {
                         if (bookmarkStatus === undefined) {
                             return null;
@@ -459,6 +453,13 @@ export const Explorer = memo((props: ExplorerProps) => {
                             />
                         );
                     })()}
+                    {isNavigating && (
+                        <CircularProgress
+                            color="textPrimary"
+                            size={theme.typography.rootFontSizePx}
+                            className={classes.circularProgress}
+                        />
+                    )}
                 </div>
                 <div
                     className={css({
@@ -624,7 +625,15 @@ const useStyles = tss
             alignItems: "center"
         },
         circularProgress: {
-            marginLeft: theme.spacing(2)
+            marginLeft: theme.spacing(2),
+            animation: `${keyframes`
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            `} 150ms ease-out`
         }
     }));
 
