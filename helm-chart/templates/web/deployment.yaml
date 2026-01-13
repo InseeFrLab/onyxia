@@ -41,6 +41,10 @@ spec:
               value: {{ $value | quote }}
             {{- end -}}
             {{- end }}
+          {{- if .Values.onboarding.enabled }}
+            - name: OIDC_DISABLE_DPOP
+              value: "true"
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.web.containerPort }}
