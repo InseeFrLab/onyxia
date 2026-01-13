@@ -18,15 +18,19 @@ if (import.meta.env.DEV) {
         return;
     }
 
-    const [{ oidcEarlyInit }, { browserRuntimeFreeze }] = await Promise.all([
+    const [{ oidcEarlyInit }, { browserRuntimeFreeze }, { DPoP }] = await Promise.all([
         import("oidc-spa/entrypoint"),
-        import("oidc-spa/browser-runtime-freeze")
+        import("oidc-spa/browser-runtime-freeze"),
+        import.meta.env.OIDC_DISABLE_DPOP === "true"
+            ? { DPoP: undefined }
+            : import("oidc-spa/DPoP")
     ]);
 
     const { shouldLoadApp } = oidcEarlyInit({
         BASE_URL: import.meta.env.BASE_URL,
         securityDefenses: {
-            ...browserRuntimeFreeze()
+            ...browserRuntimeFreeze(),
+            ...DPoP?.({ mode: "auto" })
         }
     });
 
