@@ -465,7 +465,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                     className={css({
                         flex: 1,
                         paddingRight: theme.spacing(2),
-                        overflow: "auto"
+                        overflow: "auto",
+                        minHeight: 0
                     })}
                 >
                     {(() => {
@@ -607,7 +608,8 @@ const useStyles = tss
         root: {
             position: "relative",
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            minHeight: 0
         },
         commandBar: {
             position: "absolute",

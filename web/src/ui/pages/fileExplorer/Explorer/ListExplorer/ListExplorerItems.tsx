@@ -1,18 +1,8 @@
-import {
-    type GridCellParams,
-    type GridRowSelectionModel,
-    type GridColDef,
-    type GridRowParams,
-    type GridAutosizeOptions,
-    GRID_CHECKBOX_SELECTION_COL_DEF,
-    useGridApiRef
-} from "@mui/x-data-grid";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { ExplorerIcon, getIconIdFromExtension } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
-import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import { assert } from "tsafe/assert";
 import type { Item } from "../../shared/types";
 import { useEvt } from "evt/hooks";
@@ -22,6 +12,9 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";
+import Checkbox from "@mui/material/Checkbox";
+import LinearProgress from "@mui/material/LinearProgress";
+import { alpha } from "@mui/material/styles";
 
 export type ListExplorerItemsProps = {
     className?: string;
@@ -55,13 +48,11 @@ export type ListExplorerItemsProps = {
 };
 
 type Row = Item & { id: number };
+type RowSelectionModel = Row["id"][];
 
-const listAutosizeOptions = {
-    expand: true,
-    columns: ["basename", "lastModified"],
-    includeHeaders: true,
-    includeOutliers: true
-} satisfies GridAutosizeOptions;
+const getRowKey = (row: Pick<Item, "basename" | "kind">) => `${row.kind}:${row.basename}`;
+
+const isRowSelectable = (row: Item) => !(row.isBeingDeleted || row.isBeingCreated);
 
 export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
     const {
@@ -80,145 +71,11 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
         onDownloadItems
     } = props;
 
-    const apiRef = useGridApiRef();
-
-    const { classes, cx } = useStyles();
+    const { classes, cx } = useStyles({ hasPolicy: isBucketPolicyFeatureEnabled });
 
     const { t } = useTranslation({ ListExplorerItems });
-    const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
-
-    const columns: GridColDef<(typeof rows)[number]>[] = useMemo(
-        () =>
-            [
-                {
-                    ...GRID_CHECKBOX_SELECTION_COL_DEF,
-                    maxWidth: 50,
-                    renderCell: params => {
-                        if (params.row.isBeingCreated) {
-                            return (
-                                <div className={classes.circularProgressInnerWrapper}>
-                                    <>
-                                        <CircularProgress size={32} />
-                                        <div className={classes.percentageWrapper}>
-                                            <Text
-                                                typo="caption"
-                                                className={classes.textUploadProgress}
-                                            >
-                                                {params.row.uploadPercent}%
-                                            </Text>
-                                        </div>
-                                    </>
-                                </div>
-                            );
-                        }
-
-                        assert(GRID_CHECKBOX_SELECTION_COL_DEF.renderCell !== undefined);
-
-                        return GRID_CHECKBOX_SELECTION_COL_DEF.renderCell(params);
-                    }
-                },
-                {
-                    field: "basename",
-                    headerName: t("header name"),
-                    type: "string",
-                    renderCell: params => {
-                        const fileName = params.value;
-                        const isDirectory = params.row.kind === "directory";
-
-                        const fileExtension = !isDirectory
-                            ? (fileName.split(".").pop() ?? "")
-                            : "directory";
-                        return (
-                            <>
-                                <ExplorerIcon
-                                    iconId={getIconIdFromExtension(fileExtension)}
-                                    hasShadow={false}
-                                    className={classes.nameIcon}
-                                />
-                                <Link
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        switch (params.row.kind) {
-                                            case "directory":
-                                                return onNavigate({
-                                                    basename: params.row.basename
-                                                });
-
-                                            case "file":
-                                                return onOpenFile({
-                                                    basename: params.row.basename
-                                                });
-                                        }
-                                    }}
-                                    color="inherit"
-                                >
-                                    <Text typo="label 2">{params.value}</Text>
-                                </Link>
-                            </>
-                        );
-                    },
-                    cellClassName: classes.basenameCell
-                },
-
-                {
-                    field: "lastModified",
-                    headerName: t("header modified date"),
-                    type: "date",
-                    valueFormatter: (date?: Date) => {
-                        if (!date) return "";
-                        return date.toLocaleString();
-                    }
-                },
-                {
-                    field: "size",
-                    headerName: t("header size"),
-                    type: "number",
-                    valueFormatter: size => {
-                        if (size === undefined) return "";
-                        const prettySize = fileSizePrettyPrint({
-                            bytes: size
-                        });
-                        return `${prettySize.value} ${prettySize.unit}`;
-                    }
-                },
-                {
-                    field: "policy",
-                    headerName: t("header policy"),
-                    display: "flex" as const,
-                    type: "singleSelect",
-                    valueOptions: ["public", "private"],
-                    renderCell: params => {
-                        return (
-                            <PolicySwitch
-                                policy={params.value}
-                                changePolicy={e => {
-                                    switch (params.row.policy) {
-                                        case "public":
-                                            onPolicyChange({
-                                                basename: params.row.basename,
-                                                policy: "private",
-                                                kind: params.row.kind
-                                            });
-                                            break;
-                                        case "private":
-                                            onPolicyChange({
-                                                basename: params.row.basename,
-                                                policy: "public",
-                                                kind: params.row.kind
-                                            });
-                                            break;
-                                    }
-                                    e.stopPropagation();
-                                }}
-                                isPolicyChanging={params.row.isPolicyChanging}
-                                disabled={!params.row.canChangePolicy}
-                            />
-                        );
-                    }
-                }
-            ] satisfies GridColDef<(typeof rows)[number]>[],
-        [classes.nameIcon]
-    );
+    const [rowSelectionModel, setRowSelectionModel] = useState<RowSelectionModel>([]);
+    const [hiddenRowKeys, setHiddenRowKeys] = useState<Set<string>>(new Set());
 
     const rows = useMemo(
         () =>
@@ -232,44 +89,72 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
         [items]
     );
 
+    const visibleRows = useMemo(
+        () => rows.filter(row => !hiddenRowKeys.has(getRowKey(row))),
+        [rows, hiddenRowKeys]
+    );
+
+    const selectableRowIds = useMemo(
+        () => visibleRows.filter(isRowSelectable).map(row => row.id),
+        [visibleRows]
+    );
+
+    const selectedRows = useMemo(
+        () =>
+            rowSelectionModel
+                .map(id => rows[id])
+                .filter((row): row is Row => row !== undefined)
+                .filter(row => !hiddenRowKeys.has(getRowKey(row))),
+        [rowSelectionModel, rows, hiddenRowKeys]
+    );
+
+    const isAllSelected =
+        selectableRowIds.length > 0 &&
+        selectableRowIds.every(id => rowSelectionModel.includes(id));
+    const isIndeterminate = rowSelectionModel.length > 0 && !isAllSelected;
+
     useEvt(
         ctx =>
             evtAction.attach(ctx, action => {
-                const selectedItems = Array.from(
-                    apiRef.current.getSelectedRows().values()
-                ) as Row[];
-
                 switch (action) {
                     case "DELETE SELECTED ITEM": {
-                        assert(selectedItems !== undefined);
-                        onDeleteItems({ items: selectedItems }, () =>
-                            selectedItems.forEach(item =>
-                                apiRef.current.updateRows([
-                                    { id: item.id, _action: "delete" }
-                                ])
-                            )
-                        );
-                        break;
+                        assert(selectedRows.length !== 0);
+                        const rowsToDelete = selectedRows;
+
+                        onDeleteItems({ items: rowsToDelete }, () => {
+                            setHiddenRowKeys(prev => {
+                                const next = new Set(prev);
+                                rowsToDelete.forEach(row => next.add(getRowKey(row)));
+                                return next;
+                            });
+                            setRowSelectionModel(prev =>
+                                prev.filter(
+                                    id => !rowsToDelete.some(row => row.id === id)
+                                )
+                            );
+                        });
+                        return;
                     }
                     case "COPY SELECTED ITEM PATH":
-                        assert(selectedItems !== undefined && selectedItems.length === 1);
+                        assert(selectedRows.length === 1);
                         onCopyPath({
-                            basename: selectedItems[0].basename
+                            basename: selectedRows[0].basename
                         });
-                        break;
+                        return;
                     case "SHARE SELECTED FILE":
                         assert(
-                            selectedItems.length === 1 && selectedItems[0].kind === "file"
+                            selectedRows.length === 1 && selectedRows[0].kind === "file"
                         );
                         onShare({
-                            fileBasename: selectedItems[0].basename
+                            fileBasename: selectedRows[0].basename
                         });
                         return;
                     case "DOWNLOAD DIRECTORY":
-                        onDownloadItems({ items: selectedItems });
+                        onDownloadItems({ items: selectedRows });
+                        return;
                 }
             }),
-        [evtAction, onDeleteItems, onCopyPath]
+        [evtAction, selectedRows, onDeleteItems, onCopyPath, onShare, onDownloadItems]
     );
 
     useEffect(() => {
@@ -278,80 +163,273 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
     }, [isNavigating]);
 
     useEffect(() => {
-        if (rowSelectionModel.length === 0) {
+        setRowSelectionModel(prev => {
+            const next = prev.filter(id => {
+                const row = rows[id];
+                return (
+                    row !== undefined &&
+                    !hiddenRowKeys.has(getRowKey(row)) &&
+                    isRowSelectable(row)
+                );
+            });
+
+            if (
+                next.length === prev.length &&
+                next.every((id, index) => id === prev[index])
+            ) {
+                return prev;
+            }
+
+            return next;
+        });
+    }, [rows, hiddenRowKeys]);
+
+    useEffect(() => {
+        if (selectedRows.length === 0) {
             onSelectedItemKindValueChange({ selectedItemKind: "none" });
             return;
         }
 
-        if (rowSelectionModel.length === 1) {
+        if (selectedRows.length === 1) {
             onSelectedItemKindValueChange({
-                selectedItemKind: rows[rowSelectionModel[0] as Row["id"]].kind
+                selectedItemKind: selectedRows[0].kind
             });
             return;
         }
         onSelectedItemKindValueChange({ selectedItemKind: "multiple" });
-    }, [rowSelectionModel]);
+    }, [selectedRows]);
 
-    const handleFileOrDirectoryAction = (params: GridCellParams) => {
-        if (params.field !== "basename") return;
+    useEffect(() => {
+        if (hiddenRowKeys.size === 0) {
+            return;
+        }
+        setHiddenRowKeys(new Set());
+    }, [items]);
 
-        switch (params.row.kind) {
+    const handleSelectAllChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+            setRowSelectionModel(selectableRowIds);
+            return;
+        }
+        setRowSelectionModel([]);
+    };
+
+    const handleNameAction = (row: Row) => {
+        switch (row.kind) {
             case "directory":
-                return onNavigate({ basename: params.row.basename });
+                return onNavigate({ basename: row.basename });
 
             case "file":
-                return onOpenFile({ basename: params.row.basename });
+                return onOpenFile({ basename: row.basename });
         }
     };
 
-    useEffect(() => {
-        //isBucketPolicyFeatureEnabled can change without full rendering
-        apiRef.current.setColumnVisibility("policy", isBucketPolicyFeatureEnabled);
-        apiRef.current.autosizeColumns(listAutosizeOptions);
-    }, [apiRef, isBucketPolicyFeatureEnabled]);
-
     return (
-        <div className={cx(classes.root, className)}>
-            <CustomDataGrid<Row>
-                apiRef={apiRef}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                    pagination: {
-                        paginationModel: { pageSize: 25, page: 0 }
-                    }
-                }}
-                isRowSelectable={(params: GridRowParams<Item>) =>
-                    !(params.row.isBeingDeleted || params.row.isBeingCreated)
-                }
-                onRowSelectionModelChange={setRowSelectionModel}
-                rowSelectionModel={rowSelectionModel}
-                onRowClick={(params, event) => {
-                    if (rowSelectionModel.includes(params.id)) return;
+        <div className={cx(classes.root, className)} role="grid" aria-busy={isNavigating}>
+            {isNavigating && <LinearProgress className={classes.linearProgress} />}
+            <div className={classes.listFrame}>
+                <div className={cx(classes.grid, classes.headerRow)} role="row">
+                    <div
+                        className={cx(classes.cell, classes.checkboxCell)}
+                        role="columnheader"
+                    >
+                        <Checkbox
+                            size="small"
+                            checked={isAllSelected}
+                            indeterminate={isIndeterminate}
+                            disabled={selectableRowIds.length === 0}
+                            onChange={handleSelectAllChange}
+                        />
+                    </div>
+                    <div className={classes.cell} role="columnheader">
+                        <Text typo="caption" className={classes.headerText}>
+                            {t("header name")}
+                        </Text>
+                    </div>
+                    <div
+                        className={cx(classes.cell, classes.dateCell)}
+                        role="columnheader"
+                    >
+                        <Text typo="caption" className={classes.headerText}>
+                            {t("header modified date")}
+                        </Text>
+                    </div>
+                    <div
+                        className={cx(classes.cell, classes.sizeCell)}
+                        role="columnheader"
+                    >
+                        <Text typo="caption" className={classes.headerText}>
+                            {t("header size")}
+                        </Text>
+                    </div>
+                    {isBucketPolicyFeatureEnabled && (
+                        <div
+                            className={cx(classes.cell, classes.policyCell)}
+                            role="columnheader"
+                        >
+                            <Text typo="caption" className={classes.headerText}>
+                                {t("header policy")}
+                            </Text>
+                        </div>
+                    )}
+                </div>
+                <div className={classes.rows} role="rowgroup">
+                    {visibleRows.map(row => {
+                        const isSelected = rowSelectionModel.includes(row.id);
+                        const isSelectable = isRowSelectable(row);
+                        const fileExtension =
+                            row.kind === "directory"
+                                ? "directory"
+                                : (row.basename.split(".").pop() ?? "");
+                        const formattedDate = row.lastModified
+                            ? row.lastModified.toLocaleString()
+                            : "";
+                        const formattedSize =
+                            row.size === undefined
+                                ? ""
+                                : (() => {
+                                      const prettySize = fileSizePrettyPrint({
+                                          bytes: row.size
+                                      });
+                                      return `${prettySize.value} ${prettySize.unit}`;
+                                  })();
 
-                    if (event.metaKey) {
-                        return setRowSelectionModel(prev => [...prev, params.id]);
-                    }
+                        return (
+                            <div
+                                key={row.id}
+                                className={cx(
+                                    classes.grid,
+                                    classes.row,
+                                    isSelected && classes.rowSelected,
+                                    !isSelectable && classes.rowDisabled
+                                )}
+                                role="row"
+                                aria-selected={isSelected}
+                                tabIndex={0}
+                                onClick={event => {
+                                    if (!isSelectable) return;
+                                    if (rowSelectionModel.includes(row.id)) return;
 
-                    setRowSelectionModel([params.id]);
-                }}
-                loading={isNavigating}
-                slotProps={{
-                    loadingOverlay: {
-                        variant: "linear-progress",
-                        noRowsVariant: "linear-progress"
-                    }
-                }}
-                disableRowSelectionOnClick
-                onCellDoubleClick={handleFileOrDirectoryAction}
-                onCellKeyDown={(params, event) => {
-                    if (event.key !== "Enter") return;
-                    handleFileOrDirectoryAction(params);
-                }}
-                autosizeOptions={listAutosizeOptions}
-                checkboxSelection
-                disableColumnMenu
-            />
+                                    if (event.metaKey) {
+                                        setRowSelectionModel(prev =>
+                                            prev.includes(row.id)
+                                                ? prev
+                                                : [...prev, row.id]
+                                        );
+                                        return;
+                                    }
+
+                                    setRowSelectionModel([row.id]);
+                                }}
+                                onKeyDown={event => {
+                                    if (event.key !== "Enter") return;
+                                    if (event.currentTarget !== event.target) return;
+                                    handleNameAction(row);
+                                }}
+                            >
+                                <div className={cx(classes.cell, classes.checkboxCell)}>
+                                    {row.isBeingCreated ? (
+                                        <div
+                                            className={
+                                                classes.circularProgressInnerWrapper
+                                            }
+                                        >
+                                            <CircularProgress size={32} />
+                                            <div className={classes.percentageWrapper}>
+                                                <Text
+                                                    typo="caption"
+                                                    className={classes.textUploadProgress}
+                                                >
+                                                    {row.uploadPercent}%
+                                                </Text>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Checkbox
+                                            size="small"
+                                            checked={isSelected}
+                                            disabled={!isSelectable}
+                                            onClick={event => event.stopPropagation()}
+                                            onChange={event => {
+                                                if (!isSelectable) return;
+                                                const isChecked = event.target.checked;
+                                                setRowSelectionModel(prev => {
+                                                    if (isChecked) {
+                                                        if (prev.includes(row.id))
+                                                            return prev;
+                                                        return [...prev, row.id];
+                                                    }
+                                                    return prev.filter(
+                                                        id => id !== row.id
+                                                    );
+                                                });
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                                <div
+                                    className={cx(classes.cell, classes.basenameCell)}
+                                    onDoubleClick={() => handleNameAction(row)}
+                                >
+                                    <ExplorerIcon
+                                        iconId={getIconIdFromExtension(fileExtension)}
+                                        hasShadow={false}
+                                        className={classes.nameIcon}
+                                    />
+                                    <Link
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            handleNameAction(row);
+                                        }}
+                                        color="inherit"
+                                        underline="none"
+                                        className={classes.nameLink}
+                                        title={row.basename}
+                                    >
+                                        <Text typo="label 2" className={classes.nameText}>
+                                            {row.basename}
+                                        </Text>
+                                    </Link>
+                                </div>
+                                <div className={cx(classes.cell, classes.dateCell)}>
+                                    <Text typo="body 2">{formattedDate}</Text>
+                                </div>
+                                <div className={cx(classes.cell, classes.sizeCell)}>
+                                    <Text typo="body 2">{formattedSize}</Text>
+                                </div>
+                                {isBucketPolicyFeatureEnabled && (
+                                    <div className={cx(classes.cell, classes.policyCell)}>
+                                        <PolicySwitch
+                                            policy={row.policy}
+                                            changePolicy={event => {
+                                                switch (row.policy) {
+                                                    case "public":
+                                                        onPolicyChange({
+                                                            basename: row.basename,
+                                                            policy: "private",
+                                                            kind: row.kind
+                                                        });
+                                                        break;
+                                                    case "private":
+                                                        onPolicyChange({
+                                                            basename: row.basename,
+                                                            policy: "public",
+                                                            kind: row.kind
+                                                        });
+                                                        break;
+                                                }
+                                                event.stopPropagation();
+                                            }}
+                                            isPolicyChanging={row.isPolicyChanging}
+                                            disabled={!row.canChangePolicy}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
         </div>
     );
 });
@@ -361,38 +439,162 @@ const { i18n } = declareComponentKeys<
 >()({ ListExplorerItems });
 export type I18n = typeof i18n;
 
-const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
-    root: {
-        borderRadius: theme.spacing(1),
-        boxShadow: theme.shadows[1],
-        height: "100%"
-    },
-    nameIcon: {
-        width: "30px",
-        height: "30px",
-        marginRight: theme.spacing(2),
-        flexShrink: 0
-    },
-    circularProgressInnerWrapper: {
-        position: "relative",
-        display: "inline-flex"
-    },
-    basenameCell: {
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center"
-    },
-    percentageWrapper: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    textUploadProgress: {
-        fontSize: theme.typography.rootFontSizePx * 0.6
-    }
-}));
+const useStyles = tss
+    .withName({ ListExplorerItems })
+    .withParams<{ hasPolicy: boolean }>()
+    .create(({ theme, hasPolicy }) => {
+        const px = (value: number) => `${value}px`;
+        const baseUnit = theme.typography.rootFontSizePx;
+        const gridTemplateColumns = hasPolicy
+            ? `${px(baseUnit * 2.5)} minmax(${px(
+                  baseUnit * 12
+              )}, 1fr) ${px(baseUnit * 11)} ${px(baseUnit * 6)} ${px(baseUnit * 6)}`
+            : `${px(baseUnit * 2.5)} minmax(${px(
+                  baseUnit * 12
+              )}, 1fr) ${px(baseUnit * 11)} ${px(baseUnit * 6)}`;
+
+        return {
+            root: {
+                backgroundColor: "transparent",
+                position: "relative",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                minWidth: 0,
+                width: "100%",
+                boxSizing: "border-box"
+            },
+            listFrame: {
+                borderRadius: theme.spacing(2),
+                boxShadow: theme.shadows[1],
+                border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                maxHeight: "100%",
+                minHeight: 0,
+                width: "100%",
+                boxSizing: "border-box"
+            },
+            grid: {
+                display: "grid",
+                gridTemplateColumns,
+                columnGap: theme.spacing(2),
+                alignItems: "center",
+                minWidth: 0
+            },
+            headerRow: {
+                padding: theme.spacing({ topBottom: 1.5, rightLeft: 2 }),
+                borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
+                borderTopLeftRadius: theme.spacing(2),
+                borderTopRightRadius: theme.spacing(2)
+            },
+            headerText: {
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                color: theme.colors.useCases.typography.textSecondary,
+                fontWeight: 600
+            },
+            rows: {
+                display: "flex",
+                flexDirection: "column",
+                flex: "1 1 auto",
+                minHeight: 0,
+                overflowY: "auto",
+                overflowX: "hidden"
+            },
+            row: {
+                padding: theme.spacing({ topBottom: 1.25, rightLeft: 2 }),
+                borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+                backgroundColor: theme.colors.useCases.surfaces.surface1,
+                cursor: "pointer",
+                transition: "background-color 120ms ease",
+                "&:hover": {
+                    backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.6)
+                }
+            },
+            rowSelected: {
+                backgroundColor: alpha(theme.colors.useCases.typography.textFocus, 0.12),
+                boxShadow: `inset 0 0 0 1px ${alpha(
+                    theme.colors.useCases.typography.textFocus,
+                    0.35
+                )}`,
+                "&:hover": {
+                    backgroundColor: alpha(
+                        theme.colors.useCases.typography.textFocus,
+                        0.16
+                    )
+                }
+            },
+            rowDisabled: {
+                opacity: 0.6,
+                cursor: "default",
+                "&:hover": {
+                    backgroundColor: "transparent"
+                }
+            },
+            cell: {
+                display: "flex",
+                alignItems: "center",
+                minWidth: 0
+            },
+            checkboxCell: {
+                justifyContent: "center"
+            },
+            basenameCell: {
+                gap: theme.spacing(1.5),
+                minWidth: 0
+            },
+            nameIcon: {
+                width: "24px",
+                height: "24px",
+                flexShrink: 0
+            },
+            nameLink: {
+                minWidth: 0,
+                flex: 1,
+                display: "block"
+            },
+            nameText: {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+            },
+            dateCell: {
+                color: theme.colors.useCases.typography.textSecondary,
+                fontVariantNumeric: "tabular-nums"
+            },
+            sizeCell: {
+                justifyContent: "flex-end",
+                color: theme.colors.useCases.typography.textSecondary,
+                fontVariantNumeric: "tabular-nums"
+            },
+            policyCell: {
+                justifyContent: "center"
+            },
+            circularProgressInnerWrapper: {
+                position: "relative",
+                display: "inline-flex"
+            },
+            percentageWrapper: {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+            },
+            textUploadProgress: {
+                fontSize: theme.typography.rootFontSizePx * 0.6
+            },
+            linearProgress: {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0
+            }
+        };
+    });
