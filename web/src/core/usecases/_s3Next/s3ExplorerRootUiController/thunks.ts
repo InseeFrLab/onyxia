@@ -49,12 +49,15 @@ export const thunks = {
                 return { routeParams_toSet: routeParams };
             }
 
-            const wrap = await dispatch(
-                s3ProfilesManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-            );
+            const { s3Profile } =
+                (await dispatch(
+                    s3ProfilesManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                )) ?? {};
+
+            console.log(s3Profile);
 
             const routeParams_toSet: RouteParams = {
-                profile: wrap === undefined ? undefined : wrap.s3Profile.id,
+                profile: s3Profile === undefined ? undefined : s3Profile.id,
                 path: ""
             };
 
