@@ -7,37 +7,34 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 
 export const thunks = {
     initialize:
-        (params: { creationTimeOfS3ProfileToEdit: number | undefined }) =>
+        (params: {
+            // NOTE: Undefined for creation
+            profileName_toUpdate: string | undefined;
+        }) =>
         async (...args) => {
-            const { creationTimeOfS3ProfileToEdit } = params;
+            const { profileName_toUpdate } = params;
 
             const [dispatch, getState] = args;
 
             const s3Profiles = s3ProfilesManagement.selectors.s3Profiles(getState());
 
             update_existing_config: {
-                if (creationTimeOfS3ProfileToEdit === undefined) {
+                if (profileName_toUpdate === undefined) {
                     break update_existing_config;
                 }
 
-                const s3Profile = s3Profiles
-                    .filter(
-                        s3Profile =>
-                            s3Profile.origin ===
-                            "created by user (or group project member)"
-                    )
-                    .find(
-                        s3Profile =>
-                            s3Profile.creationTime === creationTimeOfS3ProfileToEdit
-                    );
+                const s3Profile = s3Profiles.find(
+                    s3Profile => s3Profile.profileName === profileName_toUpdate
+                );
 
                 assert(s3Profile !== undefined);
+                assert(s3Profile.origin === "created by user (or group project member)");
 
                 dispatch(
                     actions.initialized({
-                        creationTimeOfS3ProfileToEdit,
+                        creationTimeOfProfileToEdit: s3Profile.creationTime,
                         initialFormValues: {
-                            friendlyName: s3Profile.friendlyName,
+                            profileName: s3Profile.profileName,
                             url: s3Profile.paramsOfCreateS3Client.url,
                             region: s3Profile.paramsOfCreateS3Client.region,
                             pathStyleAccess:
@@ -83,9 +80,9 @@ export const thunks = {
             if (s3Profiles_defaultValuesOfCreationForm === undefined) {
                 dispatch(
                     actions.initialized({
-                        creationTimeOfS3ProfileToEdit: undefined,
+                        creationTimeOfProfileToEdit: undefined,
                         initialFormValues: {
-                            friendlyName: "",
+                            profileName: "",
                             url: "",
                             region: undefined,
                             pathStyleAccess: false,
@@ -101,9 +98,9 @@ export const thunks = {
 
             dispatch(
                 actions.initialized({
-                    creationTimeOfS3ProfileToEdit: undefined,
+                    creationTimeOfProfileToEdit: undefined,
                     initialFormValues: {
-                        friendlyName: "",
+                        profileName: "",
                         url: s3Profiles_defaultValuesOfCreationForm.url,
                         region: s3Profiles_defaultValuesOfCreationForm.region,
                         pathStyleAccess:

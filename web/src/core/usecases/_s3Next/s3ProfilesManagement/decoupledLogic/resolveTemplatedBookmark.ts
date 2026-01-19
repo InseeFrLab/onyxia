@@ -10,7 +10,7 @@ export type ResolvedTemplateBookmark = {
     description: LocalizedString | undefined;
     tags: LocalizedString[];
     s3UriPrefixObj: S3UriPrefixObj;
-    forStsRoleSessionNames: string[];
+    forProfileNames: string[];
 };
 
 export async function resolveTemplatedBookmark(params: {
@@ -29,7 +29,7 @@ export async function resolveTemplatedBookmark(params: {
                 title: bookmark_region.title,
                 description: bookmark_region.description,
                 tags: bookmark_region.tags,
-                forStsRoleSessionNames: bookmark_region.forStsRoleSessionNames
+                forProfileNames: bookmark_region.forProfileNames
             })
         ];
     }
@@ -130,8 +130,8 @@ export async function resolveTemplatedBookmark(params: {
                         ? undefined
                         : substituteLocalizedString(bookmark_region.description),
                 tags: bookmark_region.tags.map(tag => substituteLocalizedString(tag)),
-                forStsRoleSessionNames: bookmark_region.forStsRoleSessionNames.map(
-                    stsRoleSessionName => substituteTemplateString(stsRoleSessionName)
+                forProfileNames: bookmark_region.forProfileNames.map(profileName =>
+                    substituteTemplateString(profileName)
                 )
             });
         })

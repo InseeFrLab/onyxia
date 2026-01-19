@@ -83,6 +83,7 @@ export type ApiTypes = {
             };
             data?: {
                 S3?: ArrayOrNot<{
+                    profileName?: string;
                     URL: string;
                     pathStyleAccess?: true;
 
@@ -94,6 +95,7 @@ export type ApiTypes = {
                             {
                                 roleARN: string;
                                 roleSessionName: string;
+                                profileName: string;
                             } & (
                                 | { claimName?: undefined }
                                 | {
@@ -125,7 +127,7 @@ export type ApiTypes = {
                         title: LocalizedString;
                         description?: LocalizedString;
                         tags?: LocalizedString[];
-                        forStsRoleSessionName?: string | string[];
+                        forProfileName?: string | string[];
                     } & (
                         | { claimName?: undefined }
                         | {

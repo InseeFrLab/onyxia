@@ -157,7 +157,7 @@ export async function bootstrapCore(
                 }
 
                 const result = await dispatch(
-                    usecases.s3ProfilesManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                    usecases.s3ProfilesManagement.protectedThunks.getS3ProfileAndClientForExplorer()
                 );
 
                 if (result === undefined) {
