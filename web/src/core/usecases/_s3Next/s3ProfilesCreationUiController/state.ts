@@ -12,13 +12,12 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         formValues: Ready.FormValues;
-        s3ProfileCreationTime: number;
-        action: "Update existing S3 profile" | "Create new S3 profile";
+        creationTimeOfProfileToEdit: number | undefined;
     };
 
     export namespace Ready {
         export type FormValues = {
-            friendlyName: string;
+            profileName: string;
             url: string;
             region: string | undefined;
             pathStyleAccess: boolean;
@@ -53,21 +52,17 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    creationTimeOfS3ProfileToEdit: number | undefined;
+                    creationTimeOfProfileToEdit: number | undefined;
                     initialFormValues: State.Ready["formValues"];
                 };
             }
         ) => {
-            const { creationTimeOfS3ProfileToEdit, initialFormValues } = payload;
+            const { creationTimeOfProfileToEdit, initialFormValues } = payload;
 
             return id<State.Ready>({
                 stateDescription: "ready",
                 formValues: initialFormValues,
-                s3ProfileCreationTime: creationTimeOfS3ProfileToEdit ?? Date.now(),
-                action:
-                    creationTimeOfS3ProfileToEdit === undefined
-                        ? "Create new S3 profile"
-                        : "Update existing S3 profile"
+                creationTimeOfProfileToEdit
             });
         },
         formValueChanged: (

@@ -6,6 +6,7 @@ import { getValueAtPath } from "core/tools/Stringifyable";
 export type ResolvedTemplateStsRole = {
     roleARN: string;
     roleSessionName: string;
+    profileName: string;
 };
 
 export async function resolveTemplatedStsRole(params: {
@@ -18,7 +19,8 @@ export async function resolveTemplatedStsRole(params: {
         return [
             id<ResolvedTemplateStsRole>({
                 roleARN: stsRole_region.roleARN,
-                roleSessionName: stsRole_region.roleSessionName
+                roleSessionName: stsRole_region.roleSessionName,
+                profileName: stsRole_region.profileName
             })
         ];
     }
@@ -97,7 +99,8 @@ export async function resolveTemplatedStsRole(params: {
 
             return id<ResolvedTemplateStsRole>({
                 roleARN: substituteTemplateString(stsRole_region.roleARN),
-                roleSessionName: substituteTemplateString(stsRole_region.roleSessionName)
+                roleSessionName: substituteTemplateString(stsRole_region.roleSessionName),
+                profileName: substituteTemplateString(stsRole_region.profileName)
             });
         })
         .filter(x => x !== undefined);

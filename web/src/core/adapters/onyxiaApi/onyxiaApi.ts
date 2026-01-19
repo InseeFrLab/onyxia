@@ -377,6 +377,7 @@ export function createOnyxiaApi(params: {
                                                 s3Config_api
                                             ): DeploymentRegion.S3Next.S3Profile => {
                                                 return {
+                                                    profileName: s3Config_api.profileName,
                                                     url: s3Config_api.URL,
                                                     pathStyleAccess:
                                                         s3Config_api.pathStyleAccess ??
@@ -413,6 +414,8 @@ export function createOnyxiaApi(params: {
                                                                             role_api.roleARN,
                                                                         roleSessionName:
                                                                             role_api.roleSessionName,
+                                                                        profileName:
+                                                                            role_api.profileName,
                                                                         ...(role_api.claimName ===
                                                                         undefined
                                                                             ? {
@@ -462,10 +465,10 @@ export function createOnyxiaApi(params: {
                                                                     tags:
                                                                         bookmarkedDirectory_api.tags ??
                                                                         [],
-                                                                    forStsRoleSessionNames:
+                                                                    forProfileNames:
                                                                         (() => {
                                                                             const v =
-                                                                                bookmarkedDirectory_api.forStsRoleSessionName;
+                                                                                bookmarkedDirectory_api.forProfileName;
 
                                                                             if (
                                                                                 v ===

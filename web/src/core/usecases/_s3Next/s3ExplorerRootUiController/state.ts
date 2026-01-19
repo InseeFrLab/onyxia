@@ -44,11 +44,11 @@ export const { actions, reducer } = createUsecaseActions({
         },
         selectedS3ProfileUpdated: (
             state,
-            { payload }: { payload: { s3ProfileId: string } }
+            { payload }: { payload: { profileName: string } }
         ) => {
-            const { s3ProfileId } = payload;
+            const { profileName } = payload;
 
-            state.routeParams.profile = s3ProfileId;
+            state.routeParams.profile = profileName;
             state.routeParams.path = "";
         }
     }
