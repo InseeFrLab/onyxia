@@ -18,10 +18,9 @@ export const protectedSelectors = {
 };
 
 export type View = {
-    selectedS3ProfileId: string | undefined;
-    selectedS3Profile_creationTime: number | undefined;
+    selectedProfileName: string | undefined;
     availableS3Profiles: {
-        id: string;
+        profileName: string;
         displayName: string;
     }[];
     bookmarks: {
@@ -48,8 +47,7 @@ const view = createSelector(
 
         if (routeParams.profile === undefined) {
             return {
-                selectedS3ProfileId: undefined,
-                selectedS3Profile_creationTime: undefined,
+                selectedProfileName: undefined,
                 availableS3Profiles: [],
                 bookmarks: [],
                 s3UriPrefixObj: undefined,
@@ -59,10 +57,10 @@ const view = createSelector(
             };
         }
 
-        const selectedS3ProfileId = routeParams.profile;
+        const profileName = routeParams.profile;
 
         const s3Profile = s3Profiles.find(
-            s3Profile => s3Profile.id === selectedS3ProfileId
+            s3Profile => s3Profile.profileName === profileName
         );
 
         // NOTE: We enforce this invariant while loading the route
@@ -77,13 +75,9 @@ const view = createSelector(
                   });
 
         return {
-            selectedS3ProfileId,
-            selectedS3Profile_creationTime:
-                s3Profile.origin !== "created by user (or group project member)"
-                    ? undefined
-                    : s3Profile.creationTime,
+            selectedProfileName: profileName,
             availableS3Profiles: s3Profiles.map(s3Profile => ({
-                id: s3Profile.id,
+                profileName: s3Profile.profileName,
                 displayName: s3Profile.paramsOfCreateS3Client.url
             })),
             bookmarks: s3Profile.bookmarks,

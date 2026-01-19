@@ -3,13 +3,13 @@ import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
 import { aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet } from "./s3Profiles";
 
 type R = Record<
-    "s3ConfigId_defaultXOnyxia" | "s3ConfigId_explorer",
+    "profileName_defaultXOnyxia" | "profileName_explorer",
     | {
           isUpdateNeeded: false;
       }
     | {
           isUpdateNeeded: true;
-          s3ProfileId: string | undefined;
+          profileName: string | undefined;
       }
 >;
 
@@ -34,35 +34,47 @@ export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
     });
 
     const actions: R = {
-        s3ConfigId_defaultXOnyxia: {
+        profileName_defaultXOnyxia: {
             isUpdateNeeded: false
         },
-        s3ConfigId_explorer: {
+        profileName_explorer: {
             isUpdateNeeded: false
         }
     };
 
     for (const propertyName of [
-        "s3ConfigId_defaultXOnyxia",
-        "s3ConfigId_explorer"
+        "s3ConfigId_defaultXOnyxia", // TODO: Rename
+        "s3ConfigId_explorer" // TODO: Rename
     ] as const) {
-        const s3ConfigId_default = fromVault.projectConfigs_s3[propertyName];
+        const profileName_default = fromVault.projectConfigs_s3[propertyName];
 
-        if (s3ConfigId_default === undefined) {
+        if (profileName_default === undefined) {
             continue;
         }
 
-        if (s3Profiles.find(({ id }) => id === s3ConfigId_default) !== undefined) {
+        if (
+            s3Profiles.find(({ profileName }) => profileName === profileName_default) !==
+            undefined
+        ) {
             continue;
         }
 
-        const s3ConfigId_toUseAsDefault = s3Profiles.find(
+        const profileName_newDefault = s3Profiles.find(
             ({ origin }) => origin === "defined in region"
-        )?.id;
+        )?.profileName;
 
-        actions[propertyName] = {
+        actions[
+            (() => {
+                switch (propertyName) {
+                    case "s3ConfigId_defaultXOnyxia":
+                        return "profileName_defaultXOnyxia";
+                    case "s3ConfigId_explorer":
+                        return "profileName_explorer";
+                }
+            })()
+        ] = {
             isUpdateNeeded: true,
-            s3ProfileId: s3ConfigId_toUseAsDefault
+            profileName: profileName_newDefault
         };
     }
 

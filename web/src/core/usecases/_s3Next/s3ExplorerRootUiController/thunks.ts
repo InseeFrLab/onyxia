@@ -16,15 +16,16 @@ export const thunks = {
             const { routeParams } = params;
 
             if (routeParams.profile !== undefined) {
-                const s3ProfileId = routeParams.profile;
+                const profileName = routeParams.profile;
 
                 {
                     const s3Profiles =
                         s3ProfilesManagement.selectors.s3Profiles(getState());
 
                     if (
-                        s3Profiles.find(s3Profile => s3Profile.id === s3ProfileId) ===
-                        undefined
+                        s3Profiles.find(
+                            s3Profile => s3Profile.profileName === profileName
+                        ) === undefined
                     ) {
                         return dispatch(thunks.load({ routeParams: { path: "" } }));
                     }
@@ -32,7 +33,7 @@ export const thunks = {
 
                 await dispatch(
                     s3ProfilesManagement.protectedThunks.changeIsDefault({
-                        s3ProfileId,
+                        profileName,
                         usecase: "explorer",
                         value: true
                     })
@@ -51,13 +52,13 @@ export const thunks = {
 
             const { s3Profile } =
                 (await dispatch(
-                    s3ProfilesManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                    s3ProfilesManagement.protectedThunks.getS3ProfileAndClientForExplorer()
                 )) ?? {};
 
             console.log(s3Profile);
 
             const routeParams_toSet: RouteParams = {
-                profile: s3Profile === undefined ? undefined : s3Profile.id,
+                profile: s3Profile === undefined ? undefined : s3Profile.profileName,
                 path: ""
             };
 
@@ -90,15 +91,15 @@ export const thunks = {
             dispatch(actions.s3UrlUpdated({ s3UriPrefixObj }));
         },
     updateSelectedS3Profile:
-        (params: { s3ProfileId: string }) =>
+        (params: { profileName: string }) =>
         async (...args) => {
             const [dispatch] = args;
 
-            const { s3ProfileId } = params;
+            const { profileName } = params;
 
             await dispatch(
                 s3ProfilesManagement.protectedThunks.changeIsDefault({
-                    s3ProfileId,
+                    profileName,
                     usecase: "explorer",
                     value: true
                 })
@@ -106,7 +107,7 @@ export const thunks = {
 
             dispatch(
                 actions.selectedS3ProfileUpdated({
-                    s3ProfileId
+                    profileName
                 })
             );
         },
@@ -123,15 +124,15 @@ export const thunks = {
 
                 const [dispatch, getState] = args;
 
-                const { selectedS3ProfileId, s3UriPrefixObj, bookmarkStatus } =
+                const { selectedProfileName, s3UriPrefixObj, bookmarkStatus } =
                     selectors.view(getState());
 
-                assert(selectedS3ProfileId !== undefined);
+                assert(selectedProfileName !== undefined);
                 assert(s3UriPrefixObj !== undefined);
 
                 await dispatch(
                     s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
-                        s3ProfileId: selectedS3ProfileId,
+                        profileName: selectedProfileName,
                         s3UriPrefixObj,
                         action: bookmarkStatus.isBookmarked
                             ? {

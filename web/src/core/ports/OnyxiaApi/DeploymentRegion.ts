@@ -174,6 +174,7 @@ export namespace DeploymentRegion {
     export namespace S3Next {
         /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */
         export type S3Profile = {
+            profileName: string | undefined;
             url: string;
             pathStyleAccess: boolean;
             region: string | undefined;
@@ -190,6 +191,7 @@ export namespace DeploymentRegion {
             export type StsRole = {
                 roleARN: string;
                 roleSessionName: string;
+                profileName: string;
             } & (
                 | {
                       claimName: undefined;
@@ -208,7 +210,7 @@ export namespace DeploymentRegion {
                 title: LocalizedString;
                 description: LocalizedString | undefined;
                 tags: LocalizedString[];
-                forStsRoleSessionNames: string[];
+                forProfileNames: string[];
             } & (
                 | {
                       claimName: undefined;

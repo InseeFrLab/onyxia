@@ -13,7 +13,9 @@ export type ProjectConfigs = {
     restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
     s3: {
         s3Configs: ProjectConfigs.S3Config[];
+        // TODO: Rename to profileName_defaultXOnyxia
         s3ConfigId_defaultXOnyxia: string | undefined;
+        // TODO: Rename to profileName_explorer
         s3ConfigId_explorer: string | undefined;
     };
     clusterNotificationCheckoutTime: number;
@@ -22,6 +24,7 @@ export type ProjectConfigs = {
 export namespace ProjectConfigs {
     export type S3Config = {
         creationTime: number;
+        // TODO: Rename this to profileName
         friendlyName: string;
         url: string;
         region: string | undefined;

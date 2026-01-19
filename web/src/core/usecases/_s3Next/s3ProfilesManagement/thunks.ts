@@ -3,7 +3,6 @@ import { selectors, protectedSelectors } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
 import { assert } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
-import { createUsecaseContextApi } from "clean-architecture";
 import { updateDefaultS3ProfilesAfterPotentialDeletion } from "./decoupledLogic/updateDefaultS3ProfilesAfterPotentialDeletion";
 import structuredClone from "@ungap/structured-clone";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
@@ -22,10 +21,10 @@ import {
 import * as userConfigs from "core/usecases/userConfigs";
 
 export const thunks = {
-    deleteS3Config:
-        (params: { s3ProfileCreationTime: number }) =>
+    deleteS3Profile:
+        (params: { profileName: string }) =>
         async (...args) => {
-            const { s3ProfileCreationTime } = params;
+            const { profileName } = params;
 
             const [dispatch, getState] = args;
 
@@ -34,7 +33,7 @@ export const thunks = {
             );
 
             const i = projectConfigs_s3.s3Configs.findIndex(
-                ({ creationTime }) => creationTime === s3ProfileCreationTime
+                s3Profile => s3Profile.friendlyName === profileName
             );
 
             assert(i !== -1);
@@ -54,19 +53,27 @@ export const thunks = {
                     }
                 });
 
-                await Promise.all(
-                    (["s3ConfigId_defaultXOnyxia", "s3ConfigId_explorer"] as const).map(
-                        async propertyName => {
-                            const action = actions[propertyName];
+                for (const propertyName of [
+                    "profileName_defaultXOnyxia",
+                    "profileName_explorer"
+                ] as const) {
+                    const action = actions[propertyName];
 
-                            if (!action.isUpdateNeeded) {
-                                return;
+                    if (!action.isUpdateNeeded) {
+                        continue;
+                    }
+
+                    projectConfigs_s3[
+                        (() => {
+                            switch (propertyName) {
+                                case "profileName_defaultXOnyxia":
+                                    return "s3ConfigId_defaultXOnyxia";
+                                case "profileName_explorer":
+                                    return "s3ConfigId_explorer";
                             }
-
-                            projectConfigs_s3[propertyName] = action.s3ProfileId;
-                        }
-                    )
-                );
+                        })()
+                    ] = action.profileName;
+                }
             }
 
             await dispatch(
@@ -78,21 +85,22 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-export const protectedThunks = {
-    getS3ClientForSpecificConfig:
-        (params: { s3ProfileId: string | undefined }) =>
-        async (...args): Promise<S3Client> => {
-            const { s3ProfileId } = params;
-            const [, getState, rootContext] = args;
+const globalContext = {
+    prS3ClientByProfileName: new Map<string, Promise<S3Client>>()
+};
 
-            const { prS3ClientByConfigId: prS3ClientByProfileId } =
-                getContext(rootContext);
+export const protectedThunks = {
+    getS3Client:
+        (params: { profileName: string }) =>
+        async (...args): Promise<S3Client> => {
+            const { profileName } = params;
+            const [, getState, rootContext] = args;
 
             const s3Profile = (() => {
                 const s3Profiles = selectors.s3Profiles(getState());
 
                 const s3Config = s3Profiles.find(
-                    s3Profile => s3Profile.id === s3ProfileId
+                    s3Profile => s3Profile.profileName === profileName
                 );
                 assert(s3Config !== undefined);
 
@@ -100,7 +108,9 @@ export const protectedThunks = {
             })();
 
             use_cached_s3Client: {
-                const prS3Client = prS3ClientByProfileId.get(s3Profile.id);
+                const prS3Client = globalContext.prS3ClientByProfileName.get(
+                    s3Profile.profileName
+                );
 
                 if (prS3Client === undefined) {
                     break use_cached_s3Client;
@@ -189,11 +199,11 @@ export const protectedThunks = {
                 );
             })();
 
-            prS3ClientByProfileId.set(s3Profile.id, prS3Client);
+            globalContext.prS3ClientByProfileName.set(s3Profile.profileName, prS3Client);
 
             return prS3Client;
         },
-    getS3ConfigAndClientForExplorer:
+    getS3ProfileAndClientForExplorer:
         () =>
         async (
             ...args
@@ -209,8 +219,8 @@ export const protectedThunks = {
             }
 
             const s3Client = await dispatch(
-                protectedThunks.getS3ClientForSpecificConfig({
-                    s3ProfileId: s3Profile.id
+                protectedThunks.getS3Client({
+                    profileName: s3Profile.profileName
                 })
             );
 
@@ -219,7 +229,7 @@ export const protectedThunks = {
     createOrUpdateS3Profile:
         (params: { s3Config_vault: projectManagement.ProjectConfigs.S3Config }) =>
         async (...args) => {
-            const { s3Config_vault: s3Config_vault } = params;
+            const { s3Config_vault } = params;
 
             const [dispatch, getState] = args;
 
@@ -231,6 +241,27 @@ export const protectedThunks = {
                 projectS3Config_i =>
                     projectS3Config_i.creationTime === s3Config_vault.creationTime
             );
+
+            update_default_selected: {
+                if (i === -1) {
+                    break update_default_selected;
+                }
+
+                const s3Config_vault_current = fromVault.s3Configs[i];
+
+                if (s3Config_vault.friendlyName === s3Config_vault.friendlyName) {
+                    break update_default_selected;
+                }
+
+                for (const propertyName of [
+                    "s3ConfigId_defaultXOnyxia",
+                    "s3ConfigId_explorer"
+                ] as const) {
+                    if (fromVault[propertyName] === s3Config_vault_current.friendlyName) {
+                        fromVault[propertyName] = s3Config_vault.friendlyName;
+                    }
+                }
+            }
 
             if (i < 0) {
                 fromVault.s3Configs.push(s3Config_vault);
@@ -247,7 +278,7 @@ export const protectedThunks = {
         },
     createDeleteOrUpdateBookmark:
         (params: {
-            s3ProfileId: string;
+            profileName: string;
             s3UriPrefixObj: S3UriPrefixObj;
             action:
                 | {
@@ -259,13 +290,15 @@ export const protectedThunks = {
                   };
         }) =>
         async (...args) => {
-            const { s3ProfileId, s3UriPrefixObj, action } = params;
+            const { profileName, s3UriPrefixObj, action } = params;
 
             const [dispatch, getState] = args;
 
             const s3Profiles = selectors.s3Profiles(getState());
 
-            const s3Profile = s3Profiles.find(s3Profile => s3Profile.id === s3ProfileId);
+            const s3Profile = s3Profiles.find(
+                s3Profile => s3Profile.profileName === profileName
+            );
 
             assert(s3Profile !== undefined);
 
@@ -332,7 +365,7 @@ export const protectedThunks = {
 
                         const index = userConfigs_s3Bookmarks.findIndex(
                             entry =>
-                                entry.s3ProfileId === s3Profile.id &&
+                                entry.profileName === s3Profile.profileName &&
                                 same(entry.s3UriPrefixObj, s3UriPrefixObj)
                         );
 
@@ -340,8 +373,8 @@ export const protectedThunks = {
                             case "create or update":
                                 {
                                     const bookmark_new = {
-                                        s3ProfileId: s3Profile.id,
-                                        displayName: action.displayName,
+                                        profileName: s3Profile.profileName,
+                                        displayName: action.displayName ?? null,
                                         s3UriPrefixObj
                                     };
 
@@ -375,12 +408,12 @@ export const protectedThunks = {
         },
     changeIsDefault:
         (params: {
-            s3ProfileId: string;
+            profileName: string;
             usecase: "defaultXOnyxia" | "explorer";
             value: boolean;
         }) =>
         async (...args) => {
-            const { s3ProfileId, usecase, value } = params;
+            const { profileName, usecase, value } = params;
 
             const [dispatch, getState] = args;
 
@@ -401,17 +434,17 @@ export const protectedThunks = {
                 const s3ProfileId_currentDefault = fromVault[propertyName];
 
                 if (value) {
-                    if (s3ProfileId_currentDefault === s3ProfileId) {
+                    if (s3ProfileId_currentDefault === profileName) {
                         return;
                     }
                 } else {
-                    if (s3ProfileId_currentDefault !== s3ProfileId) {
+                    if (s3ProfileId_currentDefault !== profileName) {
                         return;
                     }
                 }
             }
 
-            fromVault[propertyName] = value ? s3ProfileId : undefined;
+            fromVault[propertyName] = value ? profileName : undefined;
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
@@ -516,7 +549,3 @@ export const protectedThunks = {
             );
         }
 } satisfies Thunks;
-
-const { getContext } = createUsecaseContextApi(() => ({
-    prS3ClientByConfigId: new Map<string, Promise<S3Client>>()
-}));

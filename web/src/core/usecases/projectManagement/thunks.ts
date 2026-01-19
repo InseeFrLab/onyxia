@@ -147,8 +147,8 @@ export const thunks = {
                 let needUpdate = false;
 
                 for (const propertyName of [
-                    "s3ConfigId_defaultXOnyxia",
-                    "s3ConfigId_explorer"
+                    "profileName_defaultXOnyxia",
+                    "profileName_explorer"
                 ] as const) {
                     const action = actions[propertyName];
 
@@ -158,7 +158,16 @@ export const thunks = {
 
                     needUpdate = true;
 
-                    projectConfigs.s3[propertyName] = action.s3ProfileId;
+                    projectConfigs.s3[
+                        (() => {
+                            switch (propertyName) {
+                                case "profileName_defaultXOnyxia":
+                                    return "s3ConfigId_defaultXOnyxia";
+                                case "profileName_explorer":
+                                    return "s3ConfigId_explorer";
+                            }
+                        })()
+                    ] = action.profileName;
                 }
 
                 if (!needUpdate) {
