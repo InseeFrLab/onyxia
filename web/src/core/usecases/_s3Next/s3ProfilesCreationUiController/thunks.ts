@@ -134,7 +134,10 @@ export const thunks = {
 
             await dispatch(
                 s3ProfilesManagement.protectedThunks.createOrUpdateS3Profile({
-                    s3Config_vault
+                    s3Config_vault: {
+                        ...s3Config_vault,
+                        creationTime: s3Config_vault.creationTime ?? Date.now()
+                    }
                 })
             );
 
