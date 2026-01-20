@@ -83,7 +83,6 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     paramsOfCreateS3Client,
                     isXOnyxiaDefault: false,
                     isExplorerConfig: false,
-                    // TODO: Actually store custom bookmarks
                     bookmarks: (c.bookmarks ?? []).map(
                         ({ displayName, s3UriPrefixObj }) => ({
                             displayName,
