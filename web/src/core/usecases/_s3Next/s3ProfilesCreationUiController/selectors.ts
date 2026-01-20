@@ -7,6 +7,7 @@ import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as projectManagement from "core/usecases/projectManagement";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -180,14 +181,16 @@ const submittableFormValuesAsProjectS3Config = createSelector(
         if (state === null) {
             return null;
         }
-        return state.s3ProfileCreationTime;
+        return state.creationTimeOfProfileToEdit;
     }),
+    projectManagement.protectedSelectors.projectConfig,
     (
         isReady,
         formValues,
         formattedFormValuesUrl,
         isFormSubmittable,
-        s3ProfileCreationTime
+        creationTimeOfProfileToEdit,
+        projectConfig
     ) => {
         if (!isReady) {
             return null;
@@ -195,7 +198,7 @@ const submittableFormValuesAsProjectS3Config = createSelector(
         assert(formValues !== null);
         assert(formattedFormValuesUrl !== null);
         assert(isFormSubmittable !== null);
-        assert(s3ProfileCreationTime !== null);
+        assert(creationTimeOfProfileToEdit !== null);
 
         if (!isFormSubmittable) {
             return undefined;
@@ -203,9 +206,30 @@ const submittableFormValuesAsProjectS3Config = createSelector(
 
         assert(formattedFormValuesUrl !== undefined);
 
-        return id<ProjectConfigs.S3Config>({
-            creationTime: s3ProfileCreationTime,
-            friendlyName: formValues.friendlyName.trim(),
+        const projectS3Config_current = (() => {
+            if (creationTimeOfProfileToEdit === undefined) {
+                return undefined;
+            }
+
+            const projectS3Config_current = projectConfig.s3.s3Configs.find(
+                s3Config => s3Config.creationTime === creationTimeOfProfileToEdit
+            );
+
+            assert(projectS3Config_current !== undefined);
+
+            return projectS3Config_current;
+        })();
+
+        return id<
+            Omit<ProjectConfigs.S3Config, "creationTime"> & {
+                creationTime: number | undefined;
+            }
+        >({
+            creationTime:
+                projectS3Config_current === undefined
+                    ? undefined
+                    : projectS3Config_current.creationTime,
+            friendlyName: formValues.profileName.trim(),
             url: formattedFormValuesUrl,
             region: formValues.region?.trim(),
             pathStyleAccess: formValues.pathStyleAccess,
@@ -224,8 +248,14 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                 };
             })(),
             // TODO: Delete once we move on
-            workingDirectoryPath: "mybucket/my/prefix/",
-            bookmarks: []
+            workingDirectoryPath:
+                projectS3Config_current === undefined
+                    ? "mybucket/my/prefix/"
+                    : projectS3Config_current.workingDirectoryPath,
+            bookmarks:
+                projectS3Config_current === undefined
+                    ? []
+                    : projectS3Config_current.bookmarks
         });
     }
 );
@@ -285,20 +315,18 @@ const urlStylesExamples = createSelector(
     }
 );
 
-const isEditionOfAnExistingConfig = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-    return state.action === "Update existing S3 profile";
-});
-
 const main = createSelector(
     isReady,
     formValues,
     formValuesErrors,
     isFormSubmittable,
     urlStylesExamples,
-    isEditionOfAnExistingConfig,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.creationTimeOfProfileToEdit !== undefined;
+    }),
     (
         isReady,
         formValues,
