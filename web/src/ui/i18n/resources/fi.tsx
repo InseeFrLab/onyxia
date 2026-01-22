@@ -482,6 +482,60 @@ export const translations: Translations<"fi"> = {
         "can't be empty": "Ei voi olla tyhjä",
         "new directory": "Uusi hakemisto"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Uusi mukautettu S3-määritys",
+        "dialog subtitle":
+            "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
+        cancel: "Peruuta",
+        "save config": "Tallenna määritys",
+        "update config": "Päivitä määritys",
+        "is required": "Tämä kenttä on pakollinen",
+        "must be an url": "Ei kelvollinen URL-osoite",
+        "profile name already used": "Samanniminen profiili on jo olemassa",
+        "not a valid access key id":
+            "Tämä ei näytä kelvolliselta access key -tunnukselta",
+        "url textField label": "URL",
+        "url textField helper text": "S3-palvelun URL-osoite",
+        "region textField label": "AWS S3 -alue",
+        "region textField helper text":
+            "Esimerkki: eu-west-1, jos et ole varma, jätä tyhjäksi",
+        "account credentials": "Tilin tunnistetiedot",
+        "profileName textField label": "Profiilin nimi",
+        "profileName textField helper text": "Tämän S3-profiilin yksilöllinen tunniste",
+        "isAnonymous switch label": "Anonyymi pääsy",
+        "isAnonymous switch helper text":
+            "Aseta ON, jos salainen access key ei ole tarpeen",
+        "accessKeyId textField label": "Access key -tunnus",
+        "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Salainen access key",
+        "sessionToken textField label": "Istuntotunnus",
+        "sessionToken textField helper text":
+            "Valinnainen, jätä tyhjäksi jos et ole varma",
+        "url style": "URL-tyyli",
+        "url style helper text": "Määritä, miten S3-palvelimesi muotoilee lataus-URL:n.",
+        "path style label": ({ example }) => (
+            <>
+                Polkutyylinen
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted-tyyli
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "Älä näytä uudelleen",
         "add an entry": "Lisää uusi muuttuja",

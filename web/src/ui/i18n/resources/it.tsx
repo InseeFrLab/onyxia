@@ -402,9 +402,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -492,6 +491,60 @@ export const translations: Translations<"it"> = {
 
     SecretsExplorerItems: {
         "empty directory": "Questa cartella è vuota"
+    },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Nuova configurazione S3 personalizzata",
+        "dialog subtitle":
+            "Specifica un account di servizio personalizzato o connettiti a un altro servizio compatibile con S3",
+        cancel: "Annulla",
+        "save config": "Salva configurazione",
+        "update config": "Aggiorna configurazione",
+        "is required": "Questo campo è obbligatorio",
+        "must be an url": "URL non valido",
+        "profile name already used": "Esiste già un altro profilo con lo stesso nome",
+        "not a valid access key id": "Non sembra un ID di access key valido",
+        "url textField label": "URL",
+        "url textField helper text": "URL del servizio S3",
+        "region textField label": "Regione AWS S3",
+        "region textField helper text":
+            "Esempio: eu-west-1, se non sei sicuro lascia vuoto",
+        "account credentials": "Credenziali dell'account",
+        "profileName textField label": "Nome profilo",
+        "profileName textField helper text":
+            "Identificatore univoco di questo profilo S3",
+        "isAnonymous switch label": "Accesso anonimo",
+        "isAnonymous switch helper text":
+            "Imposta su ON se non è necessaria una secret access key",
+        "accessKeyId textField label": "ID access key",
+        "accessKeyId textField helper text": "Esempio: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Secret access key",
+        "sessionToken textField label": "Token di sessione",
+        "sessionToken textField helper text": "Opzionale, lascia vuoto se non sei sicuro",
+        "url style": "Stile URL",
+        "url style helper text":
+            "Specifica come il server S3 formatta l'URL per scaricare i file.",
+        "path style label": ({ example }) => (
+            <>
+                Stile path
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Stile virtual-hosted
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     MySecretsEditor: {
         "do not display again": "Non mostrare più",

@@ -496,6 +496,59 @@ export const translations: Translations<"en"> = {
         "header size": "Tamaño",
         "header policy": "Política"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Nueva configuración S3 personalizada",
+        "dialog subtitle":
+            "Especifique una cuenta de servicio personalizada o conéctese a otro servicio compatible con S3",
+        cancel: "Cancelar",
+        "save config": "Guardar configuración",
+        "update config": "Actualizar configuración",
+        "is required": "Este campo es obligatorio",
+        "must be an url": "No es una URL válida",
+        "profile name already used": "Ya existe otro perfil con el mismo nombre",
+        "not a valid access key id": "No parece un ID de clave de acceso válido",
+        "url textField label": "URL",
+        "url textField helper text": "URL del servicio S3",
+        "region textField label": "Región de AWS S3",
+        "region textField helper text":
+            "Ejemplo: eu-west-1, si no está seguro, déjelo vacío",
+        "account credentials": "Credenciales de la cuenta",
+        "profileName textField label": "Nombre del perfil",
+        "profileName textField helper text": "Identificador único de este perfil S3",
+        "isAnonymous switch label": "Acceso anónimo",
+        "isAnonymous switch helper text":
+            "Poner en ON si no se requiere una clave de acceso secreta",
+        "accessKeyId textField label": "ID de clave de acceso",
+        "accessKeyId textField helper text": "Ejemplo: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Clave de acceso secreta",
+        "sessionToken textField label": "Token de sesión",
+        "sessionToken textField helper text": "Opcional, deje vacío si no está seguro",
+        "url style": "Estilo de URL",
+        "url style helper text":
+            "Indique cómo su servidor S3 formatea la URL para descargar archivos.",
+        "path style label": ({ example }) => (
+            <>
+                Estilo de ruta
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Estilo de host virtual
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "No mostrar de nuevo",
         "add an entry": "Agregar una nueva variable",

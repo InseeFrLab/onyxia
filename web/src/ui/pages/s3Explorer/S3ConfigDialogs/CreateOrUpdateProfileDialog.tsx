@@ -19,70 +19,72 @@ import { Text } from "onyxia-ui/Text";
 import FormHelperText from "@mui/material/FormHelperText";
 import Switch from "@mui/material/Switch";
 
-export type AddCustomS3ConfigDialogProps = {
+export type CreateOrUpdateProfileDialogProps = {
     evtOpen: NonPostableEvt<{
-        creationTimeOfS3ProfileToEdit: number | undefined;
+        profileName_toUpdate: string | undefined;
     }>;
 };
 
-export const AddCustomS3ConfigDialog = memo((props: AddCustomS3ConfigDialogProps) => {
-    const { evtOpen } = props;
+export const CreateOrUpdateProfileDialog = memo(
+    (props: CreateOrUpdateProfileDialogProps) => {
+        const { evtOpen } = props;
 
-    const { t } = useTranslation({ AddCustomS3ConfigDialog });
+        const { t } = useTranslation({ CreateOrUpdateProfileDialog });
 
-    const {
-        functions: { s3ProfilesCreationUiController }
-    } = getCoreSync();
+        const {
+            functions: { s3ProfilesCreationUiController }
+        } = getCoreSync();
 
-    const { isReady } = useCoreState("s3ProfilesCreationUiController", "main");
+        const { isReady } = useCoreState("s3ProfilesCreationUiController", "main");
 
-    useEvt(
-        ctx =>
-            evtOpen.attach(ctx, ({ creationTimeOfS3ProfileToEdit }) =>
-                s3ProfilesCreationUiController.initialize({
-                    creationTimeOfS3ProfileToEdit
-                })
-            ),
-        [evtOpen]
-    );
+        useEvt(
+            ctx =>
+                evtOpen.attach(ctx, ({ profileName_toUpdate }) =>
+                    s3ProfilesCreationUiController.initialize({
+                        profileName_toUpdate
+                    })
+                ),
+            [evtOpen]
+        );
 
-    const onCloseFactory = useCallbackFactory(([isSubmit]: [boolean]) => {
-        if (isSubmit) {
-            s3ProfilesCreationUiController.submit();
-        } else {
-            s3ProfilesCreationUiController.reset();
-        }
-    });
-
-    const { classes } = useStyles();
-
-    return (
-        <Dialog
-            title={t("dialog title")}
-            subtitle={t("dialog subtitle")}
-            maxWidth="md"
-            classes={{
-                buttons: classes.buttons
-            }}
-            fullWidth={true}
-            isOpen={isReady}
-            body={<Body />}
-            buttons={
-                <Buttons
-                    onCloseCancel={onCloseFactory(false)}
-                    onCloseSubmit={onCloseFactory(true)}
-                />
+        const onCloseFactory = useCallbackFactory(([isSubmit]: [boolean]) => {
+            if (isSubmit) {
+                s3ProfilesCreationUiController.submit();
+            } else {
+                s3ProfilesCreationUiController.reset();
             }
-            onClose={onCloseFactory(false)}
-        />
-    );
+        });
+
+        const { classes } = useStyles();
+
+        return (
+            <Dialog
+                title={t("dialog title")}
+                subtitle={t("dialog subtitle")}
+                maxWidth="md"
+                classes={{
+                    buttons: classes.buttons
+                }}
+                fullWidth={true}
+                isOpen={isReady}
+                body={<Body />}
+                buttons={
+                    <Buttons
+                        onCloseCancel={onCloseFactory(false)}
+                        onCloseSubmit={onCloseFactory(true)}
+                    />
+                }
+                onClose={onCloseFactory(false)}
+            />
+        );
+    }
+);
+
+CreateOrUpdateProfileDialog.displayName = symToStr({
+    CreateOrUpdateProfileDialog
 });
 
-AddCustomS3ConfigDialog.displayName = symToStr({
-    AddCustomS3ConfigDialog
-});
-
-const useStyles = tss.withName({ AddCustomS3ConfigDialog }).create({
+const useStyles = tss.withName({ CreateOrUpdateProfileDialog }).create({
     buttons: {
         display: "flex"
     }
@@ -103,7 +105,7 @@ const Buttons = memo((props: ButtonsProps) => {
 
     const { css } = useButtonsStyles();
 
-    const { t } = useTranslation({ AddCustomS3ConfigDialog });
+    const { t } = useTranslation({ CreateOrUpdateProfileDialog });
 
     if (!isReady) {
         return null;
@@ -123,7 +125,7 @@ const Buttons = memo((props: ButtonsProps) => {
 });
 
 const useButtonsStyles = tss
-    .withName(`${symToStr({ AddCustomS3ConfigDialog })}${symToStr({ Buttons })}`)
+    .withName(`${symToStr({ CreateOrUpdateProfileDialog })}${symToStr({ Buttons })}`)
     .create({});
 
 const Body = memo(() => {
@@ -138,7 +140,7 @@ const Body = memo(() => {
 
     const { classes, css, theme } = useBodyStyles();
 
-    const { t } = useTranslation({ AddCustomS3ConfigDialog });
+    const { t } = useTranslation({ CreateOrUpdateProfileDialog });
 
     if (!isReady) {
         return null;
@@ -151,18 +153,18 @@ const Body = memo(() => {
                     className={css({
                         marginBottom: theme.spacing(6)
                     })}
-                    label={t("friendlyName textField label")}
-                    helperText={t("friendlyName textField helper text")}
+                    label={t("profileName textField label")}
+                    helperText={t("profileName textField helper text")}
                     helperTextError={
-                        formValuesErrors.friendlyName === undefined
+                        formValuesErrors.profileName === undefined
                             ? undefined
-                            : t(formValuesErrors.friendlyName)
+                            : t(formValuesErrors.profileName)
                     }
-                    defaultValue={formValues.friendlyName}
+                    defaultValue={formValues.profileName}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ProfilesCreationUiController.changeValue({
-                            key: "friendlyName",
+                            key: "profileName",
                             value
                         })
                     }
@@ -352,7 +354,7 @@ const Body = memo(() => {
 });
 
 const useBodyStyles = tss
-    .withName(`${symToStr({ AddCustomS3ConfigDialog })}${symToStr({ Body })}`)
+    .withName(`${symToStr({ CreateOrUpdateProfileDialog })}${symToStr({ Body })}`)
     .create(({ theme }) => ({
         serverConfigFormGroup: {
             display: "flex",
@@ -381,19 +383,15 @@ const { i18n } = declareComponentKeys<
     | "update config"
     | "is required"
     | "must be an url"
+    | "profile name already used"
     | "not a valid access key id"
     | "url textField label"
     | "url textField helper text"
     | "region textField label"
     | "region textField helper text"
-    | "workingDirectoryPath textField label"
-    | {
-          K: "workingDirectoryPath textField helper text";
-          R: JSX.Element;
-      }
     | "account credentials"
-    | "friendlyName textField label"
-    | "friendlyName textField helper text"
+    | "profileName textField label"
+    | "profileName textField helper text"
     | "isAnonymous switch label"
     | "isAnonymous switch helper text"
     | "accessKeyId textField label"
@@ -413,5 +411,5 @@ const { i18n } = declareComponentKeys<
           P: { example: string | undefined };
           R: JSX.Element;
       }
->()({ AddCustomS3ConfigDialog });
+>()({ CreateOrUpdateProfileDialog });
 export type I18n = typeof i18n;

@@ -18,11 +18,9 @@ export const protectedSelectors = {
 };
 
 export type View = {
-    selectedProfileName: string | undefined;
-    availableS3Profiles: {
-        profileName: string;
-        displayName: string;
-    }[];
+    selectedS3ProfileName: string | undefined;
+    isSelectedS3ProfileEditable: boolean;
+    availableS3ProfileNames: string[];
     bookmarks: {
         displayName: LocalizedString | undefined;
         s3UriPrefixObj: S3UriPrefixObj;
@@ -47,8 +45,9 @@ const view = createSelector(
 
         if (routeParams.profile === undefined) {
             return {
-                selectedProfileName: undefined,
-                availableS3Profiles: [],
+                selectedS3ProfileName: undefined,
+                isSelectedS3ProfileEditable: false,
+                availableS3ProfileNames: [],
                 bookmarks: [],
                 s3UriPrefixObj: undefined,
                 bookmarkStatus: {
@@ -75,11 +74,10 @@ const view = createSelector(
                   });
 
         return {
-            selectedProfileName: profileName,
-            availableS3Profiles: s3Profiles.map(s3Profile => ({
-                profileName: s3Profile.profileName,
-                displayName: s3Profile.paramsOfCreateS3Client.url
-            })),
+            selectedS3ProfileName: profileName,
+            isSelectedS3ProfileEditable:
+                s3Profile.origin === "created by user (or group project member)",
+            availableS3ProfileNames: s3Profiles.map(s3Profile => s3Profile.profileName),
             bookmarks: s3Profile.bookmarks,
             s3UriPrefixObj,
             bookmarkStatus: (() => {

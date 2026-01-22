@@ -21,6 +21,7 @@ export type ComponentKey =
     | import("ui/pages/fileExplorerEntry/FileExplorerDisabledDialog").I18n
     | import("ui/pages/s3Explorer/ConfirmBucketCreationAttemptDialog").I18n
     | import("ui/pages/s3Explorer/Explorer").I18n
+    | import("ui/pages/s3Explorer/S3ConfigDialogs/CreateOrUpdateProfileDialog").I18n
     | import("ui/pages/fileExplorer/Explorer/Explorer").I18n
     | import("ui/pages/fileExplorer/Explorer/ExplorerButtonBar").I18n
     | import("ui/pages/fileExplorer/Explorer/ExplorerItems").I18n

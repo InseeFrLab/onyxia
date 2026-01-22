@@ -493,6 +493,58 @@ export const translations: Translations<"nl"> = {
     SecretsExplorerItems: {
         "empty directory": "Deze bestandenlijst is leeg"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Nieuwe aangepaste S3-configuratie",
+        "dialog subtitle":
+            "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele dienst",
+        cancel: "Annuleren",
+        "save config": "Configuratie opslaan",
+        "update config": "Configuratie bijwerken",
+        "is required": "Dit veld is verplicht",
+        "must be an url": "Geen geldige URL",
+        "profile name already used": "Er bestaat al een ander profiel met dezelfde naam",
+        "not a valid access key id": "Dit lijkt geen geldige access key-id",
+        "url textField label": "URL",
+        "url textField helper text": "URL van de S3-dienst",
+        "region textField label": "AWS S3-regio",
+        "region textField helper text": "Voorbeeld: eu-west-1, bij twijfel leeg laten",
+        "account credentials": "Accountgegevens",
+        "profileName textField label": "Profielnaam",
+        "profileName textField helper text": "Unieke identificatie van dit S3-profiel",
+        "isAnonymous switch label": "Anonieme toegang",
+        "isAnonymous switch helper text":
+            "Zet op ON als geen geheime access key nodig is",
+        "accessKeyId textField label": "Access key-id",
+        "accessKeyId textField helper text": "Voorbeeld: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Geheime access key",
+        "sessionToken textField label": "Sessietoken",
+        "sessionToken textField helper text": "Optioneel, leeg laten bij twijfel",
+        "url style": "URL-stijl",
+        "url style helper text":
+            "Geef aan hoe je S3-server de URL voor het downloaden van bestanden opmaakt.",
+        "path style label": ({ example }) => (
+            <>
+                Padstijl
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted-stijl
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "Niet meer weergeven",
         "add an entry": "Een variabele toevoegen",
