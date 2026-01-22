@@ -453,6 +453,55 @@ export const translations: Translations<"zh-CN"> = {
     SecretsExplorerItems: {
         "empty directory": "此目录为空"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "新的自定义 S3 配置",
+        "dialog subtitle": "指定自定义服务账号或连接到其他兼容 S3 的服务",
+        cancel: "取消",
+        "save config": "保存配置",
+        "update config": "更新配置",
+        "is required": "此字段为必填项",
+        "must be an url": "不是有效的 URL",
+        "profile name already used": "已存在同名的配置文件",
+        "not a valid access key id": "看起来不是有效的 Access Key ID",
+        "url textField label": "URL",
+        "url textField helper text": "S3 服务的 URL",
+        "region textField label": "AWS S3 区域",
+        "region textField helper text": "示例：eu-west-1，不确定可留空",
+        "account credentials": "账号凭证",
+        "profileName textField label": "配置文件名称",
+        "profileName textField helper text": "此 S3 配置文件的唯一标识",
+        "isAnonymous switch label": "匿名访问",
+        "isAnonymous switch helper text": "若不需要 Secret Access Key，请设为开",
+        "accessKeyId textField label": "Access Key ID",
+        "accessKeyId textField helper text": "示例：1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Secret Access Key",
+        "sessionToken textField label": "会话令牌",
+        "sessionToken textField helper text": "可选，不确定可留空",
+        "url style": "URL 样式",
+        "url style helper text": "指定你的 S3 服务器用于下载文件的 URL 格式。",
+        "path style label": ({ example }) => (
+            <>
+                路径样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                虚拟主机样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "不要再显示",
         "add an entry": "添加变量",

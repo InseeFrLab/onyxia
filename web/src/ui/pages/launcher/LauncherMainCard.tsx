@@ -77,13 +77,7 @@ export type Props = {
         | {
               projectS3ConfigLink: Link;
               selectedOption: string | undefined;
-              options: {
-                  optionValue: string;
-                  label: {
-                      dataSource: string;
-                      friendlyName: string | undefined;
-                  };
-              }[];
+              options: string[];
               onSelectedS3ConfigChange: (params: { s3ConfigId: string }) => void;
           }
         | undefined;
@@ -317,12 +311,9 @@ export const LauncherMainCard = memo((props: Props) => {
                                 <MenuItem value={""} disabled>
                                     {" "}
                                 </MenuItem>
-                                {s3ConfigsSelect.options.map(({ label, optionValue }) => (
-                                    <MenuItem key={optionValue} value={optionValue}>
-                                        {label.friendlyName !== undefined
-                                            ? `${label.friendlyName} - `
-                                            : ""}
-                                        {label.dataSource}
+                                {s3ConfigsSelect.options.map(profileName => (
+                                    <MenuItem key={profileName} value={profileName}>
+                                        {profileName}
                                     </MenuItem>
                                 ))}
                             </Select>

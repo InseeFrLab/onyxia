@@ -482,6 +482,56 @@ export const translations: Translations<"en"> = {
         "can't be empty": "Can't be empty",
         "new directory": "New directory"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "New custom S3 configuration",
+        "dialog subtitle":
+            "Specify a custom service account or connect to another S3 compatible service",
+        cancel: "Cancel",
+        "save config": "Save configuration",
+        "update config": "Update configuration",
+        "is required": "This field is required",
+        "must be an url": "Not a valid URL",
+        "profile name already used": "Another profile with same name already exists",
+        "not a valid access key id": "This doesn't look like a valid access key id",
+        "url textField label": "URL",
+        "url textField helper text": "URL of the S3 service",
+        "region textField label": "AWS S3 Region",
+        "region textField helper text": "Example: eu-west-1, if not sure, leave empty",
+        "account credentials": "Account credentials",
+        "profileName textField label": "Profile Name",
+        "profileName textField helper text": "Unique identifier of this s3 profile",
+        "isAnonymous switch label": "Anonymous access",
+        "isAnonymous switch helper text": "Set to ON if no secret access key is required",
+        "accessKeyId textField label": "Access key ID",
+        "accessKeyId textField helper text": "Example: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Secret access key",
+        "sessionToken textField label": "Session token",
+        "sessionToken textField helper text": "Optional, leave empty if not sure",
+        "url style": "URL style",
+        "url style helper text": `Specify how your S3 server formats the URL for downloading files.`,
+        "path style label": ({ example }) => (
+            <>
+                Path style
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted style
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "Don't display again",
         "add an entry": "Add a new variable",
