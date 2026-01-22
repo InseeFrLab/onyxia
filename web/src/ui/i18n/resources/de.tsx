@@ -495,6 +495,61 @@ export const translations: Translations<"de"> = {
     SecretsExplorerItems: {
         "empty directory": "Dieses Verzeichnis ist leer"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Neue benutzerdefinierte S3-Konfiguration",
+        "dialog subtitle":
+            "Geben Sie ein benutzerdefiniertes Servicekonto an oder verbinden Sie einen anderen S3-kompatiblen Dienst",
+        cancel: "Abbrechen",
+        "save config": "Konfiguration speichern",
+        "update config": "Konfiguration aktualisieren",
+        "is required": "Dieses Feld ist erforderlich",
+        "must be an url": "Keine gültige URL",
+        "profile name already used":
+            "Ein anderes Profil mit demselben Namen existiert bereits",
+        "not a valid access key id":
+            "Dies sieht nicht nach einer gültigen Access-Key-ID aus",
+        "url textField label": "URL",
+        "url textField helper text": "URL des S3-Dienstes",
+        "region textField label": "AWS S3-Region",
+        "region textField helper text":
+            "Beispiel: eu-west-1, bei Unsicherheit leer lassen",
+        "account credentials": "Kontodaten",
+        "profileName textField label": "Profilname",
+        "profileName textField helper text": "Eindeutige Kennung dieses S3-Profils",
+        "isAnonymous switch label": "Anonymer Zugriff",
+        "isAnonymous switch helper text":
+            "Auf EIN stellen, wenn kein geheimer Zugriffsschlüssel erforderlich ist",
+        "accessKeyId textField label": "Access-Key-ID",
+        "accessKeyId textField helper text": "Beispiel: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Geheimer Zugriffsschlüssel",
+        "sessionToken textField label": "Sitzungstoken",
+        "sessionToken textField helper text": "Optional, bei Unsicherheit leer lassen",
+        "url style": "URL-Stil",
+        "url style helper text":
+            "Geben Sie an, wie Ihr S3-Server die URL zum Herunterladen von Dateien formatiert.",
+        "path style label": ({ example }) => (
+            <>
+                Pfad-Stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-Hosted-Stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "Nicht mehr anzeigen",
         "add an entry": "Einen Variable hinzufügen",

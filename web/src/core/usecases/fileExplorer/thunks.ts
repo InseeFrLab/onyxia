@@ -167,7 +167,7 @@ const privateThunks = {
             );
 
             const { s3Client, s3Profile } = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r;
@@ -275,7 +275,7 @@ const privateThunks = {
             const { s3Object } = params;
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -317,7 +317,7 @@ const privateThunks = {
             const { s3Objects } = params;
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -518,7 +518,7 @@ const privateThunks = {
             );
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -550,7 +550,7 @@ export const protectedThunks = {
             const [dispatch] = args;
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -670,7 +670,7 @@ export const thunks = {
                 })
             );
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -903,7 +903,7 @@ export const thunks = {
             );
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -1004,7 +1004,7 @@ export const thunks = {
             );
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -1040,7 +1040,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const { s3Client, s3Profile } = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r;

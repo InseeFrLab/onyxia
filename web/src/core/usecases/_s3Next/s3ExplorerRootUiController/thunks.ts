@@ -55,8 +55,6 @@ export const thunks = {
                     s3ProfilesManagement.protectedThunks.getS3ProfileAndClientForExplorer()
                 )) ?? {};
 
-            console.log(s3Profile);
-
             const routeParams_toSet: RouteParams = {
                 profile: s3Profile === undefined ? undefined : s3Profile.profileName,
                 path: ""
@@ -124,15 +122,15 @@ export const thunks = {
 
                 const [dispatch, getState] = args;
 
-                const { selectedProfileName, s3UriPrefixObj, bookmarkStatus } =
+                const { selectedS3ProfileName, s3UriPrefixObj, bookmarkStatus } =
                     selectors.view(getState());
 
-                assert(selectedProfileName !== undefined);
+                assert(selectedS3ProfileName !== undefined);
                 assert(s3UriPrefixObj !== undefined);
 
                 await dispatch(
                     s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
-                        profileName: selectedProfileName,
+                        profileName: selectedS3ProfileName,
                         s3UriPrefixObj,
                         action: bookmarkStatus.isBookmarked
                             ? {

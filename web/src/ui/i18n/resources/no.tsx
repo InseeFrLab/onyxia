@@ -491,6 +491,59 @@ export const translations: Translations<"no"> = {
         "header size": "Størrelse",
         "header policy": "Retningslinje"
     },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Ny tilpasset S3-konfigurasjon",
+        "dialog subtitle":
+            "Angi en tilpasset tjenestekonto eller koble til en annen S3-kompatibel tjeneste",
+        cancel: "Avbryt",
+        "save config": "Lagre konfigurasjon",
+        "update config": "Oppdater konfigurasjon",
+        "is required": "Dette feltet er påkrevd",
+        "must be an url": "Ugyldig URL",
+        "profile name already used": "En annen profil med samme navn finnes allerede",
+        "not a valid access key id": "Dette ser ikke ut som en gyldig access key-ID",
+        "url textField label": "URL",
+        "url textField helper text": "URL til S3-tjenesten",
+        "region textField label": "AWS S3-region",
+        "region textField helper text":
+            "Eksempel: eu-west-1, hvis du er usikker, la stå tomt",
+        "account credentials": "Kontoopplysninger",
+        "profileName textField label": "Profilnavn",
+        "profileName textField helper text": "Unik identifikator for denne S3-profilen",
+        "isAnonymous switch label": "Anonym tilgang",
+        "isAnonymous switch helper text":
+            "Sett til PÅ hvis ingen hemmelig access key er nødvendig",
+        "accessKeyId textField label": "Access key-ID",
+        "accessKeyId textField helper text": "Eksempel: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Hemmelig access key",
+        "sessionToken textField label": "Økttoken",
+        "sessionToken textField helper text": "Valgfritt, la stå tomt hvis du er usikker",
+        "url style": "URL-stil",
+        "url style helper text":
+            "Angi hvordan S3-serveren din formaterer URL-en for nedlasting av filer.",
+        "path style label": ({ example }) => (
+            <>
+                Sti-stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted-stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     MySecretsEditor: {
         "do not display again": "Ikke vis igjen",
         "add an entry": "Legg til en ny variabel",

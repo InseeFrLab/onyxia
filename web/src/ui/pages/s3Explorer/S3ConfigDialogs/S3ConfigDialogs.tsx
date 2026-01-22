@@ -3,25 +3,27 @@ import {
     type Props as ConfirmCustomS3ConfigDeletionDialogProps
 } from "./ConfirmCustomS3ConfigDeletionDialog";
 import {
-    AddCustomS3ConfigDialog,
-    type AddCustomS3ConfigDialogProps
-} from "./AddCustomS3ConfigDialog";
+    CreateOrUpdateProfileDialog,
+    type CreateOrUpdateProfileDialogProps
+} from "./CreateOrUpdateProfileDialog";
 
 export type S3ConfigDialogsProps = {
     evtConfirmCustomS3ConfigDeletionDialogOpen: ConfirmCustomS3ConfigDeletionDialogProps["evtOpen"];
-    evtAddCustomS3ConfigDialogOpen: AddCustomS3ConfigDialogProps["evtOpen"];
+    evtCreateOrUpdateProfileDialogOpen: CreateOrUpdateProfileDialogProps["evtOpen"];
 };
 
 export function S3ConfigDialogs(props: S3ConfigDialogsProps) {
-    const { evtConfirmCustomS3ConfigDeletionDialogOpen, evtAddCustomS3ConfigDialogOpen } =
-        props;
+    const {
+        evtConfirmCustomS3ConfigDeletionDialogOpen,
+        evtCreateOrUpdateProfileDialogOpen
+    } = props;
 
     return (
         <>
             <ConfirmCustomS3ConfigDeletionDialog
                 evtOpen={evtConfirmCustomS3ConfigDeletionDialogOpen}
             />
-            <AddCustomS3ConfigDialog evtOpen={evtAddCustomS3ConfigDialogOpen} />
+            <CreateOrUpdateProfileDialog evtOpen={evtCreateOrUpdateProfileDialogOpen} />
         </>
     );
 }
