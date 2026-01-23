@@ -32,6 +32,8 @@ export async function createOidc<AutoLogin extends boolean>(
         enableDebugLogs
     } = params;
 
+    let audience_extraQueryParams: string | undefined = undefined;
+
     const oidc = await createOidcSpa({
         issuerUri,
         clientId,
@@ -51,11 +53,15 @@ export async function createOidc<AutoLogin extends boolean>(
                     break add_extraQueryParams_raw;
                 }
 
-                for (const name of Object.keys(
+                for (const [name, value] of Object.entries(
                     getAllSearchParams(
                         `https://dummy.com?${extraQueryParams_raw_normalized}`
                     )
                 )) {
+                    if (name === "audience") {
+                        audience_extraQueryParams = value;
+                    }
+
                     const { wasPresent, url_withoutTheParam } = getSearchParam({
                         url: authorizationUrl,
                         name
@@ -84,6 +90,11 @@ export async function createOidc<AutoLogin extends boolean>(
             }
 
             return authorizationUrl;
+        },
+        extraTokenParams: {
+            get audience() {
+                return audience_extraQueryParams;
+            }
         },
         idleSessionLifetimeInSeconds,
         debugLogs: enableDebugLogs,
