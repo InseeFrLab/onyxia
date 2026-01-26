@@ -23,7 +23,12 @@ export function updateDefaultS3ProfilesAfterPotentialDeletion(params: {
 
     const s3Profiles = aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
         fromRegion: {
-            s3Profiles: fromRegion.s3Profiles,
+            s3Profiles: fromRegion.s3Profiles.map(s3Profile => {
+                return {
+                    ...s3Profile,
+                    profileName: s3Profile.profileName ?? ""
+                };
+            }),
             resolvedTemplatedBookmarks: undefined,
             resolvedTemplatedStsRoles: undefined
         },
