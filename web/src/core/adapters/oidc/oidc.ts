@@ -33,6 +33,7 @@ export async function createOidc<AutoLogin extends boolean>(
     } = params;
 
     let audience_extraQueryParams: string | undefined = undefined;
+    let resource_extraQueryParams: string | undefined = undefined;
 
     const oidc = await createOidcSpa({
         issuerUri,
@@ -60,6 +61,9 @@ export async function createOidc<AutoLogin extends boolean>(
                 )) {
                     if (name === "audience") {
                         audience_extraQueryParams = value;
+                    }
+                    if (name === "resource") {
+                        resource_extraQueryParams = value;
                     }
 
                     const { wasPresent, url_withoutTheParam } = getSearchParam({
@@ -94,6 +98,9 @@ export async function createOidc<AutoLogin extends boolean>(
         extraTokenParams: {
             get audience() {
                 return audience_extraQueryParams;
+            },
+            get resource() {
+                return resource_extraQueryParams;
             }
         },
         idleSessionLifetimeInSeconds,
