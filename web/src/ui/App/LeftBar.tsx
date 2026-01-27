@@ -25,7 +25,10 @@ export const LeftBar = memo((props: Props) => {
     } = getCoreSync();
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
+    const isS3ExplorerEnabled = useCoreState(
+        "s3ProfilesManagement",
+        "isS3ExplorerEnabled"
+    );
 
     const route = useRoute();
 
@@ -59,12 +62,6 @@ export const LeftBar = memo((props: Props) => {
                     link: routes.account().link
                 },
                 {
-                    itemId: "projectSettings",
-                    icon: getIconUrlByName("DisplaySettings"),
-                    label: t("projectSettings"),
-                    link: routes.projectSettings().link
-                },
-                {
                     groupId: "services",
                     label: t("divider: services features")
                 },
@@ -94,18 +91,11 @@ export const LeftBar = memo((props: Props) => {
                         : "not visible"
                 },
                 {
-                    itemId: "fileExplorer",
-                    icon: customIcons.filesSvgUrl,
-                    label: t("fileExplorer"),
-                    link: routes.fileExplorerEntry().link,
-                    availability: isFileExplorerEnabled ? "available" : "not visible"
-                },
-                {
                     itemId: "dataExplorer",
                     icon: getIconUrlByName("DocumentScanner"),
                     label: t("dataExplorer"),
                     link: routes.dataExplorer().link,
-                    availability: isFileExplorerEnabled ? "available" : "not visible"
+                    availability: isS3ExplorerEnabled ? "available" : "not visible"
                 },
                 {
                     itemId: "dataCollection",
@@ -125,13 +115,8 @@ export const LeftBar = memo((props: Props) => {
                     itemId: "s3Explorer",
                     icon: customIcons.filesSvgUrl,
                     label: "S3 Explorer",
-                    link: routes.s3Explorer({
-                        path: ""
-                    }).link,
-                    availability:
-                        isDevModeEnabled && isFileExplorerEnabled
-                            ? "available"
-                            : "not visible"
+                    link: routes.s3Explorer_root().link,
+                    availability: isS3ExplorerEnabled ? "available" : "not visible"
                 },
                 {
                     groupId: "custom-leftbar-links",
@@ -161,8 +146,6 @@ export const LeftBar = memo((props: Props) => {
                         return "home" as const;
                     case "account":
                         return "account";
-                    case "projectSettings":
-                        return "projectSettings";
                     case "catalog":
                     case "launcher":
                         return "catalog";
@@ -171,9 +154,6 @@ export const LeftBar = memo((props: Props) => {
                         return "myServices";
                     case "mySecrets":
                         return "mySecrets";
-                    case "fileExplorerEntry":
-                    case "myFiles":
-                        return "fileExplorer";
                     case "sqlOlapShell":
                         return "sqlOlapShell";
                     case "dataExplorer":
@@ -204,12 +184,9 @@ const { i18n } = declareComponentKeys<
     | "reduce"
     | "home"
     | "account"
-    | "projectSettings"
     | "catalog"
     | "myServices"
     | "mySecrets"
-    | "myFiles"
-    | "fileExplorer"
     | "dataExplorer"
     | "dataCollection"
     | "sqlOlapShell"

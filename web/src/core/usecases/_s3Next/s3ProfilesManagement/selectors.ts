@@ -8,6 +8,7 @@ import {
 } from "./decoupledLogic/s3Profiles";
 import { name } from "./state";
 import type { State as RootState } from "core/bootstrap";
+import * as userAuthentication from "core/usecases/userAuthentication";
 
 const resolvedTemplatedBookmarks = createSelector(
     (state: RootState) => state[name],
@@ -56,7 +57,24 @@ const s3Profiles = createSelector(
         })
 );
 
-export const selectors = { s3Profiles };
+/** Can be used even when not authenticated */
+const isS3ExplorerEnabled = (rootState: RootState) => {
+    const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
+
+    if (!isUserLoggedIn) {
+        const { s3Configs } =
+            deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
+
+        return s3Configs.length !== 0;
+    } else {
+        return (
+            s3Profiles(rootState).find(s3Profile => s3Profile.isExplorerConfig) !==
+            undefined
+        );
+    }
+};
+
+export const selectors = { s3Profiles, isS3ExplorerEnabled };
 
 export const protectedSelectors = {
     resolvedTemplatedBookmarks

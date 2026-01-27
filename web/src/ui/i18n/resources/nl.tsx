@@ -130,135 +130,6 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) => `Het token vervalt in ${howMuchTime}`
     },
-    ProjectSettings: {
-        "page header title": "Projectinstellingen",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Instellingen van uw persoonlijke project"
-                : `Instellingen voor "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Deze pagina stelt u in staat de instellingen te configureren die van
-                toepassing zijn op
-                {groupProjectName === undefined
-                    ? " uw persoonlijke project"
-                    : ` het ${groupProjectName} project`}
-                .
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Wees u ervan bewust dat {groupProjectName} een groepsproject is
-                        gedeeld met andere gebruikers; de wijzigingen die u hier
-                        aanbrengt, zijn van toepassing op alle leden van het project.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        U kunt tussen uw projecten wisselen via het dropdownmenu in de
-                        kop.
-                        <br />
-                    </>
-                )}
-                Let op: alleen de beheerder van uw Onyxia instantie kan nieuwe projecten
-                aanmaken.
-            </>
-        ),
-        "security-info": "Veiligheidsinformatie",
-        "s3-configs": "S3-configuraties"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Voeg een aangepaste S3-configuratie toe"
-    },
-    S3ConfigCard: {
-        "data source": "Gegevensbron",
-        credentials: "Inloggegevens",
-        "sts credentials": "Dynamisch aangevraagde tokens namens u door Onyxia (STS)",
-        account: "Account",
-        "use in services": "Gebruiken in diensten",
-        "use in services helper": `Indien ingeschakeld, zal deze configuratie standaard worden gebruikt in uw diensten die een S3-integratie implementeren.`,
-        "use for onyxia explorers": "Gebruiken voor Onyxia-verkenners",
-        "use for onyxia explorers helper": `Indien ingeschakeld zal deze configuratie worden gebruikt
-            door de bestandsverkenner en de gegevensverkenner.`,
-        edit: "Bewerken",
-        delete: "Verwijderen"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Nieuwe aangepaste S3-configuratie",
-        "dialog subtitle":
-            "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele service",
-        cancel: "Annuleren",
-        "save config": "Configuratie opslaan",
-        "update config": "Configuratie bijwerken",
-        "is required": "Dit veld is verplicht",
-        "must be an url": "Geen geldige URL",
-        "not a valid access key id": "Dit lijkt geen geldige toegangssleutel-ID te zijn",
-        "url textField label": "URL",
-        "url textField helper text": "URL van de S3-service",
-        "region textField label": "AWS S3 Regio",
-        "region textField helper text":
-            "Voorbeeld: eu-west-1, laat leeg indien niet zeker",
-        "workingDirectoryPath textField label": "Pad van werkdirectory",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Hiermee kunt u de bucket en het S3-objectprefix specificeren dat u bezit
-                op de S3-service. <br />
-                Voorbeeld: <code>mijn-bucket/mijn-prefix/</code> of{" "}
-                <code>alleen mijn-bucket/</code> als u de hele bucket bezit.
-            </>
-        ),
-        "account credentials": "Accountgegevens",
-        "friendlyName textField label": "Configuratienaam",
-        "friendlyName textField helper text":
-            "Dit helpt je alleen om deze configuratie te identificeren. Voorbeeld: Mijn AWS-bucket",
-
-        "isAnonymous switch label": "Anonieme toegang",
-        "isAnonymous switch helper text":
-            "Zet op AAN als er geen geheime toegangssleutel nodig is",
-
-        "accessKeyId textField label": "Toegangssleutel-ID",
-        "accessKeyId textField helper text": "Voorbeeld: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Geheime toegangssleutel",
-        "sessionToken textField label": "Sessietoken",
-        "sessionToken textField helper text":
-            "Optioneel, laat leeg als u het niet zeker weet",
-        "url style": "URL-stijl",
-        "url style helper text": `Specificeer hoe uw S3-server de URL formatteert voor het downloaden van bestanden.`,
-        "path style label": ({ example }) => (
-            <>
-                Padstijl
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mijn-dataset.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtueel-gehoste stijl
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mijn-dataset.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Verbinding testen",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Verbindingstest mislukt met fout: <br />
-                {errorMessage}
-            </>
-        )
-    },
     AccountUserInterfaceTab: {
         title: "De interfacemodus configureren",
         "enable dark mode": "Donkere modus activeren",
@@ -311,43 +182,6 @@ export const translations: Translations<"nl"> = {
         reset: "Opnieuw initialiseren",
         "reset helper dialogs helper text":
             "De berichtvensters waarvan u heeft gevraagd ze niet meer weer te geven, opnieuw initialiseren"
-    },
-    FileExplorerEntry: {
-        "page title - file explorer": "Bestandsverkenner",
-        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lezen{" "}
-                <MuiLink href={docHref} target="_blank">
-                    onze documentatie
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Minio-clients instellen</MuiLink>.
-            </>
-        ),
-        "title personal": "Mijn gegevens",
-        "description personal": "Je eigen bestanden en datasets.",
-        "title project": ({ projectName }) => `Project ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Gedeelde opslagruimte voor project ${projectName}`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Mijn gegevens";
-                case "project":
-                    return "Groepsgegevens";
-            }
-        }
-    },
-    S3EntryCard: {
-        "space path": "Ruimtepad"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "Geen S3-server geconfigureerd",
-        "dialog body":
-            "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",
-        cancel: "Annuleren",
-        "go to settings": "Ga naar instellingen"
     },
     ConfirmBucketCreationAttemptDialog: {
         "bucket does not exist title": ({ bucket }) => `De bucket ${bucket} bestaat niet`,
@@ -596,18 +430,15 @@ export const translations: Translations<"nl"> = {
         reduce: "Verkleinen",
         home: "Onthaal",
         account: "Mijn account",
-        projectSettings: "Projectinstellingen",
         catalog: "Catalogus van de diensten",
         myServices: "Mijn diensten",
         mySecrets: "Mijn geheimen",
-        myFiles: "Mijn bestanden",
         "divider: services features": "Functionaliteiten met betrekking tot de diensten",
         "divider: external services features":
             "Functionaliteiten met betrekking tot de externe diensten",
         "divider: onyxia instance specific features":
             "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
         dataExplorer: "Data Verkenner",
-        fileExplorer: "Bestanden Verkenner",
         dataCollection: "Collecties Verkenner",
         sqlOlapShell: "SQL OLAP Shell"
     },

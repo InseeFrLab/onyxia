@@ -272,7 +272,6 @@ export async function bootstrapCore(
     }
 
     if (oidc.isUserLoggedIn) {
-        await dispatch(usecases.s3ConfigManagement.protectedThunks.initialize());
         await dispatch(usecases.s3ProfilesManagement.protectedThunks.initialize());
     }
 

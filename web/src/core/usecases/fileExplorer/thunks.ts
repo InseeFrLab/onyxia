@@ -598,23 +598,6 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const thunks = {
-    initialize:
-        (params: { directoryPath: string; viewMode: "list" | "block" }) =>
-        async (...args) => {
-            const { directoryPath, viewMode } = params;
-
-            const [dispatch] = args;
-
-            dispatch(actions.viewModeChanged({ viewMode }));
-
-            await dispatch(
-                privateThunks.navigate({
-                    directoryPath: directoryPath,
-                    doListAgainIfSamePath: false
-                })
-            );
-        },
-
     changeCurrentDirectory:
         (params: { directoryPath: string }) =>
         async (...args) => {

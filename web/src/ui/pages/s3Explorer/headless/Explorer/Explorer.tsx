@@ -76,7 +76,6 @@ export type ExplorerProps = {
     onDeleteItems: (params: { items: Item[] }) => void;
     onCreateNewEmptyDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
-    pathMinDepth: number;
     onOpenFile: (params: { basename: string }) => void;
     shareView: ShareView | undefined;
     onShareFileOpen: (params: { fileBasename: string }) => void;
@@ -143,7 +142,6 @@ export const Explorer = memo((props: ExplorerProps) => {
         onOpenFile,
         onRequestFilesUpload,
         filesBeingUploaded,
-        pathMinDepth,
         onViewModeChange,
         viewMode,
         isBucketPolicyFeatureEnabled,
@@ -412,7 +410,6 @@ export const Explorer = memo((props: ExplorerProps) => {
 
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
-                        minDepth={pathMinDepth}
                         path={[
                             "s3://",
                             ...directoryPath

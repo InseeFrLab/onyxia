@@ -131,134 +131,6 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) => `Token går ut om ${howMuchTime}`
     },
-    ProjectSettings: {
-        "page header title": "Prosjektinnstillinger",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Innstillinger for ditt personlige prosjekt"
-                : `Innstillinger for "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Denne siden lar deg konfigurere innstillingene som gjelder for
-                {groupProjectName === undefined
-                    ? " ditt personlige prosjekt"
-                    : ` ${groupProjectName}-prosjektet`}
-                .
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Vær oppmerksom på at {groupProjectName} er et gruppeprosjekt delt
-                        med andre brukere; endringene du gjør her vil gjelde for alle
-                        medlemmer av prosjektet.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        Du kan bytte mellom dine prosjekter ved å bruke rullegardinmenyen
-                        i overskriften.
-                        <br />
-                    </>
-                )}
-                Merk at bare administratoren for din Onyxia-instans kan opprette nye
-                prosjekter.
-            </>
-        ),
-        "security-info": "Sikkerhetsinformasjon",
-        "s3-configs": "S3-konfigurasjoner"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Legg til en tilpasset S3-konfigurasjon"
-    },
-    S3ConfigCard: {
-        "data source": "Datakilde",
-        credentials: "Legitimasjon",
-        "sts credentials":
-            "Token som dynamisk etterspørres på dine vegne av Onyxia (STS)",
-        account: "Konto",
-        "use in services": "Bruk i tjenester",
-        "use in services helper": `Hvis aktivert, vil denne konfigurasjonen brukes som standard i dine tjenester som implementerer en S3-integrasjon.`,
-        "use for onyxia explorers": "Bruk for Onyxia utforskere",
-        "use for onyxia explorers helper": `Hvis aktivert, vil denne konfigurasjonen brukes
-            av filutforskeren og datautforskeren.`,
-        edit: "Rediger",
-        delete: "Slett"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Ny tilpasset S3-konfigurasjon",
-        "dialog subtitle":
-            "Angi en tilpasset tjenestekonto eller koble til en annen S3-kompatibel tjeneste",
-        cancel: "Avbryt",
-        "save config": "Lagre konfigurasjon",
-        "update config": "Oppdater konfigurasjon",
-        "is required": "Dette feltet er påkrevd",
-        "must be an url": "Ikke en gyldig URL",
-        "not a valid access key id": "Dette ser ikke ut som en gyldig tilgangsnøkkel-ID",
-        "url textField label": "URL",
-        "url textField helper text": "URL til S3-tjenesten",
-        "region textField label": "AWS S3-region",
-        "region textField helper text":
-            "Eksempel: eu-west-1, hvis du er usikker, la det stå tomt",
-        "workingDirectoryPath textField label": "Arbeidsmappesti",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Dette lar deg spesifisere bøtten og S3-objektprefikset du eier på
-                S3-tjenesten. <br />
-                Eksempel: <code>min-bøtte/mitt-prefiks/</code> eller{" "}
-                <code>kun min-bøtte/</code> hvis du eier hele bøtten.
-            </>
-        ),
-        "account credentials": "Kontoinformasjon",
-        "friendlyName textField label": "Konfigurasjonsnavn",
-        "friendlyName textField helper text":
-            "Dette er bare for å hjelpe deg med å identifisere denne konfigurasjonen. Eksempel: Min AWS-bøtte",
-
-        "isAnonymous switch label": "Anonym tilgang",
-        "isAnonymous switch helper text":
-            "Sett til PÅ hvis ingen hemmelig tilgangsnøkkel er nødvendig",
-
-        "accessKeyId textField label": "Tilgangsnøkkel-ID",
-        "accessKeyId textField helper text": "Eksempel: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Hemmelig tilgangsnøkkel",
-        "sessionToken textField label": "Sesjonstoken",
-        "sessionToken textField helper text": "Valgfritt, la være tom hvis usikker",
-        "url style": "URL-stil",
-        "url style helper text": `Spesifiser hvordan din S3-server formaterer URL-en for nedlasting av filer.`,
-        "path style label": ({ example }) => (
-            <>
-                Sti-stil
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mitt-datasett.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtuelt-vertsbasert stil
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mitt-datasett.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Test forbindelse",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Test av forbindelse feilet med feil: <br />
-                {errorMessage}
-            </>
-        )
-    },
     AccountUserInterfaceTab: {
         title: "Grensesnittspreferanser",
         "enable dark mode": "Skru på mørk modus",
@@ -307,43 +179,6 @@ export const translations: Translations<"no"> = {
         reset: "Tilbakestill",
         "reset helper dialogs helper text":
             "Tilbakestill meldingsvinduer som er bedt om å ikke vises igjen"
-    },
-    FileExplorerEntry: {
-        "page title - file explorer": "Filutforsker",
-        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Les{" "}
-                <MuiLink href={docHref} target="_blank">
-                    dokumentasjonen vår
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Konfigurer minio-klientene</MuiLink>.
-            </>
-        ),
-        "title personal": "Mine data",
-        "description personal": "Dine egne filer og datasett.",
-        "title project": ({ projectName }) => `Prosjekt ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Felles lagringsområde for prosjektet ${projectName}`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Mine data";
-                case "project":
-                    return "Gruppedata";
-            }
-        }
-    },
-    S3EntryCard: {
-        "space path": "Områdesti"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "Ingen S3-server konfigurert",
-        "dialog body":
-            "Det er ingen S3-server konfigurert for denne instansen. Men du kan legge til en manuelt for å aktivere S3-filutforskeren.",
-        cancel: "Avbryt",
-        "go to settings": "Gå til innstillinger"
     },
     ConfirmBucketCreationAttemptDialog: {
         "bucket does not exist title": ({ bucket }) => `Bucket ${bucket} finnes ikke`,
@@ -595,17 +430,14 @@ export const translations: Translations<"no"> = {
         reduce: "Reduser",
         home: "Hjem",
         account: "Min konto",
-        projectSettings: "Prosjektinnstillinger",
         catalog: "Tjenestekatalog",
         myServices: "Mine tjenester",
         mySecrets: "Mine hemmeligheter",
-        myFiles: "Mine filer",
         "divider: services features": "Tjenestefunksjoner",
         "divider: external services features": "Eksterne tjenestefunksjoner",
         "divider: onyxia instance specific features":
             "Onyxia-instansspesifikke funksjoner",
         dataExplorer: "Datautforsker",
-        fileExplorer: "Filutforsker",
         dataCollection: "Samlingseksplorer",
         sqlOlapShell: "SQL OLAP-Skall"
     },
