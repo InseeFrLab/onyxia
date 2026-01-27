@@ -130,134 +130,6 @@ export const translations: Translations<"fi"> = {
         ),
         "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
     },
-    ProjectSettings: {
-        "page header title": "Projektiasetukset",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Henkilökohtaisen projektisi asetukset"
-                : `Asetukset "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Tällä sivulla voit määrittää asetuksia, jotka koskevat
-                {groupProjectName === undefined
-                    ? " henkilökohtaista projektiasi"
-                    : ` ${groupProjectName} projektia`}
-                .
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Huomaa, että {groupProjectName} on ryhmäprojekti, joka on jaettu
-                        muiden käyttäjien kanssa; tällä sivulla tekemäsi muutokset
-                        koskevat kaikkia projektin jäseniä.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        Voit vaihtaa projekteja käyttämällä pudotusvalikkoa
-                        otsikkopalkissa.
-                        <br />
-                    </>
-                )}
-                Huomaa, että vain Onyxia-instanssisi ylläpitäjä voi luoda uusia
-                projekteja.
-            </>
-        ),
-        "security-info": "Turvallisuustiedot",
-        "s3-configs": "S3-konfiguraatiot"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Lisää mukautettu S3-kokoonpano"
-    },
-    S3ConfigCard: {
-        "data source": "Tietolähde",
-        credentials: "Tunnistetiedot",
-        "sts credentials":
-            "Dynaamisesti pyydetyt tokenit puolestasi Onyxian toimesta (STS)",
-        account: "Tili",
-        "use in services": "Käytä palveluissa",
-        "use in services helper": `Jos otettu käyttöön, tätä konfiguraatiota käytetään
-            oletusarvoisesti palveluissasi, jotka toteuttavat S3-integraation.`,
-        "use for onyxia explorers": "Käytä Onyxia-tutkijoille",
-        "use for onyxia explorers helper": `Jos otettu käyttöön, tätä konfiguraatiota käytetään
-            tiedostonhallintaohjelmassa ja data-analysaattorissa.`,
-        edit: "Muokkaa",
-        delete: "Poista"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Uusi mukautettu S3-kokoonpano",
-        "dialog subtitle":
-            "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
-        cancel: "Peruuta",
-        "save config": "Tallenna kokoonpano",
-        "update config": "Päivitä kokoonpano",
-        "is required": "Tämä kenttä on pakollinen",
-        "must be an url": "Ei ole kelvollinen URL-osoite",
-        "not a valid access key id": "Tämä ei näytä kelvolliselta pääsyavain-ID:ltä",
-        "url textField label": "URL",
-        "url textField helper text": "S3-palvelun URL-osoite",
-        "region textField label": "AWS S3-alue",
-        "region textField helper text":
-            "Esimerkki: eu-west-1, jos epävarma, jätä tyhjäksi",
-        "workingDirectoryPath textField label": "Työkansion polku",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Tämän avulla voit määrittää ämpärin ja S3-objektin etuliitteen, joka
-                sinulla on S3-palvelussa. <br />
-                Esimerkki: <code>minun-ämpäri/etuliitteeni/</code> tai{" "}
-                <code>vain minun-ämpäri/</code> jos omistat koko ämpärin.
-            </>
-        ),
-        "account credentials": "Tilin tunnistetiedot",
-        "friendlyName textField label": "Konfiguraation nimi",
-        "friendlyName textField helper text":
-            "Tämä auttaa sinua tunnistamaan tämän konfiguraation. Esimerkki: Minun AWS-bucket",
-        "isAnonymous switch label": "Anonyymi pääsy",
-        "isAnonymous switch helper text":
-            "Aseta PÄÄLLE, jos salainen pääsyavain ei ole tarpeen",
-
-        "accessKeyId textField label": "Pääsyavaimen tunnus",
-        "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Salainen pääsyavain",
-        "sessionToken textField label": "Istuntotunnus",
-        "sessionToken textField helper text": "Valinnainen, jätä tyhjäksi, jos epävarma",
-        "url style": "URL-tyyli",
-        "url style helper text": `Määritä, miten S3-palvelimesi muotoilee tiedostojen lataamisen URL-osoitteita.`,
-        "path style label": ({ example }) => (
-            <>
-                Polkutyyli
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}tietoaineisto.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtual-hosted tyyli
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}tietoaineisto.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Testaa yhteys",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Yhteystestaus epäonnistui virheellä: <br />
-                {errorMessage}
-            </>
-        )
-    },
     AccountUserInterfaceTab: {
         title: "Käyttöliittymän asetukset",
         "enable dark mode": "Ota tumma tila käyttöön",
@@ -307,44 +179,6 @@ export const translations: Translations<"fi"> = {
         reset: "Nollaa",
         "reset helper dialogs helper text":
             "Nollaa ohjeviestit, joista on pyydetty, ettei niitä näytetä uudelleen"
-    },
-    FileExplorerEntry: {
-        "page title - file explorer": "Tiedostoselain",
-        "what this page is used for - file explorer":
-            "Täällä voit selata S3 Bucket -tiedostojasi.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lue{" "}
-                <MuiLink href={docHref} target="_blank">
-                    dokumentaatiomme
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
-            </>
-        ),
-        "title personal": "Omat tietoni",
-        "description personal": "Omat tiedostosi ja tietoaineistosi.",
-        "title project": ({ projectName }) => `Projekti ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Projektin ${projectName} yhteinen tallennustila`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Omat tiedot";
-                case "project":
-                    return "Ryhmän tiedot";
-            }
-        }
-    },
-    S3EntryCard: {
-        "space path": "Tilapolku"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "S3-palvelinta ei ole määritetty",
-        "dialog body":
-            "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",
-        cancel: "Peruuta",
-        "go to settings": "Siirry asetuksiin"
     },
     ConfirmBucketCreationAttemptDialog: {
         "bucket does not exist title": ({ bucket }) => `Bucket ${bucket} ei ole olemassa`,
@@ -594,17 +428,14 @@ export const translations: Translations<"fi"> = {
         reduce: "Pienennä",
         home: "Koti",
         account: "Oma tili",
-        projectSettings: "Projektin asetukset",
         catalog: "Palvelukatalogi",
         myServices: "Omat palvelut",
         mySecrets: "Omat salaisuudet",
-        myFiles: "Omat tiedostot",
         "divider: services features": "Palvelun ominaisuudet",
         "divider: external services features": "Ulkoisten palveluiden ominaisuudet",
         "divider: onyxia instance specific features":
             "Onyxia-instanssin erityisominaisuudet",
         dataExplorer: "Data Explorer",
-        fileExplorer: "Tiedostonhallinta",
         dataCollection: "Kokoelmien selains",
         sqlOlapShell: "SQL OLAP-kuori"
     },

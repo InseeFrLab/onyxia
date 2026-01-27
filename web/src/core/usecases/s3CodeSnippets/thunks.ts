@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { actions } from "./state";
 import { assert } from "tsafe/assert";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import type { Technology } from "./state";
 import { parseUrl } from "core/tools/parseUrl";
 import { privateSelectors } from "./selectors";
@@ -14,7 +14,7 @@ export const thunks = {
         () =>
         (...args): boolean => {
             const [, getState] = args;
-            return privateSelectors.s3Config(getState()) !== undefined;
+            return privateSelectors.s3Profile(getState()) !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     refresh:
@@ -30,24 +30,24 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const s3Config = privateSelectors.s3Config(getState());
+            const s3Profile = privateSelectors.s3Profile(getState());
 
-            assert(s3Config !== undefined);
+            assert(s3Profile !== undefined);
 
             const { region, host, port } = (() => {
                 const { host, port = 443 } = parseUrl(
-                    s3Config.paramsOfCreateS3Client.url
+                    s3Profile.paramsOfCreateS3Client.url
                 );
 
-                const region = s3Config.paramsOfCreateS3Client.region;
+                const region = s3Profile.paramsOfCreateS3Client.region;
 
                 return { region, host, port };
             })();
 
             const { tokens } = await (async () => {
                 const s3Client = await dispatch(
-                    s3ConfigManagement.protectedThunks.getS3ClientForSpecificConfig({
-                        s3ConfigId: s3Config.id
+                    s3ProfilesManagement.protectedThunks.getS3Client({
+                        profileName: s3Profile.profileName
                     })
                 );
 

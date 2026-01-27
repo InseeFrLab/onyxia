@@ -5,7 +5,7 @@ import { useCoreState, getCoreSync } from "core";
 import {
     Explorer as HeadlessExplorer,
     type ExplorerProps as HeadlessExplorerProps
-} from "../fileExplorer/Explorer";
+} from "./headless/Explorer";
 import { routes } from "ui/routes";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
@@ -85,7 +85,6 @@ function Explorer_inner(props: Props) {
         isNavigationOngoing,
         uploadProgress,
         currentWorkingDirectoryView,
-        pathMinDepth,
         viewMode,
         shareView,
         isDownloadPreparing
@@ -287,7 +286,6 @@ function Explorer_inner(props: Props) {
                 onRefresh={onRefresh}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}
-                pathMinDepth={pathMinDepth}
                 onOpenFile={onOpenFile}
                 viewMode={viewMode}
                 onViewModeChange={fileExplorer.changeViewMode}

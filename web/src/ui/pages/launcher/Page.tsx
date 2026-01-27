@@ -266,10 +266,7 @@ function Launcher() {
         myServicesSavedConfigsExtendedLink: routes.myServices({
             isSavedConfigsExtended: true
         }).link,
-
-        projectS3ConfigLink: routes.projectSettings({
-            tabId: "s3-configs"
-        }).link
+        projectS3ConfigLink: routes.s3Explorer_root().link
     }));
 
     const { resolveLocalizedString } = useResolveLocalizedString({

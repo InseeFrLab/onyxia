@@ -7,9 +7,6 @@ import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
 import * as podLogs from "./podLogs";
 import * as restorableConfigManagement from "./restorableConfigManagement";
-import * as s3ConfigConnectionTest from "./s3ConfigConnectionTest";
-import * as s3ConfigCreation from "./s3ConfigCreation";
-import * as s3ConfigManagement from "./s3ConfigManagement";
 import * as serviceDetails from "./serviceDetails";
 import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
@@ -39,9 +36,6 @@ export const usecases = {
     launcher,
     podLogs,
     restorableConfigManagement,
-    s3ConfigConnectionTest,
-    s3ConfigCreation,
-    s3ConfigManagement,
     serviceDetails,
     serviceManagement,
     userAuthentication,

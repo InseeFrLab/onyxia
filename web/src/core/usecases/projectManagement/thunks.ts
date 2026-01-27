@@ -11,7 +11,6 @@ import { updateDefaultS3ProfilesAfterPotentialDeletion } from "core/usecases/_s3
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { getProjectVaultTopDirPath_reserved } from "./decoupledLogic/projectVaultTopDirPath_reserved";
 import { secretToValue, valueToSecret } from "./decoupledLogic/secretParsing";
-import { projectConfigsMigration } from "./decoupledLogic/projectConfigsMigration";
 import { symToStr } from "tsafe/symToStr";
 import { type ProjectConfigs, zProjectConfigs } from "./decoupledLogic/ProjectConfigs";
 import { clearProjectConfigs } from "./decoupledLogic/clearProjectConfigs";
@@ -67,11 +66,6 @@ export const thunks = {
 
             const projectVaultTopDirPath_reserved = getProjectVaultTopDirPath_reserved({
                 projectVaultTopDirPath
-            });
-
-            await projectConfigsMigration({
-                secretsManager,
-                projectVaultTopDirPath_reserved
             });
 
             const { projectConfigs } = await (async function getProjectConfig(): Promise<{

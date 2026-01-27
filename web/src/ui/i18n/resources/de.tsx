@@ -132,132 +132,6 @@ export const translations: Translations<"de"> = {
         ),
         "expires in": ({ howMuchTime }) => `Das Token läuft in ${howMuchTime} ab`
     },
-    ProjectSettings: {
-        "page header title": "Projekteinstellungen",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Einstellungen Ihres persönlichen Projekts"
-                : `Einstellungen für "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Diese Seite ermöglicht es Ihnen, die Einstellungen zu konfigurieren, die
-                auf
-                {groupProjectName === undefined
-                    ? " Ihr persönliches Projekt"
-                    : ` das ${groupProjectName}`}{" "}
-                angewendet werden.
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Beachten Sie, dass {groupProjectName} ein Gruppenprojekt ist, das
-                        mit anderen Benutzern geteilt wird; die hier vorgenommenen
-                        Änderungen gelten für alle Mitglieder des Projekts.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        Sie können zwischen Ihren Projekten wechseln, indem Sie das
-                        Dropdown-Menü in der Kopfzeile verwenden.
-                        <br />
-                    </>
-                )}
-                Beachten Sie, dass nur Ihr Onyxia-Instanzadministrator neue Projekte
-                erstellen kann.
-            </>
-        ),
-        "security-info": "Sicherheitsinformationen",
-        "s3-configs": "S3-Konfigurationen"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Eine benutzerdefinierte S3-Konfiguration hinzufügen"
-    },
-    S3ConfigCard: {
-        "data source": "Datenquelle",
-        credentials: "Anmeldedaten",
-        "sts credentials":
-            "Dynamisch angeforderte Tokens in Ihrem Auftrag von Onyxia (STS)",
-        account: "Konto",
-        "use in services": "In Diensten verwenden",
-        "use in services helper": `Wenn aktiviert, wird diese Konfiguration standardmäßig in Ihren Diensten verwendet, die eine S3-Integration implementieren.`,
-        "use for onyxia explorers": "Für Onyxia-Explorer verwenden",
-        "use for onyxia explorers helper": `Wenn aktiviert, wird diese Konfiguration vom Datei-Explorer und dem Daten-Explorer verwendet.`,
-        edit: "Bearbeiten",
-        delete: "Löschen"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Neue benutzerdefinierte S3-Konfiguration",
-        "dialog subtitle":
-            "Geben Sie ein benutzerdefiniertes Dienstkonto an oder verbinden Sie sich mit einem anderen S3-kompatiblen Dienst",
-        cancel: "Abbrechen",
-        "save config": "Konfiguration speichern",
-        "update config": "Konfiguration aktualisieren",
-        "is required": "Dieses Feld ist erforderlich",
-        "must be an url": "Keine gültige URL",
-        "not a valid access key id":
-            "Das sieht nicht nach einer gültigen Zugangsschlüssel-ID aus",
-        "url textField label": "URL",
-        "url textField helper text": "URL des S3-Dienstes",
-        "region textField label": "AWS S3-Region",
-        "region textField helper text": "Beispiel: eu-west-1, wenn unsicher, leer lassen",
-        "workingDirectoryPath textField label": "Arbeitsverzeichnispfad",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Hiermit können Sie den Bucket und das S3-Objektprefix angeben, das Sie im
-                S3-Dienst besitzen. <br />
-                Beispiel: <code>mein-bucket/mein-präfix/</code> oder{" "}
-                <code>nur mein-bucket/</code> wenn Sie den ganzen Bucket besitzen.
-            </>
-        ),
-        "account credentials": "Kontozugangsdaten",
-        "friendlyName textField label": "Konfigurationsname",
-        "friendlyName textField helper text":
-            "Dies hilft Ihnen nur, diese Konfiguration zu identifizieren. Beispiel: Mein AWS-Bucket",
-        "isAnonymous switch label": "Anonymer Zugang",
-        "isAnonymous switch helper text":
-            "Auf EIN stellen, wenn kein geheimer Zugangsschlüssel erforderlich ist",
-        "accessKeyId textField label": "Zugangsschlüssel-ID",
-        "accessKeyId textField helper text": "Beispiel: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Geheimer Zugangsschlüssel",
-        "sessionToken textField label": "Sitzungstoken",
-        "sessionToken textField helper text": "Optional, leer lassen, wenn unsicher",
-        "url style": "URL-Stil",
-        "url style helper text": `Geben Sie an, wie Ihr S3-Server die URL für das Herunterladen von Dateien formatiert.`,
-        "path style label": ({ example }) => (
-            <>
-                Pfadstil
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}meine-daten.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtual-hosted-Stil
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}meine-daten.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Verbindung testen",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Verbindungstest fehlgeschlagen mit Fehler: <br />
-                {errorMessage}
-            </>
-        )
-    },
     AccountUserInterfaceTab: {
         title: "Konfiguration der Benutzeroberfläche",
         "enable dark mode": "Dunkelmodus aktivieren",
@@ -311,43 +185,6 @@ export const translations: Translations<"de"> = {
         reset: "Zurücksetzen",
         "reset helper dialogs helper text":
             "Die Hilfsdialoge zurücksetzen, die Sie aufgefordert haben, nicht mehr anzuzeigen"
-    },
-    FileExplorerEntry: {
-        "page title - file explorer": "Datei-Explorer",
-        "what this page is used for - file explorer": "Speichern Sie hier Ihre Dateien.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lesen Sie
-                <MuiLink href={docHref} target="_blank">
-                    unsere Dokumentation
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>MinIO-Clients konfigurieren</MuiLink>.
-            </>
-        ),
-        "title personal": "Meine Daten",
-        "description personal": "Ihre eigenen Dateien und Datensätze.",
-        "title project": ({ projectName }) => `Projekt ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Gemeinsamer Speicherplatz für das Projekt ${projectName}`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Meine Daten";
-                case "project":
-                    return "Gruppendaten";
-            }
-        }
-    },
-    S3EntryCard: {
-        "space path": "Pfad des Bereichs"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "Kein S3-Server konfiguriert",
-        "dialog body":
-            "Für diese Instanz ist kein S3-Server konfiguriert. Sie können jedoch manuell einen hinzufügen, um den S3-Dateiexplorer zu aktivieren.",
-        cancel: "Abbrechen",
-        "go to settings": "Zu den Einstellungen gehen"
     },
     ConfirmBucketCreationAttemptDialog: {
         "bucket does not exist title": ({ bucket }) =>
@@ -599,18 +436,15 @@ export const translations: Translations<"de"> = {
         reduce: "Reduzieren",
         home: "Startseite",
         account: "Mein Konto",
-        projectSettings: "Projekteinstellungen",
         catalog: "Servicekatalog",
         myServices: "Meine Dienste",
         mySecrets: "Meine Geheimnisse",
-        myFiles: "Meine Dateien",
         "divider: services features": "Funktionen im Zusammenhang mit Diensten",
         "divider: external services features":
             "Funktionen im Zusammenhang mit externen Diensten",
         "divider: onyxia instance specific features":
             "Funktionen spezifisch für diese Onyxia-Instanz",
         dataExplorer: "Daten-Explorer",
-        fileExplorer: "Datei-Explorer",
         dataCollection: "Sammlungs-Explorer",
         sqlOlapShell: "SQL OLAP-Shell"
     },

@@ -2,7 +2,7 @@ import type { State as RootState } from "core/bootstrap";
 import { name } from "./state";
 import { createSelector } from "clean-architecture";
 import { assert } from "tsafe/assert";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -321,15 +321,16 @@ const main = createSelector(
 
 export const selectors = { main };
 
-const s3Config = createSelector(s3ConfigManagement.selectors.s3Configs, s3Configs =>
-    s3Configs.find(
-        s3Config =>
-            s3Config.origin === "deploymentRegion" &&
-            s3Config.paramsOfCreateS3Client.isStsEnabled
+const s3Profile = createSelector(s3ProfilesManagement.selectors.s3Profiles, s3Profiles =>
+    s3Profiles.find(
+        s3Profile =>
+            s3Profile.origin === "defined in region" &&
+            s3Profile.paramsOfCreateS3Client.isStsEnabled &&
+            s3Profile.isExplorerConfig
     )
 );
 
 export const privateSelectors = {
-    s3Config,
+    s3Profile,
     isRefreshing
 };
