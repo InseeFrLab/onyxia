@@ -31,7 +31,18 @@ if (import.meta.env.DEV) {
         securityDefenses: {
             ...browserRuntimeFreeze(),
             ...DPoP?.({ mode: "auto" })
-        }
+        },
+        sessionRestorationMethod: (() => {
+            switch (import.meta.env.OIDC_SESSION_RESTORATION_METHOD) {
+                case "iframe":
+                    return "iframe";
+                case "full page redirect":
+                    return "full page redirect";
+                case "auto":
+                default:
+                    return undefined;
+            }
+        })()
     });
 
     if (!shouldLoadApp) {
