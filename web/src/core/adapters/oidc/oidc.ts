@@ -32,8 +32,25 @@ export async function createOidc<AutoLogin extends boolean>(
         enableDebugLogs
     } = params;
 
-    let audience_extraQueryParams: string | undefined = undefined;
-    let resource_extraQueryParams: string | undefined = undefined;
+    const extraQueryParams_raw_normalized = extraQueryParams_raw
+        ?.replace(/^\?/, "")
+        .replace(/^&/, "")
+        .replace(/&$/, "");
+
+    const extraTokenParams = (() => {
+        if (!extraQueryParams_raw_normalized) {
+            return undefined;
+        }
+
+        const o = getAllSearchParams(
+            `https://dummy.com?${extraQueryParams_raw_normalized}`
+        );
+
+        return {
+            audience: o["audience"],
+            resource: o["resource"]
+        };
+    })();
 
     const oidc = await createOidcSpa({
         issuerUri,
@@ -41,31 +58,15 @@ export async function createOidc<AutoLogin extends boolean>(
         scopes: scope_spaceSeparated?.split(" "),
         transformUrlBeforeRedirect: ({ authorizationUrl, isSilent }) => {
             add_extraQueryParams_raw: {
-                if (extraQueryParams_raw === undefined) {
+                if (!extraQueryParams_raw_normalized) {
                     break add_extraQueryParams_raw;
                 }
 
-                const extraQueryParams_raw_normalized = extraQueryParams_raw
-                    .replace(/^\?/, "")
-                    .replace(/^&/, "")
-                    .replace(/&$/, "");
-
-                if (extraQueryParams_raw_normalized === "") {
-                    break add_extraQueryParams_raw;
-                }
-
-                for (const [name, value] of Object.entries(
+                for (const name of Object.keys(
                     getAllSearchParams(
                         `https://dummy.com?${extraQueryParams_raw_normalized}`
                     )
                 )) {
-                    if (name === "audience") {
-                        audience_extraQueryParams = value;
-                    }
-                    if (name === "resource") {
-                        resource_extraQueryParams = value;
-                    }
-
                     const { wasPresent, url_withoutTheParam } = getSearchParam({
                         url: authorizationUrl,
                         name
@@ -95,14 +96,7 @@ export async function createOidc<AutoLogin extends boolean>(
 
             return authorizationUrl;
         },
-        extraTokenParams: {
-            get audience() {
-                return audience_extraQueryParams;
-            },
-            get resource() {
-                return resource_extraQueryParams;
-            }
-        },
+        extraTokenParams,
         idleSessionLifetimeInSeconds,
         debugLogs: enableDebugLogs,
         autoLogin
