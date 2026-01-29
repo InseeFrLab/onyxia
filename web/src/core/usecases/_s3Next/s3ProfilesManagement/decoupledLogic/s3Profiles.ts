@@ -1,7 +1,7 @@
 import * as projectManagement from "core/usecases/projectManagement";
 import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
-import { assert, type Equals } from "tsafe";
+import { assert } from "tsafe";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
 import type { ResolvedTemplateStsRole } from "./resolveTemplatedStsRole";
@@ -13,8 +13,6 @@ export type S3Profile = S3Profile.DefinedInRegion | S3Profile.CreatedByUser;
 export namespace S3Profile {
     type Common = {
         profileName: string;
-        isXOnyxiaDefault: boolean;
-        isExplorerConfig: boolean;
         bookmarks: Bookmark[];
     };
 
@@ -38,11 +36,11 @@ export namespace S3Profile {
 
 export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
     fromVault: {
-        projectConfigs_s3: projectManagement.ProjectConfigs["s3"];
+        s3Profiles: projectManagement.ProjectConfigs.S3Profile[];
         userConfigs_s3BookmarksStr: string | null;
     };
     fromRegion: {
-        s3Profiles: DeploymentRegion.S3Next.S3Profile[];
+        s3Profiles: DeploymentRegion.S3Profile[];
         // NOTE: The resolvedXXX can be undefined only when the function is used to
         // the stablish the default profiles (for explorer and services)
         resolvedTemplatedBookmarks:
@@ -62,7 +60,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
     const { fromVault, fromRegion } = params;
 
     const s3Profiles: S3Profile[] = [
-        ...fromVault.projectConfigs_s3.s3Configs
+        ...fromVault.s3Profiles
             .map((c): S3Profile.CreatedByUser => {
                 const url = c.url;
                 const pathStyleAccess = c.pathStyleAccess;
@@ -78,11 +76,9 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
 
                 return {
                     origin: "created by user (or group project member)",
-                    profileName: c.friendlyName,
+                    profileName: c.profileName,
                     creationTime: c.creationTime,
                     paramsOfCreateS3Client,
-                    isXOnyxiaDefault: false,
-                    isExplorerConfig: false,
                     bookmarks: (c.bookmarks ?? []).map(
                         ({ displayName, s3UriPrefixObj }) => ({
                             displayName,
@@ -191,9 +187,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                     s3UriPrefixObj: entry.s3UriPrefixObj
                                 }))
                         ],
-                        paramsOfCreateS3Client,
-                        isXOnyxiaDefault: false,
-                        isExplorerConfig: false
+                        paramsOfCreateS3Client
                     };
                 };
 
@@ -248,36 +242,6 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
             s3Profiles.splice(i, 1);
         }
     }
-
-    (
-        [
-            ["defaultXOnyxia", fromVault.projectConfigs_s3.s3ConfigId_defaultXOnyxia],
-            ["explorer", fromVault.projectConfigs_s3.s3ConfigId_explorer]
-        ] as const
-    ).forEach(([prop, profileName]) => {
-        if (profileName === undefined) {
-            return;
-        }
-
-        const s3Profile =
-            s3Profiles.find(s3Profile => s3Profile.profileName === profileName) ??
-            s3Profiles.find(s3Config => s3Config.origin === "defined in region");
-
-        if (s3Profile === undefined) {
-            return;
-        }
-
-        switch (prop) {
-            case "defaultXOnyxia":
-                s3Profile.isXOnyxiaDefault = true;
-                return;
-            case "explorer":
-                s3Profile.isExplorerConfig = true;
-                return;
-            default:
-                assert<Equals<typeof prop, never>>(false);
-        }
-    });
 
     return s3Profiles;
 }

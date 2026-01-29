@@ -10,13 +10,15 @@ import { name } from "./state";
 import type { State as RootState } from "core/bootstrap";
 import * as userAuthentication from "core/usecases/userAuthentication";
 
+const state = (rootState: RootState) => rootState[name];
+
 const resolvedTemplatedBookmarks = createSelector(
-    (state: RootState) => state[name],
+    state,
     state => state.resolvedTemplatedBookmarks
 );
 
 const resolvedTemplatedStsRoles = createSelector(
-    (state: RootState) => state[name],
+    state,
     state => state.resolvedTemplatedStsRoles
 );
 
@@ -28,17 +30,17 @@ const userConfigs_s3BookmarksStr = createSelector(
 const s3Profiles = createSelector(
     createSelector(
         projectManagement.protectedSelectors.projectConfig,
-        projectConfig => projectConfig.s3
+        projectConfig => projectConfig.s3Profiles
     ),
     createSelector(
         deploymentRegionManagement.selectors.currentDeploymentRegion,
-        deploymentRegion => deploymentRegion._s3Next.s3Profiles
+        deploymentRegion => deploymentRegion.s3Profiles
     ),
     resolvedTemplatedBookmarks,
     resolvedTemplatedStsRoles,
     userConfigs_s3BookmarksStr,
     (
-        projectConfigs_s3,
+        s3Profiles_vault,
         s3Profiles_region,
         resolvedTemplatedBookmarks,
         resolvedTemplatedStsRoles,
@@ -46,7 +48,7 @@ const s3Profiles = createSelector(
     ): S3Profile[] =>
         aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
             fromVault: {
-                projectConfigs_s3,
+                s3Profiles: s3Profiles_vault,
                 userConfigs_s3BookmarksStr
             },
             fromRegion: {
@@ -62,20 +64,35 @@ const isS3ExplorerEnabled = (rootState: RootState) => {
     const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
 
     if (!isUserLoggedIn) {
-        const { s3Configs } =
-            deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
-
-        return s3Configs.length !== 0;
-    } else {
         return (
-            s3Profiles(rootState).find(s3Profile => s3Profile.isExplorerConfig) !==
-            undefined
+            deploymentRegionManagement.selectors.currentDeploymentRegion(rootState)
+                .s3Profiles.length !== 0
         );
     }
+
+    return s3Profiles(rootState).length !== 0;
 };
+
+const ambientS3Profile = createSelector(
+    s3Profiles,
+    createSelector(state, state => state.ambientProfileName),
+    (s3Profiles, ambientProfileName) => {
+        return (
+            s3Profiles.find(
+                ambientProfileName === undefined
+                    ? () => false
+                    : s3Profiles => s3Profiles.profileName === ambientProfileName
+            ) ??
+            s3Profiles.find(s3Profile => s3Profile.profileName === "default") ??
+            s3Profiles.find(s3Profile => s3Profile.origin === "defined in region") ??
+            s3Profiles.find(() => true)
+        );
+    }
+);
 
 export const selectors = { s3Profiles, isS3ExplorerEnabled };
 
 export const protectedSelectors = {
-    resolvedTemplatedBookmarks
+    resolvedTemplatedBookmarks,
+    ambientS3Profile
 };

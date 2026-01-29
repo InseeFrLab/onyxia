@@ -73,9 +73,7 @@ export const thunks = {
             }
 
             const { s3Profiles_defaultValuesOfCreationForm } =
-                deploymentRegionManagement.selectors.currentDeploymentRegion(
-                    getState()
-                )._s3Next;
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
             if (s3Profiles_defaultValuesOfCreationForm === undefined) {
                 dispatch(
@@ -126,17 +124,17 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const s3Config_vault =
-                privateSelectors.submittableFormValuesAsProjectS3Config(getState());
+            const s3Profile_vault =
+                privateSelectors.submittableFormValuesAsS3Profile_vault(getState());
 
-            assert(s3Config_vault !== null);
-            assert(s3Config_vault !== undefined);
+            assert(s3Profile_vault !== null);
+            assert(s3Profile_vault !== undefined);
 
             await dispatch(
                 s3ProfilesManagement.protectedThunks.createOrUpdateS3Profile({
-                    s3Config_vault: {
-                        ...s3Config_vault,
-                        creationTime: s3Config_vault.creationTime ?? Date.now()
+                    s3Profile_vault: {
+                        ...s3Profile_vault,
+                        creationTime: s3Profile_vault.creationTime ?? Date.now()
                     }
                 })
             );

@@ -27,8 +27,8 @@ export async function clearProjectConfigs(params: {
             [
                 "__modelVersion",
                 "servicePassword",
-                "restorableConfigs",
-                "s3",
+                "restorableServiceConfigs",
+                "s3Profiles",
                 "clusterNotificationCheckoutTime"
             ] as const
         ).map(async key => {

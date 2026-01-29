@@ -1,10 +1,11 @@
 import type { S3UriPrefixObj } from "core/tools/S3Uri";
 import { z } from "zod";
 import { assert, type Equals, id, is } from "tsafe";
+import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefined";
 
 export type UserProfileS3Bookmark = {
     profileName: string;
-    displayName: string | null;
+    displayName: string | undefined;
     s3UriPrefixObj: S3UriPrefixObj;
 };
 
@@ -28,14 +29,15 @@ const zUserProfileS3Bookmark = (() => {
 
     const zTargetType = z.object({
         profileName: z.string(),
-        displayName: z.union([z.string(), z.null()]),
+        displayName: z.union([z.string(), z.undefined()]),
         s3UriPrefixObj: zS3UriPrefixObj
     });
 
     type InferredType = z.infer<typeof zTargetType>;
 
-    assert<Equals<TargetType, InferredType>>;
+    assert<Equals<InferredType, OptionalIfCanBeUndefined<TargetType>>>;
 
+    // @ts-expect-error
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 

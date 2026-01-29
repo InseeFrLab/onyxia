@@ -6,6 +6,7 @@ import type { ResolvedTemplateBookmark } from "./decoupledLogic/resolveTemplated
 import type { ResolvedTemplateStsRole } from "./decoupledLogic/resolveTemplatedStsRole";
 
 type State = {
+    ambientProfileName: string | undefined;
     resolvedTemplatedBookmarks: {
         correspondingS3ConfigIndexInRegion: number;
         bookmarks: ResolvedTemplateBookmark[];
@@ -36,11 +37,20 @@ export const { reducer, actions } = createUsecaseActions({
             const { resolvedTemplatedBookmarks, resolvedTemplatedStsRoles } = payload;
 
             const state: State = {
+                ambientProfileName: undefined,
                 resolvedTemplatedBookmarks,
                 resolvedTemplatedStsRoles
             };
 
             return state;
+        },
+        ambientProfileChanged: (
+            state,
+            { payload }: { payload: { profileName: string } }
+        ) => {
+            const { profileName } = payload;
+
+            state.ambientProfileName = profileName;
         }
     }
 });
