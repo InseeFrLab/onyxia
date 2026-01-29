@@ -7,9 +7,6 @@ import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
 import * as podLogs from "./podLogs";
 import * as restorableConfigManagement from "./restorableConfigManagement";
-import * as s3ConfigConnectionTest from "./s3ConfigConnectionTest";
-import * as s3ConfigCreation from "./s3ConfigCreation";
-import * as s3ConfigManagement from "./s3ConfigManagement";
 import * as serviceDetails from "./serviceDetails";
 import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
@@ -25,6 +22,10 @@ import * as projectManagement from "./projectManagement";
 import * as viewQuotas from "./viewQuotas";
 import * as dataCollection from "./dataCollection";
 
+import * as s3ProfilesManagement from "./_s3Next/s3ProfilesManagement";
+import * as s3ProfilesCreationUiController from "./_s3Next/s3ProfilesCreationUiController";
+import * as s3ExplorerRootUiController from "./_s3Next/s3ExplorerRootUiController";
+
 export const usecases = {
     autoLogoutCountdown,
     catalog,
@@ -35,9 +36,6 @@ export const usecases = {
     launcher,
     podLogs,
     restorableConfigManagement,
-    s3ConfigConnectionTest,
-    s3ConfigCreation,
-    s3ConfigManagement,
     serviceDetails,
     serviceManagement,
     userAuthentication,
@@ -51,5 +49,9 @@ export const usecases = {
     dataExplorer,
     projectManagement,
     viewQuotas,
-    dataCollection
+    dataCollection,
+    // Next
+    s3ProfilesManagement,
+    s3ProfilesCreationUiController,
+    s3ExplorerRootUiController
 };

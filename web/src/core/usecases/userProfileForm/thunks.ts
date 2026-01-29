@@ -123,7 +123,7 @@ export const protectedThunks = {
                 xOnyxiaContext: await dispatch(
                     launcher.protectedThunks.getXOnyxiaContext({
                         doInjectPersonalInfos: true,
-                        s3ConfigId: undefined
+                        s3ProfileName: undefined
                     })
                 ),
                 helmValuesYaml: "{}",

@@ -7,7 +7,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as s3ConfigManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";
@@ -155,7 +155,7 @@ const chartVersion = createSelector(readyState, state => {
 });
 
 const s3ConfigSelect = createSelector(
-    s3ConfigManagement.selectors.s3Configs,
+    s3ConfigManagement.selectors.s3Profiles,
     isReady,
     projectManagement.selectors.canInjectPersonalInfos,
     createSelector(readyState, state => {
@@ -177,7 +177,7 @@ const s3ConfigSelect = createSelector(
         }
 
         const availableConfigs = s3Configs.filter(
-            config => canInjectPersonalInfos || config.origin !== "deploymentRegion"
+            config => canInjectPersonalInfos || config.origin !== "defined in region"
         );
 
         // We don't display the s3 config selector if there is no config or only one
@@ -186,15 +186,8 @@ const s3ConfigSelect = createSelector(
         }
 
         return {
-            options: availableConfigs.map(s3Config => ({
-                optionValue: s3Config.id,
-                label: {
-                    dataSource: s3Config.dataSource,
-                    friendlyName:
-                        s3Config.origin === "project" ? s3Config.friendlyName : undefined
-                }
-            })),
-            selectedOptionValue: s3Config.s3ConfigId
+            options: availableConfigs.map(s3Config => s3Config.profileName),
+            selectedOptionValue: s3Config.s3ProfileName
         };
     }
 );
@@ -218,7 +211,7 @@ const restorableConfig = createSelector(
         if (state === null) {
             return null;
         }
-        return state.s3Config.isChartUsingS3 ? state.s3Config.s3ConfigId : undefined;
+        return state.s3Config.isChartUsingS3 ? state.s3Config.s3ProfileName : undefined;
     }),
     helmValues,
     createSelector(readyState, state => {
@@ -235,7 +228,7 @@ const restorableConfig = createSelector(
         catalogId,
         chartName,
         chartVersion,
-        s3ConfigId,
+        s3ProfileName,
         helmValues,
         helmValues_default
     ): projectManagement.ProjectConfigs.RestorableServiceConfig | null => {
@@ -248,7 +241,7 @@ const restorableConfig = createSelector(
         assert(isShared !== null);
         assert(chartName !== null);
         assert(chartVersion !== null);
-        assert(s3ConfigId !== null);
+        assert(s3ProfileName !== null);
         assert(helmValues !== null);
         assert(helmValues_default !== null);
 
@@ -263,7 +256,7 @@ const restorableConfig = createSelector(
             friendlyName,
             isShared,
             chartVersion,
-            s3ConfigId,
+            s3ConfigId: s3ProfileName,
             helmValuesPatch: diffPatch
         };
     }
@@ -316,7 +309,7 @@ const isDefaultConfiguration = createSelector(
             return null;
         }
         const { s3Config } = state;
-        return s3Config.isChartUsingS3 ? s3Config.s3ConfigId_default : undefined;
+        return s3Config.isChartUsingS3 ? s3Config.s3ProfileName_default : undefined;
     }),
     restorableConfig,
     (
@@ -324,7 +317,7 @@ const isDefaultConfiguration = createSelector(
         friendlyName_default,
         chartVersion_default,
         isShared_default,
-        s3ConfigId_default,
+        s3ProfileName_default,
         restorableConfig
     ) => {
         if (!isReady) {
@@ -333,14 +326,15 @@ const isDefaultConfiguration = createSelector(
         assert(friendlyName_default !== null);
         assert(chartVersion_default !== null);
         assert(isShared_default !== null);
-        assert(s3ConfigId_default !== null);
+        assert(s3ProfileName_default !== null);
         assert(restorableConfig !== null);
 
         return (
             restorableConfig.chartVersion === chartVersion_default &&
             restorableConfig.isShared === isShared_default &&
             restorableConfig.friendlyName === friendlyName_default &&
-            restorableConfig.helmValuesPatch.length === 0
+            restorableConfig.helmValuesPatch.length === 0 &&
+            restorableConfig.s3ConfigId === s3ProfileName_default
         );
     }
 );

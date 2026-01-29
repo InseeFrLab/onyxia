@@ -2,14 +2,12 @@ import type { State as RootState } from "core/bootstrap";
 import { type State, name } from "./state";
 import { createSelector } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
-import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe/assert";
-import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
 import { join as pathJoin, relative as pathRelative } from "pathe";
 import { getUploadProgress } from "./decoupledLogic/uploadProgress";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -70,18 +68,20 @@ export namespace CurrentWorkingDirectoryView {
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.navigationError),
     createSelector(state, state => state.objects),
     createSelector(state, state => state.ongoingOperations),
     createSelector(state, state => state.s3FilesBeingUploaded),
     createSelector(state, state => state.isBucketPolicyAvailable),
     (
         directoryPath,
+        navigationError,
         objects,
         ongoingOperations,
         s3FilesBeingUploaded,
         isBucketPolicyAvailable
     ): CurrentWorkingDirectoryView | null => {
-        if (directoryPath === undefined) {
+        if (directoryPath === undefined || navigationError !== undefined) {
             return null;
         }
         const items = [
@@ -284,58 +284,61 @@ const shareView = createSelector(
     }
 );
 
-const isNavigationOngoing = createSelector(state, state => state.isNavigationOngoing);
-
-const workingDirectoryPath = createSelector(
-    s3ConfigManagement.selectors.s3Configs,
-    s3Configs => {
-        const s3Config = s3Configs.find(s3Config => s3Config.isExplorerConfig);
-        assert(s3Config !== undefined);
-        return s3Config.workingDirectoryPath;
-    }
+const isNavigationOngoing = createSelector(
+    state,
+    state => state.ongoingNavigation !== undefined
 );
 
-const pathMinDepth = createSelector(workingDirectoryPath, workingDirectoryPath => {
-    // "jgarrone/" -> 0
-    // "jgarrone/foo/" -> 1
-    // "jgarrone/foo/bar/" -> 2
-    return workingDirectoryPath.split("/").length - 2;
-});
-
 const main = createSelector(
-    createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.navigationError),
     uploadProgress,
     commandLogsEntries,
     currentWorkingDirectoryView,
     isNavigationOngoing,
-    pathMinDepth,
     createSelector(state, state => state.viewMode),
     shareView,
     isDownloadPreparing,
     (
-        directoryPath,
+        navigationError,
         uploadProgress,
         commandLogsEntries,
         currentWorkingDirectoryView,
         isNavigationOngoing,
-        pathMinDepth,
         viewMode,
         shareView,
         isDownloadPreparing
     ) => {
-        if (directoryPath === undefined) {
+        if (currentWorkingDirectoryView === null) {
             return {
                 isCurrentWorkingDirectoryLoaded: false as const,
+                navigationError: (() => {
+                    if (navigationError === undefined) {
+                        return undefined;
+                    }
+                    switch (navigationError.errorCase) {
+                        case "access denied":
+                            return {
+                                errorCase: navigationError.errorCase,
+                                directoryPath: navigationError.directoryPath
+                            } as const;
+                        case "no such bucket":
+                            return {
+                                errorCase: navigationError.errorCase,
+                                bucket: parseS3UriPrefix({
+                                    s3UriPrefix: `s3://${navigationError.directoryPath}`,
+                                    strict: false
+                                }).bucket
+                            } as const;
+                    }
+                })(),
                 isNavigationOngoing,
                 uploadProgress,
                 commandLogsEntries,
-                pathMinDepth,
                 viewMode,
                 isDownloadPreparing
             };
         }
 
-        assert(currentWorkingDirectoryView !== null);
         assert(shareView !== null);
 
         return {
@@ -343,7 +346,6 @@ const main = createSelector(
             isNavigationOngoing,
             uploadProgress,
             commandLogsEntries,
-            pathMinDepth,
             currentWorkingDirectoryView,
             viewMode,
             shareView,
@@ -352,25 +354,8 @@ const main = createSelector(
     }
 );
 
-const isFileExplorerEnabled = (rootState: RootState) => {
-    const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
-
-    if (!isUserLoggedIn) {
-        const { s3Configs } =
-            deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
-
-        return s3Configs.length !== 0;
-    } else {
-        return (
-            s3ConfigManagement.selectors
-                .s3Configs(rootState)
-                .find(s3Config => s3Config.isExplorerConfig) !== undefined
-        );
-    }
-};
-
 const directoryPath = createSelector(state, state => state.directoryPath);
 
-export const protectedSelectors = { workingDirectoryPath, directoryPath, shareView };
+export const protectedSelectors = { directoryPath, shareView };
 
-export const selectors = { main, isFileExplorerEnabled };
+export const selectors = { main };

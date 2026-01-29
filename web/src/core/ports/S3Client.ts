@@ -34,11 +34,18 @@ export type S3Client = {
     /**
      *  In charge of creating bucket if doesn't exist.
      */
-    listObjects: (params: { path: string }) => Promise<{
-        objects: S3Object[];
-        bucketPolicy: S3BucketPolicy | undefined;
-        isBucketPolicyAvailable: boolean;
-    }>;
+    listObjects: (params: { path: string }) => Promise<
+        | {
+              isSuccess: false;
+              errorCase: "access denied" | "no such bucket";
+          }
+        | {
+              isSuccess: true;
+              objects: S3Object[];
+              bucketPolicy: S3BucketPolicy | undefined;
+              isBucketPolicyAvailable: boolean;
+          }
+    >;
 
     setPathAccessPolicy: (params: {
         path: string;
@@ -70,6 +77,15 @@ export type S3Client = {
     }>;
 
     getFileContentType: (params: { path: string }) => Promise<string | undefined>;
+
+    createBucket: (params: { bucket: string }) => Promise<
+        | { isSuccess: true }
+        | {
+              isSuccess: false;
+              errorCase: "already exist" | "access denied" | "unknown";
+              errorMessage: string;
+          }
+    >;
 
     // getPresignedUploadUrl: (params: {
     //     path: string;

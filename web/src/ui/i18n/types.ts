@@ -16,20 +16,20 @@ export type ComponentKey =
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems").I18n
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
     | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
-    | import("ui/pages/fileExplorerEntry/Page").I18n
-    | import("ui/pages/fileExplorerEntry/S3Entries/S3EntryCard").I18n
-    | import("ui/pages/fileExplorerEntry/FileExplorerDisabledDialog").I18n
-    | import("ui/pages/fileExplorer/Explorer/Explorer").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerButtonBar").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerItems").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerItems/ExplorerItem").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
-    | import("ui/pages/fileExplorer/Explorer/ListExplorer/ListExplorerItems").I18n
-    | import("ui/pages/fileExplorer/Explorer/ExplorerDownloadSnackbar").I18n
-    | import("ui/pages/fileExplorer/ShareFile/ShareDialog").I18n
-    | import("ui/pages/fileExplorer/ShareFile/SelectTime").I18n
+    | import("ui/pages/s3Explorer/ConfirmBucketCreationAttemptDialog").I18n
+    | import("ui/pages/s3Explorer/Explorer").I18n
+    | import("ui/pages/s3Explorer/S3ConfigDialogs/CreateOrUpdateProfileDialog").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/Explorer").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerButtonBar").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerItems").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerItems/ExplorerItem").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ListExplorer/ListExplorerItems").I18n
+    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerDownloadSnackbar").I18n
+    | import("ui/pages/s3Explorer/headless/ShareFile/ShareDialog").I18n
+    | import("ui/pages/s3Explorer/headless/ShareFile/SelectTime").I18n
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n
@@ -47,11 +47,6 @@ export type ComponentKey =
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n
     | import("ui/pages/account/AccountVaultTab").I18n
-    | import("ui/pages/projectSettings/Page").I18n
-    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/ProjectSettingsS3ConfigTab").I18n
-    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigCard").I18n
-    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigDialogs/AddCustomS3ConfigDialog").I18n
-    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/TestS3ConnectionButton").I18n
     | import("ui/App/Footer").I18n
     | import("ui/pages/catalog/Page").I18n
     | import("ui/pages/catalog/CatalogChartCard").I18n
