@@ -8,27 +8,19 @@ import { zStringifyableAtomic } from "core/tools/Stringifyable";
 import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 export type ProjectConfigs = {
-    __modelVersion: 1;
+    __modelVersion: 2;
     servicePassword: string;
-    restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
-    s3: {
-        s3Configs: ProjectConfigs.S3Config[];
-        // TODO: Rename to profileName_defaultXOnyxia
-        s3ConfigId_defaultXOnyxia: string | undefined;
-        // TODO: Rename to profileName_explorer
-        s3ConfigId_explorer: string | undefined;
-    };
+    restorableServiceConfigs: ProjectConfigs.RestorableServiceConfig[];
+    s3Profiles: ProjectConfigs.S3Profile[];
     clusterNotificationCheckoutTime: number;
 };
 
 export namespace ProjectConfigs {
-    export type S3Config = {
+    export type S3Profile = {
+        profileName: string;
         creationTime: number;
-        // TODO: Rename this to profileName
-        friendlyName: string;
         url: string;
         region: string | undefined;
-        workingDirectoryPath: string;
         pathStyleAccess: boolean;
         credentials:
             | {
@@ -37,10 +29,10 @@ export namespace ProjectConfigs {
                   sessionToken: string | undefined;
               }
             | undefined;
-        bookmarks: S3Config.Bookmark[] | undefined;
+        bookmarks: S3Profile.Bookmark[] | undefined;
     };
 
-    export namespace S3Config {
+    export namespace S3Profile {
         export type Bookmark = {
             displayName: string | undefined;
             s3UriPrefixObj: S3UriPrefixObj;
@@ -53,7 +45,7 @@ export namespace ProjectConfigs {
         catalogId: string;
         chartName: string;
         chartVersion: string;
-        s3ConfigId: string | undefined;
+        s3ProfileName: string | undefined;
         helmValuesPatch: {
             path: (string | number)[];
             value: StringifyableAtomic | undefined;
@@ -87,7 +79,7 @@ const zRestorableServiceConfig = (() => {
         catalogId: z.string(),
         chartName: z.string(),
         chartVersion: z.string(),
-        s3ConfigId: z.union([z.string(), z.undefined()]),
+        s3ProfileName: z.union([z.string(), z.undefined()]),
         helmValuesPatch: z.array(zHelmValuesPatch)
     });
 
@@ -98,7 +90,7 @@ const zRestorableServiceConfig = (() => {
 })();
 
 const zS3Credentials = (() => {
-    type TargetType = Exclude<ProjectConfigs.S3Config["credentials"], undefined>;
+    type TargetType = Exclude<ProjectConfigs.S3Profile["credentials"], undefined>;
 
     const zTargetType = z.object({
         accessKeyId: z.string(),
@@ -113,7 +105,7 @@ const zS3Credentials = (() => {
 })();
 
 const zS3ConfigBookmark = (() => {
-    type TargetType = ProjectConfigs.S3Config.Bookmark;
+    type TargetType = ProjectConfigs.S3Profile.Bookmark;
 
     const zTargetType = z.object({
         displayName: z.union([z.string(), z.undefined()]),
@@ -129,12 +121,12 @@ const zS3ConfigBookmark = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
-const zS3Config = (() => {
-    type TargetType = ProjectConfigs.S3Config;
+const zS3Profile = (() => {
+    type TargetType = ProjectConfigs.S3Profile;
 
     const zTargetType = z.object({
         creationTime: z.number(),
-        friendlyName: z.string(),
+        profileName: z.string(),
         url: z.string(),
         region: z.union([z.string(), z.undefined()]),
         workingDirectoryPath: z.string(),
@@ -143,22 +135,7 @@ const zS3Config = (() => {
         bookmarks: z.union([z.array(zS3ConfigBookmark), z.undefined()])
     });
 
-    assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();
-
-    // @ts-expect-error
-    return id<z.ZodType<TargetType>>(zTargetType);
-})();
-
-const zS3 = (() => {
-    type TargetType = ProjectConfigs["s3"];
-
-    const zTargetType = z.object({
-        s3Configs: z.array(zS3Config),
-        s3ConfigId_defaultXOnyxia: z.union([z.string(), z.undefined()]),
-        s3ConfigId_explorer: z.union([z.string(), z.undefined()])
-    });
-
-    assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();
+    assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>;
 
     // @ts-expect-error
     return id<z.ZodType<TargetType>>(zTargetType);
@@ -168,10 +145,10 @@ export const zProjectConfigs = (() => {
     type TargetType = ProjectConfigs;
 
     const zTargetType = z.object({
-        __modelVersion: z.literal(1),
+        __modelVersion: z.literal(2),
         servicePassword: z.string(),
-        restorableConfigs: z.array(zRestorableServiceConfig),
-        s3: zS3,
+        restorableServiceConfigs: z.array(zRestorableServiceConfig),
+        s3Profiles: z.array(zS3Profile),
         clusterNotificationCheckoutTime: z.number()
     });
 

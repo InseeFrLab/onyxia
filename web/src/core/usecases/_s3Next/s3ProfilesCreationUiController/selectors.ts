@@ -5,7 +5,6 @@ import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
-import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 
@@ -172,7 +171,7 @@ const formattedFormValuesUrl = createSelector(
     }
 );
 
-const submittableFormValuesAsProjectS3Config = createSelector(
+const submittableFormValuesAsS3Profile_vault = createSelector(
     isReady,
     formValues,
     formattedFormValuesUrl,
@@ -206,30 +205,30 @@ const submittableFormValuesAsProjectS3Config = createSelector(
 
         assert(formattedFormValuesUrl !== undefined);
 
-        const projectS3Config_current = (() => {
+        const s3Profile_vault_current = (() => {
             if (creationTimeOfProfileToEdit === undefined) {
                 return undefined;
             }
 
-            const projectS3Config_current = projectConfig.s3.s3Configs.find(
+            const s3Profile_vault_current = projectConfig.s3Profiles.find(
                 s3Config => s3Config.creationTime === creationTimeOfProfileToEdit
             );
 
-            assert(projectS3Config_current !== undefined);
+            assert(s3Profile_vault_current !== undefined);
 
-            return projectS3Config_current;
+            return s3Profile_vault_current;
         })();
 
         return id<
-            Omit<ProjectConfigs.S3Config, "creationTime"> & {
+            Omit<ProjectConfigs.S3Profile, "creationTime"> & {
                 creationTime: number | undefined;
             }
         >({
             creationTime:
-                projectS3Config_current === undefined
+                s3Profile_vault_current === undefined
                     ? undefined
-                    : projectS3Config_current.creationTime,
-            friendlyName: formValues.profileName.trim(),
+                    : s3Profile_vault_current.creationTime,
+            profileName: formValues.profileName.trim(),
             url: formattedFormValuesUrl,
             region: formValues.region?.trim(),
             pathStyleAccess: formValues.pathStyleAccess,
@@ -247,39 +246,10 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                     sessionToken: formValues.sessionToken
                 };
             })(),
-            // TODO: Delete once we move on
-            workingDirectoryPath:
-                projectS3Config_current === undefined
-                    ? "mybucket/my/prefix/"
-                    : projectS3Config_current.workingDirectoryPath,
             bookmarks:
-                projectS3Config_current === undefined
+                s3Profile_vault_current === undefined
                     ? []
-                    : projectS3Config_current.bookmarks
-        });
-    }
-);
-
-const paramsOfCreateS3Client = createSelector(
-    isReady,
-    submittableFormValuesAsProjectS3Config,
-    (isReady, submittableFormValuesAsProjectS3Config) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(submittableFormValuesAsProjectS3Config !== null);
-
-        if (submittableFormValuesAsProjectS3Config === undefined) {
-            return undefined;
-        }
-
-        return id<ParamsOfCreateS3Client.NoSts>({
-            url: submittableFormValuesAsProjectS3Config.url,
-            pathStyleAccess: submittableFormValuesAsProjectS3Config.pathStyleAccess,
-            isStsEnabled: false,
-            region: submittableFormValuesAsProjectS3Config.region,
-            credentials: submittableFormValuesAsProjectS3Config.credentials
+                    : s3Profile_vault_current.bookmarks
         });
     }
 );
@@ -360,9 +330,8 @@ const main = createSelector(
 
 export const privateSelectors = {
     formattedFormValuesUrl,
-    submittableFormValuesAsProjectS3Config,
-    formValuesErrors,
-    paramsOfCreateS3Client
+    submittableFormValuesAsS3Profile_vault,
+    formValuesErrors
 };
 
 export const selectors = { main };
