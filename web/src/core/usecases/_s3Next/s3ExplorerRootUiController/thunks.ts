@@ -16,28 +16,15 @@ export const thunks = {
             const { routeParams } = params;
 
             if (routeParams.profile !== undefined) {
-                const profileName = routeParams.profile;
-
-                {
-                    const s3Profiles =
-                        s3ProfilesManagement.selectors.s3Profiles(getState());
-
-                    if (
-                        s3Profiles.find(
-                            s3Profile => s3Profile.profileName === profileName
-                        ) === undefined
-                    ) {
-                        return dispatch(thunks.load({ routeParams: { path: "" } }));
-                    }
-                }
-
-                await dispatch(
-                    s3ProfilesManagement.protectedThunks.changeIsDefault({
-                        profileName,
-                        usecase: "explorer",
-                        value: true
+                const { doesProfileExist } = dispatch(
+                    s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                        profileName: routeParams.profile
                     })
                 );
+
+                if (!doesProfileExist) {
+                    return dispatch(thunks.load({ routeParams: { path: "" } }));
+                }
 
                 dispatch(actions.routeParamsSet({ routeParams }));
                 return { routeParams_toSet: undefined };
@@ -52,7 +39,7 @@ export const thunks = {
 
             const { s3Profile } =
                 (await dispatch(
-                    s3ProfilesManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                    s3ProfilesManagement.protectedThunks.getAmbientS3ProfileAndClient()
                 )) ?? {};
 
             const routeParams_toSet: RouteParams = {

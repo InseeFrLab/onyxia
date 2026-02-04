@@ -360,12 +360,17 @@ export const protectedThunks = {
 
             const s3Profiles = selectors.s3Profiles(getState());
 
-            assert(
+            const doesProfileExist =
                 s3Profiles.find(s3Profile => s3Profile.profileName === profileName) !==
-                    undefined
-            );
+                undefined;
+
+            if (!doesProfileExist) {
+                return { doesProfileExist };
+            }
 
             dispatch(actions.ambientProfileChanged({ profileName }));
+
+            return { doesProfileExist };
         },
     initialize:
         () =>
@@ -406,53 +411,49 @@ export const protectedThunks = {
             };
 
             const resolvedTemplatedBookmarks = await Promise.all(
-                deploymentRegion._s3Next.s3Profiles.map(
-                    async (s3Config, s3ConfigIndex) => {
-                        const { bookmarks: bookmarks_region, sts } = s3Config;
+                deploymentRegion.s3Profiles.map(async (s3Config, s3ConfigIndex) => {
+                    const { bookmarks: bookmarks_region, sts } = s3Config;
 
-                        return {
-                            correspondingS3ConfigIndexInRegion: s3ConfigIndex,
-                            bookmarks: (
-                                await Promise.all(
-                                    bookmarks_region.map(bookmark =>
-                                        resolveTemplatedBookmark({
-                                            bookmark_region: bookmark,
-                                            getDecodedIdToken: () =>
-                                                getDecodedIdToken({
-                                                    oidcParams_partial: sts.oidcParams
-                                                })
-                                        })
-                                    )
+                    return {
+                        correspondingS3ConfigIndexInRegion: s3ConfigIndex,
+                        bookmarks: (
+                            await Promise.all(
+                                bookmarks_region.map(bookmark =>
+                                    resolveTemplatedBookmark({
+                                        bookmark_region: bookmark,
+                                        getDecodedIdToken: () =>
+                                            getDecodedIdToken({
+                                                oidcParams_partial: sts.oidcParams
+                                            })
+                                    })
                                 )
-                            ).flat()
-                        };
-                    }
-                )
+                            )
+                        ).flat()
+                    };
+                })
             );
 
             const resolvedTemplatedStsRoles = await Promise.all(
-                deploymentRegion._s3Next.s3Profiles.map(
-                    async (s3Config, s3ConfigIndex) => {
-                        const { sts } = s3Config;
+                deploymentRegion.s3Profiles.map(async (s3Config, s3ConfigIndex) => {
+                    const { sts } = s3Config;
 
-                        return {
-                            correspondingS3ConfigIndexInRegion: s3ConfigIndex,
-                            stsRoles: (
-                                await Promise.all(
-                                    sts.roles.map(stsRole_region =>
-                                        resolveTemplatedStsRole({
-                                            stsRole_region,
-                                            getDecodedIdToken: () =>
-                                                getDecodedIdToken({
-                                                    oidcParams_partial: sts.oidcParams
-                                                })
-                                        })
-                                    )
+                    return {
+                        correspondingS3ConfigIndexInRegion: s3ConfigIndex,
+                        stsRoles: (
+                            await Promise.all(
+                                sts.roles.map(stsRole_region =>
+                                    resolveTemplatedStsRole({
+                                        stsRole_region,
+                                        getDecodedIdToken: () =>
+                                            getDecodedIdToken({
+                                                oidcParams_partial: sts.oidcParams
+                                            })
+                                    })
                                 )
-                            ).flat()
-                        };
-                    }
-                )
+                            )
+                        ).flat()
+                    };
+                })
             );
 
             dispatch(
