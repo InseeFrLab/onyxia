@@ -354,8 +354,26 @@ const main = createSelector(
     }
 );
 
-const directoryPath = createSelector(state, state => state.directoryPath);
+export const protectedSelectors = {
+    shareView,
+    isBusy: createSelector(state, state => {
+        if (state.ongoingNavigation !== undefined) {
+            return true;
+        }
 
-export const protectedSelectors = { directoryPath, shareView };
+        if (state.ongoingOperations.length !== 0) {
+            return true;
+        }
 
-export const selectors = { main };
+        if (state.share !== undefined && state.share.isSignedUrlBeingRequested) {
+            return true;
+        }
+
+        return false;
+    })
+};
+
+export const selectors = {
+    main,
+    s3UriPrefixObj: createSelector(state, state => state.s3UriPrefixObj)
+};

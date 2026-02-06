@@ -1,9 +1,8 @@
 import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
-import { name, type RouteParams } from "./state";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
-import { protectedSelectors } from "./selectors";
-import { same } from "evt/tools/inDepth/same";
+import { protectedSelectors, type RouteParams } from "./selectors";
+import { Reflect } from "tsafe";
 
 export const evt = Evt.create<{
     actionName: "updateRoute";
@@ -13,31 +12,25 @@ export const evt = Evt.create<{
 
 export const createEvt = (({ evtAction, getState }) => {
     evtAction
-        .pipe(action => (action.usecaseName !== name ? null : [action.actionName]))
-        .pipe(() => protectedSelectors.isStateInitialized(getState()))
-        .pipe(actionName => [
+        .pipe(() => [protectedSelectors.routeParams(getState())])
+        .pipe(onlyIfChanged())
+        .pipe([
+            (routeParams, { routeParams: routeParams_prev }) => [
+                {
+                    routeParams,
+                    method:
+                        routeParams.path === routeParams_prev.path ? "replace" : "push"
+                } as const
+            ],
             {
-                actionName,
-                routeParams: protectedSelectors.routeParams(getState())
+                routeParams: protectedSelectors.routeParams(getState()),
+                method: Reflect<"push" | "replace">()
             }
         ])
-        .pipe(
-            onlyIfChanged({
-                areEqual: (a, b) => same(a.routeParams, b.routeParams)
-            })
-        )
-        .attach(({ actionName, routeParams }) => {
+        .attach(({ method, routeParams }) => {
             evt.post({
                 actionName: "updateRoute",
-                method: (() => {
-                    switch (actionName) {
-                        case "routeParamsSet":
-                        case "selectedS3ProfileUpdated":
-                            return "replace" as const;
-                        case "s3UrlUpdated":
-                            return "push" as const;
-                    }
-                })(),
+                method,
                 routeParams
             });
         });
