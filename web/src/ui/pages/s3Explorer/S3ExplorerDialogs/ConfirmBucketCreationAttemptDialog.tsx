@@ -3,13 +3,13 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import { assert } from "tsafe/assert";
-import type { NonPostableEvt, UnpackEvt } from "evt";
+import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type ConfirmBucketCreationAttemptDialogProps = {
-    evtOpen: NonPostableEvt<{
+    evtOpen: Evt<{
         bucket: string;
         createBucket: () => Promise<{ isSuccess: boolean }>;
     }>;

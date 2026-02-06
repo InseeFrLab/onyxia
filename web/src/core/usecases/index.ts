@@ -2,7 +2,6 @@ import * as autoLogoutCountdown from "./autoLogoutCountdown";
 import * as catalog from "./catalog";
 import * as clusterEventsMonitor from "./clusterEventsMonitor";
 import * as deploymentRegionManagement from "./deploymentRegionManagement";
-import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
 import * as podLogs from "./podLogs";
@@ -24,14 +23,13 @@ import * as dataCollection from "./dataCollection";
 
 import * as s3ProfilesManagement from "./_s3Next/s3ProfilesManagement";
 import * as s3ProfilesCreationUiController from "./_s3Next/s3ProfilesCreationUiController";
-import * as s3ExplorerRootUiController from "./_s3Next/s3ExplorerRootUiController";
+import * as s3ExplorerUiController from "./_s3Next/s3ExplorerUiController";
 
 export const usecases = {
     autoLogoutCountdown,
     catalog,
     clusterEventsMonitor,
     deploymentRegionManagement,
-    fileExplorer,
     secretExplorer,
     launcher,
     podLogs,
@@ -50,8 +48,7 @@ export const usecases = {
     projectManagement,
     viewQuotas,
     dataCollection,
-    // Next
     s3ProfilesManagement,
     s3ProfilesCreationUiController,
-    s3ExplorerRootUiController
+    s3ExplorerUiController
 };

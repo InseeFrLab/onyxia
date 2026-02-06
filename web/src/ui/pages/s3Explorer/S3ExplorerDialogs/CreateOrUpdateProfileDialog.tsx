@@ -3,7 +3,6 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { type NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { TextField } from "onyxia-ui/TextField";
 import Radio from "@mui/material/Radio";
@@ -20,7 +19,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Switch from "@mui/material/Switch";
 
 export type CreateOrUpdateProfileDialogProps = {
-    evtOpen: NonPostableEvt<{
+    evtOpen: Evt<{
         profileName_toUpdate: string | undefined;
     }>;
 };

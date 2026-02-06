@@ -18,11 +18,6 @@ import { Button } from "onyxia-ui/Button";
 import { useStyles } from "tss";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
-import {
-    ConfirmBucketCreationAttemptDialog,
-    type ConfirmBucketCreationAttemptDialogProps
-} from "./ConfirmBucketCreationAttemptDialog";
-import { useEvt } from "evt/hooks";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 type Props = {
@@ -30,36 +25,6 @@ type Props = {
 };
 
 export function Explorer(props: Props) {
-    const {
-        evts: { evtFileExplorer }
-    } = getCoreSync();
-
-    const evtConfirmBucketCreationAttemptDialogOpen = useConst(() =>
-        Evt.create<ConfirmBucketCreationAttemptDialogProps["evtOpen"]>()
-    );
-
-    useEvt(ctx => {
-        evtFileExplorer.pipe(ctx).attach(
-            data => data.action === "ask confirmation for bucket creation attempt",
-            ({ bucket, createBucket }) =>
-                evtConfirmBucketCreationAttemptDialogOpen.post({
-                    bucket,
-                    createBucket
-                })
-        );
-    }, []);
-
-    return (
-        <>
-            <Explorer_inner {...props} />
-            <ConfirmBucketCreationAttemptDialog
-                evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
-            />
-        </>
-    );
-}
-
-function Explorer_inner(props: Props) {
     const { className } = props;
 
     const {
@@ -72,7 +37,7 @@ function Explorer_inner(props: Props) {
         viewMode,
         shareView,
         isDownloadPreparing
-    } = useCoreState("fileExplorer", "main");
+    } = useCoreState("s3ExplorerUiController", "explorerView");
 
     const { t } = useTranslation("S3ExplorerExplorer");
 
@@ -83,14 +48,16 @@ function Explorer_inner(props: Props) {
     }, [isDownloadPreparing]);
 
     const {
-        functions: { fileExplorer }
+        functions: { s3ExplorerUiController }
     } = getCoreSync();
 
-    const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
+    const onRefresh = useConstCallback(() =>
+        s3ExplorerUiController.refreshCurrentDirectory()
+    );
 
     const onCreateNewEmptyDirectory = useConstCallback(
         ({ basename }: Param0<HeadlessExplorerProps["onCreateNewEmptyDirectory"]>) =>
-            fileExplorer.createNewEmptyDirectory({
+            s3ExplorerUiController.createNewEmptyDirectory({
                 basename
             })
     );
@@ -99,7 +66,7 @@ function Explorer_inner(props: Props) {
         async (params: Param0<HeadlessExplorerProps["onDownloadItems"]>) => {
             const { items } = params;
 
-            const { url, filename } = await fileExplorer.getBlobUrl({
+            const { url, filename } = await s3ExplorerUiController.getBlobUrl({
                 s3Objects: items
             });
 
@@ -109,7 +76,7 @@ function Explorer_inner(props: Props) {
 
     const onDeleteItems = useConstCallback(
         (params: Param0<HeadlessExplorerProps["onDeleteItems"]>) =>
-            fileExplorer.bulkDelete({
+            s3ExplorerUiController.bulkDelete({
                 s3Objects: params.items
             })
     );
@@ -145,21 +112,21 @@ function Explorer_inner(props: Props) {
                 return;
             }
 
-            fileExplorer.getFileDownloadUrl({ basename }).then(window.open);
+            s3ExplorerUiController.getFileDownloadUrl({ basename }).then(window.open);
         }
     );
 
     const onRequestFilesUpload = useConstCallback<
         HeadlessExplorerProps["onRequestFilesUpload"]
     >(({ files }) =>
-        fileExplorer.uploadFiles({
+        s3ExplorerUiController.uploadFiles({
             files
         })
     );
 
     const onNavigate = useConstCallback<HeadlessExplorerProps["onNavigate"]>(
         ({ directoryPath }) => {
-            fileExplorer.setS3UriPrefixObjAndNavigate({
+            s3ExplorerUiController.setS3UriPrefixObjAndNavigate({
                 s3UriPrefixObj: parseS3UriPrefix({
                     s3UriPrefix: `s3://${directoryPath}`,
                     strict: false
@@ -222,9 +189,11 @@ function Explorer_inner(props: Props) {
                                     <Button
                                         startIcon={getIconUrlByName("ArrowBack")}
                                         onClick={() =>
-                                            fileExplorer.setS3UriPrefixObjAndNavigate({
-                                                s3UriPrefixObj: undefined
-                                            })
+                                            s3ExplorerUiController.setS3UriPrefixObjAndNavigate(
+                                                {
+                                                    s3UriPrefixObj: undefined
+                                                }
+                                            )
                                         }
                                     >
                                         {t("go back")}
@@ -270,20 +239,20 @@ function Explorer_inner(props: Props) {
                 isBucketPolicyFeatureEnabled={
                     currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
                 }
-                changePolicy={fileExplorer.changePolicy}
+                changePolicy={s3ExplorerUiController.changePolicy}
                 onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}
                 onOpenFile={onOpenFile}
                 viewMode={viewMode}
-                onViewModeChange={fileExplorer.changeViewMode}
+                onViewModeChange={s3ExplorerUiController.changeViewMode}
                 shareView={shareView}
-                onShareFileOpen={fileExplorer.openShare}
-                onShareFileClose={fileExplorer.closeShare}
-                onShareRequestSignedUrl={fileExplorer.requestShareSignedUrl}
+                onShareFileOpen={s3ExplorerUiController.openShare}
+                onShareFileClose={s3ExplorerUiController.closeShare}
+                onShareRequestSignedUrl={s3ExplorerUiController.requestShareSignedUrl}
                 onChangeShareSelectedValidityDuration={
-                    fileExplorer.changeShareSelectedValidityDuration
+                    s3ExplorerUiController.changeShareSelectedValidityDuration
                 }
                 onDownloadItems={onDownloadItems}
                 evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}

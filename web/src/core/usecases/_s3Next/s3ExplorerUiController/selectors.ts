@@ -1,6 +1,9 @@
+import { createSelector } from "clean-architecture";
+import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
+import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
 import { type State, name } from "./state";
-import { createSelector } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -9,7 +12,22 @@ import { join as pathJoin, relative as pathRelative } from "pathe";
 import { getUploadProgress } from "./decoupledLogic/uploadProgress";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
 
+export type RouteParams = {
+    profile?: string;
+    path: string;
+};
+
+/*
+    bookmarks: {
+        displayName: LocalizedString | undefined;
+        s3UriPrefixObj: S3UriPrefixObj;
+    }[];
+    shouldRenderExplorer: boolean;
+*/
+
 const state = (rootState: RootState): State => rootState[name];
+
+const s3UriPrefixObj = createSelector(state, state => state.s3UriPrefixObj);
 
 const isDownloadPreparing = createSelector(
     createSelector(state, state => state.ongoingOperations),
@@ -289,7 +307,7 @@ const isNavigationOngoing = createSelector(
     state => state.ongoingNavigation !== undefined
 );
 
-const main = createSelector(
+const explorerView = createSelector(
     createSelector(state, state => state.navigationError),
     uploadProgress,
     commandLogsEntries,
@@ -355,25 +373,114 @@ const main = createSelector(
 );
 
 export const protectedSelectors = {
-    shareView,
-    isBusy: createSelector(state, state => {
-        if (state.ongoingNavigation !== undefined) {
-            return true;
-        }
+    routeParams: createSelector(
+        createSelector(
+            s3ProfilesManagement.selectors.ambientS3Profile,
+            ambientS3Profile => ambientS3Profile?.profileName
+        ),
+        s3UriPrefixObj,
+        (profileName, s3UriPrefixObj): RouteParams => ({
+            profile: profileName,
+            path:
+                s3UriPrefixObj === undefined
+                    ? ""
+                    : stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length)
+        })
+    ),
+    shareView
+};
 
-        if (state.ongoingOperations.length !== 0) {
-            return true;
-        }
+export type RootView = {
+    rootViewState:
+        | "no s3 profile yet - user need to create one"
+        | "no location - user need to specify location"
+        | "explorer can be rendered";
+};
 
-        if (state.share !== undefined && state.share.isSignedUrlBeingRequested) {
-            return true;
-        }
+export type ProfileSelectionView = {
+    selectedS3ProfileName: string | undefined;
+    isSelectedS3ProfileEditable: boolean;
+    isS3ProfileSelectionLocked: boolean;
+    availableS3ProfileNames: string[];
+};
 
-        return false;
-    })
+export type BookmarksView = {
+    bookmarks: {
+        displayName: LocalizedString | undefined;
+        s3UriPrefixObj: S3UriPrefixObj;
+    }[];
 };
 
 export const selectors = {
-    main,
-    s3UriPrefixObj: createSelector(state, state => state.s3UriPrefixObj)
+    rootView: createSelector(
+        createSelector(state, state => state.s3UriPrefixObj),
+        s3ProfilesManagement.selectors.ambientS3Profile,
+        (s3UriPrefixObj, ambientS3Profile): RootView => {
+            if (s3UriPrefixObj !== undefined) {
+                return { rootViewState: "explorer can be rendered" };
+            }
+
+            if (ambientS3Profile === undefined) {
+                return { rootViewState: "no s3 profile yet - user need to create one" };
+            }
+
+            return { rootViewState: "no location - user need to specify location" };
+        }
+    ),
+    profileSelectionView: createSelector(
+        s3ProfilesManagement.selectors.ambientS3Profile,
+        s3ProfilesManagement.selectors.s3Profiles,
+        createSelector(state, state => {
+            if (state.ongoingNavigation !== undefined) {
+                return true;
+            }
+
+            if (state.ongoingOperations.length !== 0) {
+                return true;
+            }
+
+            if (state.share !== undefined && state.share.isSignedUrlBeingRequested) {
+                return true;
+            }
+
+            return false;
+        }),
+        (ambientS3Profile, s3Profiles, isBusy): ProfileSelectionView => {
+            if (ambientS3Profile === undefined) {
+                return {
+                    selectedS3ProfileName: undefined,
+                    isSelectedS3ProfileEditable: false,
+                    isS3ProfileSelectionLocked: false,
+                    availableS3ProfileNames: []
+                };
+            }
+
+            return {
+                selectedS3ProfileName: ambientS3Profile.profileName,
+                isSelectedS3ProfileEditable:
+                    ambientS3Profile.origin ===
+                    "created by user (or group project member)",
+                isS3ProfileSelectionLocked: isBusy,
+                availableS3ProfileNames: s3Profiles.map(
+                    s3Profile => s3Profile.profileName
+                )
+            };
+        }
+    ),
+    bookmarkView: createSelector(
+        s3ProfilesManagement.selectors.ambientS3Profile,
+        (ambientS3Profile): BookmarksView => {
+            if (ambientS3Profile === undefined) {
+                return {
+                    bookmarks: []
+                };
+            }
+
+            return {
+                bookmarks: ambientS3Profile.bookmarks
+            };
+        }
+    ),
+    s3UriPrefixObj: createSelector(state, state => state.s3UriPrefixObj),
+    explorerView
 };
