@@ -90,9 +90,8 @@ const ambientS3Profile = createSelector(
     }
 );
 
-export const selectors = { s3Profiles, isS3ExplorerEnabled };
-
-export const protectedSelectors = {
-    resolvedTemplatedBookmarks,
+export const selectors = {
+    isS3ExplorerEnabled,
+    s3Profiles,
     ambientS3Profile
 };

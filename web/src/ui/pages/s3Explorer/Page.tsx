@@ -20,13 +20,9 @@ import { parseS3UriPrefix, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 import { useResolveLocalizedString } from "ui/i18n";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
-import { S3ConfigDialogs, type S3ConfigDialogsProps } from "./S3ConfigDialogs";
+import { S3ExplorerDialogs, type S3ExplorerDialogsProps } from "./S3ExplorerDialogs";
 import { useConst } from "powerhooks/useConst";
-import { Evt, type UnpackEvt } from "evt";
-import {
-    MaybeAcknowledgeConfigVolatilityDialog,
-    type MaybeAcknowledgeConfigVolatilityDialogProps
-} from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
+import { Evt } from "evt";
 import { Deferred } from "evt/tools/Deferred";
 import { Button } from "onyxia-ui/Button";
 
@@ -39,10 +35,9 @@ const Page = withLoader({
         const route = getRoute();
         assert(routeGroup.has(route));
 
-        const { routeParams_toSet } =
-            await core.functions.s3ExplorerRootUiController.load({
-                routeParams: route.params
-            });
+        const { routeParams_toSet } = await core.functions.s3ExplorerUiController.load({
+            routeParams: route.params
+        });
 
         if (routeParams_toSet !== undefined) {
             routes.s3Explorer(routeParams_toSet).replace();
@@ -54,23 +49,26 @@ export default Page;
 
 function S3Explorer() {
     const {
-        functions: { s3ExplorerRootUiController },
-        evts: { evtS3ExplorerRootUiController }
+        functions: { s3ExplorerUiController },
+        evts: { evtS3ExplorerUiController }
     } = getCoreSync();
-
-    const { selectedS3ProfileName, shouldRenderExplorer } = useCoreState(
-        "s3ExplorerRootUiController",
-        "view"
-    );
 
     const { classes, css, theme } = useStyles();
 
     useEvt(ctx => {
-        evtS3ExplorerRootUiController
+        evtS3ExplorerUiController
             .pipe(ctx)
-            .pipe(action => action.actionName === "updateRoute")
-            .attach(({ routeParams, method }) =>
-                routes.s3Explorer(routeParams)[method]()
+            .attach(
+                action => action.action === "updateRoute",
+                ({ routeParams, method }) => routes.s3Explorer(routeParams)[method]()
+            )
+            .attach(
+                data => data.action === "ask confirmation for bucket creation attempt",
+                ({ bucket, createBucket }) =>
+                    dialogProps.evtConfirmBucketCreationAttemptDialogOpen.post({
+                        bucket,
+                        createBucket
+                    })
             );
     }, []);
 
@@ -78,13 +76,24 @@ function S3Explorer() {
         () =>
             session.listen(route => {
                 if (routeGroup.has(route)) {
-                    s3ExplorerRootUiController.notifyRouteParamsExternallyUpdated({
+                    s3ExplorerUiController.notifyRouteParamsExternallyUpdated({
                         routeParams: route.params
                     });
                 }
             }),
         []
     );
+
+    const dialogProps = useConst(
+        (): S3ExplorerDialogsProps => ({
+            evtConfirmBucketCreationAttemptDialogOpen: new Evt(),
+            evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
+            evtCreateOrUpdateProfileDialogOpen: new Evt(),
+            evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
+        })
+    );
+
+    const { rootViewState } = useCoreState("s3ExplorerUiController", "rootView");
 
     return (
         <div className={classes.root}>
@@ -93,7 +102,7 @@ function S3Explorer() {
                     display: "flex"
                 }}
             >
-                <S3ProfileSelect />
+                <S3ProfileSelect dialogsProps={dialogProps} />
                 <BookmarkBar
                     className={css({
                         flex: 1
@@ -104,21 +113,23 @@ function S3Explorer() {
             <DirectNavigation
                 className={css({
                     marginTop: theme.spacing(5),
-                    display: shouldRenderExplorer ? undefined : "none"
+                    display:
+                        rootViewState === "no location - user need to specify location"
+                            ? undefined
+                            : "none"
                 })}
             />
-
             {(() => {
-                if (!shouldRenderExplorer) {
-                    if (selectedS3ProfileName === undefined) {
+                switch (rootViewState) {
+                    case "no s3 profile yet - user need to create one":
                         return <h1>Create a profile</h1>;
-                    }
-
-                    return <BookmarkPanel />;
+                    case "no location - user need to specify location":
+                        return <BookmarkPanel />;
+                    case "explorer can be rendered":
+                        return <Explorer className={classes.explorer} />;
                 }
-
-                return <Explorer className={classes.explorer} />;
             })()}
+            <S3ExplorerDialogs {...dialogProps} />
         </div>
     );
 }
@@ -128,10 +139,10 @@ function BookmarkPanel(props: { className?: string }) {
 
     const { resolveLocalizedString } = useResolveLocalizedString();
 
-    const { bookmarks } = useCoreState("s3ExplorerRootUiController", "view");
+    const { bookmarks } = useCoreState("s3ExplorerUiController", "bookmarkView");
 
     const {
-        functions: { fileExplorer }
+        functions: { s3ExplorerUiController }
     } = getCoreSync();
 
     const { cx, css, theme } = useStyles();
@@ -167,7 +178,7 @@ function BookmarkPanel(props: { className?: string }) {
                         href="#"
                         onClick={e => {
                             e.preventDefault();
-                            fileExplorer.setS3UriPrefixObjAndNavigate({
+                            s3ExplorerUiController.setS3UriPrefixObjAndNavigate({
                                 s3UriPrefixObj: bookmark.s3UriPrefixObj
                             });
                         }}
@@ -190,10 +201,10 @@ function DirectNavigation(props: { className?: string }) {
     const { className } = props;
 
     const {
-        functions: { fileExplorer }
+        functions: { s3ExplorerUiController }
     } = getCoreSync();
 
-    const s3UriPrefixObj = useCoreState("fileExplorer", "s3UriPrefixObj");
+    const s3UriPrefixObj = useCoreState("s3ExplorerUiController", "s3UriPrefixObj");
     const search_initialValue =
         s3UriPrefixObj === undefined ? "s3://" : stringifyS3UriPrefixObj(s3UriPrefixObj);
 
@@ -229,7 +240,7 @@ function DirectNavigation(props: { className?: string }) {
                                 return;
                             }
 
-                            fileExplorer.setS3UriPrefixObjAndNavigate({
+                            s3ExplorerUiController.setS3UriPrefixObjAndNavigate({
                                 s3UriPrefixObj
                             });
                         }
@@ -249,10 +260,10 @@ function BookmarkBar(props: { className?: string }) {
     const { cx, css, theme } = useStyles();
 
     const {
-        functions: { fileExplorer }
+        functions: { s3ExplorerUiController }
     } = getCoreSync();
 
-    const { bookmarks } = useCoreState("s3ExplorerRootUiController", "view");
+    const { bookmarks } = useCoreState("s3ExplorerUiController", "bookmarkView");
 
     return (
         <div
@@ -288,7 +299,7 @@ function BookmarkBar(props: { className?: string }) {
                     href="#"
                     onClick={e => {
                         e.preventDefault();
-                        fileExplorer.setS3UriPrefixObjAndNavigate({
+                        s3ExplorerUiController.setS3UriPrefixObjAndNavigate({
                             s3UriPrefixObj: bookmark.s3UriPrefixObj
                         });
                     }}
@@ -300,9 +311,11 @@ function BookmarkBar(props: { className?: string }) {
     );
 }
 
-function S3ProfileSelect() {
+function S3ProfileSelect(props: { dialogsProps: S3ExplorerDialogsProps }) {
+    const { dialogsProps } = props;
+
     const {
-        functions: { s3ExplorerRootUiController }
+        functions: { s3ExplorerUiController }
     } = getCoreSync();
 
     const {
@@ -310,28 +323,9 @@ function S3ProfileSelect() {
         availableS3ProfileNames,
         isSelectedS3ProfileEditable,
         isS3ProfileSelectionLocked
-    } = useCoreState("s3ExplorerRootUiController", "view");
+    } = useCoreState("s3ExplorerUiController", "profileSelectionView");
 
     const { css } = useStyles();
-
-    const {
-        evtConfirmCustomS3ConfigDeletionDialogOpen,
-        evtCreateOrUpdateProfileDialogOpen,
-        evtMaybeAcknowledgeConfigVolatilityDialogOpen
-    } = useConst(() => ({
-        evtConfirmCustomS3ConfigDeletionDialogOpen:
-            Evt.create<
-                UnpackEvt<
-                    S3ConfigDialogsProps["evtConfirmCustomS3ConfigDeletionDialogOpen"]
-                >
-            >(),
-        evtCreateOrUpdateProfileDialogOpen:
-            Evt.create<
-                UnpackEvt<S3ConfigDialogsProps["evtCreateOrUpdateProfileDialogOpen"]>
-            >(),
-        evtMaybeAcknowledgeConfigVolatilityDialogOpen:
-            Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
-    }));
 
     return (
         <>
@@ -347,21 +341,24 @@ function S3ProfileSelect() {
                         if (value === "__create__") {
                             const dDoProceed = new Deferred<boolean>();
 
-                            evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
-                                resolve: ({ doProceed }) => dDoProceed.resolve(doProceed)
-                            });
+                            dialogsProps.evtMaybeAcknowledgeConfigVolatilityDialogOpen.post(
+                                {
+                                    resolve: ({ doProceed }) =>
+                                        dDoProceed.resolve(doProceed)
+                                }
+                            );
 
                             if (!(await dDoProceed.pr)) {
                                 return;
                             }
 
-                            evtCreateOrUpdateProfileDialogOpen.post({
+                            dialogsProps.evtCreateOrUpdateProfileDialogOpen.post({
                                 profileName_toUpdate: undefined
                             });
 
                             return;
                         }
-                        s3ExplorerRootUiController.updateSelectedS3Profile({
+                        s3ExplorerUiController.updateSelectedS3Profile({
                             profileName: value
                         });
                     }}
@@ -388,7 +385,7 @@ function S3ProfileSelect() {
                         <Button
                             startIcon={getIconUrlByName("Edit")}
                             onClick={() => {
-                                evtCreateOrUpdateProfileDialogOpen.post({
+                                dialogsProps.evtCreateOrUpdateProfileDialogOpen.post({
                                     profileName_toUpdate: selectedS3ProfileName
                                 });
                             }}
@@ -397,15 +394,6 @@ function S3ProfileSelect() {
                         </Button>
                     );
                 })()}
-            <S3ConfigDialogs
-                evtConfirmCustomS3ConfigDeletionDialogOpen={
-                    evtConfirmCustomS3ConfigDeletionDialogOpen
-                }
-                evtCreateOrUpdateProfileDialogOpen={evtCreateOrUpdateProfileDialogOpen}
-            />
-            <MaybeAcknowledgeConfigVolatilityDialog
-                evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
-            />
         </>
     );
 }

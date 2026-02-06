@@ -51,7 +51,7 @@ export type State = {
         | undefined;
 };
 
-export const name = "fileExplorer";
+export const name = "s3ExplorerUiController";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

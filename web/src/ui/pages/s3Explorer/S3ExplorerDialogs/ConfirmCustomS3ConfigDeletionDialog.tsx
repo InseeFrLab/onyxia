@@ -4,11 +4,11 @@ import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
-import type { NonPostableEvt, UnpackEvt } from "evt";
+import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
 export type Props = {
-    evtOpen: NonPostableEvt<{
+    evtOpen: Evt<{
         resolveDoProceed: (doProceed: boolean) => void;
     }>;
 };
