@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
@@ -58,7 +58,7 @@ function S3Explorer() {
         evts: { evtS3ExplorerRootUiController }
     } = getCoreSync();
 
-    const { selectedS3ProfileName, s3UriPrefixObj, bookmarkStatus } = useCoreState(
+    const { selectedS3ProfileName, shouldRenderExplorer } = useCoreState(
         "s3ExplorerRootUiController",
         "view"
     );
@@ -104,48 +104,20 @@ function S3Explorer() {
             <DirectNavigation
                 className={css({
                     marginTop: theme.spacing(5),
-                    display:
-                        selectedS3ProfileName === undefined ||
-                        s3UriPrefixObj !== undefined
-                            ? "none"
-                            : undefined
+                    display: shouldRenderExplorer ? undefined : "none"
                 })}
             />
 
             {(() => {
-                if (selectedS3ProfileName === undefined) {
-                    return <h1>Create a profile</h1>;
-                }
+                if (!shouldRenderExplorer) {
+                    if (selectedS3ProfileName === undefined) {
+                        return <h1>Create a profile</h1>;
+                    }
 
-                if (s3UriPrefixObj === undefined) {
                     return <BookmarkPanel />;
                 }
 
-                return (
-                    <Explorer
-                        className={classes.explorer}
-                        changeCurrentDirectory={({ directoryPath }) => {
-                            const s3UriPrefixObj =
-                                directoryPath === ""
-                                    ? undefined
-                                    : parseS3UriPrefix({
-                                          s3UriPrefix: `s3://${directoryPath}`,
-                                          strict: false
-                                      });
-
-                            s3ExplorerRootUiController.updateS3Url({
-                                s3UriPrefixObj
-                            });
-                        }}
-                        directoryPath={stringifyS3UriPrefixObj(s3UriPrefixObj).slice(
-                            "s3://".length
-                        )}
-                        bookmarkStatus={bookmarkStatus}
-                        onToggleIsDirectoryPathBookmarked={
-                            s3ExplorerRootUiController.toggleIsDirectoryPathBookmarked
-                        }
-                    />
-                );
+                return <Explorer className={classes.explorer} />;
             })()}
         </div>
     );
@@ -159,7 +131,7 @@ function BookmarkPanel(props: { className?: string }) {
     const { bookmarks } = useCoreState("s3ExplorerRootUiController", "view");
 
     const {
-        functions: { s3ExplorerRootUiController }
+        functions: { fileExplorer }
     } = getCoreSync();
 
     const { cx, css, theme } = useStyles();
@@ -195,7 +167,7 @@ function BookmarkPanel(props: { className?: string }) {
                         href="#"
                         onClick={e => {
                             e.preventDefault();
-                            s3ExplorerRootUiController.updateS3Url({
+                            fileExplorer.setS3UriPrefixObjAndNavigate({
                                 s3UriPrefixObj: bookmark.s3UriPrefixObj
                             });
                         }}
@@ -218,32 +190,18 @@ function DirectNavigation(props: { className?: string }) {
     const { className } = props;
 
     const {
-        functions: { s3ExplorerRootUiController }
+        functions: { fileExplorer }
     } = getCoreSync();
 
-    const { s3UriPrefixObj } = useCoreState("s3ExplorerRootUiController", "view");
-
-    const search_external =
+    const s3UriPrefixObj = useCoreState("fileExplorer", "s3UriPrefixObj");
+    const search_initialValue =
         s3UriPrefixObj === undefined ? "s3://" : stringifyS3UriPrefixObj(s3UriPrefixObj);
 
-    const [search, setSearch] = useState(search_external);
+    const [search, setSearch] = useState(search_initialValue);
 
     useEffect(() => {
-        if (search_external !== "s3://") {
-            setSearch(search_external);
-        }
-    }, [search_external]);
-
-    const s3UriPrefixObj_search = useMemo(() => {
-        try {
-            return parseS3UriPrefix({
-                s3UriPrefix: search,
-                strict: false
-            });
-        } catch {
-            return undefined;
-        }
-    }, [search]);
+        setSearch(search_initialValue);
+    }, [search_initialValue]);
 
     return (
         <SearchBar
@@ -256,17 +214,28 @@ function DirectNavigation(props: { className?: string }) {
                 switch (keyId) {
                     case "Enter":
                         {
-                            if (s3UriPrefixObj_search === undefined) {
+                            const s3UriPrefixObj = (() => {
+                                try {
+                                    return parseS3UriPrefix({
+                                        s3UriPrefix: search,
+                                        strict: false
+                                    });
+                                } catch {
+                                    return undefined;
+                                }
+                            })();
+
+                            if (s3UriPrefixObj === undefined) {
                                 return;
                             }
 
-                            s3ExplorerRootUiController.updateS3Url({
-                                s3UriPrefixObj: s3UriPrefixObj_search
+                            fileExplorer.setS3UriPrefixObjAndNavigate({
+                                s3UriPrefixObj
                             });
                         }
                         break;
                     case "Escape":
-                        setSearch(search_external);
+                        setSearch(search_initialValue);
                         break;
                 }
             }}
@@ -280,7 +249,7 @@ function BookmarkBar(props: { className?: string }) {
     const { cx, css, theme } = useStyles();
 
     const {
-        functions: { s3ExplorerRootUiController }
+        functions: { fileExplorer }
     } = getCoreSync();
 
     const { bookmarks } = useCoreState("s3ExplorerRootUiController", "view");
@@ -319,7 +288,7 @@ function BookmarkBar(props: { className?: string }) {
                     href="#"
                     onClick={e => {
                         e.preventDefault();
-                        s3ExplorerRootUiController.updateS3Url({
+                        fileExplorer.setS3UriPrefixObjAndNavigate({
                             s3UriPrefixObj: bookmark.s3UriPrefixObj
                         });
                     }}
@@ -339,7 +308,8 @@ function S3ProfileSelect() {
     const {
         selectedS3ProfileName,
         availableS3ProfileNames,
-        isSelectedS3ProfileEditable
+        isSelectedS3ProfileEditable,
+        isS3ProfileSelectionLocked
     } = useCoreState("s3ExplorerRootUiController", "view");
 
     const { css } = useStyles();
@@ -368,6 +338,7 @@ function S3ProfileSelect() {
             <FormControl variant="standard">
                 <InputLabel id="select-s3Profile">S3 Profile</InputLabel>
                 <Select
+                    disabled={isS3ProfileSelectionLocked}
                     labelId="select-s3Profile"
                     value={selectedS3ProfileName}
                     onChange={async event => {

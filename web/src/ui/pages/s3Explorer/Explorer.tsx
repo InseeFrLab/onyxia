@@ -23,20 +23,10 @@ import {
     type ConfirmBucketCreationAttemptDialogProps
 } from "./ConfirmBucketCreationAttemptDialog";
 import { useEvt } from "evt/hooks";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 type Props = {
     className?: string;
-    directoryPath: string;
-    changeCurrentDirectory: (params: { directoryPath: string }) => void;
-    bookmarkStatus:
-        | {
-              isBookmarked: false;
-          }
-        | {
-              isBookmarked: true;
-              isReadonly: boolean;
-          };
-    onToggleIsDirectoryPathBookmarked: () => void;
 };
 
 export function Explorer(props: Props) {
@@ -70,13 +60,7 @@ export function Explorer(props: Props) {
 }
 
 function Explorer_inner(props: Props) {
-    const {
-        className,
-        directoryPath,
-        changeCurrentDirectory,
-        bookmarkStatus,
-        onToggleIsDirectoryPathBookmarked
-    } = props;
+    const { className } = props;
 
     const {
         isCurrentWorkingDirectoryLoaded,
@@ -101,12 +85,6 @@ function Explorer_inner(props: Props) {
     const {
         functions: { fileExplorer }
     } = getCoreSync();
-
-    useEffect(() => {
-        fileExplorer.changeCurrentDirectory({
-            directoryPath
-        });
-    }, [directoryPath]);
 
     const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
 
@@ -179,6 +157,17 @@ function Explorer_inner(props: Props) {
         })
     );
 
+    const onNavigate = useConstCallback<HeadlessExplorerProps["onNavigate"]>(
+        ({ directoryPath }) => {
+            fileExplorer.setS3UriPrefixObjAndNavigate({
+                s3UriPrefixObj: parseS3UriPrefix({
+                    s3UriPrefix: `s3://${directoryPath}`,
+                    strict: false
+                })
+            });
+        }
+    );
+
     const { cx, css, theme } = useStyles();
 
     if (!isCurrentWorkingDirectoryLoaded) {
@@ -233,8 +222,8 @@ function Explorer_inner(props: Props) {
                                     <Button
                                         startIcon={getIconUrlByName("ArrowBack")}
                                         onClick={() =>
-                                            changeCurrentDirectory({
-                                                directoryPath: ""
+                                            fileExplorer.setS3UriPrefixObjAndNavigate({
+                                                s3UriPrefixObj: undefined
                                             })
                                         }
                                     >
@@ -282,7 +271,7 @@ function Explorer_inner(props: Props) {
                     currentWorkingDirectoryView.isBucketPolicyFeatureEnabled
                 }
                 changePolicy={fileExplorer.changePolicy}
-                onNavigate={changeCurrentDirectory}
+                onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItems={onDeleteItems}
                 onCopyPath={onCopyPath}

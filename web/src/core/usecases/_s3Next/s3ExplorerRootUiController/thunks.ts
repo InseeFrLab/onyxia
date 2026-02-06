@@ -1,10 +1,10 @@
 import type { Thunks } from "core/bootstrap";
-import { actions, type RouteParams } from "./state";
 import { protectedSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
-import { selectors } from "./selectors";
+import * as fileExplorer from "core/usecases/fileExplorer";
+import type { RouteParams } from "./selectors";
 import { evt } from "./evt";
-import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import { parseS3UriPrefix } from "core/tools/S3Uri";
 import { assert } from "tsafe/assert";
 
 export const thunks = {
@@ -26,30 +26,19 @@ export const thunks = {
                     return dispatch(thunks.load({ routeParams: { path: "" } }));
                 }
 
-                dispatch(actions.routeParamsSet({ routeParams }));
+                fileExplorer.thunks.setS3UriPrefixObjAndNavigate({
+                    s3UriPrefixObj: parseS3UriPrefix({
+                        s3UriPrefix: routeParams.path,
+                        strict: false
+                    })
+                });
+
                 return { routeParams_toSet: undefined };
             }
 
-            const isStateInitialized = protectedSelectors.isStateInitialized(getState());
-
-            if (isStateInitialized) {
-                const routeParams = protectedSelectors.routeParams(getState());
-                return { routeParams_toSet: routeParams };
-            }
-
-            const { s3Profile } =
-                (await dispatch(
-                    s3ProfilesManagement.protectedThunks.getAmbientS3ProfileAndClient()
-                )) ?? {};
-
-            const routeParams_toSet: RouteParams = {
-                profile: s3Profile === undefined ? undefined : s3Profile.profileName,
-                path: ""
+            return {
+                routeParams_toSet: protectedSelectors.routeParams(getState())
             };
-
-            dispatch(actions.routeParamsSet({ routeParams: routeParams_toSet }));
-
-            return { routeParams_toSet };
         },
     notifyRouteParamsExternallyUpdated:
         (params: { routeParams: RouteParams }) =>
@@ -66,15 +55,6 @@ export const thunks = {
                 });
             }
         },
-    updateS3Url:
-        (params: { s3UriPrefixObj: S3UriPrefixObj | undefined }) =>
-        (...args) => {
-            const [dispatch] = args;
-
-            const { s3UriPrefixObj } = params;
-
-            dispatch(actions.s3UrlUpdated({ s3UriPrefixObj }));
-        },
     updateSelectedS3Profile:
         (params: { profileName: string }) =>
         async (...args) => {
@@ -82,20 +62,15 @@ export const thunks = {
 
             const { profileName } = params;
 
-            await dispatch(
-                s3ProfilesManagement.protectedThunks.changeIsDefault({
-                    profileName,
-                    usecase: "explorer",
-                    value: true
-                })
-            );
-
-            dispatch(
-                actions.selectedS3ProfileUpdated({
+            const { doesProfileExist } = dispatch(
+                s3ProfilesManagement.protectedThunks.changeAmbientProfile({
                     profileName
                 })
             );
-        },
+
+            assert(doesProfileExist);
+        }
+    /*
     toggleIsDirectoryPathBookmarked: (() => {
         let isRunning = false;
 
@@ -133,4 +108,5 @@ export const thunks = {
                 isRunning = false;
             };
     })()
+            */
 } satisfies Thunks;

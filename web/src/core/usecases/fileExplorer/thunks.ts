@@ -14,6 +14,7 @@ import { id } from "tsafe/id";
 import { isAmong } from "tsafe/isAmong";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
+import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 
 const privateThunks = {
     startOperationWhenAllConflictingOperationHaveCompleted:
@@ -101,169 +102,6 @@ const privateThunks = {
                 )
             );
         },
-    /**
-     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
-     */
-    navigate:
-        (params: { directoryPath: string; doListAgainIfSamePath: boolean }) =>
-        async (...args) => {
-            const { doListAgainIfSamePath } = params;
-
-            // Ensure trailing slash for consistency.
-            const directoryPath = params.directoryPath.replace(/\/+$/, "") + "/";
-
-            const [dispatch, getState, { evtAction }] = args;
-
-            {
-                const { ongoingNavigation } = getState()[name];
-
-                if (
-                    ongoingNavigation !== undefined &&
-                    ongoingNavigation.directoryPath === directoryPath
-                ) {
-                    return;
-                }
-            }
-
-            if (
-                !doListAgainIfSamePath &&
-                getState()[name].directoryPath === directoryPath &&
-                getState()[name].navigationError === undefined
-            ) {
-                return;
-            }
-
-            dispatch(actions.navigationStarted({ directoryPath }));
-
-            const ctx = Evt.newCtx();
-
-            evtAction.attachOnce(
-                event =>
-                    event.usecaseName === name &&
-                    event.actionName === "navigationStarted",
-                ctx,
-                () => ctx.abort(new Error("Other navigation started"))
-            );
-
-            await dispatch(
-                privateThunks.waitForNoOngoingOperation({
-                    directoryPath: pathJoin(directoryPath, "..") + "/",
-                    objects_ref: [
-                        {
-                            kind: "directory",
-                            basename: pathBasename(directoryPath)
-                        }
-                    ]
-                })
-            );
-
-            const cmdId = Date.now();
-
-            dispatch(
-                actions.commandLogIssued({
-                    cmdId,
-                    cmd: `mc ls ${pathJoin("s3", directoryPath)}`
-                })
-            );
-
-            const { s3Client, s3Profile } = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
-            ).then(r => {
-                assert(r !== undefined);
-                return r;
-            });
-
-            const listObjectResult = await s3Client.listObjects({
-                path: directoryPath
-            });
-
-            if (ctx.completionStatus !== undefined) {
-                dispatch(actions.commandLogCancelled({ cmdId }));
-                return;
-            }
-
-            ctx.done();
-
-            dispatch(
-                actions.commandLogResponseReceived({
-                    cmdId,
-                    resp: (() => {
-                        if (listObjectResult.isSuccess) {
-                            return listObjectResult.objects
-                                .map(({ kind, basename }) =>
-                                    kind === "directory" ? `${basename}/` : basename
-                                )
-                                .join("\n");
-                        }
-
-                        switch (listObjectResult.errorCase) {
-                            case "access denied":
-                                return "Access Denied";
-                            case "no such bucket":
-                                return "No Such Bucket";
-                            default:
-                                assert<Equals<typeof listObjectResult.errorCase, never>>(
-                                    false
-                                );
-                        }
-                    })()
-                })
-            );
-
-            dispatch(
-                actions.navigationCompleted(
-                    (() => {
-                        if (!listObjectResult.isSuccess) {
-                            switch (listObjectResult.errorCase) {
-                                case "access denied":
-                                    return {
-                                        isSuccess: false,
-                                        navigationError: {
-                                            directoryPath,
-                                            errorCase: "access denied"
-                                        }
-                                    };
-                                case "no such bucket": {
-                                    const { bucket } = parseS3UriPrefix({
-                                        s3UriPrefix: `s3://${directoryPath}`,
-                                        strict: false
-                                    });
-
-                                    const shouldAttemptToCreate =
-                                        s3Profile.bookmarks.find(
-                                            bookmark =>
-                                                bookmark.s3UriPrefixObj.bucket === bucket
-                                        ) !== undefined;
-
-                                    return {
-                                        isSuccess: false,
-                                        navigationError: {
-                                            directoryPath,
-                                            errorCase: "no such bucket",
-                                            bucket,
-                                            shouldAttemptToCreate
-                                        }
-                                    };
-                                }
-                                default:
-                                    assert<
-                                        Equals<typeof listObjectResult.errorCase, never>
-                                    >(false);
-                            }
-                        }
-
-                        return {
-                            isSuccess: true,
-                            directoryPath,
-                            objects: listObjectResult.objects,
-                            bucketPolicy: listObjectResult.bucketPolicy,
-                            isBucketPolicyAvailable:
-                                listObjectResult.isBucketPolicyAvailable
-                        };
-                    })()
-                )
-            );
-        },
     downloadObject:
         (params: { s3Object: S3Object }) =>
         async (...args) => {
@@ -275,7 +113,7 @@ const privateThunks = {
             const { s3Object } = params;
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -317,7 +155,7 @@ const privateThunks = {
             const { s3Objects } = params;
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -518,7 +356,7 @@ const privateThunks = {
             );
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -550,7 +388,7 @@ export const protectedThunks = {
             const [dispatch] = args;
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -587,8 +425,11 @@ export const protectedThunks = {
 
             if (result.isSuccess) {
                 await dispatch(
-                    thunks.changeCurrentDirectory({
-                        directoryPath: directoryPath_toNavigateToOnSuccess
+                    thunks.setS3UriPrefixObjAndNavigate({
+                        s3UriPrefixObj: parseS3UriPrefix({
+                            s3UriPrefix: directoryPath_toNavigateToOnSuccess,
+                            strict: false
+                        })
                     })
                 );
             }
@@ -598,20 +439,169 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const thunks = {
-    changeCurrentDirectory:
-        (params: { directoryPath: string }) =>
+    /**
+     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
+     */
+    setS3UriPrefixObjAndNavigate:
+        (params: { s3UriPrefixObj: S3UriPrefixObj | undefined }) =>
         async (...args) => {
-            const { directoryPath } = params;
+            const [dispatch, getState, { evtAction }] = args;
 
-            const [dispatch] = args;
+            const { s3UriPrefixObj } = params;
+
+            dispatch(actions.s3UriPrefixObjectSet({ s3UriPrefixObj }));
+
+            if (s3UriPrefixObj === undefined) {
+                return;
+            }
+
+            const directoryPath = stringifyS3UriPrefixObj(s3UriPrefixObj).slice(
+                "s3://".length
+            );
+
+            {
+                const { ongoingNavigation } = getState()[name];
+
+                if (
+                    ongoingNavigation !== undefined &&
+                    ongoingNavigation.directoryPath === directoryPath
+                ) {
+                    return;
+                }
+            }
+
+            dispatch(actions.navigationStarted({ directoryPath }));
+
+            const ctx = Evt.newCtx();
+
+            evtAction.attachOnce(
+                event =>
+                    event.usecaseName === name &&
+                    event.actionName === "navigationStarted",
+                ctx,
+                () => ctx.abort(new Error("Other navigation started"))
+            );
 
             await dispatch(
-                privateThunks.navigate({
-                    directoryPath: directoryPath,
-                    doListAgainIfSamePath: false
+                privateThunks.waitForNoOngoingOperation({
+                    directoryPath: pathJoin(directoryPath, "..") + "/",
+                    objects_ref: [
+                        {
+                            kind: "directory",
+                            basename: pathBasename(directoryPath)
+                        }
+                    ]
                 })
             );
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc ls ${pathJoin("s3", directoryPath)}`
+                })
+            );
+
+            const { s3Client, s3Profile } = await dispatch(
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
+            ).then(r => {
+                assert(r !== undefined);
+                return r;
+            });
+
+            const listObjectResult = await s3Client.listObjects({
+                path: directoryPath
+            });
+
+            if (ctx.completionStatus !== undefined) {
+                dispatch(actions.commandLogCancelled({ cmdId }));
+                return;
+            }
+
+            ctx.done();
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: (() => {
+                        if (listObjectResult.isSuccess) {
+                            return listObjectResult.objects
+                                .map(({ kind, basename }) =>
+                                    kind === "directory" ? `${basename}/` : basename
+                                )
+                                .join("\n");
+                        }
+
+                        switch (listObjectResult.errorCase) {
+                            case "access denied":
+                                return "Access Denied";
+                            case "no such bucket":
+                                return "No Such Bucket";
+                            default:
+                                assert<Equals<typeof listObjectResult.errorCase, never>>(
+                                    false
+                                );
+                        }
+                    })()
+                })
+            );
+
+            dispatch(
+                actions.navigationCompleted(
+                    (() => {
+                        if (!listObjectResult.isSuccess) {
+                            switch (listObjectResult.errorCase) {
+                                case "access denied":
+                                    return {
+                                        isSuccess: false,
+                                        navigationError: {
+                                            directoryPath,
+                                            errorCase: "access denied"
+                                        }
+                                    };
+                                case "no such bucket": {
+                                    const { bucket } = parseS3UriPrefix({
+                                        s3UriPrefix: `s3://${directoryPath}`,
+                                        strict: false
+                                    });
+
+                                    const shouldAttemptToCreate =
+                                        s3Profile.bookmarks.find(
+                                            bookmark =>
+                                                bookmark.s3UriPrefixObj.bucket === bucket
+                                        ) !== undefined;
+
+                                    return {
+                                        isSuccess: false,
+                                        navigationError: {
+                                            directoryPath,
+                                            errorCase: "no such bucket",
+                                            bucket,
+                                            shouldAttemptToCreate
+                                        }
+                                    };
+                                }
+                                default:
+                                    assert<
+                                        Equals<typeof listObjectResult.errorCase, never>
+                                    >(false);
+                            }
+                        }
+
+                        return {
+                            isSuccess: true,
+                            directoryPath,
+                            objects: listObjectResult.objects,
+                            bucketPolicy: listObjectResult.bucketPolicy,
+                            isBucketPolicyAvailable:
+                                listObjectResult.isBucketPolicyAvailable
+                        };
+                    })()
+                )
+            );
         },
+
     changeViewMode:
         (params: { viewMode: "list" | "block" }) =>
         async (...args) => {
@@ -653,7 +643,7 @@ export const thunks = {
                 })
             );
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -719,13 +709,11 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { directoryPath } = getState()[name];
+            const { s3UriPrefixObj } = getState()[name];
 
-            assert(directoryPath !== undefined);
+            assert(s3UriPrefixObj !== undefined);
 
-            await dispatch(
-                privateThunks.navigate({ directoryPath, doListAgainIfSamePath: true })
-            );
+            await dispatch(thunks.setS3UriPrefixObjAndNavigate({ s3UriPrefixObj }));
         },
 
     uploadFiles:
@@ -886,7 +874,7 @@ export const thunks = {
             );
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -987,7 +975,7 @@ export const thunks = {
             );
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r.s3Client;
@@ -1023,7 +1011,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             const { s3Client, s3Profile } = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3ProfileAndClientForExplorer()
+                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
             ).then(r => {
                 assert(r !== undefined);
                 return r;

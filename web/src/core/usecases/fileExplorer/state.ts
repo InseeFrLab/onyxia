@@ -4,10 +4,14 @@ import { createUsecaseActions } from "clean-architecture";
 import type { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 import { relative as pathRelative } from "pathe";
 import type { S3FilesBeingUploaded } from "./decoupledLogic/uploadProgress";
+import type { S3UriPrefixObj } from "core/tools/S3Uri";
 
 //All explorer paths are expected to be absolute (start with /)
 
 export type State = {
+    /** Defines where we are */
+    s3UriPrefixObj: S3UriPrefixObj | undefined;
+
     navigationError:
         | {
               errorCase: "access denied" | "no such bucket";
@@ -52,6 +56,7 @@ export const name = "fileExplorer";
 export const { reducer, actions } = createUsecaseActions({
     name,
     initialState: id<State>({
+        s3UriPrefixObj: undefined,
         directoryPath: undefined,
         objects: [],
         viewMode: "list",
@@ -68,6 +73,20 @@ export const { reducer, actions } = createUsecaseActions({
         navigationError: undefined
     }),
     reducers: {
+        s3UriPrefixObjectSet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    s3UriPrefixObj: S3UriPrefixObj | undefined;
+                };
+            }
+        ) => {
+            const { s3UriPrefixObj } = payload;
+
+            state.s3UriPrefixObj = s3UriPrefixObj;
+        },
         fileUploadStarted: (
             state,
             {
