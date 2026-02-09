@@ -74,7 +74,6 @@ export const thunks = {
                 })
             );
         },
-    /*
     toggleIsDirectoryPathBookmarked: (() => {
         let isRunning = false;
 
@@ -88,15 +87,17 @@ export const thunks = {
 
                 const [dispatch, getState] = args;
 
-                const { selectedS3ProfileName, s3UriPrefixObj, bookmarkStatus } =
-                    selectors.view(getState());
+                const bookmarkStatus = privateSelectors.bookmarkStatus(getState());
+                const s3UriPrefixObj = privateSelectors.s3UriPrefixObj(getState());
+                const ambientS3Profile =
+                    s3ProfileManagement.selectors.ambientS3Profile(getState());
 
-                assert(selectedS3ProfileName !== undefined);
+                assert(ambientS3Profile !== undefined);
                 assert(s3UriPrefixObj !== undefined);
 
                 await dispatch(
                     s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
-                        profileName: selectedS3ProfileName,
+                        profileName: ambientS3Profile.profileName,
                         s3UriPrefixObj,
                         action: bookmarkStatus.isBookmarked
                             ? {
@@ -111,8 +112,7 @@ export const thunks = {
 
                 isRunning = false;
             };
-    })()
-            */
+    })(),
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
