@@ -145,7 +145,7 @@ export const protectedThunks = {
         ): Promise<undefined | { s3Client: S3Client; s3Profile: S3Profile }> => {
             const [dispatch, getState] = args;
 
-            const s3Profile = protectedSelectors.ambientS3Profile(getState());
+            const s3Profile = selectors.ambientS3Profile(getState());
 
             if (s3Profile === undefined) {
                 return undefined;

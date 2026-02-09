@@ -1,6 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { protectedSelectors } from "./selectors";
-import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { RouteParams } from "./selectors";
 import { evt } from "./evt";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
@@ -10,7 +10,7 @@ import { Zip, ZipPassThrough } from "fflate/browser";
 import { name, actions } from "./state";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
-import * as s3ProfileManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfileManagement from "core/usecases/s3ProfilesManagement";
 import type { S3Object } from "core/ports/S3Client";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { relative as pathRelative } from "pathe";

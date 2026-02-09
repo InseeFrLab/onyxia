@@ -1,5 +1,5 @@
 import { createSelector } from "clean-architecture";
-import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";

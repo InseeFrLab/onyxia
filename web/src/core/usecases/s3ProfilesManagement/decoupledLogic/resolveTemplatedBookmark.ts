@@ -1,31 +1,40 @@
 import type { DeploymentRegion } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
+import type { LocalizedString } from "ui/i18n";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
+import { type S3UriPrefixObj, parseS3UriPrefix } from "core/tools/S3Uri";
 
-export type ResolvedTemplateStsRole = {
-    roleARN: string;
-    roleSessionName: string;
-    profileName: string;
+export type ResolvedTemplateBookmark = {
+    title: LocalizedString;
+    description: LocalizedString | undefined;
+    tags: LocalizedString[];
+    s3UriPrefixObj: S3UriPrefixObj;
+    forProfileNames: string[];
 };
 
-export async function resolveTemplatedStsRole(params: {
-    stsRole_region: DeploymentRegion.S3Next.S3Profile.StsRole;
+export async function resolveTemplatedBookmark(params: {
+    bookmark_region: DeploymentRegion.S3Profile.Bookmark;
     getDecodedIdToken: () => Promise<Record<string, unknown>>;
-}): Promise<ResolvedTemplateStsRole[]> {
-    const { stsRole_region, getDecodedIdToken } = params;
+}): Promise<ResolvedTemplateBookmark[]> {
+    const { bookmark_region, getDecodedIdToken } = params;
 
-    if (stsRole_region.claimName === undefined) {
+    if (bookmark_region.claimName === undefined) {
         return [
-            id<ResolvedTemplateStsRole>({
-                roleARN: stsRole_region.roleARN,
-                roleSessionName: stsRole_region.roleSessionName,
-                profileName: stsRole_region.profileName
+            id<ResolvedTemplateBookmark>({
+                s3UriPrefixObj: parseS3UriPrefix({
+                    s3UriPrefix: bookmark_region.s3UriPrefix,
+                    strict: true
+                }),
+                title: bookmark_region.title,
+                description: bookmark_region.description,
+                tags: bookmark_region.tags,
+                forProfileNames: bookmark_region.forProfileNames
             })
         ];
     }
 
-    const { claimName, excludedClaimPattern, includedClaimPattern } = stsRole_region;
+    const { claimName, excludedClaimPattern, includedClaimPattern } = bookmark_region;
 
     const decodedIdToken = await getDecodedIdToken();
 
@@ -97,10 +106,33 @@ export async function resolveTemplatedStsRole(params: {
             const substituteTemplateString = (str: string) =>
                 str.replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "");
 
-            return id<ResolvedTemplateStsRole>({
-                roleARN: substituteTemplateString(stsRole_region.roleARN),
-                roleSessionName: substituteTemplateString(stsRole_region.roleSessionName),
-                profileName: substituteTemplateString(stsRole_region.profileName)
+            const substituteLocalizedString = (
+                locStr: LocalizedString
+            ): LocalizedString => {
+                if (typeof locStr === "string") {
+                    return substituteTemplateString(locStr);
+                }
+                return Object.fromEntries(
+                    Object.entries(locStr)
+                        .filter(([, value]) => value !== undefined)
+                        .map(([lang, value]) => [lang, substituteTemplateString(value)])
+                );
+            };
+
+            return id<ResolvedTemplateBookmark>({
+                s3UriPrefixObj: parseS3UriPrefix({
+                    s3UriPrefix: substituteTemplateString(bookmark_region.s3UriPrefix),
+                    strict: true
+                }),
+                title: substituteLocalizedString(bookmark_region.title),
+                description:
+                    bookmark_region.description === undefined
+                        ? undefined
+                        : substituteLocalizedString(bookmark_region.description),
+                tags: bookmark_region.tags.map(tag => substituteLocalizedString(tag)),
+                forProfileNames: bookmark_region.forProfileNames.map(profileName =>
+                    substituteTemplateString(profileName)
+                )
             });
         })
         .filter(x => x !== undefined);

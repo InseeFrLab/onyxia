@@ -2,7 +2,7 @@ import type { State as RootState } from "core/bootstrap";
 import { name } from "./state";
 import { createSelector } from "clean-architecture";
 import { assert } from "tsafe/assert";
-import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 
 const state = (rootState: RootState) => rootState[name];
 
