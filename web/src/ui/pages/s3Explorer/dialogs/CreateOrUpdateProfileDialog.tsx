@@ -17,6 +17,7 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { Text } from "onyxia-ui/Text";
 import FormHelperText from "@mui/material/FormHelperText";
 import Switch from "@mui/material/Switch";
+import type { Evt } from "evt";
 
 export type CreateOrUpdateProfileDialogProps = {
     evtOpen: Evt<{

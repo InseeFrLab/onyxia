@@ -321,13 +321,22 @@ const main = createSelector(
 
 export const selectors = { main };
 
-const s3Profile = createSelector(s3ProfilesManagement.selectors.s3Profiles, s3Profiles =>
-    s3Profiles.find(
-        s3Profile =>
-            s3Profile.origin === "defined in region" &&
-            s3Profile.paramsOfCreateS3Client.isStsEnabled &&
-            s3Profile.isExplorerConfig
-    )
+const s3Profile = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    s3ProfilesManagement.selectors.s3Profiles,
+    (ambientS3Profile, s3Profiles) => {
+        if (
+            ambientS3Profile !== undefined &&
+            ambientS3Profile.origin === "defined in region"
+        ) {
+            return ambientS3Profile;
+        }
+
+        return (
+            s3Profiles.find(s3Profile => s3Profile.profileName === "default") ??
+            s3Profiles.find(s3Profile => s3Profile.origin === "defined in region")
+        );
+    }
 );
 
 export const privateSelectors = {

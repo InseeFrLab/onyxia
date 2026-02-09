@@ -42,7 +42,7 @@ import type { Item } from "../shared/types";
 import type { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
-import type { ShareView } from "core/usecases/fileExplorer";
+import type { ShareView } from "core/usecases/s3ExplorerUiController";
 import { ExplorerDownloadSnackbar } from "./ExplorerDownloadSnackbar";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";

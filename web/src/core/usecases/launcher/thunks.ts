@@ -27,7 +27,7 @@ type RestorableServiceConfigLike = {
     chartVersion: string | undefined;
     friendlyName: string | undefined;
     isShared: boolean | undefined;
-    s3ConfigId: string | undefined;
+    s3ProfileName: string | undefined;
     helmValuesPatch:
         | {
               path: (string | number)[];
@@ -46,7 +46,7 @@ type RestorableServiceConfigLike = {
               : RestorableServiceConfig[Key] | undefined;
     };
 
-    assert<Equals<Got, Expected>>();
+    assert<Equals<Got, Expected>>;
 }
 
 export const thunks = {
@@ -121,7 +121,7 @@ export const thunks = {
                         chartVersion: chartVersion_pinned,
                         friendlyName,
                         isShared,
-                        s3ConfigId: s3ProfileName_pinned,
+                        s3ProfileName: s3ProfileName_pinned,
                         helmValuesPatch
                     },
                     autoLaunch
@@ -181,16 +181,15 @@ export const thunks = {
                                   "created by user (or group project member)"
                         );
 
-                    const s3ProfileName_default = (() => {
-                        const s3Config = s3Profiles.find(
-                            s3Config => s3Config.isXOnyxiaDefault
-                        );
-                        if (s3Config === undefined) {
-                            return undefined;
-                        }
-
-                        return s3Config.profileName;
-                    })();
+                    const s3ProfileName_default = (
+                        s3Profiles.find(
+                            s3Profile => s3Profile.profileName === "default"
+                        ) ??
+                        s3Profiles.find(
+                            s3Profile => s3Profile.origin === "defined in region"
+                        ) ??
+                        s3Profiles.find(() => true)
+                    )?.profileName;
 
                     const s3ProfileName = (() => {
                         use_pinned_s3_profile: {
@@ -365,7 +364,7 @@ export const thunks = {
                         friendlyName: undefined,
                         helmValuesPatch: undefined,
                         isShared: undefined,
-                        s3ConfigId: undefined
+                        s3ProfileName: undefined
                     },
                     autoLaunch: false
                 })
@@ -397,18 +396,18 @@ export const thunks = {
                 })
             );
         },
-    changeS3Config:
-        (params: { s3ConfigId: string }) =>
+    changeS3Profile:
+        (params: { s3ProfileName: string }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { s3ConfigId } = params;
+            const { s3ProfileName } = params;
 
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(restorableConfig !== null);
 
-            if (restorableConfig.s3ConfigId === s3ConfigId) {
+            if (restorableConfig.s3ProfileName === s3ProfileName) {
                 // NOTE: No changes, skip.
                 return;
             }
@@ -417,7 +416,7 @@ export const thunks = {
                 thunks.initialize({
                     restorableConfig: {
                         ...restorableConfig,
-                        s3ConfigId
+                        s3ProfileName
                     },
                     autoLaunch: false
                 })

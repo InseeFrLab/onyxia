@@ -46,11 +46,11 @@ export const thunks = {
 
             const { restorableConfig } = params;
 
-            const { restorableConfigs } =
+            const { restorableServiceConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
             const restorableConfig_withSameRef = (() => {
-                const results = restorableConfigs.filter(restorableConfig_i =>
+                const results = restorableServiceConfigs.filter(restorableConfig_i =>
                     getAreSameRestorableConfigRef(restorableConfig_i, restorableConfig)
                 );
 
@@ -71,12 +71,12 @@ export const thunks = {
                 return;
             }
 
-            const restorableConfigs_new = [...restorableConfigs];
+            const restorableConfigs_new = [...restorableServiceConfigs];
 
             if (restorableConfig_withSameRef === undefined) {
                 restorableConfigs_new.unshift(restorableConfig);
             } else {
-                const i = restorableConfigs.indexOf(restorableConfig_withSameRef);
+                const i = restorableServiceConfigs.indexOf(restorableConfig_withSameRef);
 
                 assert(i !== -1);
 
@@ -85,7 +85,7 @@ export const thunks = {
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    key: "restorableConfigs",
+                    key: "restorableServiceConfigs",
                     value: restorableConfigs_new
                 })
             );
@@ -97,10 +97,10 @@ export const thunks = {
 
             const { restorableConfigRef: ref } = params;
 
-            const { restorableConfigs } =
+            const { restorableServiceConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
-            const index_toDelete = restorableConfigs.findIndex(c =>
+            const index_toDelete = restorableServiceConfigs.findIndex(c =>
                 getAreSameRestorableConfigRef(c, ref)
             );
 
@@ -109,13 +109,13 @@ export const thunks = {
                 return;
             }
 
-            const restorableConfigs_new = restorableConfigs.filter(
+            const restorableConfigs_new = restorableServiceConfigs.filter(
                 (_, index) => index !== index_toDelete
             );
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    key: "restorableConfigs",
+                    key: "restorableServiceConfigs",
                     value: restorableConfigs_new
                 })
             );
@@ -130,10 +130,10 @@ export const thunks = {
 
             const { restorableConfigRef: ref, targetIndex } = params;
 
-            const { restorableConfigs } =
+            const { restorableServiceConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
-            const index_current = restorableConfigs.findIndex(c =>
+            const index_current = restorableServiceConfigs.findIndex(c =>
                 getAreSameRestorableConfigRef(c, ref)
             );
 
@@ -143,16 +143,16 @@ export const thunks = {
                 return;
             }
 
-            const restorableConfigs_new = [...restorableConfigs];
+            const restorableConfigs_new = [...restorableServiceConfigs];
 
-            const restorableConfig = restorableConfigs[index_current];
+            const restorableConfig = restorableServiceConfigs[index_current];
 
             restorableConfigs_new.splice(index_current, 1);
             restorableConfigs_new.splice(targetIndex, 0, restorableConfig);
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    key: "restorableConfigs",
+                    key: "restorableServiceConfigs",
                     value: restorableConfigs_new
                 })
             );
@@ -167,10 +167,10 @@ export const thunks = {
 
             const { restorableConfigRef: ref, newFriendlyName } = params;
 
-            const { restorableConfigs } =
+            const { restorableServiceConfigs } =
                 projectManagement.protectedSelectors.projectConfig(getState());
 
-            const restorableConfig_current = restorableConfigs.find(c =>
+            const restorableConfig_current = restorableServiceConfigs.find(c =>
                 getAreSameRestorableConfigRef(c, ref)
             );
 
@@ -180,11 +180,11 @@ export const thunks = {
                 return;
             }
 
-            const index = restorableConfigs.indexOf(restorableConfig_current);
+            const index = restorableServiceConfigs.indexOf(restorableConfig_current);
 
             assert(index !== -1);
 
-            const restorableConfigs_new = [...restorableConfigs];
+            const restorableConfigs_new = [...restorableServiceConfigs];
 
             const restorableConfig_new = structuredClone(restorableConfig_current);
 
@@ -194,7 +194,7 @@ export const thunks = {
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    key: "restorableConfigs",
+                    key: "restorableServiceConfigs",
                     value: restorableConfigs_new
                 })
             );

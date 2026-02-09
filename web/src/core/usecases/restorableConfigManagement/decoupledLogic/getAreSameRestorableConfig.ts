@@ -12,7 +12,7 @@ export function getAreSameRestorableConfig(
         "catalogId",
         "chartName",
         "chartVersion",
-        "s3ConfigId",
+        "s3ProfileName",
         "helmValuesPatch"
     ] as const) {
         assert<
@@ -23,7 +23,7 @@ export function getAreSameRestorableConfig(
                     "creationTime"
                 >
             >
-        >();
+        >;
 
         if (key === "helmValuesPatch") {
             if (

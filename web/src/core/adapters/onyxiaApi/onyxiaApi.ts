@@ -233,140 +233,7 @@ export function createOnyxiaApi(params: {
                                     return [value];
                                 })();
 
-                                const s3ConfigCreationFormDefaults: DeploymentRegion["s3ConfigCreationFormDefaults"] =
-                                    (() => {
-                                        const s3Config_api = (() => {
-                                            config_without_sts: {
-                                                const s3Config_api = s3Configs_api.find(
-                                                    s3Config_api =>
-                                                        s3Config_api.sts === undefined
-                                                );
-
-                                                if (s3Config_api === undefined) {
-                                                    break config_without_sts;
-                                                }
-
-                                                return s3Config_api;
-                                            }
-
-                                            if (s3Configs_api.length === 0) {
-                                                return undefined;
-                                            }
-
-                                            const [s3Config_api] = s3Configs_api;
-
-                                            return s3Config_api;
-                                        })();
-
-                                        if (s3Config_api === undefined) {
-                                            return undefined;
-                                        }
-
-                                        return {
-                                            url: s3Config_api.URL,
-                                            pathStyleAccess:
-                                                s3Config_api.pathStyleAccess ?? true,
-                                            region: s3Config_api.region,
-                                            workingDirectory:
-                                                s3Config_api.workingDirectory
-                                        };
-                                    })();
-
-                                const s3Configs: DeploymentRegion["s3Configs"] =
-                                    s3Configs_api
-                                        .map(({ sts, workingDirectory, ...rest }) => {
-                                            if (sts === undefined) {
-                                                return undefined;
-                                            }
-                                            assert(
-                                                workingDirectory !== undefined,
-                                                "If region.data.S3.sts is not undefined workingDirectory must be specified"
-                                            );
-
-                                            return {
-                                                sts,
-                                                workingDirectory,
-                                                ...rest
-                                            };
-                                        })
-                                        .filter(exclude(undefined))
-                                        .map(s3Config_api =>
-                                            id<DeploymentRegion.S3Config>({
-                                                url: s3Config_api.URL,
-                                                pathStyleAccess:
-                                                    s3Config_api.pathStyleAccess ?? true,
-                                                region: s3Config_api.region,
-                                                sts: {
-                                                    url: s3Config_api.sts.URL,
-                                                    durationSeconds:
-                                                        s3Config_api.sts.durationSeconds,
-                                                    role: (() => {
-                                                        if (
-                                                            s3Config_api.sts.role ===
-                                                            undefined
-                                                        ) {
-                                                            return undefined;
-                                                        }
-
-                                                        const entry =
-                                                            s3Config_api.sts
-                                                                .role instanceof Array
-                                                                ? s3Config_api.sts.role[0]
-                                                                : s3Config_api.sts.role;
-
-                                                        return {
-                                                            roleARN: entry.roleARN,
-                                                            roleSessionName:
-                                                                entry.roleSessionName
-                                                        };
-                                                    })(),
-                                                    oidcParams:
-                                                        apiTypesOidcConfigurationToOidcParams_Partial(
-                                                            s3Config_api.sts
-                                                                .oidcConfiguration
-                                                        )
-                                                },
-                                                workingDirectory:
-                                                    s3Config_api.workingDirectory,
-                                                bookmarkedDirectories:
-                                                    s3Config_api.bookmarkedDirectories?.map(
-                                                        bookmarkedDirectory_api => {
-                                                            const {
-                                                                fullPath,
-                                                                title,
-                                                                description,
-                                                                tags,
-                                                                ...rest
-                                                            } = bookmarkedDirectory_api;
-
-                                                            return id<DeploymentRegion.S3Config.BookmarkedDirectory>(
-                                                                {
-                                                                    fullPath,
-                                                                    title,
-                                                                    description,
-                                                                    tags,
-                                                                    ...(rest.claimName ===
-                                                                    undefined
-                                                                        ? {
-                                                                              claimName:
-                                                                                  undefined
-                                                                          }
-                                                                        : {
-                                                                              claimName:
-                                                                                  rest.claimName,
-                                                                              includedClaimPattern:
-                                                                                  rest.includedClaimPattern,
-                                                                              excludedClaimPattern:
-                                                                                  rest.excludedClaimPattern
-                                                                          })
-                                                                }
-                                                            );
-                                                        }
-                                                    ) ?? []
-                                            })
-                                        );
-
-                                const s3Profiles: DeploymentRegion.S3Next.S3Profile[] =
+                                const s3Profiles: DeploymentRegion.S3Profile[] =
                                     s3Configs_api
                                         .filter(
                                             s3Configs_api =>
@@ -375,7 +242,7 @@ export function createOnyxiaApi(params: {
                                         .map(
                                             (
                                                 s3Config_api
-                                            ): DeploymentRegion.S3Next.S3Profile => {
+                                            ): DeploymentRegion.S3Profile => {
                                                 return {
                                                     profileName: s3Config_api.profileName,
                                                     url: s3Config_api.URL,
@@ -409,7 +276,7 @@ export function createOnyxiaApi(params: {
                                                                 return rolesArray.map(
                                                                     (
                                                                         role_api
-                                                                    ): DeploymentRegion.S3Next.S3Profile.StsRole => ({
+                                                                    ): DeploymentRegion.S3Profile.StsRole => ({
                                                                         roleARN:
                                                                             role_api.roleARN,
                                                                         roleSessionName:
@@ -445,8 +312,8 @@ export function createOnyxiaApi(params: {
                                                     ).map(
                                                         (
                                                             bookmarkedDirectory_api
-                                                        ): DeploymentRegion.S3Next.S3Profile.Bookmark => {
-                                                            return id<DeploymentRegion.S3Next.S3Profile.Bookmark>(
+                                                        ): DeploymentRegion.S3Profile.Bookmark => {
+                                                            return id<DeploymentRegion.S3Profile.Bookmark>(
                                                                 {
                                                                     s3UriPrefix: (() => {
                                                                         const s3UriPrefix = `s3://${bookmarkedDirectory_api.fullPath}`;
@@ -510,7 +377,7 @@ export function createOnyxiaApi(params: {
                                             }
                                         );
 
-                                const s3Profiles_defaultValuesOfCreationForm: DeploymentRegion["_s3Next"]["s3Profiles_defaultValuesOfCreationForm"] =
+                                const s3Profiles_defaultValuesOfCreationForm: DeploymentRegion["s3Profiles_defaultValuesOfCreationForm"] =
                                     (() => {
                                         const s3Config_api = (() => {
                                             config_without_sts: {
@@ -548,12 +415,8 @@ export function createOnyxiaApi(params: {
                                     })();
 
                                 return {
-                                    s3Configs,
-                                    s3ConfigCreationFormDefaults,
-                                    _s3Next: id<DeploymentRegion["_s3Next"]>({
-                                        s3Profiles,
-                                        s3Profiles_defaultValuesOfCreationForm
-                                    })
+                                    s3Profiles,
+                                    s3Profiles_defaultValuesOfCreationForm
                                 };
                             })(),
                             allowedURIPatternForUserDefinedInitScript:
