@@ -9,7 +9,7 @@ import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
 import { join as pathJoin, relative as pathRelative } from "pathe";
-import { getUploadProgress } from "./decoupledLogic/uploadProgress";
+import { getUploadProgress, type UploadProgress } from "./decoupledLogic/uploadProgress";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 export type RouteParams = {
@@ -26,26 +26,6 @@ export type RouteParams = {
 */
 
 const state = (rootState: RootState): State => rootState[name];
-
-const s3UriPrefixObj = createSelector(state, state => state.s3UriPrefixObj);
-
-const isDownloadPreparing = createSelector(
-    createSelector(state, state => state.ongoingOperations),
-    (ongoingOperations): boolean =>
-        ongoingOperations.some(operation => operation.operation === "downloading")
-);
-
-const uploadProgress = createSelector(
-    createSelector(state, state => state.s3FilesBeingUploaded),
-    s3FilesBeingUploaded => getUploadProgress(s3FilesBeingUploaded)
-);
-
-const commandLogsEntries = createSelector(
-    state,
-    userConfigs.selectors.userConfigs,
-    (state, userConfigs) =>
-        !userConfigs.isCommandBarEnabled ? undefined : state.commandLogsEntries
-);
 
 export type CurrentWorkingDirectoryView = {
     directoryPath: string;
@@ -302,20 +282,56 @@ const shareView = createSelector(
     }
 );
 
-const isNavigationOngoing = createSelector(
-    state,
-    state => state.ongoingNavigation !== undefined
-);
+export type ExplorerView = ExplorerView.NotLoaded | ExplorerView.Loaded;
+
+export namespace ExplorerView {
+    export type Common = {
+        isNavigationOngoing: boolean;
+        uploadProgress: UploadProgress;
+        commandLogsEntries:
+            | {
+                  cmdId: number;
+                  cmd: string;
+                  resp: string | undefined;
+              }[]
+            | undefined;
+        viewMode: "list" | "block";
+        isDownloadPreparing: boolean;
+    };
+
+    export type NotLoaded = Common & {
+        isCurrentWorkingDirectoryLoaded: false;
+        navigationError:
+            | { errorCase: "access denied"; directoryPath: string }
+            | { errorCase: "no such bucket"; bucket: string }
+            | undefined;
+    };
+
+    export type Loaded = Common & {
+        isCurrentWorkingDirectoryLoaded: true;
+        currentWorkingDirectoryView: CurrentWorkingDirectoryView;
+        shareView: ShareView | undefined;
+    };
+}
 
 const explorerView = createSelector(
     createSelector(state, state => state.navigationError),
-    uploadProgress,
-    commandLogsEntries,
+    createSelector(
+        createSelector(state, state => state.s3FilesBeingUploaded),
+        s3FilesBeingUploaded => getUploadProgress(s3FilesBeingUploaded)
+    ),
+    createSelector(state, userConfigs.selectors.userConfigs, (state, userConfigs) =>
+        !userConfigs.isCommandBarEnabled ? undefined : state.commandLogsEntries
+    ),
     currentWorkingDirectoryView,
-    isNavigationOngoing,
+    createSelector(state, state => state.ongoingNavigation !== undefined),
     createSelector(state, state => state.viewMode),
     shareView,
-    isDownloadPreparing,
+    createSelector(
+        createSelector(state, state => state.ongoingOperations),
+        (ongoingOperations): boolean =>
+            ongoingOperations.some(operation => operation.operation === "downloading")
+    ),
     (
         navigationError,
         uploadProgress,
@@ -325,9 +341,18 @@ const explorerView = createSelector(
         viewMode,
         shareView,
         isDownloadPreparing
-    ) => {
+    ): ExplorerView => {
+        const common = id<ExplorerView.Common>({
+            isNavigationOngoing,
+            uploadProgress,
+            commandLogsEntries,
+            viewMode,
+            isDownloadPreparing
+        });
+
         if (currentWorkingDirectoryView === null) {
-            return {
+            return id<ExplorerView.NotLoaded>({
+                ...common,
                 isCurrentWorkingDirectoryLoaded: false as const,
                 navigationError: (() => {
                     if (navigationError === undefined) {
@@ -348,37 +373,28 @@ const explorerView = createSelector(
                                 }).bucket
                             } as const;
                     }
-                })(),
-                isNavigationOngoing,
-                uploadProgress,
-                commandLogsEntries,
-                viewMode,
-                isDownloadPreparing
-            };
+                })()
+            });
         }
 
         assert(shareView !== null);
 
-        return {
+        return id<ExplorerView.Loaded>({
+            ...common,
             isCurrentWorkingDirectoryLoaded: true as const,
-            isNavigationOngoing,
-            uploadProgress,
-            commandLogsEntries,
             currentWorkingDirectoryView,
-            viewMode,
-            shareView,
-            isDownloadPreparing
-        };
+            shareView
+        });
     }
 );
 
-export const protectedSelectors = {
+export const privateSelectors = {
     routeParams: createSelector(
         createSelector(
             s3ProfilesManagement.selectors.ambientS3Profile,
             ambientS3Profile => ambientS3Profile?.profileName
         ),
-        s3UriPrefixObj,
+        createSelector(state, state => state.s3UriPrefixObj),
         (profileName, s3UriPrefixObj): RouteParams => ({
             profile: profileName,
             path:
@@ -387,7 +403,8 @@ export const protectedSelectors = {
                     : stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length)
         })
     ),
-    shareView
+    shareView,
+    ongoingNavigation: createSelector(state, state => state.ongoingNavigation)
 };
 
 export type RootView = {

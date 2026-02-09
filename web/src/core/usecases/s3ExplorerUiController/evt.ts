@@ -1,25 +1,25 @@
 import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
-import { protectedSelectors, type RouteParams } from "./selectors";
+import { privateSelectors, type RouteParams } from "./selectors";
 import { Reflect } from "tsafe";
 import { name } from "./state";
 import { protectedThunks } from "./thunks";
 
-export const evt = Evt.create<
-    | {
-          action: "updateRoute";
-          method: "replace" | "push";
-          routeParams: RouteParams;
-      }
-    | {
-          action: "ask confirmation for bucket creation attempt";
-          bucket: string;
-          createBucket: () => Promise<{ isSuccess: boolean }>;
-      }
->();
-
 export const createEvt = (({ evtAction, dispatch, getState }) => {
+    const evt = Evt.create<
+        | {
+              action: "updateRoute";
+              method: "replace" | "push";
+              routeParams: RouteParams;
+          }
+        | {
+              action: "ask confirmation for bucket creation attempt";
+              bucket: string;
+              createBucket: () => Promise<{ isSuccess: boolean }>;
+          }
+    >();
+
     evtAction
         .pipe(action => action.usecaseName === name)
         .$attach(
@@ -45,7 +45,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
         );
 
     evtAction
-        .pipe(() => [protectedSelectors.routeParams(getState())])
+        .pipe(() => [privateSelectors.routeParams(getState())])
         .pipe(onlyIfChanged())
         .pipe([
             (routeParams, { routeParams: routeParams_prev }) => [
@@ -56,7 +56,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                 } as const
             ],
             {
-                routeParams: protectedSelectors.routeParams(getState()),
+                routeParams: privateSelectors.routeParams(getState()),
                 method: Reflect<"push" | "replace">()
             }
         ])
