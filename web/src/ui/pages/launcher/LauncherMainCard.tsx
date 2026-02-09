@@ -73,12 +73,12 @@ export type Props = {
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
 
-    s3ConfigsSelect:
+    s3ProfileSelect:
         | {
               projectS3ConfigLink: Link;
-              selectedOption: string | undefined;
-              options: string[];
-              onSelectedS3ConfigChange: (params: { s3ConfigId: string }) => void;
+              selectedProfileName: string | undefined;
+              availableProfileNames: string[];
+              onSelectedS3ConfigChange: (params: { profileName: string }) => void;
           }
         | undefined;
 
@@ -111,7 +111,7 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestCopyLaunchUrl,
         onRequestRestoreAllDefault,
 
-        s3ConfigsSelect,
+        s3ProfileSelect,
         erroredFormFields,
         dataTextEditorErrorMsg
     } = props;
@@ -277,7 +277,7 @@ export const LauncherMainCard = memo((props: Props) => {
                         </Select>
                     </FormControl>
 
-                    {s3ConfigsSelect !== undefined && (
+                    {s3ProfileSelect !== undefined && (
                         <FormControl
                             variant="standard"
                             className={classes.versionSelectWrapper}
@@ -287,7 +287,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                 <Tooltip
                                     title={t("s3 configuration - explain", {
                                         projectS3ConfigLink:
-                                            s3ConfigsSelect.projectS3ConfigLink
+                                            s3ProfileSelect.projectS3ConfigLink
                                     })}
                                 >
                                     <Icon
@@ -299,23 +299,25 @@ export const LauncherMainCard = memo((props: Props) => {
                             </InputLabel>
                             <Select
                                 labelId={s3ConfigInputLabelId}
-                                value={s3ConfigsSelect.selectedOption ?? ""}
+                                value={s3ProfileSelect.selectedProfileName ?? ""}
                                 onChange={event => {
                                     const { value } = event.target;
                                     assert(typeof value === "string");
-                                    s3ConfigsSelect.onSelectedS3ConfigChange({
-                                        s3ConfigId: value
+                                    s3ProfileSelect.onSelectedS3ConfigChange({
+                                        profileName: value
                                     });
                                 }}
                             >
                                 <MenuItem value={""} disabled>
                                     {" "}
                                 </MenuItem>
-                                {s3ConfigsSelect.options.map(profileName => (
-                                    <MenuItem key={profileName} value={profileName}>
-                                        {profileName}
-                                    </MenuItem>
-                                ))}
+                                {s3ProfileSelect.availableProfileNames.map(
+                                    profileName => (
+                                        <MenuItem key={profileName} value={profileName}>
+                                            {profileName}
+                                        </MenuItem>
+                                    )
+                                )}
                             </Select>
                         </FormControl>
                     )}

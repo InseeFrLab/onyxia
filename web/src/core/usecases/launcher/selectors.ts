@@ -154,7 +154,7 @@ const chartVersion = createSelector(readyState, state => {
     return state.chartVersion;
 });
 
-const s3ConfigSelect = createSelector(
+const s3ProfileSelect = createSelector(
     s3ConfigManagement.selectors.s3Profiles,
     isReady,
     projectManagement.selectors.canInjectPersonalInfos,
@@ -186,8 +186,8 @@ const s3ConfigSelect = createSelector(
         }
 
         return {
-            options: availableConfigs.map(s3Config => s3Config.profileName),
-            selectedOptionValue: s3Config.s3ProfileName
+            availableProfileNames: availableConfigs.map(s3Config => s3Config.profileName),
+            selectedProfileName: s3Config.s3ProfileName
         };
     }
 );
@@ -256,7 +256,7 @@ const restorableConfig = createSelector(
             friendlyName,
             isShared,
             chartVersion,
-            s3ConfigId: s3ProfileName,
+            s3ProfileName,
             helmValuesPatch: diffPatch
         };
     }
@@ -334,7 +334,7 @@ const isDefaultConfiguration = createSelector(
             restorableConfig.isShared === isShared_default &&
             restorableConfig.friendlyName === friendlyName_default &&
             restorableConfig.helmValuesPatch.length === 0 &&
-            restorableConfig.s3ConfigId === s3ProfileName_default
+            restorableConfig.s3ProfileName === s3ProfileName_default
         );
     }
 );
@@ -577,7 +577,7 @@ const groupProjectName = createSelector(
         currentProject.group === undefined ? undefined : currentProject.name
 );
 
-const main = createSelector(
+const mainView = createSelector(
     isReady,
     friendlyName,
     isShared,
@@ -594,7 +594,7 @@ const main = createSelector(
     launchScript,
     commandLogsEntries,
     groupProjectName,
-    s3ConfigSelect,
+    s3ProfileSelect,
     labeledHelmChartSourceUrls,
     helmValues,
     createSelector(readyState, state => {
@@ -627,7 +627,7 @@ const main = createSelector(
         launchScript,
         commandLogsEntries,
         groupProjectName,
-        s3ConfigSelect,
+        s3ProfileSelect,
         labeledHelmChartSourceUrls,
         helmValues,
         helmValuesSchema_forDataTextEditor,
@@ -654,7 +654,7 @@ const main = createSelector(
         assert(launchScript !== null);
         assert(commandLogsEntries !== null);
         assert(groupProjectName !== null);
-        assert(s3ConfigSelect !== null);
+        assert(s3ProfileSelect !== null);
         assert(labeledHelmChartSourceUrls !== null);
         assert(helmValues !== null);
         assert(helmValuesSchema_forDataTextEditor !== null);
@@ -677,7 +677,7 @@ const main = createSelector(
             launchScript,
             commandLogsEntries,
             groupProjectName,
-            s3ConfigSelect,
+            s3ProfileSelect,
             labeledHelmChartSourceUrls,
             helmValues,
             helmValuesSchema_forDataTextEditor,
@@ -686,7 +686,7 @@ const main = createSelector(
     }
 );
 
-export const selectors = { main };
+export const selectors = { mainView };
 
 export const privateSelectors = {
     helmReleaseName,

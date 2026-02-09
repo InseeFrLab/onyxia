@@ -181,14 +181,12 @@ function MyServices() {
                         chartVersion,
                         friendlyName,
                         isShared,
-                        s3ConfigId,
+                        s3ProfileName,
                         helmValuesPatch,
                         ...rest
                     } = restorableConfig;
 
-                    assert<Equals<typeof rest, { chartIconUrl: string | undefined }>>(
-                        true
-                    );
+                    assert<Equals<typeof rest, { chartIconUrl: string | undefined }>>;
 
                     return routes.launcher({
                         catalogId,
@@ -196,7 +194,7 @@ function MyServices() {
                         name: friendlyName,
                         shared: isShared,
                         version: restorableConfig.chartVersion,
-                        s3: s3ConfigId,
+                        s3: s3ProfileName,
                         helmValuesPatch,
                         autoLaunch: autoLaunch ? true : undefined
                     }).link;

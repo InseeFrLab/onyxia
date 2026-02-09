@@ -11,7 +11,7 @@ import { SelectTime } from "./SelectTime";
 import TextField from "@mui/material/TextField";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import type { ShareView } from "core/usecases/fileExplorer";
+import type { ShareView } from "core/usecases/s3ExplorerUiController";
 import { formatDuration } from "ui/shared/formattedDate";
 
 export type Props = {

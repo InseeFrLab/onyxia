@@ -20,7 +20,7 @@ import { parseS3UriPrefix, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 import { useResolveLocalizedString } from "ui/i18n";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
-import { S3ExplorerDialogs, type S3ExplorerDialogsProps } from "./S3ExplorerDialogs";
+import { S3ExplorerDialogs, type S3ExplorerDialogsProps } from "./dialogs";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import { Deferred } from "evt/tools/Deferred";

@@ -1,4 +1,4 @@
-import type { CurrentWorkingDirectoryView } from "core/usecases/fileExplorer";
+import type { CurrentWorkingDirectoryView } from "core/usecases/s3ExplorerUiController";
 
 export type Item = CurrentWorkingDirectoryView.Item;
 export type DirectoryItem = CurrentWorkingDirectoryView.Item.Directory;

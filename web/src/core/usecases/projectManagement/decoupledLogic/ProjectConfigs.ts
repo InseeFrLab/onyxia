@@ -129,7 +129,6 @@ const zS3Profile = (() => {
         profileName: z.string(),
         url: z.string(),
         region: z.union([z.string(), z.undefined()]),
-        workingDirectoryPath: z.string(),
         pathStyleAccess: z.boolean(),
         credentials: z.union([zS3Credentials, z.undefined()]),
         bookmarks: z.union([z.array(zS3ConfigBookmark), z.undefined()])
