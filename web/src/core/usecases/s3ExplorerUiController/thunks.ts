@@ -1,8 +1,7 @@
 import type { Thunks } from "core/bootstrap";
-import { protectedSelectors } from "./selectors";
+import { privateSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { RouteParams } from "./selectors";
-import { evt } from "./evt";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
 import { assert, type Equals } from "tsafe/assert";
 import { Evt } from "evt";
@@ -49,7 +48,7 @@ export const thunks = {
             }
 
             return {
-                routeParams_toSet: protectedSelectors.routeParams(getState())
+                routeParams_toSet: privateSelectors.routeParams(getState())
             };
         },
     notifyRouteParamsExternallyUpdated:
@@ -57,15 +56,7 @@ export const thunks = {
         async (...args) => {
             const { routeParams } = params;
             const [dispatch] = args;
-            const { routeParams_toSet } = await dispatch(thunks.load({ routeParams }));
-
-            if (routeParams_toSet !== undefined) {
-                evt.post({
-                    action: "updateRoute",
-                    method: "replace",
-                    routeParams: routeParams_toSet
-                });
-            }
+            await dispatch(thunks.load({ routeParams }));
         },
     updateSelectedS3Profile:
         (params: { profileName: string }) =>
@@ -74,13 +65,14 @@ export const thunks = {
 
             const { profileName } = params;
 
-            const { doesProfileExist } = dispatch(
-                s3ProfilesManagement.protectedThunks.changeAmbientProfile({
-                    profileName
+            await dispatch(
+                thunks.load({
+                    routeParams: {
+                        profile: profileName,
+                        path: ""
+                    }
                 })
             );
-
-            assert(doesProfileExist);
         },
     /*
     toggleIsDirectoryPathBookmarked: (() => {
@@ -142,7 +134,7 @@ export const thunks = {
             );
 
             {
-                const { ongoingNavigation } = getState()[name];
+                const ongoingNavigation = privateSelectors.ongoingNavigation(getState());
 
                 if (
                     ongoingNavigation !== undefined &&
@@ -765,7 +757,7 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const shareView = protectedSelectors.shareView(getState());
+            const shareView = privateSelectors.shareView(getState());
 
             assert(shareView !== null);
             assert(shareView !== undefined);
