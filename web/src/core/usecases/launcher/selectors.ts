@@ -7,7 +7,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
-import * as s3ConfigManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ConfigManagement from "core/usecases/s3ProfilesManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";

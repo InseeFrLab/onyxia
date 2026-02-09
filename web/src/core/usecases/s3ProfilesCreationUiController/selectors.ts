@@ -5,7 +5,7 @@ import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
-import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 
 const readyState = (rootState: RootState) => {

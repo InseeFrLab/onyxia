@@ -2,7 +2,7 @@ import type { Thunks } from "core/bootstrap";
 import { actions, type State, type ChangeValueParams } from "./state";
 import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
-import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 export const thunks = {

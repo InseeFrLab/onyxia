@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { actions } from "./state";
 import { assert } from "tsafe/assert";
-import * as s3ProfilesManagement from "core/usecases/_s3Next/s3ProfilesManagement";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { Technology } from "./state";
 import { parseUrl } from "core/tools/parseUrl";
 import { privateSelectors } from "./selectors";

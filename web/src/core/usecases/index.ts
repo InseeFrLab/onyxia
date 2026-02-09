@@ -21,9 +21,9 @@ import * as projectManagement from "./projectManagement";
 import * as viewQuotas from "./viewQuotas";
 import * as dataCollection from "./dataCollection";
 
-import * as s3ProfilesManagement from "./_s3Next/s3ProfilesManagement";
-import * as s3ProfilesCreationUiController from "./_s3Next/s3ProfilesCreationUiController";
-import * as s3ExplorerUiController from "./_s3Next/s3ExplorerUiController";
+import * as s3ProfilesManagement from "./s3ProfilesManagement";
+import * as s3ProfilesCreationUiController from "./s3ProfilesCreationUiController";
+import * as s3ExplorerUiController from "./s3ExplorerUiController";
 
 export const usecases = {
     autoLogoutCountdown,
