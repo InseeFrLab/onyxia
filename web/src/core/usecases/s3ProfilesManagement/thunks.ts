@@ -464,3 +464,5 @@ export const protectedThunks = {
             );
         }
 } satisfies Thunks;
+
+export const thunks = {} satisfies Thunks;
