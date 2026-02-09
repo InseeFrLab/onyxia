@@ -1,7 +1,11 @@
 import { createSelector } from "clean-architecture";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
-import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
+import {
+    type S3UriPrefixObj,
+    stringifyS3UriPrefixObj,
+    parseS3UriPrefix
+} from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
 import { type State, name } from "./state";
 import * as userConfigs from "core/usecases/userConfigs";
@@ -10,20 +14,11 @@ import { id } from "tsafe/id";
 import type { S3Object } from "core/ports/S3Client";
 import { join as pathJoin, relative as pathRelative } from "pathe";
 import { getUploadProgress, type UploadProgress } from "./decoupledLogic/uploadProgress";
-import { parseS3UriPrefix } from "core/tools/S3Uri";
 
 export type RouteParams = {
     profile?: string;
     path: string;
 };
-
-/*
-    bookmarks: {
-        displayName: LocalizedString | undefined;
-        s3UriPrefixObj: S3UriPrefixObj;
-    }[];
-    shouldRenderExplorer: boolean;
-*/
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -282,6 +277,37 @@ const shareView = createSelector(
     }
 );
 
+const s3UriPrefixObj = createSelector(state, state => state.s3UriPrefixObj);
+
+const bookmarkStatus = createSelector(
+    s3UriPrefixObj,
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    (s3UriPrefixObj, ambientS3Profile): ExplorerView.Loaded["bookmarkStatus"] => {
+        if (s3UriPrefixObj === undefined || ambientS3Profile === undefined) {
+            return {
+                isBookmarked: false
+            };
+        }
+
+        const bookmark_matching = ambientS3Profile.bookmarks.find(
+            bookmark =>
+                stringifyS3UriPrefixObj(bookmark.s3UriPrefixObj) ===
+                stringifyS3UriPrefixObj(s3UriPrefixObj)
+        );
+
+        if (bookmark_matching === undefined) {
+            return {
+                isBookmarked: false
+            };
+        }
+
+        return {
+            isBookmarked: true,
+            isReadonly: bookmark_matching.isReadonly
+        };
+    }
+);
+
 export type ExplorerView = ExplorerView.NotLoaded | ExplorerView.Loaded;
 
 export namespace ExplorerView {
@@ -297,6 +323,14 @@ export namespace ExplorerView {
             | undefined;
         viewMode: "list" | "block";
         isDownloadPreparing: boolean;
+        bookmarkStatus:
+            | {
+                  isBookmarked: false;
+              }
+            | {
+                  isBookmarked: true;
+                  isReadonly: boolean;
+              };
     };
 
     export type NotLoaded = Common & {
@@ -305,12 +339,17 @@ export namespace ExplorerView {
             | { errorCase: "access denied"; directoryPath: string }
             | { errorCase: "no such bucket"; bucket: string }
             | undefined;
+
+        currentWorkingDirectoryView?: never;
+        shareView?: never;
     };
 
     export type Loaded = Common & {
         isCurrentWorkingDirectoryLoaded: true;
         currentWorkingDirectoryView: CurrentWorkingDirectoryView;
         shareView: ShareView | undefined;
+
+        navigationError?: never;
     };
 }
 
@@ -332,6 +371,7 @@ const explorerView = createSelector(
         (ongoingOperations): boolean =>
             ongoingOperations.some(operation => operation.operation === "downloading")
     ),
+    bookmarkStatus,
     (
         navigationError,
         uploadProgress,
@@ -340,14 +380,16 @@ const explorerView = createSelector(
         isNavigationOngoing,
         viewMode,
         shareView,
-        isDownloadPreparing
+        isDownloadPreparing,
+        bookmarkStatus
     ): ExplorerView => {
         const common = id<ExplorerView.Common>({
             isNavigationOngoing,
             uploadProgress,
             commandLogsEntries,
             viewMode,
-            isDownloadPreparing
+            isDownloadPreparing,
+            bookmarkStatus
         });
 
         if (currentWorkingDirectoryView === null) {
@@ -383,7 +425,8 @@ const explorerView = createSelector(
             ...common,
             isCurrentWorkingDirectoryLoaded: true as const,
             currentWorkingDirectoryView,
-            shareView
+            shareView,
+            bookmarkStatus
         });
     }
 );
@@ -404,7 +447,9 @@ export const privateSelectors = {
         })
     ),
     shareView,
-    ongoingNavigation: createSelector(state, state => state.ongoingNavigation)
+    ongoingNavigation: createSelector(state, state => state.ongoingNavigation),
+    bookmarkStatus,
+    s3UriPrefixObj
 };
 
 export type RootView = {
@@ -498,6 +543,6 @@ export const selectors = {
             };
         }
     ),
-    s3UriPrefixObj: createSelector(state, state => state.s3UriPrefixObj),
+    s3UriPrefixObj,
     explorerView
 };

@@ -36,7 +36,8 @@ export function Explorer(props: Props) {
         currentWorkingDirectoryView,
         viewMode,
         shareView,
-        isDownloadPreparing
+        isDownloadPreparing,
+        bookmarkStatus
     } = useCoreState("s3ExplorerUiController", "explorerView");
 
     const { t } = useTranslation("S3ExplorerExplorer");
@@ -203,10 +204,13 @@ export function Explorer(props: Props) {
                                             <Button
                                                 startIcon={getIconUrlByName("Delete")}
                                                 onClick={async () => {
-                                                    onToggleIsDirectoryPathBookmarked();
-                                                    changeCurrentDirectory({
-                                                        directoryPath: ""
-                                                    });
+                                                    s3ExplorerUiController.toggleIsDirectoryPathBookmarked();
+
+                                                    s3ExplorerUiController.setS3UriPrefixObjAndNavigate(
+                                                        {
+                                                            s3UriPrefixObj: undefined
+                                                        }
+                                                    );
                                                 }}
                                             >
                                                 {t("delete bookmark")}
@@ -257,7 +261,9 @@ export function Explorer(props: Props) {
                 onDownloadItems={onDownloadItems}
                 evtIsDownloadSnackbarOpen={evtIsSnackbarOpen}
                 bookmarkStatus={bookmarkStatus}
-                onToggleIsDirectoryPathBookmarked={onToggleIsDirectoryPathBookmarked}
+                onToggleIsDirectoryPathBookmarked={
+                    s3ExplorerUiController.toggleIsDirectoryPathBookmarked
+                }
             />
         </>
     );
