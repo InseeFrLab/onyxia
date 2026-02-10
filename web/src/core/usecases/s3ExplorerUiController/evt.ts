@@ -2,9 +2,10 @@ import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { privateSelectors, type RouteParams } from "./selectors";
-import { Reflect } from "tsafe";
+import { Reflect, id } from "tsafe";
 import { name } from "./state";
 import { protectedThunks } from "./thunks";
+import { AccessError } from "clean-architecture";
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -45,7 +46,18 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
         );
 
     evtAction
-        .pipe(() => [privateSelectors.routeParams(getState())])
+        .pipe(() => {
+            try {
+                return [privateSelectors.routeParams(getState())];
+            } catch (error) {
+                // NOTE: If it's too early to get the route params, we skip.
+                if (!(error instanceof AccessError)) {
+                    throw error;
+                }
+
+                return null;
+            }
+        })
         .pipe(onlyIfChanged())
         .pipe([
             (routeParams, { routeParams: routeParams_prev }) => [
@@ -56,7 +68,9 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                 } as const
             ],
             {
-                routeParams: privateSelectors.routeParams(getState()),
+                routeParams: id<RouteParams>({
+                    path: ""
+                }),
                 method: Reflect<"push" | "replace">()
             }
         ])
