@@ -39,7 +39,7 @@ export const thunks = {
 
                 thunks.setS3UriPrefixObjAndNavigate({
                     s3UriPrefixObj: parseS3UriPrefix({
-                        s3UriPrefix: routeParams.path,
+                        s3UriPrefix: `s3://${routeParams.path}`,
                         strict: false
                     })
                 });
