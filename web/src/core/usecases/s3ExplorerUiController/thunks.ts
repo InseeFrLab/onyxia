@@ -38,10 +38,13 @@ export const thunks = {
                 }
 
                 thunks.setS3UriPrefixObjAndNavigate({
-                    s3UriPrefixObj: parseS3UriPrefix({
-                        s3UriPrefix: `s3://${routeParams.path}`,
-                        strict: false
-                    })
+                    s3UriPrefixObj:
+                        routeParams.path === ""
+                            ? undefined
+                            : parseS3UriPrefix({
+                                  s3UriPrefix: `s3://${routeParams.path}`,
+                                  strict: false
+                              })
                 });
 
                 return { routeParams_toSet: undefined };
@@ -1236,7 +1239,7 @@ export const protectedThunks = {
                 await dispatch(
                     thunks.setS3UriPrefixObjAndNavigate({
                         s3UriPrefixObj: parseS3UriPrefix({
-                            s3UriPrefix: directoryPath_toNavigateToOnSuccess,
+                            s3UriPrefix: `s3://${directoryPath_toNavigateToOnSuccess}`,
                             strict: false
                         })
                     })
