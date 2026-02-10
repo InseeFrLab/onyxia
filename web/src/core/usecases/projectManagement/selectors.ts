@@ -5,7 +5,6 @@ import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-// TODO: Here this selector should take a s
 const projectConfig = createSelector(state, state => state.currentProjectConfigs);
 
 export const protectedSelectors = {
