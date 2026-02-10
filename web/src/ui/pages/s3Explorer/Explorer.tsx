@@ -128,10 +128,13 @@ export function Explorer(props: Props) {
     const onNavigate = useConstCallback<HeadlessExplorerProps["onNavigate"]>(
         ({ directoryPath }) => {
             s3ExplorerUiController.setS3UriPrefixObjAndNavigate({
-                s3UriPrefixObj: parseS3UriPrefix({
-                    s3UriPrefix: `s3://${directoryPath}`,
-                    strict: false
-                })
+                s3UriPrefixObj:
+                    directoryPath === ""
+                        ? undefined
+                        : parseS3UriPrefix({
+                              s3UriPrefix: `s3://${directoryPath}`,
+                              strict: false
+                          })
             });
         }
     );
