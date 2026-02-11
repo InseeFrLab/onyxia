@@ -78,9 +78,11 @@ export const thunks = {
 
             assert(doesProfileExist);
 
-            thunks.setS3UriPrefixObjAndNavigate({
-                s3UriPrefixObj: undefined
-            });
+            dispatch(
+                thunks.setS3UriPrefixObjAndNavigate({
+                    s3UriPrefixObj: undefined
+                })
+            );
         },
     toggleIsDirectoryPathBookmarked: (() => {
         let isRunning = false;
