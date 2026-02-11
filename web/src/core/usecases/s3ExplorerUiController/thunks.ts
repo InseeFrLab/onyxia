@@ -17,6 +17,13 @@ import { id } from "tsafe/id";
 import { isAmong } from "tsafe/isAmong";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
+import { same } from "evt/tools/inDepth/same";
+import { createWaitForDebounce } from "core/tools/waitForDebounce";
+
+const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
+    createWaitForDebounce({
+        delay: 10
+    });
 
 export const thunks = {
     load:
@@ -60,8 +67,60 @@ export const thunks = {
         (params: { routeParams: RouteParams }) =>
         async (...args) => {
             const { routeParams } = params;
-            const [dispatch] = args;
-            dispatch(thunks.load({ routeParams }));
+            const [dispatch, getState] = args;
+
+            // NOTE: We need a debounce here to avoid cycles since the ambient s3 profile
+            // and the s3 prefix location are not on the same slice and cannot be dispatched
+            // in a single action.
+            await waitForDebounce_notifyRouteParamsExternallyUpdated();
+
+            update_profile: {
+                const profileName = routeParams.profile;
+
+                if (profileName === undefined) {
+                    break update_profile;
+                }
+
+                const profileName_current =
+                    s3ProfileManagement.selectors.ambientS3Profile(
+                        getState()
+                    )?.profileName;
+
+                if (profileName_current === profileName) {
+                    break update_profile;
+                }
+
+                const { doesProfileExist } = dispatch(
+                    s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                        profileName
+                    })
+                );
+
+                assert(doesProfileExist);
+            }
+
+            update_location: {
+                const s3UriPrefixObj_current =
+                    privateSelectors.s3UriPrefixObj(getState());
+
+                const s3UriPrefixObj =
+                    routeParams.path === ""
+                        ? undefined
+                        : parseS3UriPrefix({
+                              s3UriPrefix: `s3://${routeParams.path}`,
+                              strict: false
+                          });
+
+                if (same(s3UriPrefixObj_current, s3UriPrefixObj)) {
+                    break update_location;
+                }
+
+                dispatch(
+                    thunks.setS3UriPrefixObjAndNavigate({
+                        s3UriPrefixObj
+                    })
+                );
+            }
         },
     updateSelectedS3Profile:
         (params: { profileName: string }) =>
