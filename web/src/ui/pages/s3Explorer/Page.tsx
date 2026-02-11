@@ -35,7 +35,7 @@ const Page = withLoader({
         const route = getRoute();
         assert(routeGroup.has(route));
 
-        const { routeParams_toSet } = await core.functions.s3ExplorerUiController.load({
+        const { routeParams_toSet } = core.functions.s3ExplorerUiController.load({
             routeParams: route.params
         });
 
