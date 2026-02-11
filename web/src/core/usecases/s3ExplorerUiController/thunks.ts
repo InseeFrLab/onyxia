@@ -37,15 +37,17 @@ export const thunks = {
                     return dispatch(thunks.load({ routeParams: { path: "" } }));
                 }
 
-                thunks.setS3UriPrefixObjAndNavigate({
-                    s3UriPrefixObj:
-                        routeParams.path === ""
-                            ? undefined
-                            : parseS3UriPrefix({
-                                  s3UriPrefix: `s3://${routeParams.path}`,
-                                  strict: false
-                              })
-                });
+                dispatch(
+                    thunks.setS3UriPrefixObjAndNavigate({
+                        s3UriPrefixObj:
+                            routeParams.path === ""
+                                ? undefined
+                                : parseS3UriPrefix({
+                                      s3UriPrefix: `s3://${routeParams.path}`,
+                                      strict: false
+                                  })
+                    })
+                );
 
                 return { routeParams_toSet: undefined };
             }
