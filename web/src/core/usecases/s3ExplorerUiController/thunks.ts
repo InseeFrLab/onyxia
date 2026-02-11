@@ -21,7 +21,7 @@ import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
 export const thunks = {
     load:
         (params: { routeParams: RouteParams }) =>
-        async (...args): Promise<{ routeParams_toSet: RouteParams | undefined }> => {
+        (...args): { routeParams_toSet: RouteParams | undefined } => {
             const [dispatch, getState] = args;
 
             const { routeParams } = params;
@@ -59,7 +59,7 @@ export const thunks = {
         async (...args) => {
             const { routeParams } = params;
             const [dispatch] = args;
-            await dispatch(thunks.load({ routeParams }));
+            dispatch(thunks.load({ routeParams }));
         },
     updateSelectedS3Profile:
         (params: { profileName: string }) =>
@@ -68,14 +68,17 @@ export const thunks = {
 
             const { profileName } = params;
 
-            await dispatch(
-                thunks.load({
-                    routeParams: {
-                        profile: profileName,
-                        path: ""
-                    }
+            const { doesProfileExist } = dispatch(
+                s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                    profileName
                 })
             );
+
+            assert(doesProfileExist);
+
+            thunks.setS3UriPrefixObjAndNavigate({
+                s3UriPrefixObj: undefined
+            });
         },
     toggleIsDirectoryPathBookmarked: (() => {
         let isRunning = false;
