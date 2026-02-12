@@ -24,6 +24,7 @@ import * as dataCollection from "./dataCollection";
 import * as s3ProfilesManagement from "./s3ProfilesManagement";
 import * as s3ProfilesCreationUiController from "./s3ProfilesCreationUiController";
 import * as s3ExplorerUiController from "./s3ExplorerUiController";
+import * as s3ExplorerUiController_next from "./s3ExplorerUiController_next";
 
 export const usecases = {
     autoLogoutCountdown,
@@ -50,5 +51,7 @@ export const usecases = {
     dataCollection,
     s3ProfilesManagement,
     s3ProfilesCreationUiController,
-    s3ExplorerUiController
+    s3ExplorerUiController,
+
+    s3ExplorerUiController_next
 };
