@@ -11,53 +11,48 @@ import { type State, name } from "./state";
 import * as userConfigs from "core/usecases/userConfigs";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import type { S3Object } from "core/ports/S3Client";
 import { join as pathJoin, relative as pathRelative } from "pathe";
-import { getUploadProgress, type UploadProgress } from "./decoupledLogic/uploadProgress";
+import { getUploadProgress } from "./decoupledLogic/uploadProgress";
+import { same } from "evt/tools/inDepth/same";
+import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
 
 export type RouteParams = {
     profile?: string;
-    path: string;
+    prefix: string;
 };
 
 const state = (rootState: RootState): State => rootState[name];
 
-export type CurrentWorkingDirectoryView = {
-    directoryPath: string;
-    items: CurrentWorkingDirectoryView.Item[];
-    isBucketPolicyFeatureEnabled: boolean;
-};
+const profileName = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    ambientS3Profile => ambientS3Profile?.profileName
+);
 
-export namespace CurrentWorkingDirectoryView {
-    export type Item = Item.File | Item.Directory;
-    export namespace Item {
-        export type Common = {
-            basename: string;
-            policy: "public" | "private";
-            canChangePolicy: boolean;
-            isBeingDeleted: boolean;
-            isPolicyChanging: boolean;
-        } & (
-            | {
-                  isBeingCreated: false;
-              }
-            | {
-                  isBeingCreated: true;
-                  uploadPercent: number;
-              }
-        );
+const s3UriPrefixObj = createSelector(
+    createSelector(state, state => state.listedPrefixByProfile),
+    profileName,
+    (listedPrefixByProfile, profileName): S3UriPrefixObj | undefined => {
+        if (profileName === undefined) {
+            return undefined;
+        }
 
-        export type File = Common & {
-            kind: "file";
-            size: number | undefined;
-            lastModified: Date | undefined;
-        };
+        const listedPrefix = listedPrefixByProfile[profileName];
 
-        export type Directory = Common & {
-            kind: "directory";
-        };
+        if (listedPrefix === undefined) {
+            return undefined;
+        }
+
+        if (listedPrefix.next !== undefined) {
+            return listedPrefix.next.s3UriPrefixObj;
+        }
+
+        if (listedPrefix.current === undefined) {
+            return undefined;
+        }
+
+        return listedPrefix.current.s3UriPrefixObj;
     }
-}
+);
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
@@ -196,89 +191,6 @@ const currentWorkingDirectoryView = createSelector(
     }
 );
 
-export type ShareView = ShareView.PublicFile | ShareView.PrivateFile;
-
-export namespace ShareView {
-    export type Common = {
-        file: S3Object.File;
-    };
-
-    export type PublicFile = Common & {
-        isPublic: true;
-        url: string;
-    };
-
-    export type PrivateFile = Common & {
-        isPublic: false;
-        validityDurationSecond: number;
-        validityDurationSecondOptions: number[];
-        url: string | undefined;
-        isSignedUrlBeingRequested: boolean;
-    };
-}
-
-const shareView = createSelector(
-    createSelector(state, state => state.directoryPath),
-    createSelector(state, state => state.objects),
-    createSelector(state, state => state.share),
-    (directoryPath, objects, share): ShareView | undefined | null => {
-        if (directoryPath === undefined) {
-            return null;
-        }
-
-        if (share === undefined) {
-            return undefined;
-        }
-
-        const common: ShareView.Common = {
-            file: (() => {
-                const file = objects.find(
-                    obj => obj.basename === share.fileBasename && obj.kind === "file"
-                );
-
-                assert(file !== undefined);
-                assert(file.kind === "file");
-
-                return file;
-            })()
-        };
-
-        const isPublic = share.isSignedUrlBeingRequested === undefined;
-
-        if (isPublic) {
-            assert(share.url !== undefined);
-
-            return id<ShareView.PublicFile>({
-                ...common,
-                isPublic: true,
-                url: share.url
-            });
-        }
-
-        const {
-            url,
-            isSignedUrlBeingRequested,
-            validityDurationSecond,
-            validityDurationSecondOptions
-        } = share;
-
-        assert(isSignedUrlBeingRequested !== undefined);
-        assert(validityDurationSecond !== undefined);
-        assert(validityDurationSecondOptions !== undefined);
-
-        return id<ShareView.PrivateFile>({
-            ...common,
-            isPublic: false,
-            isSignedUrlBeingRequested,
-            url,
-            validityDurationSecond,
-            validityDurationSecondOptions
-        });
-    }
-);
-
-const s3UriPrefixObj = createSelector(state, state => state.s3UriPrefixObj);
-
 const bookmarkStatus = createSelector(
     s3UriPrefixObj,
     s3ProfilesManagement.selectors.ambientS3Profile,
@@ -307,51 +219,6 @@ const bookmarkStatus = createSelector(
         };
     }
 );
-
-export type ExplorerView = ExplorerView.NotLoaded | ExplorerView.Loaded;
-
-export namespace ExplorerView {
-    export type Common = {
-        isNavigationOngoing: boolean;
-        uploadProgress: UploadProgress;
-        commandLogsEntries:
-            | {
-                  cmdId: number;
-                  cmd: string;
-                  resp: string | undefined;
-              }[]
-            | undefined;
-        viewMode: "list" | "block";
-        isDownloadPreparing: boolean;
-        bookmarkStatus:
-            | {
-                  isBookmarked: false;
-              }
-            | {
-                  isBookmarked: true;
-                  isReadonly: boolean;
-              };
-    };
-
-    export type NotLoaded = Common & {
-        isCurrentWorkingDirectoryLoaded: false;
-        navigationError:
-            | { errorCase: "access denied"; directoryPath: string }
-            | { errorCase: "no such bucket"; bucket: string }
-            | undefined;
-
-        currentWorkingDirectoryView?: never;
-        shareView?: never;
-    };
-
-    export type Loaded = Common & {
-        isCurrentWorkingDirectoryLoaded: true;
-        currentWorkingDirectoryView: CurrentWorkingDirectoryView;
-        shareView: ShareView | undefined;
-
-        navigationError?: never;
-    };
-}
 
 const explorerView = createSelector(
     createSelector(state, state => state.navigationError),
@@ -433,45 +300,241 @@ const explorerView = createSelector(
 
 export const privateSelectors = {
     routeParams: createSelector(
-        createSelector(
-            s3ProfilesManagement.selectors.ambientS3Profile,
-            ambientS3Profile => ambientS3Profile?.profileName
-        ),
-        createSelector(state, state => state.s3UriPrefixObj),
+        profileName,
+        s3UriPrefixObj,
         (profileName, s3UriPrefixObj): RouteParams => ({
             profile: profileName,
-            path:
+            prefix:
                 s3UriPrefixObj === undefined
                     ? ""
                     : stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length)
         })
-    ),
-    shareView,
-    ongoingNavigation: createSelector(state, state => state.ongoingNavigation),
-    bookmarkStatus,
-    s3UriPrefixObj
+    )
 };
 
-export type RootView = {
-    rootViewState:
-        | "no s3 profile yet - user need to create one"
-        | "no location - user need to specify location"
-        | "explorer can be rendered";
-};
-
-export type ProfileSelectionView = {
-    selectedS3ProfileName: string | undefined;
-    isSelectedS3ProfileEditable: boolean;
-    isS3ProfileSelectionLocked: boolean;
-    availableS3ProfileNames: string[];
-};
-
-export type BookmarksView = {
+export type MainView = {
+    // NOTE: Undefined is when no profile (user should be prompted to create one)
+    profileSelect:
+        | {
+              value: string;
+              options: string[];
+              isEditable: boolean;
+          }
+        | undefined;
     bookmarks: {
         displayName: LocalizedString | undefined;
         s3UriPrefixObj: S3UriPrefixObj;
     }[];
+
+    navigationBarValue: string;
+    isListing: boolean;
+
+    listedPrefix:
+        | {
+              isErrored: true;
+              errorCase: State.ListedPrefix.ErrorCase;
+          }
+        | {
+              isErrored: false;
+              bookmarkStatus:
+                  | {
+                        isBookmarked: false;
+                    }
+                  | {
+                        isBookmarked: true;
+                        isReadonly: boolean;
+                    };
+              items: MainView.Item[];
+          }
+        | undefined;
 };
+
+export namespace MainView {
+    export type Item = Item.PrefixSegment | Item.Object;
+
+    export namespace Item {
+        type Common = {
+            uploadProgressPercent: number | undefined;
+        };
+
+        export type PrefixSegment = Common & {
+            type: "prefix segment";
+            prefixSegment: string;
+        };
+
+        export type Object = Common & {
+            type: "object";
+            fileBasename: string;
+        };
+    }
+}
+
+const profileSelect = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    s3ProfilesManagement.selectors.s3Profiles,
+    (ambientS3Profile, s3Profiles): MainView["profileSelect"] => {
+        if (ambientS3Profile === undefined) {
+            return undefined;
+        }
+
+        return {
+            value: ambientS3Profile.profileName,
+            options: s3Profiles.map(s3Profile => s3Profile.profileName),
+            isEditable:
+                ambientS3Profile.origin === "created by user (or group project member)"
+        };
+    }
+);
+
+const bookmarks = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    (ambientS3Profile): MainView["bookmarks"] => {
+        if (ambientS3Profile === undefined) {
+            return [];
+        }
+
+        return ambientS3Profile.bookmarks.map(bookmark => ({
+            displayName: bookmark.displayName,
+            s3UriPrefixObj: bookmark.s3UriPrefixObj
+        }));
+    }
+);
+
+const navigationBarValue = createSelector(
+    s3UriPrefixObj,
+    (s3UriPrefixObj): MainView["navigationBarValue"] =>
+        s3UriPrefixObj === undefined ? "s3://" : stringifyS3UriPrefixObj(s3UriPrefixObj)
+);
+
+const listedPrefix_state = createSelector(
+    state,
+    profileName,
+    (state, profileName): State.ListedPrefix | undefined => {
+        if (profileName === undefined) {
+            return undefined;
+        }
+
+        return state.listedPrefixByProfile[profileName];
+    }
+);
+
+const isListing = createSelector(
+    listedPrefix_state,
+    (listedPrefix_state): MainView["isListing"] => {
+        if (listedPrefix_state === undefined) {
+            return false;
+        }
+
+        if (listedPrefix_state.next === undefined) {
+            return false;
+        }
+
+        if (listedPrefix_state.next.errorCase !== undefined) {
+            return false;
+        }
+
+        return true;
+    }
+);
+
+const uploads_profile = createSelector(
+    createSelector(state, state => state.uploads),
+    profileName,
+    (uploads, profileName): State.Upload[] => {
+        if (profileName === undefined) {
+            return [];
+        }
+
+        return uploads.filter(upload => upload.profileName === profileName);
+    }
+);
+
+const items = createSelector(
+    listedPrefix_state,
+    uploads_profile,
+    (listedPrefix_state, uploads_profile): MainView.Item[] | undefined => {
+        if (listedPrefix_state === undefined) {
+            return undefined;
+        }
+
+        if (listedPrefix_state.current === undefined) {
+            return undefined;
+        }
+
+        const items: MainView.Item[] = [
+            ...listedPrefix_state.current.items.map(item => {
+                switch (item.type) {
+                    case "object":
+                        return id<MainView.Item.Object>({
+                            type: "object",
+                            fileBasename: item.s3UriObj.basename,
+                            uploadProgressPercent: undefined
+                        });
+                    case "prefix segment":
+                        return id<MainView.Item.PrefixSegment>({
+                            type: "prefix segment",
+                            prefixSegment: [
+                                ...item.s3UriPrefixObj.keySegments
+                            ].reverse()[0],
+                            uploadProgressPercent: undefined
+                        });
+                }
+            }),
+            ...computeUploadStatusAtPrefix({
+                s3UriPrefixObj: listedPrefix_state.current.s3UriPrefixObj,
+                uploads: uploads_profile
+            })
+        ];
+
+        return items;
+    }
+);
+
+const listedPrefix = createSelector(
+    listedPrefix_state,
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    items,
+    (listedPrefix_state, ambientS3Profile, items): MainView["listedPrefix"] => {
+        if (listedPrefix_state === undefined) {
+            return undefined;
+        }
+
+        if (
+            listedPrefix_state.next !== undefined &&
+            listedPrefix_state.next.errorCase !== undefined
+        ) {
+            return {
+                isErrored: true,
+                errorCase: listedPrefix_state.next.errorCase
+            };
+        }
+
+        if (listedPrefix_state.current === undefined) {
+            return undefined;
+        }
+
+        assert(ambientS3Profile !== undefined);
+        assert(items !== undefined);
+
+        const { s3UriPrefixObj } = listedPrefix_state.current;
+
+        const bookmark = ambientS3Profile.bookmarks.find(bookmark =>
+            same(bookmark.s3UriPrefixObj, s3UriPrefixObj)
+        );
+
+        return {
+            isErrored: false,
+            bookmarkStatus:
+                bookmark === undefined
+                    ? { isBookmarked: false }
+                    : {
+                          isBookmarked: true,
+                          isReadonly: bookmark.isReadonly
+                      },
+            items
+        };
+    }
+);
 
 export const selectors = {
     rootView: createSelector(

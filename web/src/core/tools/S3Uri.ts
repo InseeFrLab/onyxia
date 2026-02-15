@@ -1,14 +1,15 @@
 export type S3UriPrefixObj = {
     bucket: string;
-    /**  "" | `${string}/` */
-    keyPrefix: string;
+    keySegments: string[];
+    delimiter: string;
 };
 
 export function parseS3UriPrefix(params: {
     s3UriPrefix: string;
+    delimiter: string;
     strict: boolean;
 }): S3UriPrefixObj {
-    const { s3UriPrefix, strict } = params;
+    const { s3UriPrefix, delimiter, strict } = params;
 
     const match = s3UriPrefix.match(/^s3:\/\/([^/]+)(\/?.*)$/);
 
@@ -20,7 +21,7 @@ export function parseS3UriPrefix(params: {
 
     let keyPrefix = match[2];
 
-    if (strict && !keyPrefix.endsWith("/")) {
+    if (strict && !keyPrefix.endsWith(delimiter)) {
         throw new Error(
             [
                 `Invalid S3 URI Prefix: "${s3UriPrefix}".`,
@@ -29,26 +30,35 @@ export function parseS3UriPrefix(params: {
         );
     }
 
-    keyPrefix = match[2].replace(/^\//, "");
-
-    if (keyPrefix !== "" && !keyPrefix.endsWith("/")) {
-        keyPrefix += "/";
+    if (keyPrefix.startsWith(delimiter)) {
+        keyPrefix = keyPrefix.slice(delimiter.length);
     }
 
-    const s3UriPrefixObj = { bucket, keyPrefix };
+    if (keyPrefix !== "" && !keyPrefix.endsWith(delimiter)) {
+        keyPrefix += delimiter;
+    }
+
+    const keySegments =
+        keyPrefix === ""
+            ? []
+            : keyPrefix.split(delimiter).filter(segment => segment !== "");
+
+    const s3UriPrefixObj: S3UriPrefixObj = { bucket, keySegments, delimiter };
 
     return s3UriPrefixObj;
 }
 
 export function stringifyS3UriPrefixObj(s3UriPrefixObj: S3UriPrefixObj): string {
-    return `s3://${s3UriPrefixObj.bucket}/${s3UriPrefixObj.keyPrefix}`;
+    const { bucket, keySegments, delimiter } = s3UriPrefixObj;
+    return `s3://${bucket}/${keySegments.join(delimiter)}`;
 }
 
 export function getIsS3UriPrefix(str: string): boolean {
     try {
         parseS3UriPrefix({
             s3UriPrefix: str,
-            strict: true
+            strict: true,
+            delimiter: "/"
         });
     } catch {
         return false;
@@ -59,10 +69,14 @@ export function getIsS3UriPrefix(str: string): boolean {
 
 export type S3UriObj = {
     bucket: string;
-    key: string;
+    keySegments: string[];
+    basename: string;
+    delimiter: string;
 };
 
-export function parseS3Uri(s3Uri: string): S3UriObj {
+export function parseS3Uri(params: { s3Uri: string; delimiter: string }): S3UriObj {
+    const { s3Uri, delimiter } = params;
+
     if (getIsS3UriPrefix(s3Uri)) {
         throw new Error(`${s3Uri} is a S3 URI Prefix, not a fully qualified S3 URI.`);
     }
@@ -70,15 +84,51 @@ export function parseS3Uri(s3Uri: string): S3UriObj {
     let s3UriPrefixObj: S3UriPrefixObj;
 
     try {
-        s3UriPrefixObj = parseS3UriPrefix({ s3UriPrefix: s3Uri, strict: false });
+        s3UriPrefixObj = parseS3UriPrefix({
+            s3UriPrefix: s3Uri,
+            strict: false,
+            delimiter
+        });
     } catch {
         throw new Error(`Malformed S3 URI: ${s3Uri}`);
     }
 
+    const [basename, ...rest] = s3UriPrefixObj.keySegments.reverse();
+
     const s3UriObj: S3UriObj = {
         bucket: s3UriPrefixObj.bucket,
-        key: s3UriPrefixObj.keyPrefix.replace(/\/$/, "")
+        keySegments: rest.reverse(),
+        basename,
+        delimiter
     };
 
     return s3UriObj;
+}
+
+export function getIsInside(params: {
+    s3UriPrefixObj: S3UriPrefixObj;
+    s3UriObj: S3UriObj;
+}): { isInside: false; isTopLevel?: never } | { isInside: true; isTopLevel: boolean } {
+    const { s3UriPrefixObj, s3UriObj } = params;
+
+    let i;
+
+    for (i = 0; i < s3UriPrefixObj.keySegments.length; i++) {
+        const keyPrefix = s3UriObj.keySegments[i];
+
+        if (keyPrefix === undefined) {
+            return { isInside: false };
+        }
+
+        const keySegment_prefix = s3UriPrefixObj.keySegments[i];
+
+        if (keyPrefix !== keySegment_prefix) {
+            return { isInside: false };
+        }
+    }
+
+    return {
+        isInside: true,
+        isTopLevel: i === s3UriObj.keySegments.length
+    };
 }
