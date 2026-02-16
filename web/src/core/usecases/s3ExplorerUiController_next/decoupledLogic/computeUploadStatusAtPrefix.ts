@@ -1,23 +1,6 @@
 import { assert } from "tsafe/assert";
 import { type S3UriPrefixObj, type S3UriObj, getIsInside } from "core/tools/S3Uri";
-
-export type Item = Item.PrefixSegment | Item.Object;
-
-export namespace Item {
-    type Common = {
-        uploadProgressPercent: number;
-    };
-
-    export type PrefixSegment = Common & {
-        type: "prefix segment";
-        prefixSegment: string;
-    };
-
-    export type Object = Common & {
-        type: "object";
-        fileBasename: string;
-    };
-}
+import type { MainView } from "../selectors";
 
 export function computeUploadStatusAtPrefix(params: {
     s3UriPrefixObj: S3UriPrefixObj;
@@ -26,12 +9,12 @@ export function computeUploadStatusAtPrefix(params: {
         size: number;
         completionPercent: number;
     }[];
-}): Item[] {
+}): MainView.Item[] {
     const { s3UriPrefixObj, uploads } = params;
 
-    const items: Item[] = [];
+    const items: MainView.Item[] = [];
 
-    const progressesByPrefixSegment: Record<
+    const progressesByDisplayName: Record<
         string,
         { size: number; completionPercent: number }[]
     > = {};
@@ -49,40 +32,53 @@ export function computeUploadStatusAtPrefix(params: {
         if (isTopLevel) {
             items.push({
                 type: "object",
-                fileBasename: upload.s3UriObj.basename,
+                displayName: upload.s3UriObj.basename,
+                s3UriObj: upload.s3UriObj,
                 uploadProgressPercent: upload.completionPercent
             });
             continue;
         }
 
-        const prefixSegment =
-            upload.s3UriObj.keySegments[s3UriPrefixObj.keySegments.length];
+        const s3UriPrefixObj_newItem: S3UriPrefixObj = {
+            type: "s3 URI prefix",
+            bucket: upload.s3UriObj.bucket,
+            delimiter: upload.s3UriObj.delimiter,
+            keySegments: upload.s3UriObj.keySegments.slice(
+                0,
+                s3UriPrefixObj.keySegments.length + 1
+            )
+        };
+
+        const displayName =
+            s3UriPrefixObj_newItem.keySegments[
+                s3UriPrefixObj_newItem.keySegments.length - 1
+            ];
 
         if (
             items.find(
-                item =>
-                    item.type === "prefix segment" && item.prefixSegment === prefixSegment
+                item => item.type === "prefix segment" && item.displayName === displayName
             ) === undefined
         ) {
             items.push({
                 type: "prefix segment",
-                prefixSegment,
+                displayName,
+                s3UriPrefixObj: s3UriPrefixObj_newItem,
                 uploadProgressPercent: NaN
             });
         }
 
-        (progressesByPrefixSegment[prefixSegment] ??= []).push({
+        (progressesByDisplayName[displayName] ??= []).push({
             completionPercent: upload.completionPercent,
             size: upload.size
         });
     }
 
     for (const item of items) {
-        if (item.type === "object") {
+        if (item.type !== "prefix segment") {
             continue;
         }
 
-        const progresses = progressesByPrefixSegment[item.prefixSegment];
+        const progresses = progressesByDisplayName[item.displayName];
 
         assert(progresses !== undefined);
 

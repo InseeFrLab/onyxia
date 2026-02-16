@@ -3,313 +3,19 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import {
     type S3UriPrefixObj,
-    stringifyS3UriPrefixObj,
-    parseS3UriPrefix
+    type S3UriObj,
+    stringifyS3UriPrefixObj
 } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
-import { type State, name } from "./state";
-import * as userConfigs from "core/usecases/userConfigs";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { join as pathJoin, relative as pathRelative } from "pathe";
-import { getUploadProgress } from "./decoupledLogic/uploadProgress";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
+import { name, type State } from "./state";
 
 export type RouteParams = {
     profile?: string;
     prefix: string;
-};
-
-const state = (rootState: RootState): State => rootState[name];
-
-const profileName = createSelector(
-    s3ProfilesManagement.selectors.ambientS3Profile,
-    ambientS3Profile => ambientS3Profile?.profileName
-);
-
-const s3UriPrefixObj = createSelector(
-    createSelector(state, state => state.listedPrefixByProfile),
-    profileName,
-    (listedPrefixByProfile, profileName): S3UriPrefixObj | undefined => {
-        if (profileName === undefined) {
-            return undefined;
-        }
-
-        const listedPrefix = listedPrefixByProfile[profileName];
-
-        if (listedPrefix === undefined) {
-            return undefined;
-        }
-
-        if (listedPrefix.next !== undefined) {
-            return listedPrefix.next.s3UriPrefixObj;
-        }
-
-        if (listedPrefix.current === undefined) {
-            return undefined;
-        }
-
-        return listedPrefix.current.s3UriPrefixObj;
-    }
-);
-
-const currentWorkingDirectoryView = createSelector(
-    createSelector(state, state => state.directoryPath),
-    createSelector(state, state => state.navigationError),
-    createSelector(state, state => state.objects),
-    createSelector(state, state => state.ongoingOperations),
-    createSelector(state, state => state.s3FilesBeingUploaded),
-    createSelector(state, state => state.isBucketPolicyAvailable),
-    (
-        directoryPath,
-        navigationError,
-        objects,
-        ongoingOperations,
-        s3FilesBeingUploaded,
-        isBucketPolicyAvailable
-    ): CurrentWorkingDirectoryView | null => {
-        if (directoryPath === undefined || navigationError !== undefined) {
-            return null;
-        }
-        const items = [
-            ...objects,
-            ...ongoingOperations
-                .filter(
-                    ongoingOperation =>
-                        ongoingOperation.operation === "create" &&
-                        pathRelative(directoryPath, ongoingOperation.directoryPath) == ""
-                )
-                .map(ongoingOperation => ongoingOperation.objects)
-                .flat()
-                .filter(
-                    object =>
-                        objects.find(
-                            object_i =>
-                                object_i.kind === object.kind &&
-                                object_i.basename === object.basename
-                        ) === undefined
-                )
-        ]
-            .map((object): CurrentWorkingDirectoryView.Item => {
-                const { isBeingDeleted, isPolicyChanging, isBeingCreated } = (() => {
-                    const operation = ongoingOperations.find(
-                        op =>
-                            pathRelative(op.directoryPath, directoryPath) === "" &&
-                            op.objects.find(
-                                ongoingObject =>
-                                    ongoingObject.basename === object.basename
-                            ) !== undefined
-                    )?.operation;
-
-                    return {
-                        isBeingDeleted: operation === "delete",
-                        isPolicyChanging: operation === "modifyPolicy",
-                        isBeingCreated: operation === "create"
-                    };
-                })();
-
-                const common: CurrentWorkingDirectoryView.Item.Common = {
-                    basename: object.basename,
-                    policy: object.policy,
-                    canChangePolicy: object.canChangePolicy,
-                    isBeingDeleted,
-                    isPolicyChanging,
-                    ...(!isBeingCreated
-                        ? {
-                              isBeingCreated: false
-                          }
-                        : {
-                              isBeingCreated: true,
-                              uploadPercent: (() => {
-                                  const fileOrDirectoryPath = pathJoin(
-                                      directoryPath,
-                                      object.basename
-                                  );
-
-                                  const s3FilesBeingUploaded_relevant =
-                                      s3FilesBeingUploaded.filter(o => {
-                                          const filePath_i = pathJoin(
-                                              o.directoryPath,
-                                              o.basename
-                                          );
-
-                                          if (
-                                              pathRelative(
-                                                  fileOrDirectoryPath,
-                                                  filePath_i
-                                              ).startsWith("..")
-                                          ) {
-                                              return false;
-                                          }
-
-                                          return true;
-                                      });
-
-                                  if (s3FilesBeingUploaded_relevant.length === 0) {
-                                      return 0;
-                                  }
-
-                                  return getUploadProgress(s3FilesBeingUploaded_relevant)
-                                      .overallProgress.uploadPercent;
-                              })()
-                          })
-                };
-
-                switch (object.kind) {
-                    case "file": {
-                        const { size, lastModified } = object;
-
-                        return id<CurrentWorkingDirectoryView.Item.File>({
-                            kind: "file",
-                            ...common,
-                            size,
-                            lastModified
-                        });
-                    }
-                    case "directory":
-                        return id<CurrentWorkingDirectoryView.Item.Directory>({
-                            kind: "directory",
-                            ...common
-                        });
-                }
-            })
-            .sort((a, b) => {
-                // Sort directories first
-                if (a.kind === "directory" && b.kind !== "directory") return -1;
-                if (a.kind !== "directory" && b.kind === "directory") return 1;
-
-                // Sort alphabetically by basename
-                return a.basename.localeCompare(b.basename);
-            });
-
-        return {
-            directoryPath,
-            items,
-            isBucketPolicyFeatureEnabled: isBucketPolicyAvailable
-        };
-    }
-);
-
-const bookmarkStatus = createSelector(
-    s3UriPrefixObj,
-    s3ProfilesManagement.selectors.ambientS3Profile,
-    (s3UriPrefixObj, ambientS3Profile): ExplorerView.Loaded["bookmarkStatus"] => {
-        if (s3UriPrefixObj === undefined || ambientS3Profile === undefined) {
-            return {
-                isBookmarked: false
-            };
-        }
-
-        const bookmark_matching = ambientS3Profile.bookmarks.find(
-            bookmark =>
-                stringifyS3UriPrefixObj(bookmark.s3UriPrefixObj) ===
-                stringifyS3UriPrefixObj(s3UriPrefixObj)
-        );
-
-        if (bookmark_matching === undefined) {
-            return {
-                isBookmarked: false
-            };
-        }
-
-        return {
-            isBookmarked: true,
-            isReadonly: bookmark_matching.isReadonly
-        };
-    }
-);
-
-const explorerView = createSelector(
-    createSelector(state, state => state.navigationError),
-    createSelector(
-        createSelector(state, state => state.s3FilesBeingUploaded),
-        s3FilesBeingUploaded => getUploadProgress(s3FilesBeingUploaded)
-    ),
-    createSelector(state, userConfigs.selectors.userConfigs, (state, userConfigs) =>
-        !userConfigs.isCommandBarEnabled ? undefined : state.commandLogsEntries
-    ),
-    currentWorkingDirectoryView,
-    createSelector(state, state => state.ongoingNavigation !== undefined),
-    createSelector(state, state => state.viewMode),
-    shareView,
-    createSelector(
-        createSelector(state, state => state.ongoingOperations),
-        (ongoingOperations): boolean =>
-            ongoingOperations.some(operation => operation.operation === "downloading")
-    ),
-    bookmarkStatus,
-    (
-        navigationError,
-        uploadProgress,
-        commandLogsEntries,
-        currentWorkingDirectoryView,
-        isNavigationOngoing,
-        viewMode,
-        shareView,
-        isDownloadPreparing,
-        bookmarkStatus
-    ): ExplorerView => {
-        const common = id<ExplorerView.Common>({
-            isNavigationOngoing,
-            uploadProgress,
-            commandLogsEntries,
-            viewMode,
-            isDownloadPreparing,
-            bookmarkStatus
-        });
-
-        if (currentWorkingDirectoryView === null) {
-            return id<ExplorerView.NotLoaded>({
-                ...common,
-                isCurrentWorkingDirectoryLoaded: false as const,
-                navigationError: (() => {
-                    if (navigationError === undefined) {
-                        return undefined;
-                    }
-                    switch (navigationError.errorCase) {
-                        case "access denied":
-                            return {
-                                errorCase: navigationError.errorCase,
-                                directoryPath: navigationError.directoryPath
-                            } as const;
-                        case "no such bucket":
-                            return {
-                                errorCase: navigationError.errorCase,
-                                bucket: parseS3UriPrefix({
-                                    s3UriPrefix: `s3://${navigationError.directoryPath}`,
-                                    strict: false
-                                }).bucket
-                            } as const;
-                    }
-                })()
-            });
-        }
-
-        assert(shareView !== null);
-
-        return id<ExplorerView.Loaded>({
-            ...common,
-            isCurrentWorkingDirectoryLoaded: true as const,
-            currentWorkingDirectoryView,
-            shareView,
-            bookmarkStatus
-        });
-    }
-);
-
-export const privateSelectors = {
-    routeParams: createSelector(
-        profileName,
-        s3UriPrefixObj,
-        (profileName, s3UriPrefixObj): RouteParams => ({
-            profile: profileName,
-            prefix:
-                s3UriPrefixObj === undefined
-                    ? ""
-                    : stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length)
-        })
-    )
 };
 
 export type MainView = {
@@ -355,19 +61,65 @@ export namespace MainView {
     export namespace Item {
         type Common = {
             uploadProgressPercent: number | undefined;
+            displayName: string;
         };
 
         export type PrefixSegment = Common & {
             type: "prefix segment";
-            prefixSegment: string;
+            s3UriPrefixObj: S3UriPrefixObj;
         };
 
         export type Object = Common & {
             type: "object";
-            fileBasename: string;
+            s3UriObj: S3UriObj;
         };
     }
 }
+
+const state = (rootState: RootState): State => rootState[name];
+
+const profileName = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    ambientS3Profile => ambientS3Profile?.profileName
+);
+
+const s3UriPrefixObj = createSelector(
+    createSelector(state, state => state.listedPrefixByProfile),
+    profileName,
+    (listedPrefixByProfile, profileName): S3UriPrefixObj | undefined => {
+        if (profileName === undefined) {
+            return undefined;
+        }
+
+        const listedPrefix = listedPrefixByProfile[profileName];
+
+        if (listedPrefix === undefined) {
+            return undefined;
+        }
+
+        if (listedPrefix.next !== undefined) {
+            return listedPrefix.next.s3UriPrefixObj;
+        }
+
+        if (listedPrefix.current === undefined) {
+            return undefined;
+        }
+
+        return listedPrefix.current.s3UriPrefixObj;
+    }
+);
+
+const routeParams = createSelector(
+    profileName,
+    s3UriPrefixObj,
+    (profileName, s3UriPrefixObj): RouteParams => ({
+        profile: profileName,
+        prefix:
+            s3UriPrefixObj === undefined
+                ? ""
+                : stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length)
+    })
+);
 
 const profileSelect = createSelector(
     s3ProfilesManagement.selectors.ambientS3Profile,
@@ -467,15 +219,17 @@ const items = createSelector(
                     case "object":
                         return id<MainView.Item.Object>({
                             type: "object",
-                            fileBasename: item.s3UriObj.basename,
+                            displayName: item.s3UriObj.basename,
+                            s3UriObj: item.s3UriObj,
                             uploadProgressPercent: undefined
                         });
                     case "prefix segment":
                         return id<MainView.Item.PrefixSegment>({
                             type: "prefix segment",
-                            prefixSegment: [
+                            displayName: [
                                 ...item.s3UriPrefixObj.keySegments
                             ].reverse()[0],
+                            s3UriPrefixObj: item.s3UriPrefixObj,
                             uploadProgressPercent: undefined
                         });
                 }
@@ -484,7 +238,7 @@ const items = createSelector(
                 s3UriPrefixObj: listedPrefix_state.current.s3UriPrefixObj,
                 uploads: uploads_profile
             })
-        ];
+        ].sort((a, b) => a.displayName.localeCompare(b.displayName));
 
         return items;
     }
@@ -536,76 +290,53 @@ const listedPrefix = createSelector(
     }
 );
 
+const mainView = createSelector(
+    profileSelect,
+    bookmarks,
+    navigationBarValue,
+    isListing,
+    listedPrefix,
+    (
+        profileSelect,
+        bookmarks,
+        navigationBarValue,
+        isListing,
+        listedPrefix
+    ): MainView => ({
+        profileSelect,
+        bookmarks,
+        navigationBarValue,
+        isListing,
+        listedPrefix
+    })
+);
+
 export const selectors = {
-    rootView: createSelector(
-        createSelector(state, state => state.s3UriPrefixObj),
-        s3ProfilesManagement.selectors.ambientS3Profile,
-        (s3UriPrefixObj, ambientS3Profile): RootView => {
-            if (s3UriPrefixObj !== undefined) {
-                return { rootViewState: "explorer can be rendered" };
-            }
+    mainView
+};
 
-            if (ambientS3Profile === undefined) {
-                return { rootViewState: "no s3 profile yet - user need to create one" };
-            }
-
-            return { rootViewState: "no location - user need to specify location" };
+const s3UriPrefixObj_currentlyListing = createSelector(
+    listedPrefix_state,
+    listedPrefix_state => {
+        if (listedPrefix_state === undefined) {
+            return undefined;
         }
-    ),
-    profileSelectionView: createSelector(
-        s3ProfilesManagement.selectors.ambientS3Profile,
-        s3ProfilesManagement.selectors.s3Profiles,
-        createSelector(state, state => {
-            if (state.ongoingNavigation !== undefined) {
-                return true;
-            }
 
-            if (state.ongoingOperations.length !== 0) {
-                return true;
-            }
-
-            if (state.share !== undefined && state.share.isSignedUrlBeingRequested) {
-                return true;
-            }
-
-            return false;
-        }),
-        (ambientS3Profile, s3Profiles, isBusy): ProfileSelectionView => {
-            if (ambientS3Profile === undefined) {
-                return {
-                    selectedS3ProfileName: undefined,
-                    isSelectedS3ProfileEditable: false,
-                    isS3ProfileSelectionLocked: false,
-                    availableS3ProfileNames: []
-                };
-            }
-
-            return {
-                selectedS3ProfileName: ambientS3Profile.profileName,
-                isSelectedS3ProfileEditable:
-                    ambientS3Profile.origin ===
-                    "created by user (or group project member)",
-                isS3ProfileSelectionLocked: isBusy,
-                availableS3ProfileNames: s3Profiles.map(
-                    s3Profile => s3Profile.profileName
-                )
-            };
+        if (listedPrefix_state.next === undefined) {
+            return undefined;
         }
-    ),
-    bookmarkView: createSelector(
-        s3ProfilesManagement.selectors.ambientS3Profile,
-        (ambientS3Profile): BookmarksView => {
-            if (ambientS3Profile === undefined) {
-                return {
-                    bookmarks: []
-                };
-            }
 
-            return {
-                bookmarks: ambientS3Profile.bookmarks
-            };
+        if (listedPrefix_state.next.errorCase !== undefined) {
+            return undefined;
         }
-    ),
+
+        return listedPrefix_state.next.s3UriPrefixObj;
+    }
+);
+
+export const privateSelectors = {
+    routeParams,
     s3UriPrefixObj,
-    explorerView
+    profileName,
+    s3UriPrefixObj_currentlyListing
 };

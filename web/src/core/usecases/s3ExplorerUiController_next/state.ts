@@ -147,11 +147,6 @@ export const { reducer, actions } = createUsecaseActions({
                 current: undefined
             });
 
-            assert(
-                listedPrefix.next === undefined ||
-                    listedPrefix.next.errorCase !== undefined
-            );
-
             listedPrefix.next = {
                 s3UriPrefixObj,
                 errorCase: undefined
@@ -164,12 +159,11 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     profileName: string;
-                    s3UriPrefixObj: S3UriPrefixObj;
                     items: State.ListedPrefix.Item[];
                 };
             }
         ) => {
-            const { profileName, s3UriPrefixObj, items } = payload;
+            const { profileName, items } = payload;
 
             const listedPrefix = state.listedPrefixByProfile[profileName];
 
@@ -177,9 +171,10 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(
                 listedPrefix.next !== undefined &&
-                    listedPrefix.next.errorCase === undefined &&
-                    same(listedPrefix.next.s3UriPrefixObj, s3UriPrefixObj)
+                    listedPrefix.next.errorCase === undefined
             );
+
+            const s3UriPrefixObj = listedPrefix.next.s3UriPrefixObj;
 
             listedPrefix.next = undefined;
 

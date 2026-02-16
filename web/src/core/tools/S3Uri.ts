@@ -1,4 +1,5 @@
 export type S3UriPrefixObj = {
+    type: "s3 URI prefix";
     bucket: string;
     keySegments: string[];
     delimiter: string;
@@ -43,7 +44,12 @@ export function parseS3UriPrefix(params: {
             ? []
             : keyPrefix.split(delimiter).filter(segment => segment !== "");
 
-    const s3UriPrefixObj: S3UriPrefixObj = { bucket, keySegments, delimiter };
+    const s3UriPrefixObj: S3UriPrefixObj = {
+        type: "s3 URI prefix",
+        bucket,
+        keySegments,
+        delimiter
+    };
 
     return s3UriPrefixObj;
 }
@@ -68,6 +74,7 @@ export function getIsS3UriPrefix(str: string): boolean {
 }
 
 export type S3UriObj = {
+    type: "s3 URI";
     bucket: string;
     keySegments: string[];
     basename: string;
@@ -96,6 +103,7 @@ export function parseS3Uri(params: { s3Uri: string; delimiter: string }): S3UriO
     const [basename, ...rest] = s3UriPrefixObj.keySegments.reverse();
 
     const s3UriObj: S3UriObj = {
+        type: "s3 URI",
         bucket: s3UriPrefixObj.bucket,
         keySegments: rest.reverse(),
         basename,

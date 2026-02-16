@@ -4,7 +4,6 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { RouteParams } from "./selectors";
 import { parseS3UriPrefix } from "core/tools/S3Uri";
 import { assert, type Equals } from "tsafe/assert";
-import { Evt } from "evt";
 import { Zip, ZipPassThrough } from "fflate/browser";
 import { name, actions } from "./state";
 import { join as pathJoin, basename as pathBasename } from "pathe";
@@ -16,9 +15,14 @@ import { relative as pathRelative } from "pathe";
 import { id } from "tsafe/id";
 import { isAmong } from "tsafe/isAmong";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
-import { type S3UriPrefixObj, stringifyS3UriPrefixObj } from "core/tools/S3Uri";
+import {
+    type S3UriPrefixObj,
+    type S3UriObj,
+    stringifyS3UriPrefixObj
+} from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import { createWaitForDebounce } from "core/tools/waitForDebounce";
+import type { State } from "./state";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -184,87 +188,71 @@ export const thunks = {
                 isRunning = false;
             };
     })(),
-    /**
-     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
-     */
-    setS3UriPrefixObjAndNavigate:
+    listPrefix:
         (params: { s3UriPrefixObj: S3UriPrefixObj | undefined }) =>
         async (...args) => {
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch, getState] = args;
 
             const { s3UriPrefixObj } = params;
 
-            dispatch(actions.s3UriPrefixObjectSet({ s3UriPrefixObj }));
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
 
             if (s3UriPrefixObj === undefined) {
+                dispatch(actions.listingCleared({ profileName }));
                 return;
             }
 
-            const directoryPath = stringifyS3UriPrefixObj(s3UriPrefixObj).slice(
-                "s3://".length
-            );
-
             {
-                const ongoingNavigation = privateSelectors.ongoingNavigation(getState());
+                const s3UriPrefixObj_currentlyListing =
+                    privateSelectors.s3UriPrefixObj_currentlyListing(getState());
 
                 if (
-                    ongoingNavigation !== undefined &&
-                    ongoingNavigation.directoryPath === directoryPath
+                    s3UriPrefixObj_currentlyListing !== undefined &&
+                    same(s3UriPrefixObj_currentlyListing, s3UriPrefixObj)
                 ) {
                     return;
                 }
             }
 
-            dispatch(actions.navigationStarted({ directoryPath }));
-
-            const ctx = Evt.newCtx();
-
-            evtAction.attachOnce(
-                event =>
-                    event.usecaseName === name &&
-                    event.actionName === "navigationStarted",
-                ctx,
-                () => ctx.abort(new Error("Other navigation started"))
-            );
-
-            await dispatch(
-                privateThunks.waitForNoOngoingOperation({
-                    directoryPath: pathJoin(directoryPath, "..") + "/",
-                    objects_ref: [
-                        {
-                            kind: "directory",
-                            basename: pathBasename(directoryPath)
-                        }
-                    ]
-                })
-            );
+            dispatch(actions.listingStarted({ profileName, s3UriPrefixObj }));
 
             const cmdId = Date.now();
 
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: `mc ls ${pathJoin("s3", directoryPath)}`
+                    cmd: `mc ls ${stringifyS3UriPrefixObj(s3UriPrefixObj)}`
                 })
             );
 
-            const { s3Client, s3Profile } = await dispatch(
-                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
-            ).then(r => {
-                assert(r !== undefined);
-                return r;
-            });
+            const maybeCancel = async (): Promise<void | never> => {
+                const s3UriPrefixObj_currentlyListing =
+                    privateSelectors.s3UriPrefixObj_currentlyListing(getState());
+
+                if (s3UriPrefixObj_currentlyListing === undefined) {
+                    await new Promise<never>(() => {});
+                }
+
+                if (!same(s3UriPrefixObj_currentlyListing, s3UriPrefixObj)) {
+                    await new Promise<never>(() => {});
+                }
+
+                dispatch(actions.commandLogCancelled({ cmdId }));
+            };
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            await maybeCancel();
 
             const listObjectResult = await s3Client.listObjects({
-                path: directoryPath
+                path: stringifyS3UriPrefixObj(s3UriPrefixObj).slice("s3://".length)
             });
 
-            if (ctx.completionStatus !== undefined) {
-                dispatch(actions.commandLogCancelled({ cmdId }));
-                return;
-            }
-
-            ctx.done();
+            await maybeCancel();
 
             dispatch(
                 actions.commandLogResponseReceived({
@@ -292,58 +280,49 @@ export const thunks = {
                 })
             );
 
+            if (!listObjectResult.isSuccess) {
+                dispatch(
+                    actions.listingFailed({
+                        profileName,
+                        s3UriPrefixObj,
+                        errorCase: listObjectResult.errorCase
+                    })
+                );
+                return;
+            }
+
             dispatch(
-                actions.navigationCompleted(
-                    (() => {
-                        if (!listObjectResult.isSuccess) {
-                            switch (listObjectResult.errorCase) {
-                                case "access denied":
-                                    return {
-                                        isSuccess: false,
-                                        navigationError: {
-                                            directoryPath,
-                                            errorCase: "access denied"
-                                        }
-                                    };
-                                case "no such bucket": {
-                                    const { bucket } = parseS3UriPrefix({
-                                        s3UriPrefix: `s3://${directoryPath}`,
-                                        strict: false
-                                    });
-
-                                    const shouldAttemptToCreate =
-                                        s3Profile.bookmarks.find(
-                                            bookmark =>
-                                                bookmark.s3UriPrefixObj.bucket === bucket
-                                        ) !== undefined;
-
-                                    return {
-                                        isSuccess: false,
-                                        navigationError: {
-                                            directoryPath,
-                                            errorCase: "no such bucket",
-                                            bucket,
-                                            shouldAttemptToCreate
-                                        }
-                                    };
-                                }
-                                default:
-                                    assert<
-                                        Equals<typeof listObjectResult.errorCase, never>
-                                    >(false);
-                            }
+                actions.listingCompletedSuccessfully({
+                    profileName,
+                    items: listObjectResult.objects.map(object => {
+                        switch (object.kind) {
+                            case "file":
+                                return id<State.ListedPrefix.Item.Object>({
+                                    type: "object",
+                                    s3UriObj: id<S3UriObj>({
+                                        type: "s3 URI",
+                                        bucket: s3UriPrefixObj.bucket,
+                                        keySegments: s3UriPrefixObj.keySegments,
+                                        delimiter: s3UriPrefixObj.delimiter,
+                                        basename: object.basename
+                                    })
+                                });
+                            case "directory":
+                                return id<State.ListedPrefix.Item.PrefixSegment>({
+                                    type: "prefix segment",
+                                    s3UriPrefixObj: id<S3UriPrefixObj>({
+                                        type: "s3 URI prefix",
+                                        bucket: s3UriPrefixObj.bucket,
+                                        keySegments: [
+                                            ...s3UriPrefixObj.keySegments,
+                                            object.basename
+                                        ],
+                                        delimiter: s3UriPrefixObj.delimiter
+                                    })
+                                });
                         }
-
-                        return {
-                            isSuccess: true,
-                            directoryPath,
-                            objects: listObjectResult.objects,
-                            bucketPolicy: listObjectResult.bucketPolicy,
-                            isBucketPolicyAvailable:
-                                listObjectResult.isBucketPolicyAvailable
-                        };
-                    })()
-                )
+                    })
+                })
             );
         },
 
