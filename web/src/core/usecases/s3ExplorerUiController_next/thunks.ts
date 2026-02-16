@@ -41,17 +41,18 @@ export const thunks = {
                 );
 
                 if (!doesProfileExist) {
-                    return dispatch(thunks.load({ routeParams: { path: "" } }));
+                    return dispatch(thunks.load({ routeParams: { prefix: "" } }));
                 }
 
                 dispatch(
                     thunks.setS3UriPrefixObjAndNavigate({
                         s3UriPrefixObj:
-                            routeParams.path === ""
+                            routeParams.prefix === ""
                                 ? undefined
                                 : parseS3UriPrefix({
-                                      s3UriPrefix: `s3://${routeParams.path}`,
-                                      strict: false
+                                      s3UriPrefix: `s3://${routeParams.prefix}`,
+                                      strict: false,
+                                      delimiter: "/"
                                   })
                     })
                 );
@@ -104,11 +105,12 @@ export const thunks = {
                     privateSelectors.s3UriPrefixObj(getState());
 
                 const s3UriPrefixObj =
-                    routeParams.path === ""
+                    routeParams.prefix === ""
                         ? undefined
                         : parseS3UriPrefix({
-                              s3UriPrefix: `s3://${routeParams.path}`,
-                              strict: false
+                              s3UriPrefix: `s3://${routeParams.prefix}`,
+                              strict: false,
+                              delimiter: "/"
                           });
 
                 if (same(s3UriPrefixObj_current, s3UriPrefixObj)) {
