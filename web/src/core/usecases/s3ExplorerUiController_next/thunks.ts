@@ -325,7 +325,6 @@ export const thunks = {
         },
     putObjects:
         (params: {
-            s3UriPrefixObj: S3UriPrefixObj;
             files: {
                 relativePathSegments: string[];
                 fileBasename: string;
@@ -333,7 +332,7 @@ export const thunks = {
             }[];
         }) =>
         async (...args) => {
-            const { s3UriPrefixObj, files } = params;
+            const { files } = params;
 
             const [dispatch, getState] = args;
 
@@ -344,6 +343,10 @@ export const thunks = {
             const s3Client = await dispatch(
                 s3ProfileManagement.protectedThunks.getS3Client({ profileName })
             );
+
+            const s3UriPrefixObj = privateSelectors.s3UriPrefixObj(getState());
+
+            assert(s3UriPrefixObj !== undefined);
 
             await Promise.all(
                 files.map(async file => {
@@ -395,46 +398,24 @@ export const thunks = {
             );
         },
 
-    createNewEmptyDirectory:
-        (params: { basename: string }) =>
+    createDirectory:
+        (params: { prefixSegment: string }) =>
         async (...args) => {
-            const { basename } = params;
+            const { prefixSegment } = params;
 
-            const [dispatch, getState] = args;
-
-            const state = getState()[name];
-
-            const { directoryPath } = state;
-
-            assert(directoryPath !== undefined);
-
-            const operationId = await dispatch(
-                privateThunks.startOperationWhenAllConflictingOperationHaveCompleted({
-                    operation: "create",
-                    objects: [
-                        id<S3Object.Directory>({
-                            kind: "directory",
-                            basename: basename,
-                            policy: "private",
-                            canChangePolicy: false
-                        })
-                    ]
-                })
-            );
+            const [dispatch] = args;
 
             await dispatch(
-                privateThunks.uploadFileAndLogCommand({
-                    path: pathJoin(directoryPath, params.basename, ".keep"),
-                    blob: new Blob(["This file tells that a directory exists"], {
-                        type: "text/plain"
-                    }),
-                    onUploadProgress: () => {}
-                })
-            );
-
-            dispatch(
-                actions.operationCompleted({
-                    operationId
+                thunks.putObjects({
+                    files: [
+                        {
+                            relativePathSegments: [prefixSegment],
+                            fileBasename: ".keep",
+                            blob: new Blob(["This file tells that a directory exists"], {
+                                type: "text/plain"
+                            })
+                        }
+                    ]
                 })
             );
         },
