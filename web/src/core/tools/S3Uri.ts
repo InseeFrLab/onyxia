@@ -56,7 +56,21 @@ export function parseS3UriPrefix(params: {
 
 export function stringifyS3UriPrefixObj(s3UriPrefixObj: S3UriPrefixObj): string {
     const { bucket, keySegments, delimiter } = s3UriPrefixObj;
-    return `s3://${bucket}/${keySegments.join(delimiter)}`;
+
+    const keyPrefix = keySegments.join(delimiter);
+
+    return `s3://${bucket}/${keyPrefix === "" ? "" : `${keyPrefix}/`}`;
+}
+
+export function stringifyS3UriObj(s3UriObj: S3UriObj): string {
+    const s3UriPrefixObj: S3UriPrefixObj = {
+        type: "s3 URI prefix",
+        delimiter: s3UriObj.delimiter,
+        bucket: s3UriObj.bucket,
+        keySegments: s3UriObj.keySegments
+    };
+
+    return `${stringifyS3UriPrefixObj(s3UriPrefixObj)}${s3UriObj.basename}`;
 }
 
 export function getIsS3UriPrefix(str: string): boolean {
