@@ -266,6 +266,10 @@ const items = createSelector(
                 continue;
             }
 
+            if (item_actual.displayName === ".keep") {
+                continue;
+            }
+
             items.push(item_actual);
         }
 
