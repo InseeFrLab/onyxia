@@ -69,7 +69,7 @@ export const { reducer, actions } = createUsecaseActions({
         listedPrefixByProfile: {}
     }),
     reducers: {
-        fileUploadStarted: (
+        putObjectStarted: (
             state,
             {
                 payload
@@ -98,7 +98,7 @@ export const { reducer, actions } = createUsecaseActions({
                 completionPercent: 0
             });
         },
-        uploadProgressUpdated: (
+        putObjectProgressReported: (
             state,
             {
                 payload
@@ -119,7 +119,11 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(upload !== undefined);
 
-            upload.completionPercent = completionPercent;
+            if (upload.completionPercent === 100) {
+                state.uploads.splice(state.uploads.indexOf(upload), 1);
+            } else {
+                upload.completionPercent = completionPercent;
+            }
         },
         listingCleared: (state, { payload }: { payload: { profileName: string } }) => {
             const { profileName } = payload;

@@ -32,7 +32,9 @@ export type MainView = {
         s3UriPrefixObj: S3UriPrefixObj;
     }[];
 
-    navigationBarValue: string;
+    uploads: State.Upload[];
+
+    navigationUri: S3UriPrefixObj | undefined;
     isListing: boolean;
 
     listedPrefix:
@@ -152,10 +154,10 @@ const bookmarks = createSelector(
     }
 );
 
-const navigationBarValue = createSelector(
+const navigationUri = createSelector(
     s3UriPrefixObj,
-    (s3UriPrefixObj): MainView["navigationBarValue"] =>
-        s3UriPrefixObj === undefined ? "s3://" : stringifyS3UriPrefixObj(s3UriPrefixObj)
+    (s3UriPrefixObj): MainView["navigationUri"] =>
+        s3UriPrefixObj === undefined ? undefined : s3UriPrefixObj
 );
 
 const listedPrefix_state = createSelector(
@@ -244,6 +246,8 @@ const items = createSelector(
     }
 );
 
+const uploads = createSelector(state, (state): MainView["uploads"] => state.uploads);
+
 const listedPrefix = createSelector(
     listedPrefix_state,
     s3ProfilesManagement.selectors.ambientS3Profile,
@@ -293,19 +297,22 @@ const listedPrefix = createSelector(
 const mainView = createSelector(
     profileSelect,
     bookmarks,
-    navigationBarValue,
+    uploads,
+    navigationUri,
     isListing,
     listedPrefix,
     (
         profileSelect,
         bookmarks,
-        navigationBarValue,
+        uploads,
+        navigationUri,
         isListing,
         listedPrefix
     ): MainView => ({
         profileSelect,
         bookmarks,
-        navigationBarValue,
+        uploads,
+        navigationUri,
         isListing,
         listedPrefix
     })
