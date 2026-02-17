@@ -24,6 +24,20 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
           }
     >();
 
+    evtAction
+        .pipe(action => action.usecaseName === name)
+        .pipe(() => [privateSelectors.doesListedPrefixHaveFinishedUpload(getState())])
+        .pipe(onlyIfChanged())
+        .attach(
+            doesListedPrefixHaveFinishedUpload => doesListedPrefixHaveFinishedUpload,
+            () =>
+                dispatch(
+                    thunks.listPrefix({
+                        s3UriPrefixObj: privateSelectors.s3UriPrefixObj(getState())
+                    })
+                )
+        );
+
     evtAction.$attach(
         action => {
             if (action.usecaseName !== name) {

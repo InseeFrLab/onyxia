@@ -215,8 +215,13 @@ const items = createSelector(
             return undefined;
         }
 
-        const items: MainView.Item[] = [
-            ...listedPrefix_state.current.items.map(item => {
+        const items_upload: MainView.Item[] = computeUploadStatusAtPrefix({
+            s3UriPrefixObj: listedPrefix_state.current.s3UriPrefixObj,
+            uploads: uploads_profile
+        });
+
+        const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(
+            item => {
                 switch (item.type) {
                     case "object":
                         return id<MainView.Item.Object>({
@@ -235,18 +240,44 @@ const items = createSelector(
                             uploadProgressPercent: undefined
                         });
                 }
-            }),
-            ...computeUploadStatusAtPrefix({
-                s3UriPrefixObj: listedPrefix_state.current.s3UriPrefixObj,
-                uploads: uploads_profile
-            })
-        ].sort((a, b) => a.displayName.localeCompare(b.displayName));
+            }
+        );
+
+        const items: MainView.Item[] = [];
+
+        for (const item_upload of items_upload) {
+            if (
+                item_upload.uploadProgressPercent === 100 &&
+                items_actual.find(
+                    item_actual => item_actual.displayName === item_upload.displayName
+                ) !== undefined
+            ) {
+                continue;
+            }
+
+            items.push(item_upload);
+        }
+
+        for (const item_actual of items_actual) {
+            if (
+                items.find(item => item.displayName === item_actual.displayName) !==
+                undefined
+            ) {
+                continue;
+            }
+
+            items.push(item_actual);
+        }
+
+        items.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
         return items;
     }
 );
 
-const uploads = createSelector(state, (state): MainView["uploads"] => state.uploads);
+const uploads = createSelector(state, (state): MainView["uploads"] =>
+    state.uploads.filter(upload => upload.completionPercent !== 100)
+);
 
 const listedPrefix = createSelector(
     listedPrefix_state,
@@ -341,9 +372,18 @@ const s3UriPrefixObj_currentlyListing = createSelector(
     }
 );
 
+const doesListedPrefixHaveFinishedUpload = createSelector(
+    listedPrefix,
+    listedPrefix =>
+        listedPrefix !== undefined &&
+        !listedPrefix.isErrored &&
+        listedPrefix.items.find(item => item.uploadProgressPercent === 100) !== undefined
+);
+
 export const privateSelectors = {
     routeParams,
     s3UriPrefixObj,
     profileName,
-    s3UriPrefixObj_currentlyListing
+    s3UriPrefixObj_currentlyListing,
+    doesListedPrefixHaveFinishedUpload
 };
