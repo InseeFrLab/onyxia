@@ -279,11 +279,6 @@ export const thunks = {
             );
 
             if (!listObjectResult.isSuccess) {
-                const shouldAttemptToCreate =
-                    s3Profile.bookmarks.find(
-                        bookmark => bookmark.s3UriPrefixObj.bucket === bucket
-                    ) !== undefined;
-
                 dispatch(
                     actions.listingFailed({
                         profileName,

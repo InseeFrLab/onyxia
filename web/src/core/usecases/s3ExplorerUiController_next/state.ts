@@ -119,11 +119,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(upload !== undefined);
 
-            if (upload.completionPercent === 100) {
-                state.uploads.splice(state.uploads.indexOf(upload), 1);
-            } else {
-                upload.completionPercent = completionPercent;
-            }
+            upload.completionPercent = completionPercent;
         },
         listingCleared: (state, { payload }: { payload: { profileName: string } }) => {
             const { profileName } = payload;
