@@ -1,156 +1,159 @@
-export type S3UriPrefixObj = {
-    type: "s3 URI prefix";
-    bucket: string;
-    keySegments: string[];
-    delimiter: string;
-};
+import { assert, type Equals, id } from "tsafe";
+import { same } from "evt/tools/inDepth/same";
 
-export function parseS3UriPrefix(params: {
-    s3UriPrefix: string;
-    delimiter: string;
-    strict: boolean;
-}): S3UriPrefixObj {
-    const { s3UriPrefix, delimiter, strict } = params;
+export type S3Uri = S3Uri.Object | S3Uri.Prefix;
 
-    const match = s3UriPrefix.match(/^s3:\/\/([^/]+)(\/?.*)$/);
+export namespace S3Uri {
+    type Common = {
+        bucket: string;
+        delimiter: string;
+        keySegments: string[];
+    };
+
+    export type Object = Common & {
+        type: "object";
+        objectBasename: string;
+    };
+
+    export type Prefix = Prefix.TerminatedByDelimiter | Prefix.NonTerminatedByDelimiter;
+
+    export namespace Prefix {
+        type Common_Prefix = Common & {
+            type: "prefix";
+        };
+
+        export type TerminatedByDelimiter = Common_Prefix & {
+            isDelimiterTerminated: true;
+        };
+
+        export type NonTerminatedByDelimiter = Common_Prefix & {
+            isDelimiterTerminated: false;
+            nextKeySegmentPrefix: string;
+        };
+    }
+}
+
+export function stringifyS3Uri(s3Uri: S3Uri): string {
+    let s3UriStr = [
+        "s3://",
+        `${s3Uri.bucket}/`,
+        s3Uri.keySegments.map(keySegment => `${keySegment}${s3Uri.delimiter}`).join("")
+    ].join("");
+
+    switch (s3Uri.type) {
+        case "object":
+            s3UriStr += s3Uri.objectBasename;
+            break;
+        case "prefix":
+            if (!s3Uri.isDelimiterTerminated) {
+                s3UriStr += s3Uri.nextKeySegmentPrefix;
+            }
+            break;
+        default:
+            assert<Equals<typeof s3Uri, never>>;
+    }
+
+    return s3UriStr;
+}
+
+export function getS3UriKeyOrKeyPrefix(s3Uri: S3Uri): string {
+    return stringifyS3Uri(s3Uri).slice(`s3://${s3Uri.bucket}/`.length);
+}
+
+export function parseS3Uri(params: {
+    value: string;
+    delimiter: string;
+    isPrefix: false;
+}): S3Uri.Object;
+export function parseS3Uri(params: {
+    value: string;
+    delimiter: string;
+    isPrefix: true;
+}): S3Uri.Prefix;
+export function parseS3Uri(params: {
+    value: string;
+    delimiter: string;
+    isPrefix: boolean;
+}): S3Uri {
+    const { value, delimiter, isPrefix } = params;
+
+    const match = value.match(/^s3:\/\/([^/]+)(\/?.*)$/);
 
     if (match === null) {
-        throw new Error(`Malformed S3 URI Prefix: ${s3UriPrefix}`);
+        throw new Error(`Malformed S3 URI: ${value}`);
     }
 
     const bucket = match[1];
 
-    let keyPrefix = match[2];
+    const group2 = match[2];
 
-    if (strict && !keyPrefix.endsWith(delimiter)) {
-        throw new Error(
-            [
-                `Invalid S3 URI Prefix: "${s3UriPrefix}".`,
-                `A S3 URI Prefix should end with a "/" character.`
-            ].join(" ")
-        );
+    if (group2 === "" || group2 === "/") {
+        return id<S3Uri.Prefix.TerminatedByDelimiter>({
+            type: "prefix",
+            bucket,
+            delimiter,
+            keySegments: [],
+            isDelimiterTerminated: true
+        });
     }
 
-    if (keyPrefix.startsWith(delimiter)) {
-        keyPrefix = keyPrefix.slice(delimiter.length);
+    const key = group2.slice(1);
+
+    const [last, ...rest_reversed] = key.split(delimiter).reverse();
+
+    const keySegments = rest_reversed.reverse();
+
+    if (last === "") {
+        assert(isPrefix);
+        return id<S3Uri.Prefix.TerminatedByDelimiter>({
+            type: "prefix",
+            bucket,
+            delimiter,
+            keySegments,
+            isDelimiterTerminated: true
+        });
     }
 
-    if (keyPrefix !== "" && !keyPrefix.endsWith(delimiter)) {
-        keyPrefix += delimiter;
+    if (isPrefix) {
+        return id<S3Uri.Prefix.NonTerminatedByDelimiter>({
+            type: "prefix",
+            bucket,
+            delimiter,
+            keySegments,
+            isDelimiterTerminated: false,
+            nextKeySegmentPrefix: last
+        });
     }
 
-    const keySegments =
-        keyPrefix === ""
-            ? []
-            : keyPrefix.split(delimiter).filter(segment => segment !== "");
-
-    const s3UriPrefixObj: S3UriPrefixObj = {
-        type: "s3 URI prefix",
+    return id<S3Uri.Object>({
+        type: "object",
         bucket,
+        delimiter,
         keySegments,
-        delimiter
-    };
-
-    return s3UriPrefixObj;
-}
-
-export function stringifyS3UriPrefixObj(s3UriPrefixObj: S3UriPrefixObj): string {
-    const { bucket, keySegments, delimiter } = s3UriPrefixObj;
-
-    const keyPrefix = keySegments.join(delimiter);
-
-    return `s3://${bucket}/${keyPrefix === "" ? "" : `${keyPrefix}/`}`;
-}
-
-export function stringifyS3UriObj(s3UriObj: S3UriObj): string {
-    const s3UriPrefixObj: S3UriPrefixObj = {
-        type: "s3 URI prefix",
-        delimiter: s3UriObj.delimiter,
-        bucket: s3UriObj.bucket,
-        keySegments: s3UriObj.keySegments
-    };
-
-    return `${stringifyS3UriPrefixObj(s3UriPrefixObj)}${s3UriObj.basename}`;
-}
-
-export function getIsS3UriPrefix(str: string): boolean {
-    try {
-        parseS3UriPrefix({
-            s3UriPrefix: str,
-            strict: true,
-            delimiter: "/"
-        });
-    } catch {
-        return false;
-    }
-
-    return true;
-}
-
-export type S3UriObj = {
-    type: "s3 URI";
-    bucket: string;
-    keySegments: string[];
-    basename: string;
-    delimiter: string;
-};
-
-export function parseS3Uri(params: { s3Uri: string; delimiter: string }): S3UriObj {
-    const { s3Uri, delimiter } = params;
-
-    if (getIsS3UriPrefix(s3Uri)) {
-        throw new Error(`${s3Uri} is a S3 URI Prefix, not a fully qualified S3 URI.`);
-    }
-
-    let s3UriPrefixObj: S3UriPrefixObj;
-
-    try {
-        s3UriPrefixObj = parseS3UriPrefix({
-            s3UriPrefix: s3Uri,
-            strict: false,
-            delimiter
-        });
-    } catch {
-        throw new Error(`Malformed S3 URI: ${s3Uri}`);
-    }
-
-    const [basename, ...rest] = s3UriPrefixObj.keySegments.reverse();
-
-    const s3UriObj: S3UriObj = {
-        type: "s3 URI",
-        bucket: s3UriPrefixObj.bucket,
-        keySegments: rest.reverse(),
-        basename,
-        delimiter
-    };
-
-    return s3UriObj;
+        objectBasename: last
+    });
 }
 
 export function getIsInside(params: {
-    s3UriPrefixObj: S3UriPrefixObj;
-    s3UriObj: S3UriObj;
+    s3UriPrefix: S3Uri.Prefix;
+    s3Uri: S3Uri.Object;
 }): { isInside: false; isTopLevel?: never } | { isInside: true; isTopLevel: boolean } {
-    const { s3UriPrefixObj, s3UriObj } = params;
+    const { s3UriPrefix, s3Uri } = params;
 
-    let i;
-
-    for (i = 0; i < s3UriPrefixObj.keySegments.length; i++) {
-        const keyPrefix = s3UriObj.keySegments[i];
-
-        if (keyPrefix === undefined) {
-            return { isInside: false };
-        }
-
-        const keySegment_prefix = s3UriPrefixObj.keySegments[i];
-
-        if (keyPrefix !== keySegment_prefix) {
-            return { isInside: false };
-        }
+    if (!stringifyS3Uri(s3Uri).startsWith(stringifyS3Uri(s3UriPrefix))) {
+        return { isInside: false };
     }
 
     return {
         isInside: true,
-        isTopLevel: i === s3UriObj.keySegments.length
+        isTopLevel: same(
+            [
+                ...s3UriPrefix.keySegments,
+                ...(s3UriPrefix.isDelimiterTerminated
+                    ? []
+                    : [s3UriPrefix.nextKeySegmentPrefix])
+            ],
+            s3Uri.keySegments
+        )
     };
 }
