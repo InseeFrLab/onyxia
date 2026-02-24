@@ -1,24 +1,5 @@
-/** All path are supposed to start with /<bucket_name> */
+import type { S3Uri } from "core/tools/S3Uri-next";
 
-export type S3Object = S3Object.File | S3Object.Directory;
-
-export namespace S3Object {
-    export type Base = {
-        basename: string;
-        policy: "public" | "private";
-        canChangePolicy: boolean;
-    };
-
-    export type File = Base & {
-        kind: "file";
-        size: number | undefined;
-        lastModified: Date | undefined;
-    };
-
-    export type Directory = Base & {
-        kind: "directory";
-    };
-}
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<
         | {
@@ -34,49 +15,35 @@ export type S3Client = {
     /**
      *  In charge of creating bucket if doesn't exist.
      */
-    listObjects: (params: { path: string }) => Promise<
-        | {
-              isSuccess: false;
-              errorCase: "access denied" | "no such bucket";
-          }
-        | {
-              isSuccess: true;
-              objects: S3Object[];
-              bucketPolicy: S3BucketPolicy | undefined;
-              isBucketPolicyAvailable: boolean;
-          }
-    >;
+    listObjects: (params: {
+        s3UriPrefix: S3Uri.Prefix;
+    }) => Promise<S3Client.ListObjectsReturn>;
 
-    setPathAccessPolicy: (params: {
-        path: string;
-        policy: "public" | "private";
-        currentBucketPolicy: S3BucketPolicy;
-    }) => Promise<S3BucketPolicy>;
-
-    /** Completed when 100% uploaded */
-    uploadFile: (params: {
+    putObject: (params: {
+        s3Uri: S3Uri.Object;
         blob: Blob;
-        path: string;
         onUploadProgress: (params: { uploadPercent: number }) => void;
     }) => Promise<void>;
 
-    deleteFile: (params: { path: string }) => Promise<void>;
+    deleteObject: (params: { s3Uri: S3Uri.Object }) => Promise<void>;
 
-    deleteFiles: (params: { paths: string[] }) => Promise<void>;
-
-    getFileDownloadUrl: (params: {
-        path: string;
+    generateSignedDownloadUrl: (params: {
+        s3Uri: S3Uri.Object;
         validityDurationSecond: number;
     }) => Promise<string>;
 
-    getFileContent: (params: { path: string; range?: string }) => Promise<{
+    getObjectContent: (params: {
+        s3Uri: S3Uri.Object;
+        range: `bytes=0-${number}` | undefined;
+    }) => Promise<{
         stream: ReadableStream;
-        lastModified: Date | undefined;
         size: number | undefined;
         contentType: string | undefined;
     }>;
 
-    getFileContentType: (params: { path: string }) => Promise<string | undefined>;
+    getObjectContentType: (params: {
+        s3Uri: S3Uri.Object;
+    }) => Promise<string | undefined>;
 
     createBucket: (params: { bucket: string }) => Promise<
         | { isSuccess: true }
@@ -86,24 +53,33 @@ export type S3Client = {
               errorMessage: string;
           }
     >;
-
-    // getPresignedUploadUrl: (params: {
-    //     path: string;
-    //     validityDurationSecond: number;
-    // }) => Promise<string>;
 };
 
-type s3Action = `s3:${string}`;
+export namespace S3Client {
+    export type ListObjectsReturn = ListObjectsReturn.Error | ListObjectsReturn.Success;
 
-export type S3BucketPolicy = {
-    Version: "2012-10-17";
-    Statement:
-        | {
-              Effect: "Allow" | "Deny";
-              Principal: string | { AWS: string[] };
-              Action: s3Action | s3Action[];
-              Resource: string[];
-              Condition?: Record<string, any>;
-          }[]
-        | null;
-};
+    export namespace ListObjectsReturn {
+        export type Success = {
+            isSuccess: true;
+            objects: {
+                s3Uri: S3Uri.Object;
+                lastModified: number;
+                size: number;
+            }[];
+            s3UriPrefixes: S3Uri.Prefix.TerminatedByDelimiter[];
+        };
+
+        export namespace Success {
+            export type Object = {
+                s3Uri: S3Uri.Object;
+                lastModified: number;
+                size: number;
+            };
+        }
+
+        export type Error = {
+            isSuccess: false;
+            errorCase: "access denied" | "no such bucket";
+        };
+    }
+}
