@@ -65,7 +65,7 @@ export namespace State {
     }
 }
 
-export const name = "s3ExplorerUiController_next";
+export const name = "s3ExplorerUiController";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

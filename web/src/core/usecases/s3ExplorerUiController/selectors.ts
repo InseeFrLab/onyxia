@@ -65,7 +65,7 @@ export namespace MainView {
 
         export type PrefixSegment = Common & {
             type: "prefix segment";
-            s3UriPrefix: S3Uri.Prefix;
+            s3UriPrefix: S3Uri.Prefix.TerminatedByDelimiter;
         };
 
         export type Object = Common & {
