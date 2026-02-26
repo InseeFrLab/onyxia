@@ -399,7 +399,7 @@ export const thunks = {
             );
         },
 
-    bulkDelete:
+    delete:
         (params: { s3Uris: (S3Uri.Object | S3Uri.Prefix.TerminatedByDelimiter)[] }) =>
         async (...args): Promise<void> => {
             const { s3Uris } = params;
@@ -472,43 +472,31 @@ export const thunks = {
                 })
             );
         },
-    getFileDownloadUrl:
-        (params: { basename: string; validityDurationSecond?: number }) =>
+    getPreSignedUrl:
+        (params: { s3Uri: S3Uri.Object; validityDurationSecond?: number }) =>
         async (...args): Promise<string> => {
-            const { basename, validityDurationSecond = 3_600 } = params;
+            const { s3Uri, validityDurationSecond = 3_600 } = params;
 
             const [dispatch, getState] = args;
 
-            const state = getState()[name];
+            const profileName = privateSelectors.profileName(getState());
 
-            const { directoryPath } = state;
+            assert(profileName !== undefined);
 
-            assert(directoryPath !== undefined);
-
-            const path = pathJoin(directoryPath, basename);
+            const s3Client = await dispatch(
+                s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+            );
 
             const cmdId = Date.now();
-
-            const prettyDurationValue = formatDuration({
-                durationSeconds: validityDurationSecond,
-                t: undefined
-            });
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: `mc share download --expire ${prettyDurationValue} ${pathJoin("s3", path)}`
+                    cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
                 })
             );
 
-            const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getAmbientS3ProfileAndClient()
-            ).then(r => {
-                assert(r !== undefined);
-                return r.s3Client;
-            });
-
-            const downloadUrl = await s3Client.getFileDownloadUrl({
-                path,
+            const downloadUrl = await s3Client.generateSignedDownloadUrl({
+                s3Uri,
                 validityDurationSecond
             });
 
@@ -517,7 +505,10 @@ export const thunks = {
                     cmdId,
                     resp: [
                         `URL: ${downloadUrl.split("?")[0]}`,
-                        `Expire: ${prettyDurationValue}`,
+                        `Expire: ${formatDuration({
+                            durationSeconds: validityDurationSecond,
+                            t: undefined
+                        })}`,
                         `Share: ${downloadUrl}`
                     ].join("\n")
                 })
