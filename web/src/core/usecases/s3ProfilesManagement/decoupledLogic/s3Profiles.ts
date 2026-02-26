@@ -5,7 +5,7 @@ import { assert } from "tsafe";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
 import type { ResolvedTemplateStsRole } from "./resolveTemplatedStsRole";
-import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import type { S3Uri } from "core/tools/S3Uri";
 import { parseUserConfigsS3BookmarksStr } from "./userConfigsS3Bookmarks";
 
 export type S3Profile = S3Profile.DefinedInRegion | S3Profile.CreatedByUser;
@@ -30,7 +30,7 @@ export namespace S3Profile {
     export type Bookmark = {
         isReadonly: boolean;
         displayName: LocalizedString | undefined;
-        s3UriPrefixObj: S3UriPrefixObj;
+        s3UriPrefix: S3Uri.Prefix;
     };
 }
 
@@ -80,9 +80,9 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     creationTime: c.creationTime,
                     paramsOfCreateS3Client,
                     bookmarks: (c.bookmarks ?? []).map(
-                        ({ displayName, s3UriPrefixObj }) => ({
+                        ({ displayName, s3UriPrefix }) => ({
                             displayName,
-                            s3UriPrefixObj,
+                            s3UriPrefix,
                             isReadonly: false
                         })
                     )
@@ -171,10 +171,10 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                         })
                                     );
                                 })
-                                .map(({ title, s3UriPrefixObj }) => ({
+                                .map(({ title, s3UriPrefix }) => ({
                                     isReadonly: true,
                                     displayName: title,
-                                    s3UriPrefixObj
+                                    s3UriPrefix
                                 })),
                             ...parseUserConfigsS3BookmarksStr({
                                 userConfigs_s3BookmarksStr:
@@ -184,7 +184,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                 .map(entry => ({
                                     isReadonly: false,
                                     displayName: entry.displayName ?? undefined,
-                                    s3UriPrefixObj: entry.s3UriPrefixObj
+                                    s3UriPrefix: entry.s3UriPrefix
                                 }))
                         ],
                         paramsOfCreateS3Client

@@ -1,4 +1,4 @@
-import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import type { S3Uri } from "core/tools/S3Uri";
 import { z } from "zod";
 import { assert, type Equals, id, is } from "tsafe";
 import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefined";
@@ -6,11 +6,11 @@ import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefin
 export type UserProfileS3Bookmark = {
     profileName: string;
     displayName: string | undefined;
-    s3UriPrefixObj: S3UriPrefixObj;
+    s3UriPrefix: S3Uri.Prefix;
 };
 
 const zS3UriPrefixObj = (() => {
-    type TargetType = S3UriPrefixObj;
+    type TargetType = S3Uri.Prefix;
 
     const zTargetType = z.object({
         bucket: z.string(),
@@ -30,7 +30,7 @@ const zUserProfileS3Bookmark = (() => {
     const zTargetType = z.object({
         profileName: z.string(),
         displayName: z.union([z.string(), z.undefined()]),
-        s3UriPrefixObj: zS3UriPrefixObj
+        s3UriPrefix: zS3UriPrefixObj
     });
 
     type InferredType = z.infer<typeof zTargetType>;

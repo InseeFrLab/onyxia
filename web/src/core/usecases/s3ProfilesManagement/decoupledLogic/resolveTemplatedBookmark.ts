@@ -3,13 +3,13 @@ import { id } from "tsafe/id";
 import type { LocalizedString } from "ui/i18n";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
-import { type S3UriPrefixObj, parseS3UriPrefix } from "core/tools/S3Uri";
+import { type S3Uri, parseS3UriPrefix } from "core/tools/S3Uri";
 
 export type ResolvedTemplateBookmark = {
     title: LocalizedString;
     description: LocalizedString | undefined;
     tags: LocalizedString[];
-    s3UriPrefixObj: S3UriPrefixObj;
+    s3UriPrefix: S3Uri.Prefix;
     forProfileNames: string[];
 };
 
@@ -22,7 +22,7 @@ export async function resolveTemplatedBookmark(params: {
     if (bookmark_region.claimName === undefined) {
         return [
             id<ResolvedTemplateBookmark>({
-                s3UriPrefixObj: parseS3UriPrefix({
+                s3UriPrefix: parseS3UriPrefix({
                     s3UriPrefix: bookmark_region.s3UriPrefix,
                     strict: true
                 }),
@@ -120,7 +120,7 @@ export async function resolveTemplatedBookmark(params: {
             };
 
             return id<ResolvedTemplateBookmark>({
-                s3UriPrefixObj: parseS3UriPrefix({
+                s3UriPrefix: parseS3UriPrefix({
                     s3UriPrefix: substituteTemplateString(bookmark_region.s3UriPrefix),
                     strict: true
                 }),

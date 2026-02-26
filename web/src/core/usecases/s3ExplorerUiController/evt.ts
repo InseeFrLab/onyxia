@@ -4,8 +4,12 @@ import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { privateSelectors, type RouteParams } from "./selectors";
 import { Reflect, id } from "tsafe";
 import { name } from "./state";
-import { protectedThunks } from "./thunks";
 import { AccessError } from "clean-architecture";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
+import { assert } from "tsafe";
+import { actions } from "./state";
+import { thunks } from "./thunks";
+import { getIsInside } from "core/tools/S3Uri";
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -23,27 +27,145 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
 
     evtAction
         .pipe(action => action.usecaseName === name)
-        .$attach(
-            action =>
-                action.actionName === "navigationCompleted" &&
-                !action.payload.isSuccess &&
-                action.payload.navigationError.errorCase === "no such bucket" &&
-                action.payload.navigationError.shouldAttemptToCreate
-                    ? [action.payload.navigationError]
-                    : null,
-            ({ bucket, directoryPath }) =>
-                evt.post({
-                    action: "ask confirmation for bucket creation attempt",
-                    bucket,
-                    createBucket: () =>
-                        dispatch(
-                            protectedThunks.createBucket({
-                                bucket,
-                                directoryPath_toNavigateToOnSuccess: directoryPath
-                            })
-                        )
-                })
+        .pipe(() => [privateSelectors.doesListedPrefixHaveFinishedUpload(getState())])
+        .pipe(onlyIfChanged())
+        .attach(
+            doesListedPrefixHaveFinishedUpload => doesListedPrefixHaveFinishedUpload,
+            () =>
+                dispatch(
+                    thunks.listPrefix({
+                        s3UriPrefix: privateSelectors.s3UriPrefix(getState())
+                    })
+                )
         );
+
+    evtAction
+        .pipe(action => action.usecaseName === name)
+        .attach(
+            action => {
+                if (action.actionName !== "deletionCompleted") {
+                    return false;
+                }
+
+                const profileName = privateSelectors.profileName(getState());
+
+                if (profileName !== action.payload.profileName) {
+                    return false;
+                }
+
+                const s3UriPrefix = privateSelectors.s3UriPrefix(getState());
+
+                if (s3UriPrefix === undefined) {
+                    return false;
+                }
+
+                const { isTopLevel } = getIsInside({
+                    s3UriPrefix,
+                    s3Uri: action.payload.s3Uri
+                });
+
+                if (!isTopLevel) {
+                    return false;
+                }
+
+                return true;
+            },
+            () => {
+                dispatch(
+                    thunks.listPrefix({
+                        s3UriPrefix: privateSelectors.s3UriPrefix(getState())
+                    })
+                );
+            }
+        );
+
+    evtAction.$attach(
+        action => {
+            if (action.usecaseName !== name) {
+                return null;
+            }
+
+            if (action.actionName !== "listingFailed") {
+                return null;
+            }
+
+            if (action.payload.errorCase !== "no such bucket") {
+                return null;
+            }
+
+            const { profileName, s3UriPrefix } = action.payload;
+            const { bucket } = s3UriPrefix;
+
+            const s3Profile = s3ProfilesManagement.selectors
+                .s3Profiles(getState())
+                .find(s3Profile => s3Profile.profileName === profileName);
+
+            assert(s3Profile !== undefined);
+
+            if (
+                s3Profile.bookmarks.find(
+                    bookmark =>
+                        bookmark.isReadonly && bookmark.s3UriPrefix.bucket === bucket
+                ) === undefined
+            ) {
+                return null;
+            }
+
+            return [{ profileName, s3UriPrefix, bucket }];
+        },
+        async ({ profileName, s3UriPrefix, bucket }) => {
+            evt.post({
+                action: "ask confirmation for bucket creation attempt",
+                bucket: s3UriPrefix.bucket,
+                createBucket: async () => {
+                    const s3Client = await dispatch(
+                        s3ProfilesManagement.protectedThunks.getS3Client({
+                            profileName
+                        })
+                    );
+
+                    const cmdId = Date.now();
+
+                    dispatch(
+                        actions.commandLogIssued({
+                            cmdId,
+                            cmd: `mc mb s3/${bucket}`
+                        })
+                    );
+
+                    const result = await s3Client.createBucket({ bucket });
+
+                    dispatch(
+                        actions.commandLogResponseReceived({
+                            cmdId,
+                            resp: result.isSuccess
+                                ? `Bucket \`s3/${bucket}\` created`
+                                : (() => {
+                                      switch (result.errorCase) {
+                                          case "already exist":
+                                              return `Bucket \`s3/${bucket}\` already exists`;
+                                          case "access denied":
+                                              return `Access denied while creating \`s3/${bucket}\`: ${result.errorMessage}`;
+                                          case "unknown":
+                                              return `Failed to create \`s3/${bucket}\`: ${result.errorMessage}`;
+                                      }
+                                  })()
+                        })
+                    );
+
+                    if (result.isSuccess) {
+                        dispatch(
+                            thunks.listPrefix({
+                                s3UriPrefix
+                            })
+                        );
+                    }
+
+                    return { isSuccess: result.isSuccess };
+                }
+            });
+        }
+    );
 
     evtAction
         .pipe(() => {
@@ -64,12 +186,15 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                 {
                     routeParams,
                     method:
-                        routeParams.path === routeParams_prev.path ? "replace" : "push"
+                        routeParams.s3UriPrefixWithoutScheme ===
+                        routeParams_prev.s3UriPrefixWithoutScheme
+                            ? "replace"
+                            : "push"
                 } as const
             ],
             {
                 routeParams: id<RouteParams>({
-                    path: ""
+                    s3UriPrefixWithoutScheme: ""
                 }),
                 method: Reflect<"push" | "replace">()
             }

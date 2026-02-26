@@ -11,7 +11,7 @@ import { resolveTemplatedStsRole } from "./decoupledLogic/resolveTemplatedStsRol
 import { actions } from "./state";
 import type { S3Profile } from "./decoupledLogic/s3Profiles";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
-import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import type { S3Uri } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import {
     parseUserConfigsS3BookmarksStr,
@@ -224,7 +224,7 @@ export const protectedThunks = {
     createDeleteOrUpdateBookmark:
         (params: {
             profileName: string;
-            s3UriPrefixObj: S3UriPrefixObj;
+            s3UriPrefix: S3Uri.Prefix;
             action:
                 | {
                       type: "create or update";
@@ -235,7 +235,7 @@ export const protectedThunks = {
                   };
         }) =>
         async (...args) => {
-            const { profileName, s3UriPrefixObj, action } = params;
+            const { profileName, s3UriPrefix, action } = params;
 
             const [dispatch, getState] = args;
 
@@ -264,7 +264,7 @@ export const protectedThunks = {
                         s3Profile_vault.bookmarks ??= [];
 
                         const index = s3Profile_vault.bookmarks.findIndex(bookmark =>
-                            same(bookmark.s3UriPrefixObj, s3UriPrefixObj)
+                            same(bookmark.s3UriPrefix, s3UriPrefix)
                         );
 
                         switch (action.type) {
@@ -272,7 +272,7 @@ export const protectedThunks = {
                                 {
                                     const bookmark_new = {
                                         displayName: action.displayName,
-                                        s3UriPrefixObj
+                                        s3UriPrefix
                                     };
 
                                     if (index === -1) {
@@ -311,7 +311,7 @@ export const protectedThunks = {
                         const index = userConfigs_s3Bookmarks.findIndex(
                             entry =>
                                 entry.profileName === s3Profile.profileName &&
-                                same(entry.s3UriPrefixObj, s3UriPrefixObj)
+                                same(entry.s3UriPrefix, s3UriPrefix)
                         );
 
                         switch (action.type) {
@@ -320,7 +320,7 @@ export const protectedThunks = {
                                     const bookmark_new = {
                                         profileName: s3Profile.profileName,
                                         displayName: action.displayName,
-                                        s3UriPrefixObj
+                                        s3UriPrefix
                                     };
 
                                     if (index === -1) {

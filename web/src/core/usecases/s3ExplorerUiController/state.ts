@@ -1,287 +1,219 @@
-import { id } from "tsafe/id";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, id } from "tsafe";
 import { createUsecaseActions } from "clean-architecture";
-import type { S3BucketPolicy, S3Object } from "core/ports/S3Client";
-import { relative as pathRelative } from "pathe";
-import type { S3FilesBeingUploaded } from "./decoupledLogic/uploadProgress";
-import type { S3UriPrefixObj } from "core/tools/S3Uri";
+import type { S3Uri } from "core/tools/S3Uri";
+import { same } from "evt/tools/inDepth/same";
 
 //All explorer paths are expected to be absolute (start with /)
 
 export type State = {
-    /** Defines where we are */
-    s3UriPrefixObj: S3UriPrefixObj | undefined;
+    commandLogsEntries: State.CommandLogsEntry[];
+    uploads: State.Upload[];
+    deletions: State.Deletion[];
+    listedPrefixByProfile: Record<string, State.ListedPrefix | undefined>;
+};
 
-    navigationError:
-        | {
-              errorCase: "access denied" | "no such bucket";
-              directoryPath: string;
-          }
-        | undefined;
-    directoryPath: string | undefined;
-    viewMode: "list" | "block";
-    objects: S3Object[];
-    ongoingNavigation:
-        | {
-              directoryPath: string;
-          }
-        | undefined;
-    ongoingOperations: {
-        operationId: string;
-        operation: "create" | "delete" | "modifyPolicy" | "downloading";
-        directoryPath: string;
-        objects: S3Object[];
-    }[];
-    s3FilesBeingUploaded: S3FilesBeingUploaded;
-    commandLogsEntries: {
+export namespace State {
+    export type CommandLogsEntry = {
         cmdId: number;
         cmd: string;
         resp: string | undefined;
-    }[];
-    bucketPolicy: S3BucketPolicy;
-    isBucketPolicyAvailable: boolean;
-    share:
-        | {
-              fileBasename: string;
-              url: string | undefined;
-              validityDurationSecond: number | undefined;
-              validityDurationSecondOptions: number[] | undefined;
-              isSignedUrlBeingRequested: boolean | undefined;
-          }
-        | undefined;
-};
+    };
 
-export const name = "s3ExplorerUiController";
+    export type Upload = {
+        profileName: string;
+        s3Uri: S3Uri.Object;
+        size: number;
+        completionPercent: number;
+    };
+
+    export type Deletion = {
+        profileName: string;
+        s3Uri: S3Uri;
+    };
+
+    export type ListedPrefix = {
+        next:
+            | {
+                  s3UriPrefix: S3Uri.Prefix;
+                  errorCase: ListedPrefix.ErrorCase | undefined;
+              }
+            | undefined;
+        current:
+            | {
+                  s3UriPrefix: S3Uri.Prefix;
+                  items: ListedPrefix.Item[];
+              }
+            | undefined;
+    };
+
+    export namespace ListedPrefix {
+        export type ErrorCase = "access denied" | "no such bucket";
+
+        export type Item = Item.Prefix | Item.Object;
+
+        export namespace Item {
+            export type Prefix = {
+                type: "prefix";
+                s3UriPrefix: S3Uri.Prefix.TerminatedByDelimiter;
+            };
+
+            export type Object = {
+                type: "object";
+                s3Uri: S3Uri.Object;
+            };
+        }
+    }
+}
+
+export const name = "s3ExplorerUiController_next";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
     initialState: id<State>({
-        s3UriPrefixObj: undefined,
-        directoryPath: undefined,
-        objects: [],
-        viewMode: "list",
-        ongoingNavigation: undefined,
-        ongoingOperations: [],
-        s3FilesBeingUploaded: [],
         commandLogsEntries: [],
-        bucketPolicy: {
-            Version: "2012-10-17",
-            Statement: []
-        },
-        isBucketPolicyAvailable: true,
-        share: undefined,
-        navigationError: undefined
+        uploads: [],
+        deletions: [],
+        listedPrefixByProfile: {}
     }),
     reducers: {
-        s3UriPrefixObjectSet: (
+        putObjectStarted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    s3UriPrefixObj: S3UriPrefixObj | undefined;
-                };
-            }
-        ) => {
-            const { s3UriPrefixObj } = payload;
-
-            state.s3UriPrefixObj = s3UriPrefixObj;
-        },
-        fileUploadStarted: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    directoryPath: string;
-                    basename: string;
+                    profileName: string;
+                    s3Uri: S3Uri.Object;
                     size: number;
                 };
             }
         ) => {
-            const { directoryPath, basename, size } = payload;
-
-            state.s3FilesBeingUploaded.push({
-                directoryPath,
-                basename,
-                size,
-                uploadPercent: 0
-            });
-        },
-        uploadProgressUpdated: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    directoryPath: string;
-                    basename: string;
-                    uploadPercent: number;
-                };
-            }
-        ) => {
-            const { basename, directoryPath, uploadPercent } = payload;
-            const { s3FilesBeingUploaded } = state;
-
-            const s3FileBeingUploaded = s3FilesBeingUploaded.find(
-                s3FileBeingUploaded =>
-                    s3FileBeingUploaded.directoryPath === directoryPath &&
-                    s3FileBeingUploaded.basename === basename
-            );
-            assert(s3FileBeingUploaded !== undefined);
-            s3FileBeingUploaded.uploadPercent = uploadPercent;
-
-            if (
-                s3FilesBeingUploaded.find(
-                    ({ uploadPercent }) => uploadPercent !== 100
-                ) !== undefined
-            ) {
-                return;
-            }
-
-            state.s3FilesBeingUploaded = [];
-        },
-        navigationStarted: (
-            state,
-            { payload }: { payload: { directoryPath: string } }
-        ) => {
-            const { directoryPath } = payload;
-
-            assert(state.share === undefined);
-            state.ongoingNavigation = {
-                directoryPath
-            };
-        },
-        navigationCompleted: (
-            state,
-            {
-                payload
-            }: {
-                payload:
-                    | {
-                          isSuccess: false;
-                          navigationError:
-                              | {
-                                    errorCase: "access denied";
-                                    directoryPath: string;
-                                }
-                              | {
-                                    errorCase: "no such bucket";
-                                    directoryPath: string;
-                                    bucket: string;
-                                    shouldAttemptToCreate: boolean;
-                                };
-                      }
-                    | {
-                          isSuccess: true;
-                          directoryPath: string;
-                          objects: S3Object[];
-                          bucketPolicy: S3BucketPolicy | undefined;
-                          isBucketPolicyAvailable: boolean;
-                      };
-            }
-        ) => {
-            state.ongoingNavigation = undefined;
-
-            if (!payload.isSuccess) {
-                state.navigationError = payload.navigationError;
-                return;
-            }
-
-            const { directoryPath, objects, bucketPolicy, isBucketPolicyAvailable } =
-                payload;
-
-            state.navigationError = undefined;
-            state.directoryPath = directoryPath;
-            state.objects = objects;
-            if (bucketPolicy) {
-                state.bucketPolicy = bucketPolicy;
-            }
-            state.isBucketPolicyAvailable = isBucketPolicyAvailable;
-        },
-        operationStarted: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    operationId: string;
-                    objects: S3Object[];
-                    operation: "create" | "delete" | "modifyPolicy" | "downloading";
-                };
-            }
-        ) => {
-            const { objects, operation, operationId } = payload;
-
-            assert(state.directoryPath !== undefined);
-
-            const { directoryPath } = state;
-
-            state.ongoingOperations.push({
-                operationId,
-                operation,
-                directoryPath,
-                objects
-            });
-        },
-        operationCompleted: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    operationId: string;
-                };
-            }
-        ) => {
-            const { operationId } = payload;
-
-            assert(state.directoryPath !== undefined);
-
-            const { ongoingOperations } = state;
-
-            const ongoingOperation = ongoingOperations.find(
-                o => o.operationId === operationId
-            );
-
-            assert(ongoingOperation !== undefined);
-
-            ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
+            const { profileName, s3Uri, size } = payload;
 
             assert(
-                pathRelative(ongoingOperation.directoryPath, state.directoryPath) === ""
+                state.uploads.find(
+                    upload =>
+                        upload.profileName === profileName && same(upload.s3Uri, s3Uri)
+                ) === undefined
             );
 
-            switch (ongoingOperation.operation) {
-                case "create":
-                    state.objects.push(
-                        ...ongoingOperation.objects.filter(
-                            object_created_i =>
-                                state.objects.find(
-                                    object_i =>
-                                        object_i.kind === object_created_i.kind &&
-                                        object_i.basename === object_created_i.basename
-                                ) === undefined
-                        )
-                    );
-                    break;
-                case "delete":
-                    state.objects = state.objects.filter(
-                        object_i =>
-                            ongoingOperation.objects.find(
-                                object_deleted_i =>
-                                    object_deleted_i.kind === object_i.kind &&
-                                    object_deleted_i.basename === object_i.basename
-                            ) === undefined
-                    );
-                    break;
-                case "downloading":
-                    break;
-                case "modifyPolicy":
-                    break;
-                default:
-                    assert<Equals<typeof ongoingOperation.operation, never>>;
+            state.uploads.push({
+                profileName,
+                s3Uri,
+                size,
+                completionPercent: 0
+            });
+        },
+        putObjectProgressReported: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    s3Uri: S3Uri.Object;
+                    completionPercent: number;
+                };
             }
+        ) => {
+            const { profileName, s3Uri, completionPercent } = payload;
+
+            const upload = state.uploads.find(
+                upload => upload.profileName === profileName && same(upload.s3Uri, s3Uri)
+            );
+
+            assert(upload !== undefined);
+
+            upload.completionPercent = completionPercent;
+        },
+        listingCleared: (state, { payload }: { payload: { profileName: string } }) => {
+            const { profileName } = payload;
+
+            state.listedPrefixByProfile[profileName] = {
+                current: undefined,
+                next: undefined
+            };
+        },
+        listingStarted: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    s3UriPrefix: S3Uri.Prefix;
+                };
+            }
+        ) => {
+            const { profileName, s3UriPrefix } = payload;
+
+            const listedPrefix = (state.listedPrefixByProfile[profileName] ??= {
+                next: undefined,
+                current: undefined
+            });
+
+            listedPrefix.next = {
+                s3UriPrefix,
+                errorCase: undefined
+            };
+        },
+        listingCompletedSuccessfully: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    items: State.ListedPrefix.Item[];
+                };
+            }
+        ) => {
+            const { profileName, items } = payload;
+
+            const listedPrefix = state.listedPrefixByProfile[profileName];
+
+            assert(listedPrefix !== undefined);
+
+            assert(
+                listedPrefix.next !== undefined &&
+                    listedPrefix.next.errorCase === undefined
+            );
+
+            const s3UriPrefix = listedPrefix.next.s3UriPrefix;
+
+            listedPrefix.next = undefined;
+
+            listedPrefix.current = {
+                s3UriPrefix,
+                items
+            };
+        },
+
+        listingFailed: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    s3UriPrefix: S3Uri.Prefix;
+                    errorCase: State.ListedPrefix.ErrorCase;
+                };
+            }
+        ) => {
+            const { profileName, s3UriPrefix, errorCase } = payload;
+
+            const listedPrefix = state.listedPrefixByProfile[profileName];
+
+            assert(listedPrefix !== undefined);
+
+            assert(
+                listedPrefix.next !== undefined &&
+                    listedPrefix.next.errorCase === undefined &&
+                    same(listedPrefix.next.s3UriPrefix, s3UriPrefix)
+            );
+
+            listedPrefix.next.errorCase = errorCase;
         },
         commandLogIssued: (
             state,
@@ -341,118 +273,45 @@ export const { reducer, actions } = createUsecaseActions({
 
             entry.resp = resp;
         },
-        workingDirectoryChanged: state => {
-            state.directoryPath = undefined;
-            state.objects = [];
-            state.ongoingNavigation = undefined;
-        },
-        viewModeChanged: (
-            state,
-            { payload }: { payload: { viewMode: "list" | "block" } }
-        ) => {
-            const { viewMode } = payload;
-            state.viewMode = viewMode;
-        },
-        bucketPolicyModified: (
+        deletionStarted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    kind: "file" | "directory";
-                    basename: string;
-                    policy: "public" | "private";
-                    bucketPolicy: S3BucketPolicy;
+                    profileName: string;
+                    s3Uri: S3Uri;
                 };
             }
         ) => {
-            const { bucketPolicy, policy, basename, kind } = payload;
+            const { profileName, s3Uri } = payload;
 
-            {
-                const object = state.objects.find(
-                    object => object.kind === kind && object.basename === basename
-                );
-                assert(object !== undefined);
-                object.policy = policy;
-            }
-
-            state.bucketPolicy = bucketPolicy;
+            state.deletions.push({
+                profileName,
+                s3Uri
+            });
         },
-        shareOpened: (
+        deletionCompleted: (
             state,
             {
                 payload
             }: {
                 payload: {
-                    fileBasename: string;
-                    url: string | undefined;
-                    validityDurationSecondOptions: number[] | undefined;
+                    profileName: string;
+                    s3Uri: S3Uri;
                 };
             }
         ) => {
-            const { fileBasename, url, validityDurationSecondOptions } = payload;
+            const { profileName, s3Uri } = payload;
 
-            if (url !== undefined) {
-                state.share = {
-                    fileBasename,
-                    url,
-                    isSignedUrlBeingRequested: undefined,
-                    validityDurationSecondOptions: undefined,
-                    validityDurationSecond: undefined
-                };
-            } else {
-                assert(validityDurationSecondOptions !== undefined);
-
-                state.share = {
-                    fileBasename,
-                    url,
-                    isSignedUrlBeingRequested: false,
-                    validityDurationSecondOptions,
-                    validityDurationSecond: validityDurationSecondOptions[0]
-                };
-            }
-        },
-        shareClosed: state => {
-            state.share = undefined;
-        },
-        shareSelectedValidityDurationChanged: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    validityDurationSecond: number;
-                };
-            }
-        ) => {
-            const { validityDurationSecond } = payload;
-
-            assert(state.share !== undefined);
-            assert(state.share.validityDurationSecondOptions !== undefined);
-            assert(
-                state.share.validityDurationSecondOptions.includes(validityDurationSecond)
+            const i = state.deletions.findIndex(
+                deletion =>
+                    deletion.profileName === profileName && same(deletion.s3Uri, s3Uri)
             );
-            state.share.validityDurationSecond = validityDurationSecond;
-        },
-        requestSignedUrlStarted: state => {
-            assert(state.share !== undefined);
-            state.share.isSignedUrlBeingRequested = true;
-        },
-        requestSignedUrlCompleted: (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    url: string;
-                };
-            }
-        ) => {
-            const { url } = payload;
 
-            assert(state.share !== undefined);
-            state.share.isSignedUrlBeingRequested = false;
-            state.share.url = url;
+            assert(i !== -1);
+
+            state.deletions.splice(i, 1);
         }
     }
 });
