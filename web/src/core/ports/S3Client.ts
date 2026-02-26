@@ -1,4 +1,4 @@
-import type { S3Uri } from "core/tools/S3Uri-next";
+import type { S3Uri } from "core/tools/S3Uri";
 
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<

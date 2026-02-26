@@ -5,7 +5,7 @@ import {
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert, is } from "tsafe/assert";
 import type { Oidc } from "core/ports/Oidc";
-import { getS3UriKeyOrKeyPrefix, parseS3Uri } from "core/tools/S3Uri-next";
+import { getS3UriKeyOrKeyPrefix, parseS3Uri } from "core/tools/S3Uri";
 import { exclude, id } from "tsafe";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi";

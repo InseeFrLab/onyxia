@@ -1,16 +1,16 @@
 import { assert } from "tsafe/assert";
-import { type S3UriPrefixObj, type S3UriObj, getIsInside } from "core/tools/S3Uri";
+import { type S3Uri, getIsInside } from "core/tools/S3Uri";
 import type { MainView } from "../selectors";
 
 export function computeUploadStatusAtPrefix(params: {
-    s3UriPrefixObj: S3UriPrefixObj;
+    s3UriPrefix: S3Uri.Prefix;
     uploads: {
-        s3UriObj: S3UriObj;
+        s3Uri: S3Uri.Object;
         size: number;
         completionPercent: number;
     }[];
 }): MainView.Item[] {
-    const { s3UriPrefixObj, uploads } = params;
+    const { s3UriPrefix, uploads } = params;
 
     const items: MainView.Item[] = [];
 
@@ -21,8 +21,8 @@ export function computeUploadStatusAtPrefix(params: {
 
     for (const upload of uploads) {
         const { isInside, isTopLevel } = getIsInside({
-            s3UriPrefixObj,
-            s3UriObj: upload.s3UriObj
+            s3UriPrefix,
+            s3Uri: upload.s3Uri
         });
 
         if (!isInside) {
@@ -32,21 +32,23 @@ export function computeUploadStatusAtPrefix(params: {
         if (isTopLevel) {
             items.push({
                 type: "object",
-                displayName: upload.s3UriObj.basename,
-                s3UriObj: upload.s3UriObj,
-                uploadProgressPercent: upload.completionPercent
+                displayName: upload.s3Uri.keyBasename,
+                s3Uri: upload.s3Uri,
+                uploadProgressPercent: upload.completionPercent,
+                isDeleting: false
             });
             continue;
         }
 
-        const s3UriPrefixObj_newItem: S3UriPrefixObj = {
-            type: "s3 URI prefix",
-            bucket: upload.s3UriObj.bucket,
-            delimiter: upload.s3UriObj.delimiter,
-            keySegments: upload.s3UriObj.keySegments.slice(
+        const s3UriPrefixObj_newItem: S3Uri.Prefix.TerminatedByDelimiter = {
+            type: "prefix",
+            bucket: upload.s3Uri.bucket,
+            delimiter: upload.s3Uri.delimiter,
+            keySegments: upload.s3Uri.keySegments.slice(
                 0,
-                s3UriPrefixObj.keySegments.length + 1
-            )
+                s3UriPrefix.keySegments.length + 1
+            ),
+            isDelimiterTerminated: true
         };
 
         const displayName =
@@ -62,7 +64,8 @@ export function computeUploadStatusAtPrefix(params: {
             items.push({
                 type: "prefix segment",
                 displayName,
-                s3UriPrefixObj: s3UriPrefixObj_newItem,
+                s3UriPrefix: s3UriPrefixObj_newItem,
+                isDeleting: false,
                 uploadProgressPercent: NaN
             });
         }
