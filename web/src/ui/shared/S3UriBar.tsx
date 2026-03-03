@@ -814,6 +814,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                                                 keyIndex === 0 &&
                                                                     classes.segmentKeyFirst,
                                                                 crumb.isCurrent &&
+                                                                    crumb.kind !==
+                                                                        "segment" &&
                                                                     classes.segmentCurrent
                                                             )}
                                                             data-s3-uri-segment="true"
@@ -928,6 +930,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                         crumb.kind === "segment" &&
                                                         classes.segmentKeyFirst,
                                                     crumb.isCurrent &&
+                                                        crumb.kind !== "segment" &&
                                                         classes.segmentCurrent
                                                 )}
                                             >
