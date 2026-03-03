@@ -1209,7 +1209,7 @@ const useStyles = tss
                 fontWeight: 700
             },
             segmentKeyFirst: {
-                paddingLeft: 0
+                paddingLeft: "6px"
             },
             segmentLabel: {
                 display: "inline-block"
