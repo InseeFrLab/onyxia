@@ -44,7 +44,7 @@ type DisplayCrumb =
           kind: "ellipsis";
       };
 
-const longPressDelayMs = 100;
+const longPressDelayMs = 200;
 
 function getBucketRootPrefix(params: {
     bucket: string;
