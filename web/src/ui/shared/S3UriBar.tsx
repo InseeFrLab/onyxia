@@ -1007,8 +1007,34 @@ export function S3UriBar(props: S3UriBarProps) {
                     </nav>
                 )}
 
-                {(onToggleBookmark || isBookmarked) && (
-                    <div className={classes.trailingActions}>
+                <div className={classes.trailingActions}>
+                    <Tooltip title={isEditing ? "Exit edit mode" : "Enter edit mode"}>
+                        <div data-s3-uri-ignore-edit="true">
+                            <IconButton
+                                aria-label={
+                                    isEditing ? "Exit edit mode" : "Enter edit mode"
+                                }
+                                icon={getIconUrlByName(isEditing ? "Close" : "Edit")}
+                                onClick={event => {
+                                    event.stopPropagation();
+
+                                    const nextIsEditing = !isEditing;
+
+                                    if (nextIsEditing) {
+                                        lastEnterEditRequestTimeRef.current =
+                                            performance.now();
+                                    }
+
+                                    onIsEditingChange({ isEditing: nextIsEditing });
+                                }}
+                                className={cx(
+                                    classes.bookmarkButton,
+                                    isEditing && classes.editButtonActive
+                                )}
+                            />
+                        </div>
+                    </Tooltip>
+                    {(onToggleBookmark || isBookmarked) && (
                         <Tooltip
                             title={
                                 onToggleBookmark
@@ -1044,8 +1070,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                 />
                             </div>
                         </Tooltip>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {isEditing && hints.length > 0 && (
@@ -1241,6 +1267,7 @@ const useStyles = tss
             trailingActions: {
                 display: "flex",
                 alignItems: "center",
+                gap: theme.spacing(1),
                 flexShrink: 0
             },
             bookmarkButton: {
@@ -1261,6 +1288,11 @@ const useStyles = tss
             },
             bookmarkButtonReadonly: {
                 opacity: 0.65
+            },
+            editButtonActive: {
+                "& .MuiSvgIcon-root, & img": {
+                    color: accentColor
+                }
             },
             hintsPanel: {
                 position: "absolute",
