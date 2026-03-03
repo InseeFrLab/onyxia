@@ -16,6 +16,18 @@ type Story = StoryObj<typeof meta>;
 const delimiter = "/";
 
 function parsePrefixOrThrow(s3Uri: string): S3Uri.Prefix {
+    return parsePrefixOrThrowWithDelimiter({
+        s3Uri,
+        delimiter
+    });
+}
+
+function parsePrefixOrThrowWithDelimiter(params: {
+    s3Uri: string;
+    delimiter: string;
+}): S3Uri.Prefix {
+    const { s3Uri, delimiter } = params;
+
     return parseS3Uri({
         value: s3Uri,
         delimiter,
@@ -111,6 +123,21 @@ export const RootPrefix: Story = {
     args: {
         ...baseArgs,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/")
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const HashDelimiter: Story = {
+    args: {
+        ...baseArgs,
+        s3UriPrefix: parsePrefixOrThrowWithDelimiter({
+            s3Uri: "s3://mybucket/foo#bar#file.txt",
+            delimiter: "#"
+        }),
+        hints: [
+            { type: "key-segment", name: "baz" },
+            { type: "object", name: "other.txt" }
+        ]
     },
     render: args => <StatefulS3UriBar {...args} />
 };
