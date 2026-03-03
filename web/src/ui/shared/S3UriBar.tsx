@@ -47,39 +47,94 @@ type DisplayCrumb =
 const longPressDelayMs = 200;
 type CrumbKind = DisplayCrumb["kind"];
 
-function shouldShowSeparatorBetweenKinds(params: {
+function getSeparatorTokenBetweenKinds(params: {
     leftKind: CrumbKind;
     rightKind: CrumbKind;
-}): boolean {
-    const { leftKind, rightKind } = params;
+    delimiter: string;
+}): string | undefined {
+    const { leftKind, rightKind, delimiter } = params;
 
-    return !(leftKind === "root" && rightKind === "bucket");
+    if (leftKind === "root" && rightKind === "bucket") {
+        return undefined;
+    }
+
+    if (leftKind === "bucket") {
+        return "/";
+    }
+
+    return delimiter;
 }
 
 function shouldShowSeparatorAtIndex(
     crumbs: Array<{ kind: CrumbKind }>,
-    index: number
+    index: number,
+    delimiter: string
 ): boolean {
     if (index >= crumbs.length - 1) {
         return false;
     }
 
-    return shouldShowSeparatorBetweenKinds({
-        leftKind: crumbs[index].kind,
-        rightKind: crumbs[index + 1].kind
-    });
+    return (
+        getSeparatorTokenBetweenKinds({
+            leftKind: crumbs[index].kind,
+            rightKind: crumbs[index + 1].kind,
+            delimiter
+        }) !== undefined
+    );
 }
 
-function getSeparatorCount(crumbs: Array<{ kind: CrumbKind }>): number {
+function getSeparatorCount(
+    crumbs: Array<{ kind: CrumbKind }>,
+    delimiter: string
+): number {
     let count = 0;
 
     for (let index = 0; index < crumbs.length - 1; index += 1) {
-        if (shouldShowSeparatorAtIndex(crumbs, index)) {
+        if (shouldShowSeparatorAtIndex(crumbs, index, delimiter)) {
             count += 1;
         }
     }
 
     return count;
+}
+
+function getTrailingSeparatorToken(s3UriPrefix: S3Uri.Prefix): string | undefined {
+    if (!s3UriPrefix.isDelimiterTerminated) {
+        return undefined;
+    }
+
+    if (s3UriPrefix.keySegments.length === 0) {
+        return "/";
+    }
+
+    return s3UriPrefix.delimiter;
+}
+
+function getSeparatorWidthForKinds(params: {
+    leftKind: CrumbKind;
+    rightKind: CrumbKind;
+    delimiter: string;
+    slashSeparatorWidth: number;
+    delimiterSeparatorWidth: number;
+}): number {
+    const {
+        leftKind,
+        rightKind,
+        delimiter,
+        slashSeparatorWidth,
+        delimiterSeparatorWidth
+    } = params;
+    const token = getSeparatorTokenBetweenKinds({
+        leftKind,
+        rightKind,
+        delimiter
+    });
+
+    if (token === undefined) {
+        return 0;
+    }
+
+    return token === "/" ? slashSeparatorWidth : delimiterSeparatorWidth;
 }
 
 function getBucketRootPrefix(params: {
@@ -191,7 +246,7 @@ export function S3UriBar(props: S3UriBarProps) {
         () => getBreadcrumbs({ s3UriPrefix: normalizedPrefix }),
         [normalizedPrefix]
     );
-    const hasTrailingSlash = normalizedPrefix.isDelimiterTerminated;
+    const trailingSeparatorToken = getTrailingSeparatorToken(normalizedPrefix);
 
     const rootRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -202,7 +257,8 @@ export function S3UriBar(props: S3UriBarProps) {
     const lastEnterEditRequestTimeRef = useRef(Number.NEGATIVE_INFINITY);
 
     const measureCrumbRefs = useRef<Array<HTMLSpanElement | null>>([]);
-    const measureSeparatorRef = useRef<HTMLSpanElement | null>(null);
+    const measureSlashSeparatorRef = useRef<HTMLSpanElement | null>(null);
+    const measureDelimiterSeparatorRef = useRef<HTMLSpanElement | null>(null);
     const measureEllipsisRef = useRef<HTMLSpanElement | null>(null);
     const { domRect: pathDisplayRect, ref: pathDisplayRef } = useDomRect();
 
@@ -279,20 +335,32 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        const separatorWidth =
-            measureSeparatorRef.current?.getBoundingClientRect().width ?? 0;
+        const slashSeparatorWidth =
+            measureSlashSeparatorRef.current?.getBoundingClientRect().width ?? 0;
+        const delimiterSeparatorWidth =
+            normalizedPrefix.delimiter === "/"
+                ? slashSeparatorWidth
+                : (measureDelimiterSeparatorRef.current?.getBoundingClientRect().width ??
+                  slashSeparatorWidth);
+        const separatorWidth = Math.max(slashSeparatorWidth, delimiterSeparatorWidth);
         const ellipsisWidth =
             measureEllipsisRef.current?.getBoundingClientRect().width ?? 0;
         const crumbWidths = crumbs.map(
             (_, index) =>
                 measureCrumbRefs.current[index]?.getBoundingClientRect().width ?? 0
         );
-        const separatorCount = getSeparatorCount(crumbs);
+        const separatorCount = getSeparatorCount(crumbs, normalizedPrefix.delimiter);
+        const trailingSeparatorWidth =
+            trailingSeparatorToken === undefined
+                ? 0
+                : trailingSeparatorToken === "/"
+                  ? slashSeparatorWidth
+                  : delimiterSeparatorWidth;
 
         const totalWidth =
             crumbWidths.reduce((sum, width) => sum + width, 0) +
             separatorWidth * separatorCount +
-            (hasTrailingSlash ? separatorWidth : 0);
+            trailingSeparatorWidth;
 
         if (totalWidth <= availableWidth) {
             setDisplayCrumbs(crumbs);
@@ -317,12 +385,13 @@ export function S3UriBar(props: S3UriBarProps) {
 
         if (bucketIndex !== rootIndex) {
             widthSum +=
-                (shouldShowSeparatorBetweenKinds({
+                getSeparatorWidthForKinds({
                     leftKind: crumbs[rootIndex].kind,
-                    rightKind: crumbs[bucketIndex].kind
-                })
-                    ? separatorWidth
-                    : 0) + (crumbWidths[bucketIndex] ?? 0);
+                    rightKind: crumbs[bucketIndex].kind,
+                    delimiter: normalizedPrefix.delimiter,
+                    slashSeparatorWidth,
+                    delimiterSeparatorWidth
+                }) + (crumbWidths[bucketIndex] ?? 0);
         }
 
         const shouldUseEllipsis = lastIndex > bucketIndex;
@@ -368,7 +437,13 @@ export function S3UriBar(props: S3UriBarProps) {
         }
 
         setDisplayCrumbs(collapsed);
-    }, [crumbs, hasTrailingSlash, isEditing, pathDisplayRect.width]);
+    }, [
+        crumbs,
+        isEditing,
+        normalizedPrefix.delimiter,
+        pathDisplayRect.width,
+        trailingSeparatorToken
+    ]);
 
     useEffect(() => {
         return () => {
@@ -647,13 +722,25 @@ export function S3UriBar(props: S3UriBarProps) {
                                             </button>
                                         </span>
                                     )}
-                                    {shouldShowSeparatorAtIndex(displayCrumbs, index) && (
-                                        <span className={classes.separator}>/</span>
+                                    {shouldShowSeparatorAtIndex(
+                                        displayCrumbs,
+                                        index,
+                                        normalizedPrefix.delimiter
+                                    ) && (
+                                        <span className={classes.separator}>
+                                            {getSeparatorTokenBetweenKinds({
+                                                leftKind: crumb.kind,
+                                                rightKind: displayCrumbs[index + 1].kind,
+                                                delimiter: normalizedPrefix.delimiter
+                                            })}
+                                        </span>
                                     )}
                                 </Fragment>
                             ))}
-                            {hasTrailingSlash && crumbs.length > 0 && (
-                                <span className={classes.separator}>/</span>
+                            {trailingSeparatorToken && crumbs.length > 0 && (
+                                <span className={classes.separator}>
+                                    {trailingSeparatorToken}
+                                </span>
                             )}
                         </div>
 
@@ -685,25 +772,36 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 </span>
                                             </span>
                                         </span>
-                                        {shouldShowSeparatorAtIndex(crumbs, index) && (
-                                            <span
-                                                className={classes.separator}
-                                                ref={el => {
-                                                    if (
-                                                        el &&
-                                                        measureSeparatorRef.current ===
-                                                            null
-                                                    ) {
-                                                        measureSeparatorRef.current = el;
-                                                    }
-                                                }}
-                                            >
-                                                /
+                                        {shouldShowSeparatorAtIndex(
+                                            crumbs,
+                                            index,
+                                            normalizedPrefix.delimiter
+                                        ) && (
+                                            <span className={classes.separator}>
+                                                {getSeparatorTokenBetweenKinds({
+                                                    leftKind: crumb.kind,
+                                                    rightKind: crumbs[index + 1].kind,
+                                                    delimiter: normalizedPrefix.delimiter
+                                                })}
                                             </span>
                                         )}
                                     </Fragment>
                                 ))}
                             </div>
+                            <span
+                                ref={measureSlashSeparatorRef}
+                                className={classes.separator}
+                            >
+                                /
+                            </span>
+                            {normalizedPrefix.delimiter !== "/" && (
+                                <span
+                                    ref={measureDelimiterSeparatorRef}
+                                    className={classes.separator}
+                                >
+                                    {normalizedPrefix.delimiter}
+                                </span>
+                            )}
                             <span ref={measureEllipsisRef} className={classes.ellipsis}>
                                 ...
                             </span>
@@ -731,7 +829,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 : "Add bookmark"
                                             : "Bookmarked"
                                     }
-                                    icon={getIconUrlByName("PushPin")}
+                                    icon={getIconUrlByName(
+                                        isBookmarked ? "PushPin" : "PushPinOutlined"
+                                    )}
                                     onClick={event => {
                                         event.stopPropagation();
                                         onToggleBookmark?.();
