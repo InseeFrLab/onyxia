@@ -1,0 +1,12 @@
+# UI General Spec
+
+## Styling Guidelines (tss-react)
+
+- Each component owns one dedicated `useStyles` created with `tss.create()`.
+- Prefer `tss.withParams<...>().create(...)` for conditional styles.
+- Avoid style explosion from many atomic variant class combinations.
+
+Recommended pattern:
+
+- `const { classes, cx } = useStyles({ ...params })`
+- `className={cx(classes.root, props.className)}`
