@@ -1232,6 +1232,7 @@ const useStyles = tss
                 border: "none",
                 outline: "none",
                 background: "transparent",
+                paddingLeft: "10px",
                 font: "inherit",
                 fontSize: "1.05rem",
                 fontWeight: 600,
