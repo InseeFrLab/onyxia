@@ -746,6 +746,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     >
                                                         <Icon
                                                             size="small"
+                                                            className={
+                                                                classes.rootIconGlyph
+                                                            }
                                                             icon={getIconUrlByName(
                                                                 "Home"
                                                             )}
@@ -953,6 +956,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     >
                                                         <Icon
                                                             size="small"
+                                                            className={
+                                                                classes.rootIconGlyph
+                                                            }
                                                             icon={getIconUrlByName(
                                                                 "Home"
                                                             )}
@@ -1133,7 +1139,7 @@ const useStyles = tss
                 alignItems: "center",
                 gap: theme.spacing(1),
                 paddingLeft: "10px",
-                borderRadius: theme.spacing(3),
+                borderRadius: "12px",
                 backgroundColor: theme.colors.useCases.surfaces.background,
                 boxShadow: `inset 0 0 0 1px ${theme.colors.useCases.surfaces.surface2}`
             },
@@ -1173,7 +1179,7 @@ const useStyles = tss
                 paddingRight: "10px",
                 margin: 0,
                 border: "1px solid transparent",
-                borderRadius: theme.spacing(3),
+                borderRadius: "12px",
                 backgroundColor: "transparent",
                 color: "inherit",
                 font: "inherit",
@@ -1210,6 +1216,9 @@ const useStyles = tss
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center"
+            },
+            rootIconGlyph: {
+                fontSize: "18px"
             },
             inputWrapper: {
                 flex: 1,
