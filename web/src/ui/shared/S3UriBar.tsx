@@ -213,8 +213,21 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        inputRef.current?.focus();
-        inputRef.current?.select();
+        const frameId = window.requestAnimationFrame(() => {
+            const input = inputRef.current;
+
+            if (!input) {
+                return;
+            }
+
+            input.focus();
+            const cursorPosition = input.value.length;
+            input.setSelectionRange(cursorPosition, cursorPosition);
+        });
+
+        return () => {
+            window.cancelAnimationFrame(frameId);
+        };
     }, [isEditing]);
 
     useEffect(() => {
