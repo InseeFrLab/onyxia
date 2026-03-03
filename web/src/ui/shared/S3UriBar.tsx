@@ -1100,6 +1100,7 @@ const useStyles = tss
                 display: "flex",
                 alignItems: "center",
                 gap: theme.spacing(3),
+                cursor: "text",
                 width: "100%",
                 minWidth: 0,
                 height: barHeight,
