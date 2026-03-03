@@ -16,6 +16,8 @@ import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
+import s3UriBucketSvgUrl from "ui/assets/svg/S3UriBucket.svg";
+import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 
 export type S3UriBarProps = {
     className?: string;
@@ -733,9 +735,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     >
                                                         <Icon
                                                             size="extra small"
-                                                            icon={getIconUrlByName(
-                                                                "Storage"
-                                                            )}
+                                                            icon={s3UriBucketSvgUrl}
                                                         />
                                                     </span>
                                                 )}
@@ -749,9 +749,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                             className={
                                                                 classes.rootIconGlyph
                                                             }
-                                                            icon={getIconUrlByName(
-                                                                "Home"
-                                                            )}
+                                                            icon={s3UriHomeSvgUrl}
                                                         />
                                                     </span>
                                                 ) : (
@@ -943,9 +941,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     >
                                                         <Icon
                                                             size="extra small"
-                                                            icon={getIconUrlByName(
-                                                                "Storage"
-                                                            )}
+                                                            icon={s3UriBucketSvgUrl}
                                                         />
                                                     </span>
                                                 )}
@@ -959,9 +955,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                             className={
                                                                 classes.rootIconGlyph
                                                             }
-                                                            icon={getIconUrlByName(
-                                                                "Home"
-                                                            )}
+                                                            icon={s3UriHomeSvgUrl}
                                                         />
                                                     </span>
                                                 ) : (
