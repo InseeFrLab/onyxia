@@ -45,6 +45,42 @@ type DisplayCrumb =
       };
 
 const longPressDelayMs = 200;
+type CrumbKind = DisplayCrumb["kind"];
+
+function shouldShowSeparatorBetweenKinds(params: {
+    leftKind: CrumbKind;
+    rightKind: CrumbKind;
+}): boolean {
+    const { leftKind, rightKind } = params;
+
+    return !(leftKind === "root" && rightKind === "bucket");
+}
+
+function shouldShowSeparatorAtIndex(
+    crumbs: Array<{ kind: CrumbKind }>,
+    index: number
+): boolean {
+    if (index >= crumbs.length - 1) {
+        return false;
+    }
+
+    return shouldShowSeparatorBetweenKinds({
+        leftKind: crumbs[index].kind,
+        rightKind: crumbs[index + 1].kind
+    });
+}
+
+function getSeparatorCount(crumbs: Array<{ kind: CrumbKind }>): number {
+    let count = 0;
+
+    for (let index = 0; index < crumbs.length - 1; index += 1) {
+        if (shouldShowSeparatorAtIndex(crumbs, index)) {
+            count += 1;
+        }
+    }
+
+    return count;
+}
 
 function getBucketRootPrefix(params: {
     bucket: string;
@@ -251,10 +287,11 @@ export function S3UriBar(props: S3UriBarProps) {
             (_, index) =>
                 measureCrumbRefs.current[index]?.getBoundingClientRect().width ?? 0
         );
+        const separatorCount = getSeparatorCount(crumbs);
 
         const totalWidth =
             crumbWidths.reduce((sum, width) => sum + width, 0) +
-            separatorWidth * Math.max(crumbs.length - 1, 0) +
+            separatorWidth * separatorCount +
             (hasTrailingSlash ? separatorWidth : 0);
 
         if (totalWidth <= availableWidth) {
@@ -279,7 +316,13 @@ export function S3UriBar(props: S3UriBarProps) {
         let widthSum = crumbWidths[rootIndex] ?? 0;
 
         if (bucketIndex !== rootIndex) {
-            widthSum += separatorWidth + (crumbWidths[bucketIndex] ?? 0);
+            widthSum +=
+                (shouldShowSeparatorBetweenKinds({
+                    leftKind: crumbs[rootIndex].kind,
+                    rightKind: crumbs[bucketIndex].kind
+                })
+                    ? separatorWidth
+                    : 0) + (crumbWidths[bucketIndex] ?? 0);
         }
 
         const shouldUseEllipsis = lastIndex > bucketIndex;
@@ -604,17 +647,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                             </button>
                                         </span>
                                     )}
-                                    {index < displayCrumbs.length - 1 && (
-                                        <span
-                                            className={classes.separator}
-                                            ref={
-                                                index === 0
-                                                    ? measureSeparatorRef
-                                                    : undefined
-                                            }
-                                        >
-                                            /
-                                        </span>
+                                    {shouldShowSeparatorAtIndex(displayCrumbs, index) && (
+                                        <span className={classes.separator}>/</span>
                                     )}
                                 </Fragment>
                             ))}
@@ -651,8 +685,21 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 </span>
                                             </span>
                                         </span>
-                                        {index < crumbs.length - 1 && (
-                                            <span className={classes.separator}>/</span>
+                                        {shouldShowSeparatorAtIndex(crumbs, index) && (
+                                            <span
+                                                className={classes.separator}
+                                                ref={el => {
+                                                    if (
+                                                        el &&
+                                                        measureSeparatorRef.current ===
+                                                            null
+                                                    ) {
+                                                        measureSeparatorRef.current = el;
+                                                    }
+                                                }}
+                                            >
+                                                /
+                                            </span>
                                         )}
                                     </Fragment>
                                 ))}
