@@ -1134,6 +1134,7 @@ const useStyles = tss
                 gap: theme.spacing(1),
                 height: "36px",
                 paddingLeft: "10px",
+                paddingRight: "10px",
                 borderRadius: "12px",
                 boxSizing: "border-box",
                 backgroundColor: theme.colors.useCases.surfaces.background,
