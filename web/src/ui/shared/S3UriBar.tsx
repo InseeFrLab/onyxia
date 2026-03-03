@@ -739,9 +739,25 @@ export function S3UriBar(props: S3UriBarProps) {
                                                         />
                                                     </span>
                                                 )}
-                                                <span className={classes.segmentLabel}>
-                                                    {crumb.label}
-                                                </span>
+                                                {crumb.kind === "root" ? (
+                                                    <span
+                                                        className={classes.rootIcon}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <Icon
+                                                            size="small"
+                                                            icon={getIconUrlByName(
+                                                                "Home"
+                                                            )}
+                                                        />
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        className={classes.segmentLabel}
+                                                    >
+                                                        {crumb.label}
+                                                    </span>
+                                                )}
                                             </button>
                                         )}
                                     </span>
@@ -930,9 +946,25 @@ export function S3UriBar(props: S3UriBarProps) {
                                                         />
                                                     </span>
                                                 )}
-                                                <span className={classes.segmentLabel}>
-                                                    {crumb.label}
-                                                </span>
+                                                {crumb.kind === "root" ? (
+                                                    <span
+                                                        className={classes.rootIcon}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <Icon
+                                                            size="small"
+                                                            icon={getIconUrlByName(
+                                                                "Home"
+                                                            )}
+                                                        />
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        className={classes.segmentLabel}
+                                                    >
+                                                        {crumb.label}
+                                                    </span>
+                                                )}
                                             </span>
                                         </span>
                                         {shouldShowSeparatorAtIndex(
@@ -1094,7 +1126,7 @@ const useStyles = tss
             crumbs: {
                 display: "inline-flex",
                 alignItems: "center",
-                gap: theme.spacing(3)
+                gap: theme.spacing(2)
             },
             keyGroup: {
                 display: "inline-flex",
@@ -1152,7 +1184,9 @@ const useStyles = tss
                 }
             },
             segmentRoot: {
-                fontWeight: 600
+                fontWeight: 600,
+                borderColor: theme.colors.useCases.surfaces.surface2,
+                backgroundColor: theme.colors.useCases.surfaces.background
             },
             segmentBucket: {
                 fontWeight: 700,
@@ -1171,6 +1205,11 @@ const useStyles = tss
             },
             segmentLabel: {
                 display: "inline-block"
+            },
+            rootIcon: {
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center"
             },
             inputWrapper: {
                 flex: 1,
