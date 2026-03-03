@@ -12,6 +12,7 @@ import {
 import { tss } from "tss";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { IconButton } from "onyxia-ui/IconButton";
+import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
@@ -627,6 +628,12 @@ export function S3UriBar(props: S3UriBarProps) {
         onIsEditingChange({ isEditing: false });
     };
 
+    const displayLeadingCrumbs = displayCrumbs.slice(
+        0,
+        Math.min(2, displayCrumbs.length)
+    );
+    const displayKeyCrumbs = displayCrumbs.slice(2);
+
     return (
         <div className={cx(classes.root, className)} ref={rootRef} onBlur={onRootBlur}>
             <div className={classes.bar} onPointerDown={onBarPointerDown}>
@@ -662,12 +669,12 @@ export function S3UriBar(props: S3UriBarProps) {
                         ref={pathDisplayRef}
                     >
                         <div className={classes.crumbs}>
-                            {displayCrumbs.map((crumb, index) => (
+                            {displayLeadingCrumbs.map((crumb, index) => (
                                 <Fragment key={`${crumb.label}-${index}`}>
-                                    {crumb.kind === "ellipsis" ? (
-                                        <span className={classes.ellipsis}>...</span>
-                                    ) : (
-                                        <span className={classes.crumbItem}>
+                                    <span className={classes.crumbItem}>
+                                        {crumb.kind === "ellipsis" ? (
+                                            <span className={classes.ellipsis}>...</span>
+                                        ) : (
                                             <button
                                                 type="button"
                                                 className={cx(
@@ -716,30 +723,155 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     crumb.s3UriPrefix
                                                 )}`}
                                             >
+                                                {crumb.kind === "bucket" && (
+                                                    <span
+                                                        className={cx(
+                                                            classes.segmentGroupTag,
+                                                            classes.segmentGroupTagBucket
+                                                        )}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <Icon
+                                                            size="extra small"
+                                                            icon={getIconUrlByName(
+                                                                "Storage"
+                                                            )}
+                                                        />
+                                                    </span>
+                                                )}
                                                 <span className={classes.segmentLabel}>
                                                     {crumb.label}
                                                 </span>
                                             </button>
-                                        </span>
-                                    )}
+                                        )}
+                                    </span>
                                     {shouldShowSeparatorAtIndex(
-                                        displayCrumbs,
+                                        displayLeadingCrumbs,
                                         index,
                                         normalizedPrefix.delimiter
                                     ) && (
                                         <span className={classes.separator}>
                                             {getSeparatorTokenBetweenKinds({
                                                 leftKind: crumb.kind,
-                                                rightKind: displayCrumbs[index + 1].kind,
+                                                rightKind:
+                                                    displayLeadingCrumbs[index + 1].kind,
                                                 delimiter: normalizedPrefix.delimiter
                                             })}
                                         </span>
                                     )}
                                 </Fragment>
                             ))}
-                            {trailingSeparatorToken && crumbs.length > 0 && (
-                                <span className={classes.separator}>
-                                    {trailingSeparatorToken}
+                            {displayKeyCrumbs.length > 0 && (
+                                <span className={classes.keyGroup}>
+                                    <span
+                                        className={cx(
+                                            classes.segmentGroupTag,
+                                            classes.segmentGroupTagKey
+                                        )}
+                                        aria-label="Object key"
+                                    >
+                                        <Icon
+                                            size="extra small"
+                                            icon={getIconUrlByName("Key")}
+                                        />
+                                    </span>
+                                    {displayKeyCrumbs.map((crumb, keyIndex) => {
+                                        const absoluteIndex = keyIndex + 2;
+
+                                        return (
+                                            <Fragment
+                                                key={`${crumb.label}-${absoluteIndex}`}
+                                            >
+                                                <span className={classes.crumbItem}>
+                                                    {crumb.kind === "ellipsis" ? (
+                                                        <span
+                                                            className={classes.ellipsis}
+                                                        >
+                                                            ...
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            className={cx(
+                                                                classes.segmentButton,
+                                                                keyIndex === 0 &&
+                                                                    classes.segmentKeyFirst,
+                                                                crumb.isCurrent &&
+                                                                    classes.segmentCurrent
+                                                            )}
+                                                            data-s3-uri-segment="true"
+                                                            onPointerDown={event => {
+                                                                if (event.button !== 0) {
+                                                                    return;
+                                                                }
+
+                                                                event.stopPropagation();
+                                                                startLongPressTimer();
+                                                            }}
+                                                            onPointerUp={() => {
+                                                                clearLongPressTimeout();
+                                                            }}
+                                                            onPointerLeave={() => {
+                                                                clearLongPressTimeout();
+                                                            }}
+                                                            onPointerCancel={() => {
+                                                                clearLongPressTimeout();
+                                                            }}
+                                                            onClick={event => {
+                                                                event.stopPropagation();
+
+                                                                if (
+                                                                    longPressTriggeredRef.current
+                                                                ) {
+                                                                    longPressTriggeredRef.current =
+                                                                        false;
+                                                                    return;
+                                                                }
+
+                                                                onS3UriPrefixChange({
+                                                                    s3UriPrefix:
+                                                                        crumb.s3UriPrefix
+                                                                });
+                                                            }}
+                                                            aria-label={`Go to ${stringifyS3Uri(
+                                                                crumb.s3UriPrefix
+                                                            )}`}
+                                                        >
+                                                            <span
+                                                                className={
+                                                                    classes.segmentLabel
+                                                                }
+                                                            >
+                                                                {crumb.label}
+                                                            </span>
+                                                        </button>
+                                                    )}
+                                                </span>
+                                                {shouldShowSeparatorAtIndex(
+                                                    displayCrumbs,
+                                                    absoluteIndex,
+                                                    normalizedPrefix.delimiter
+                                                ) && (
+                                                    <span className={classes.separator}>
+                                                        {getSeparatorTokenBetweenKinds({
+                                                            leftKind: crumb.kind,
+                                                            rightKind:
+                                                                displayCrumbs[
+                                                                    absoluteIndex + 1
+                                                                ].kind,
+                                                            delimiter:
+                                                                normalizedPrefix.delimiter
+                                                        })}
+                                                    </span>
+                                                )}
+                                            </Fragment>
+                                        );
+                                    })}
+                                    {trailingSeparatorToken && (
+                                        <span className={classes.separator}>
+                                            {trailingSeparatorToken}
+                                        </span>
+                                    )}
                                 </span>
                             )}
                         </div>
@@ -754,6 +886,20 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 measureCrumbRefs.current[index] = el;
                                             }}
                                         >
+                                            {index === 2 && (
+                                                <span
+                                                    className={cx(
+                                                        classes.segmentGroupTag,
+                                                        classes.segmentGroupTagKey
+                                                    )}
+                                                    aria-label="Object key"
+                                                >
+                                                    <Icon
+                                                        size="extra small"
+                                                        icon={getIconUrlByName("Key")}
+                                                    />
+                                                </span>
+                                            )}
                                             <span
                                                 className={cx(
                                                     classes.segmentButton,
@@ -761,12 +907,29 @@ export function S3UriBar(props: S3UriBarProps) {
                                                         classes.segmentRoot,
                                                     crumb.kind === "bucket" &&
                                                         classes.segmentBucket,
-                                                    crumb.kind === "segment" &&
-                                                        classes.segmentPrefix,
+                                                    index === 2 &&
+                                                        crumb.kind === "segment" &&
+                                                        classes.segmentKeyFirst,
                                                     crumb.isCurrent &&
                                                         classes.segmentCurrent
                                                 )}
                                             >
+                                                {crumb.kind === "bucket" && (
+                                                    <span
+                                                        className={cx(
+                                                            classes.segmentGroupTag,
+                                                            classes.segmentGroupTagBucket
+                                                        )}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <Icon
+                                                            size="extra small"
+                                                            icon={getIconUrlByName(
+                                                                "Storage"
+                                                            )}
+                                                        />
+                                                    </span>
+                                                )}
                                                 <span className={classes.segmentLabel}>
                                                     {crumb.label}
                                                 </span>
@@ -933,9 +1096,36 @@ const useStyles = tss
                 alignItems: "center",
                 gap: theme.spacing(3)
             },
+            keyGroup: {
+                display: "inline-flex",
+                alignItems: "center",
+                gap: theme.spacing(1),
+                paddingLeft: "10px",
+                borderRadius: theme.spacing(3),
+                backgroundColor: theme.colors.useCases.surfaces.background,
+                boxShadow: `inset 0 0 0 1px ${theme.colors.useCases.surfaces.surface2}`
+            },
             crumbItem: {
                 display: "inline-flex",
-                alignItems: "center"
+                alignItems: "center",
+                gap: theme.spacing(1)
+            },
+            segmentGroupTag: {
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "999px",
+                whiteSpace: "nowrap"
+            },
+            segmentGroupTagBucket: {
+                color: theme.colors.useCases.typography.textPrimary,
+                backgroundColor: "transparent"
+            },
+            segmentGroupTagKey: {
+                color: theme.colors.useCases.typography.textPrimary,
+                backgroundColor: theme.colors.useCases.surfaces.background
             },
             separator: {
                 margin: `0 ${theme.spacing(2)}`,
@@ -944,12 +1134,13 @@ const useStyles = tss
             segmentButton: {
                 display: "inline-flex",
                 alignItems: "center",
+                gap: theme.spacing(1),
                 paddingTop: "6px",
                 paddingBottom: "6px",
                 paddingLeft: "10px",
                 paddingRight: "10px",
                 margin: 0,
-                border: "none",
+                border: "1px solid transparent",
                 borderRadius: theme.spacing(3),
                 backgroundColor: "transparent",
                 color: "inherit",
@@ -964,11 +1155,19 @@ const useStyles = tss
                 fontWeight: 600
             },
             segmentBucket: {
-                fontWeight: 600
+                fontWeight: 700,
+                borderColor: theme.colors.useCases.surfaces.surface2,
+                backgroundColor: theme.colors.useCases.surfaces.background
             },
-            segmentPrefix: {},
+            segmentPrefix: {
+                borderColor: theme.colors.useCases.surfaces.surface2,
+                backgroundColor: theme.colors.useCases.surfaces.background
+            },
             segmentCurrent: {
-                fontWeight: 600
+                fontWeight: 700
+            },
+            segmentKeyFirst: {
+                paddingLeft: 0
             },
             segmentLabel: {
                 display: "inline-block"
