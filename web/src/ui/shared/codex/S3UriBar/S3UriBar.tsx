@@ -1476,9 +1476,9 @@ const useStyles = tss
             bookmarkButton: {
                 borderRadius: "10px",
                 backgroundColor: "transparent",
-                width: "28px",
-                height: "28px",
-                minWidth: "28px",
+                width: "31px",
+                height: "31px",
+                minWidth: "31px",
                 padding: 0,
                 "&:hover": {
                     backgroundColor: theme.colors.useCases.surfaces.surface2
