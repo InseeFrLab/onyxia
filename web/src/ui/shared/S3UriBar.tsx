@@ -436,6 +436,24 @@ export function S3UriBar(props: S3UriBarProps) {
     }, [activeHintIndex, draftS3Uri, hints, isEditing, updateHintsPanelPosition]);
 
     useEffect(() => {
+        if (!isEditing || activeHintIndex < 0) {
+            return;
+        }
+
+        const activeHintElement = document.getElementById(
+            `${hintsListId}-${activeHintIndex}`
+        );
+
+        if (!(activeHintElement instanceof HTMLElement)) {
+            return;
+        }
+
+        activeHintElement.scrollIntoView({
+            block: "nearest"
+        });
+    }, [activeHintIndex, hintsListId, isEditing]);
+
+    useEffect(() => {
         if (isEditing) {
             setDisplayCrumbs(crumbs);
             return;
