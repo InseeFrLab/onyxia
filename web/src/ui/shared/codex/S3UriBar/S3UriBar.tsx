@@ -1425,7 +1425,8 @@ const useStyles = tss
             segmentBucket: {
                 fontWeight: 700,
                 borderColor: theme.colors.useCases.surfaces.surface2,
-                backgroundColor: theme.colors.useCases.surfaces.background
+                backgroundColor: theme.colors.useCases.surfaces.background,
+                paddingRight: "14px"
             },
             segmentPrefix: {
                 borderColor: theme.colors.useCases.surfaces.surface2,
