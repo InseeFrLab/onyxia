@@ -10,3 +10,12 @@ Recommended pattern:
 
 - `const { classes, cx } = useStyles({ ...params })`
 - `className={cx(classes.root, props.className)}`
+
+## className props
+
+Every component should have an option className props.
+
+Allows the parent to position/size the component.
+
+Must take precedence over internal styles:
+className={cx(classes.root, props.className)}

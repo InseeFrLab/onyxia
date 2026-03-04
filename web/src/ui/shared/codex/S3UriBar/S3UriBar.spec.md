@@ -29,12 +29,6 @@ The component has two modes:
 
 ```ts
 export type S3UriBarProps = {
-    /**
-     * Allows the parent to position/size the component.
-     *
-     * Must take precedence over internal styles:
-     *   className={cx(classes.root, props.className)}
-     */
     className?: string;
 
     /**
