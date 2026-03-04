@@ -586,23 +586,42 @@ export function S3UriBar(props: S3UriBarProps) {
                 delimiter: normalizedPrefix.delimiter
             }) ?? normalizedPrefix;
 
-        const nextPrefix: S3Uri.Prefix =
-            hint.type === "key-segment"
-                ? {
-                      type: "prefix",
-                      bucket: sourcePrefix.bucket,
-                      delimiter: sourcePrefix.delimiter,
-                      keySegments: [...sourcePrefix.keySegments, hint.name],
-                      isDelimiterTerminated: true
-                  }
-                : {
-                      type: "prefix",
-                      bucket: sourcePrefix.bucket,
-                      delimiter: sourcePrefix.delimiter,
-                      keySegments: [...sourcePrefix.keySegments],
-                      isDelimiterTerminated: false,
-                      nextKeySegmentPrefix: hint.name
-                  };
+        let nextPrefix: S3Uri.Prefix | undefined;
+
+        if (hint.type === "key-segment") {
+            nextPrefix = {
+                type: "prefix",
+                bucket: sourcePrefix.bucket,
+                delimiter: sourcePrefix.delimiter,
+                keySegments: [...sourcePrefix.keySegments, hint.name],
+                isDelimiterTerminated: true
+            };
+        } else if (hint.type === "object") {
+            nextPrefix = {
+                type: "prefix",
+                bucket: sourcePrefix.bucket,
+                delimiter: sourcePrefix.delimiter,
+                keySegments: [...sourcePrefix.keySegments],
+                isDelimiterTerminated: false,
+                nextKeySegmentPrefix: hint.name
+            };
+        } else {
+            const shortcut = hint.name.trim();
+
+            nextPrefix =
+                tryParsePrefix({
+                    s3Uri: shortcut,
+                    delimiter: normalizedPrefix.delimiter
+                }) ??
+                tryParsePrefix({
+                    s3Uri: `s3://${sourcePrefix.bucket}${shortcut.startsWith(sourcePrefix.delimiter) ? "" : sourcePrefix.delimiter}${shortcut}`,
+                    delimiter: normalizedPrefix.delimiter
+                });
+        }
+
+        if (!nextPrefix) {
+            return;
+        }
 
         const nextDraftS3Uri = stringifyS3Uri(nextPrefix);
 
@@ -1216,7 +1235,11 @@ export function S3UriBar(props: S3UriBarProps) {
                             }}
                         >
                             <span className={classes.hintType}>
-                                {hint.type === "key-segment" ? "Prefix" : "Object"}
+                                {hint.type === "key-segment"
+                                    ? "Prefix"
+                                    : hint.type === "shortcut"
+                                      ? "Shortcut"
+                                      : "Object"}
                             </span>
                             <span className={classes.hintName}>{hint.name}</span>
                         </button>
@@ -1423,7 +1446,7 @@ const useStyles = tss
                 maxWidth: "calc(100% - 16px)",
                 maxHeight: "260px",
                 overflowY: "auto",
-                borderRadius: "14px",
+                borderRadius: "10px",
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
                 backgroundColor: theme.colors.useCases.surfaces.surface1,
                 boxShadow: theme.shadows[6]
