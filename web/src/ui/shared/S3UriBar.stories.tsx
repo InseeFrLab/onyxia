@@ -74,7 +74,8 @@ const baseArgs: S3UriBarProps = {
     hints: [
         { type: "key-segment", name: "quarter-2" },
         { type: "key-segment", name: "quarter-3" },
-        { type: "object", name: "report.parquet" }
+        { type: "object", name: "report.parquet" },
+        { type: "shortcut", name: "exports/2024/" }
     ],
     isBookmarked: false,
     onToggleBookmark: action("toggleBookmark")
@@ -136,7 +137,23 @@ export const HashDelimiter: Story = {
         }),
         hints: [
             { type: "key-segment", name: "baz" },
-            { type: "object", name: "other.txt" }
+            { type: "object", name: "other.txt" },
+            { type: "shortcut", name: "s3://mybucket/foo#bar#" }
+        ]
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const EditingModeWithShortcuts: Story = {
+    args: {
+        ...baseArgs,
+        isEditing: true,
+        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        hints: [
+            { type: "shortcut", name: "s3://analytics-data/exports/2024/" },
+            { type: "shortcut", name: "s3://analytics-data/raw/" },
+            { type: "key-segment", name: "dashboards" },
+            { type: "object", name: "README.md" }
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -174,6 +191,10 @@ function ControlledS3UriBarStory() {
         }
 
         return [
+            {
+                type: "shortcut" as const,
+                name: `s3://${s3UriPrefix.bucket}${s3UriPrefix.delimiter}${bucketData.keySegments[0]}${s3UriPrefix.delimiter}`
+            },
             ...bucketData.keySegments.map(name => ({
                 type: "key-segment" as const,
                 name
