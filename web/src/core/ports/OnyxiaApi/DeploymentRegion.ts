@@ -20,6 +20,12 @@ export type DeploymentRegion = {
     initScriptUrl: string;
 
     allowedURIPatternForUserDefinedInitScript: string;
+    iceberg: {
+        warehouse: string;
+        endpoint: string;
+        catalog: string;
+        oidcParams: OidcParams_Partial;
+    }[];
     kafka:
         | {
               url: string;

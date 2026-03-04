@@ -6,6 +6,7 @@ import {
 } from "clean-architecture";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import type { SqlOlap } from "core/ports/SqlOlap";
+import type { IcebergApi } from "core/ports/IcebergApi";
 import { usecases } from "./usecases";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import type { Oidc } from "core/ports/Oidc";
@@ -18,6 +19,7 @@ import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
 import { type AiConfig, parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
 import { setRootContext } from "./rootContext";
+import { createDuckDbIcebergApi } from "./adapters/icebergApi";
 
 export type ParamsOfBootstrapCore = {
     onyxiaApiUrl: string | undefined;
@@ -45,6 +47,8 @@ export type Context = {
     sqlOlap: SqlOlap;
     s3Config: S3Config;
     aiConfig: AiConfig;
+    icebergApi: IcebergApi;
+    icebergCatalogConfigs: { name: string; warehouse: string; endpoint: string }[];
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -204,6 +208,13 @@ export async function bootstrapCore(
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
     }
 
+    const sqlOlap = createDuckDbSqlOlap({
+        getAmbientS3ProfileAndClient: () =>
+            dispatch(
+                usecases.s3ProfilesManagement.protectedThunks.getAmbientS3ProfileAndClient()
+            )
+    });
+
     const context: Context = {
         paramsOfBootstrapCore: params,
         oidc,
@@ -212,12 +223,12 @@ export async function bootstrapCore(
             debugMessage:
                 "SecretsManager not initialized, probably because user is not logged in."
         }),
-        sqlOlap: createDuckDbSqlOlap({
-            getAmbientS3ProfileAndClient: () =>
-                dispatch(
-                    usecases.s3ProfilesManagement.protectedThunks.getAmbientS3ProfileAndClient()
-                )
+        sqlOlap,
+        icebergApi: createObjectThatThrowsIfAccessed<IcebergApi>({
+            debugMessage:
+                "IcebergApi not initialized, probably because user is not logged in or because iceberg is not configured for the current deployment region."
         }),
+        icebergCatalogConfigs: [],
         s3Config,
         aiConfig
     };
@@ -297,6 +308,70 @@ export async function bootstrapCore(
             getAccessToken: async () => (await oidc_vault.getTokens()).accessToken,
             doClearCachedVaultToken
         });
+    }
+
+    init_iceberg_api: {
+        if (!oidc.isUserLoggedIn) {
+            break init_iceberg_api;
+        }
+
+        const deploymentRegion =
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                getState()
+            );
+
+        if (deploymentRegion.iceberg.length === 0) {
+            break init_iceberg_api;
+        }
+
+        const [{ createOidc, mergeOidcParams }, { oidcParams }] = await Promise.all([
+            import("core/adapters/oidc"),
+            onyxiaApi.getAvailableRegionsAndOidcParams()
+        ]);
+
+        assert(oidcParams !== undefined);
+
+        const catalogs = await Promise.all(
+            deploymentRegion.iceberg.map(async warehouseConfig => {
+                console.log(
+                    "oidcParams",
+                    oidcParams,
+                    "mergeOidcParams",
+                    mergeOidcParams({
+                        oidcParams,
+                        oidcParams_partial: warehouseConfig.oidcParams
+                    })
+                );
+
+                const oidc_iceberg = await createOidc({
+                    ...mergeOidcParams({
+                        oidcParams,
+                        oidcParams_partial: warehouseConfig.oidcParams
+                    }),
+                    transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang,
+                    autoLogin: true,
+                    enableDebugLogs: enableOidcDebugLogs
+                });
+
+                return {
+                    name: warehouseConfig.catalog,
+                    warehouse: warehouseConfig.warehouse,
+                    endpoint: warehouseConfig.endpoint,
+                    getAccessToken: async (): Promise<string | undefined> => {
+                        if (!oidc_iceberg.isUserLoggedIn) return undefined;
+                        return (await oidc_iceberg.getTokens()).accessToken;
+                    }
+                };
+            })
+        );
+
+        context.icebergApi = createDuckDbIcebergApi({ sqlOlap, catalogs });
+        context.icebergCatalogConfigs = deploymentRegion.iceberg.map(wc => ({
+            name: wc.catalog,
+            warehouse: wc.warehouse,
+            endpoint: wc.endpoint
+        }));
     }
 
     init_userConfigs: {
