@@ -26,6 +26,7 @@ export type MainView = {
     bookmarks: {
         displayName: LocalizedString | undefined;
         s3UriPrefix: S3Uri.Prefix;
+        isReadonly: boolean;
     }[];
 
     uploads: State.Upload[];
@@ -163,7 +164,8 @@ const bookmarks = createSelector(
 
         return ambientS3Profile.bookmarks.map(bookmark => ({
             displayName: bookmark.displayName,
-            s3UriPrefix: bookmark.s3UriPrefix
+            s3UriPrefix: bookmark.s3UriPrefix,
+            isReadonly: bookmark.isReadonly
         }));
     }
 );
