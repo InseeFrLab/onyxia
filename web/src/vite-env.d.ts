@@ -67,6 +67,7 @@ type ImportMetaEnv = {
   SCREEN_SCALER: string
   OIDC_DEBUG_LOGS: string
   OIDC_DISABLE_DPOP: string
+  OIDC_SESSION_RESTORATION_METHOD: string
   // @user-defined-start
   /*
    * Here you can define your own special variables

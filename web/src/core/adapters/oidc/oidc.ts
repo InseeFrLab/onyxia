@@ -32,22 +32,33 @@ export async function createOidc<AutoLogin extends boolean>(
         enableDebugLogs
     } = params;
 
+    const extraQueryParams_raw_normalized = extraQueryParams_raw
+        ?.replace(/^\?/, "")
+        .replace(/^&/, "")
+        .replace(/&$/, "");
+
+    const extraTokenParams = (() => {
+        if (!extraQueryParams_raw_normalized) {
+            return undefined;
+        }
+
+        const o = getAllSearchParams(
+            `https://dummy.com?${extraQueryParams_raw_normalized}`
+        );
+
+        return {
+            audience: o["audience"],
+            resource: o["resource"]
+        };
+    })();
+
     const oidc = await createOidcSpa({
         issuerUri,
         clientId,
         scopes: scope_spaceSeparated?.split(" "),
         transformUrlBeforeRedirect: ({ authorizationUrl, isSilent }) => {
             add_extraQueryParams_raw: {
-                if (extraQueryParams_raw === undefined) {
-                    break add_extraQueryParams_raw;
-                }
-
-                const extraQueryParams_raw_normalized = extraQueryParams_raw
-                    .replace(/^\?/, "")
-                    .replace(/^&/, "")
-                    .replace(/&$/, "");
-
-                if (extraQueryParams_raw_normalized === "") {
+                if (!extraQueryParams_raw_normalized) {
                     break add_extraQueryParams_raw;
                 }
 
@@ -85,6 +96,7 @@ export async function createOidc<AutoLogin extends boolean>(
 
             return authorizationUrl;
         },
+        extraTokenParams,
         idleSessionLifetimeInSeconds,
         debugLogs: enableDebugLogs,
         autoLogin
