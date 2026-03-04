@@ -48,8 +48,7 @@ export type S3BookmarksBarItem = {
 
 This component looks like a button.  
 There an left icon of a pin and a text label
-the text label is either the displayName or the serialized s3Uri (potentially collapsed)
-if too long.
+the text label is either the displayName or the serialized s3Uri (use the 3 lasts segments of the path) if too long.
 
 The component is an anchor `<a />` (use `<MuiLink />` imported from `@mui/material/Link`).
 
@@ -57,7 +56,24 @@ The props of the anchor as provided as `props.link`.
 
 But. When clicking on the icon, the behavior change.  
 First the pin icon is only visible when `props.onDelete` is defined.  
-When the cursor is over the pin icon, the icon turns into an "unpin icon".  
+When the cursor is over the pin icon, the icon turns into an "unpin icon". and we add some surface color hover like a icon button (theme.colors.palette.focus.mainAlpha20)
 When clicked `props.onDelete()` should be called.
 
-When `props.isActive` is `true` then:
+When `props.isActive` is `true` then: the surface color changes and the style of text label too.
+For typography change
+
+Color surfaces specs if the component can be deleted :
+default color surface : `theme.colors.palette.focus.mainAlpha10`
+hover color surface : `theme.colors.palette.focus.mainAlpha20`
+Active color surface : `theme.colors.palette.focus.mainAlpha20`
+
+Color surfaces specs if the component can't be deleted :
+default color surface : `theme.colors.useCases.surfaces.surface1`
+hover color surface : `theme.colors.useCases.surfaces.surface2`
+Active color surface : `theme.colors.useCases.surfaces.surface2`
+
+The radius of the component is a `full radius` (rounded, `border-radius: 9999px;`)
+The style of the text label is `theme.typography.variants["label 1"]`
+Add some top & bottom padding: 8px and left and right padding: 16px
+
+The are a specific behaviors for long label, the maximum width of the componeny is 300px and after that we need to collapse text.
