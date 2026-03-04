@@ -54,6 +54,19 @@ const hintsPanelVerticalOffsetPx = 6;
 const hintsPanelFallbackWidthPx = 280;
 type CrumbKind = DisplayCrumb["kind"];
 type HintType = S3UriBarProps["hints"][number]["type"];
+const hintMiddleEllipsisMaxLength = 58;
+const hintMiddleEllipsisHeadLength = 34;
+const hintMiddleEllipsisTailLength = 20;
+
+function collapseMiddle(text: string): string {
+    if (text.length <= hintMiddleEllipsisMaxLength) {
+        return text;
+    }
+
+    return `${text.slice(0, hintMiddleEllipsisHeadLength)}...${text.slice(
+        -hintMiddleEllipsisTailLength
+    )}`;
+}
 
 function getHintTypeLabel(type: HintType): string {
     switch (type) {
@@ -1285,7 +1298,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                     icon={getHintTypeIcon(hint.type)}
                                 />
                             </span>
-                            <span className={classes.hintName}>{hint.name}</span>
+                            <span className={classes.hintName} title={hint.name}>
+                                {collapseMiddle(hint.name)}
+                            </span>
                         </button>
                     ))}
                 </div>
