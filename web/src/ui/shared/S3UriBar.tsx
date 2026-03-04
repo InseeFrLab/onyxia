@@ -1,5 +1,6 @@
 import {
     Fragment,
+    useCallback,
     useEffect,
     useId,
     useMemo,
@@ -26,7 +27,7 @@ export type S3UriBarProps = {
     onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
     onIsEditingChange: (params: { isEditing: boolean }) => void;
     hints: {
-        type: "object" | "key-segment";
+        type: "object" | "key-segment" | "shortcut";
         name: string;
     }[];
     isBookmarked: boolean;
@@ -48,6 +49,9 @@ type DisplayCrumb =
       };
 
 const longPressDelayMs = 200;
+const hintsPanelHorizontalEdgePaddingPx = 8;
+const hintsPanelVerticalOffsetPx = 6;
+const hintsPanelFallbackWidthPx = 280;
 type CrumbKind = DisplayCrumb["kind"];
 
 function getSeparatorTokenBetweenKinds(params: {
@@ -253,6 +257,8 @@ export function S3UriBar(props: S3UriBarProps) {
 
     const rootRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const hintsPanelRef = useRef<HTMLDivElement>(null);
+    const textMeasureCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const longPressTimeoutRef = useRef<number | undefined>(undefined);
     const longPressTriggeredRef = useRef(false);
     const wasEditingRef = useRef(isEditing);
@@ -268,11 +274,77 @@ export function S3UriBar(props: S3UriBarProps) {
     const [draftS3Uri, setDraftS3Uri] = useState(canonicalS3Uri);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
+    const [hintsPanelPosition, setHintsPanelPosition] = useState({
+        left: hintsPanelHorizontalEdgePaddingPx,
+        top: 0
+    });
 
     const inputId = useId();
     const hintsListId = useId();
 
     const { classes, cx } = useStyles({ isEditing });
+
+    const updateHintsPanelPosition = useCallback(() => {
+        const input = inputRef.current;
+        const root = rootRef.current;
+
+        if (!input || !root) {
+            return;
+        }
+
+        const rootRect = root.getBoundingClientRect();
+        const inputRect = input.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(input);
+        const selectionStart = input.selectionStart ?? input.value.length;
+        const textBeforeCursor = input.value.slice(0, selectionStart);
+
+        if (textMeasureCanvasRef.current === null) {
+            textMeasureCanvasRef.current = document.createElement("canvas");
+        }
+
+        const context = textMeasureCanvasRef.current.getContext("2d");
+
+        if (!context) {
+            return;
+        }
+
+        context.font = computedStyle.font;
+
+        const measuredTextWidth = context.measureText(textBeforeCursor).width;
+        const letterSpacingValue = Number.parseFloat(computedStyle.letterSpacing);
+        const letterSpacingPx = Number.isFinite(letterSpacingValue)
+            ? letterSpacingValue
+            : 0;
+        const letterSpacingWidth =
+            textBeforeCursor.length > 0
+                ? (textBeforeCursor.length - 1) * letterSpacingPx
+                : 0;
+        const paddingLeft = Number.parseFloat(computedStyle.paddingLeft) || 0;
+        const cursorLeft =
+            inputRect.left -
+            rootRect.left +
+            paddingLeft +
+            measuredTextWidth +
+            letterSpacingWidth -
+            input.scrollLeft;
+
+        const panelWidth =
+            hintsPanelRef.current?.getBoundingClientRect().width ??
+            hintsPanelFallbackWidthPx;
+        const minLeft = hintsPanelHorizontalEdgePaddingPx;
+        const maxLeft = Math.max(
+            minLeft,
+            rootRect.width - panelWidth - hintsPanelHorizontalEdgePaddingPx
+        );
+        const nextLeft = Math.min(Math.max(cursorLeft, minLeft), maxLeft);
+        const nextTop = inputRect.bottom - rootRect.top + hintsPanelVerticalOffsetPx;
+
+        setHintsPanelPosition(previous =>
+            previous.left === nextLeft && previous.top === nextTop
+                ? previous
+                : { left: nextLeft, top: nextTop }
+        );
+    }, []);
 
     useEffect(() => {
         if (!isEditing) {
@@ -318,12 +390,27 @@ export function S3UriBar(props: S3UriBarProps) {
             input.focus();
             const cursorPosition = input.value.length;
             input.setSelectionRange(cursorPosition, cursorPosition);
+            updateHintsPanelPosition();
         });
 
         return () => {
             window.cancelAnimationFrame(frameId);
         };
-    }, [isEditing]);
+    }, [isEditing, updateHintsPanelPosition]);
+
+    useEffect(() => {
+        if (!isEditing || hints.length === 0) {
+            return;
+        }
+
+        const frameId = window.requestAnimationFrame(() => {
+            updateHintsPanelPosition();
+        });
+
+        return () => {
+            window.cancelAnimationFrame(frameId);
+        };
+    }, [activeHintIndex, draftS3Uri, hints, isEditing, updateHintsPanelPosition]);
 
     useEffect(() => {
         if (isEditing) {
@@ -652,6 +739,9 @@ export function S3UriBar(props: S3UriBarProps) {
                             value={draftS3Uri}
                             onChange={event => onInputChange(event.target.value)}
                             onKeyDown={onInputKeyDown}
+                            onKeyUp={updateHintsPanelPosition}
+                            onSelect={updateHintsPanelPosition}
+                            onClick={updateHintsPanelPosition}
                             autoComplete="off"
                             spellCheck={false}
                             aria-autocomplete={hints.length > 0 ? "list" : undefined}
@@ -1008,6 +1098,24 @@ export function S3UriBar(props: S3UriBarProps) {
                 )}
 
                 <div className={classes.trailingActions}>
+                    <Tooltip title="Copy URI">
+                        <div data-s3-uri-ignore-edit="true">
+                            <IconButton
+                                aria-label="Copy URI"
+                                icon={getIconUrlByName("ContentCopy")}
+                                onClick={event => {
+                                    event.stopPropagation();
+
+                                    if ("clipboard" in navigator) {
+                                        void navigator.clipboard.writeText(
+                                            canonicalS3Uri
+                                        );
+                                    }
+                                }}
+                                className={classes.bookmarkButton}
+                            />
+                        </div>
+                    </Tooltip>
                     <Tooltip title={isEditing ? "Exit edit mode" : "Enter edit mode"}>
                         <div data-s3-uri-ignore-edit="true">
                             <IconButton
@@ -1075,7 +1183,16 @@ export function S3UriBar(props: S3UriBarProps) {
             </div>
 
             {isEditing && hints.length > 0 && (
-                <div className={classes.hintsPanel} id={hintsListId} role="listbox">
+                <div
+                    className={classes.hintsPanel}
+                    style={{
+                        left: hintsPanelPosition.left,
+                        top: hintsPanelPosition.top
+                    }}
+                    ref={hintsPanelRef}
+                    id={hintsListId}
+                    role="listbox"
+                >
                     {hints.map((hint, index) => (
                         <button
                             id={`${hintsListId}-${index}`}
@@ -1296,14 +1413,16 @@ const useStyles = tss
             },
             hintsPanel: {
                 position: "absolute",
-                left: 0,
-                right: 0,
-                top: `calc(${barHeight} + ${theme.spacing(2)})`,
                 zIndex: 2,
                 display: "flex",
                 flexDirection: "column",
                 gap: theme.spacing(1),
                 padding: theme.spacing(2),
+                width: "fit-content",
+                minWidth: "260px",
+                maxWidth: "calc(100% - 16px)",
+                maxHeight: "260px",
+                overflowY: "auto",
                 borderRadius: "14px",
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
                 backgroundColor: theme.colors.useCases.surfaces.surface1,
