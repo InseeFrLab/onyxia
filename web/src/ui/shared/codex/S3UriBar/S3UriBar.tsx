@@ -1475,13 +1475,13 @@ const useStyles = tss
             },
             bookmarkButton: {
                 borderRadius: "10px",
-                backgroundColor: theme.colors.useCases.surfaces.surface2,
+                backgroundColor: "transparent",
                 width: "28px",
                 height: "28px",
                 minWidth: "28px",
                 padding: 0,
                 "&:hover": {
-                    backgroundColor: theme.colors.useCases.surfaces.surface1
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
                 }
             },
             bookmarkButtonActive: {
