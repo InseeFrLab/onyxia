@@ -53,6 +53,29 @@ const hintsPanelHorizontalEdgePaddingPx = 8;
 const hintsPanelVerticalOffsetPx = 6;
 const hintsPanelFallbackWidthPx = 280;
 type CrumbKind = DisplayCrumb["kind"];
+type HintType = S3UriBarProps["hints"][number]["type"];
+
+function getHintTypeLabel(type: HintType): string {
+    switch (type) {
+        case "key-segment":
+            return "Prefix";
+        case "shortcut":
+            return "Shortcut";
+        case "object":
+            return "Object";
+    }
+}
+
+function getHintTypeIcon(type: HintType): string {
+    switch (type) {
+        case "key-segment":
+            return getIconUrlByName("Folder");
+        case "shortcut":
+            return getIconUrlByName("Link");
+        case "object":
+            return getIconUrlByName("Description");
+    }
+}
 
 function getSeparatorTokenBetweenKinds(params: {
     leftKind: CrumbKind;
@@ -1234,12 +1257,15 @@ export function S3UriBar(props: S3UriBarProps) {
                                 selectHint(hint);
                             }}
                         >
-                            <span className={classes.hintType}>
-                                {hint.type === "key-segment"
-                                    ? "Prefix"
-                                    : hint.type === "shortcut"
-                                      ? "Shortcut"
-                                      : "Object"}
+                            <span
+                                className={classes.hintType}
+                                aria-label={getHintTypeLabel(hint.type)}
+                                title={getHintTypeLabel(hint.type)}
+                            >
+                                <Icon
+                                    size="extra small"
+                                    icon={getHintTypeIcon(hint.type)}
+                                />
                             </span>
                             <span className={classes.hintName}>{hint.name}</span>
                         </button>
@@ -1468,11 +1494,14 @@ const useStyles = tss
                 backgroundColor: theme.colors.useCases.surfaces.surface2
             },
             hintType: {
-                fontSize: "0.78rem",
-                fontWeight: 600,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+                borderRadius: "6px",
                 color: theme.colors.useCases.typography.textSecondary,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
                 flexShrink: 0
             },
             hintName: {
