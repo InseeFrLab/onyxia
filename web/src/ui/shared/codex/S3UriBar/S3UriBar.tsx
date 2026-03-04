@@ -1176,6 +1176,7 @@ export function S3UriBar(props: S3UriBarProps) {
                             <IconButton
                                 aria-label="Copy URI"
                                 icon={getIconUrlByName("ContentCopy")}
+                                size="small"
                                 onClick={event => {
                                     event.stopPropagation();
 
@@ -1196,6 +1197,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                     isEditing ? "Exit edit mode" : "Enter edit mode"
                                 }
                                 icon={getIconUrlByName(isEditing ? "Close" : "Edit")}
+                                size="small"
                                 onClick={event => {
                                     event.stopPropagation();
 
@@ -1237,6 +1239,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                     icon={getIconUrlByName(
                                         isBookmarked ? "PushPin" : "PushPinOutlined"
                                     )}
+                                    size="small"
                                     onClick={event => {
                                         event.stopPropagation();
                                         onToggleBookmark?.();
@@ -1473,9 +1476,9 @@ const useStyles = tss
             bookmarkButton: {
                 borderRadius: "10px",
                 backgroundColor: theme.colors.useCases.surfaces.surface2,
-                width: "32px",
-                height: "32px",
-                minWidth: "32px",
+                width: "28px",
+                height: "28px",
+                minWidth: "28px",
                 padding: 0,
                 "&:hover": {
                     backgroundColor: theme.colors.useCases.surfaces.surface1
