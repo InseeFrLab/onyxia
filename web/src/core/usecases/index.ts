@@ -24,6 +24,7 @@ import * as dataExplorer from "./dataExplorer";
 import * as projectManagement from "./projectManagement";
 import * as viewQuotas from "./viewQuotas";
 import * as dataCollection from "./dataCollection";
+import * as icebergCatalog from "./icebergCatalog";
 
 export const usecases = {
     autoLogoutCountdown,
@@ -51,5 +52,6 @@ export const usecases = {
     dataExplorer,
     projectManagement,
     viewQuotas,
-    dataCollection
+    dataCollection,
+    icebergCatalog
 };

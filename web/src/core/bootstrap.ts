@@ -6,6 +6,7 @@ import {
 } from "clean-architecture";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import type { SqlOlap } from "core/ports/SqlOlap";
+import type { IcebergApi } from "core/ports/IcebergApi";
 import { usecases } from "./usecases";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import type { Oidc } from "core/ports/Oidc";
@@ -15,6 +16,7 @@ import { pluginSystemInitCore } from "pluginSystem";
 import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import { createDuckDbIcebergApi } from "./adapters/icebergApi";
 
 export type ParamsOfBootstrapCore = {
     apiUrl: string;
@@ -38,6 +40,8 @@ export type Context = {
     onyxiaApi: OnyxiaApi;
     secretsManager: SecretsManager;
     sqlOlap: SqlOlap;
+    icebergApi: IcebergApi;
+    icebergCatalogConfigs: { name: string; warehouse: string; endpoint: string }[];
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -140,6 +144,37 @@ export async function bootstrapCore(
         // NOTE: Never reached
     }
 
+    const sqlOlap = createDuckDbSqlOlap({
+        getS3Client: async () => {
+            if (!oidc.isUserLoggedIn) {
+                return {
+                    errorCause: "need login"
+                };
+            }
+
+            const result = await dispatch(
+                usecases.s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            );
+
+            if (result === undefined) {
+                return {
+                    errorCause: "no s3 client"
+                };
+            }
+
+            const { s3Config, s3Client } = result;
+
+            return {
+                s3Client,
+                s3_endpoint: s3Config.paramsOfCreateS3Client.url,
+                s3_url_style: s3Config.paramsOfCreateS3Client.pathStyleAccess
+                    ? "path"
+                    : "vhost",
+                s3_region: s3Config.region
+            };
+        }
+    });
+
     const context: Context = {
         paramsOfBootstrapCore: params,
         oidc,
@@ -148,36 +183,12 @@ export async function bootstrapCore(
             debugMessage:
                 "SecretsManager not initialized, probably because user is not logged in."
         }),
-        sqlOlap: createDuckDbSqlOlap({
-            getS3Client: async () => {
-                if (!oidc.isUserLoggedIn) {
-                    return {
-                        errorCause: "need login"
-                    };
-                }
-
-                const result = await dispatch(
-                    usecases.s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
-                );
-
-                if (result === undefined) {
-                    return {
-                        errorCause: "no s3 client"
-                    };
-                }
-
-                const { s3Config, s3Client } = result;
-
-                return {
-                    s3Client,
-                    s3_endpoint: s3Config.paramsOfCreateS3Client.url,
-                    s3_url_style: s3Config.paramsOfCreateS3Client.pathStyleAccess
-                        ? "path"
-                        : "vhost",
-                    s3_region: s3Config.region
-                };
-            }
-        })
+        sqlOlap,
+        icebergApi: createObjectThatThrowsIfAccessed<IcebergApi>({
+            debugMessage:
+                "IcebergApi not initialized, probably because user is not logged in or because iceberg is not configured for the current deployment region."
+        }),
+        icebergCatalogConfigs: []
     };
 
     const { core, dispatch, getState } = createCore({
@@ -253,6 +264,70 @@ export async function bootstrapCore(
             getAccessToken: async () => (await oidc_vault.getTokens()).accessToken,
             doClearCachedVaultToken
         });
+    }
+
+    init_iceberg_api: {
+        if (!oidc.isUserLoggedIn) {
+            break init_iceberg_api;
+        }
+
+        const deploymentRegion =
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                getState()
+            );
+
+        if (deploymentRegion.iceberg.length === 0) {
+            break init_iceberg_api;
+        }
+
+        const [{ createOidc, mergeOidcParams }, { oidcParams }] = await Promise.all([
+            import("core/adapters/oidc"),
+            onyxiaApi.getAvailableRegionsAndOidcParams()
+        ]);
+
+        assert(oidcParams !== undefined);
+
+        const catalogs = await Promise.all(
+            deploymentRegion.iceberg.map(async warehouseConfig => {
+                console.log(
+                    "oidcParams",
+                    oidcParams,
+                    "mergeOidcParams",
+                    mergeOidcParams({
+                        oidcParams,
+                        oidcParams_partial: warehouseConfig.oidcParams
+                    })
+                );
+
+                const oidc_iceberg = await createOidc({
+                    ...mergeOidcParams({
+                        oidcParams,
+                        oidcParams_partial: warehouseConfig.oidcParams
+                    }),
+                    transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang,
+                    autoLogin: true,
+                    enableDebugLogs: enableOidcDebugLogs
+                });
+
+                return {
+                    name: warehouseConfig.catalog,
+                    warehouse: warehouseConfig.warehouse,
+                    endpoint: warehouseConfig.endpoint,
+                    getAccessToken: async (): Promise<string | undefined> => {
+                        if (!oidc_iceberg.isUserLoggedIn) return undefined;
+                        return (await oidc_iceberg.getTokens()).accessToken;
+                    }
+                };
+            })
+        );
+
+        context.icebergApi = createDuckDbIcebergApi({ sqlOlap, catalogs });
+        context.icebergCatalogConfigs = deploymentRegion.iceberg.map(wc => ({
+            name: wc.catalog,
+            warehouse: wc.warehouse,
+            endpoint: wc.endpoint
+        }));
     }
 
     if (oidc.isUserLoggedIn) {
