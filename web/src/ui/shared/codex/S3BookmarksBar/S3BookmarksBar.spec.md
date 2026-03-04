@@ -138,3 +138,86 @@ Supports two visual modes:
 ```ts
 type BookmarkKind = "user" | "admin";
 ```
+
+Behavior differences:
+| Kind | User | Admin |
+| -------- | -------- | -------- |
+| Pin Icon | Yes | No |
+| Unpin | Yes | No |
+| Hover Surface | Yes | Yes |
+| Background | Action surface | Secondary surface |
+
+# 6. Interaction Model
+
+## Navigation
+
+Both bookmark types:
+
+- Are clickable.
+- Use the provided `Link`.
+
+## Unpin (User Only)
+
+Unpin is available only when:
+
+```ts
+kind === "user";
+```
+
+Admin bookmarks:
+
+- Do not expose onUnpin.
+- Do not display interactive affordances.
+
+# 7. Multi-Profile Handling
+
+The component does not know the active profile.
+
+The parent layer must:
+
+- Filter bookmarks by active profile.
+- Provide only the relevant bookmarks.
+
+# 8. Props Contract
+
+```ts
+import type { LocalizedString } from "core/ports/OnyxiaApi";
+import type { Link } from "type-route";
+
+export type S3BookmarksBarProps = {
+    className?: string;
+
+    bookmarks: {
+        displayName: LocalizedString;
+        link: Link;
+        kind: "user" | "admin";
+        createdAt: number;
+    }[];
+};
+```
+
+Rules:
+
+- Sorting may be handled by the parent layer.
+- The component may sort locally by `createdAt` descending if explicitly implemented.
+- No business logic beyond rendering.
+
+# 9. Integration with S3UriBar (Pin / Unpin)
+
+`S3UriBar` handles bookmark toggle logic.
+
+Expected behavior:
+
+If the current path corresponds to:
+
+A user bookmark → `isBookmarked = true`, unpin available.
+
+An admin bookmark → `isBookmarked = true`, unpin disabled.
+
+Visual states in `S3UriBar`:
+
+| State            | Behavior                     |
+| ---------------- | ---------------------------- |
+| Not bookmarked   | Outline pin                  |
+| User bookmarked  | Filled pin + interactive     |
+| Admin bookmarked | Filled pin + non-interactive |
