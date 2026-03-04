@@ -184,6 +184,45 @@ export const EditingModeWithManyHints: Story = {
     render: args => <StatefulS3UriBar {...args} />
 };
 
+export const EditingModeWithVeryLongHints: Story = {
+    args: {
+        ...baseArgs,
+        isEditing: true,
+        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        hints: [
+            {
+                type: "shortcut",
+                name: "raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/"
+            },
+            {
+                type: "shortcut",
+                name: "dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/"
+            },
+            {
+                type: "key-segment",
+                name: "department=analytics-team-with-an-extremely-descriptive-name"
+            },
+            {
+                type: "key-segment",
+                name: "source-system=customer-interaction-and-engagement-platform"
+            },
+            {
+                type: "object",
+                name: "report-quarterly-performance-and-financial-projections-for-fiscal-year-2025.parquet"
+            },
+            {
+                type: "object",
+                name: "dashboard_configuration_snapshot_with_extended_metadata_and_annotations.json"
+            },
+            {
+                type: "object",
+                name: "this-is-a-very-very-very-very-very-very-long-object-name.csv"
+            }
+        ]
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
 const mockS3Tree = {
     "analytics-data": {
         keySegments: ["exports", "dashboards", "raw", "sandbox"],
