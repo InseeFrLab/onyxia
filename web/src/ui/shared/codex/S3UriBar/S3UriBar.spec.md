@@ -4,10 +4,11 @@
 
 `S3UriBar` is a Chrome-like address bar for S3 prefixes.
 
-It is a controlled UI component:
+It is a partially controlled UI component:
 
-- State is provided by props.
-- The component requests changes through callbacks.
+- `s3UriPrefix`, hints, and bookmark state are provided by props.
+- The component requests S3 URI changes through callbacks.
+- Editing mode (`isEditing`) is internal to the component.
 - Parent code owns business logic and data fetching.
 
 ## External Responsibilities
@@ -22,8 +23,8 @@ The parent (or surrounding usecase layer) is responsible for:
 
 The component has two modes:
 
-- Navigation mode (`isEditing = false`): breadcrumb-like path with clickable segments.
-- Editing mode (`isEditing = true`): text input with optional keyboard-navigable hints.
+- Navigation mode: breadcrumb-like path with clickable segments.
+- Editing mode: text input with optional keyboard-navigable hints.
 
 ## Props Contract
 
@@ -42,13 +43,6 @@ export type S3UriBarProps = {
     s3UriPrefix: S3Uri.Prefix;
 
     /**
-     * Current mode.
-     * - true  => Editing mode (text input + hints)
-     * - false => Navigation mode (breadcrumb)
-     */
-    isEditing: boolean;
-
-    /**
      * Request a change to the current prefix.
      *
      * Called when:
@@ -57,21 +51,6 @@ export type S3UriBarProps = {
      * - user clicks a breadcrumb segment in navigation mode
      */
     onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
-
-    /**
-     * Request an editing mode change.
-     *
-     * The component decides *when* to request mode changes based on user interactions:
-     * - Request `isEditing: true`:
-     *   - pointer down anywhere inside the bar, except on a path segment
-     *   - long-press on a path segment (press duration >= 100ms)
-     * - Stay in navigation mode:
-     *   - short click on a path segment (press duration < 100ms) triggers navigation instead
-     * - Request `isEditing: false`:
-     *   - on blur (component loses focus)
-     *   - on Escape (while editing)
-     */
-    onIsEditingChange: (params: { isEditing: boolean }) => void;
 
     /**
      * Hints to display while editing.
@@ -109,10 +88,10 @@ export type S3UriBarProps = {
 
 - Navigation mode:
     - Segment short click => request navigation (`onS3UriPrefixChange`).
-    - Segment long press (`>= 100ms`) => request edit mode (`onIsEditingChange({ isEditing: true })`).
+    - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.
     - Hints are selectable (pointer and keyboard).
-    - `Escape` requests return to navigation mode.
+    - `Escape` returns to navigation mode.
 - Focus handling:
-    - Blur requests return to navigation mode.
+    - Blur returns to navigation mode.

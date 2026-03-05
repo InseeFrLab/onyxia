@@ -23,9 +23,7 @@ import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 export type S3UriBarProps = {
     className?: string;
     s3UriPrefix: S3Uri.Prefix;
-    isEditing: boolean;
     onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
-    onIsEditingChange: (params: { isEditing: boolean }) => void;
     hints: {
         type: "object" | "key-segment" | "bookmark";
         text: string;
@@ -272,9 +270,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const {
         className,
         s3UriPrefix,
-        isEditing,
         onS3UriPrefixChange,
-        onIsEditingChange,
         hints,
         isBookmarked,
         onToggleBookmark
@@ -297,7 +293,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const textMeasureCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const longPressTimeoutRef = useRef<number | undefined>(undefined);
     const longPressTriggeredRef = useRef(false);
-    const wasEditingRef = useRef(isEditing);
+    const wasEditingRef = useRef(false);
     const ignoreNextBlurRef = useRef(false);
     const lastEnterEditRequestTimeRef = useRef(Number.NEGATIVE_INFINITY);
 
@@ -308,6 +304,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const { domRect: pathDisplayRect, ref: pathDisplayRef } = useDomRect();
 
     const [draftS3Uri, setDraftS3Uri] = useState(canonicalS3Uri);
+    const [isEditing, setIsEditing] = useState(false);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
     const [hintsPanelPosition, setHintsPanelPosition] = useState({
@@ -613,7 +610,7 @@ export function S3UriBar(props: S3UriBarProps) {
         longPressTimeoutRef.current = window.setTimeout(() => {
             longPressTriggeredRef.current = true;
             lastEnterEditRequestTimeRef.current = performance.now();
-            onIsEditingChange({ isEditing: true });
+            setIsEditing(true);
         }, longPressDelayMs);
     };
 
@@ -697,7 +694,7 @@ export function S3UriBar(props: S3UriBarProps) {
         if (event.key === "Escape") {
             event.preventDefault();
             ignoreNextBlurRef.current = true;
-            onIsEditingChange({ isEditing: false });
+            setIsEditing(false);
             return;
         }
 
@@ -758,7 +755,7 @@ export function S3UriBar(props: S3UriBarProps) {
         }
 
         lastEnterEditRequestTimeRef.current = performance.now();
-        onIsEditingChange({ isEditing: true });
+        setIsEditing(true);
     };
 
     const onRootBlur = (event: FocusEvent<HTMLDivElement>) => {
@@ -787,7 +784,7 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        onIsEditingChange({ isEditing: false });
+        setIsEditing(false);
     };
 
     const displayLeadingCrumbs = displayCrumbs.slice(
@@ -1208,7 +1205,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                             performance.now();
                                     }
 
-                                    onIsEditingChange({ isEditing: nextIsEditing });
+                                    setIsEditing(nextIsEditing);
                                 }}
                                 className={cx(
                                     classes.bookmarkButton,
