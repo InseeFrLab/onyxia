@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { Button } from "onyxia-ui/Button";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import Collapse from "@mui/material/Collapse";
-import { routes } from "ui/routes";
+import { type GridColDef } from "@mui/x-data-grid";
+import { CustomDataGrid, autosizeOptions } from "ui/shared/Datagrid/CustomDataGrid";
 import type { CatalogView, SelectedTableView } from "core/usecases/icebergCatalog";
 
 export type Props = {
@@ -91,10 +91,11 @@ function CatalogCard(props: {
                     <Text typo="object heading">{catalog.name}</Text>
                     <div className={classes.catalogMeta}>
                         <Tooltip title={catalog.warehouse}>
-                            <span className={classes.metaChip}>{catalog.warehouse}</span>
+                            <span className={classes.metaText}>{catalog.warehouse}</span>
                         </Tooltip>
+                        <span className={classes.metaSep}>·</span>
                         <Tooltip title={catalog.endpoint}>
-                            <span className={classes.metaChip}>
+                            <span className={classes.metaText}>
                                 {shortenUrl(catalog.endpoint)}
                             </span>
                         </Tooltip>
@@ -154,10 +155,9 @@ function NamespaceSection(props: {
                     icon={getIconUrlByName(open ? "FolderOpen" : "Folder")}
                     className={classes.nsIcon}
                 />
-                <Text typo="label 1" className={classes.nsName}>
-                    {namespace.name}
-                </Text>
+                <Text typo="label 1">{namespace.name}</Text>
                 <span className={classes.nsCountBadge}>{namespace.tables.length}</span>
+                <span className={classes.nsSpacer} />
                 <Icon
                     icon={getIconUrlByName("ChevronRight")}
                     className={cx(classes.nsChevron, open && classes.nsChevronOpen)}
@@ -223,70 +223,57 @@ function TableRow(props: {
                 <Text typo="body 1" className={classes.tableName}>
                     {table.name}
                 </Text>
-                <Button
-                    className={classes.openButton}
-                    variant="ternary"
-                    startIcon={getIconUrlByName("ManageSearch")}
-                    onClick={e => {
-                        e.stopPropagation();
-                        routes.dataExplorer({ source: table.explorerSource }).push();
-                    }}
-                >
-                    Open in Explorer
-                </Button>
             </div>
             <Collapse in={isSelected} unmountOnExit>
-                <div className={classes.tableDetails}>
-                    {isSelected && selectedTable?.isLoadingSchema ? (
-                        <div className={classes.detailsLoading}>
-                            <CircularProgress size={20} />
-                        </div>
-                    ) : isSelected && selectedTable !== undefined ? (
-                        <TableMetadataPanel selectedTable={selectedTable} />
-                    ) : null}
-                </div>
+                {isSelected && selectedTable !== undefined && (
+                    <TablePreviewPanel selectedTable={selectedTable} />
+                )}
             </Collapse>
         </>
     );
 }
 
-function TableMetadataPanel(props: { selectedTable: SelectedTableView }) {
+function TablePreviewPanel(props: { selectedTable: SelectedTableView }) {
     const { selectedTable } = props;
     const { classes } = useStyles();
 
+    const columns = useMemo<GridColDef[]>(
+        () =>
+            selectedTable.columns.map(col => ({
+                field: col.name,
+                headerName: col.name,
+                description: col.rawType,
+                flex: 1,
+                minWidth: 100,
+                sortable: false
+            })),
+        [selectedTable.columns]
+    );
+
+    const rows = useMemo(
+        () => selectedTable.rows.map((row, i) => ({ ...row, _id: i })),
+        [selectedTable.rows]
+    );
+
     return (
-        <div className={classes.metaPanel}>
-            <div className={classes.metaPanelChips}>
-                {selectedTable.format !== undefined && (
-                    <span className={classes.metaTagFormat}>{selectedTable.format}</span>
-                )}
-                {selectedTable.rowCount !== undefined && (
-                    <span className={classes.metaTag}>
-                        {selectedTable.rowCount.toLocaleString()} rows
-                    </span>
-                )}
-                {selectedTable.lastUpdatedAt !== undefined && (
-                    <span className={classes.metaTag}>
-                        Updated {selectedTable.lastUpdatedAt}
-                    </span>
-                )}
-                {selectedTable.location !== undefined && (
-                    <Tooltip title={selectedTable.location}>
-                        <span className={classes.metaTagLocation}>
-                            {selectedTable.location}
-                        </span>
-                    </Tooltip>
-                )}
-            </div>
-            {selectedTable.columns.length > 0 && (
-                <div className={classes.columnsGrid}>
-                    {selectedTable.columns.map(col => (
-                        <div key={col.fieldId} className={classes.columnChip}>
-                            <span className={classes.columnName}>{col.name}</span>
-                            <span className={classes.columnType}>{col.rawType}</span>
-                        </div>
-                    ))}
+        <div className={classes.previewPanel}>
+            {selectedTable.isLoading ? (
+                <div className={classes.previewLoading}>
+                    <CircularProgress size={24} />
                 </div>
+            ) : (
+                <CustomDataGrid
+                    className={classes.previewGrid}
+                    density="compact"
+                    columns={columns}
+                    rows={rows}
+                    getRowId={row => row._id as number}
+                    hideFooter
+                    disableColumnMenu
+                    autoHeight
+                    autosizeOnMount
+                    autosizeOptions={autosizeOptions}
+                />
             )}
         </div>
     );
@@ -317,10 +304,7 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         borderRadius: 8,
         overflow: "hidden",
         backgroundColor: theme.colors.useCases.surfaces.surface1,
-        boxShadow: theme.shadows[1],
-        "&:hover": {
-            boxShadow: theme.shadows[6]
-        }
+        boxShadow: theme.shadows[1]
     },
     catalogHeader: {
         display: "flex",
@@ -356,7 +340,7 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         gap: theme.spacing(1),
         flexWrap: "wrap"
     },
-    metaChip: {
+    metaText: {
         fontFamily: "monospace",
         fontSize: "0.72rem",
         color: theme.colors.useCases.typography.textSecondary,
@@ -368,6 +352,11 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
         cursor: "default"
+    },
+    metaSep: {
+        color: theme.colors.useCases.typography.textDisabled,
+        fontSize: "0.75rem",
+        userSelect: "none"
     },
     catalogBadges: {
         display: "flex",
@@ -383,16 +372,14 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         color: theme.colors.useCases.typography.textSecondary,
         whiteSpace: "nowrap"
     },
-    // ── Namespace list ────────────────────────────────────────────────────
+    // ── Namespace sections ────────────────────────────────────────────────
     namespaceList: {},
     emptyInner: {
         padding: `${theme.spacing(3)} ${theme.spacing(4)}`
     },
     namespaceSection: {
         borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "&:last-child": {
-            borderBottom: "none"
-        }
+        "&:last-child": { borderBottom: "none" }
     },
     namespaceHeader: {
         display: "flex",
@@ -415,19 +402,15 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         color: theme.colors.useCases.typography.textSecondary,
         flexShrink: 0
     },
-    nsName: {
-        flex: 1,
-        minWidth: 0
-    },
     nsCountBadge: {
         fontSize: "0.68rem",
         fontWeight: 600,
         padding: "1px 7px",
         borderRadius: 20,
         backgroundColor: theme.colors.useCases.surfaces.surface2,
-        color: theme.colors.useCases.typography.textSecondary,
-        marginRight: theme.spacing(1)
+        color: theme.colors.useCases.typography.textSecondary
     },
+    nsSpacer: { flex: 1 },
     nsChevron: {
         fontSize: "1rem",
         color: theme.colors.useCases.typography.textDisabled,
@@ -437,7 +420,7 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
     nsChevronOpen: {
         transform: "rotate(90deg)"
     },
-    // ── Table list / tree ─────────────────────────────────────────────────
+    // ── Table rows ────────────────────────────────────────────────────────
     tableList: {
         marginLeft: `calc(${theme.spacing(4)} + 8px)`,
         paddingLeft: theme.spacing(3),
@@ -452,13 +435,12 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(2),
-        padding: `${theme.spacing(1.5)} ${theme.spacing(3)} ${theme.spacing(1.5)} 0`,
+        padding: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
         cursor: "pointer",
         borderRadius: 6,
         transition: "background-color 0.15s",
         "&::before": {
             content: '""',
-            display: "block",
             position: "absolute",
             left: `calc(-1 * ${theme.spacing(3)})`,
             top: "50%",
@@ -468,16 +450,13 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
             backgroundColor: theme.colors.useCases.typography.textTertiary
         },
         "&:hover": {
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            [`& $openButton`]: {
-                opacity: 1
-            }
+            backgroundColor: theme.colors.useCases.surfaces.surface2
         }
     },
     tableRowSelected: {
         backgroundColor: `${theme.colors.useCases.typography.textFocus}11`,
         "&:hover": {
-            backgroundColor: `${theme.colors.useCases.typography.textFocus}18`
+            backgroundColor: `${theme.colors.useCases.typography.textFocus}1a`
         }
     },
     tableIcon: {
@@ -492,88 +471,22 @@ const useStyles = tss.withName({ IcebergCatalogs }).create(({ theme }) => ({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
     },
-    openButton: {
-        opacity: 0,
-        transition: "opacity 0.15s",
-        flexShrink: 0
+    // ── Inline preview panel ──────────────────────────────────────────────
+    previewPanel: {
+        marginLeft: `-${theme.spacing(3)}`,
+        borderTop: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        marginBottom: theme.spacing(1)
     },
-    // ── Table details panel ───────────────────────────────────────────────
-    tableDetails: {
-        marginLeft: 0,
-        paddingLeft: 0
-    },
-    detailsLoading: {
+    previewLoading: {
         display: "flex",
         justifyContent: "center",
-        padding: theme.spacing(2)
+        padding: theme.spacing(3)
     },
-    metaPanel: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(2),
-        padding: `${theme.spacing(2)} ${theme.spacing(3)} ${theme.spacing(3)} 0`,
-        backgroundColor: `${theme.colors.useCases.typography.textFocus}09`
-    },
-    metaPanelChips: {
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(1),
-        flexWrap: "wrap"
-    },
-    metaTag: {
-        fontSize: "0.72rem",
-        fontWeight: 500,
-        padding: "3px 8px",
-        borderRadius: 4,
-        backgroundColor: theme.colors.useCases.surfaces.surface2,
-        color: theme.colors.useCases.typography.textSecondary,
-        whiteSpace: "nowrap"
-    },
-    metaTagFormat: {
-        fontSize: "0.72rem",
-        fontWeight: 600,
-        padding: "3px 8px",
-        borderRadius: 4,
-        backgroundColor: `${theme.colors.useCases.typography.textFocus}22`,
-        color: theme.colors.useCases.typography.textFocus,
-        whiteSpace: "nowrap",
-        textTransform: "uppercase"
-    },
-    metaTagLocation: {
-        fontFamily: "monospace",
-        fontSize: "0.68rem",
-        padding: "3px 8px",
-        borderRadius: 4,
-        backgroundColor: theme.colors.useCases.surfaces.surface2,
-        color: theme.colors.useCases.typography.textSecondary,
-        maxWidth: 340,
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-        cursor: "default"
-    },
-    columnsGrid: {
-        display: "flex",
-        flexWrap: "wrap",
-        gap: theme.spacing(1)
-    },
-    columnChip: {
-        display: "flex",
-        alignItems: "center",
-        gap: 4,
-        padding: "2px 8px",
-        borderRadius: 4,
-        border: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        backgroundColor: theme.colors.useCases.surfaces.surface1
-    },
-    columnName: {
-        fontSize: "0.72rem",
-        fontWeight: 500,
-        color: theme.colors.useCases.typography.textPrimary
-    },
-    columnType: {
-        fontSize: "0.68rem",
-        color: theme.colors.useCases.typography.textSecondary,
-        fontFamily: "monospace"
+    previewGrid: {
+        border: "none",
+        borderRadius: 0,
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        fontSize: "0.8rem"
     }
 }));

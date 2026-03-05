@@ -4,10 +4,6 @@
  * One IcebergApi instance manages several catalogs whose endpoints, warehouses
  * and token providers are all fixed at creation time.
  * Callers identify which catalog to target via the `catalog` parameter.
- *
- * Two operations map directly onto the spec:
- *   - listAllTables  →  SHOW ALL TABLES
- *   - describeTable  →  DESCRIBE <catalog>.<namespace>.<table>
  */
 export type IcebergApi = {
     /**
@@ -15,20 +11,21 @@ export type IcebergApi = {
      *
      * Equivalent to:  SHOW ALL TABLES
      */
-    listAllTables: (params: {
-        catalog: string;
-    }) => Promise<IcebergApi.ListAllTablesResult>;
+    listAllTables: () => Promise<IcebergApi.ListAllTablesResult>;
 
     /**
-     * Returns the full column schema for one specific table.
+     * Fetches the first `limit` rows of a table together with its column schema
+     * in a single query. The column schema is derived from the Arrow result schema
+     * so no separate DESCRIBE round-trip is needed.
      *
-     * Equivalent to:  DESCRIBE <catalog>.<namespace>.<table>
+     * Equivalent to:  SELECT * FROM <catalog>.<namespace>.<table> LIMIT <limit>
      */
-    describeTable: (params: {
+    fetchTablePreview: (params: {
         catalog: string;
         namespace: string;
         table: string;
-    }) => Promise<IcebergApi.DescribeTableResult>;
+        limit: number;
+    }) => Promise<IcebergApi.FetchTablePreviewResult>;
 };
 
 export namespace IcebergApi {
@@ -44,42 +41,16 @@ export namespace IcebergApi {
     };
 
     /**
-     * A column from DESCRIBE.
+     * A column derived from the Arrow result schema.
      *
-     * `type` is the normalised semantic category used by the UI.
-     * `rawType` is the original Iceberg type string returned by the
-     * API (e.g. "decimal(10, 2)", "list<string>", "struct<id:long>").
+     * `rawType` is the Arrow type string (e.g. "Int<32, true>", "Utf8").
      */
     export type Column = {
         fieldId: number;
         name: string;
-        type: Column.Type;
         rawType: string;
         isRequired: boolean;
-        doc: string | undefined;
     };
-
-    export namespace Column {
-        export type Type =
-            | "boolean"
-            | "int"
-            | "long"
-            | "float"
-            | "double"
-            | "decimal"
-            | "date"
-            | "time"
-            | "timestamp"
-            | "timestamptz"
-            | "string"
-            | "uuid"
-            | "binary"
-            | "fixed"
-            | "list"
-            | "map"
-            | "struct"
-            | "unknown";
-    }
 
     // ----------------------------------------------------------------
     // listAllTables
@@ -97,38 +68,28 @@ export namespace IcebergApi {
 
         export type Failed = {
             tables?: never;
-            errorCause: "unauthorized" | "catalog not found" | "network error";
+            errorCause: "unauthorized" | "network error";
         };
     }
 
     // ----------------------------------------------------------------
-    // describeTable
+    // fetchTablePreview
     // ----------------------------------------------------------------
 
-    export type DescribeTableResult =
-        | DescribeTableResult.Success
-        | DescribeTableResult.Failed;
+    export type FetchTablePreviewResult =
+        | FetchTablePreviewResult.Success
+        | FetchTablePreviewResult.Failed;
 
-    export namespace DescribeTableResult {
+    export namespace FetchTablePreviewResult {
         export type Success = {
             columns: Column[];
-            /** Total number of rows if available from table metadata */
-            rowCount: number | undefined;
-            /** Storage location of the table (e.g. s3://…) */
-            location: string | undefined;
-            /** Snapshot timestamp of the current table version */
-            lastUpdatedMs: number | undefined;
-            /** Data file format: parquet, orc, avro */
-            format: string | undefined;
+            rows: Record<string, unknown>[];
             errorCause?: never;
         };
 
         export type Failed = {
             columns?: never;
-            rowCount?: never;
-            location?: never;
-            lastUpdatedMs?: never;
-            format?: never;
+            rows?: never;
             errorCause: "unauthorized" | "table not found" | "network error";
         };
     }
