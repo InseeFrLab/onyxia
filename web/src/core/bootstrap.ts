@@ -289,16 +289,6 @@ export async function bootstrapCore(
 
         const catalogs = await Promise.all(
             deploymentRegion.iceberg.map(async warehouseConfig => {
-                console.log(
-                    "oidcParams",
-                    oidcParams,
-                    "mergeOidcParams",
-                    mergeOidcParams({
-                        oidcParams,
-                        oidcParams_partial: warehouseConfig.oidcParams
-                    })
-                );
-
                 const oidc_iceberg = await createOidc({
                     ...mergeOidcParams({
                         oidcParams,

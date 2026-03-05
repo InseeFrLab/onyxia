@@ -11,11 +11,7 @@ export type CatalogView = {
     endpoint: string;
     namespaces: {
         name: string;
-        tables: {
-            name: string;
-            /** iceberg://<catalog>/<namespace>/<table> */
-            explorerSource: string;
-        }[];
+        tables: { name: string }[];
     }[];
 };
 
@@ -23,13 +19,9 @@ export type SelectedTableView = {
     catalog: string;
     namespace: string;
     table: string;
-    isLoadingSchema: boolean;
+    isLoading: boolean;
     columns: IcebergApi.Column[];
-    rowCount: number | undefined;
-    location: string | undefined;
-    /** ISO date string (YYYY-MM-DD), derived from lastUpdatedMs. */
-    lastUpdatedAt: string | undefined;
-    format: string | undefined;
+    rows: Record<string, unknown>[];
 };
 
 export type View = {
@@ -48,10 +40,7 @@ const view = createSelector(
             endpoint: catalog.endpoint,
             namespaces: catalog.namespaces.map(ns => ({
                 name: ns.name,
-                tables: ns.tables.map(tableName => ({
-                    name: tableName,
-                    explorerSource: `iceberg://${catalog.name}/${ns.name}/${tableName}`
-                }))
+                tables: ns.tables.map(tableName => ({ name: tableName }))
             }))
         })),
         selectedTable:
@@ -61,17 +50,9 @@ const view = createSelector(
                       catalog: state.selectedTable.catalog,
                       namespace: state.selectedTable.namespace,
                       table: state.selectedTable.table,
-                      isLoadingSchema: state.selectedTable.isLoadingSchema,
+                      isLoading: state.selectedTable.isLoading,
                       columns: state.selectedTable.columns,
-                      rowCount: state.selectedTable.rowCount,
-                      location: state.selectedTable.location,
-                      lastUpdatedAt:
-                          state.selectedTable.lastUpdatedMs !== undefined
-                              ? new Date(state.selectedTable.lastUpdatedMs)
-                                    .toISOString()
-                                    .slice(0, 10)
-                              : undefined,
-                      format: state.selectedTable.format
+                      rows: state.selectedTable.rows
                   }
     })
 );

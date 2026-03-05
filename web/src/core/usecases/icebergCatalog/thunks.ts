@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { actions } from "./state";
+import { actions, previewCacheKey } from "./state";
 import type { CatalogMetadata, NamespaceMetadata } from "./state";
 import { id } from "tsafe/id";
 
@@ -7,7 +7,6 @@ export const thunks = {
     /**
      * Fetches the flat table list from all configured catalogs and groups
      * them into a hierarchical catalog → namespace → tables structure.
-     * Equivalent to running SHOW ALL TABLES on each catalog.
      */
     initialize:
         () =>
@@ -16,71 +15,86 @@ export const thunks = {
 
             dispatch(actions.loadingStarted());
 
-            const catalogs = await Promise.all(
-                icebergCatalogConfigs.map(async config => {
-                    const result = await icebergApi.listAllTables({
-                        catalog: config.name
-                    });
+            const listResult = await icebergApi.listAllTables();
+            const allTables =
+                listResult.errorCause !== undefined ? [] : listResult.tables;
 
-                    if (result.errorCause !== undefined) {
-                        return id<CatalogMetadata>({
-                            name: config.name,
-                            warehouse: config.warehouse,
-                            endpoint: config.endpoint,
-                            namespaces: []
-                        });
-                    }
+            const catalogs: CatalogMetadata[] = icebergCatalogConfigs.map(config => {
+                const namespaceMap = new Map<string, string[]>();
 
-                    const namespaceMap = new Map<string, string[]>();
+                for (const entry of allTables.filter(t => t.catalog === config.name)) {
+                    const tables = namespaceMap.get(entry.namespace) ?? [];
+                    tables.push(entry.name);
+                    namespaceMap.set(entry.namespace, tables);
+                }
 
-                    for (const entry of result.tables) {
-                        const tables = namespaceMap.get(entry.namespace) ?? [];
-                        tables.push(entry.name);
-                        namespaceMap.set(entry.namespace, tables);
-                    }
+                const namespaces: NamespaceMetadata[] = Array.from(
+                    namespaceMap.entries()
+                ).map(([name, tables]) => ({ name, tables }));
 
-                    const namespaces: NamespaceMetadata[] = Array.from(
-                        namespaceMap.entries()
-                    ).map(([name, tables]) => ({ name, tables }));
-
-                    return id<CatalogMetadata>({
-                        name: config.name,
-                        warehouse: config.warehouse,
-                        endpoint: config.endpoint,
-                        namespaces
-                    });
-                })
-            );
+                return id<CatalogMetadata>({
+                    name: config.name,
+                    warehouse: config.warehouse,
+                    endpoint: config.endpoint,
+                    namespaces
+                });
+            });
 
             dispatch(actions.catalogsLoaded({ catalogs }));
         },
 
     /**
-     * Fetches the full column schema for a specific table.
-     * Equivalent to running DESCRIBE <catalog>.<namespace>.<table>.
+     * Fetches schema + preview rows for a table in a single DuckDB query.
+     * No-ops if the same table is already selected.
+     * Serves from cache if previously fetched.
      */
     selectTable:
         (params: { catalog: string; namespace: string; table: string }) =>
         async (...args) => {
             const { catalog, namespace, table } = params;
-            const [dispatch, , { icebergApi }] = args;
+            const [dispatch, getState, { icebergApi }] = args;
 
-            dispatch(actions.tableSelectionStarted({ catalog, namespace, table }));
+            const state = getState().icebergCatalog;
 
-            const result = await icebergApi.describeTable({ catalog, namespace, table });
-
-            if (result.errorCause !== undefined) {
-                // TODO: surface error in state (add a schemaLoadFailed action)
+            // No-op if already the active table
+            if (
+                state.selectedTable !== undefined &&
+                !state.selectedTable.isLoading &&
+                state.selectedTable.catalog === catalog &&
+                state.selectedTable.namespace === namespace &&
+                state.selectedTable.table === table
+            ) {
                 return;
             }
 
+            // Serve from cache if available
+            const cached = state.previewCache[previewCacheKey(catalog, namespace, table)];
+            if (cached !== undefined) {
+                dispatch(
+                    actions.tableSelectedFromCache({
+                        catalog,
+                        namespace,
+                        table,
+                        columns: cached.columns,
+                        rows: cached.rows
+                    })
+                );
+                return;
+            }
+
+            dispatch(actions.tableSelectionStarted({ catalog, namespace, table }));
+
+            const result = await icebergApi.fetchTablePreview({
+                catalog,
+                namespace,
+                table,
+                limit: 10
+            });
+
             dispatch(
-                actions.schemaLoaded({
-                    columns: result.columns,
-                    rowCount: result.rowCount,
-                    location: result.location,
-                    lastUpdatedMs: result.lastUpdatedMs,
-                    format: result.format
+                actions.tablePreviewLoaded({
+                    columns: result.errorCause === undefined ? result.columns : [],
+                    rows: result.errorCause === undefined ? result.rows : []
                 })
             );
         }

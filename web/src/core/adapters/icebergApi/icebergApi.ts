@@ -25,14 +25,44 @@ export function createDuckDbIcebergApi(params: {
 }): IcebergApi {
     const { sqlOlap, catalogs } = params;
 
-    // Load the iceberg extension once, lazily, on first use.
-    // custom_extension_repository is already set by getConfiguredAsyncDuckDb().
+    function secretName(catalogName: string): string {
+        return `iceberg_${catalogName}`;
+    }
+
+    // Eagerly install the iceberg extension, create secrets and attach all
+    // catalogs in a single connection so everything is ready before the first query.
     const prDb = (async () => {
         const { db } = await sqlOlap.getConfiguredAsyncDuckDb();
 
         const conn = await db.connect();
         try {
             await conn.query("INSTALL iceberg;\nLOAD iceberg;");
+
+            for (const catalogConfig of catalogs) {
+                const token = await catalogConfig.getAccessToken();
+
+                if (token !== undefined) {
+                    await conn.query(
+                        [
+                            `CREATE OR REPLACE SECRET "${secretName(catalogConfig.name)}" (`,
+                            `    TYPE iceberg,`,
+                            `    TOKEN '${token}'`,
+                            ");"
+                        ].join("\n")
+                    );
+                }
+
+                const attachLines = [
+                    `ATTACH '${catalogConfig.warehouse}' AS "${catalogConfig.name}" (`,
+                    `    TYPE iceberg,`,
+                    ...(token !== undefined
+                        ? [`    SECRET '${secretName(catalogConfig.name)}',`]
+                        : []),
+                    `    ENDPOINT '${catalogConfig.endpoint}'`,
+                    ");"
+                ];
+                await conn.query(attachLines.join("\n"));
+            }
         } finally {
             await conn.close();
         }
@@ -40,71 +70,8 @@ export function createDuckDbIcebergApi(params: {
         return db;
     })();
 
-    // Catalogs that have already been ATTACHed — ATTACH is done once per session.
-    const attached = new Set<string>();
-
-    // The secret name is stable for a given catalog name.
-    // Only the token content changes via CREATE OR REPLACE SECRET.
-    function secretName(catalogName: string): string {
-        return `iceberg_${catalogName}`;
-    }
-
-    async function upsertSecret(
-        catalogConfig: IcebergCatalogConfig,
-        conn: import("@duckdb/duckdb-wasm").AsyncDuckDBConnection
-    ): Promise<void> {
-        const token = await catalogConfig.getAccessToken();
-
-        if (token === undefined) return;
-
-        await conn.query(
-            [
-                `CREATE OR REPLACE SECRET "${secretName(catalogConfig.name)}" (`,
-                `    TYPE iceberg,`,
-                `    TOKEN '${token}'`,
-                ");"
-            ].join("\n")
-        );
-    }
-
-    async function ensureAttached(
-        catalogConfig: IcebergCatalogConfig,
-        conn: import("@duckdb/duckdb-wasm").AsyncDuckDBConnection
-    ): Promise<void> {
-        if (attached.has(catalogConfig.name)) return;
-
-        attached.add(catalogConfig.name);
-
-        try {
-            await conn.query(
-                [
-                    `ATTACH '${catalogConfig.warehouse}' AS "${catalogConfig.name}" (`,
-                    `    TYPE iceberg,`,
-                    `    SECRET '${secretName(catalogConfig.name)}',`,
-                    `    ENDPOINT '${catalogConfig.endpoint}'`,
-                    ");"
-                ].join("\n")
-            );
-        } catch (e) {
-            attached.delete(catalogConfig.name);
-            throw e;
-        }
-    }
-
-    function findCatalog(name: string): IcebergCatalogConfig | undefined {
-        return catalogs.find(c => c.name === name);
-    }
-
     return {
-        listAllTables: async ({ catalog: catalogName }) => {
-            const catalogConfig = findCatalog(catalogName);
-
-            if (catalogConfig === undefined) {
-                return id<IcebergApi.ListAllTablesResult.Failed>({
-                    errorCause: "catalog not found"
-                });
-            }
-
+        listAllTables: async () => {
             let db: import("@duckdb/duckdb-wasm").AsyncDuckDB;
             try {
                 db = await prDb;
@@ -116,18 +83,8 @@ export function createDuckDbIcebergApi(params: {
 
             const conn = await db.connect();
             try {
-                await upsertSecret(catalogConfig, conn);
-                await ensureAttached(catalogConfig, conn);
-
                 const result = await conn.query(
-                    `
-                    SELECT
-                        table_catalog AS database,
-                        table_schema  AS schema,
-                        table_name    AS name
-                    FROM information_schema.tables
-                    WHERE table_catalog = '${catalogName}';
-                    `.trim()
+                    `SELECT table_catalog AS database, table_schema AS schema, table_name AS name FROM information_schema.tables;`
                 );
 
                 const tables: IcebergApi.TableEntry[] = result.toArray().map(row => ({
@@ -138,19 +95,21 @@ export function createDuckDbIcebergApi(params: {
 
                 return id<IcebergApi.ListAllTablesResult.Success>({ tables });
             } catch (e) {
+                const cause = classifyError(e);
                 return id<IcebergApi.ListAllTablesResult.Failed>({
-                    errorCause: classifyListError(e)
+                    errorCause:
+                        cause === "unauthorized" ? "unauthorized" : "network error"
                 });
             } finally {
                 await conn.close();
             }
         },
 
-        describeTable: async ({ catalog: catalogName, namespace, table }) => {
-            const catalogConfig = findCatalog(catalogName);
+        fetchTablePreview: async ({ catalog: catalogName, namespace, table, limit }) => {
+            const catalogConfig = catalogs.find(c => c.name === catalogName);
 
             if (catalogConfig === undefined) {
-                return id<IcebergApi.DescribeTableResult.Failed>({
+                return id<IcebergApi.FetchTablePreviewResult.Failed>({
                     errorCause: "network error"
                 });
             }
@@ -159,7 +118,7 @@ export function createDuckDbIcebergApi(params: {
             try {
                 db = await prDb;
             } catch {
-                return id<IcebergApi.DescribeTableResult.Failed>({
+                return id<IcebergApi.FetchTablePreviewResult.Failed>({
                     errorCause: "network error"
                 });
             }
@@ -167,35 +126,30 @@ export function createDuckDbIcebergApi(params: {
             const conn = await db.connect();
             try {
                 const result = await conn.query(
-                    `SELECT * FROM "${catalogName}.${namespace}.${table}"`
+                    `SELECT * FROM "${catalogName}"."${namespace}"."${table}" LIMIT ${limit};`
                 );
 
-                const columns: IcebergApi.Column[] = result
-                    .toArray()
-                    .map((row, index) => {
-                        const rawType = String(row["column_type"]);
-                        return {
-                            fieldId: index,
-                            name: String(row["column_name"]),
-                            type: parseDuckDbType(rawType),
-                            rawType,
-                            isRequired: String(row["null"]).toUpperCase() === "NO",
-                            doc: undefined
-                        };
-                    });
+                const columns: IcebergApi.Column[] = (
+                    result.schema.fields as {
+                        name: string;
+                        type: { toString(): string };
+                        nullable: boolean;
+                    }[]
+                ).map((field, index) => ({
+                    fieldId: index,
+                    name: field.name,
+                    rawType: field.type.toString(),
+                    isRequired: !field.nullable
+                }));
 
-                return id<IcebergApi.DescribeTableResult.Success>({
-                    columns,
-                    // These fields come from Iceberg snapshot metadata, not
-                    // available via DuckDB DESCRIBE. A REST-native adapter would fill them.
-                    rowCount: undefined,
-                    location: undefined,
-                    lastUpdatedMs: undefined,
-                    format: undefined
-                });
+                const rows: Record<string, unknown>[] = result
+                    .toArray()
+                    .map(row => Object.fromEntries(Object.entries(row)));
+
+                return id<IcebergApi.FetchTablePreviewResult.Success>({ columns, rows });
             } catch (e) {
-                return id<IcebergApi.DescribeTableResult.Failed>({
-                    errorCause: classifyDescribeError(e)
+                return id<IcebergApi.FetchTablePreviewResult.Failed>({
+                    errorCause: classifyError(e)
                 });
             } finally {
                 await conn.close();
@@ -208,91 +162,13 @@ export function createDuckDbIcebergApi(params: {
 // Error classification
 // ---------------------------------------------------------------------------
 
-function isAuthError(e: unknown): boolean {
+function classifyError(e: unknown): "unauthorized" | "table not found" | "network error" {
     const msg = (e instanceof Error ? e.message : String(e)).toLowerCase();
-    return msg.includes("401") || msg.includes("unauthorized") || msg.includes("403");
-}
-
-function isNotFoundError(e: unknown): boolean {
-    const msg = (e instanceof Error ? e.message : String(e)).toLowerCase();
-    return msg.includes("not found") || msg.includes("does not exist");
-}
-
-function classifyListError(
-    e: unknown
-): IcebergApi.ListAllTablesResult.Failed["errorCause"] {
-    if (isAuthError(e)) return "unauthorized";
-    return "network error";
-}
-
-function classifyDescribeError(
-    e: unknown
-): IcebergApi.DescribeTableResult.Failed["errorCause"] {
-    if (isAuthError(e)) return "unauthorized";
-    if (isNotFoundError(e)) return "table not found";
-    return "network error";
-}
-
-// ---------------------------------------------------------------------------
-// DuckDB type → IcebergApi.Column.Type
-// ---------------------------------------------------------------------------
-
-function parseDuckDbType(raw: string): IcebergApi.Column.Type {
-    const t = raw.toUpperCase().trim();
-
-    if (t === "BOOLEAN") return "boolean";
-
-    if (
-        [
-            "TINYINT",
-            "SMALLINT",
-            "INTEGER",
-            "INT",
-            "INT4",
-            "INT2",
-            "UINTEGER",
-            "USMALLINT",
-            "UTINYINT"
-        ].includes(t)
-    ) {
-        return "int";
+    if (msg.includes("401") || msg.includes("unauthorized") || msg.includes("403")) {
+        return "unauthorized";
     }
-
-    if (["BIGINT", "INT8", "HUGEINT", "UBIGINT"].includes(t)) return "long";
-
-    if (["FLOAT", "REAL", "FLOAT4"].includes(t)) return "float";
-
-    if (["DOUBLE", "FLOAT8"].includes(t)) return "double";
-
-    if (t.startsWith("DECIMAL") || t.startsWith("NUMERIC")) return "decimal";
-
-    if (t === "DATE") return "date";
-
-    if (t === "TIME" || t.startsWith("TIME ")) return "time";
-
-    if (t === "TIMESTAMPTZ" || t.includes("WITH TIME ZONE")) return "timestamptz";
-
-    if (t.startsWith("TIMESTAMP")) return "timestamp";
-
-    if (
-        ["VARCHAR", "TEXT", "STRING", "JSON"].includes(t) ||
-        t.startsWith("CHAR") ||
-        t.startsWith("VARCHAR")
-    ) {
-        return "string";
+    if (msg.includes("not found") || msg.includes("does not exist")) {
+        return "table not found";
     }
-
-    if (t === "UUID") return "uuid";
-
-    if (["BLOB", "BYTEA", "VARBINARY", "BINARY"].includes(t)) return "binary";
-
-    if (t.startsWith("BIT") || t.startsWith("FIXED")) return "fixed";
-
-    if (t.startsWith("LIST") || t.endsWith("[]")) return "list";
-
-    if (t.startsWith("MAP")) return "map";
-
-    if (t.startsWith("STRUCT")) return "struct";
-
-    return "unknown";
+    return "network error";
 }
