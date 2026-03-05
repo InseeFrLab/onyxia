@@ -22,7 +22,7 @@ import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 
 export type S3UriBarProps = {
     className?: string;
-    s3UriPrefix: S3Uri.Prefix;
+    s3UriPrefix: S3Uri.Prefix | undefined;
     onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
     hints: {
         type: "object" | "key-segment" | "bookmark";
@@ -276,16 +276,36 @@ export function S3UriBar(props: S3UriBarProps) {
         onToggleBookmark
     } = props;
 
-    const normalizedPrefix = s3UriPrefix;
+    const defaultDraftS3Uri = "s3://";
+    const normalizedPrefix = useMemo<S3Uri.Prefix>(() => {
+        if (s3UriPrefix !== undefined) {
+            return s3UriPrefix;
+        }
+
+        return {
+            type: "prefix",
+            bucket: "",
+            delimiter: "/",
+            keySegments: [],
+            isDelimiterTerminated: true
+        };
+    }, [s3UriPrefix]);
+    const isUndefinedPrefixMode = s3UriPrefix === undefined;
     const canonicalS3Uri = useMemo(
-        () => stringifyS3Uri(normalizedPrefix),
-        [normalizedPrefix]
+        () =>
+            isUndefinedPrefixMode ? defaultDraftS3Uri : stringifyS3Uri(normalizedPrefix),
+        [isUndefinedPrefixMode, normalizedPrefix]
     );
     const crumbs = useMemo(
-        () => getBreadcrumbs({ s3UriPrefix: normalizedPrefix }),
-        [normalizedPrefix]
+        () =>
+            isUndefinedPrefixMode
+                ? []
+                : getBreadcrumbs({ s3UriPrefix: normalizedPrefix }),
+        [isUndefinedPrefixMode, normalizedPrefix]
     );
-    const trailingSeparatorToken = getTrailingSeparatorToken(normalizedPrefix);
+    const trailingSeparatorToken = isUndefinedPrefixMode
+        ? undefined
+        : getTrailingSeparatorToken(normalizedPrefix);
 
     const rootRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -304,7 +324,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const { domRect: pathDisplayRect, ref: pathDisplayRef } = useDomRect();
 
     const [draftS3Uri, setDraftS3Uri] = useState(canonicalS3Uri);
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(isUndefinedPrefixMode);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
     const [hintsPanelPosition, setHintsPanelPosition] = useState({
@@ -314,6 +334,20 @@ export function S3UriBar(props: S3UriBarProps) {
 
     const inputId = useId();
     const hintsListId = useId();
+
+    const displayedHints = useMemo(() => {
+        if (!isUndefinedPrefixMode) {
+            return hints;
+        }
+
+        const normalizedDraft = draftS3Uri.trim().toLocaleLowerCase();
+
+        return hints.filter(
+            hint =>
+                hint.type === "bookmark" &&
+                hint.text.toLocaleLowerCase().startsWith(normalizedDraft)
+        );
+    }, [draftS3Uri, hints, isUndefinedPrefixMode]);
 
     const { classes, cx } = useStyles({ isEditing });
 
@@ -380,6 +414,12 @@ export function S3UriBar(props: S3UriBarProps) {
     }, []);
 
     useEffect(() => {
+        if (isUndefinedPrefixMode && !isEditing) {
+            setIsEditing(true);
+        }
+    }, [isEditing, isUndefinedPrefixMode]);
+
+    useEffect(() => {
         if (!isEditing) {
             ignoreNextBlurRef.current = false;
             lastEnterEditRequestTimeRef.current = Number.NEGATIVE_INFINITY;
@@ -398,15 +438,17 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        if (hints.length === 0) {
+        if (displayedHints.length === 0) {
             setActiveHintIndex(-1);
             return;
         }
 
         setActiveHintIndex(index =>
-            index >= hints.length ? hints.length - 1 : Math.max(index, 0)
+            index >= displayedHints.length
+                ? displayedHints.length - 1
+                : Math.max(index, 0)
         );
-    }, [hints, isEditing]);
+    }, [displayedHints.length, isEditing]);
 
     useEffect(() => {
         if (!isEditing) {
@@ -432,7 +474,7 @@ export function S3UriBar(props: S3UriBarProps) {
     }, [isEditing, updateHintsPanelPosition]);
 
     useEffect(() => {
-        if (!isEditing || hints.length === 0) {
+        if (!isEditing || displayedHints.length === 0) {
             return;
         }
 
@@ -443,7 +485,13 @@ export function S3UriBar(props: S3UriBarProps) {
         return () => {
             window.cancelAnimationFrame(frameId);
         };
-    }, [activeHintIndex, draftS3Uri, hints, isEditing, updateHintsPanelPosition]);
+    }, [
+        activeHintIndex,
+        draftS3Uri,
+        displayedHints.length,
+        isEditing,
+        updateHintsPanelPosition
+    ]);
 
     useEffect(() => {
         if (!isEditing || activeHintIndex < 0) {
@@ -617,8 +665,25 @@ export function S3UriBar(props: S3UriBarProps) {
     const onInputChange = (nextDraftS3Uri: string) => {
         setDraftS3Uri(nextDraftS3Uri);
 
+        if (isUndefinedPrefixMode) {
+            return;
+        }
+
         const parsed = tryParsePrefix({
             s3Uri: nextDraftS3Uri.trim(),
+            delimiter: normalizedPrefix.delimiter
+        });
+
+        if (!parsed) {
+            return;
+        }
+
+        onS3UriPrefixChange({ s3UriPrefix: parsed });
+    };
+
+    const tryCommitDraftS3Uri = () => {
+        const parsed = tryParsePrefix({
+            s3Uri: draftS3Uri.trim(),
             delimiter: normalizedPrefix.delimiter
         });
 
@@ -693,31 +758,36 @@ export function S3UriBar(props: S3UriBarProps) {
     const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Escape") {
             event.preventDefault();
+
+            if (isUndefinedPrefixMode) {
+                return;
+            }
+
             ignoreNextBlurRef.current = true;
             setIsEditing(false);
             return;
         }
 
-        if (hints.length > 0 && event.key === "ArrowDown") {
+        if (displayedHints.length > 0 && event.key === "ArrowDown") {
             event.preventDefault();
             setActiveHintIndex(index => {
                 if (index < 0) {
                     return 0;
                 }
 
-                return (index + 1) % hints.length;
+                return (index + 1) % displayedHints.length;
             });
             return;
         }
 
-        if (hints.length > 0 && event.key === "ArrowUp") {
+        if (displayedHints.length > 0 && event.key === "ArrowUp") {
             event.preventDefault();
             setActiveHintIndex(index => {
                 if (index < 0) {
-                    return hints.length - 1;
+                    return displayedHints.length - 1;
                 }
 
-                return (index - 1 + hints.length) % hints.length;
+                return (index - 1 + displayedHints.length) % displayedHints.length;
             });
             return;
         }
@@ -725,13 +795,19 @@ export function S3UriBar(props: S3UriBarProps) {
         if (event.key === "Enter" && activeHintIndex >= 0) {
             event.preventDefault();
 
-            const activeHint = hints[activeHintIndex];
+            const activeHint = displayedHints[activeHintIndex];
 
             if (!activeHint) {
                 return;
             }
 
             selectHint(activeHint);
+            return;
+        }
+
+        if (event.key === "Enter" && isUndefinedPrefixMode) {
+            event.preventDefault();
+            tryCommitDraftS3Uri();
         }
     };
 
@@ -784,6 +860,11 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
+        if (isUndefinedPrefixMode) {
+            tryCommitDraftS3Uri();
+            return;
+        }
+
         setIsEditing(false);
     };
 
@@ -814,9 +895,13 @@ export function S3UriBar(props: S3UriBarProps) {
                             onClick={updateHintsPanelPosition}
                             autoComplete="off"
                             spellCheck={false}
-                            aria-autocomplete={hints.length > 0 ? "list" : undefined}
-                            aria-controls={hints.length > 0 ? hintsListId : undefined}
-                            aria-expanded={hints.length > 0}
+                            aria-autocomplete={
+                                displayedHints.length > 0 ? "list" : undefined
+                            }
+                            aria-controls={
+                                displayedHints.length > 0 ? hintsListId : undefined
+                            }
+                            aria-expanded={displayedHints.length > 0}
                             aria-activedescendant={
                                 activeHintIndex >= 0
                                     ? `${hintsListId}-${activeHintIndex}`
@@ -1198,6 +1283,10 @@ export function S3UriBar(props: S3UriBarProps) {
                                 onClick={event => {
                                     event.stopPropagation();
 
+                                    if (isUndefinedPrefixMode) {
+                                        return;
+                                    }
+
                                     const nextIsEditing = !isEditing;
 
                                     if (nextIsEditing) {
@@ -1255,7 +1344,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 </div>
             </div>
 
-            {isEditing && hints.length > 0 && (
+            {isEditing && displayedHints.length > 0 && (
                 <div
                     className={classes.hintsPanel}
                     style={{
@@ -1266,7 +1355,7 @@ export function S3UriBar(props: S3UriBarProps) {
                     id={hintsListId}
                     role="listbox"
                 >
-                    {hints.map((hint, index) => (
+                    {displayedHints.map((hint, index) => (
                         <button
                             id={`${hintsListId}-${index}`}
                             key={`${hint.type}-${hint.text}-${index}`}

@@ -294,9 +294,86 @@ function ControlledS3UriBarStory() {
     );
 }
 
+function UndefinedPrefixLockedEditingStory() {
+    const [s3UriPrefix, setS3UriPrefix] = useState<S3Uri.Prefix | undefined>(undefined);
+    const [lastCommittedS3Uri, setLastCommittedS3Uri] = useState<string | undefined>(
+        undefined
+    );
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <S3UriBar
+                s3UriPrefix={s3UriPrefix}
+                hints={[
+                    { type: "bookmark", text: "s3://mybucket/" },
+                    { type: "bookmark", text: "s3://donnee-insee/diffusion/" },
+                    { type: "key-segment", text: "hidden-non-bookmark-hint" }
+                ]}
+                isBookmarked={false}
+                onS3UriPrefixChange={({ s3UriPrefix }) => {
+                    const nextS3Uri = stringifyS3Uri(s3UriPrefix);
+                    setS3UriPrefix(s3UriPrefix);
+                    setLastCommittedS3Uri(nextS3Uri);
+                    action("s3UriPrefixChange")(nextS3Uri);
+                }}
+                onToggleBookmark={undefined}
+            />
+
+            <button
+                type="button"
+                style={{ width: "fit-content" }}
+                onClick={() => {
+                    setS3UriPrefix(undefined);
+                    setLastCommittedS3Uri(undefined);
+                    action("resetToUndefinedPrefix")();
+                }}
+            >
+                Reset to Undefined Prefix
+            </button>
+
+            <div
+                style={{
+                    fontFamily:
+                        "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                    fontSize: 12,
+                    color: "#64748b",
+                    border: "1px dashed #cbd5e1",
+                    borderRadius: 8,
+                    padding: 8
+                }}
+            >
+                <div>
+                    Current prefix:{" "}
+                    {s3UriPrefix === undefined
+                        ? "undefined"
+                        : stringifyS3Uri(s3UriPrefix)}
+                </div>
+                <div>Last committed URI: {lastCommittedS3Uri ?? "none"}</div>
+                <div>
+                    Type a valid URI, then press Enter or blur to commit and leave
+                    undefined mode.
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export const ControlledShell: Story = {
     args: {
         ...baseArgs
     },
     render: () => <ControlledS3UriBarStory />
+};
+
+export const UndefinedPrefixLockedEditingWithBookmarkHints: Story = {
+    args: {
+        ...baseArgs,
+        s3UriPrefix: undefined,
+        hints: [
+            { type: "bookmark", text: "s3://mybucket/" },
+            { type: "bookmark", text: "s3://donnee-insee/diffusion/" }
+        ],
+        onToggleBookmark: undefined
+    },
+    render: () => <UndefinedPrefixLockedEditingStory />
 };
