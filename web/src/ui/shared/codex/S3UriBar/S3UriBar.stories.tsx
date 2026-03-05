@@ -37,28 +37,18 @@ function parsePrefixOrThrowWithDelimiter(params: {
 
 function StatefulS3UriBar(args: S3UriBarProps) {
     const [s3UriPrefix, setS3UriPrefix] = useState(args.s3UriPrefix);
-    const [isEditing, setIsEditing] = useState(args.isEditing);
 
     useEffect(() => {
         setS3UriPrefix(args.s3UriPrefix);
     }, [args.s3UriPrefix]);
 
-    useEffect(() => {
-        setIsEditing(args.isEditing);
-    }, [args.isEditing]);
-
     return (
         <S3UriBar
             {...args}
             s3UriPrefix={s3UriPrefix}
-            isEditing={isEditing}
             onS3UriPrefixChange={params => {
                 args.onS3UriPrefixChange(params);
                 setS3UriPrefix(params.s3UriPrefix);
-            }}
-            onIsEditingChange={params => {
-                args.onIsEditingChange(params);
-                setIsEditing(params.isEditing);
             }}
         />
     );
@@ -68,9 +58,7 @@ const baseArgs: S3UriBarProps = {
     s3UriPrefix: parsePrefixOrThrow(
         "s3://analytics-data/exports/2024/quarter-1/report.csv"
     ),
-    isEditing: false,
     onS3UriPrefixChange: action("s3UriPrefixChange"),
-    onIsEditingChange: action("isEditingChange"),
     hints: [
         { type: "key-segment", text: "quarter-2" },
         { type: "key-segment", text: "quarter-3" },
@@ -91,7 +79,6 @@ export const NavigationMode: Story = {
 export const EditingModeWithHints: Story = {
     args: {
         ...baseArgs,
-        isEditing: true,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/2024/")
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -147,7 +134,6 @@ export const HashDelimiter: Story = {
 export const EditingModeWithShortcuts: Story = {
     args: {
         ...baseArgs,
-        isEditing: true,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             { type: "bookmark", text: "2024/quarter-1/" },
@@ -162,7 +148,6 @@ export const EditingModeWithShortcuts: Story = {
 export const EditingModeWithManyHints: Story = {
     args: {
         ...baseArgs,
-        isEditing: true,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             { type: "bookmark", text: "2024/" },
@@ -187,7 +172,6 @@ export const EditingModeWithManyHints: Story = {
 export const EditingModeWithVeryLongHints: Story = {
     args: {
         ...baseArgs,
-        isEditing: true,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             {
@@ -242,7 +226,6 @@ function ControlledS3UriBarStory() {
     const [s3UriPrefix, setS3UriPrefix] = useState<S3Uri.Prefix>(
         parsePrefixOrThrow("s3://analytics-data/exports/")
     );
-    const [isEditing, setIsEditing] = useState(false);
     const [bookmarkedS3Uris, setBookmarkedS3Uris] = useState<string[]>([]);
 
     const currentS3Uri = useMemo(() => stringifyS3Uri(s3UriPrefix), [s3UriPrefix]);
@@ -276,16 +259,11 @@ function ControlledS3UriBarStory() {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
                 s3UriPrefix={s3UriPrefix}
-                isEditing={isEditing}
                 hints={hints}
                 isBookmarked={isBookmarked}
                 onS3UriPrefixChange={({ s3UriPrefix }) => {
                     setS3UriPrefix(s3UriPrefix);
                     action("s3UriPrefixChange")(stringifyS3Uri(s3UriPrefix));
-                }}
-                onIsEditingChange={({ isEditing }) => {
-                    setIsEditing(isEditing);
-                    action("isEditingChange")(isEditing);
                 }}
                 onToggleBookmark={() => {
                     setBookmarkedS3Uris(current =>
@@ -309,7 +287,6 @@ function ControlledS3UriBarStory() {
                 }}
             >
                 <div>Current URI: {currentS3Uri}</div>
-                <div>Mode: {isEditing ? "editing" : "navigation"}</div>
                 <div>Hints count: {hints.length}</div>
                 <div>Bookmarked URIs: {bookmarkedS3Uris.length}</div>
             </div>

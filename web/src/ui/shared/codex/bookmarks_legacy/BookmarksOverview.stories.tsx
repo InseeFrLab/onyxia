@@ -31,9 +31,7 @@ const overviewArgs = {
     s3UriPrefix: parsePrefixOrThrow(
         "s3://analytics-data/exports/2024/quarter-1/report.csv"
     ),
-    isEditing: false,
     onS3UriPrefixChange: () => undefined,
-    onIsEditingChange: () => undefined,
     hints: [],
     isBookmarked: false
 };
@@ -44,7 +42,6 @@ export const Overview: Story = {
         const [s3UriPrefix, setS3UriPrefix] = useState<S3Uri.Prefix>(
             parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv")
         );
-        const [isEditing, setIsEditing] = useState(false);
         const [pinnedBookmarks, setPinnedBookmarks] = useState<Bookmark[]>([
             {
                 id: "bucket-analytics",
@@ -66,14 +63,9 @@ export const Overview: Story = {
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <S3UriBar
                     s3UriPrefix={s3UriPrefix}
-                    isEditing={isEditing}
                     onS3UriPrefixChange={({ s3UriPrefix }) => {
                         action("s3UriPrefixChange")(stringifyS3Uri(s3UriPrefix));
                         setS3UriPrefix(s3UriPrefix);
-                    }}
-                    onIsEditingChange={({ isEditing }) => {
-                        action("isEditingChange")(isEditing);
-                        setIsEditing(isEditing);
                     }}
                     hints={[
                         { type: "key-segment", text: "quarter-2" },
@@ -102,7 +94,6 @@ export const Overview: Story = {
                     activeId={activeBookmarkId}
                     onSelect={bookmark => {
                         setS3UriPrefix(parsePrefixOrThrow(bookmark.path));
-                        setIsEditing(false);
                     }}
                     onUnpin={bookmark =>
                         setPinnedBookmarks(prev =>
