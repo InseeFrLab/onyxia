@@ -39,8 +39,23 @@ export type S3UriBarProps = {
      *   const s3UriPrefix: S3Uri.Prefix = { ... }
      *
      * Use helpers from `core/tools/S3Uri` to parse/stringify/manipulate.
+     *
+     * The s3UriPrefix can be undefined. In this case the component should be locked in editing mode.
+     * The text input should be set by default to s3://
+     * And the state representing input text should be internal to the component.
+     * onS3UriPrefixChange() should only be called when the user have typed an uri that is
+     * successfully parsable as a S3Uri (parseS3Uri() does not throw) and when enter is pressed, or the focus
+     * is lost.
+     * When s3UriPrefix is undefined there can be hint but only of type "bookmark".
+     * For example hints can be:
+     * [
+     *  { type: "bookmark", text: "s3://mybucket/" },
+     *  { type: "bookmark", text: "s3://donee-insee/diffusion/" }
+     * ]
+     * The component is responsible for filtering out the irrelevant hint entry as the user types
+     * For example when the current value of the input is "s3://my" only the "s3://mybucket/" hint should appear.
      */
-    s3UriPrefix: S3Uri.Prefix;
+    s3UriPrefix: S3Uri.Prefix | undefined;
 
     /**
      * Request a change to the current prefix.
