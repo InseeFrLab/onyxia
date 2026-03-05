@@ -27,8 +27,8 @@ export type S3UriBarProps = {
     onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
     onIsEditingChange: (params: { isEditing: boolean }) => void;
     hints: {
-        type: "object" | "key-segment" | "shortcut";
-        name: string;
+        type: "object" | "key-segment" | "bookmark";
+        text: string;
     }[];
     isBookmarked: boolean;
     onToggleBookmark?: () => void;
@@ -72,8 +72,8 @@ function getHintTypeLabel(type: HintType): string {
     switch (type) {
         case "key-segment":
             return "Prefix";
-        case "shortcut":
-            return "Shortcut";
+        case "bookmark":
+            return "Bookmark";
         case "object":
             return "Object";
     }
@@ -83,7 +83,7 @@ function getHintTypeIcon(type: HintType): string {
     switch (type) {
         case "key-segment":
             return getIconUrlByName("Folder");
-        case "shortcut":
+        case "bookmark":
             return getIconUrlByName("Link");
         case "object":
             return getIconUrlByName("Description");
@@ -647,7 +647,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 type: "prefix",
                 bucket: sourcePrefix.bucket,
                 delimiter: sourcePrefix.delimiter,
-                keySegments: [...sourcePrefix.keySegments, hint.name],
+                keySegments: [...sourcePrefix.keySegments, hint.text],
                 isDelimiterTerminated: true
             };
         } else if (hint.type === "object") {
@@ -657,18 +657,18 @@ export function S3UriBar(props: S3UriBarProps) {
                 delimiter: sourcePrefix.delimiter,
                 keySegments: [...sourcePrefix.keySegments],
                 isDelimiterTerminated: false,
-                nextKeySegmentPrefix: hint.name
+                nextKeySegmentPrefix: hint.text
             };
         } else {
-            const shortcut = hint.name.trim();
+            const bookmarkPath = hint.text.trim();
 
             nextPrefix =
                 tryParsePrefix({
-                    s3Uri: shortcut,
+                    s3Uri: bookmarkPath,
                     delimiter: normalizedPrefix.delimiter
                 }) ??
                 tryParsePrefix({
-                    s3Uri: `s3://${sourcePrefix.bucket}${shortcut.startsWith(sourcePrefix.delimiter) ? "" : sourcePrefix.delimiter}${shortcut}`,
+                    s3Uri: `s3://${sourcePrefix.bucket}${bookmarkPath.startsWith(sourcePrefix.delimiter) ? "" : sourcePrefix.delimiter}${bookmarkPath}`,
                     delimiter: normalizedPrefix.delimiter
                 });
         }
@@ -1272,7 +1272,7 @@ export function S3UriBar(props: S3UriBarProps) {
                     {hints.map((hint, index) => (
                         <button
                             id={`${hintsListId}-${index}`}
-                            key={`${hint.type}-${hint.name}-${index}`}
+                            key={`${hint.type}-${hint.text}-${index}`}
                             type="button"
                             role="option"
                             aria-selected={activeHintIndex === index}
@@ -1301,8 +1301,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                     icon={getHintTypeIcon(hint.type)}
                                 />
                             </span>
-                            <span className={classes.hintName} title={hint.name}>
-                                {collapseMiddle(hint.name)}
+                            <span className={classes.hintName} title={hint.text}>
+                                {collapseMiddle(hint.text)}
                             </span>
                         </button>
                     ))}

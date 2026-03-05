@@ -76,10 +76,10 @@ export const Overview: Story = {
                         setIsEditing(isEditing);
                     }}
                     hints={[
-                        { type: "key-segment", name: "quarter-2" },
-                        { type: "key-segment", name: "quarter-3" },
-                        { type: "object", name: "report.parquet" },
-                        { type: "shortcut", name: "exports/2024/" }
+                        { type: "key-segment", text: "quarter-2" },
+                        { type: "key-segment", text: "quarter-3" },
+                        { type: "object", text: "report.parquet" },
+                        { type: "bookmark", text: "exports/2024/" }
                     ]}
                     isBookmarked={activeBookmarkId !== undefined}
                     onToggleBookmark={() => {

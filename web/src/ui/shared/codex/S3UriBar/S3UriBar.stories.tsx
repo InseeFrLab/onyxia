@@ -72,10 +72,10 @@ const baseArgs: S3UriBarProps = {
     onS3UriPrefixChange: action("s3UriPrefixChange"),
     onIsEditingChange: action("isEditingChange"),
     hints: [
-        { type: "key-segment", name: "quarter-2" },
-        { type: "key-segment", name: "quarter-3" },
-        { type: "object", name: "report.parquet" },
-        { type: "shortcut", name: "exports/2024/" }
+        { type: "key-segment", text: "quarter-2" },
+        { type: "key-segment", text: "quarter-3" },
+        { type: "object", text: "report.parquet" },
+        { type: "bookmark", text: "exports/2024/" }
     ],
     isBookmarked: false,
     onToggleBookmark: action("toggleBookmark")
@@ -136,9 +136,9 @@ export const HashDelimiter: Story = {
             delimiter: "#"
         }),
         hints: [
-            { type: "key-segment", name: "baz" },
-            { type: "object", name: "other.txt" },
-            { type: "shortcut", name: "foo#bar#" }
+            { type: "key-segment", text: "baz" },
+            { type: "object", text: "other.txt" },
+            { type: "bookmark", text: "foo#bar#" }
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -150,10 +150,10 @@ export const EditingModeWithShortcuts: Story = {
         isEditing: true,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
-            { type: "shortcut", name: "2024/quarter-1/" },
-            { type: "shortcut", name: "raw/events/" },
-            { type: "key-segment", name: "dashboards" },
-            { type: "object", name: "README.md" }
+            { type: "bookmark", text: "2024/quarter-1/" },
+            { type: "bookmark", text: "raw/events/" },
+            { type: "key-segment", text: "dashboards" },
+            { type: "object", text: "README.md" }
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -165,20 +165,20 @@ export const EditingModeWithManyHints: Story = {
         isEditing: true,
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
-            { type: "shortcut", name: "2024/" },
-            { type: "shortcut", name: "2024/quarter-1/" },
-            { type: "shortcut", name: "raw/events/" },
-            { type: "key-segment", name: "2021" },
-            { type: "key-segment", name: "2022" },
-            { type: "key-segment", name: "2023" },
-            { type: "key-segment", name: "2024" },
-            { type: "key-segment", name: "2025" },
-            { type: "key-segment", name: "dashboards" },
-            { type: "key-segment", name: "reports" },
-            { type: "object", name: "README.md" },
-            { type: "object", name: "manifest.json" },
-            { type: "object", name: "report-quarterly.parquet" },
-            { type: "object", name: "report-yearly.parquet" }
+            { type: "bookmark", text: "2024/" },
+            { type: "bookmark", text: "2024/quarter-1/" },
+            { type: "bookmark", text: "raw/events/" },
+            { type: "key-segment", text: "2021" },
+            { type: "key-segment", text: "2022" },
+            { type: "key-segment", text: "2023" },
+            { type: "key-segment", text: "2024" },
+            { type: "key-segment", text: "2025" },
+            { type: "key-segment", text: "dashboards" },
+            { type: "key-segment", text: "reports" },
+            { type: "object", text: "README.md" },
+            { type: "object", text: "manifest.json" },
+            { type: "object", text: "report-quarterly.parquet" },
+            { type: "object", text: "report-yearly.parquet" }
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -191,32 +191,32 @@ export const EditingModeWithVeryLongHints: Story = {
         s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             {
-                type: "shortcut",
-                name: "raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/"
+                type: "bookmark",
+                text: "raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/"
             },
             {
-                type: "shortcut",
-                name: "dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/"
-            },
-            {
-                type: "key-segment",
-                name: "department=analytics-team-with-an-extremely-descriptive-name"
+                type: "bookmark",
+                text: "dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/"
             },
             {
                 type: "key-segment",
-                name: "source-system=customer-interaction-and-engagement-platform"
+                text: "department=analytics-team-with-an-extremely-descriptive-name"
+            },
+            {
+                type: "key-segment",
+                text: "source-system=customer-interaction-and-engagement-platform"
             },
             {
                 type: "object",
-                name: "report-quarterly-performance-and-financial-projections-for-fiscal-year-2025.parquet"
+                text: "report-quarterly-performance-and-financial-projections-for-fiscal-year-2025.parquet"
             },
             {
                 type: "object",
-                name: "dashboard_configuration_snapshot_with_extended_metadata_and_annotations.json"
+                text: "dashboard_configuration_snapshot_with_extended_metadata_and_annotations.json"
             },
             {
                 type: "object",
-                name: "this-is-a-very-very-very-very-very-very-long-object-name.csv"
+                text: "this-is-a-very-very-very-very-very-very-long-object-name.csv"
             }
         ]
     },
@@ -256,16 +256,16 @@ function ControlledS3UriBarStory() {
 
         return [
             {
-                type: "shortcut" as const,
-                name: `${bucketData.keySegments[0]}${s3UriPrefix.delimiter}`
+                type: "bookmark" as const,
+                text: `${bucketData.keySegments[0]}${s3UriPrefix.delimiter}`
             },
-            ...bucketData.keySegments.map(name => ({
+            ...bucketData.keySegments.map(text => ({
                 type: "key-segment" as const,
-                name
+                text
             })),
-            ...bucketData.objects.map(name => ({
+            ...bucketData.objects.map(text => ({
                 type: "object" as const,
-                name
+                text
             }))
         ];
     }, [s3UriPrefix.bucket]);
