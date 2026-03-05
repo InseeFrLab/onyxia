@@ -76,14 +76,19 @@ export type S3UriBarProps = {
     /**
      * Hints to display while editing.
      *
-     * - type: "object" => object entry
-     * - type: "key-segment" => common prefix / folder-like segment
+     * - type: "object" => object entry. Example "foo.csv"
+     * - type: "key-segment" => common prefix / folder-like segment. Example "quarter-2"
+     * - type: "bookmark" => Known location. Example "2026/quarter-2/foo.csv"
      *
      * Note: ordering, debouncing, and content correctness are external responsibilities.
+     *
+     * Actually the semantic of the different types of items is out of scope for the component.
+     * The component only needs to know the type so that the popup modal for selecting hits can
+     * have different icons depending of the type of hint this is.
      */
     hints: {
-        type: "object" | "key-segment";
-        name: string;
+        type: "object" | "key-segment" | "bookmark";
+        text: string;
     }[];
 
     /**
