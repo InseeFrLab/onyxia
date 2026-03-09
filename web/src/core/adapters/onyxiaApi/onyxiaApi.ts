@@ -21,7 +21,7 @@ import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
-import { parseS3UriPrefix } from "core/tools/S3Uri";
+import { parseS3Uri } from "core/tools/S3Uri";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -319,9 +319,11 @@ export function createOnyxiaApi(params: {
                                                                         const s3UriPrefix = `s3://${bookmarkedDirectory_api.fullPath}`;
 
                                                                         // NOTE: Just for checking shape.
-                                                                        parseS3UriPrefix({
-                                                                            s3UriPrefix,
-                                                                            strict: true
+                                                                        parseS3Uri({
+                                                                            value: s3UriPrefix,
+                                                                            delimiter:
+                                                                                "/",
+                                                                            isPrefix: true
                                                                         });
 
                                                                         return s3UriPrefix;

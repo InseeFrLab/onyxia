@@ -3,7 +3,7 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
@@ -30,7 +30,22 @@ export type MainView = {
 
     uploads: State.Upload[];
 
-    navigationUri: S3Uri.Prefix | undefined;
+    uriBar: {
+        s3UriPrefix: S3Uri.Prefix | undefined;
+        hints: {
+            type: "object" | "key-segment" | "bookmark";
+            text: string;
+        }[];
+        bookmarkStatus:
+            | {
+                  isBookmarked: false;
+              }
+            | {
+                  isBookmarked: true;
+                  isReadonly: boolean;
+              };
+    };
+
     isListing: boolean;
 
     listedPrefix:
@@ -40,6 +55,7 @@ export type MainView = {
           }
         | {
               isErrored: false;
+              /*
               bookmarkStatus:
                   | {
                         isBookmarked: false;
@@ -48,6 +64,7 @@ export type MainView = {
                         isBookmarked: true;
                         isReadonly: boolean;
                     };
+                */
               items: MainView.Item[];
           }
         | undefined;
@@ -149,12 +166,6 @@ const bookmarks = createSelector(
             s3UriPrefix: bookmark.s3UriPrefix
         }));
     }
-);
-
-const navigationUri = createSelector(
-    s3UriPrefix,
-    (s3UriPrefix): MainView["navigationUri"] =>
-        s3UriPrefix === undefined ? undefined : s3UriPrefix
 );
 
 const listedPrefix_state = createSelector(
@@ -344,22 +355,115 @@ const listedPrefix = createSelector(
         assert(ambientS3Profile !== undefined);
         assert(items !== undefined);
 
-        const { s3UriPrefix } = listedPrefix_state.current;
-
-        const bookmark = ambientS3Profile.bookmarks.find(bookmark =>
-            same(bookmark.s3UriPrefix, s3UriPrefix)
-        );
-
         return {
             isErrored: false,
-            bookmarkStatus:
-                bookmark === undefined
-                    ? { isBookmarked: false }
-                    : {
-                          isBookmarked: true,
-                          isReadonly: bookmark.isReadonly
-                      },
             items
+        };
+    }
+);
+
+const uriBar = createSelector(
+    s3UriPrefix,
+    bookmarks,
+    listedPrefix,
+    isListing,
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    (
+        s3UriPrefix,
+        bookmarks,
+        listedPrefix,
+        isListing,
+        ambientS3Profile
+    ): MainView["uriBar"] => {
+        if (s3UriPrefix === undefined) {
+            return {
+                s3UriPrefix: undefined,
+                hints: bookmarks.map(bookmark => ({
+                    type: "bookmark",
+                    text: stringifyS3Uri(bookmark.s3UriPrefix)
+                })),
+                bookmarkStatus: {
+                    isBookmarked: false
+                }
+            };
+        }
+
+        const bookmarkStatus: MainView["uriBar"]["bookmarkStatus"] = (() => {
+            assert(ambientS3Profile !== undefined);
+
+            const bookmark = ambientS3Profile.bookmarks.find(bookmark =>
+                same(bookmark.s3UriPrefix, s3UriPrefix)
+            );
+
+            if (bookmark === undefined) {
+                return { isBookmarked: false };
+            }
+
+            return {
+                isBookmarked: true,
+                isReadonly: bookmark.isReadonly
+            };
+        })();
+
+        const s3UriPrefix_str = stringifyS3Uri(s3UriPrefix);
+
+        const hints: MainView["uriBar"]["hints"] = bookmarks
+            .map(bookmark => stringifyS3Uri(bookmark.s3UriPrefix))
+            .filter(s3UriPrefix_bookmark_str =>
+                s3UriPrefix_bookmark_str.startsWith(s3UriPrefix_str)
+            )
+            .map(s3UriPrefix_bookmark_str =>
+                s3UriPrefix_bookmark_str.slice(s3UriPrefix_str.length)
+            )
+            .map(text => ({
+                type: "bookmark" as const,
+                text
+            }));
+
+        if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
+            return {
+                s3UriPrefix,
+                hints,
+                bookmarkStatus
+            };
+        }
+
+        listedPrefix.items.forEach(item => {
+            switch (item.type) {
+                case "object":
+                    hints.push({
+                        type: "object",
+                        text: item.s3Uri.keyBasename
+                    });
+
+                    break;
+
+                case "prefix segment":
+                    {
+                        const last_segment = item.s3UriPrefix.keySegments.at(-1);
+                        assert(last_segment !== undefined);
+
+                        hints.push({
+                            type: "key-segment",
+                            text: last_segment
+                        });
+                    }
+                    break;
+                default:
+                    assert<Equals<typeof item, never>>(false);
+            }
+        });
+
+        hints.sort((a, b) => {
+            const getRank = (hint: typeof a) =>
+                hint.type === "key-segment" ? 0 : hint.type === "object" ? 1 : 2;
+            return getRank(a) - getRank(b);
+        });
+
+        return {
+            s3UriPrefix,
+            hints,
+            bookmarkStatus
         };
     }
 );
@@ -368,21 +472,14 @@ const mainView = createSelector(
     profileSelect,
     bookmarks,
     uploads,
-    navigationUri,
+    uriBar,
     isListing,
     listedPrefix,
-    (
+    (profileSelect, bookmarks, uploads, uriBar, isListing, listedPrefix): MainView => ({
         profileSelect,
         bookmarks,
         uploads,
-        navigationUri,
-        isListing,
-        listedPrefix
-    ): MainView => ({
-        profileSelect,
-        bookmarks,
-        uploads,
-        navigationUri,
+        uriBar,
         isListing,
         listedPrefix
     })
