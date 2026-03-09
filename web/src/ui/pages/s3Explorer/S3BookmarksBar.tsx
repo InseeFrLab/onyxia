@@ -30,6 +30,7 @@ export function S3BookmarksBar(props: Props) {
                 s3Uri: bookmark.s3UriPrefix,
                 isReadonly: bookmark.isReadonly
             }))}
+            activeItemS3Uri={mainView.navigationUri}
             getItemLink={({ s3Uri }) => {
                 const s3UriStr = stringifyS3Uri(s3Uri);
 

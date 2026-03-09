@@ -26,13 +26,17 @@ export type S3BookmarksBarItem = {
      */
     link: Link;
 
-    /**
-     * A callback function that the component should call
-     * when the user click for deleting the bookmark.
-     *
-     * Not all bookmarks are deletable, hence the optionality.
-     */
-    onDelete: (() => void) | undefined;
+    /** Some bookmarks are readonly hens the optionality */
+    callbacks:
+        | {
+              /**
+               * A callback function that the component should call
+               * when the user click for deleting the bookmark.
+               */
+              onDelete: () => void;
+              onRename: () => void;
+          }
+        | undefined;
 
     /*
      * This specifies if the bookmark is currently active.
