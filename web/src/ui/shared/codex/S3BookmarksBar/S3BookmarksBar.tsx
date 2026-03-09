@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss";
-import type { S3Uri } from "core/tools/S3Uri";
+import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import type { LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
 import { S3BookmarksBarItem } from "./S3BookmarksBarItem";
@@ -8,6 +8,7 @@ import { S3BookmarksBarItem } from "./S3BookmarksBarItem";
 export type S3BookmarksBarProps = {
     className?: string;
     items: S3BookmarksBarProps.Item[];
+    activeItemS3Uri: S3Uri | undefined;
     onDelete: (props: { s3Uri: S3Uri }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
@@ -20,29 +21,14 @@ export namespace S3BookmarksBarProps {
     };
 }
 
-function getIsLinkActive(link: Link): boolean {
-    if (typeof window === "undefined") {
-        return false;
-    }
-
-    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-
-    try {
-        const url = new URL(link.href, window.location.origin);
-        const target = `${url.pathname}${url.search}${url.hash}`;
-        return target === current;
-    } catch {
-        return link.href === current || link.href === window.location.href;
-    }
-}
-
 export function S3BookmarksBar(props: S3BookmarksBarProps) {
-    const { className, items, getItemLink, onDelete } = props;
+    const { className, items, activeItemS3Uri, getItemLink, onDelete } = props;
 
     const { classes, cx } = useStyles();
 
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const [showRightFade, setShowRightFade] = useState(false);
+    const activeItemKey = activeItemS3Uri ? stringifyS3Uri(activeItemS3Uri) : undefined;
 
     useEffect(() => {
         const element = scrollRef.current;
@@ -86,7 +72,10 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                     ? undefined
                                     : () => onDelete({ s3Uri: item.s3Uri })
                             }
-                            isActive={getIsLinkActive(link)}
+                            isActive={
+                                activeItemKey !== undefined &&
+                                stringifyS3Uri(item.s3Uri) === activeItemKey
+                            }
                         />
                     );
                 })}

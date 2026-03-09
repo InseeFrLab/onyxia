@@ -85,6 +85,7 @@ const onDelete: S3BookmarksBarProps["onDelete"] = ({ s3Uri }) => {
 export const Default: Story = {
     args: {
         items: baseItems,
+        activeItemS3Uri: baseItems[0].s3Uri,
         getItemLink,
         onDelete
     }
@@ -93,6 +94,7 @@ export const Default: Story = {
 export const Overflow: Story = {
     args: {
         items: overflowItems,
+        activeItemS3Uri: overflowItems[3].s3Uri,
         getItemLink,
         onDelete
     },
@@ -109,6 +111,7 @@ export const ReadonlyOnly: Story = {
             ...item,
             isReadonly: true
         })),
+        activeItemS3Uri: overflowItems[2].s3Uri,
         getItemLink,
         onDelete
     }

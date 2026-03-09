@@ -8,7 +8,9 @@ import type { Link } from "type-route";
 export type S3BookmarksBarProps = {
     className?: string;
     items: S3BookmarksBarProps.Item[];
+    activeItemS3Uri: S3Uri | undefined;
     onDelete: (props: { s3Uri: S3Uri }) => void;
+    onRename: (props: { s3Uri: S3Uri }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
