@@ -147,7 +147,21 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             or: "或",
             doRegister: "创建账户",
             tabTitleSuffix: "登录"
-        }
+        }, 
+        ru: {
+            lowerCaseAlphanumericalCharsOnly: "Только строчные буквы и цифры",
+            "allowed email domains": "Разрешённые домены",
+            "this email domain is not allowed": "Этот домен электронной почты не разрешён",
+            "minimum length": "Минимальная длина: {0}",
+            "must be different from username": "Пароль не может совпадать с именем пользователя",
+            "password mismatch": "Пароли не совпадают",
+            "go back": "Назад",
+            "form not filled properly yet": "Пожалуйста, убедитесь, что форма заполнена корректно",
+            "must respect the pattern": "Должно соответствовать формату",
+            or: "или",
+            doRegister: "Создать аккаунт",
+            tabTitleSuffix: "Вход"
+        },
         /* spell-checker: enable */
     })
     .build();

@@ -138,6 +138,7 @@ localisation:
     - nl
     - no
     - zh-CN
+    - ru
 
 dependsOn:
   open:

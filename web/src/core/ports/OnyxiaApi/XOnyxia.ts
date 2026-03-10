@@ -50,7 +50,7 @@ export type XOnyxiaContext = {
         password: string;
         ip: string;
         darkMode: boolean;
-        lang: "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "es" | "de";
+        lang: "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "es" | "de" | "ru";
         /**
          * Decoded JWT OIDC ID token of the user launching the service.
          *

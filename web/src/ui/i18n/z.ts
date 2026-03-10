@@ -14,7 +14,8 @@ export const languages = [
     "nl",
     "it",
     "es",
-    "de"
+    "de", 
+    "ru"
 ] as const;
 
 assert<Equals<(typeof languages)[number], Language>>();
