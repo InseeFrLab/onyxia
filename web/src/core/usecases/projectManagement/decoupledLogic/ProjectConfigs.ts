@@ -5,7 +5,7 @@ import { z } from "zod";
 import { id } from "tsafe/id";
 import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefined";
 import { zStringifyableAtomic } from "core/tools/Stringifyable";
-import { type S3Uri, zS3UriPrefix } from "core/tools/S3Uri";
+import { type S3Uri, zS3Uri } from "core/tools/S3Uri";
 
 export type ProjectConfigs = {
     __modelVersion: 2;
@@ -35,7 +35,7 @@ export namespace ProjectConfigs {
     export namespace S3Profile {
         export type Bookmark = {
             displayName: string | undefined;
-            s3UriPrefix: S3Uri.Prefix;
+            s3Uri: S3Uri;
         };
     }
 
@@ -109,7 +109,7 @@ const zS3ConfigBookmark = (() => {
 
     const zTargetType = z.object({
         displayName: z.union([z.string(), z.undefined()]),
-        s3UriPrefix: zS3UriPrefix
+        s3Uri: zS3Uri
     });
 
     assert<Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>>();

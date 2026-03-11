@@ -1,5 +1,6 @@
 import type { OidcParams_Partial } from "./OidcParams";
 import type { LocalizedString } from "./Language";
+import type { S3Uri } from "core/tools/S3Uri";
 
 export type DeploymentRegion = {
     id: string;
@@ -137,7 +138,7 @@ export namespace DeploymentRegion {
         );
 
         export type Bookmark = {
-            s3UriPrefix: string;
+            s3Uri: S3Uri;
             title: LocalizedString;
             description: LocalizedString | undefined;
             tags: LocalizedString[];

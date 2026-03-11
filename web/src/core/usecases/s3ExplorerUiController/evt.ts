@@ -34,7 +34,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             () =>
                 dispatch(
                     thunks.listPrefix({
-                        s3UriPrefix: privateSelectors.s3UriPrefix(getState())
+                        s3Uri: privateSelectors.s3Uri(getState())
                     })
                 )
         );
@@ -53,14 +53,14 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                     return false;
                 }
 
-                const s3UriPrefix = privateSelectors.s3UriPrefix(getState());
+                const s3Uri = privateSelectors.s3Uri(getState());
 
-                if (s3UriPrefix === undefined) {
+                if (s3Uri === undefined) {
                     return false;
                 }
 
                 const { isTopLevel } = getIsInside({
-                    s3UriPrefix,
+                    s3UriPrefix: s3Uri,
                     s3Uri: action.payload.s3Uri
                 });
 
@@ -73,7 +73,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             () => {
                 dispatch(
                     thunks.listPrefix({
-                        s3UriPrefix: privateSelectors.s3UriPrefix(getState())
+                        s3Uri: privateSelectors.s3Uri(getState())
                     })
                 );
             }
@@ -93,8 +93,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                 return null;
             }
 
-            const { profileName, s3UriPrefix } = action.payload;
-            const { bucket } = s3UriPrefix;
+            const { profileName, s3Uri } = action.payload;
 
             const s3Profile = s3ProfilesManagement.selectors
                 .s3Profiles(getState())
@@ -105,24 +104,26 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             if (
                 s3Profile.bookmarks.find(
                     bookmark =>
-                        bookmark.isReadonly && bookmark.s3UriPrefix.bucket === bucket
+                        bookmark.isReadonly && bookmark.s3Uri.bucket === s3Uri.bucket
                 ) === undefined
             ) {
                 return null;
             }
 
-            return [{ profileName, s3UriPrefix, bucket }];
+            return [{ profileName, s3Uri }];
         },
-        async ({ profileName, s3UriPrefix, bucket }) => {
+        async ({ profileName, s3Uri }) => {
             evt.post({
                 action: "ask confirmation for bucket creation attempt",
-                bucket: s3UriPrefix.bucket,
+                bucket: s3Uri.bucket,
                 createBucket: async () => {
                     const s3Client = await dispatch(
                         s3ProfilesManagement.protectedThunks.getS3Client({
                             profileName
                         })
                     );
+
+                    const { bucket } = s3Uri;
 
                     const cmdId = Date.now();
 
@@ -154,11 +155,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                     );
 
                     if (result.isSuccess) {
-                        dispatch(
-                            thunks.listPrefix({
-                                s3UriPrefix
-                            })
-                        );
+                        dispatch(thunks.listPrefix({ s3Uri }));
                     }
 
                     return { isSuccess: result.isSuccess };
@@ -186,15 +183,15 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                 {
                     routeParams,
                     method:
-                        routeParams.s3UriPrefixWithoutScheme ===
-                        routeParams_prev.s3UriPrefixWithoutScheme
+                        routeParams.s3UriWithoutScheme ===
+                        routeParams_prev.s3UriWithoutScheme
                             ? "replace"
                             : "push"
                 } as const
             ],
             {
                 routeParams: id<RouteParams>({
-                    s3UriPrefixWithoutScheme: ""
+                    s3UriWithoutScheme: ""
                 }),
                 method: Reflect<"push" | "replace">()
             }

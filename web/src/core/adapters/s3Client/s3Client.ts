@@ -5,7 +5,7 @@ import {
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert, is } from "tsafe/assert";
 import type { Oidc } from "core/ports/Oidc";
-import { getS3UriKeyOrKeyPrefix, parseS3Uri } from "core/tools/S3Uri";
+import { getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
 import { exclude, id } from "tsafe";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi";
@@ -226,19 +226,19 @@ export function createS3Client(
 
             return getNewlyRequestedOrCachedToken();
         },
-        listObjects: async ({ s3UriPrefix }) => {
+        listObjects: async ({ s3Uri }) => {
             const { getAwsS3Client } = await prApi;
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const Bucket = s3UriPrefix.bucket;
-            const Delimiter = s3UriPrefix.delimiter;
+            const Bucket = s3Uri.bucket;
+            const Delimiter = s3Uri.delimiter;
 
             const listObjectsV2Command = new (
                 await import("@aws-sdk/client-s3")
             ).ListObjectsV2Command({
                 Bucket,
-                Prefix: getS3UriKeyOrKeyPrefix(s3UriPrefix),
+                Prefix: getS3UriKey(s3Uri),
                 Delimiter,
                 MaxKeys: 1_000
             });
@@ -288,30 +288,31 @@ export function createS3Client(
                     .map(({ key, LastModified, Size }) => {
                         assert(LastModified !== undefined);
                         assert(Size !== undefined);
+                        const s3Uri = parseS3Uri({
+                            delimiter: Delimiter,
+                            value: `s3://${Bucket}/${key}`
+                        });
+                        assert(!s3Uri.isDelimiterTerminated);
+
                         return id<S3Client.ListObjectsReturn.Success.Object>({
-                            s3Uri: parseS3Uri({
-                                delimiter: Delimiter,
-                                isPrefix: false,
-                                value: `s3://${Bucket}/${key}`
-                            }),
+                            s3Uri,
                             lastModified: LastModified.getTime(),
                             size: Size
                         });
                     }),
 
-                s3UriPrefixes: (resp.CommonPrefixes ?? [])
+                prefixes: (resp.CommonPrefixes ?? [])
                     .map(({ Prefix }) => Prefix)
                     .filter(prefix => prefix !== undefined)
                     .map(prefix => {
-                        const s3UriPrefix = parseS3Uri({
-                            isPrefix: true,
+                        const s3Uri = parseS3Uri({
                             delimiter: Delimiter,
                             value: `s3://${Bucket}/${prefix}`
                         });
 
-                        assert(s3UriPrefix.isDelimiterTerminated);
+                        assert(s3Uri.isDelimiterTerminated);
 
-                        return s3UriPrefix;
+                        return s3Uri;
                     })
             });
         },
@@ -329,7 +330,7 @@ export function createS3Client(
                 client: awsS3Client,
                 params: {
                     Bucket,
-                    Key: getS3UriKeyOrKeyPrefix(s3Uri),
+                    Key: getS3UriKey(s3Uri),
                     Body: blob,
                     ContentType: blob.type
                 },
@@ -361,7 +362,7 @@ export function createS3Client(
             await awsS3Client.send(
                 new (await import("@aws-sdk/client-s3")).DeleteObjectCommand({
                     Bucket: s3Uri.bucket,
-                    Key: getS3UriKeyOrKeyPrefix(s3Uri)
+                    Key: getS3UriKey(s3Uri)
                 })
             );
         },
@@ -376,7 +377,7 @@ export function createS3Client(
                 awsS3Client,
                 new (await import("@aws-sdk/client-s3")).GetObjectCommand({
                     Bucket: s3Uri.bucket,
-                    Key: getS3UriKeyOrKeyPrefix(s3Uri)
+                    Key: getS3UriKey(s3Uri)
                 }),
                 {
                     expiresIn: validityDurationSecond
@@ -395,7 +396,7 @@ export function createS3Client(
             const response = await awsS3Client.send(
                 new GetObjectCommand({
                     Bucket: s3Uri.bucket,
-                    Key: getS3UriKeyOrKeyPrefix(s3Uri),
+                    Key: getS3UriKey(s3Uri),
                     ...(range !== undefined ? { Range: range } : {})
                 })
             );
@@ -417,7 +418,7 @@ export function createS3Client(
             const head = await awsS3Client.send(
                 new (await import("@aws-sdk/client-s3")).HeadObjectCommand({
                     Bucket: s3Uri.bucket,
-                    Key: getS3UriKeyOrKeyPrefix(s3Uri)
+                    Key: getS3UriKey(s3Uri)
                 })
             );
 

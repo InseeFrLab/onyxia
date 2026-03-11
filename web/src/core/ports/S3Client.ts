@@ -15,25 +15,23 @@ export type S3Client = {
     /**
      *  In charge of creating bucket if doesn't exist.
      */
-    listObjects: (params: {
-        s3UriPrefix: S3Uri.Prefix;
-    }) => Promise<S3Client.ListObjectsReturn>;
+    listObjects: (params: { s3Uri: S3Uri }) => Promise<S3Client.ListObjectsReturn>;
 
     putObject: (params: {
-        s3Uri: S3Uri.Object;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
         blob: Blob;
         onUploadProgress: (params: { uploadPercent: number }) => void;
     }) => Promise<void>;
 
-    deleteObject: (params: { s3Uri: S3Uri.Object }) => Promise<void>;
+    deleteObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => Promise<void>;
 
     generateSignedDownloadUrl: (params: {
-        s3Uri: S3Uri.Object;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
         validityDurationSecond: number;
     }) => Promise<string>;
 
     getObjectContent: (params: {
-        s3Uri: S3Uri.Object;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
         range: `bytes=0-${number}` | undefined;
     }) => Promise<{
         stream: ReadableStream;
@@ -42,7 +40,7 @@ export type S3Client = {
     }>;
 
     getObjectContentType: (params: {
-        s3Uri: S3Uri.Object;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
     }) => Promise<string | undefined>;
 
     createBucket: (params: { bucket: string }) => Promise<
@@ -62,16 +60,16 @@ export namespace S3Client {
         export type Success = {
             isSuccess: true;
             objects: {
-                s3Uri: S3Uri.Object;
+                s3Uri: S3Uri.NonTerminatedByDelimiter;
                 lastModified: number;
                 size: number;
             }[];
-            s3UriPrefixes: S3Uri.Prefix.TerminatedByDelimiter[];
+            prefixes: S3Uri.TerminatedByDelimiter[];
         };
 
         export namespace Success {
             export type Object = {
-                s3Uri: S3Uri.Object;
+                s3Uri: S3Uri.NonTerminatedByDelimiter;
                 lastModified: number;
                 size: number;
             };

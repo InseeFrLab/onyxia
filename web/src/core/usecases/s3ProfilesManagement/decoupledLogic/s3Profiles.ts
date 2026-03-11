@@ -30,7 +30,7 @@ export namespace S3Profile {
     export type Bookmark = {
         isReadonly: boolean;
         displayName: LocalizedString | undefined;
-        s3UriPrefix: S3Uri.Prefix;
+        s3Uri: S3Uri;
     };
 }
 
@@ -79,13 +79,11 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     profileName: c.profileName,
                     creationTime: c.creationTime,
                     paramsOfCreateS3Client,
-                    bookmarks: (c.bookmarks ?? []).map(
-                        ({ displayName, s3UriPrefix }) => ({
-                            displayName,
-                            s3UriPrefix,
-                            isReadonly: false
-                        })
-                    )
+                    bookmarks: (c.bookmarks ?? []).map(({ displayName, s3Uri }) => ({
+                        displayName,
+                        s3Uri,
+                        isReadonly: false
+                    }))
                 };
             })
             .sort((a, b) => b.creationTime - a.creationTime),
@@ -171,10 +169,10 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                         })
                                     );
                                 })
-                                .map(({ title, s3UriPrefix }) => ({
+                                .map(({ title, s3Uri }) => ({
                                     isReadonly: true,
                                     displayName: title,
-                                    s3UriPrefix
+                                    s3Uri
                                 })),
                             ...parseUserConfigsS3BookmarksStr({
                                 userConfigs_s3BookmarksStr:
@@ -184,7 +182,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                 .map(entry => ({
                                     isReadonly: false,
                                     displayName: entry.displayName ?? undefined,
-                                    s3UriPrefix: entry.s3UriPrefix
+                                    s3Uri: entry.s3Uri
                                 }))
                         ],
                         paramsOfCreateS3Client

@@ -34,19 +34,18 @@ export const thunks = {
 
                 if (!doesProfileExist) {
                     return dispatch(
-                        thunks.load({ routeParams: { s3UriPrefixWithoutScheme: "" } })
+                        thunks.load({ routeParams: { s3UriWithoutScheme: "" } })
                     );
                 }
 
                 dispatch(
                     thunks.listPrefix({
-                        s3UriPrefix:
-                            routeParams.s3UriPrefixWithoutScheme === ""
+                        s3Uri:
+                            routeParams.s3UriWithoutScheme === ""
                                 ? undefined
                                 : parseS3Uri({
-                                      value: `s3://${routeParams.s3UriPrefixWithoutScheme}`,
-                                      delimiter: "/",
-                                      isPrefix: true
+                                      value: `s3://${routeParams.s3UriWithoutScheme}`,
+                                      delimiter: "/"
                                   })
                     })
                 );
@@ -93,24 +92,23 @@ export const thunks = {
             }
 
             update_location: {
-                const s3UriPrefixObj_current = privateSelectors.s3UriPrefix(getState());
+                const s3Uri_current = privateSelectors.s3Uri(getState());
 
-                const s3UriPrefix =
-                    routeParams.s3UriPrefixWithoutScheme === ""
+                const s3Uri =
+                    routeParams.s3UriWithoutScheme === ""
                         ? undefined
                         : parseS3Uri({
-                              value: `s3://${routeParams.s3UriPrefixWithoutScheme}`,
-                              delimiter: "/",
-                              isPrefix: true
+                              value: `s3://${routeParams.s3UriWithoutScheme}`,
+                              delimiter: "/"
                           });
 
-                if (same(s3UriPrefixObj_current, s3UriPrefix)) {
+                if (same(s3Uri_current, s3Uri)) {
                     break update_location;
                 }
 
                 dispatch(
                     thunks.listPrefix({
-                        s3UriPrefix
+                        s3Uri
                     })
                 );
             }
@@ -132,7 +130,7 @@ export const thunks = {
 
             dispatch(
                 thunks.listPrefix({
-                    s3UriPrefix: undefined
+                    s3Uri: undefined
                 })
             );
         },
@@ -149,21 +147,21 @@ export const thunks = {
 
                 const [dispatch, getState] = args;
 
-                const s3UriPrefix = privateSelectors.s3UriPrefix(getState());
+                const s3Uri = privateSelectors.s3Uri(getState());
                 const s3Profile =
                     s3ProfileManagement.selectors.ambientS3Profile(getState());
 
                 assert(s3Profile !== undefined);
-                assert(s3UriPrefix !== undefined);
+                assert(s3Uri !== undefined);
 
                 const isBookmarked = s3Profile.bookmarks.find(bookmark =>
-                    same(bookmark.s3UriPrefix, s3UriPrefix)
+                    same(bookmark.s3Uri, s3Uri)
                 );
 
                 await dispatch(
                     s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
                         profileName: s3Profile.profileName,
-                        s3UriPrefix,
+                        s3Uri,
                         action: isBookmarked
                             ? {
                                   type: "delete"
@@ -179,57 +177,55 @@ export const thunks = {
             };
     })(),
     listPrefix:
-        (params: { s3UriPrefix: S3Uri.Prefix | undefined }) =>
+        (params: { s3Uri: S3Uri | undefined }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { s3UriPrefix } = params;
+            const { s3Uri } = params;
 
             const profileName = privateSelectors.profileName(getState());
 
             assert(profileName !== undefined);
 
-            if (s3UriPrefix === undefined) {
+            if (s3Uri === undefined) {
                 dispatch(actions.listingCleared({ profileName }));
                 return;
             }
 
             {
-                const s3UriPrefixObj_currentlyListing =
-                    privateSelectors.s3UriPrefixObj_currentlyListing(getState());
+                const s3Uri_currentlyListing =
+                    privateSelectors.s3Uri_currentlyListing(getState());
 
                 if (
-                    s3UriPrefixObj_currentlyListing !== undefined &&
-                    same(s3UriPrefixObj_currentlyListing, s3UriPrefix)
+                    s3Uri_currentlyListing !== undefined &&
+                    same(s3Uri_currentlyListing, s3Uri)
                 ) {
                     return;
                 }
             }
 
-            dispatch(actions.listingStarted({ profileName, s3UriPrefix }));
+            dispatch(actions.listingStarted({ profileName, s3Uri }));
 
             const cmdId = Date.now();
 
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: `aws s3 ls ${stringifyS3Uri(s3UriPrefix)}`
+                    cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
                 })
             );
 
             const maybeCancel = async (): Promise<void | never> => {
-                const s3UriPrefixObj_currentlyListing =
-                    privateSelectors.s3UriPrefixObj_currentlyListing(getState());
+                const s3Uri_currentlyListing =
+                    privateSelectors.s3Uri_currentlyListing(getState());
 
-                if (s3UriPrefixObj_currentlyListing === undefined) {
+                if (
+                    s3Uri_currentlyListing === undefined ||
+                    !same(s3Uri_currentlyListing, s3Uri)
+                ) {
+                    dispatch(actions.commandLogCancelled({ cmdId }));
                     await new Promise<never>(() => {});
                 }
-
-                if (!same(s3UriPrefixObj_currentlyListing, s3UriPrefix)) {
-                    await new Promise<never>(() => {});
-                }
-
-                dispatch(actions.commandLogCancelled({ cmdId }));
             };
 
             const s3Client = await dispatch(
@@ -238,7 +234,7 @@ export const thunks = {
 
             await maybeCancel();
 
-            const listObjectResult = await s3Client.listObjects({ s3UriPrefix });
+            const listObjectResult = await s3Client.listObjects({ s3Uri });
 
             await maybeCancel();
 
@@ -248,12 +244,12 @@ export const thunks = {
                     resp: (() => {
                         if (listObjectResult.isSuccess) {
                             return [
-                                listObjectResult.s3UriPrefixes.map(
-                                    s3UriPrefix =>
-                                        `PRE ${s3UriPrefix.keySegments.at(-1)}${s3UriPrefix.delimiter}`
+                                listObjectResult.prefixes.map(
+                                    s3Uri =>
+                                        `PRE ${s3Uri.keySegments.at(-1)}${s3Uri.delimiter}`
                                 ),
                                 listObjectResult.objects.map(
-                                    ({ s3Uri }) => `OBJ ${s3Uri.keyBasename}`
+                                    ({ s3Uri }) => `OBJ ${s3Uri.keySegments.at(-1)}`
                                 )
                             ].join("\n");
                         }
@@ -276,7 +272,7 @@ export const thunks = {
                 dispatch(
                     actions.listingFailed({
                         profileName,
-                        s3UriPrefix,
+                        s3Uri,
                         errorCase: listObjectResult.errorCase
                     })
                 );
@@ -287,16 +283,18 @@ export const thunks = {
                 actions.listingCompletedSuccessfully({
                     profileName,
                     items: [
-                        ...listObjectResult.s3UriPrefixes.map(s3UriPrefix =>
+                        ...listObjectResult.prefixes.map(s3Uri =>
                             id<State.ListedPrefix.Item.Prefix>({
                                 type: "prefix",
-                                s3UriPrefix
+                                s3Uri
                             })
                         ),
-                        ...listObjectResult.objects.map(({ s3Uri }) =>
+                        ...listObjectResult.objects.map(({ s3Uri, lastModified, size }) =>
                             id<State.ListedPrefix.Item.Object>({
                                 type: "object",
-                                s3Uri
+                                s3Uri,
+                                lastModified,
+                                size
                             })
                         )
                     ]
@@ -324,21 +322,21 @@ export const thunks = {
                 s3ProfileManagement.protectedThunks.getS3Client({ profileName })
             );
 
-            const s3UriPrefix = privateSelectors.s3UriPrefix(getState());
+            const s3Uri = privateSelectors.s3Uri(getState());
 
-            assert(s3UriPrefix !== undefined);
+            assert(s3Uri !== undefined);
 
             await Promise.all(
                 files.map(async file => {
-                    const s3Uri: S3Uri.Object = {
-                        type: "object",
-                        delimiter: s3UriPrefix.delimiter,
-                        bucket: s3UriPrefix.bucket,
+                    const s3Uri_object: S3Uri.NonTerminatedByDelimiter = {
+                        delimiter: s3Uri.delimiter,
+                        bucket: s3Uri.bucket,
                         keySegments: [
-                            ...s3UriPrefix.keySegments,
-                            ...file.relativePathSegments
+                            ...s3Uri.keySegments,
+                            ...file.relativePathSegments,
+                            file.fileBasename
                         ],
-                        keyBasename: file.fileBasename
+                        isDelimiterTerminated: false
                     };
 
                     const cmdId = Date.now();
@@ -346,7 +344,7 @@ export const thunks = {
                     dispatch(
                         actions.commandLogIssued({
                             cmdId,
-                            cmd: `mc cp ./${file.fileBasename} ${stringifyS3Uri(s3Uri)}`
+                            cmd: `mc cp ./${file.fileBasename} ${stringifyS3Uri(s3Uri_object)}`
                         })
                     );
 
@@ -355,13 +353,13 @@ export const thunks = {
                     dispatch(
                         actions.putObjectStarted({
                             profileName,
-                            s3Uri,
+                            s3Uri: s3Uri_object,
                             size
                         })
                     );
 
                     await s3Client.putObject({
-                        s3Uri,
+                        s3Uri: s3Uri_object,
                         blob: file.blob,
                         onUploadProgress: ({ uploadPercent }) => {
                             dispatch(
@@ -399,7 +397,7 @@ export const thunks = {
         },
 
     delete:
-        (params: { s3Uris: (S3Uri.Object | S3Uri.Prefix.TerminatedByDelimiter)[] }) =>
+        (params: { s3Uris: S3Uri[] }) =>
         async (...args): Promise<void> => {
             const { s3Uris } = params;
 
@@ -414,11 +412,11 @@ export const thunks = {
             );
 
             const crawl = async (params: {
-                s3UriPrefix: S3Uri.Prefix.TerminatedByDelimiter;
-            }): Promise<S3Uri.Object[]> => {
+                s3UriPrefix: S3Uri.TerminatedByDelimiter;
+            }): Promise<S3Uri.NonTerminatedByDelimiter[]> => {
                 const { s3UriPrefix } = params;
 
-                const result = await s3Client.listObjects({ s3UriPrefix });
+                const result = await s3Client.listObjects({ s3Uri: s3UriPrefix });
 
                 assert(result.isSuccess);
 
@@ -426,15 +424,15 @@ export const thunks = {
                     ...result.objects.map(({ s3Uri }) => s3Uri),
                     ...(
                         await Promise.all(
-                            result.s3UriPrefixes.map(s3UriPrefix =>
-                                crawl({ s3UriPrefix })
-                            )
+                            result.prefixes.map(s3Uri => crawl({ s3UriPrefix: s3Uri }))
                         )
                     ).flat()
                 ];
             };
 
-            const deleteObject = async (params: { s3Uri: S3Uri.Object }) => {
+            const deleteObject = async (params: {
+                s3Uri: S3Uri.NonTerminatedByDelimiter;
+            }) => {
                 const { s3Uri } = params;
 
                 const cmdId = Math.random();
@@ -460,10 +458,9 @@ export const thunks = {
                 s3Uris.map(async s3Uri => {
                     dispatch(actions.deletionStarted({ profileName, s3Uri }));
 
-                    const s3Uris =
-                        s3Uri.type === "object"
-                            ? [s3Uri]
-                            : await crawl({ s3UriPrefix: s3Uri });
+                    const s3Uris = s3Uri.isDelimiterTerminated
+                        ? await crawl({ s3UriPrefix: s3Uri })
+                        : [s3Uri];
 
                     await Promise.all(s3Uris.map(s3Uri => deleteObject({ s3Uri })));
 
@@ -472,7 +469,10 @@ export const thunks = {
             );
         },
     getPreSignedUrl:
-        (params: { s3Uri: S3Uri.Object; validityDurationSecond?: number }) =>
+        (params: {
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            validityDurationSecond?: number;
+        }) =>
         async (...args): Promise<string> => {
             const { s3Uri, validityDurationSecond = 3_600 } = params;
 
