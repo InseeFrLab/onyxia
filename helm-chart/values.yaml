@@ -13,6 +13,17 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    - name: ""
+      # namespace:
+      # sectionName:
+      # port:
+  hostnames:
+    - chart-example.local
+
 route:
   enabled: false
   annotations: {} # route.openshift.io/termination: "reencrypt"

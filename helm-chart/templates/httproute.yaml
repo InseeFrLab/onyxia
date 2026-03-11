@@ -1,0 +1,64 @@
+{{- if .Values.httpRoute.enabled -}}
+{{- $fullNameApi := include "onyxia.api.fullname" . -}}
+{{- $fullNameWeb := include "onyxia.web.fullname" . -}}
+{{- $fullNameOnboarding := include "onyxia.onboarding.fullname" . -}}
+{{- $fullName := include "onyxia.fullname" . -}}
+{{- $svcPortApi := .Values.api.service.port -}}
+{{- $svcPortWeb := .Values.web.service.port -}}
+{{- $svcPortOnboarding := .Values.onboarding.service.port -}}
+{{- $onboardingEnabled := .Values.onboarding.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "onyxia.labels" . | nindent 4 }}
+  annotations:
+  {{- with .Values.httpRoute.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- range .Values.httpRoute.parentRefs }}
+    - name: {{ .name | quote }}
+      {{- with .namespace }}
+      namespace: {{ . | quote }}
+      {{- end }}
+      {{- with .sectionName }}
+      sectionName: {{ . | quote }}
+      {{- end }}
+      {{- with .port }}
+      port: {{ . }}
+      {{- end }}
+    {{- end }}
+  {{- with .Values.httpRoute.hostnames }}
+  hostnames:
+    {{- range . }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- if $onboardingEnabled }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/onboarding
+      backendRefs:
+        - name: {{ $fullNameOnboarding }}
+          port: {{ $svcPortOnboarding }}
+    {{- end }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: {{ $fullNameApi }}
+          port: {{ $svcPortApi }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ $fullNameWeb }}
+          port: {{ $svcPortWeb }}
+{{- end }}
