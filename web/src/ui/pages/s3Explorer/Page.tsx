@@ -86,7 +86,7 @@ function PageComponent() {
                         <S3UriBar
                             hints={mainView.uriBar.hints}
                             onS3UriPrefixChange={s3ExplorerUiController.listPrefix}
-                            s3UriPrefix={mainView.uriBar.s3UriPrefix}
+                            s3Uri={mainView.uriBar.s3Uri}
                             onToggleBookmark={
                                 mainView.profileSelect.isEditable
                                     ? s3ExplorerUiController.toggleIsDirectoryPathBookmarked
