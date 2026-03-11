@@ -17,7 +17,9 @@ httpRoute:
   enabled: false
   annotations: {}
   parentRefs:
-    - name: ""
+    # parentRefs must reference the Gateway configured by the cluster administrator.
+    # parentRefs[0].name is required when httpRoute.enabled=true.
+    - name: onyxia-gateway
       # namespace:
       # sectionName:
       # port:

@@ -13,8 +13,8 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "onyxia.labels" . | nindent 4 }}
-  annotations:
   {{- with .Values.httpRoute.annotations }}
+  annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
