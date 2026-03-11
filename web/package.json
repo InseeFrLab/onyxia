@@ -70,7 +70,7 @@
         "minimal-polyfills": "^2.2.3",
         "mui-icons-material-lazy": "^1.0.4",
         "oidc-spa": "^10.0.4",
-        "onyxia-ui": "^6.9.0",
+        "onyxia-ui": "^6.10.0",
         "pathe": "^2.0.3",
         "powerhooks": "^2.0.1",
         "react": "^18.3.1",
