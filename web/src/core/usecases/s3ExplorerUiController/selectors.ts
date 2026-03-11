@@ -11,7 +11,7 @@ import { name, type State } from "./state";
 
 export type RouteParams = {
     profile?: string;
-    s3UriPrefixWithoutScheme: string;
+    s3UriWithoutScheme: string;
 };
 
 export type MainView = {
@@ -25,14 +25,13 @@ export type MainView = {
         | undefined;
     bookmarks: {
         displayName: LocalizedString | undefined;
-        s3UriPrefix: S3Uri.Prefix;
-        isReadonly: boolean;
+        s3Uri: S3Uri;
     }[];
 
     uploads: State.Upload[];
 
     uriBar: {
-        s3UriPrefix: S3Uri.Prefix | undefined;
+        s3Uri: S3Uri | undefined;
         hints: {
             type: "object" | "key-segment" | "bookmark";
             text: string;
@@ -56,16 +55,6 @@ export type MainView = {
           }
         | {
               isErrored: false;
-              /*
-              bookmarkStatus:
-                  | {
-                        isBookmarked: false;
-                    }
-                  | {
-                        isBookmarked: true;
-                        isReadonly: boolean;
-                    };
-                */
               items: MainView.Item[];
           }
         | undefined;
@@ -83,12 +72,14 @@ export namespace MainView {
 
         export type PrefixSegment = Common & {
             type: "prefix segment";
-            s3UriPrefix: S3Uri.Prefix.TerminatedByDelimiter;
+            s3Uri: S3Uri.TerminatedByDelimiter;
         };
 
         export type Object = Common & {
             type: "object";
-            s3Uri: S3Uri.Object;
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            size: number;
+            lastModified: number;
         };
     }
 }
@@ -97,13 +88,18 @@ const state = (rootState: RootState): State => rootState[name];
 
 const profileName = createSelector(
     s3ProfilesManagement.selectors.ambientS3Profile,
-    ambientS3Profile => ambientS3Profile?.profileName
+    ambientS3Profile => {
+        if (ambientS3Profile === undefined) {
+            return undefined;
+        }
+        return ambientS3Profile.profileName;
+    }
 );
 
-const s3UriPrefix = createSelector(
+const s3Uri = createSelector(
     createSelector(state, state => state.listedPrefixByProfile),
     profileName,
-    (listedPrefixByProfile, profileName): S3Uri.Prefix | undefined => {
+    (listedPrefixByProfile, profileName): S3Uri | undefined => {
         if (profileName === undefined) {
             return undefined;
         }
@@ -115,26 +111,24 @@ const s3UriPrefix = createSelector(
         }
 
         if (listedPrefix.next !== undefined) {
-            return listedPrefix.next.s3UriPrefix;
+            return listedPrefix.next.s3Uri;
         }
 
         if (listedPrefix.current === undefined) {
             return undefined;
         }
 
-        return listedPrefix.current.s3UriPrefix;
+        return listedPrefix.current.s3Uri;
     }
 );
 
 const routeParams = createSelector(
     profileName,
-    s3UriPrefix,
-    (profileName, s3UriPrefix): RouteParams => ({
+    s3Uri,
+    (profileName, s3Uri): RouteParams => ({
         profile: profileName,
-        s3UriPrefixWithoutScheme:
-            s3UriPrefix === undefined
-                ? ""
-                : stringifyS3Uri(s3UriPrefix).slice("s3://".length)
+        s3UriWithoutScheme:
+            s3Uri === undefined ? "" : stringifyS3Uri(s3Uri).slice("s3://".length)
     })
 );
 
@@ -164,8 +158,7 @@ const bookmarks = createSelector(
 
         return ambientS3Profile.bookmarks.map(bookmark => ({
             displayName: bookmark.displayName,
-            s3UriPrefix: bookmark.s3UriPrefix,
-            isReadonly: bookmark.isReadonly
+            s3Uri: bookmark.s3Uri
         }));
     }
 );
@@ -243,7 +236,7 @@ const items = createSelector(
         }
 
         const items_upload: MainView.Item[] = computeUploadStatusAtPrefix({
-            s3UriPrefix: listedPrefix_state.current.s3UriPrefix,
+            s3Uri: listedPrefix_state.current.s3Uri,
             uploads: uploads_profile
         });
 
@@ -253,16 +246,30 @@ const items = createSelector(
                     case "object":
                         return id<MainView.Item.Object>({
                             type: "object",
-                            displayName: item.s3Uri.keyBasename,
+                            displayName: (() => {
+                                const keyBasename = item.s3Uri.keySegments.at(-1);
+
+                                assert(keyBasename !== undefined);
+
+                                return keyBasename;
+                            })(),
                             s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
-                            isDeleting: false
+                            isDeleting: false,
+                            lastModified: item.lastModified,
+                            size: item.size
                         });
                     case "prefix":
                         return id<MainView.Item.PrefixSegment>({
                             type: "prefix segment",
-                            displayName: [...item.s3UriPrefix.keySegments].reverse()[0],
-                            s3UriPrefix: item.s3UriPrefix,
+                            displayName: (() => {
+                                const lastSegment = item.s3Uri.keySegments.at(-1);
+
+                                assert(lastSegment !== undefined);
+
+                                return lastSegment;
+                            })(),
+                            s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
                             isDeleting: false
                         });
@@ -302,20 +309,8 @@ const items = createSelector(
 
         for (const item of items) {
             if (
-                deletions_profile.find(({ s3Uri }) => {
-                    switch (item.type) {
-                        case "object":
-                            if (s3Uri.type !== "object") {
-                                return false;
-                            }
-                            return same(item.s3Uri, s3Uri);
-                        case "prefix segment":
-                            if (s3Uri.type !== "prefix") {
-                                return false;
-                            }
-                            return same(item.s3UriPrefix, s3Uri);
-                    }
-                }) !== undefined
+                deletions_profile.find(({ s3Uri }) => same(item.s3Uri, s3Uri)) !==
+                undefined
             ) {
                 item.isDeleting = true;
             }
@@ -365,24 +360,18 @@ const listedPrefix = createSelector(
 );
 
 const uriBar = createSelector(
-    s3UriPrefix,
+    s3Uri,
     bookmarks,
     listedPrefix,
     isListing,
     s3ProfilesManagement.selectors.ambientS3Profile,
-    (
-        s3UriPrefix,
-        bookmarks,
-        listedPrefix,
-        isListing,
-        ambientS3Profile
-    ): MainView["uriBar"] => {
-        if (s3UriPrefix === undefined) {
+    (s3Uri, bookmarks, listedPrefix, isListing, ambientS3Profile): MainView["uriBar"] => {
+        if (s3Uri === undefined) {
             return {
-                s3UriPrefix: undefined,
+                s3Uri: undefined,
                 hints: bookmarks.map(bookmark => ({
                     type: "bookmark",
-                    text: stringifyS3Uri(bookmark.s3UriPrefix)
+                    text: stringifyS3Uri(bookmark.s3Uri)
                 })),
                 bookmarkStatus: {
                     isBookmarked: false
@@ -394,7 +383,7 @@ const uriBar = createSelector(
             assert(ambientS3Profile !== undefined);
 
             const bookmark = ambientS3Profile.bookmarks.find(bookmark =>
-                same(bookmark.s3UriPrefix, s3UriPrefix)
+                same(bookmark.s3Uri, s3Uri)
             );
 
             if (bookmark === undefined) {
@@ -407,15 +396,15 @@ const uriBar = createSelector(
             };
         })();
 
-        const s3UriPrefix_str = stringifyS3Uri(s3UriPrefix);
+        const s3Uri_str = stringifyS3Uri(s3Uri);
 
         const hints: MainView["uriBar"]["hints"] = bookmarks
-            .map(bookmark => stringifyS3Uri(bookmark.s3UriPrefix))
+            .map(bookmark => stringifyS3Uri(bookmark.s3Uri))
             .filter(s3UriPrefix_bookmark_str =>
-                s3UriPrefix_bookmark_str.startsWith(s3UriPrefix_str)
+                s3UriPrefix_bookmark_str.startsWith(s3Uri_str)
             )
             .map(s3UriPrefix_bookmark_str =>
-                s3UriPrefix_bookmark_str.slice(s3UriPrefix_str.length)
+                s3UriPrefix_bookmark_str.slice(s3Uri_str.length)
             )
             .map(text => ({
                 type: "bookmark" as const,
@@ -424,30 +413,30 @@ const uriBar = createSelector(
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
             return {
-                s3UriPrefix,
+                s3Uri,
                 hints,
                 bookmarkStatus
             };
         }
 
         listedPrefix.items.forEach(item => {
+            const keyBasename = item.s3Uri.keySegments.at(-1);
+            assert(keyBasename !== undefined);
+
             switch (item.type) {
                 case "object":
                     hints.push({
                         type: "object",
-                        text: item.s3Uri.keyBasename
+                        text: keyBasename
                     });
 
                     break;
 
                 case "prefix segment":
                     {
-                        const last_segment = item.s3UriPrefix.keySegments.at(-1);
-                        assert(last_segment !== undefined);
-
                         hints.push({
                             type: "key-segment",
-                            text: last_segment
+                            text: keyBasename
                         });
                     }
                     break;
@@ -463,7 +452,7 @@ const uriBar = createSelector(
         });
 
         return {
-            s3UriPrefix,
+            s3Uri,
             hints,
             bookmarkStatus
         };
@@ -491,24 +480,21 @@ export const selectors = {
     mainView
 };
 
-const s3UriPrefixObj_currentlyListing = createSelector(
-    listedPrefix_state,
-    listedPrefix_state => {
-        if (listedPrefix_state === undefined) {
-            return undefined;
-        }
-
-        if (listedPrefix_state.next === undefined) {
-            return undefined;
-        }
-
-        if (listedPrefix_state.next.errorCase !== undefined) {
-            return undefined;
-        }
-
-        return listedPrefix_state.next.s3UriPrefix;
+const s3Uri_currentlyListing = createSelector(listedPrefix_state, listedPrefix_state => {
+    if (listedPrefix_state === undefined) {
+        return undefined;
     }
-);
+
+    if (listedPrefix_state.next === undefined) {
+        return undefined;
+    }
+
+    if (listedPrefix_state.next.errorCase !== undefined) {
+        return undefined;
+    }
+
+    return listedPrefix_state.next.s3Uri;
+});
 
 const doesListedPrefixHaveFinishedUpload = createSelector(
     listedPrefix,
@@ -520,8 +506,8 @@ const doesListedPrefixHaveFinishedUpload = createSelector(
 
 export const privateSelectors = {
     routeParams,
-    s3UriPrefix,
+    s3Uri,
     profileName,
-    s3UriPrefixObj_currentlyListing,
+    s3Uri_currentlyListing,
     doesListedPrefixHaveFinishedUpload
 };

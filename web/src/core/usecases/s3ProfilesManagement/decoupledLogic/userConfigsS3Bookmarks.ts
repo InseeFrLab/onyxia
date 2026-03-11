@@ -1,36 +1,21 @@
-import type { S3Uri } from "core/tools/S3Uri";
+import { type S3Uri, zS3Uri } from "core/tools/S3Uri";
 import { z } from "zod";
 import { assert, type Equals, id, is } from "tsafe";
 import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefined";
 
-export type UserProfileS3Bookmark = {
+export type UserConfigs_S3Bookmark = {
     profileName: string;
     displayName: string | undefined;
-    s3UriPrefix: S3Uri.Prefix;
+    s3Uri: S3Uri;
 };
 
-const zS3UriPrefixObj = (() => {
-    type TargetType = S3Uri.Prefix;
-
-    const zTargetType = z.object({
-        bucket: z.string(),
-        keyPrefix: z.string()
-    });
-
-    type InferredType = z.infer<typeof zTargetType>;
-
-    assert<Equals<TargetType, InferredType>>;
-
-    return id<z.ZodType<TargetType>>(zTargetType);
-})();
-
 const zUserProfileS3Bookmark = (() => {
-    type TargetType = UserProfileS3Bookmark;
+    type TargetType = UserConfigs_S3Bookmark;
 
     const zTargetType = z.object({
         profileName: z.string(),
         displayName: z.union([z.string(), z.undefined()]),
-        s3UriPrefix: zS3UriPrefixObj
+        s3Uri: zS3Uri
     });
 
     type InferredType = z.infer<typeof zTargetType>;
@@ -43,7 +28,7 @@ const zUserProfileS3Bookmark = (() => {
 
 export function parseUserConfigsS3BookmarksStr(params: {
     userConfigs_s3BookmarksStr: string | null;
-}): UserProfileS3Bookmark[] {
+}): UserConfigs_S3Bookmark[] {
     const { userConfigs_s3BookmarksStr } = params;
 
     if (userConfigs_s3BookmarksStr === null) {
@@ -58,13 +43,13 @@ export function parseUserConfigsS3BookmarksStr(params: {
         return [];
     }
 
-    assert(is<UserProfileS3Bookmark[]>(userProfileS3Bookmarks));
+    assert(is<UserConfigs_S3Bookmark[]>(userProfileS3Bookmarks));
 
     return userProfileS3Bookmarks;
 }
 
 export function serializeUserConfigsS3Bookmarks(params: {
-    userConfigs_s3Bookmarks: UserProfileS3Bookmark[];
+    userConfigs_s3Bookmarks: UserConfigs_S3Bookmark[];
 }) {
     const { userConfigs_s3Bookmarks } = params;
 

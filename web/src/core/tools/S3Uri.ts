@@ -2,7 +2,7 @@ import { assert, type Equals, id } from "tsafe";
 import { same } from "evt/tools/inDepth/same";
 import { z } from "zod";
 
-export type S3Uri = S3Uri.Object | S3Uri.Prefix;
+export type S3Uri = S3Uri.TerminatedByDelimiter | S3Uri.NonTerminatedByDelimiter;
 
 export namespace S3Uri {
     type Common = {
@@ -11,72 +11,34 @@ export namespace S3Uri {
         keySegments: string[];
     };
 
-    export type Object = Common & {
-        type: "object";
-        keyBasename: string;
+    export type TerminatedByDelimiter = Common & {
+        isDelimiterTerminated: true;
     };
 
-    export type Prefix = Prefix.TerminatedByDelimiter | Prefix.NonTerminatedByDelimiter;
-
-    export namespace Prefix {
-        type Common_Prefix = Common & {
-            type: "prefix";
-        };
-
-        export type TerminatedByDelimiter = Common_Prefix & {
-            isDelimiterTerminated: true;
-        };
-
-        export type NonTerminatedByDelimiter = Common_Prefix & {
-            isDelimiterTerminated: false;
-            nextKeySegmentPrefix: string;
-        };
-    }
+    export type NonTerminatedByDelimiter = Common & {
+        isDelimiterTerminated: false;
+    };
 }
 
 export function stringifyS3Uri(s3Uri: S3Uri): string {
-    let s3UriStr = [
+    return [
         "s3://",
         `${s3Uri.bucket}/`,
-        s3Uri.keySegments.map(keySegment => `${keySegment}${s3Uri.delimiter}`).join("")
+        s3Uri.keySegments
+            .map(
+                (keySegment, i) =>
+                    `${keySegment}${s3Uri.isDelimiterTerminated ? s3Uri.delimiter : i === s3Uri.keySegments.length - 1 ? "" : s3Uri.delimiter}`
+            )
+            .join("")
     ].join("");
-
-    switch (s3Uri.type) {
-        case "object":
-            s3UriStr += s3Uri.keyBasename;
-            break;
-        case "prefix":
-            if (!s3Uri.isDelimiterTerminated) {
-                s3UriStr += s3Uri.nextKeySegmentPrefix;
-            }
-            break;
-        default:
-            assert<Equals<typeof s3Uri, never>>;
-    }
-
-    return s3UriStr;
 }
 
-export function getS3UriKeyOrKeyPrefix(s3Uri: S3Uri): string {
+export function getS3UriKey(s3Uri: S3Uri): string {
     return stringifyS3Uri(s3Uri).slice(`s3://${s3Uri.bucket}/`.length);
 }
 
-export function parseS3Uri(params: {
-    value: string;
-    delimiter: string;
-    isPrefix: false;
-}): S3Uri.Object;
-export function parseS3Uri(params: {
-    value: string;
-    delimiter: string;
-    isPrefix: true;
-}): S3Uri.Prefix;
-export function parseS3Uri(params: {
-    value: string;
-    delimiter: string;
-    isPrefix: boolean;
-}): S3Uri {
-    const { value, delimiter, isPrefix } = params;
+export function parseS3Uri(params: { value: string; delimiter: string }): S3Uri {
+    const { value, delimiter } = params;
 
     const match = value.match(/^s3:\/\/([^/]+)(\/?.*)$/);
 
@@ -89,8 +51,7 @@ export function parseS3Uri(params: {
     const group2 = match[2];
 
     if (group2 === "" || group2 === "/") {
-        return id<S3Uri.Prefix.TerminatedByDelimiter>({
-            type: "prefix",
+        return id<S3Uri.TerminatedByDelimiter>({
             bucket,
             delimiter,
             keySegments: [],
@@ -100,43 +61,24 @@ export function parseS3Uri(params: {
 
     const key = group2.slice(1);
 
-    const [last, ...rest_reversed] = key.split(delimiter).reverse();
+    const split = key.split(delimiter);
 
-    const keySegments = rest_reversed.reverse();
+    const isDelimiterTerminated = split.at(-1) === "";
 
-    if (last === "") {
-        assert(isPrefix);
-        return id<S3Uri.Prefix.TerminatedByDelimiter>({
-            type: "prefix",
-            bucket,
-            delimiter,
-            keySegments,
-            isDelimiterTerminated: true
-        });
+    if (isDelimiterTerminated) {
+        split.pop();
     }
 
-    if (isPrefix) {
-        return id<S3Uri.Prefix.NonTerminatedByDelimiter>({
-            type: "prefix",
-            bucket,
-            delimiter,
-            keySegments,
-            isDelimiterTerminated: false,
-            nextKeySegmentPrefix: last
-        });
-    }
-
-    return id<S3Uri.Object>({
-        type: "object",
+    return {
         bucket,
         delimiter,
-        keySegments,
-        keyBasename: last
-    });
+        keySegments: split,
+        isDelimiterTerminated
+    };
 }
 
 export function getIsInside(params: {
-    s3UriPrefix: S3Uri.Prefix;
+    s3UriPrefix: S3Uri;
     s3Uri: S3Uri;
 }): { isInside: false; isTopLevel?: never } | { isInside: true; isTopLevel: boolean } {
     const { s3UriPrefix, s3Uri } = params;
@@ -146,19 +88,18 @@ export function getIsInside(params: {
     }
     return {
         isInside: true,
-        isTopLevel: same(s3UriPrefix.keySegments, s3Uri.keySegments)
+        isTopLevel: same(s3UriPrefix.keySegments, s3Uri.keySegments.slice(0, -1))
     };
 }
 
-export const zS3UriObject = (() => {
-    type TargetType = S3Uri.Object;
+export const zS3Uri_NonTerminatedByDelimiter = (() => {
+    type TargetType = S3Uri.NonTerminatedByDelimiter;
 
     const zTargetType = z.object({
-        type: z.literal("object"),
         bucket: z.string(),
         delimiter: z.string(),
         keySegments: z.array(z.string()),
-        keyBasename: z.string()
+        isDelimiterTerminated: z.literal(false)
     });
 
     type InferredType = z.infer<typeof zTargetType>;
@@ -168,11 +109,10 @@ export const zS3UriObject = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
-export const zS3UriPrefixDelimiterTerminated = (() => {
-    type TargetType = S3Uri.Prefix.TerminatedByDelimiter;
+export const zS3Uri_TerminatedByDelimiter = (() => {
+    type TargetType = S3Uri.TerminatedByDelimiter;
 
     const zTargetType = z.object({
-        type: z.literal("prefix"),
         bucket: z.string(),
         delimiter: z.string(),
         keySegments: z.array(z.string()),
@@ -186,43 +126,13 @@ export const zS3UriPrefixDelimiterTerminated = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
-export const zS3UriPrefixNonDelimiterTerminated = (() => {
-    type TargetType = S3Uri.Prefix.NonTerminatedByDelimiter;
-
-    const zTargetType = z.object({
-        type: z.literal("prefix"),
-        bucket: z.string(),
-        delimiter: z.string(),
-        keySegments: z.array(z.string()),
-        isDelimiterTerminated: z.literal(false),
-        nextKeySegmentPrefix: z.string()
-    });
-
-    type InferredType = z.infer<typeof zTargetType>;
-
-    assert<Equals<TargetType, InferredType>>;
-
-    return id<z.ZodType<TargetType>>(zTargetType);
-})();
-
-export const zS3UriPrefix = (() => {
-    type TargetType = S3Uri.Prefix;
-
-    const zTargetType = z.union([
-        zS3UriPrefixDelimiterTerminated,
-        zS3UriPrefixNonDelimiterTerminated
-    ]);
-
-    type InferredType = z.infer<typeof zTargetType>;
-
-    assert<Equals<TargetType, InferredType>>;
-    return id<z.ZodType<TargetType>>(zTargetType);
-})();
-
 export const zS3Uri = (() => {
     type TargetType = S3Uri;
 
-    const zTargetType = z.union([zS3UriObject, zS3UriPrefix]);
+    const zTargetType = z.union([
+        zS3Uri_NonTerminatedByDelimiter,
+        zS3Uri_TerminatedByDelimiter
+    ]);
 
     type InferredType = z.infer<typeof zTargetType>;
 

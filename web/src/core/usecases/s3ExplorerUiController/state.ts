@@ -21,9 +21,10 @@ export namespace State {
 
     export type Upload = {
         profileName: string;
-        s3Uri: S3Uri.Object;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
         size: number;
         completionPercent: number;
+        uploadStartTime: number;
     };
 
     export type Deletion = {
@@ -34,13 +35,13 @@ export namespace State {
     export type ListedPrefix = {
         next:
             | {
-                  s3UriPrefix: S3Uri.Prefix;
+                  s3Uri: S3Uri;
                   errorCase: ListedPrefix.ErrorCase | undefined;
               }
             | undefined;
         current:
             | {
-                  s3UriPrefix: S3Uri.Prefix;
+                  s3Uri: S3Uri;
                   items: ListedPrefix.Item[];
               }
             | undefined;
@@ -54,12 +55,14 @@ export namespace State {
         export namespace Item {
             export type Prefix = {
                 type: "prefix";
-                s3UriPrefix: S3Uri.Prefix.TerminatedByDelimiter;
+                s3Uri: S3Uri.TerminatedByDelimiter;
             };
 
             export type Object = {
                 type: "object";
-                s3Uri: S3Uri.Object;
+                s3Uri: S3Uri.NonTerminatedByDelimiter;
+                size: number;
+                lastModified: number;
             };
         }
     }
@@ -83,7 +86,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     profileName: string;
-                    s3Uri: S3Uri.Object;
+                    s3Uri: S3Uri.NonTerminatedByDelimiter;
                     size: number;
                 };
             }
@@ -101,7 +104,8 @@ export const { reducer, actions } = createUsecaseActions({
                 profileName,
                 s3Uri,
                 size,
-                completionPercent: 0
+                completionPercent: 0,
+                uploadStartTime: Date.now()
             });
         },
         putObjectProgressReported: (
@@ -111,7 +115,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     profileName: string;
-                    s3Uri: S3Uri.Object;
+                    s3Uri: S3Uri.NonTerminatedByDelimiter;
                     completionPercent: number;
                 };
             }
@@ -141,11 +145,11 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     profileName: string;
-                    s3UriPrefix: S3Uri.Prefix;
+                    s3Uri: S3Uri;
                 };
             }
         ) => {
-            const { profileName, s3UriPrefix } = payload;
+            const { profileName, s3Uri } = payload;
 
             const listedPrefix = (state.listedPrefixByProfile[profileName] ??= {
                 next: undefined,
@@ -153,7 +157,7 @@ export const { reducer, actions } = createUsecaseActions({
             });
 
             listedPrefix.next = {
-                s3UriPrefix,
+                s3Uri,
                 errorCase: undefined
             };
         },
@@ -179,12 +183,12 @@ export const { reducer, actions } = createUsecaseActions({
                     listedPrefix.next.errorCase === undefined
             );
 
-            const s3UriPrefix = listedPrefix.next.s3UriPrefix;
+            const { s3Uri } = listedPrefix.next;
 
             listedPrefix.next = undefined;
 
             listedPrefix.current = {
-                s3UriPrefix,
+                s3Uri,
                 items
             };
         },
@@ -196,12 +200,12 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     profileName: string;
-                    s3UriPrefix: S3Uri.Prefix;
+                    s3Uri: S3Uri;
                     errorCase: State.ListedPrefix.ErrorCase;
                 };
             }
         ) => {
-            const { profileName, s3UriPrefix, errorCase } = payload;
+            const { profileName, s3Uri, errorCase } = payload;
 
             const listedPrefix = state.listedPrefixByProfile[profileName];
 
@@ -210,7 +214,7 @@ export const { reducer, actions } = createUsecaseActions({
             assert(
                 listedPrefix.next !== undefined &&
                     listedPrefix.next.errorCase === undefined &&
-                    same(listedPrefix.next.s3UriPrefix, s3UriPrefix)
+                    same(listedPrefix.next.s3Uri, s3Uri)
             );
 
             listedPrefix.next.errorCase = errorCase;

@@ -224,7 +224,7 @@ export const protectedThunks = {
     createDeleteOrUpdateBookmark:
         (params: {
             profileName: string;
-            s3UriPrefix: S3Uri.Prefix;
+            s3Uri: S3Uri;
             action:
                 | {
                       type: "create or update";
@@ -235,7 +235,7 @@ export const protectedThunks = {
                   };
         }) =>
         async (...args) => {
-            const { profileName, s3UriPrefix, action } = params;
+            const { profileName, s3Uri, action } = params;
 
             const [dispatch, getState] = args;
 
@@ -264,7 +264,7 @@ export const protectedThunks = {
                         s3Profile_vault.bookmarks ??= [];
 
                         const index = s3Profile_vault.bookmarks.findIndex(bookmark =>
-                            same(bookmark.s3UriPrefix, s3UriPrefix)
+                            same(bookmark.s3Uri, s3Uri)
                         );
 
                         switch (action.type) {
@@ -272,7 +272,7 @@ export const protectedThunks = {
                                 {
                                     const bookmark_new = {
                                         displayName: action.displayName,
-                                        s3UriPrefix
+                                        s3Uri
                                     };
 
                                     if (index === -1) {
@@ -311,7 +311,7 @@ export const protectedThunks = {
                         const index = userConfigs_s3Bookmarks.findIndex(
                             entry =>
                                 entry.profileName === s3Profile.profileName &&
-                                same(entry.s3UriPrefix, s3UriPrefix)
+                                same(entry.s3Uri, s3Uri)
                         );
 
                         switch (action.type) {
@@ -320,7 +320,7 @@ export const protectedThunks = {
                                     const bookmark_new = {
                                         profileName: s3Profile.profileName,
                                         displayName: action.displayName,
-                                        s3UriPrefix
+                                        s3Uri
                                     };
 
                                     if (index === -1) {
