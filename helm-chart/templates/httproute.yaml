@@ -7,6 +7,10 @@
 {{- $svcPortWeb := .Values.web.service.port -}}
 {{- $svcPortOnboarding := .Values.onboarding.service.port -}}
 {{- $onboardingEnabled := .Values.onboarding.enabled -}}
+{{- $parentRefs := .Values.httpRoute.parentRefs -}}
+{{- if or (not $parentRefs) (eq (len $parentRefs) 0) -}}
+{{- fail "httpRoute.parentRefs must contain at least one Gateway reference when httpRoute.enabled=true" -}}
+{{- end -}}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -19,8 +23,8 @@ metadata:
   {{- end }}
 spec:
   parentRefs:
-    {{- range .Values.httpRoute.parentRefs }}
-    - name: {{ .name | quote }}
+    {{- range $parentRefs }}
+    - name: {{ required "httpRoute.parentRefs[].name is required when httpRoute.enabled=true" .name | quote }}
       {{- with .namespace }}
       namespace: {{ . | quote }}
       {{- end }}
