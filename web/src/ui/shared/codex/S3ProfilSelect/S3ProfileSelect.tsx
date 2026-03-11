@@ -123,6 +123,16 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                     onKeyDown={handleTriggerKeyDown}
                 >
                     <span className={classes.triggerMain}>
+                        {selectedProfile.isReadonly && (
+                            <Tooltip title="Read-only profile">
+                                <span className={classes.readonlyBadge}>
+                                    <Icon
+                                        icon={getIconUrlByName("AdminPanelSettings")}
+                                        size="extra small"
+                                    />
+                                </span>
+                            </Tooltip>
+                        )}
                         <span
                             className={classes.triggerLabel}
                             title={selectedProfile.name}
@@ -193,35 +203,33 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                                     role="option"
                                     aria-selected={isSelected}
                                 >
+                                    {isReadonly && (
+                                        <Tooltip title="Read-only profile">
+                                            <span className={classes.readonlyBadge}>
+                                                <Icon
+                                                    icon={getIconUrlByName(
+                                                        "AdminPanelSettings"
+                                                    )}
+                                                    size="extra small"
+                                                />
+                                            </span>
+                                        </Tooltip>
+                                    )}
                                     <span
                                         className={classes.profileName}
                                         title={profileName}
                                     >
                                         {profileName}
                                     </span>
-                                    <span className={classes.profileMeta}>
-                                        {isReadonly && (
-                                            <Tooltip title="Read-only profile">
-                                                <span className={classes.readonlyBadge}>
-                                                    <Icon
-                                                        icon={getIconUrlByName(
-                                                            "AdminPanelSettings"
-                                                        )}
-                                                        size="extra small"
-                                                    />
-                                                </span>
-                                            </Tooltip>
-                                        )}
-                                        {isSelected && (
-                                            <span className={classes.iconSlot}>
-                                                <Icon
-                                                    className={classes.checkIcon}
-                                                    icon={getIconUrlByName("Check")}
-                                                    size="extra small"
-                                                />
-                                            </span>
-                                        )}
-                                    </span>
+                                    {isSelected && (
+                                        <span className={classes.iconSlot}>
+                                            <Icon
+                                                className={classes.checkIcon}
+                                                icon={getIconUrlByName("Check")}
+                                                size="extra small"
+                                            />
+                                        </span>
+                                    )}
                                 </button>
                             );
                         })}
@@ -380,7 +388,7 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             borderRadius: 10,
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "flex-start",
             gap: theme.spacing(1.5),
             cursor: "pointer",
             minHeight: 44,
@@ -406,13 +414,6 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             minWidth: 0,
             flex: 1
         },
-        profileMeta: {
-            display: "inline-flex",
-            alignItems: "center",
-            gap: theme.spacing(1),
-            flexShrink: 0,
-            paddingRight: theme.spacing(1)
-        },
         iconSlot: {
             width: 28,
             height: 28,
@@ -429,7 +430,8 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            color: theme.colors.useCases.typography.textSecondary
+            color: theme.colors.useCases.typography.textPrimary,
+            flexShrink: 0
         },
         checkIcon: {
             color: theme.colors.useCases.typography.textPrimary
