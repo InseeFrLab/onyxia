@@ -22,8 +22,8 @@ import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 
 export type S3UriBarProps = {
     className?: string;
-    s3UriPrefix: S3Uri.Prefix | undefined;
-    onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
+    s3Uri: S3Uri | undefined;
+    onS3UriPrefixChange: (params: { s3Uri: S3Uri }) => void;
     hints: {
         type: "object" | "key-segment" | "bookmark";
         text: string;
@@ -35,7 +35,7 @@ export type S3UriBarProps = {
 type NavigationCrumb = {
     label: string;
     kind: "root" | "bucket" | "segment";
-    s3UriPrefix: S3Uri.Prefix;
+    s3Uri: S3Uri;
     isCurrent: boolean;
 };
 
@@ -139,16 +139,16 @@ function getSeparatorCount(
     return count;
 }
 
-function getTrailingSeparatorToken(s3UriPrefix: S3Uri.Prefix): string | undefined {
-    if (!s3UriPrefix.isDelimiterTerminated) {
+function getTrailingSeparatorToken(s3Uri: S3Uri): string | undefined {
+    if (!s3Uri.isDelimiterTerminated) {
         return undefined;
     }
 
-    if (s3UriPrefix.keySegments.length === 0) {
+    if (s3Uri.keySegments.length === 0) {
         return "/";
     }
 
-    return s3UriPrefix.delimiter;
+    return s3Uri.delimiter;
 }
 
 function getSeparatorWidthForKinds(params: {
@@ -178,14 +178,10 @@ function getSeparatorWidthForKinds(params: {
     return token === "/" ? slashSeparatorWidth : delimiterSeparatorWidth;
 }
 
-function getBucketRootPrefix(params: {
-    bucket: string;
-    delimiter: string;
-}): S3Uri.Prefix {
+function getBucketRootPrefix(params: { bucket: string; delimiter: string }): S3Uri {
     const { bucket, delimiter } = params;
 
     return {
-        type: "prefix",
         bucket,
         delimiter,
         keySegments: [],
@@ -193,43 +189,37 @@ function getBucketRootPrefix(params: {
     };
 }
 
-function tryParsePrefix(params: {
-    s3Uri: string;
-    delimiter: string;
-}): S3Uri.Prefix | undefined {
+function tryParseS3Uri(params: { s3Uri: string; delimiter: string }): S3Uri | undefined {
     const { s3Uri, delimiter } = params;
 
     try {
         return parseS3Uri({
             value: s3Uri,
-            delimiter,
-            isPrefix: true
+            delimiter
         });
     } catch {
         return undefined;
     }
 }
 
-function getBreadcrumbs(params: { s3UriPrefix: S3Uri.Prefix }): NavigationCrumb[] {
-    const { s3UriPrefix } = params;
-    const { bucket, delimiter } = s3UriPrefix;
-    const bucketRootPrefix = getBucketRootPrefix({ bucket, delimiter });
+function getBreadcrumbs(params: { s3Uri: S3Uri }): NavigationCrumb[] {
+    const { s3Uri } = params;
+    const { bucket, delimiter } = s3Uri;
+    const bucketRootS3Uri = getBucketRootPrefix({ bucket, delimiter });
 
-    const segmentLabels = s3UriPrefix.isDelimiterTerminated
-        ? s3UriPrefix.keySegments
-        : [...s3UriPrefix.keySegments, s3UriPrefix.nextKeySegmentPrefix];
+    const segmentLabels = s3Uri.keySegments;
 
     const crumbs: NavigationCrumb[] = [
         {
             label: "s3://",
             kind: "root",
-            s3UriPrefix: bucketRootPrefix,
+            s3Uri: bucketRootS3Uri,
             isCurrent: false
         },
         {
             label: bucket,
             kind: "bucket",
-            s3UriPrefix: bucketRootPrefix,
+            s3Uri: bucketRootS3Uri,
             isCurrent: segmentLabels.length === 0
         }
     ];
@@ -237,28 +227,17 @@ function getBreadcrumbs(params: { s3UriPrefix: S3Uri.Prefix }): NavigationCrumb[
     segmentLabels.forEach((segmentLabel, index) => {
         const isLast = index === segmentLabels.length - 1;
 
-        const segmentPrefix: S3Uri.Prefix =
-            isLast && !s3UriPrefix.isDelimiterTerminated
-                ? {
-                      type: "prefix",
-                      bucket,
-                      delimiter,
-                      keySegments: [...s3UriPrefix.keySegments],
-                      isDelimiterTerminated: false,
-                      nextKeySegmentPrefix: s3UriPrefix.nextKeySegmentPrefix
-                  }
-                : {
-                      type: "prefix",
-                      bucket,
-                      delimiter,
-                      keySegments: segmentLabels.slice(0, index + 1),
-                      isDelimiterTerminated: true
-                  };
+        const segmentS3Uri: S3Uri = {
+            bucket,
+            delimiter,
+            keySegments: segmentLabels.slice(0, index + 1),
+            isDelimiterTerminated: isLast ? s3Uri.isDelimiterTerminated : true
+        };
 
         crumbs.push({
             label: segmentLabel,
             kind: "segment",
-            s3UriPrefix: segmentPrefix,
+            s3Uri: segmentS3Uri,
             isCurrent: isLast
         });
     });
@@ -269,7 +248,7 @@ function getBreadcrumbs(params: { s3UriPrefix: S3Uri.Prefix }): NavigationCrumb[
 export function S3UriBar(props: S3UriBarProps) {
     const {
         className,
-        s3UriPrefix,
+        s3Uri,
         onS3UriPrefixChange,
         hints,
         isBookmarked,
@@ -277,35 +256,31 @@ export function S3UriBar(props: S3UriBarProps) {
     } = props;
 
     const defaultDraftS3Uri = "s3://";
-    const normalizedPrefix = useMemo<S3Uri.Prefix>(() => {
-        if (s3UriPrefix !== undefined) {
-            return s3UriPrefix;
+    const normalizedS3Uri = useMemo<S3Uri>(() => {
+        if (s3Uri !== undefined) {
+            return s3Uri;
         }
 
         return {
-            type: "prefix",
             bucket: "",
             delimiter: "/",
             keySegments: [],
             isDelimiterTerminated: true
         };
-    }, [s3UriPrefix]);
-    const isUndefinedPrefixMode = s3UriPrefix === undefined;
+    }, [s3Uri]);
+    const isUndefinedPrefixMode = s3Uri === undefined;
     const canonicalS3Uri = useMemo(
         () =>
-            isUndefinedPrefixMode ? defaultDraftS3Uri : stringifyS3Uri(normalizedPrefix),
-        [isUndefinedPrefixMode, normalizedPrefix]
+            isUndefinedPrefixMode ? defaultDraftS3Uri : stringifyS3Uri(normalizedS3Uri),
+        [isUndefinedPrefixMode, normalizedS3Uri]
     );
     const crumbs = useMemo(
-        () =>
-            isUndefinedPrefixMode
-                ? []
-                : getBreadcrumbs({ s3UriPrefix: normalizedPrefix }),
-        [isUndefinedPrefixMode, normalizedPrefix]
+        () => (isUndefinedPrefixMode ? [] : getBreadcrumbs({ s3Uri: normalizedS3Uri })),
+        [isUndefinedPrefixMode, normalizedS3Uri]
     );
     const trailingSeparatorToken = isUndefinedPrefixMode
         ? undefined
-        : getTrailingSeparatorToken(normalizedPrefix);
+        : getTrailingSeparatorToken(normalizedS3Uri);
 
     const rootRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -527,7 +502,7 @@ export function S3UriBar(props: S3UriBarProps) {
         const slashSeparatorWidth =
             measureSlashSeparatorRef.current?.getBoundingClientRect().width ?? 0;
         const delimiterSeparatorWidth =
-            normalizedPrefix.delimiter === "/"
+            normalizedS3Uri.delimiter === "/"
                 ? slashSeparatorWidth
                 : (measureDelimiterSeparatorRef.current?.getBoundingClientRect().width ??
                   slashSeparatorWidth);
@@ -538,7 +513,7 @@ export function S3UriBar(props: S3UriBarProps) {
             (_, index) =>
                 measureCrumbRefs.current[index]?.getBoundingClientRect().width ?? 0
         );
-        const separatorCount = getSeparatorCount(crumbs, normalizedPrefix.delimiter);
+        const separatorCount = getSeparatorCount(crumbs, normalizedS3Uri.delimiter);
         const trailingSeparatorWidth =
             trailingSeparatorToken === undefined
                 ? 0
@@ -577,7 +552,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 getSeparatorWidthForKinds({
                     leftKind: crumbs[rootIndex].kind,
                     rightKind: crumbs[bucketIndex].kind,
-                    delimiter: normalizedPrefix.delimiter,
+                    delimiter: normalizedS3Uri.delimiter,
                     slashSeparatorWidth,
                     delimiterSeparatorWidth
                 }) + (crumbWidths[bucketIndex] ?? 0);
@@ -629,7 +604,7 @@ export function S3UriBar(props: S3UriBarProps) {
     }, [
         crumbs,
         isEditing,
-        normalizedPrefix.delimiter,
+        normalizedS3Uri.delimiter,
         pathDisplayRect.width,
         trailingSeparatorToken
     ]);
@@ -669,90 +644,87 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        const parsed = tryParsePrefix({
+        const parsed = tryParseS3Uri({
             s3Uri: nextDraftS3Uri.trim(),
-            delimiter: normalizedPrefix.delimiter
+            delimiter: normalizedS3Uri.delimiter
         });
 
         if (!parsed) {
             return;
         }
 
-        onS3UriPrefixChange({ s3UriPrefix: parsed });
+        onS3UriPrefixChange({ s3Uri: parsed });
     };
 
     const tryCommitDraftS3Uri = () => {
-        const parsed = tryParsePrefix({
+        const parsed = tryParseS3Uri({
             s3Uri: draftS3Uri.trim(),
-            delimiter: normalizedPrefix.delimiter
+            delimiter: normalizedS3Uri.delimiter
         });
 
         if (!parsed) {
             return;
         }
 
-        onS3UriPrefixChange({ s3UriPrefix: parsed });
+        onS3UriPrefixChange({ s3Uri: parsed });
     };
 
     const selectHint = (hint: S3UriBarProps["hints"][number]) => {
         const source = draftS3Uri.startsWith("s3://") ? draftS3Uri : canonicalS3Uri;
-        const sourcePrefix =
-            tryParsePrefix({
+        const sourceS3Uri =
+            tryParseS3Uri({
                 s3Uri: source,
-                delimiter: normalizedPrefix.delimiter
-            }) ?? normalizedPrefix;
+                delimiter: normalizedS3Uri.delimiter
+            }) ?? normalizedS3Uri;
 
-        let nextPrefix: S3Uri.Prefix | undefined;
+        let nextS3Uri: S3Uri | undefined;
 
         if (hint.type === "key-segment") {
-            nextPrefix = {
-                type: "prefix",
-                bucket: sourcePrefix.bucket,
-                delimiter: sourcePrefix.delimiter,
-                keySegments: [...sourcePrefix.keySegments, hint.text],
+            nextS3Uri = {
+                bucket: sourceS3Uri.bucket,
+                delimiter: sourceS3Uri.delimiter,
+                keySegments: [...sourceS3Uri.keySegments, hint.text],
                 isDelimiterTerminated: true
             };
         } else if (hint.type === "object") {
-            nextPrefix = {
-                type: "prefix",
-                bucket: sourcePrefix.bucket,
-                delimiter: sourcePrefix.delimiter,
-                keySegments: [...sourcePrefix.keySegments],
-                isDelimiterTerminated: false,
-                nextKeySegmentPrefix: hint.text
+            nextS3Uri = {
+                bucket: sourceS3Uri.bucket,
+                delimiter: sourceS3Uri.delimiter,
+                keySegments: [...sourceS3Uri.keySegments, hint.text],
+                isDelimiterTerminated: false
             };
         } else {
             const bookmarkPath = hint.text.trim();
 
-            nextPrefix =
-                tryParsePrefix({
+            nextS3Uri =
+                tryParseS3Uri({
                     s3Uri: bookmarkPath,
-                    delimiter: normalizedPrefix.delimiter
+                    delimiter: normalizedS3Uri.delimiter
                 }) ??
-                tryParsePrefix({
-                    s3Uri: `s3://${sourcePrefix.bucket}${bookmarkPath.startsWith(sourcePrefix.delimiter) ? "" : sourcePrefix.delimiter}${bookmarkPath}`,
-                    delimiter: normalizedPrefix.delimiter
+                tryParseS3Uri({
+                    s3Uri: `s3://${sourceS3Uri.bucket}${bookmarkPath.startsWith(sourceS3Uri.delimiter) ? "" : sourceS3Uri.delimiter}${bookmarkPath}`,
+                    delimiter: normalizedS3Uri.delimiter
                 });
         }
 
-        if (!nextPrefix) {
+        if (!nextS3Uri) {
             return;
         }
 
-        const nextDraftS3Uri = stringifyS3Uri(nextPrefix);
+        const nextDraftS3Uri = stringifyS3Uri(nextS3Uri);
 
         setDraftS3Uri(nextDraftS3Uri);
 
-        const parsed = tryParsePrefix({
+        const parsed = tryParseS3Uri({
             s3Uri: nextDraftS3Uri,
-            delimiter: normalizedPrefix.delimiter
+            delimiter: normalizedS3Uri.delimiter
         });
 
         if (!parsed) {
             return;
         }
 
-        onS3UriPrefixChange({ s3UriPrefix: parsed });
+        onS3UriPrefixChange({ s3Uri: parsed });
     };
 
     const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -963,11 +935,11 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     }
 
                                                     onS3UriPrefixChange({
-                                                        s3UriPrefix: crumb.s3UriPrefix
+                                                        s3Uri: crumb.s3Uri
                                                     });
                                                 }}
                                                 aria-label={`Go to ${stringifyS3Uri(
-                                                    crumb.s3UriPrefix
+                                                    crumb.s3Uri
                                                 )}`}
                                             >
                                                 {crumb.kind === "bucket" && (
@@ -1010,14 +982,14 @@ export function S3UriBar(props: S3UriBarProps) {
                                     {shouldShowSeparatorAtIndex(
                                         displayLeadingCrumbs,
                                         index,
-                                        normalizedPrefix.delimiter
+                                        normalizedS3Uri.delimiter
                                     ) && (
                                         <span className={classes.separator}>
                                             {getSeparatorTokenBetweenKinds({
                                                 leftKind: crumb.kind,
                                                 rightKind:
                                                     displayLeadingCrumbs[index + 1].kind,
-                                                delimiter: normalizedPrefix.delimiter
+                                                delimiter: normalizedS3Uri.delimiter
                                             })}
                                         </span>
                                     )}
@@ -1093,12 +1065,11 @@ export function S3UriBar(props: S3UriBarProps) {
                                                                 }
 
                                                                 onS3UriPrefixChange({
-                                                                    s3UriPrefix:
-                                                                        crumb.s3UriPrefix
+                                                                    s3Uri: crumb.s3Uri
                                                                 });
                                                             }}
                                                             aria-label={`Go to ${stringifyS3Uri(
-                                                                crumb.s3UriPrefix
+                                                                crumb.s3Uri
                                                             )}`}
                                                         >
                                                             <span
@@ -1114,7 +1085,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 {shouldShowSeparatorAtIndex(
                                                     displayCrumbs,
                                                     absoluteIndex,
-                                                    normalizedPrefix.delimiter
+                                                    normalizedS3Uri.delimiter
                                                 ) && (
                                                     <span className={classes.separator}>
                                                         {getSeparatorTokenBetweenKinds({
@@ -1124,7 +1095,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                                     absoluteIndex + 1
                                                                 ].kind,
                                                             delimiter:
-                                                                normalizedPrefix.delimiter
+                                                                normalizedS3Uri.delimiter
                                                         })}
                                                     </span>
                                                 )}
@@ -1218,13 +1189,13 @@ export function S3UriBar(props: S3UriBarProps) {
                                         {shouldShowSeparatorAtIndex(
                                             crumbs,
                                             index,
-                                            normalizedPrefix.delimiter
+                                            normalizedS3Uri.delimiter
                                         ) && (
                                             <span className={classes.separator}>
                                                 {getSeparatorTokenBetweenKinds({
                                                     leftKind: crumb.kind,
                                                     rightKind: crumbs[index + 1].kind,
-                                                    delimiter: normalizedPrefix.delimiter
+                                                    delimiter: normalizedS3Uri.delimiter
                                                 })}
                                             </span>
                                         )}
@@ -1237,12 +1208,12 @@ export function S3UriBar(props: S3UriBarProps) {
                             >
                                 /
                             </span>
-                            {normalizedPrefix.delimiter !== "/" && (
+                            {normalizedS3Uri.delimiter !== "/" && (
                                 <span
                                     ref={measureDelimiterSeparatorRef}
                                     className={classes.separator}
                                 >
-                                    {normalizedPrefix.delimiter}
+                                    {normalizedS3Uri.delimiter}
                                 </span>
                             )}
                             <span ref={measureEllipsisRef} className={classes.ellipsis}>

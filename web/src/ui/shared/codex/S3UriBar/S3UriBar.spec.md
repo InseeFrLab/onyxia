@@ -6,7 +6,7 @@
 
 It is a partially controlled UI component:
 
-- `s3UriPrefix`, hints, and bookmark state are provided by props.
+- `s3Uri`, hints, and bookmark state are provided by props.
 - The component requests S3 URI changes through callbacks.
 - Editing mode (`isEditing`) is internal to the component.
 - Parent code owns business logic and data fetching.
@@ -36,17 +36,17 @@ export type S3UriBarProps = {
      * The currently selected S3 prefix.
      *
      * Example object (simplified):
-     *   const s3UriPrefix: S3Uri.Prefix = { ... }
+     *   const s3Uri: S3Uri = { ... }
      *
      * Use helpers from `core/tools/S3Uri` to parse/stringify/manipulate.
      *
-     * The s3UriPrefix can be undefined. In this case the component should be locked in editing mode.
+     * The s3Uri can be undefined. In this case the component should be locked in editing mode.
      * The text input should be set by default to s3://
      * And the state representing input text should be internal to the component.
      * onS3UriPrefixChange() should only be called when the user have typed an uri that is
      * successfully parsable as a S3Uri (parseS3Uri() does not throw) and when enter is pressed, or the focus
      * is lost.
-     * When s3UriPrefix is undefined there can be hint but only of type "bookmark".
+     * When s3Uri is undefined there can be hint but only of type "bookmark".
      * For example hints can be:
      * [
      *  { type: "bookmark", text: "s3://mybucket/" },
@@ -55,7 +55,7 @@ export type S3UriBarProps = {
      * The component is responsible for filtering out the irrelevant hint entry as the user types
      * For example when the current value of the input is "s3://my" only the "s3://mybucket/" hint should appear.
      */
-    s3UriPrefix: S3Uri.Prefix | undefined;
+    s3Uri: S3Uri | undefined;
 
     /**
      * Request a change to the current prefix.
@@ -65,7 +65,7 @@ export type S3UriBarProps = {
      * - user validates input externally (if you wire that)
      * - user clicks a breadcrumb segment in navigation mode
      */
-    onS3UriPrefixChange: (params: { s3UriPrefix: S3Uri.Prefix }) => void;
+    onS3UriPrefixChange: (params: { s3Uri: S3Uri }) => void;
 
     /**
      * Hints to display while editing.
