@@ -15,7 +15,7 @@ type Story = StoryObj<typeof meta>;
 
 const delimiter = "/";
 
-function parsePrefixOrThrow(s3Uri: string): S3Uri.Prefix {
+function parsePrefixOrThrow(s3Uri: string): S3Uri {
     return parsePrefixOrThrowWithDelimiter({
         s3Uri,
         delimiter
@@ -25,39 +25,36 @@ function parsePrefixOrThrow(s3Uri: string): S3Uri.Prefix {
 function parsePrefixOrThrowWithDelimiter(params: {
     s3Uri: string;
     delimiter: string;
-}): S3Uri.Prefix {
+}): S3Uri {
     const { s3Uri, delimiter } = params;
 
     return parseS3Uri({
         value: s3Uri,
-        delimiter,
-        isPrefix: true
+        delimiter
     });
 }
 
 function StatefulS3UriBar(args: S3UriBarProps) {
-    const [s3UriPrefix, setS3UriPrefix] = useState(args.s3UriPrefix);
+    const [s3Uri, setS3Uri] = useState(args.s3Uri);
 
     useEffect(() => {
-        setS3UriPrefix(args.s3UriPrefix);
-    }, [args.s3UriPrefix]);
+        setS3Uri(args.s3Uri);
+    }, [args.s3Uri]);
 
     return (
         <S3UriBar
             {...args}
-            s3UriPrefix={s3UriPrefix}
+            s3Uri={s3Uri}
             onS3UriPrefixChange={params => {
                 args.onS3UriPrefixChange(params);
-                setS3UriPrefix(params.s3UriPrefix);
+                setS3Uri(params.s3Uri);
             }}
         />
     );
 }
 
 const baseArgs: S3UriBarProps = {
-    s3UriPrefix: parsePrefixOrThrow(
-        "s3://analytics-data/exports/2024/quarter-1/report.csv"
-    ),
+    s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv"),
     onS3UriPrefixChange: action("s3UriPrefixChange"),
     hints: [
         { type: "key-segment", text: "quarter-2" },
@@ -79,7 +76,7 @@ export const NavigationMode: Story = {
 export const EditingModeWithHints: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/2024/")
+        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/")
     },
     render: args => <StatefulS3UriBar {...args} />
 };
@@ -87,7 +84,7 @@ export const EditingModeWithHints: Story = {
 export const LongPathCollapsed: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrow(
+        s3Uri: parsePrefixOrThrow(
             "s3://very-long-bucket-name/one/two/three/four/five/six/seven/eight/nine/ten/report.csv"
         )
     },
@@ -110,7 +107,7 @@ export const BookmarkedReadonlyIndicator: Story = {
 export const RootPrefix: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/")
+        s3Uri: parsePrefixOrThrow("s3://analytics-data/")
     },
     render: args => <StatefulS3UriBar {...args} />
 };
@@ -118,7 +115,7 @@ export const RootPrefix: Story = {
 export const HashDelimiter: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrowWithDelimiter({
+        s3Uri: parsePrefixOrThrowWithDelimiter({
             s3Uri: "s3://mybucket/foo#bar#file.txt",
             delimiter: "#"
         }),
@@ -134,7 +131,7 @@ export const HashDelimiter: Story = {
 export const EditingModeWithShortcuts: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             { type: "bookmark", text: "2024/quarter-1/" },
             { type: "bookmark", text: "raw/events/" },
@@ -148,7 +145,7 @@ export const EditingModeWithShortcuts: Story = {
 export const EditingModeWithManyHints: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             { type: "bookmark", text: "2024/" },
             { type: "bookmark", text: "2024/quarter-1/" },
@@ -172,7 +169,7 @@ export const EditingModeWithManyHints: Story = {
 export const EditingModeWithVeryLongHints: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
             {
                 type: "bookmark",
@@ -223,15 +220,15 @@ const mockS3Tree = {
 } as const;
 
 function ControlledS3UriBarStory() {
-    const [s3UriPrefix, setS3UriPrefix] = useState<S3Uri.Prefix>(
+    const [s3Uri, setS3Uri] = useState<S3Uri>(
         parsePrefixOrThrow("s3://analytics-data/exports/")
     );
     const [bookmarkedS3Uris, setBookmarkedS3Uris] = useState<string[]>([]);
 
-    const currentS3Uri = useMemo(() => stringifyS3Uri(s3UriPrefix), [s3UriPrefix]);
+    const currentS3Uri = useMemo(() => stringifyS3Uri(s3Uri), [s3Uri]);
 
     const hints = useMemo<S3UriBarProps["hints"]>(() => {
-        const bucketData = mockS3Tree[s3UriPrefix.bucket as keyof typeof mockS3Tree];
+        const bucketData = mockS3Tree[s3Uri.bucket as keyof typeof mockS3Tree];
 
         if (!bucketData) {
             return [];
@@ -240,7 +237,7 @@ function ControlledS3UriBarStory() {
         return [
             {
                 type: "bookmark" as const,
-                text: `${bucketData.keySegments[0]}${s3UriPrefix.delimiter}`
+                text: `${bucketData.keySegments[0]}${s3Uri.delimiter}`
             },
             ...bucketData.keySegments.map(text => ({
                 type: "key-segment" as const,
@@ -251,19 +248,19 @@ function ControlledS3UriBarStory() {
                 text
             }))
         ];
-    }, [s3UriPrefix.bucket]);
+    }, [s3Uri.bucket]);
 
     const isBookmarked = bookmarkedS3Uris.includes(currentS3Uri);
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
-                s3UriPrefix={s3UriPrefix}
+                s3Uri={s3Uri}
                 hints={hints}
                 isBookmarked={isBookmarked}
-                onS3UriPrefixChange={({ s3UriPrefix }) => {
-                    setS3UriPrefix(s3UriPrefix);
-                    action("s3UriPrefixChange")(stringifyS3Uri(s3UriPrefix));
+                onS3UriPrefixChange={({ s3Uri }) => {
+                    setS3Uri(s3Uri);
+                    action("s3UriPrefixChange")(stringifyS3Uri(s3Uri));
                 }}
                 onToggleBookmark={() => {
                     setBookmarkedS3Uris(current =>
@@ -295,7 +292,7 @@ function ControlledS3UriBarStory() {
 }
 
 function UndefinedPrefixLockedEditingStory() {
-    const [s3UriPrefix, setS3UriPrefix] = useState<S3Uri.Prefix | undefined>(undefined);
+    const [s3Uri, setS3Uri] = useState<S3Uri | undefined>(undefined);
     const [lastCommittedS3Uri, setLastCommittedS3Uri] = useState<string | undefined>(
         undefined
     );
@@ -303,16 +300,16 @@ function UndefinedPrefixLockedEditingStory() {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
-                s3UriPrefix={s3UriPrefix}
+                s3Uri={s3Uri}
                 hints={[
                     { type: "bookmark", text: "s3://mybucket/" },
                     { type: "bookmark", text: "s3://donnee-insee/diffusion/" },
                     { type: "key-segment", text: "hidden-non-bookmark-hint" }
                 ]}
                 isBookmarked={false}
-                onS3UriPrefixChange={({ s3UriPrefix }) => {
-                    const nextS3Uri = stringifyS3Uri(s3UriPrefix);
-                    setS3UriPrefix(s3UriPrefix);
+                onS3UriPrefixChange={({ s3Uri }) => {
+                    const nextS3Uri = stringifyS3Uri(s3Uri);
+                    setS3Uri(s3Uri);
                     setLastCommittedS3Uri(nextS3Uri);
                     action("s3UriPrefixChange")(nextS3Uri);
                 }}
@@ -323,7 +320,7 @@ function UndefinedPrefixLockedEditingStory() {
                 type="button"
                 style={{ width: "fit-content" }}
                 onClick={() => {
-                    setS3UriPrefix(undefined);
+                    setS3Uri(undefined);
                     setLastCommittedS3Uri(undefined);
                     action("resetToUndefinedPrefix")();
                 }}
@@ -344,9 +341,7 @@ function UndefinedPrefixLockedEditingStory() {
             >
                 <div>
                     Current prefix:{" "}
-                    {s3UriPrefix === undefined
-                        ? "undefined"
-                        : stringifyS3Uri(s3UriPrefix)}
+                    {s3Uri === undefined ? "undefined" : stringifyS3Uri(s3Uri)}
                 </div>
                 <div>Last committed URI: {lastCommittedS3Uri ?? "none"}</div>
                 <div>
@@ -368,7 +363,7 @@ export const ControlledShell: Story = {
 export const UndefinedPrefixLockedEditingWithBookmarkHints: Story = {
     args: {
         ...baseArgs,
-        s3UriPrefix: undefined,
+        s3Uri: undefined,
         hints: [
             { type: "bookmark", text: "s3://mybucket/" },
             { type: "bookmark", text: "s3://donnee-insee/diffusion/" }

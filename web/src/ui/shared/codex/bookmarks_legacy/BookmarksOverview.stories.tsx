@@ -10,11 +10,10 @@ import type { Bookmark } from "./types";
 
 const delimiter = "/";
 
-function parsePrefixOrThrow(s3Uri: string): S3Uri.Prefix {
+function parsePrefixOrThrow(s3Uri: string): S3Uri {
     return parseS3Uri({
         value: s3Uri,
-        delimiter,
-        isPrefix: true
+        delimiter
     });
 }
 
@@ -28,9 +27,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const overviewArgs = {
-    s3UriPrefix: parsePrefixOrThrow(
-        "s3://analytics-data/exports/2024/quarter-1/report.csv"
-    ),
+    s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv"),
     onS3UriPrefixChange: () => undefined,
     hints: [],
     isBookmarked: false
@@ -39,7 +36,7 @@ const overviewArgs = {
 export const Overview: Story = {
     args: overviewArgs,
     render: () => {
-        const [s3UriPrefix, setS3UriPrefix] = useState<S3Uri.Prefix>(
+        const [s3Uri, setS3Uri] = useState<S3Uri>(
             parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv")
         );
         const [pinnedBookmarks, setPinnedBookmarks] = useState<Bookmark[]>([
@@ -53,7 +50,7 @@ export const Overview: Story = {
         const [showNameModal, setShowNameModal] = useState(false);
         const [pendingPath, setPendingPath] = useState<string | null>(null);
 
-        const currentPath = useMemo(() => stringifyS3Uri(s3UriPrefix), [s3UriPrefix]);
+        const currentPath = useMemo(() => stringifyS3Uri(s3Uri), [s3Uri]);
 
         const activeBookmarkId = useMemo(() => {
             return pinnedBookmarks.find(bookmark => bookmark.path === currentPath)?.id;
@@ -62,10 +59,10 @@ export const Overview: Story = {
         return (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <S3UriBar
-                    s3UriPrefix={s3UriPrefix}
-                    onS3UriPrefixChange={({ s3UriPrefix }) => {
-                        action("s3UriPrefixChange")(stringifyS3Uri(s3UriPrefix));
-                        setS3UriPrefix(s3UriPrefix);
+                    s3Uri={s3Uri}
+                    onS3UriPrefixChange={({ s3Uri }) => {
+                        action("s3UriPrefixChange")(stringifyS3Uri(s3Uri));
+                        setS3Uri(s3Uri);
                     }}
                     hints={[
                         { type: "key-segment", text: "quarter-2" },
@@ -93,7 +90,7 @@ export const Overview: Story = {
                     bookmarks={pinnedBookmarks}
                     activeId={activeBookmarkId}
                     onSelect={bookmark => {
-                        setS3UriPrefix(parsePrefixOrThrow(bookmark.path));
+                        setS3Uri(parsePrefixOrThrow(bookmark.path));
                     }}
                     onUnpin={bookmark =>
                         setPinnedBookmarks(prev =>
