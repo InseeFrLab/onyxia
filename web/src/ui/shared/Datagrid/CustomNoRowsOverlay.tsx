@@ -1,14 +1,11 @@
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
-import { useTranslation } from "ui/i18n";
 
 export function CustomNoRowsOverlay() {
-    const { t } = useTranslation("ExplorerItems");
-
     const { classes } = useStyles();
     return (
         <Text className={classes.root} typo="body 1">
-            {t("empty directory")}
+            No Rows
         </Text>
     );
 }
