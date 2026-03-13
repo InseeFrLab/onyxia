@@ -34,7 +34,8 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             () =>
                 dispatch(
                     thunks.listPrefix({
-                        s3Uri: privateSelectors.s3Uri(getState())
+                        s3Uri: privateSelectors.s3Uri(getState()),
+                        debounce: false
                     })
                 )
         );
@@ -73,7 +74,8 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             () => {
                 dispatch(
                     thunks.listPrefix({
-                        s3Uri: privateSelectors.s3Uri(getState())
+                        s3Uri: privateSelectors.s3Uri(getState()),
+                        debounce: false
                     })
                 );
             }
@@ -155,7 +157,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                     );
 
                     if (result.isSuccess) {
-                        dispatch(thunks.listPrefix({ s3Uri }));
+                        dispatch(thunks.listPrefix({ s3Uri, debounce: false }));
                     }
 
                     return { isSuccess: result.isSuccess };

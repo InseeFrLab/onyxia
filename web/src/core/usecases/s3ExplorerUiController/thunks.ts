@@ -17,6 +17,10 @@ const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
         delay: 10
     });
 
+const { waitForDebounce: waitForDebounce_listPrefix } = createWaitForDebounce({
+    delay: 150
+});
+
 export const thunks = {
     load:
         (params: { routeParams: RouteParams }) =>
@@ -46,7 +50,8 @@ export const thunks = {
                                 : parseS3Uri({
                                       value: `s3://${routeParams.s3UriWithoutScheme}`,
                                       delimiter: "/"
-                                  })
+                                  }),
+                        debounce: false
                     })
                 );
             }
@@ -108,7 +113,8 @@ export const thunks = {
 
                 dispatch(
                     thunks.listPrefix({
-                        s3Uri
+                        s3Uri,
+                        debounce: false
                     })
                 );
             }
@@ -130,7 +136,8 @@ export const thunks = {
 
             dispatch(
                 thunks.listPrefix({
-                    s3Uri: undefined
+                    s3Uri: undefined,
+                    debounce: false
                 })
             );
         },
@@ -177,11 +184,11 @@ export const thunks = {
             };
     })(),
     listPrefix:
-        (params: { s3Uri: S3Uri | undefined }) =>
+        (params: { s3Uri: S3Uri | undefined; debounce: boolean }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { s3Uri } = params;
+            const { s3Uri, debounce } = params;
 
             const profileName = privateSelectors.profileName(getState());
 
@@ -205,6 +212,14 @@ export const thunks = {
             }
 
             dispatch(actions.listingStarted({ profileName, s3Uri }));
+
+            {
+                const prDebounce = waitForDebounce_listPrefix();
+
+                if (debounce) {
+                    await prDebounce;
+                }
+            }
 
             const cmdId = Date.now();
 
