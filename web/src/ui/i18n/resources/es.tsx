@@ -195,36 +195,6 @@ export const translations: Translations<"en"> = {
         "failed body": ({ bucket }) => `No se pudo crear ${bucket}.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `No tienes permiso de lectura en s3://${directoryPath} con este perfil S3`,
-        "bucket does not exist": ({ bucket }) => `El bucket ${bucket} no existe`,
-        "go back": "Volver",
-        "delete bookmark": "Eliminar marcador"
-    },
-    ShareDialog: {
-        title: "Compartir tus datos",
-        close: "Cerrar",
-        "create and copy link": "Crear y copiar enlace",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Tu archivo es público, cualquier persona con el enlace puede descargarlo."
-                : "Tu archivo está actualmente privado.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Para restringir su acceso, cambia el estado de difusión de tu archivo."
-                : "Para compartir y dar acceso a tu archivo, cambia el estado de difusión o crea un enlace de acceso temporal.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Tu enlace está disponible mientras el archivo sea público."
-                : `Este enlace otorgará acceso a tus datos durante ${expiration}.`,
-        "label input link": "Enlace de acceso"
-    },
-    SelectTime: {
-        "validity duration label": "Duración de validez"
-    },
     MySecrets: {
         "page title - my secrets": "Mis Secretos",
         "what this page is used for - my secrets":
@@ -246,9 +216,6 @@ export const translations: Translations<"en"> = {
     SecretsExplorerItem: {
         description: "descripción"
     },
-    ExplorerItem: {
-        description: "descripción"
-    },
     SecretsExplorerButtonBar: {
         secret: "secreto",
         rename: "renombrar",
@@ -260,26 +227,6 @@ export const translations: Translations<"en"> = {
         "create what": ({ what }) => `Crear ${what}`,
         new: "Nuevo"
     },
-    ExplorerButtonBar: {
-        file: "archivo",
-        delete: "eliminar",
-        "download directory": "Descargar",
-        "upload file": "Subir archivo",
-        "copy path": "Copiar nombre del objeto S3",
-        "create new empty directory": "Crear directorio",
-        refresh: "actualizar",
-        new: "Nuevo",
-        share: "Compartir",
-        "alt list view": "Mostrar lista",
-        "alt block view": "Mostrar bloque"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Preparing download ..."
-    },
-    ExplorerItems: {
-        "empty directory": "Este directorio está vacío"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Este directorio está vacío"
     },
@@ -301,32 +248,6 @@ export const translations: Translations<"en"> = {
         "already a directory with this name": "Ya existe una carpeta con este nombre",
         "can't be empty": "No puede estar vacío",
         "new directory": "Nueva carpeta"
-    },
-    Explorer: {
-        file: "archivo",
-        secret: "secreto",
-        create: "crear",
-        cancel: "cancelar",
-        delete: "eliminar",
-        "do not display again": "No mostrar de nuevo",
-        "untitled what": ({ what }) => `sin_título_${what}`,
-        directory: "carpeta",
-        multiple: "elementos",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `¿Eliminar ${isPlural ? "estos" : "este"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        Está a punto de eliminar ${isPlural ? "estos" : "este"} ${deleteWhat}.
-        Esta acción puede resultar en la pérdida de datos asociados a ${isPlural ? "estos" : "este"} ${deleteWhat}.
-        `,
-        "already a directory with this name": "Ya existe una carpeta con este nombre",
-        "can't be empty": "No puede estar vacío",
-        "new directory": "Nueva carpeta"
-    },
-    ListExplorerItems: {
-        "header name": "Nombre",
-        "header modified date": "Modificado",
-        "header size": "Tamaño",
-        "header policy": "Política"
     },
     CreateOrUpdateProfileDialog: {
         "dialog title": "Nueva configuración S3 personalizada",
@@ -409,20 +330,6 @@ export const translations: Translations<"en"> = {
         "key input desc": "Nombre de la variable de entorno",
         "value input desc": "Valor de la variable de entorno"
     },
-    ExplorerUploadModalDropArea: {
-        "browse files": "explorar archivos",
-        "drag and drop or": "Arrastra y suelta o"
-    },
-    ExplorerUploadProgress: {
-        over: "más de",
-        importing: "Importando"
-    },
-    ExplorerUploadModal: {
-        "import files": "Importar archivos",
-        cancel: "Cancelar",
-        minimize: "Minimizar"
-    },
-
     Header: {
         login: "Iniciar sesión",
         logout: "Cerrar sesión",

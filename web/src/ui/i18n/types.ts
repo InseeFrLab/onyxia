@@ -17,8 +17,9 @@ export type ComponentKey =
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
     | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
     | import("ui/pages/s3Explorer/dialogs/ConfirmBucketCreationAttemptDialog").I18n
-    | import("ui/pages/s3Explorer/Explorer").I18n
     | import("ui/pages/s3Explorer/dialogs/CreateOrUpdateProfileDialog").I18n
+    /*
+    | import("ui/pages/s3Explorer/Explorer").I18n
     | import("ui/pages/s3Explorer/headless/Explorer/Explorer").I18n
     | import("ui/pages/s3Explorer/headless/Explorer/ExplorerButtonBar").I18n
     | import("ui/pages/s3Explorer/headless/Explorer/ExplorerItems").I18n
@@ -30,6 +31,7 @@ export type ComponentKey =
     | import("ui/pages/s3Explorer/headless/Explorer/ExplorerDownloadSnackbar").I18n
     | import("ui/pages/s3Explorer/headless/ShareFile/ShareDialog").I18n
     | import("ui/pages/s3Explorer/headless/ShareFile/SelectTime").I18n
+    */
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n

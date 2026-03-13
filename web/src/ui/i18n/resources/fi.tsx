@@ -191,36 +191,6 @@ export const translations: Translations<"fi"> = {
         "failed body": ({ bucket }) => `Kohteen ${bucket} luonti epäonnistui.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `Sinulla ei ole lukuoikeutta kohteeseen s3://${directoryPath} tällä S3-profiililla`,
-        "bucket does not exist": ({ bucket }) => `Bucket ${bucket} ei ole olemassa`,
-        "go back": "Takaisin",
-        "delete bookmark": "Poista kirjanmerkki"
-    },
-    ShareDialog: {
-        title: "Jaa tietosi",
-        close: "Sulje",
-        "create and copy link": "Luo ja kopioi linkki",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Tiedostosi on julkinen, kuka tahansa linkin omistava voi ladata sen."
-                : "Tiedostosi on tällä hetkellä yksityinen.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Rajoittaaksesi pääsyä muuta tiedostosi jakamisen tilaa."
-                : "Jaa tiedosto ja anna pääsy muuttamalla jakamisen tilaa tai luomalla väliaikainen linkki.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Linkkisi on käytettävissä niin kauan kuin tiedosto on julkinen."
-                : `Tämä linkki antaa pääsyn tietoihisi ${expiration} ajaksi.`,
-        "label input link": "Pääsylinkki"
-    },
-    SelectTime: {
-        "validity duration label": "Voimassaoloaika"
-    },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
@@ -242,9 +212,6 @@ export const translations: Translations<"fi"> = {
     SecretsExplorerItem: {
         description: "kuvaus"
     },
-    ExplorerItem: {
-        description: "kuvaus"
-    },
     SecretsExplorerButtonBar: {
         secret: "salaisuus",
         rename: "nimeä uudelleen",
@@ -256,26 +223,6 @@ export const translations: Translations<"fi"> = {
         "create what": ({ what }) => `Luo ${what}`,
         new: "Uusi"
     },
-    ExplorerButtonBar: {
-        file: "tiedosto",
-        delete: "poista",
-        "download directory": "Lataa",
-        "upload file": "Lataa tiedosto",
-        "copy path": "Kopioi S3-objektin nimi",
-        "create new empty directory": "Luo hakemisto",
-        refresh: "päivitä",
-        new: "Uusi",
-        share: "Jaa",
-        "alt list view": "Näytä lista",
-        "alt block view": "Näytä lohko"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Latauksen valmistelu ..."
-    },
-    ExplorerItems: {
-        "empty directory": "Tämä hakemisto on tyhjä"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Tämä hakemisto on tyhjä"
     },
@@ -292,26 +239,6 @@ export const translations: Translations<"fi"> = {
         "deletion dialog title": ({ deleteWhat }) => `Poista ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) => `Olet poistamassa ${deleteWhat}.
             Tätä toimintoa ei voi peruuttaa.`,
-        "already a directory with this name": "Tämän niminen hakemisto on jo olemassa",
-        "can't be empty": "Ei voi olla tyhjä",
-        "new directory": "Uusi hakemisto"
-    },
-    Explorer: {
-        file: "tiedosto",
-        secret: "salaisuus",
-        create: "luo",
-        cancel: "peruuta",
-        delete: "poista",
-        "do not display again": "Älä näytä uudelleen",
-        "untitled what": ({ what }) => `nimetön_${what}`,
-        directory: "hakemisto",
-        multiple: "kohteet",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Poistetaanko ${isPlural ? "nämä" : "tämä"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        Olet poistamassa ${isPlural ? "näitä" : "tätä"} ${deleteWhat}.
-        Tämä toiminto voi johtaa näihin liittyvien tietojen menetykseen ${isPlural ? "näihin" : "tähän"} ${deleteWhat}.
-        `,
         "already a directory with this name": "Tämän niminen hakemisto on jo olemassa",
         "can't be empty": "Ei voi olla tyhjä",
         "new directory": "Uusi hakemisto"
@@ -394,30 +321,10 @@ export const translations: Translations<"fi"> = {
             `,
         "use secret dialog ok": "Selvä"
     },
-    ListExplorerItems: {
-        "header name": "Nimi",
-        "header modified date": "Muokattu",
-        "header size": "Koko",
-        "header policy": "Käytäntö"
-    },
     MySecretsEditorRow: {
         "key input desc": "Ympäristömuuttujan nimi",
         "value input desc": "Ympäristömuuttujan arvo"
     },
-    ExplorerUploadModalDropArea: {
-        "browse files": "Selaa tiedostoja",
-        "drag and drop or": "Vedä ja pudota tai"
-    },
-    ExplorerUploadProgress: {
-        over: "yli",
-        importing: "Tuodaan"
-    },
-    ExplorerUploadModal: {
-        "import files": "Tuo tiedostoja",
-        cancel: "Peruuta",
-        minimize: "Pienennä"
-    },
-
     Header: {
         login: "Kirjaudu sisään",
         logout: "Kirjaudu ulos",

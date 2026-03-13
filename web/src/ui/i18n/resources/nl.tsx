@@ -194,36 +194,6 @@ export const translations: Translations<"nl"> = {
         "failed body": ({ bucket }) => `Aanmaken van ${bucket} is mislukt.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `Je hebt geen leesrechten op s3://${directoryPath} met dit S3-profiel`,
-        "bucket does not exist": ({ bucket }) => `De bucket ${bucket} bestaat niet`,
-        "go back": "Terug",
-        "delete bookmark": "Bladwijzer verwijderen"
-    },
-    ShareDialog: {
-        title: "Deel je gegevens",
-        close: "Sluiten",
-        "create and copy link": "Link maken en kopiëren",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Je bestand is openbaar, iedereen met de link kan het downloaden."
-                : "Je bestand is momenteel privé.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Om toegang te beperken, verander de deelstatus van je bestand."
-                : "Om toegang te geven tot je bestand, verander de deelstatus of maak een tijdelijke toegangslink.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Je link is beschikbaar zolang het bestand openbaar is."
-                : `Deze link geeft toegang tot je gegevens gedurende ${expiration}.`,
-        "label input link": "Toegangslink"
-    },
-    SelectTime: {
-        "validity duration label": "Geldigheidsduur"
-    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -242,27 +212,8 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    ExplorerItem: {
-        description: "beschrijving"
-    },
     SecretsExplorerItem: {
         description: "beschrijving"
-    },
-    ExplorerButtonBar: {
-        file: "bestand",
-        delete: "verwijderen",
-        "upload file": "Een bestand uploaden",
-        "copy path": "De naam van het S3-object kopiëren",
-        "create new empty directory": "Nieuwe map",
-        refresh: "vernieuwen",
-        "download directory": "Downloaden",
-        new: "Nieuw",
-        share: "Delen",
-        "alt list view": "Toon lijst",
-        "alt block view": "Toon blok"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Voorbereiding van de download ..."
     },
     SecretsExplorerButtonBar: {
         secret: "geheim",
@@ -274,33 +225,6 @@ export const translations: Translations<"nl"> = {
         refresh: "vernieuwen",
         "create what": ({ what }) => `Nieuw ${what}`,
         new: "Nieuw"
-    },
-    Explorer: {
-        file: "bestand",
-        secret: "geheim",
-        create: "creëren",
-        cancel: "annuleren",
-        delete: "verwijderen",
-        "do not display again": "Niet meer weergeven",
-
-        "untitled what": ({ what }) => `${what}_naamloos`,
-        directory: "map",
-        multiple: "items",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `${isPlural ? "Deze" : "Dit"} ${deleteWhat} verwijderen?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        U staat op het punt om ${isPlural ? "deze" : "dit"} ${deleteWhat} te verwijderen.
-        Deze actie kan leiden tot het verlies van gegevens die gekoppeld zijn aan ${isPlural ? "deze" : "dit"} ${deleteWhat}.
-        `,
-        "already a directory with this name": "Er bestaat al een map met deze naam",
-        "can't be empty": "Kan niet leeg zijn",
-        "new directory": "Nieuwe map"
-    },
-    ListExplorerItems: {
-        "header name": "Naam",
-        "header modified date": "Gewijzigd",
-        "header size": "Grootte",
-        "header policy": "Beleid"
     },
     SecretsExplorer: {
         file: "bestand",
@@ -320,10 +244,6 @@ export const translations: Translations<"nl"> = {
         create: "Creëren",
         "new directory": "Nieuwe map"
     },
-    ExplorerItems: {
-        "empty directory": "Deze bestandenlijst is leeg"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Deze bestandenlijst is leeg"
     },
@@ -406,19 +326,6 @@ export const translations: Translations<"nl"> = {
     MySecretsEditorRow: {
         "key input desc": "Naam van de omgevingsvariabele",
         "value input desc": "Waarde van de omgevingsvariabele"
-    },
-    ExplorerUploadModalDropArea: {
-        "browse files": "uw bestanden raadplegen",
-        "drag and drop or": "Slepen en neerzetten of"
-    },
-    ExplorerUploadProgress: {
-        over: "op",
-        importing: "importeren"
-    },
-    ExplorerUploadModal: {
-        "import files": "Bestanden importeren",
-        cancel: "Annuleren",
-        minimize: "Minimaliseren"
     },
     Header: {
         login: "Inloggen",

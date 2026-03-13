@@ -198,36 +198,6 @@ export const translations: Translations<"fr"> = {
         "failed body": ({ bucket }) => `Échec de la création de ${bucket}.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `Vous n'avez pas l'autorisation de lecture sur s3://${directoryPath} avec ce profil S3`,
-        "bucket does not exist": ({ bucket }) => `Le bucket ${bucket} n'existe pas`,
-        "go back": "Retour",
-        "delete bookmark": "Supprimer le favori"
-    },
-    ShareDialog: {
-        title: "Partager vos données",
-        close: "Fermer",
-        "create and copy link": "Créer et copier le lien",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Votre fichier est public, toute personne ayant le lien peut télécharger votre fichier."
-                : "Votre fichier est actuellement privé.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Pour restreindre son accès, changez le statut de diffusion de votre fichier."
-                : "Pour partager et donner accès à votre fichier, changez le statut de diffusion ou créez un lien d’accès temporaire.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Votre lien est disponible tant que le fichier est public."
-                : `Ce lien donnera un accès à vos données pendant ${expiration}.`,
-        "label input link": "Lien d'accès"
-    },
-    SelectTime: {
-        "validity duration label": "Durée de validité"
-    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -246,27 +216,8 @@ export const translations: Translations<"fr"> = {
             </>
         )
     },
-    ExplorerItem: {
-        description: "description"
-    },
     SecretsExplorerItem: {
         description: "description"
-    },
-    ExplorerButtonBar: {
-        file: "fichier",
-        delete: "supprimer",
-        "upload file": "Téléverser un fichier",
-        "copy path": "Copier le nom de l'objet S3",
-        "create new empty directory": "Nouveau dossier",
-        refresh: "rafraîchir",
-        new: "Nouveau",
-        share: "Partager",
-        "alt list view": "Afficher la liste",
-        "alt block view": "Afficher en bloc",
-        "download directory": "Télécharger"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Préparation du téléchargement ..."
     },
     SecretsExplorerButtonBar: {
         secret: "secret",
@@ -278,32 +229,6 @@ export const translations: Translations<"fr"> = {
         refresh: "rafraîchir",
         "create what": ({ what }) => `Nouveau ${what}`,
         new: "Nouveau"
-    },
-    Explorer: {
-        file: "fichier",
-        secret: "secret",
-        create: "créer",
-        cancel: "annuler",
-        delete: "supprimer",
-        "do not display again": "Ne plus afficher",
-        "untitled what": ({ what }) => `${what}_sans_nom`,
-        multiple: "éléments",
-        directory: "dossier",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Supprimer ${isPlural ? "des" : "un"} ${deleteWhat} ?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-            Vous êtes sur le point de supprimer ${isPlural ? "des" : "un"} ${deleteWhat}. 
-            Cette action entraînera la perte potentielle des données liées à ${isPlural ? "ces" : "ce"} ${deleteWhat}.
-            `,
-        "already a directory with this name": "Il y a déjà un dossier avec ce nom",
-        "can't be empty": "Ne peut être vide",
-        "new directory": "Nouveau dossier"
-    },
-    ListExplorerItems: {
-        "header name": "Nom",
-        "header modified date": "Modifié",
-        "header size": "Taille",
-        "header policy": "Politique"
     },
     SecretsExplorer: {
         file: "fichier",
@@ -323,10 +248,6 @@ export const translations: Translations<"fr"> = {
         create: "Créer",
         "new directory": "Nouveau dossier"
     },
-    ExplorerItems: {
-        "empty directory": "Ce répertoire est vide"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Ce répertoire est vide"
     },
@@ -412,19 +333,6 @@ export const translations: Translations<"fr"> = {
     MySecretsEditorRow: {
         "key input desc": "Nom de la variable d'environnement",
         "value input desc": "Valeur de la variable d'environnement"
-    },
-    ExplorerUploadModalDropArea: {
-        "browse files": "Parcourir vos fichiers",
-        "drag and drop or": "Glisser et déposer ou"
-    },
-    ExplorerUploadProgress: {
-        over: "sur",
-        importing: "importation"
-    },
-    ExplorerUploadModal: {
-        "import files": "Importer des fichiers",
-        cancel: "Annuler",
-        minimize: "Minimiser"
     },
     Header: {
         login: "Connexion",
