@@ -315,19 +315,10 @@ export function createOnyxiaApi(params: {
                                                         ): DeploymentRegion.S3Profile.Bookmark => {
                                                             return id<DeploymentRegion.S3Profile.Bookmark>(
                                                                 {
-                                                                    s3UriPrefix: (() => {
-                                                                        const s3UriPrefix = `s3://${bookmarkedDirectory_api.fullPath}`;
-
-                                                                        // NOTE: Just for checking shape.
-                                                                        parseS3Uri({
-                                                                            value: s3UriPrefix,
-                                                                            delimiter:
-                                                                                "/",
-                                                                            isPrefix: true
-                                                                        });
-
-                                                                        return s3UriPrefix;
-                                                                    })(),
+                                                                    s3Uri: parseS3Uri({
+                                                                        value: `s3://${bookmarkedDirectory_api.fullPath}`,
+                                                                        delimiter: "/"
+                                                                    }),
                                                                     title: bookmarkedDirectory_api.title,
                                                                     description:
                                                                         bookmarkedDirectory_api.description,
