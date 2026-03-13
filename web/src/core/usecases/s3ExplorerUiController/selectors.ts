@@ -400,8 +400,10 @@ const uriBar = createSelector(
 
         const hints: MainView["uriBar"]["hints"] = bookmarks
             .map(bookmark => stringifyS3Uri(bookmark.s3Uri))
-            .filter(s3UriPrefix_bookmark_str =>
-                s3UriPrefix_bookmark_str.startsWith(s3Uri_str)
+            .filter(
+                s3UriPrefix_bookmark_str =>
+                    s3UriPrefix_bookmark_str.startsWith(s3Uri_str) &&
+                    s3UriPrefix_bookmark_str !== s3Uri_str
             )
             .map(s3UriPrefix_bookmark_str =>
                 s3UriPrefix_bookmark_str.slice(s3Uri_str.length)
@@ -425,6 +427,9 @@ const uriBar = createSelector(
 
             switch (item.type) {
                 case "object":
+                    if (same(item.s3Uri, s3Uri)) {
+                        return;
+                    }
                     hints.push({
                         type: "object",
                         text: keyBasename
