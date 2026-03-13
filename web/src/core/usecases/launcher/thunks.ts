@@ -767,6 +767,7 @@ export const protectedThunks = {
                     ingressClassName: region.ingressClassName,
                     ingress: region.ingress,
                     route: region.route,
+                    httpRoute: region.httpRoute,
                     istio: region.istio,
                     randomSubdomain: `${Math.floor(Math.random() * 1000000)}`,
                     initScriptUrl: region.initScriptUrl,
