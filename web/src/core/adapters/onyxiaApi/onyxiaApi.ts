@@ -21,7 +21,6 @@ import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
-import { parseS3Uri } from "core/tools/S3Uri";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -315,10 +314,7 @@ export function createOnyxiaApi(params: {
                                                         ): DeploymentRegion.S3Profile.Bookmark => {
                                                             return id<DeploymentRegion.S3Profile.Bookmark>(
                                                                 {
-                                                                    s3Uri: parseS3Uri({
-                                                                        value: `s3://${bookmarkedDirectory_api.fullPath}`,
-                                                                        delimiter: "/"
-                                                                    }),
+                                                                    s3UriStr_templated: `s3://${bookmarkedDirectory_api.fullPath}`,
                                                                     title: bookmarkedDirectory_api.title,
                                                                     description:
                                                                         bookmarkedDirectory_api.description,
