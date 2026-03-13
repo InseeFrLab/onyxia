@@ -25,6 +25,24 @@ EOF
 helm install onyxia onyxia/onyxia --version "10.32.7" -f onyxia-values.yaml
 ```
 
+To expose Onyxia with the Kubernetes Gateway API instead of an Ingress, use an `HTTPRoute`.
+The `parentRefs` entries must point to the `Gateway` already configured by your cluster administrator:
+
+```bash
+cat << EOF > ./onyxia-values.yaml
+httpRoute:
+  enabled: true
+  parentRefs:
+    - name: onyxia-gateway
+      namespace: infra-gateway
+      sectionName: web
+  hostnames:
+    - datalab.my-domain.net
+EOF
+
+helm install onyxia onyxia/onyxia --version "10.32.5" -f onyxia-values.yaml
+```
+
 ### Using the Keycloak Theme (Optional)
 
 If you use [Keycloak](https://www.keycloak.org/) as OIDC provider you can use the Onyxia theme.  
@@ -76,10 +94,6 @@ Documentation reference for the available configuration parameter of the Onyxia 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
 ```diff
- ingress:
-     enabled: true
-     hosts:
-       - host: datalab.yourdomain.com
 +web:
 +    env:
 +      HEADER_LOGO=https://example.com/logo.svg
@@ -100,6 +114,27 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
 +              "id":"demo",
 +              "name":"Demo",
 +              # ...
+```
+
+Ingress example:
+
+```yaml
+ingress:
+  enabled: true
+  hosts:
+    - host: datalab.yourdomain.com
+```
+
+HTTPRoute example:
+
+```yaml
+httpRoute:
+  enabled: true
+  parentRefs:
+    # Reference the Gateway configured by your cluster administrator.
+    - name: onyxia-gateway
+  hostnames:
+    - datalab.yourdomain.com
 ```
 
 ## Catalogs `x-onyxia` specifications

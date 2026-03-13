@@ -13,6 +13,19 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    # parentRefs must reference the Gateway configured by the cluster administrator.
+    # parentRefs[0].name is required when httpRoute.enabled=true.
+    - name: onyxia-gateway
+      # namespace:
+      # sectionName:
+      # port:
+  hostnames:
+    - chart-example.local
+
 route:
   enabled: false
   annotations: {} # route.openshift.io/termination: "reencrypt"
