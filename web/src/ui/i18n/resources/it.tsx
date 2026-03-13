@@ -193,36 +193,6 @@ export const translations: Translations<"it"> = {
         "failed body": ({ bucket }) => `Creazione di ${bucket} non riuscita.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `Non hai il permesso di lettura su s3://${directoryPath} con questo profilo S3`,
-        "bucket does not exist": ({ bucket }) => `Il bucket ${bucket} non esiste`,
-        "go back": "Indietro",
-        "delete bookmark": "Elimina segnalibro"
-    },
-    ShareDialog: {
-        title: "Condividi i tuoi dati",
-        close: "Chiudi",
-        "create and copy link": "Crea e copia il link",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Il tuo file è pubblico, chiunque abbia il link può scaricarlo."
-                : "Il tuo file è attualmente privato.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Per limitare l'accesso, modifica lo stato di condivisione del tuo file."
-                : "Per condividere e dare accesso al tuo file, modifica lo stato di condivisione o crea un link di accesso temporaneo.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Il tuo link è disponibile finché il file è pubblico."
-                : `Questo link garantirà l'accesso ai tuoi dati per ${expiration}.`,
-        "label input link": "Link di accesso"
-    },
-    SelectTime: {
-        "validity duration label": "Durata di validità"
-    },
     MySecrets: {
         "page title - my secrets": "I miei segreti",
         "what this page is used for - my secrets":
@@ -235,33 +205,13 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
-    ExplorerItem: {
-        description: "descrizione"
-    },
     SecretsExplorerItem: {
         description: "descrizione"
-    },
-    ExplorerButtonBar: {
-        file: "file",
-        delete: "eliminare",
-        "download directory": "Scaricare",
-        "upload file": "Caricare un file",
-        "copy path": "Copia il nome dell'oggetto S3",
-        "create new empty directory": "Nuova cartella",
-        refresh: "aggiornare",
-        new: "Nuovo",
-        share: "Condividi",
-        "alt list view": "Mostra lista",
-        "alt block view": "Mostra blocco"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Preparazione del download ..."
     },
     SecretsExplorerButtonBar: {
         secret: "segreto",
@@ -273,33 +223,6 @@ export const translations: Translations<"it"> = {
         refresh: "aggiornare",
         "create what": ({ what }) => `Nuovo ${what}`,
         new: "Nuovo"
-    },
-    Explorer: {
-        file: "file",
-        secret: "segreto",
-        create: "creare",
-        cancel: "annullare",
-        delete: "eliminare",
-        "do not display again": "Non mostrare più",
-
-        "untitled what": ({ what }) => `${what}_senza_nome`,
-        directory: "cartella",
-        multiple: "elementi",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Eliminare ${isPlural ? "questi" : "questo"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        Stai per eliminare ${isPlural ? "questi" : "questo"} ${deleteWhat}.
-        Questa azione potrebbe comportare la perdita dei dati associati a ${isPlural ? "questi" : "questo"} ${deleteWhat}.
-        `,
-        "already a directory with this name": "Esiste già una cartella con questo nome",
-        "can't be empty": "Non può essere vuoto",
-        "new directory": "Nuova cartella"
-    },
-    ListExplorerItems: {
-        "header name": "Nome",
-        "header modified date": "Modificato",
-        "header size": "Dimensione",
-        "header policy": "Politica"
     },
     SecretsExplorer: {
         file: "file",
@@ -319,10 +242,6 @@ export const translations: Translations<"it"> = {
         create: "creare",
         "new directory": "Nuova cartella"
     },
-    ExplorerItems: {
-        "empty directory": "Questa cartella è vuota"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Questa cartella è vuota"
     },
@@ -407,19 +326,6 @@ export const translations: Translations<"it"> = {
     MySecretsEditorRow: {
         "key input desc": "Nome della variabile di ambiente",
         "value input desc": "Valore della variabile di ambiente"
-    },
-    ExplorerUploadModalDropArea: {
-        "browse files": "Sfoglia i tuoi file",
-        "drag and drop or": "Trascina e rilascia o"
-    },
-    ExplorerUploadProgress: {
-        over: "su",
-        importing: "importazione"
-    },
-    ExplorerUploadModal: {
-        "import files": "Importare file",
-        cancel: "Annullare",
-        minimize: "Minimizzare"
     },
     Header: {
         login: "Connessione",

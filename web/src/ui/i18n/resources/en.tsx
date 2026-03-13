@@ -190,36 +190,6 @@ export const translations: Translations<"en"> = {
         "failed body": ({ bucket }) => `Failed to create ${bucket}.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `You do not have read permission on s3://${directoryPath} with this S3 Profile`,
-        "bucket does not exist": ({ bucket }) => `The bucket ${bucket} does not exist`,
-        "go back": "Go Back",
-        "delete bookmark": "Delete bookmark"
-    },
-    ShareDialog: {
-        title: "Share your data",
-        close: "Close",
-        "create and copy link": "Create and copy link",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Your file is public, anyone with the link can download it."
-                : "Your file is currently private.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "To restrict its access, change your file's sharing status."
-                : "To share and provide access to your file, change the sharing status or create a temporary access link.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Your link is available as long as the file is public."
-                : `This link will grant access to your data for ${expiration}.`,
-        "label input link": "Access link"
-    },
-    SelectTime: {
-        "validity duration label": "Validity duration"
-    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -241,9 +211,6 @@ export const translations: Translations<"en"> = {
     SecretsExplorerItem: {
         description: "description"
     },
-    ExplorerItem: {
-        description: "description"
-    },
     SecretsExplorerButtonBar: {
         secret: "secret",
         rename: "rename",
@@ -254,25 +221,6 @@ export const translations: Translations<"en"> = {
         refresh: "refresh",
         "create what": ({ what }) => `Create ${what}`,
         new: "New"
-    },
-    ExplorerButtonBar: {
-        file: "file",
-        delete: "delete",
-        "download directory": "Download",
-        "upload file": "Upload file",
-        "copy path": "Copy S3 object name",
-        "create new empty directory": "create new empty directory",
-        refresh: "refresh",
-        new: "New",
-        share: "Share",
-        "alt list view": "Show list",
-        "alt block view": "Show block"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Preparing download ..."
-    },
-    ExplorerItems: {
-        "empty directory": "This directory is empty"
     },
 
     SecretsExplorerItems: {
@@ -293,27 +241,6 @@ export const translations: Translations<"en"> = {
             deleteWhat
         }) => `You are about to delete ${deleteWhat}.
             This action can't be reverted.`,
-        "already a directory with this name":
-            "There is already a directory with this name",
-        "can't be empty": "Can't be empty",
-        "new directory": "New directory"
-    },
-    Explorer: {
-        file: "file",
-        secret: "secret",
-        create: "create",
-        cancel: "cancel",
-        delete: "delete",
-        "do not display again": "Don't display again",
-        "untitled what": ({ what }) => `untitled_${what}`,
-        directory: "folder",
-        multiple: "items",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Delete ${isPlural ? "these" : "this"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        You are about to delete ${isPlural ? "these" : "this"} ${deleteWhat}.
-        This action may result in the loss of data associated with ${isPlural ? "these" : "this"} ${deleteWhat}.
-        `,
         "already a directory with this name":
             "There is already a directory with this name",
         "can't be empty": "Can't be empty",
@@ -396,25 +323,6 @@ export const translations: Translations<"en"> = {
     MySecretsEditorRow: {
         "key input desc": "Environnement variable name",
         "value input desc": "Environnement variable value"
-    },
-    ExplorerUploadModalDropArea: {
-        "browse files": "browse files",
-        "drag and drop or": "Drag and drop or"
-    },
-    ExplorerUploadProgress: {
-        over: "over",
-        importing: "Importing"
-    },
-    ExplorerUploadModal: {
-        "import files": "Import files",
-        cancel: "Cancel",
-        minimize: "Minimize"
-    },
-    ListExplorerItems: {
-        "header name": "Name",
-        "header modified date": "Modified",
-        "header size": "Size",
-        "header policy": "Policy"
     },
     Header: {
         login: "Login",

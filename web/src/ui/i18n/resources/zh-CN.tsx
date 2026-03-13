@@ -171,36 +171,6 @@ export const translations: Translations<"zh-CN"> = {
         "failed body": ({ bucket }) => `创建 ${bucket} 失败。`,
         ok: "确定"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `您没有使用此 S3 配置文件读取 s3://${directoryPath} 的权限`,
-        "bucket does not exist": ({ bucket }) => `存储桶 ${bucket} 不存在`,
-        "go back": "返回",
-        "delete bookmark": "删除书签"
-    },
-    ShareDialog: {
-        title: "分享您的数据",
-        close: "关闭",
-        "create and copy link": "创建并复制链接",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "您的文件是公开的，任何拥有链接的人都可以下载。"
-                : "您的文件当前是私密的。",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "要限制访问，请更改文件的共享状态。"
-                : "要分享并提供对文件的访问，请更改共享状态或创建一个临时访问链接。",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "只要文件是公开的，您的链接就可用。"
-                : `此链接将在 ${expiration} 内提供对您的数据的访问权限。`,
-        "label input link": "访问链接"
-    },
-    SelectTime: {
-        "validity duration label": "有效期"
-    },
     MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
@@ -217,27 +187,8 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    ExplorerItem: {
-        description: "描述"
-    },
     SecretsExplorerItem: {
         description: "描述"
-    },
-    ExplorerButtonBar: {
-        file: "文件",
-        delete: "删除",
-        "download directory": "下载",
-        "upload file": "上传文件",
-        "copy path": "复制 S3 对象名称",
-        "create new empty directory": "创建目录",
-        refresh: "刷新",
-        new: "新建",
-        share: "分享",
-        "alt list view": "显示列表",
-        "alt block view": "显示块"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "下载准备中 ..."
     },
     SecretsExplorerButtonBar: {
         secret: "密码",
@@ -249,32 +200,6 @@ export const translations: Translations<"zh-CN"> = {
         refresh: "刷新",
         "create what": ({ what }) => `新 ${what}`,
         new: "新建"
-    },
-    Explorer: {
-        file: "文档",
-        secret: "密码",
-        cancel: "取消",
-        delete: "删除",
-        "do not display again": "不要再显示",
-        "untitled what": ({ what }) => `untitled_${what}`,
-        directory: "目录",
-        multiple: "项目",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `删除${isPlural ? "这些" : "此"}${deleteWhat}？`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        您将要删除${isPlural ? "这些" : "此"}${deleteWhat}。
-        此操作可能导致与${isPlural ? "这些" : "此"}${deleteWhat}相关的数据丢失。
-        `,
-        "already a directory with this name": "已经有一个同名的文件夹",
-        "can't be empty": "不能为空",
-        create: "建立",
-        "new directory": "新建文件夹"
-    },
-    ListExplorerItems: {
-        "header name": "名称",
-        "header modified date": "修改日期",
-        "header size": "大小",
-        "header policy": "策略"
     },
     SecretsExplorer: {
         file: "文档",
@@ -294,10 +219,6 @@ export const translations: Translations<"zh-CN"> = {
         create: "建立",
         "new directory": "新建文件夹"
     },
-    ExplorerItems: {
-        "empty directory": "此目录为空"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "此目录为空"
     },
@@ -375,19 +296,6 @@ export const translations: Translations<"zh-CN"> = {
     MySecretsEditorRow: {
         "key input desc": "环境变量名称",
         "value input desc": "环境变量值"
-    },
-    ExplorerUploadModalDropArea: {
-        "browse files": "浏览您的文件",
-        "drag and drop or": "拖拽，放置或"
-    },
-    ExplorerUploadProgress: {
-        over: "over",
-        importing: "导入"
-    },
-    ExplorerUploadModal: {
-        "import files": "导入文件",
-        cancel: "取消",
-        minimize: "最小化"
     },
     Header: {
         login: "登录",

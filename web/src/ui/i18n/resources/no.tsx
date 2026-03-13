@@ -191,36 +191,6 @@ export const translations: Translations<"no"> = {
         "failed body": ({ bucket }) => `Kunne ikke opprette ${bucket}.`,
         ok: "Ok"
     },
-    S3ExplorerExplorer: {
-        "access denied": ({ directoryPath }) =>
-            `Du har ikke lesetilgang til s3://${directoryPath} med denne S3-profilen`,
-        "bucket does not exist": ({ bucket }) => `Bucket ${bucket} finnes ikke`,
-        "go back": "Tilbake",
-        "delete bookmark": "Slett bokmerke"
-    },
-    ShareDialog: {
-        title: "Del dataene dine",
-        close: "Lukk",
-        "create and copy link": "Opprett og kopier lenke",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Filen din er offentlig, alle med lenken kan laste den ned."
-                : "Filen din er for øyeblikket privat.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "For å begrense tilgangen, endre delingsstatusen til filen din."
-                : "For å dele og gi tilgang til filen din, endre delingsstatusen eller opprett en midlertidig tilgangslenke.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Lenken din er tilgjengelig så lenge filen er offentlig."
-                : `Denne lenken gir tilgang til dataene dine i ${expiration}.`,
-        "label input link": "Tilgangslenke"
-    },
-    SelectTime: {
-        "validity duration label": "Gyldighetsperiode"
-    },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":
@@ -243,9 +213,6 @@ export const translations: Translations<"no"> = {
     SecretsExplorerItem: {
         description: "beskrivelse"
     },
-    ExplorerItem: {
-        description: "beskrivelse"
-    },
     SecretsExplorerButtonBar: {
         secret: "hemmelighet",
         rename: "gi nytt navn",
@@ -256,25 +223,6 @@ export const translations: Translations<"no"> = {
         refresh: "oppdater",
         "create what": ({ what }) => `Opprett ${what}`,
         new: "Ny"
-    },
-    ExplorerButtonBar: {
-        file: "fil",
-        delete: "slett",
-        "upload file": "Last opp fil",
-        "copy path": "Kopier S3-objektnavnet",
-        "create new empty directory": "Opprett katalog",
-        refresh: "oppdater",
-        "download directory": "Last ned",
-        new: "Ny",
-        share: "Del",
-        "alt list view": "Vis liste",
-        "alt block view": "Vis blokk"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Forberedelse av nedlasting ..."
-    },
-    ExplorerItems: {
-        "empty directory": "Denne katalogen er tom"
     },
     SecretsExplorerItems: {
         "empty directory": "Denne katalogen er tom"
@@ -297,34 +245,6 @@ export const translations: Translations<"no"> = {
             "Det finnes allerede en mappe med dette navnet",
         "can't be empty": "Kan ikke være tom",
         "new directory": "Ny katalog"
-    },
-    Explorer: {
-        file: "fil",
-        secret: "hemmelighet",
-        create: "opprett",
-        cancel: "avbryt",
-        delete: "slett",
-        "do not display again": "Ikke vis igjen",
-
-        "untitled what": ({ what }) => `uten tittel_${what}`,
-        directory: "mappe",
-        multiple: "elementer",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Slett ${isPlural ? "disse" : "denne"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        Du er i ferd med å slette ${isPlural ? "disse" : "denne"} ${deleteWhat}.
-        Denne handlingen kan føre til tap av data knyttet til ${isPlural ? "disse" : "dette"} ${deleteWhat}.
-        `,
-        "already a directory with this name":
-            "Det finnes allerede en mappe med dette navnet",
-        "can't be empty": "Kan ikke være tom",
-        "new directory": "Ny katalog"
-    },
-    ListExplorerItems: {
-        "header name": "Navn",
-        "header modified date": "Endret",
-        "header size": "Størrelse",
-        "header policy": "Retningslinje"
     },
     CreateOrUpdateProfileDialog: {
         "dialog title": "Ny tilpasset S3-konfigurasjon",
@@ -406,19 +326,6 @@ export const translations: Translations<"no"> = {
     MySecretsEditorRow: {
         "key input desc": "Miljøvariabelnavn",
         "value input desc": "Miljøvariabelverdi"
-    },
-    ExplorerUploadModalDropArea: {
-        "browse files": "Bla gjennom filer",
-        "drag and drop or": "Dra og slipp eller"
-    },
-    ExplorerUploadProgress: {
-        over: "over",
-        importing: "Importerer"
-    },
-    ExplorerUploadModal: {
-        "import files": "Importer filer",
-        cancel: "Avbryt",
-        minimize: "Minimer"
     },
     Header: {
         login: "Logg inn",
