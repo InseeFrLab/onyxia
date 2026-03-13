@@ -59,10 +59,31 @@ if (import.meta.env.DEV) {
             import("ui/theme/targetWindowInnerWidth")
         ]);
 
+        const portraitBreakpoint = (() => {
+            const raw = import.meta.env.SCREEN_SCALER_PORTRAIT_BREAKPOINT;
+            if (raw === "" || raw === undefined) return undefined;
+            const n = parseInt(raw, 10);
+            if (isNaN(n)) return undefined;
+            return n;
+        })();
+
         enableScreenScaler({
             rootDivId: "root",
-            getTargetWindowInnerWidth: ({ zoomFactor, isPortraitOrientation }) =>
-                isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
+            getTargetWindowInnerWidth: ({
+                zoomFactor,
+                isPortraitOrientation,
+                actualWindowInnerWidth
+            }) => {
+                if (isPortraitOrientation) {
+                    if (
+                        portraitBreakpoint === undefined ||
+                        actualWindowInnerWidth < portraitBreakpoint
+                    ) {
+                        return undefined;
+                    }
+                }
+                return targetWindowInnerWidth * zoomFactor;
+            }
         });
     }
 
