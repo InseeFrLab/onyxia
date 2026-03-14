@@ -823,6 +823,16 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
+        if (event.key === "Enter" && !isUndefinedPrefixMode) {
+            event.preventDefault();
+
+            if (displayedHints.length === 0) {
+                exitEditing();
+            }
+
+            return;
+        }
+
         if (event.key === "Enter" && isUndefinedPrefixMode) {
             event.preventDefault();
             tryCommitDraftS3Uri();
