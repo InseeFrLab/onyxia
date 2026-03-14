@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "10.32.7" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "10.32.8" -f onyxia-values.yaml
 ```
 
 To expose Onyxia with the Kubernetes Gateway API instead of an Ingress, use an `HTTPRoute`.
@@ -40,7 +40,7 @@ httpRoute:
     - datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "10.32.5" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "10.32.8" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
@@ -62,7 +62,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v10.32.7/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v10.32.8/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
@@ -89,7 +89,7 @@ After that, you should be able to select *onyxia* as *Login Theme*.
 Documentation reference for the available configuration parameter of the Onyxia Helm Chart.
 
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v4.11.0/README.md#configuration)
--   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v4.58.5/web/.env)
+-   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v4.58.6/web/.env)
 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
@@ -142,4 +142,4 @@ httpRoute:
 If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/catalog-of-services)).  
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
-[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v4.58.5/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
+[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v4.58.6/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
