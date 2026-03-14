@@ -214,6 +214,7 @@ export function createOnyxiaApi(params: {
                             ingressClassName: apiRegion.services.expose.ingressClassName,
                             ingress: apiRegion.services.expose.ingress,
                             route: apiRegion.services.expose.route,
+                            httpRoute: apiRegion.services.expose.httpRoute,
                             customValues: apiRegion.services.customValues,
                             istio: apiRegion.services.expose.istio,
                             initScriptUrl: apiRegion.services.initScript,

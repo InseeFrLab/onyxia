@@ -21,6 +21,15 @@ export type ApiTypes = {
                     ingressClassName: string;
                     ingress?: boolean;
                     route?: boolean;
+                    httpRoute?: {
+                        enabled: boolean;
+                        parentRefs: {
+                            name: string;
+                            namespace?: string;
+                            sectionName?: string;
+                            port?: number;
+                        }[];
+                    };
                     istio?: {
                         enabled: boolean;
                         gateways: string[];

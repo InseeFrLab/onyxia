@@ -851,6 +851,66 @@ describe(symToStr({ computeHelmValues }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("supports httpRoute parentRefs from x-onyxia context", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            k8s: {
+                httpRoute: {
+                    enabled: true,
+                    parentRefs: [
+                        {
+                            name: "shared-gateway",
+                            namespace: "gateway-system",
+                            sectionName: "web"
+                        }
+                    ]
+                }
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    httpRoute: {
+                        type: "object",
+                        properties: {
+                            parentRefs: {
+                                type: "array",
+                                "x-onyxia": {
+                                    overwriteDefaultWith: "k8s.httpRoute.parentRefs"
+                                },
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        name: { type: "string" },
+                                        namespace: { type: "string" },
+                                        sectionName: { type: "string" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        expect(got.helmValues).toStrictEqual({
+            httpRoute: {
+                parentRefs: [
+                    {
+                        name: "shared-gateway",
+                        namespace: "gateway-system",
+                        sectionName: "web"
+                    }
+                ]
+            }
+        });
+    });
+
     it("default array work even when extra properties in objects", () => {
         const xOnyxiaContext = {
             s3: {},
