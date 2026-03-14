@@ -52,6 +52,9 @@ const hintsPanelVerticalOffsetPx = 6;
 const hintsPanelFallbackWidthPx = 280;
 type CrumbKind = DisplayCrumb["kind"];
 type HintType = S3UriBarProps["hints"][number]["type"];
+type DisplayedHint = S3UriBarProps["hints"][number] & {
+    action: "select-hint" | "exit-edit-mode";
+};
 const hintMiddleEllipsisMaxLength = 58;
 const hintMiddleEllipsisHeadLength = 34;
 const hintMiddleEllipsisTailLength = 20;
@@ -86,6 +89,42 @@ function getHintTypeIcon(type: HintType): string {
         case "object":
             return getIconUrlByName("Description");
     }
+}
+
+function getDisplayedHints(params: {
+    draftS3Uri: string;
+    hints: S3UriBarProps["hints"];
+    s3Uri: S3Uri | undefined;
+}): DisplayedHint[] {
+    const { draftS3Uri, hints, s3Uri } = params;
+
+    const displayedHints = hints.map<DisplayedHint>(hint => ({
+        ...hint,
+        action: "select-hint"
+    }));
+
+    if (s3Uri === undefined) {
+        const normalizedDraft = draftS3Uri.trim().toLocaleLowerCase();
+
+        return displayedHints.filter(
+            hint =>
+                hint.type === "bookmark" &&
+                hint.text.toLocaleLowerCase().startsWith(normalizedDraft)
+        );
+    }
+
+    if (!s3Uri.isDelimiterTerminated) {
+        return displayedHints;
+    }
+
+    return [
+        {
+            type: "key-segment",
+            text: ".",
+            action: "exit-edit-mode"
+        },
+        ...displayedHints
+    ];
 }
 
 function getSeparatorTokenBetweenKinds(params: {
@@ -310,19 +349,15 @@ export function S3UriBar(props: S3UriBarProps) {
     const inputId = useId();
     const hintsListId = useId();
 
-    const displayedHints = useMemo(() => {
-        if (!isUndefinedPrefixMode) {
-            return hints;
-        }
-
-        const normalizedDraft = draftS3Uri.trim().toLocaleLowerCase();
-
-        return hints.filter(
-            hint =>
-                hint.type === "bookmark" &&
-                hint.text.toLocaleLowerCase().startsWith(normalizedDraft)
-        );
-    }, [draftS3Uri, hints, isUndefinedPrefixMode]);
+    const displayedHints = useMemo(
+        () =>
+            getDisplayedHints({
+                draftS3Uri,
+                hints,
+                s3Uri
+            }),
+        [draftS3Uri, hints, s3Uri]
+    );
 
     const { classes, cx } = useStyles({ isEditing });
 
@@ -669,7 +704,21 @@ export function S3UriBar(props: S3UriBarProps) {
         onS3UriPrefixChange({ s3Uri: parsed });
     };
 
-    const selectHint = (hint: S3UriBarProps["hints"][number]) => {
+    const exitEditing = () => {
+        if (isUndefinedPrefixMode) {
+            return;
+        }
+
+        ignoreNextBlurRef.current = true;
+        setIsEditing(false);
+    };
+
+    const selectHint = (hint: (typeof displayedHints)[number]) => {
+        if (hint.action === "exit-edit-mode") {
+            exitEditing();
+            return;
+        }
+
         const source = draftS3Uri.startsWith("s3://") ? draftS3Uri : canonicalS3Uri;
         const sourceS3Uri =
             tryParseS3Uri({
@@ -733,8 +782,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 return;
             }
 
-            ignoreNextBlurRef.current = true;
-            setIsEditing(false);
+            exitEditing();
             return;
         }
 
