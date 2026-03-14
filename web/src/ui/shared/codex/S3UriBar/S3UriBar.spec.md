@@ -108,5 +108,6 @@ export type S3UriBarProps = {
     - Input updates are handled by parent via requested prefix changes.
     - Hints are selectable (pointer and keyboard).
     - `Escape` returns to navigation mode.
+    - `Enter` returns to navigation mode when `s3Uri` is defined and no hint is displayed.
 - Focus handling:
     - Blur returns to navigation mode.
