@@ -679,32 +679,30 @@ export function S3UriBar(props: S3UriBarProps) {
 
         let nextS3Uri: S3Uri | undefined;
 
-        if (hint.type === "key-segment") {
-            nextS3Uri = {
-                bucket: sourceS3Uri.bucket,
-                delimiter: sourceS3Uri.delimiter,
-                keySegments: [...sourceS3Uri.keySegments, hint.text],
-                isDelimiterTerminated: true
-            };
-        } else if (hint.type === "object") {
-            nextS3Uri = {
-                bucket: sourceS3Uri.bucket,
-                delimiter: sourceS3Uri.delimiter,
-                keySegments: [...sourceS3Uri.keySegments, hint.text],
-                isDelimiterTerminated: false
-            };
-        } else {
+        if (hint.type === "bookmark") {
             const bookmarkPath = hint.text.trim();
 
             nextS3Uri =
                 tryParseS3Uri({
                     s3Uri: bookmarkPath,
-                    delimiter: normalizedS3Uri.delimiter
+                    delimiter: sourceS3Uri.delimiter
                 }) ??
                 tryParseS3Uri({
                     s3Uri: `s3://${sourceS3Uri.bucket}${bookmarkPath.startsWith(sourceS3Uri.delimiter) ? "" : sourceS3Uri.delimiter}${bookmarkPath}`,
-                    delimiter: normalizedS3Uri.delimiter
+                    delimiter: sourceS3Uri.delimiter
                 });
+        } else {
+            // If the draft does not end with the delimiter, the last segment is only a partial match.
+            const baseKeySegments = sourceS3Uri.isDelimiterTerminated
+                ? sourceS3Uri.keySegments
+                : sourceS3Uri.keySegments.slice(0, -1);
+
+            nextS3Uri = {
+                bucket: sourceS3Uri.bucket,
+                delimiter: sourceS3Uri.delimiter,
+                keySegments: [...baseKeySegments, hint.text],
+                isDelimiterTerminated: hint.type === "key-segment"
+            };
         }
 
         if (!nextS3Uri) {
