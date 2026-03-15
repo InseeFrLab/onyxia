@@ -220,14 +220,21 @@ const mockS3Tree = {
 } as const;
 
 function ControlledS3UriBarStory() {
-    const [s3Uri, setS3Uri] = useState<S3Uri>(
+    const [s3Uri, setS3Uri] = useState<S3Uri | undefined>(
         parsePrefixOrThrow("s3://analytics-data/exports/")
     );
     const [bookmarkedS3Uris, setBookmarkedS3Uris] = useState<string[]>([]);
 
-    const currentS3Uri = useMemo(() => stringifyS3Uri(s3Uri), [s3Uri]);
+    const currentS3Uri = useMemo(
+        () => (s3Uri === undefined ? undefined : stringifyS3Uri(s3Uri)),
+        [s3Uri]
+    );
 
     const hints = useMemo<S3UriBarProps["hints"]>(() => {
+        if (s3Uri === undefined) {
+            return [];
+        }
+
         const bucketData = mockS3Tree[s3Uri.bucket as keyof typeof mockS3Tree];
 
         if (!bucketData) {
@@ -248,21 +255,28 @@ function ControlledS3UriBarStory() {
                 text
             }))
         ];
-    }, [s3Uri.bucket]);
+    }, [s3Uri]);
 
-    const isBookmarked = bookmarkedS3Uris.includes(currentS3Uri);
+    const isBookmarked =
+        currentS3Uri !== undefined && bookmarkedS3Uris.includes(currentS3Uri);
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
                 s3Uri={s3Uri}
                 hints={hints}
-                isBookmarked={isBookmarked}
+                isBookmarked={currentS3Uri !== undefined && isBookmarked}
                 onS3UriPrefixChange={({ s3Uri }) => {
                     setS3Uri(s3Uri);
-                    action("s3UriPrefixChange")(stringifyS3Uri(s3Uri));
+                    action("s3UriPrefixChange")(
+                        s3Uri === undefined ? "undefined" : stringifyS3Uri(s3Uri)
+                    );
                 }}
                 onToggleBookmark={() => {
+                    if (currentS3Uri === undefined) {
+                        return;
+                    }
+
                     setBookmarkedS3Uris(current =>
                         current.includes(currentS3Uri)
                             ? current.filter(s3Uri => s3Uri !== currentS3Uri)
@@ -283,7 +297,7 @@ function ControlledS3UriBarStory() {
                     padding: 8
                 }}
             >
-                <div>Current URI: {currentS3Uri}</div>
+                <div>Current URI: {currentS3Uri ?? "undefined"}</div>
                 <div>Hints count: {hints.length}</div>
                 <div>Bookmarked URIs: {bookmarkedS3Uris.length}</div>
             </div>
@@ -308,7 +322,8 @@ function UndefinedPrefixLockedEditingStory() {
                 ]}
                 isBookmarked={false}
                 onS3UriPrefixChange={({ s3Uri }) => {
-                    const nextS3Uri = stringifyS3Uri(s3Uri);
+                    const nextS3Uri =
+                        s3Uri === undefined ? undefined : stringifyS3Uri(s3Uri);
                     setS3Uri(s3Uri);
                     setLastCommittedS3Uri(nextS3Uri);
                     action("s3UriPrefixChange")(nextS3Uri);
