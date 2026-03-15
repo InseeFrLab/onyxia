@@ -43,9 +43,11 @@ export type S3UriBarProps = {
      * The s3Uri can be undefined. In this case the component should be locked in editing mode.
      * The text input should be set by default to s3://
      * And the state representing input text should be internal to the component.
-     * onS3UriPrefixChange() should only be called when the user have typed an uri that is
-     * successfully parsable as a S3Uri (parseS3Uri() does not throw) and when enter is pressed, or the focus
-     * is lost.
+     * onS3UriPrefixChange() should be called whenever the current input changes.
+     * It should receive:
+     * - a parsed S3Uri when the current input is parsable
+     * - undefined when the current input is not parsable
+     * This enables the parent/core layer to compute the right hints while the user types.
      * When s3Uri is undefined there can be hint but only of type "bookmark".
      * For example hints can be:
      * [
@@ -65,7 +67,7 @@ export type S3UriBarProps = {
      * - user validates input externally (if you wire that)
      * - user clicks a breadcrumb segment in navigation mode
      */
-    onS3UriPrefixChange: (params: { s3Uri: S3Uri }) => void;
+    onS3UriPrefixChange: (params: { s3Uri: S3Uri | undefined }) => void;
 
     /**
      * Hints to display while editing.
@@ -106,6 +108,7 @@ export type S3UriBarProps = {
     - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.
+    - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined })`.
     - Hints are selectable (pointer and keyboard).
     - `Escape` returns to navigation mode.
     - `Enter` returns to navigation mode when `s3Uri` is defined and no hint is displayed.

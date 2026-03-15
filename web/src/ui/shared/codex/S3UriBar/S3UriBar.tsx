@@ -23,7 +23,7 @@ import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 export type S3UriBarProps = {
     className?: string;
     s3Uri: S3Uri | undefined;
-    onS3UriPrefixChange: (params: { s3Uri: S3Uri }) => void;
+    onS3UriPrefixChange: (params: { s3Uri: S3Uri | undefined }) => void;
     hints: {
         type: "object" | "key-segment" | "bookmark";
         text: string;
@@ -672,36 +672,22 @@ export function S3UriBar(props: S3UriBarProps) {
         }, longPressDelayMs);
     };
 
+    const emitDraftS3Uri = (nextDraftS3Uri: string) => {
+        onS3UriPrefixChange({
+            s3Uri: tryParseS3Uri({
+                s3Uri: nextDraftS3Uri.trim(),
+                delimiter: normalizedS3Uri.delimiter
+            })
+        });
+    };
+
     const onInputChange = (nextDraftS3Uri: string) => {
         setDraftS3Uri(nextDraftS3Uri);
-
-        if (isUndefinedPrefixMode) {
-            return;
-        }
-
-        const parsed = tryParseS3Uri({
-            s3Uri: nextDraftS3Uri.trim(),
-            delimiter: normalizedS3Uri.delimiter
-        });
-
-        if (!parsed) {
-            return;
-        }
-
-        onS3UriPrefixChange({ s3Uri: parsed });
+        emitDraftS3Uri(nextDraftS3Uri);
     };
 
     const tryCommitDraftS3Uri = () => {
-        const parsed = tryParseS3Uri({
-            s3Uri: draftS3Uri.trim(),
-            delimiter: normalizedS3Uri.delimiter
-        });
-
-        if (!parsed) {
-            return;
-        }
-
-        onS3UriPrefixChange({ s3Uri: parsed });
+        emitDraftS3Uri(draftS3Uri);
     };
 
     const exitEditing = () => {
@@ -761,17 +747,7 @@ export function S3UriBar(props: S3UriBarProps) {
         const nextDraftS3Uri = stringifyS3Uri(nextS3Uri);
 
         setDraftS3Uri(nextDraftS3Uri);
-
-        const parsed = tryParseS3Uri({
-            s3Uri: nextDraftS3Uri,
-            delimiter: normalizedS3Uri.delimiter
-        });
-
-        if (!parsed) {
-            return;
-        }
-
-        onS3UriPrefixChange({ s3Uri: parsed });
+        emitDraftS3Uri(nextDraftS3Uri);
     };
 
     const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
