@@ -315,6 +315,30 @@ export function createOnyxiaApi(params: {
                                     s3ConfigCreationFormDefaults
                                 };
                             })(),
+                            iceberg: (() => {
+                                const icebergConfig_api = (() => {
+                                    const value = apiRegion.data?.iceberg;
+
+                                    if (value === undefined) {
+                                        return [];
+                                    }
+
+                                    if (value instanceof Array) {
+                                        return value;
+                                    }
+
+                                    return [value];
+                                })();
+                                return icebergConfig_api.map(icebergConfig => ({
+                                    warehouse: icebergConfig.warehouse,
+                                    endpoint: icebergConfig.endpoint,
+                                    catalog: icebergConfig.catalog,
+                                    oidcParams:
+                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                            icebergConfig.oidcConfiguration
+                                        )
+                                }));
+                            })(),
                             allowedURIPatternForUserDefinedInitScript:
                                 apiRegion.services.allowedURIPattern,
                             kafka: (() => {

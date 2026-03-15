@@ -126,6 +126,12 @@ export type ApiTypes = {
                           }
                     ))[];
                 }>;
+                iceberg?: ArrayOrNot<{
+                    warehouse: string;
+                    endpoint: string;
+                    catalog: string;
+                    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
+                }>;
             };
             vault?: {
                 URL: string;
