@@ -84,12 +84,17 @@ const onDelete: S3BookmarksBarProps["onDelete"] = ({ s3Uri }) => {
     action("delete bookmark")(stringifyS3Uri(s3Uri));
 };
 
+const onRename: S3BookmarksBarProps["onRename"] = ({ s3Uri }) => {
+    action("rename bookmark")(stringifyS3Uri(s3Uri));
+};
+
 export const Default: Story = {
     args: {
         items: baseItems,
         activeItemS3Uri: baseItems[0].s3Uri,
         getItemLink,
-        onDelete
+        onDelete,
+        onRename
     }
 };
 
@@ -98,7 +103,8 @@ export const Overflow: Story = {
         items: overflowItems,
         activeItemS3Uri: overflowItems[3].s3Uri,
         getItemLink,
-        onDelete
+        onDelete,
+        onRename
     },
     render: args => (
         <div style={{ maxWidth: 520 }}>
@@ -115,6 +121,7 @@ export const ReadonlyOnly: Story = {
         })),
         activeItemS3Uri: overflowItems[2].s3Uri,
         getItemLink,
-        onDelete
+        onDelete,
+        onRename
     }
 };

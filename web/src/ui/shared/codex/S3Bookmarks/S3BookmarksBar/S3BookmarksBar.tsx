@@ -3,13 +3,14 @@ import { tss } from "tss";
 import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import type { LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
-import { S3BookmarksBarItem } from "./S3BookmarksBarItem";
+import { S3BookmarkItem } from "../S3BookmarksBarItem";
 
 export type S3BookmarksBarProps = {
     className?: string;
     items: S3BookmarksBarProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
     onDelete: (props: { s3Uri: S3Uri }) => void;
+    onRename: (props: { s3Uri: S3Uri }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
@@ -22,7 +23,7 @@ export namespace S3BookmarksBarProps {
 }
 
 export function S3BookmarksBar(props: S3BookmarksBarProps) {
-    const { className, items, activeItemS3Uri, getItemLink, onDelete } = props;
+    const { className, items, activeItemS3Uri, getItemLink, onDelete, onRename } = props;
 
     const { classes, cx } = useStyles();
 
@@ -62,15 +63,19 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                     const link = getItemLink({ s3Uri: item.s3Uri });
 
                     return (
-                        <S3BookmarksBarItem
+                        <S3BookmarkItem
                             key={link.href}
+                            variant="bar"
                             displayName={item.displayName}
                             s3Uri={item.s3Uri}
                             link={link}
-                            onDelete={
+                            callbacks={
                                 item.isReadonly
                                     ? undefined
-                                    : () => onDelete({ s3Uri: item.s3Uri })
+                                    : {
+                                          onDelete: () => onDelete({ s3Uri: item.s3Uri }),
+                                          onRename: () => onRename({ s3Uri: item.s3Uri })
+                                      }
                             }
                             isActive={
                                 activeItemKey !== undefined &&
