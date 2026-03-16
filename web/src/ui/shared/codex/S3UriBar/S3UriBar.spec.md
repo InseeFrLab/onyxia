@@ -17,6 +17,7 @@ The parent (or surrounding usecase layer) is responsible for:
 
 - Debounced listing/validation while the user types.
 - Fetching and ordering hint content.
+- Exposing whether hint computation is currently in flight.
 - Deciding whether bookmark toggling is available.
 
 ## Modes
@@ -24,7 +25,7 @@ The parent (or surrounding usecase layer) is responsible for:
 The component has two modes:
 
 - Navigation mode: breadcrumb-like path with clickable segments.
-- Editing mode: text input with optional keyboard-navigable hints.
+- Editing mode: text input with optional keyboard-navigable hints and loading feedback in the hints overlay.
 
 ## Props Contract
 
@@ -88,6 +89,16 @@ export type S3UriBarProps = {
     }[];
 
     /**
+     * Whether the parent is currently computing or fetching hints for the current draft.
+     *
+     * When true and the component is in editing mode, the hints overlay should stay visible.
+     * - Show a subtle linear loading indicator in the overlay.
+     * - If hints are not available yet, keep the overlay open and show a loading-only state
+     *   with the text "Listing...".
+     */
+    areHintsLoading: boolean;
+
+    /**
      * Whether the current prefix is bookmarked.
      * If true, show an “active” bookmark indicator.
      */
@@ -110,6 +121,9 @@ export type S3UriBarProps = {
     - Input updates are handled by parent via requested prefix changes.
     - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined })`.
     - Hints are selectable (pointer and keyboard).
+    - The hints overlay remains visible while `areHintsLoading` is true, even if there is no hint yet.
+    - Loading feedback should appear inside the overlay rather than elsewhere in the bar.
+    - The loading feedback uses a linear progress indicator, including when there is no suggestion yet.
     - `Escape` returns to navigation mode.
     - `Enter` returns to navigation mode when `s3Uri` is defined and no hint is displayed.
 - Focus handling:

@@ -14,6 +14,7 @@ import { tss } from "tss";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
+import LinearProgress from "@mui/material/LinearProgress";
 import { getIconUrlByName } from "lazy-icons";
 import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
@@ -28,6 +29,7 @@ export type S3UriBarProps = {
         type: "object" | "key-segment" | "bookmark";
         text: string;
     }[];
+    areHintsLoading: boolean;
     isBookmarked: boolean;
     onToggleBookmark?: () => void;
 };
@@ -290,6 +292,7 @@ export function S3UriBar(props: S3UriBarProps) {
         s3Uri,
         onS3UriPrefixChange,
         hints,
+        areHintsLoading,
         isBookmarked,
         onToggleBookmark
     } = props;
@@ -347,6 +350,7 @@ export function S3UriBar(props: S3UriBarProps) {
     });
 
     const inputId = useId();
+    const hintsPanelId = useId();
     const hintsListId = useId();
 
     const displayedHints = useMemo(
@@ -358,6 +362,8 @@ export function S3UriBar(props: S3UriBarProps) {
             }),
         [draftS3Uri, hints, s3Uri]
     );
+    const isHintsPanelVisible =
+        isEditing && (displayedHints.length > 0 || areHintsLoading);
 
     const { classes, cx } = useStyles({ isEditing });
 
@@ -484,7 +490,7 @@ export function S3UriBar(props: S3UriBarProps) {
     }, [isEditing, updateHintsPanelPosition]);
 
     useEffect(() => {
-        if (!isEditing || displayedHints.length === 0) {
+        if (!isHintsPanelVisible) {
             return;
         }
 
@@ -497,9 +503,10 @@ export function S3UriBar(props: S3UriBarProps) {
         };
     }, [
         activeHintIndex,
+        areHintsLoading,
         draftS3Uri,
         displayedHints.length,
-        isEditing,
+        isHintsPanelVisible,
         updateHintsPanelPosition
     ]);
 
@@ -899,13 +906,10 @@ export function S3UriBar(props: S3UriBarProps) {
                             onClick={updateHintsPanelPosition}
                             autoComplete="off"
                             spellCheck={false}
-                            aria-autocomplete={
-                                displayedHints.length > 0 ? "list" : undefined
-                            }
-                            aria-controls={
-                                displayedHints.length > 0 ? hintsListId : undefined
-                            }
-                            aria-expanded={displayedHints.length > 0}
+                            aria-autocomplete={isHintsPanelVisible ? "list" : undefined}
+                            aria-controls={isHintsPanelVisible ? hintsPanelId : undefined}
+                            aria-expanded={isHintsPanelVisible}
+                            aria-busy={areHintsLoading || undefined}
                             aria-activedescendant={
                                 activeHintIndex >= 0
                                     ? `${hintsListId}-${activeHintIndex}`
@@ -1347,7 +1351,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 </div>
             </div>
 
-            {isEditing && displayedHints.length > 0 && (
+            {isHintsPanelVisible && (
                 <div
                     className={classes.hintsPanel}
                     style={{
@@ -1355,46 +1359,71 @@ export function S3UriBar(props: S3UriBarProps) {
                         top: hintsPanelPosition.top
                     }}
                     ref={hintsPanelRef}
-                    id={hintsListId}
-                    role="listbox"
+                    id={hintsPanelId}
+                    aria-busy={areHintsLoading || undefined}
                 >
-                    {displayedHints.map((hint, index) => (
-                        <button
-                            id={`${hintsListId}-${index}`}
-                            key={`${hint.type}-${hint.text}-${index}`}
-                            type="button"
-                            role="option"
-                            aria-selected={activeHintIndex === index}
-                            className={cx(
-                                classes.hintItem,
-                                activeHintIndex === index && classes.hintItemActive
+                    {areHintsLoading && (
+                        <>
+                            <LinearProgress className={classes.hintsLoadingProgress} />
+                            {displayedHints.length === 0 && (
+                                <div
+                                    className={classes.hintsLoadingState}
+                                    role="status"
+                                    aria-live="polite"
+                                >
+                                    <span className={classes.hintsLoadingText}>
+                                        Listing...
+                                    </span>
+                                </div>
                             )}
-                            onMouseDown={event => {
-                                event.preventDefault();
-                            }}
-                            onMouseEnter={() => {
-                                setActiveHintIndex(index);
-                            }}
-                            onClick={() => {
-                                setActiveHintIndex(index);
-                                selectHint(hint);
-                            }}
+                        </>
+                    )}
+                    {displayedHints.length > 0 && (
+                        <div
+                            id={hintsListId}
+                            role="listbox"
+                            className={classes.hintsList}
                         >
-                            <span
-                                className={classes.hintType}
-                                aria-label={getHintTypeLabel(hint.type)}
-                                title={getHintTypeLabel(hint.type)}
-                            >
-                                <Icon
-                                    size="extra small"
-                                    icon={getHintTypeIcon(hint.type)}
-                                />
-                            </span>
-                            <span className={classes.hintName} title={hint.text}>
-                                {collapseMiddle(hint.text)}
-                            </span>
-                        </button>
-                    ))}
+                            {displayedHints.map((hint, index) => (
+                                <button
+                                    id={`${hintsListId}-${index}`}
+                                    key={`${hint.type}-${hint.text}-${index}`}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={activeHintIndex === index}
+                                    className={cx(
+                                        classes.hintItem,
+                                        activeHintIndex === index &&
+                                            classes.hintItemActive
+                                    )}
+                                    onMouseDown={event => {
+                                        event.preventDefault();
+                                    }}
+                                    onMouseEnter={() => {
+                                        setActiveHintIndex(index);
+                                    }}
+                                    onClick={() => {
+                                        setActiveHintIndex(index);
+                                        selectHint(hint);
+                                    }}
+                                >
+                                    <span
+                                        className={classes.hintType}
+                                        aria-label={getHintTypeLabel(hint.type)}
+                                        title={getHintTypeLabel(hint.type)}
+                                    >
+                                        <Icon
+                                            size="extra small"
+                                            icon={getHintTypeIcon(hint.type)}
+                                        />
+                                    </span>
+                                    <span className={classes.hintName} title={hint.text}>
+                                        {collapseMiddle(hint.text)}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -1602,6 +1631,24 @@ const useStyles = tss
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
                 backgroundColor: theme.colors.useCases.surfaces.surface1,
                 boxShadow: theme.shadows[6]
+            },
+            hintsList: {
+                display: "flex",
+                flexDirection: "column",
+                gap: theme.spacing(1)
+            },
+            hintsLoadingProgress: {
+                marginBottom: theme.spacing(1),
+                borderRadius: 999,
+                overflow: "hidden"
+            },
+            hintsLoadingState: {
+                textAlign: "center",
+                padding: `0 ${theme.spacing(3)} ${theme.spacing(1)}`
+            },
+            hintsLoadingText: {
+                color: theme.colors.useCases.typography.textSecondary,
+                fontSize: theme.typography.rootFontSizePx * 0.95
             },
             hintItem: {
                 display: "flex",
