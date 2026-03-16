@@ -83,12 +83,21 @@ export function getIsInside(params: {
 }): { isInside: false; isTopLevel?: never } | { isInside: true; isTopLevel: boolean } {
     const { s3UriPrefix, s3Uri } = params;
 
-    if (!stringifyS3Uri(s3Uri).startsWith(stringifyS3Uri(s3UriPrefix))) {
+    if (
+        !stringifyS3Uri(s3Uri).startsWith(stringifyS3Uri(s3UriPrefix)) ||
+        same(s3Uri, s3UriPrefix)
+    ) {
         return { isInside: false };
     }
+
     return {
         isInside: true,
-        isTopLevel: same(s3UriPrefix.keySegments, s3Uri.keySegments.slice(0, -1))
+        isTopLevel: same(
+            s3UriPrefix.isDelimiterTerminated
+                ? s3UriPrefix.keySegments
+                : s3UriPrefix.keySegments.slice(0, -1),
+            s3Uri.keySegments.slice(0, -1)
+        )
     };
 }
 
