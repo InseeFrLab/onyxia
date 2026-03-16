@@ -24,7 +24,10 @@ import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 export type S3UriBarProps = {
     className?: string;
     s3Uri: S3Uri | undefined;
-    onS3UriPrefixChange: (params: { s3Uri: S3Uri | undefined }) => void;
+    onS3UriPrefixChange: (params: {
+        s3Uri: S3Uri | undefined;
+        isHintSelection: boolean;
+    }) => void;
     hints: {
         type: "object" | "key-segment" | "bookmark";
         text: string;
@@ -679,22 +682,41 @@ export function S3UriBar(props: S3UriBarProps) {
         }, longPressDelayMs);
     };
 
-    const emitDraftS3Uri = (nextDraftS3Uri: string) => {
+    const emitS3UriChange = (params: {
+        s3Uri: S3Uri | undefined;
+        isHintSelection: boolean;
+    }) => {
+        onS3UriPrefixChange(params);
+    };
+
+    const emitDraftS3Uri = (params: {
+        nextDraftS3Uri: string;
+        isHintSelection: boolean;
+    }) => {
+        const { nextDraftS3Uri, isHintSelection } = params;
+
         onS3UriPrefixChange({
             s3Uri: tryParseS3Uri({
                 s3Uri: nextDraftS3Uri.trim(),
                 delimiter: normalizedS3Uri.delimiter
-            })
+            }),
+            isHintSelection
         });
     };
 
     const onInputChange = (nextDraftS3Uri: string) => {
         setDraftS3Uri(nextDraftS3Uri);
-        emitDraftS3Uri(nextDraftS3Uri);
+        emitDraftS3Uri({
+            nextDraftS3Uri,
+            isHintSelection: false
+        });
     };
 
     const tryCommitDraftS3Uri = () => {
-        emitDraftS3Uri(draftS3Uri);
+        emitDraftS3Uri({
+            nextDraftS3Uri: draftS3Uri,
+            isHintSelection: false
+        });
     };
 
     const exitEditing = () => {
@@ -754,7 +776,10 @@ export function S3UriBar(props: S3UriBarProps) {
         const nextDraftS3Uri = stringifyS3Uri(nextS3Uri);
 
         setDraftS3Uri(nextDraftS3Uri);
-        emitDraftS3Uri(nextDraftS3Uri);
+        emitS3UriChange({
+            s3Uri: nextS3Uri,
+            isHintSelection: true
+        });
     };
 
     const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -970,8 +995,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                                         return;
                                                     }
 
-                                                    onS3UriPrefixChange({
-                                                        s3Uri: crumb.s3Uri
+                                                    emitS3UriChange({
+                                                        s3Uri: crumb.s3Uri,
+                                                        isHintSelection: false
                                                     });
                                                 }}
                                                 aria-label={`Go to ${stringifyS3Uri(
@@ -1100,8 +1126,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                                                     return;
                                                                 }
 
-                                                                onS3UriPrefixChange({
-                                                                    s3Uri: crumb.s3Uri
+                                                                emitS3UriChange({
+                                                                    s3Uri: crumb.s3Uri,
+                                                                    isHintSelection: false
                                                                 });
                                                             }}
                                                             aria-label={`Go to ${stringifyS3Uri(
