@@ -125,6 +125,7 @@ export type S3UriBarProps = {
 ## Interaction Summary
 
 - Navigation mode:
+    - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Segment short click => request navigation (`onS3UriPrefixChange`).
     - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:

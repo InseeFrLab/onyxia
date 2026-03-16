@@ -335,6 +335,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const longPressTriggeredRef = useRef(false);
     const wasEditingRef = useRef(false);
     const ignoreNextBlurRef = useRef(false);
+    const preserveNextDraftResetRef = useRef(false);
     const lastEnterEditRequestTimeRef = useRef(Number.NEGATIVE_INFINITY);
 
     const measureCrumbRefs = useRef<Array<HTMLSpanElement | null>>([]);
@@ -444,7 +445,9 @@ export function S3UriBar(props: S3UriBarProps) {
             lastEnterEditRequestTimeRef.current = Number.NEGATIVE_INFINITY;
         }
 
-        if (!isEditing || !wasEditingRef.current) {
+        if (preserveNextDraftResetRef.current) {
+            preserveNextDraftResetRef.current = false;
+        } else if (!isEditing || !wasEditingRef.current) {
             setDraftS3Uri(canonicalS3Uri);
         }
 
@@ -728,6 +731,17 @@ export function S3UriBar(props: S3UriBarProps) {
         setIsEditing(false);
     };
 
+    const enterRootEditing = () => {
+        preserveNextDraftResetRef.current = true;
+        lastEnterEditRequestTimeRef.current = performance.now();
+        setDraftS3Uri(defaultDraftS3Uri);
+        setIsEditing(true);
+        emitS3UriChange({
+            s3Uri: undefined,
+            isHintSelection: false
+        });
+    };
+
     const selectHint = (hint: (typeof displayedHints)[number]) => {
         if (hint.action === "exit-edit-mode") {
             exitEditing();
@@ -995,14 +1009,23 @@ export function S3UriBar(props: S3UriBarProps) {
                                                         return;
                                                     }
 
+                                                    if (crumb.kind === "root") {
+                                                        enterRootEditing();
+                                                        return;
+                                                    }
+
                                                     emitS3UriChange({
                                                         s3Uri: crumb.s3Uri,
                                                         isHintSelection: false
                                                     });
                                                 }}
-                                                aria-label={`Go to ${stringifyS3Uri(
-                                                    crumb.s3Uri
-                                                )}`}
+                                                aria-label={
+                                                    crumb.kind === "root"
+                                                        ? "Edit from S3 root"
+                                                        : `Go to ${stringifyS3Uri(
+                                                              crumb.s3Uri
+                                                          )}`
+                                                }
                                             >
                                                 {crumb.kind === "bucket" && (
                                                     <span
