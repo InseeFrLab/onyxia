@@ -18,7 +18,7 @@ const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     });
 
 const { waitForDebounce: waitForDebounce_listPrefix } = createWaitForDebounce({
-    delay: 150
+    delay: 250
 });
 
 export const thunks = {

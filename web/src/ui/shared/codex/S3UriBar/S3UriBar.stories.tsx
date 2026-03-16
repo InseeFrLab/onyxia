@@ -62,6 +62,7 @@ const baseArgs: S3UriBarProps = {
         { type: "object", text: "report.parquet" },
         { type: "bookmark", text: "exports/2024/" }
     ],
+    areHintsLoading: false,
     isBookmarked: false,
     onToggleBookmark: action("toggleBookmark")
 };
@@ -265,6 +266,7 @@ function ControlledS3UriBarStory() {
             <S3UriBar
                 s3Uri={s3Uri}
                 hints={hints}
+                areHintsLoading={false}
                 isBookmarked={currentS3Uri !== undefined && isBookmarked}
                 onS3UriPrefixChange={({ s3Uri }) => {
                     setS3Uri(s3Uri);
@@ -320,6 +322,7 @@ function UndefinedPrefixLockedEditingStory() {
                     { type: "bookmark", text: "s3://donnee-insee/diffusion/" },
                     { type: "key-segment", text: "hidden-non-bookmark-hint" }
                 ]}
+                areHintsLoading={false}
                 isBookmarked={false}
                 onS3UriPrefixChange={({ s3Uri }) => {
                     const nextS3Uri =
