@@ -268,11 +268,12 @@ function ControlledS3UriBarStory() {
                 hints={hints}
                 areHintsLoading={false}
                 isBookmarked={currentS3Uri !== undefined && isBookmarked}
-                onS3UriPrefixChange={({ s3Uri }) => {
+                onS3UriPrefixChange={({ s3Uri, isHintSelection }) => {
                     setS3Uri(s3Uri);
-                    action("s3UriPrefixChange")(
-                        s3Uri === undefined ? "undefined" : stringifyS3Uri(s3Uri)
-                    );
+                    action("s3UriPrefixChange")({
+                        s3Uri: s3Uri === undefined ? "undefined" : stringifyS3Uri(s3Uri),
+                        isHintSelection
+                    });
                 }}
                 onToggleBookmark={() => {
                     if (currentS3Uri === undefined) {
@@ -324,12 +325,15 @@ function UndefinedPrefixLockedEditingStory() {
                 ]}
                 areHintsLoading={false}
                 isBookmarked={false}
-                onS3UriPrefixChange={({ s3Uri }) => {
+                onS3UriPrefixChange={({ s3Uri, isHintSelection }) => {
                     const nextS3Uri =
                         s3Uri === undefined ? undefined : stringifyS3Uri(s3Uri);
                     setS3Uri(s3Uri);
                     setLastCommittedS3Uri(nextS3Uri);
-                    action("s3UriPrefixChange")(nextS3Uri);
+                    action("s3UriPrefixChange")({
+                        s3Uri: nextS3Uri,
+                        isHintSelection
+                    });
                 }}
                 onToggleBookmark={undefined}
             />

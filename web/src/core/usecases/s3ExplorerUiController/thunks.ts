@@ -18,7 +18,7 @@ const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     });
 
 const { waitForDebounce: waitForDebounce_listPrefix } = createWaitForDebounce({
-    delay: 250
+    delay: 300
 });
 
 export const thunks = {
@@ -249,23 +249,6 @@ export const thunks = {
 
             dispatch(actions.listingStarted({ profileName, s3Uri }));
 
-            {
-                const prDebounce = waitForDebounce_listPrefix();
-
-                if (debounce) {
-                    await prDebounce;
-                }
-            }
-
-            const cmdId = Date.now();
-
-            dispatch(
-                actions.commandLogIssued({
-                    cmdId,
-                    cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
-                })
-            );
-
             const maybeCancel = async (): Promise<void | never> => {
                 const s3Uri_currentlyListing =
                     privateSelectors.s3Uri_currentlyListing(getState());
@@ -278,6 +261,25 @@ export const thunks = {
                     await new Promise<never>(() => {});
                 }
             };
+
+            {
+                const prDebounce = waitForDebounce_listPrefix();
+
+                if (debounce) {
+                    await prDebounce;
+                }
+            }
+
+            await maybeCancel();
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
+                })
+            );
 
             const s3Client = await dispatch(
                 s3ProfilesManagement.protectedThunks.getS3Client({ profileName })

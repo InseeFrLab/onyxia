@@ -87,10 +87,11 @@ function PageComponent() {
                             s3Uri={mainView.uriBar.s3Uri}
                             hints={mainView.uriBar.hints}
                             areHintsLoading={mainView.isListing}
-                            onS3UriPrefixChange={({ s3Uri }) =>
+                            onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
                                 s3ExplorerUiController.listPrefix({
                                     s3Uri,
-                                    debounce: true
+                                    debounce:
+                                        !isHintSelection && !s3Uri?.isDelimiterTerminated
                                 })
                             }
                             onToggleBookmark={

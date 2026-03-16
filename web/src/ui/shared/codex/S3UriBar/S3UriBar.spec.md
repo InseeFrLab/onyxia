@@ -68,7 +68,17 @@ export type S3UriBarProps = {
      * - user validates input externally (if you wire that)
      * - user clicks a breadcrumb segment in navigation mode
      */
-    onS3UriPrefixChange: (params: { s3Uri: S3Uri | undefined }) => void;
+    onS3UriPrefixChange: (params: {
+        s3Uri: S3Uri | undefined;
+
+        /**
+         * Lets the parent distinguish interactive hint selection from manual editing.
+         *
+         * - true => the change comes from selecting a hint with pointer or keyboard
+         * - false => the change comes from manual typing, manual validation, or breadcrumb navigation
+         */
+        isHintSelection: boolean;
+    }) => void;
 
     /**
      * Hints to display while editing.
@@ -119,8 +129,10 @@ export type S3UriBarProps = {
     - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.
-    - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined })`.
+    - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined, isHintSelection: false })`.
     - Hints are selectable (pointer and keyboard).
+    - Selecting a hint should call `onS3UriPrefixChange(..., isHintSelection: true)`.
+    - Manual typing, Enter-to-commit, blur-to-commit, and breadcrumb navigation should call `onS3UriPrefixChange(..., isHintSelection: false)`.
     - The hints overlay remains visible while `areHintsLoading` is true, even if there is no hint yet.
     - Loading feedback should appear inside the overlay rather than elsewhere in the bar.
     - The loading feedback uses a linear progress indicator, including when there is no suggestion yet.
