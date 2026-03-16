@@ -464,8 +464,18 @@ const uriBar = createSelector(
         });
 
         hints.sort((a, b) => {
-            const getRank = (hint: typeof a) =>
-                hint.type === "key-segment" ? 0 : hint.type === "object" ? 1 : 2;
+            const getRank = (hint: typeof a) => {
+                switch (hint.type) {
+                    case "bookmark":
+                        return 1;
+                    case "key-segment":
+                        return 2;
+                    case "object":
+                        return 3;
+                    default:
+                        assert<Equals<typeof hint.type, never>>(false);
+                }
+            };
             return getRank(a) - getRank(b);
         });
 
