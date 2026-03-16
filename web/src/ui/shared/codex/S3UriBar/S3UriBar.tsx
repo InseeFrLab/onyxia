@@ -1310,25 +1310,6 @@ export function S3UriBar(props: S3UriBarProps) {
                 )}
 
                 <div className={classes.trailingActions}>
-                    <Tooltip title="Copy URI">
-                        <div data-s3-uri-ignore-edit="true">
-                            <IconButton
-                                aria-label="Copy URI"
-                                icon={getIconUrlByName("ContentCopy")}
-                                size="small"
-                                onClick={event => {
-                                    event.stopPropagation();
-
-                                    if ("clipboard" in navigator) {
-                                        void navigator.clipboard.writeText(
-                                            canonicalS3Uri
-                                        );
-                                    }
-                                }}
-                                className={classes.bookmarkButton}
-                            />
-                        </div>
-                    </Tooltip>
                     <Tooltip title={isEditing ? "Exit edit mode" : "Enter edit mode"}>
                         <div data-s3-uri-ignore-edit="true">
                             <IconButton
