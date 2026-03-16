@@ -95,9 +95,10 @@ function PageComponent() {
                                 })
                             }
                             onToggleBookmark={
-                                mainView.profileSelect.isEditable
-                                    ? s3ExplorerUiController.toggleIsDirectoryPathBookmarked
-                                    : undefined
+                                mainView.uriBar.bookmarkStatus.isBookmarked &&
+                                mainView.uriBar.bookmarkStatus.isReadonly
+                                    ? undefined
+                                    : s3ExplorerUiController.toggleIsDirectoryPathBookmarked
                             }
                             isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
                         />
