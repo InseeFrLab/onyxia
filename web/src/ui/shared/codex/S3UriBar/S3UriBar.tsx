@@ -1310,37 +1310,6 @@ export function S3UriBar(props: S3UriBarProps) {
                 )}
 
                 <div className={classes.trailingActions}>
-                    <Tooltip title={isEditing ? "Exit edit mode" : "Enter edit mode"}>
-                        <div data-s3-uri-ignore-edit="true">
-                            <IconButton
-                                aria-label={
-                                    isEditing ? "Exit edit mode" : "Enter edit mode"
-                                }
-                                icon={getIconUrlByName(isEditing ? "Close" : "Edit")}
-                                size="small"
-                                onClick={event => {
-                                    event.stopPropagation();
-
-                                    if (isUndefinedPrefixMode) {
-                                        return;
-                                    }
-
-                                    const nextIsEditing = !isEditing;
-
-                                    if (nextIsEditing) {
-                                        lastEnterEditRequestTimeRef.current =
-                                            performance.now();
-                                    }
-
-                                    setIsEditing(nextIsEditing);
-                                }}
-                                className={cx(
-                                    classes.bookmarkButton,
-                                    isEditing && classes.editButtonActive
-                                )}
-                            />
-                        </div>
-                    </Tooltip>
                     {(onToggleBookmark || isBookmarked) && (
                         <Tooltip
                             title={
@@ -1640,11 +1609,6 @@ const useStyles = tss
             },
             bookmarkButtonReadonly: {
                 opacity: 0.65
-            },
-            editButtonActive: {
-                "& .MuiSvgIcon-root, & img": {
-                    color: accentColor
-                }
             },
             hintsPanel: {
                 position: "absolute",
