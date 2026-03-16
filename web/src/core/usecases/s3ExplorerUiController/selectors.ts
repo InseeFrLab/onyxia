@@ -514,5 +514,6 @@ export const privateSelectors = {
     s3Uri,
     profileName,
     s3Uri_currentlyListing,
-    doesListedPrefixHaveFinishedUpload
+    doesListedPrefixHaveFinishedUpload,
+    listedPrefix_state
 };

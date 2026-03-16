@@ -1,6 +1,6 @@
 import { assert, id } from "tsafe";
 import { createUsecaseActions } from "clean-architecture";
-import type { S3Uri } from "core/tools/S3Uri";
+import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 
 //All explorer paths are expected to be absolute (start with /)
@@ -190,6 +190,36 @@ export const { reducer, actions } = createUsecaseActions({
             listedPrefix.current = {
                 s3Uri,
                 items
+            };
+        },
+        listingCompletedSuccessfully_inferFromCurrentState: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    s3Uri: S3Uri;
+                };
+            }
+        ) => {
+            const { profileName, s3Uri } = payload;
+
+            const listedPrefix = state.listedPrefixByProfile[profileName];
+
+            assert(listedPrefix !== undefined);
+
+            listedPrefix.next = undefined;
+
+            assert(listedPrefix.current !== undefined);
+
+            const { items } = listedPrefix.current;
+
+            listedPrefix.current = {
+                s3Uri,
+                items: items.filter(item =>
+                    stringifyS3Uri(item.s3Uri).startsWith(stringifyS3Uri(s3Uri))
+                )
             };
         },
 

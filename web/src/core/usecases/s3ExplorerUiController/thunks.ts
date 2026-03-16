@@ -7,7 +7,7 @@ import { actions } from "./state";
 import * as s3ProfileManagement from "core/usecases/s3ProfilesManagement";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { id } from "tsafe/id";
-import { type S3Uri, parseS3Uri, stringifyS3Uri } from "core/tools/S3Uri";
+import { type S3Uri, parseS3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import type { State } from "./state";
@@ -209,6 +209,42 @@ export const thunks = {
                 ) {
                     return;
                 }
+            }
+
+            infer_from_current_state: {
+                if (s3Uri.isDelimiterTerminated) {
+                    break infer_from_current_state;
+                }
+
+                const listedPrefix = privateSelectors.listedPrefix_state(getState());
+
+                if (listedPrefix === undefined) {
+                    break infer_from_current_state;
+                }
+
+                if (listedPrefix.current === undefined) {
+                    break infer_from_current_state;
+                }
+
+                {
+                    const { isInside, isTopLevel } = getIsInside({
+                        s3UriPrefix: listedPrefix.current.s3Uri,
+                        s3Uri
+                    });
+
+                    if (!isInside || !isTopLevel) {
+                        break infer_from_current_state;
+                    }
+                }
+
+                dispatch(
+                    actions.listingCompletedSuccessfully_inferFromCurrentState({
+                        profileName,
+                        s3Uri
+                    })
+                );
+
+                return;
             }
 
             dispatch(actions.listingStarted({ profileName, s3Uri }));
