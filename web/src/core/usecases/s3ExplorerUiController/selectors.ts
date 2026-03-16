@@ -1,7 +1,7 @@
 import { createSelector } from "clean-architecture";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
-import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
+import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
 import { assert, type Equals } from "tsafe";
 import { id } from "tsafe/id";
@@ -396,21 +396,28 @@ const uriBar = createSelector(
             };
         })();
 
-        const s3Uri_str = stringifyS3Uri(s3Uri);
-
         const hints: MainView["uriBar"]["hints"] = bookmarks
-            .map(bookmark => stringifyS3Uri(bookmark.s3Uri))
             .filter(
-                s3UriPrefix_bookmark_str =>
-                    s3UriPrefix_bookmark_str.startsWith(s3Uri_str) &&
-                    s3UriPrefix_bookmark_str !== s3Uri_str
+                bookmark =>
+                    getIsInside({ s3UriPrefix: s3Uri, s3Uri: bookmark.s3Uri }).isInside
             )
-            .map(s3UriPrefix_bookmark_str =>
-                s3UriPrefix_bookmark_str.slice(s3Uri_str.length)
-            )
-            .map(text => ({
+            .map(bookmark => ({
                 type: "bookmark" as const,
-                text
+                text: (() => {
+                    const n = s3Uri.isDelimiterTerminated
+                        ? s3Uri.keySegments.length
+                        : s3Uri.keySegments.length - 1;
+
+                    let text = bookmark.s3Uri.keySegments
+                        .slice(n)
+                        .join(bookmark.s3Uri.delimiter);
+
+                    if (bookmark.s3Uri.isDelimiterTerminated) {
+                        text += bookmark.s3Uri.delimiter;
+                    }
+
+                    return text;
+                })()
             }));
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
@@ -422,6 +429,12 @@ const uriBar = createSelector(
         }
 
         listedPrefix.items.forEach(item => {
+            if (
+                bookmarks.find(bookmark => same(bookmark.s3Uri, item.s3Uri)) !== undefined
+            ) {
+                return;
+            }
+
             const keyBasename = item.s3Uri.keySegments.at(-1);
             assert(keyBasename !== undefined);
 
