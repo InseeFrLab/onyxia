@@ -68,6 +68,8 @@ function PageComponent() {
 
     const mainView = useCoreState("s3ExplorerUiController", "mainView");
 
+    const { css, theme } = useStyles();
+
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
@@ -108,6 +110,7 @@ function PageComponent() {
                             isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
                         />
                         <S3BookmarksBar
+                            className={css({ marginTop: theme.spacing(3) })}
                             items={mainView.bookmarks.items}
                             activeItemS3Uri={mainView.bookmarks.activeItemS3Uri}
                             getItemLink={({ s3Uri }) => {
