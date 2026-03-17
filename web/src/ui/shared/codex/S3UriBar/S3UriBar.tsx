@@ -780,6 +780,11 @@ export function S3UriBar(props: S3UriBarProps) {
         });
     };
 
+    const blurInput = () => {
+        lastEnterEditRequestTimeRef.current = Number.NEGATIVE_INFINITY;
+        inputRef.current?.blur();
+    };
+
     const selectHint = (hint: (typeof displayedHints)[number]) => {
         if (hint.action === "exit-edit-mode") {
             exitEditing();
@@ -798,6 +803,11 @@ export function S3UriBar(props: S3UriBarProps) {
     const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Escape") {
             event.preventDefault();
+
+            if (isHintsPanelVisible) {
+                blurInput();
+                return;
+            }
 
             if (isUndefinedPrefixMode) {
                 return;
