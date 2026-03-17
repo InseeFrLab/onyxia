@@ -128,7 +128,7 @@ function DataExplorer() {
             className={css({
                 marginTop: theme.spacing(3),
                 width: "100%",
-                height: "100%",
+                height: `calc(100% - ${theme.spacing(4)}px)`,
                 overflowY: "hidden",
                 overflowX: "auto"
             })}
