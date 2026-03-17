@@ -31,6 +31,7 @@ export type S3UriBarProps = {
     hints: {
         type: "object" | "key-segment" | "bookmark";
         text: string;
+        s3Uri: S3Uri;
     }[];
     areHintsLoading: boolean;
     isBookmarked: boolean;
@@ -57,9 +58,15 @@ const hintsPanelVerticalOffsetPx = 6;
 const hintsPanelFallbackWidthPx = 280;
 type CrumbKind = DisplayCrumb["kind"];
 type HintType = S3UriBarProps["hints"][number]["type"];
-type DisplayedHint = S3UriBarProps["hints"][number] & {
-    action: "select-hint" | "exit-edit-mode";
-};
+type DisplayedHint =
+    | (S3UriBarProps["hints"][number] & {
+          action: "select-hint";
+      })
+    | {
+          type: "key-segment";
+          text: ".";
+          action: "exit-edit-mode";
+      };
 const hintMiddleEllipsisMaxLength = 58;
 const hintMiddleEllipsisHeadLength = 34;
 const hintMiddleEllipsisTailLength = 20;
@@ -748,50 +755,11 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        const source = draftS3Uri.startsWith("s3://") ? draftS3Uri : canonicalS3Uri;
-        const sourceS3Uri =
-            tryParseS3Uri({
-                s3Uri: source,
-                delimiter: normalizedS3Uri.delimiter
-            }) ?? normalizedS3Uri;
-
-        let nextS3Uri: S3Uri | undefined;
-
-        if (hint.type === "bookmark") {
-            const bookmarkPath = hint.text.trim();
-
-            nextS3Uri =
-                tryParseS3Uri({
-                    s3Uri: bookmarkPath,
-                    delimiter: sourceS3Uri.delimiter
-                }) ??
-                tryParseS3Uri({
-                    s3Uri: `s3://${sourceS3Uri.bucket}${bookmarkPath.startsWith(sourceS3Uri.delimiter) ? "" : sourceS3Uri.delimiter}${bookmarkPath}`,
-                    delimiter: sourceS3Uri.delimiter
-                });
-        } else {
-            // If the draft does not end with the delimiter, the last segment is only a partial match.
-            const baseKeySegments = sourceS3Uri.isDelimiterTerminated
-                ? sourceS3Uri.keySegments
-                : sourceS3Uri.keySegments.slice(0, -1);
-
-            nextS3Uri = {
-                bucket: sourceS3Uri.bucket,
-                delimiter: sourceS3Uri.delimiter,
-                keySegments: [...baseKeySegments, hint.text],
-                isDelimiterTerminated: hint.type === "key-segment"
-            };
-        }
-
-        if (!nextS3Uri) {
-            return;
-        }
-
-        const nextDraftS3Uri = stringifyS3Uri(nextS3Uri);
+        const nextDraftS3Uri = stringifyS3Uri(hint.s3Uri);
 
         setDraftS3Uri(nextDraftS3Uri);
         emitS3UriChange({
-            s3Uri: nextS3Uri,
+            s3Uri: hint.s3Uri,
             isHintSelection: true
         });
     };

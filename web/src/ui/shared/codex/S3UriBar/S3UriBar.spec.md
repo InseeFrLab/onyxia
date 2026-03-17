@@ -52,8 +52,19 @@ export type S3UriBarProps = {
      * When s3Uri is undefined there can be hint but only of type "bookmark".
      * For example hints can be:
      * [
-     *  { type: "bookmark", text: "s3://mybucket/" },
-     *  { type: "bookmark", text: "s3://donee-insee/diffusion/" }
+     *  {
+     *      type: "bookmark",
+     *      text: "s3://mybucket/",
+     *      s3Uri: parseS3Uri({ value: "s3://mybucket/", delimiter: "/" })
+     *  },
+     *  {
+     *      type: "bookmark",
+     *      text: "s3://donee-insee/diffusion/",
+     *      s3Uri: parseS3Uri({
+     *          value: "s3://donee-insee/diffusion/",
+     *          delimiter: "/"
+     *      })
+     *  }
      * ]
      * The component is responsible for filtering out the irrelevant hint entry as the user types
      * For example when the current value of the input is "s3://my" only the "s3://mybucket/" hint should appear.
@@ -92,10 +103,15 @@ export type S3UriBarProps = {
      * Actually the semantic of the different types of items is out of scope for the component.
      * The component only needs to know the type so that the popup modal for selecting hits can
      * have different icons depending of the type of hint this is.
+     *
+     * `s3Uri` is the full target location for the hint.
+     * When a hint is selected, the component should forward this `s3Uri` as-is instead of
+     * trying to reconstruct a new URI by appending `text` to the current draft.
      */
     hints: {
         type: "object" | "key-segment" | "bookmark";
         text: string;
+        s3Uri: S3Uri;
     }[];
 
     /**
@@ -132,7 +148,8 @@ export type S3UriBarProps = {
     - Input updates are handled by parent via requested prefix changes.
     - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined, isHintSelection: false })`.
     - Hints are selectable (pointer and keyboard).
-    - Selecting a hint should call `onS3UriPrefixChange(..., isHintSelection: true)`.
+    - Selecting a hint should call `onS3UriPrefixChange({ s3Uri: hint.s3Uri, isHintSelection: true })`.
+    - Hint selection must not rebuild the URI from `hint.text` and the current draft.
     - Manual typing, Enter-to-commit, blur-to-commit, and breadcrumb navigation should call `onS3UriPrefixChange(..., isHintSelection: false)`.
     - The hints overlay remains visible while `areHintsLoading` is true, even if there is no hint yet.
     - Loading feedback should appear inside the overlay rather than elsewhere in the bar.
