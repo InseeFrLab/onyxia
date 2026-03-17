@@ -10,6 +10,8 @@ import { assert } from "tsafe";
 import { actions } from "./state";
 import { thunks } from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
+import * as dataExplorer from "core/usecases/dataExplorer";
+import { stringifyS3Uri } from "core/tools/S3Uri";
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -38,6 +40,27 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                         debounce: false
                     })
                 )
+        );
+
+    evtAction
+        .pipe(action => action.usecaseName === name)
+        .pipe(() => [privateSelectors.isFullyQualifiedDataFileUri(getState())])
+        .pipe(onlyIfChanged())
+        .attach(
+            isFullyQualifiedDataFileUri => isFullyQualifiedDataFileUri,
+            () => {
+                const s3Uri = privateSelectors.s3Uri(getState());
+
+                assert(s3Uri !== undefined);
+
+                dispatch(
+                    dataExplorer.thunks.load({
+                        routeParams: {
+                            source: stringifyS3Uri(s3Uri)
+                        }
+                    })
+                );
+            }
         );
 
     evtAction

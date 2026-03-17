@@ -9,6 +9,9 @@ import { S3ExplorerDialogs, type S3ExplorerDialogsProps } from "./dialogs";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import { S3UriBar } from "ui/shared/codex/S3UriBar";
+import { DataGrid } from "ui/pages/dataExplorer/DataGrid";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useStyles } from "tss";
 
 const Page = withLoader({
     loader: async () => {
@@ -102,9 +105,35 @@ function PageComponent() {
                             }
                             isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
                         />
+                        {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
+                            mainView.fullyQualifiedUri.isDataObject && <DataExplorer />}
                     </>
                 );
             })()}
         </>
+    );
+}
+
+function DataExplorer() {
+    const { dataGridView } = useCoreState("dataExplorer", "view");
+
+    const { css, theme } = useStyles();
+
+    if (dataGridView === undefined) {
+        return <CircularProgress />;
+    }
+
+    return (
+        <div
+            className={css({
+                marginTop: theme.spacing(3),
+                width: "100%",
+                height: "100%",
+                overflowY: "hidden",
+                overflowX: "auto"
+            })}
+        >
+            <DataGrid />
+        </div>
     );
 }
