@@ -831,7 +831,11 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        if (event.key === "Enter" && areHintsInteractive && activeHintIndex >= 0) {
+        if (
+            (event.key === "Enter" || event.key === "Tab") &&
+            areHintsInteractive &&
+            activeHintIndex >= 0
+        ) {
             event.preventDefault();
 
             const activeHint = displayedHints[activeHintIndex];
