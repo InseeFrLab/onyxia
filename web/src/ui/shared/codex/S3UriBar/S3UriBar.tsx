@@ -353,6 +353,7 @@ export function S3UriBar(props: S3UriBarProps) {
 
     const [draftS3Uri, setDraftS3Uri] = useState(canonicalS3Uri);
     const [isEditing, setIsEditing] = useState(isUndefinedPrefixMode);
+    const [isFocusedWithin, setIsFocusedWithin] = useState(false);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
     const [hintsPanelPosition, setHintsPanelPosition] = useState({
@@ -374,7 +375,7 @@ export function S3UriBar(props: S3UriBarProps) {
         [draftS3Uri, hints, s3Uri]
     );
     const isHintsPanelVisible =
-        isEditing && (displayedHints.length > 0 || areHintsLoading);
+        isEditing && isFocusedWithin && (displayedHints.length > 0 || areHintsLoading);
 
     const { classes, cx } = useStyles({ isEditing });
 
@@ -857,17 +858,19 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        if (ignoreNextBlurRef.current) {
-            ignoreNextBlurRef.current = false;
-            return;
-        }
-
         const nextFocusedElement = event.relatedTarget;
 
         if (
             nextFocusedElement instanceof Node &&
             event.currentTarget.contains(nextFocusedElement)
         ) {
+            return;
+        }
+
+        setIsFocusedWithin(false);
+
+        if (ignoreNextBlurRef.current) {
+            ignoreNextBlurRef.current = false;
             return;
         }
 
@@ -893,7 +896,14 @@ export function S3UriBar(props: S3UriBarProps) {
     const displayKeyCrumbs = displayCrumbs.slice(2);
 
     return (
-        <div className={cx(classes.root, className)} ref={rootRef} onBlur={onRootBlur}>
+        <div
+            className={cx(classes.root, className)}
+            ref={rootRef}
+            onFocus={() => {
+                setIsFocusedWithin(true);
+            }}
+            onBlur={onRootBlur}
+        >
             <div className={classes.bar} onPointerDown={onBarPointerDown}>
                 {isEditing ? (
                     <div className={classes.inputWrapper}>

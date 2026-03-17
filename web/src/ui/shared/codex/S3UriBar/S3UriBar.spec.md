@@ -44,6 +44,8 @@ export type S3UriBarProps = {
      * The s3Uri can be undefined. In this case the component should be locked in editing mode.
      * The text input should be set by default to s3://
      * And the state representing input text should be internal to the component.
+     * In this locked editing mode, losing focus must not exit editing mode, but it should hide
+     * the hints overlay until the component gains focus again.
      * onS3UriPrefixChange() should be called whenever the current input changes.
      * It should receive:
      * - a parsed S3Uri when the current input is parsable
@@ -157,4 +159,6 @@ export type S3UriBarProps = {
     - `Escape` returns to navigation mode.
     - `Enter` returns to navigation mode when `s3Uri` is defined and no hint is displayed.
 - Focus handling:
-    - Blur returns to navigation mode.
+    - Blur returns to navigation mode when the component is not in undefined-prefix mode.
+    - In undefined-prefix mode, blur keeps the component in editing mode but hides the hints overlay.
+    - In undefined-prefix mode, the hints overlay reappears when focus comes back.
