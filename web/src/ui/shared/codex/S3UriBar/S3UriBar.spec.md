@@ -144,6 +144,7 @@ export type S3UriBarProps = {
 
 - Navigation mode:
     - Home/root button short click => enter editing mode with `s3://` as the draft.
+    - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
     - Segment short click => request navigation (`onS3UriPrefixChange`).
     - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:

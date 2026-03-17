@@ -350,6 +350,13 @@ export function S3UriBar(props: S3UriBarProps) {
     const wasEditingRef = useRef(false);
     const ignoreNextBlurRef = useRef(false);
     const preserveNextDraftResetRef = useRef(false);
+    const pendingInputSelectionRef = useRef<
+        | {
+              start: number;
+              end: number;
+          }
+        | undefined
+    >(undefined);
     const lastEnterEditRequestTimeRef = useRef(Number.NEGATIVE_INFINITY);
 
     const measureCrumbRefs = useRef<Array<HTMLSpanElement | null>>([]);
@@ -522,8 +529,19 @@ export function S3UriBar(props: S3UriBarProps) {
             }
 
             input.focus();
-            const cursorPosition = input.value.length;
-            input.setSelectionRange(cursorPosition, cursorPosition);
+            const selection = pendingInputSelectionRef.current;
+            pendingInputSelectionRef.current = undefined;
+
+            if (selection !== undefined) {
+                input.setSelectionRange(
+                    Math.min(selection.start, input.value.length),
+                    Math.min(selection.end, input.value.length)
+                );
+            } else {
+                const cursorPosition = input.value.length;
+                input.setSelectionRange(cursorPosition, cursorPosition);
+            }
+
             syncInputCursorState(input);
             updateHintsPanelPosition();
         });
@@ -778,6 +796,17 @@ export function S3UriBar(props: S3UriBarProps) {
             s3Uri: undefined,
             isHintSelection: false
         });
+    };
+
+    const enterKeyEditing = () => {
+        const keyStartIndex = `s3://${normalizedS3Uri.bucket}/`.length;
+
+        pendingInputSelectionRef.current = {
+            start: keyStartIndex,
+            end: canonicalS3Uri.length
+        };
+        lastEnterEditRequestTimeRef.current = performance.now();
+        setIsEditing(true);
     };
 
     const blurInput = () => {
@@ -1116,18 +1145,25 @@ export function S3UriBar(props: S3UriBarProps) {
                             ))}
                             {displayKeyCrumbs.length > 0 && (
                                 <span className={classes.keyGroup}>
-                                    <span
+                                    <button
+                                        type="button"
                                         className={cx(
                                             classes.segmentGroupTag,
-                                            classes.segmentGroupTagKey
+                                            classes.segmentGroupTagKey,
+                                            classes.keyEditButton
                                         )}
-                                        aria-label="Object key"
+                                        data-s3-uri-ignore-edit="true"
+                                        aria-label="Edit object key"
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            enterKeyEditing();
+                                        }}
                                     >
                                         <Icon
                                             size="extra small"
                                             icon={getIconUrlByName("Key")}
                                         />
-                                    </span>
+                                    </button>
                                     {displayKeyCrumbs.map((crumb, keyIndex) => {
                                         const absoluteIndex = keyIndex + 2;
 
@@ -1545,6 +1581,16 @@ const useStyles = tss
             segmentGroupTagKey: {
                 color: theme.colors.useCases.typography.textPrimary,
                 backgroundColor: theme.colors.useCases.surfaces.background
+            },
+            keyEditButton: {
+                margin: 0,
+                border: "none",
+                padding: 0,
+                boxSizing: "border-box",
+                cursor: "pointer",
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                }
             },
             separator: {
                 margin: `0 ${theme.spacing(2)}`,
