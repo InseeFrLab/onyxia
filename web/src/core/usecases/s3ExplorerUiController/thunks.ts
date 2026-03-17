@@ -141,7 +141,40 @@ export const thunks = {
                 })
             );
         },
-    toggleIsDirectoryPathBookmarked: (() => {
+    deleteBookmark: (() => {
+        let isRunning = false;
+
+        return (params: { s3Uri: S3Uri }) =>
+            async (...args) => {
+                if (isRunning) {
+                    return;
+                }
+
+                isRunning = true;
+
+                const { s3Uri } = params;
+
+                const [dispatch, getState] = args;
+
+                const s3Profile =
+                    s3ProfileManagement.selectors.ambientS3Profile(getState());
+
+                assert(s3Profile !== undefined);
+
+                await dispatch(
+                    s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
+                        profileName: s3Profile.profileName,
+                        s3Uri,
+                        action: {
+                            type: "delete"
+                        }
+                    })
+                );
+
+                isRunning = false;
+            };
+    })(),
+    toggleIsS3UriBookmarked: (() => {
         let isRunning = false;
 
         return () =>

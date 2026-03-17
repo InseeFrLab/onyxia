@@ -23,10 +23,15 @@ export type MainView = {
               isEditable: boolean;
           }
         | undefined;
+
     bookmarks: {
-        displayName: LocalizedString | undefined;
-        s3Uri: S3Uri;
-    }[];
+        items: {
+            displayName: LocalizedString | undefined;
+            s3Uri: S3Uri;
+            isReadonly: boolean;
+        }[];
+        activeItemS3Uri: S3Uri | undefined;
+    };
 
     uploads: State.Upload[];
 
@@ -161,15 +166,25 @@ const profileSelect = createSelector(
 
 const bookmarks = createSelector(
     s3ProfilesManagement.selectors.ambientS3Profile,
-    (ambientS3Profile): MainView["bookmarks"] => {
+    s3Uri,
+    (ambientS3Profile, s3Uri): MainView["bookmarks"] => {
         if (ambientS3Profile === undefined) {
-            return [];
+            return {
+                items: [],
+                activeItemS3Uri: undefined
+            };
         }
 
-        return ambientS3Profile.bookmarks.map(bookmark => ({
+        const items = ambientS3Profile.bookmarks.map(bookmark => ({
             displayName: bookmark.displayName,
-            s3Uri: bookmark.s3Uri
+            s3Uri: bookmark.s3Uri,
+            isReadonly: bookmark.isReadonly
         }));
+
+        return {
+            items,
+            activeItemS3Uri: items.find(item => same(item.s3Uri, s3Uri))?.s3Uri
+        };
     }
 );
 
@@ -411,12 +426,11 @@ const uriBar = createSelector(
     bookmarks,
     listedPrefix,
     isListing,
-    s3ProfilesManagement.selectors.ambientS3Profile,
-    (s3Uri, bookmarks, listedPrefix, isListing, ambientS3Profile): MainView["uriBar"] => {
+    (s3Uri, bookmarks, listedPrefix, isListing): MainView["uriBar"] => {
         if (s3Uri === undefined) {
             return {
                 s3Uri: undefined,
-                hints: bookmarks.map(bookmark => ({
+                hints: bookmarks.items.map(bookmark => ({
                     type: "bookmark",
                     text: stringifyS3Uri(bookmark.s3Uri),
                     s3Uri: bookmark.s3Uri
@@ -428,15 +442,15 @@ const uriBar = createSelector(
         }
 
         const bookmarkStatus: MainView["uriBar"]["bookmarkStatus"] = (() => {
-            assert(ambientS3Profile !== undefined);
-
-            const bookmark = ambientS3Profile.bookmarks.find(bookmark =>
-                same(bookmark.s3Uri, s3Uri)
-            );
-
-            if (bookmark === undefined) {
+            if (bookmarks.activeItemS3Uri === undefined) {
                 return { isBookmarked: false };
             }
+
+            const bookmark = bookmarks.items.find(bookmark =>
+                same(bookmark.s3Uri, bookmarks.activeItemS3Uri)
+            );
+
+            assert(bookmark !== undefined);
 
             return {
                 isBookmarked: true,
@@ -444,7 +458,7 @@ const uriBar = createSelector(
             };
         })();
 
-        const hints: MainView["uriBar"]["hints"] = bookmarks
+        const hints: MainView["uriBar"]["hints"] = bookmarks.items
             .filter(
                 bookmark =>
                     getIsInside({ s3UriPrefix: s3Uri, s3Uri: bookmark.s3Uri }).isInside
@@ -479,7 +493,8 @@ const uriBar = createSelector(
 
         listedPrefix.items.forEach(item => {
             if (
-                bookmarks.find(bookmark => same(bookmark.s3Uri, item.s3Uri)) !== undefined
+                bookmarks.items.find(bookmark => same(bookmark.s3Uri, item.s3Uri)) !==
+                undefined
             ) {
                 return;
             }
