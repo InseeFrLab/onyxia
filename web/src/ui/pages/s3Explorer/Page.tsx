@@ -12,6 +12,8 @@ import { S3UriBar } from "ui/shared/codex/S3UriBar";
 import { DataGrid } from "ui/pages/dataExplorer/DataGrid";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useStyles } from "tss";
+import { S3BookmarksBar } from "ui/shared/codex/S3BookmarksBar";
+import { stringifyS3Uri } from "core/tools/S3Uri";
 
 const Page = withLoader({
     loader: async () => {
@@ -101,9 +103,25 @@ function PageComponent() {
                                 mainView.uriBar.bookmarkStatus.isBookmarked &&
                                 mainView.uriBar.bookmarkStatus.isReadonly
                                     ? undefined
-                                    : s3ExplorerUiController.toggleIsDirectoryPathBookmarked
+                                    : s3ExplorerUiController.toggleIsS3UriBookmarked
                             }
                             isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
+                        />
+                        <S3BookmarksBar
+                            items={mainView.bookmarks.items}
+                            activeItemS3Uri={mainView.bookmarks.activeItemS3Uri}
+                            getItemLink={({ s3Uri }) => {
+                                const route = getRoute();
+                                assert(routeGroup.has(route));
+
+                                return routes.s3Explorer({
+                                    ...route.params,
+                                    s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice(
+                                        "s3://".length
+                                    )
+                                }).link;
+                            }}
+                            onDelete={s3ExplorerUiController.deleteBookmark}
                         />
                         {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
                             mainView.fullyQualifiedUri.isDataObject && <DataExplorer />}
