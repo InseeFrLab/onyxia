@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3BookmarksEntryPointList, type S3BookmarksEntryPointListProps } from ".";
+import { assert } from "tsafe";
 
 const meta = {
     title: "Shared/S3BookmarksEntryPointList",
@@ -12,12 +13,15 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function parsePrefixOrThrow(s3Uri: string): S3Uri.Prefix {
-    return parseS3Uri({
+function parsePrefixOrThrow(s3Uri: string): S3Uri.TerminatedByDelimiter {
+    const obj = parseS3Uri({
         value: s3Uri,
-        delimiter: "/",
-        isPrefix: true
+        delimiter: "/"
     });
+
+    assert(obj.isDelimiterTerminated);
+
+    return obj;
 }
 
 const baseItems: S3BookmarksEntryPointListProps["items"] = [

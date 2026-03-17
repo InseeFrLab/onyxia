@@ -12,7 +12,7 @@ import { S3UriBar } from "ui/shared/codex/S3UriBar";
 import { DataGrid } from "ui/pages/dataExplorer/DataGrid";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useStyles } from "tss";
-import { S3BookmarksBar } from "ui/shared/codex/S3BookmarksBar";
+import { S3BookmarksBar } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 
 const Page = withLoader({
@@ -125,6 +125,9 @@ function PageComponent() {
                                 }).link;
                             }}
                             onDelete={s3ExplorerUiController.deleteBookmark}
+                            onRename={() => {
+                                alert("TODO");
+                            }}
                         />
                         {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
                             mainView.fullyQualifiedUri.isDataObject && <DataExplorer />}
