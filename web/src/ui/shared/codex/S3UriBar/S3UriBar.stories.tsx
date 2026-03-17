@@ -34,6 +34,23 @@ function parsePrefixOrThrowWithDelimiter(params: {
     });
 }
 
+function makeHint(params: {
+    type: S3UriBarProps["hints"][number]["type"];
+    text: string;
+    s3Uri: string;
+    delimiter?: string;
+}): S3UriBarProps["hints"][number] {
+    const { delimiter = "/", ...rest } = params;
+
+    return {
+        ...rest,
+        s3Uri: parsePrefixOrThrowWithDelimiter({
+            s3Uri: rest.s3Uri,
+            delimiter
+        })
+    };
+}
+
 function StatefulS3UriBar(args: S3UriBarProps) {
     const [s3Uri, setS3Uri] = useState(args.s3Uri);
 
@@ -57,10 +74,26 @@ const baseArgs: S3UriBarProps = {
     s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv"),
     onS3UriPrefixChange: action("s3UriPrefixChange"),
     hints: [
-        { type: "key-segment", text: "quarter-2" },
-        { type: "key-segment", text: "quarter-3" },
-        { type: "object", text: "report.parquet" },
-        { type: "bookmark", text: "exports/2024/" }
+        makeHint({
+            type: "key-segment",
+            text: "quarter-2",
+            s3Uri: "s3://analytics-data/exports/2024/quarter-2/"
+        }),
+        makeHint({
+            type: "key-segment",
+            text: "quarter-3",
+            s3Uri: "s3://analytics-data/exports/2024/quarter-3/"
+        }),
+        makeHint({
+            type: "object",
+            text: "report.parquet",
+            s3Uri: "s3://analytics-data/exports/2024/quarter-1/report.parquet"
+        }),
+        makeHint({
+            type: "bookmark",
+            text: "exports/2024/",
+            s3Uri: "s3://analytics-data/exports/2024/"
+        })
     ],
     areHintsLoading: false,
     isBookmarked: false,
@@ -121,9 +154,24 @@ export const HashDelimiter: Story = {
             delimiter: "#"
         }),
         hints: [
-            { type: "key-segment", text: "baz" },
-            { type: "object", text: "other.txt" },
-            { type: "bookmark", text: "foo#bar#" }
+            makeHint({
+                type: "key-segment",
+                text: "baz",
+                s3Uri: "s3://mybucket/foo#bar#baz#",
+                delimiter: "#"
+            }),
+            makeHint({
+                type: "object",
+                text: "other.txt",
+                s3Uri: "s3://mybucket/foo#bar#other.txt",
+                delimiter: "#"
+            }),
+            makeHint({
+                type: "bookmark",
+                text: "foo#bar#",
+                s3Uri: "s3://mybucket/foo#bar#",
+                delimiter: "#"
+            })
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -134,10 +182,26 @@ export const EditingModeWithShortcuts: Story = {
         ...baseArgs,
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
-            { type: "bookmark", text: "2024/quarter-1/" },
-            { type: "bookmark", text: "raw/events/" },
-            { type: "key-segment", text: "dashboards" },
-            { type: "object", text: "README.md" }
+            makeHint({
+                type: "bookmark",
+                text: "2024/quarter-1/",
+                s3Uri: "s3://analytics-data/exports/2024/quarter-1/"
+            }),
+            makeHint({
+                type: "bookmark",
+                text: "raw/events/",
+                s3Uri: "s3://analytics-data/raw/events/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "dashboards",
+                s3Uri: "s3://analytics-data/exports/dashboards/"
+            }),
+            makeHint({
+                type: "object",
+                text: "README.md",
+                s3Uri: "s3://analytics-data/exports/README.md"
+            })
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -148,20 +212,76 @@ export const EditingModeWithManyHints: Story = {
         ...baseArgs,
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
-            { type: "bookmark", text: "2024/" },
-            { type: "bookmark", text: "2024/quarter-1/" },
-            { type: "bookmark", text: "raw/events/" },
-            { type: "key-segment", text: "2021" },
-            { type: "key-segment", text: "2022" },
-            { type: "key-segment", text: "2023" },
-            { type: "key-segment", text: "2024" },
-            { type: "key-segment", text: "2025" },
-            { type: "key-segment", text: "dashboards" },
-            { type: "key-segment", text: "reports" },
-            { type: "object", text: "README.md" },
-            { type: "object", text: "manifest.json" },
-            { type: "object", text: "report-quarterly.parquet" },
-            { type: "object", text: "report-yearly.parquet" }
+            makeHint({
+                type: "bookmark",
+                text: "2024/",
+                s3Uri: "s3://analytics-data/exports/2024/"
+            }),
+            makeHint({
+                type: "bookmark",
+                text: "2024/quarter-1/",
+                s3Uri: "s3://analytics-data/exports/2024/quarter-1/"
+            }),
+            makeHint({
+                type: "bookmark",
+                text: "raw/events/",
+                s3Uri: "s3://analytics-data/raw/events/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "2021",
+                s3Uri: "s3://analytics-data/exports/2021/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "2022",
+                s3Uri: "s3://analytics-data/exports/2022/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "2023",
+                s3Uri: "s3://analytics-data/exports/2023/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "2024",
+                s3Uri: "s3://analytics-data/exports/2024/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "2025",
+                s3Uri: "s3://analytics-data/exports/2025/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "dashboards",
+                s3Uri: "s3://analytics-data/exports/dashboards/"
+            }),
+            makeHint({
+                type: "key-segment",
+                text: "reports",
+                s3Uri: "s3://analytics-data/exports/reports/"
+            }),
+            makeHint({
+                type: "object",
+                text: "README.md",
+                s3Uri: "s3://analytics-data/exports/README.md"
+            }),
+            makeHint({
+                type: "object",
+                text: "manifest.json",
+                s3Uri: "s3://analytics-data/exports/manifest.json"
+            }),
+            makeHint({
+                type: "object",
+                text: "report-quarterly.parquet",
+                s3Uri: "s3://analytics-data/exports/report-quarterly.parquet"
+            }),
+            makeHint({
+                type: "object",
+                text: "report-yearly.parquet",
+                s3Uri: "s3://analytics-data/exports/report-yearly.parquet"
+            })
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -172,34 +292,41 @@ export const EditingModeWithVeryLongHints: Story = {
         ...baseArgs,
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         hints: [
-            {
+            makeHint({
                 type: "bookmark",
-                text: "raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/"
-            },
-            {
+                text: "raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/",
+                s3Uri: "s3://analytics-data/raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/"
+            }),
+            makeHint({
                 type: "bookmark",
-                text: "dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/"
-            },
-            {
+                text: "dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/",
+                s3Uri: "s3://analytics-data/dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/"
+            }),
+            makeHint({
                 type: "key-segment",
-                text: "department=analytics-team-with-an-extremely-descriptive-name"
-            },
-            {
+                text: "department=analytics-team-with-an-extremely-descriptive-name",
+                s3Uri: "s3://analytics-data/exports/department=analytics-team-with-an-extremely-descriptive-name/"
+            }),
+            makeHint({
                 type: "key-segment",
-                text: "source-system=customer-interaction-and-engagement-platform"
-            },
-            {
+                text: "source-system=customer-interaction-and-engagement-platform",
+                s3Uri: "s3://analytics-data/exports/source-system=customer-interaction-and-engagement-platform/"
+            }),
+            makeHint({
                 type: "object",
-                text: "report-quarterly-performance-and-financial-projections-for-fiscal-year-2025.parquet"
-            },
-            {
+                text: "report-quarterly-performance-and-financial-projections-for-fiscal-year-2025.parquet",
+                s3Uri: "s3://analytics-data/exports/report-quarterly-performance-and-financial-projections-for-fiscal-year-2025.parquet"
+            }),
+            makeHint({
                 type: "object",
-                text: "dashboard_configuration_snapshot_with_extended_metadata_and_annotations.json"
-            },
-            {
+                text: "dashboard_configuration_snapshot_with_extended_metadata_and_annotations.json",
+                s3Uri: "s3://analytics-data/exports/dashboard_configuration_snapshot_with_extended_metadata_and_annotations.json"
+            }),
+            makeHint({
                 type: "object",
-                text: "this-is-a-very-very-very-very-very-very-long-object-name.csv"
-            }
+                text: "this-is-a-very-very-very-very-very-very-long-object-name.csv",
+                s3Uri: "s3://analytics-data/exports/this-is-a-very-very-very-very-very-very-long-object-name.csv"
+            })
         ]
     },
     render: args => <StatefulS3UriBar {...args} />
@@ -243,18 +370,35 @@ function ControlledS3UriBarStory() {
         }
 
         return [
-            {
-                type: "bookmark" as const,
-                text: `${bucketData.keySegments[0]}${s3Uri.delimiter}`
-            },
-            ...bucketData.keySegments.map(text => ({
-                type: "key-segment" as const,
-                text
-            })),
-            ...bucketData.objects.map(text => ({
-                type: "object" as const,
-                text
-            }))
+            makeHint({
+                type: "bookmark",
+                text: `${bucketData.keySegments[0]}${s3Uri.delimiter}`,
+                s3Uri: `s3://${s3Uri.bucket}/${bucketData.keySegments[0]}${s3Uri.delimiter}`
+            }),
+            ...bucketData.keySegments.map(text =>
+                makeHint({
+                    type: "key-segment",
+                    text,
+                    s3Uri: `s3://${s3Uri.bucket}/${[
+                        ...(s3Uri.isDelimiterTerminated
+                            ? s3Uri.keySegments
+                            : s3Uri.keySegments.slice(0, -1)),
+                        text
+                    ].join(s3Uri.delimiter)}${s3Uri.delimiter}`
+                })
+            ),
+            ...bucketData.objects.map(text =>
+                makeHint({
+                    type: "object",
+                    text,
+                    s3Uri: `s3://${s3Uri.bucket}/${[
+                        ...(s3Uri.isDelimiterTerminated
+                            ? s3Uri.keySegments
+                            : s3Uri.keySegments.slice(0, -1)),
+                        text
+                    ].join(s3Uri.delimiter)}`
+                })
+            )
         ];
     }, [s3Uri]);
 
@@ -319,9 +463,21 @@ function UndefinedPrefixLockedEditingStory() {
             <S3UriBar
                 s3Uri={s3Uri}
                 hints={[
-                    { type: "bookmark", text: "s3://mybucket/" },
-                    { type: "bookmark", text: "s3://donnee-insee/diffusion/" },
-                    { type: "key-segment", text: "hidden-non-bookmark-hint" }
+                    makeHint({
+                        type: "bookmark",
+                        text: "s3://mybucket/",
+                        s3Uri: "s3://mybucket/"
+                    }),
+                    makeHint({
+                        type: "bookmark",
+                        text: "s3://donnee-insee/diffusion/",
+                        s3Uri: "s3://donnee-insee/diffusion/"
+                    }),
+                    makeHint({
+                        type: "key-segment",
+                        text: "hidden-non-bookmark-hint",
+                        s3Uri: "s3://mybucket/hidden-non-bookmark-hint/"
+                    })
                 ]}
                 areHintsLoading={false}
                 isBookmarked={false}
@@ -387,8 +543,16 @@ export const UndefinedPrefixLockedEditingWithBookmarkHints: Story = {
         ...baseArgs,
         s3Uri: undefined,
         hints: [
-            { type: "bookmark", text: "s3://mybucket/" },
-            { type: "bookmark", text: "s3://donnee-insee/diffusion/" }
+            makeHint({
+                type: "bookmark",
+                text: "s3://mybucket/",
+                s3Uri: "s3://mybucket/"
+            }),
+            makeHint({
+                type: "bookmark",
+                text: "s3://donnee-insee/diffusion/",
+                s3Uri: "s3://donnee-insee/diffusion/"
+            })
         ],
         onToggleBookmark: undefined
     },

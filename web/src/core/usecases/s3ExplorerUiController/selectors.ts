@@ -35,6 +35,7 @@ export type MainView = {
         hints: {
             type: "object" | "key-segment" | "bookmark";
             text: string;
+            s3Uri: S3Uri;
         }[];
         bookmarkStatus:
             | {
@@ -417,7 +418,8 @@ const uriBar = createSelector(
                 s3Uri: undefined,
                 hints: bookmarks.map(bookmark => ({
                     type: "bookmark",
-                    text: stringifyS3Uri(bookmark.s3Uri)
+                    text: stringifyS3Uri(bookmark.s3Uri),
+                    s3Uri: bookmark.s3Uri
                 })),
                 bookmarkStatus: {
                     isBookmarked: false
@@ -463,7 +465,8 @@ const uriBar = createSelector(
                     }
 
                     return text;
-                })()
+                })(),
+                s3Uri: bookmark.s3Uri
             }));
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
@@ -491,7 +494,8 @@ const uriBar = createSelector(
                     }
                     hints.push({
                         type: "object",
-                        text: keyBasename
+                        text: keyBasename,
+                        s3Uri: item.s3Uri
                     });
 
                     break;
@@ -500,7 +504,8 @@ const uriBar = createSelector(
                     {
                         hints.push({
                             type: "key-segment",
-                            text: keyBasename
+                            text: keyBasename,
+                            s3Uri: item.s3Uri
                         });
                     }
                     break;
