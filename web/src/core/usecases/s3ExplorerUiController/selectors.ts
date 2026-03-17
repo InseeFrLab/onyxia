@@ -48,6 +48,15 @@ export type MainView = {
 
     isListing: boolean;
 
+    fullyQualifiedUri:
+        | {
+              isFullyQualifiedUri: false;
+          }
+        | {
+              isFullyQualifiedUri: true;
+              isDataObject: boolean;
+          };
+
     listedPrefix:
         | {
               isErrored: true;
@@ -359,6 +368,43 @@ const listedPrefix = createSelector(
     }
 );
 
+const fullyQualifiedUri = createSelector(
+    listedPrefix_state,
+    (listedPrefix_state): MainView["fullyQualifiedUri"] => {
+        if (listedPrefix_state === undefined) {
+            return { isFullyQualifiedUri: false };
+        }
+
+        const { current } = listedPrefix_state;
+
+        if (current === undefined) {
+            return { isFullyQualifiedUri: false };
+        }
+
+        const [item, ...rest] = current.items;
+
+        if (item === undefined || rest.length !== 0) {
+            return { isFullyQualifiedUri: false };
+        }
+
+        if (!same(current.s3Uri, item.s3Uri)) {
+            return { isFullyQualifiedUri: false };
+        }
+
+        const isFullyQualifiedUri = true as const;
+
+        const s3Uri_str = stringifyS3Uri(item.s3Uri);
+
+        return {
+            isFullyQualifiedUri,
+            isDataObject:
+                s3Uri_str.endsWith(".parquet") ||
+                s3Uri_str.endsWith(".csv") ||
+                s3Uri_str.endsWith(".json")
+        };
+    }
+);
+
 const uriBar = createSelector(
     s3Uri,
     bookmarks,
@@ -492,13 +538,23 @@ const mainView = createSelector(
     bookmarks,
     uploads,
     uriBar,
+    fullyQualifiedUri,
     isListing,
     listedPrefix,
-    (profileSelect, bookmarks, uploads, uriBar, isListing, listedPrefix): MainView => ({
+    (
         profileSelect,
         bookmarks,
         uploads,
         uriBar,
+        fullyQualifiedUri,
+        isListing,
+        listedPrefix
+    ): MainView => ({
+        profileSelect,
+        bookmarks,
+        uploads,
+        uriBar,
+        fullyQualifiedUri,
         isListing,
         listedPrefix
     })
@@ -532,11 +588,18 @@ const doesListedPrefixHaveFinishedUpload = createSelector(
         listedPrefix.items.find(item => item.uploadProgressPercent === 100) !== undefined
 );
 
+const isFullyQualifiedDataFileUri = createSelector(
+    fullyQualifiedUri,
+    fullyQualifiedUri =>
+        fullyQualifiedUri.isFullyQualifiedUri && fullyQualifiedUri.isDataObject
+);
+
 export const privateSelectors = {
     routeParams,
     s3Uri,
     profileName,
     s3Uri_currentlyListing,
     doesListedPrefixHaveFinishedUpload,
-    listedPrefix_state
+    listedPrefix_state,
+    isFullyQualifiedDataFileUri
 };
