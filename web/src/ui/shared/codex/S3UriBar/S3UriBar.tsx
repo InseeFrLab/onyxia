@@ -103,6 +103,13 @@ function getHintTypeIcon(type: HintType): string {
     }
 }
 
+function getIsCursorAtEnd(input: HTMLInputElement): boolean {
+    const selectionStart = input.selectionStart ?? input.value.length;
+    const selectionEnd = input.selectionEnd ?? input.value.length;
+
+    return selectionStart === input.value.length && selectionEnd === input.value.length;
+}
+
 function getDisplayedHints(params: {
     draftS3Uri: string;
     hints: S3UriBarProps["hints"];
@@ -354,6 +361,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const [draftS3Uri, setDraftS3Uri] = useState(canonicalS3Uri);
     const [isEditing, setIsEditing] = useState(isUndefinedPrefixMode);
     const [isFocusedWithin, setIsFocusedWithin] = useState(false);
+    const [isCursorAtEnd, setIsCursorAtEnd] = useState(true);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
     const [hintsPanelPosition, setHintsPanelPosition] = useState({
@@ -375,9 +383,28 @@ export function S3UriBar(props: S3UriBarProps) {
         [draftS3Uri, hints, s3Uri]
     );
     const isHintsPanelVisible =
-        isEditing && isFocusedWithin && (displayedHints.length > 0 || areHintsLoading);
+        isEditing &&
+        isFocusedWithin &&
+        isCursorAtEnd &&
+        (displayedHints.length > 0 || areHintsLoading);
+    const areHintsInteractive = isHintsPanelVisible && displayedHints.length > 0;
 
     const { classes, cx } = useStyles({ isEditing });
+
+    const syncInputCursorState = useCallback(
+        (input: HTMLInputElement | null = inputRef.current) => {
+            if (!input) {
+                return;
+            }
+
+            const nextIsCursorAtEnd = getIsCursorAtEnd(input);
+
+            setIsCursorAtEnd(previous =>
+                previous === nextIsCursorAtEnd ? previous : nextIsCursorAtEnd
+            );
+        },
+        []
+    );
 
     const updateHintsPanelPosition = useCallback(() => {
         const input = inputRef.current;
@@ -386,6 +413,8 @@ export function S3UriBar(props: S3UriBarProps) {
         if (!input || !root) {
             return;
         }
+
+        syncInputCursorState(input);
 
         const rootRect = root.getBoundingClientRect();
         const inputRect = input.getBoundingClientRect();
@@ -439,7 +468,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 ? previous
                 : { left: nextLeft, top: nextTop }
         );
-    }, []);
+    }, [syncInputCursorState]);
 
     useEffect(() => {
         if (isUndefinedPrefixMode && !isEditing) {
@@ -495,13 +524,14 @@ export function S3UriBar(props: S3UriBarProps) {
             input.focus();
             const cursorPosition = input.value.length;
             input.setSelectionRange(cursorPosition, cursorPosition);
+            syncInputCursorState(input);
             updateHintsPanelPosition();
         });
 
         return () => {
             window.cancelAnimationFrame(frameId);
         };
-    }, [isEditing, updateHintsPanelPosition]);
+    }, [isEditing, syncInputCursorState, updateHintsPanelPosition]);
 
     useEffect(() => {
         if (!isHintsPanelVisible) {
@@ -777,7 +807,7 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        if (displayedHints.length > 0 && event.key === "ArrowDown") {
+        if (areHintsInteractive && event.key === "ArrowDown") {
             event.preventDefault();
             setActiveHintIndex(index => {
                 if (index < 0) {
@@ -789,7 +819,7 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        if (displayedHints.length > 0 && event.key === "ArrowUp") {
+        if (areHintsInteractive && event.key === "ArrowUp") {
             event.preventDefault();
             setActiveHintIndex(index => {
                 if (index < 0) {
@@ -801,7 +831,7 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
-        if (event.key === "Enter" && activeHintIndex >= 0) {
+        if (event.key === "Enter" && areHintsInteractive && activeHintIndex >= 0) {
             event.preventDefault();
 
             const activeHint = displayedHints[activeHintIndex];
@@ -817,7 +847,7 @@ export function S3UriBar(props: S3UriBarProps) {
         if (event.key === "Enter" && !isUndefinedPrefixMode) {
             event.preventDefault();
 
-            if (displayedHints.length === 0) {
+            if (!isHintsPanelVisible || displayedHints.length === 0) {
                 exitEditing();
             }
 
@@ -916,11 +946,23 @@ export function S3UriBar(props: S3UriBarProps) {
                             className={classes.input}
                             type="text"
                             value={draftS3Uri}
-                            onChange={event => onInputChange(event.target.value)}
+                            onChange={event => {
+                                syncInputCursorState(event.target);
+                                onInputChange(event.target.value);
+                            }}
                             onKeyDown={onInputKeyDown}
-                            onKeyUp={updateHintsPanelPosition}
-                            onSelect={updateHintsPanelPosition}
-                            onClick={updateHintsPanelPosition}
+                            onKeyUp={event => {
+                                syncInputCursorState(event.currentTarget);
+                                updateHintsPanelPosition();
+                            }}
+                            onSelect={event => {
+                                syncInputCursorState(event.currentTarget);
+                                updateHintsPanelPosition();
+                            }}
+                            onClick={event => {
+                                syncInputCursorState(event.currentTarget);
+                                updateHintsPanelPosition();
+                            }}
                             autoComplete="off"
                             spellCheck={false}
                             aria-autocomplete={isHintsPanelVisible ? "list" : undefined}

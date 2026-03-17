@@ -150,6 +150,8 @@ export type S3UriBarProps = {
     - Input updates are handled by parent via requested prefix changes.
     - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined, isHintSelection: false })`.
     - Hints are selectable (pointer and keyboard).
+    - The hints overlay is shown only when the caret is at the end of the current input value.
+    - Moving the caret away from the end hides the hints overlay and disables keyboard hint navigation until the caret returns to the end.
     - Selecting a hint should call `onS3UriPrefixChange({ s3Uri: hint.s3Uri, isHintSelection: true })`.
     - Hint selection must not rebuild the URI from `hint.text` and the current draft.
     - Manual typing, Enter-to-commit, blur-to-commit, and breadcrumb navigation should call `onS3UriPrefixChange(..., isHintSelection: false)`.
