@@ -62,7 +62,7 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
     );
 }
 
-const useStyles = tss.withName({ S3BookmarksEntryPointList }).create(({ theme }) => ({
+const useStyles = tss.withName({ S3BookmarksEntryPointList }).create(() => ({
     root: {
         display: "grid",
         gap: 24,

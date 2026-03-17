@@ -83,30 +83,14 @@ const s3Scheme = "s3://";
 const maxTailSegments = 3;
 
 function getShortS3UriLabel(s3Uri: S3Uri): string {
-    const keySegments = [...s3Uri.keySegments];
-
-    switch (s3Uri.type) {
-        case "object":
-            keySegments.push(s3Uri.keyBasename);
-            break;
-        case "prefix":
-            if (!s3Uri.isDelimiterTerminated) {
-                keySegments.push(s3Uri.nextKeySegmentPrefix);
-            }
-            break;
-        default:
-            break;
-    }
-
     const fullS3Uri = stringifyS3Uri(s3Uri);
 
-    if (keySegments.length <= maxTailSegments) {
+    if (s3Uri.keySegments.length <= maxTailSegments) {
         return fullS3Uri;
     }
 
-    const tail = keySegments.slice(-maxTailSegments).join(s3Uri.delimiter);
-    const suffix =
-        s3Uri.type === "prefix" && s3Uri.isDelimiterTerminated ? s3Uri.delimiter : "";
+    const tail = s3Uri.keySegments.slice(-maxTailSegments).join(s3Uri.delimiter);
+    const suffix = s3Uri.isDelimiterTerminated ? s3Uri.delimiter : "";
 
     return `${s3Scheme}${s3Uri.bucket}/...${s3Uri.delimiter}${tail}${suffix}`;
 }
