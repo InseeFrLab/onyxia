@@ -101,14 +101,16 @@ export const CreateOrRenameBookmarkDialog = memo(
 
         return (
             <Dialog
-                title="Create Bookmark"
-                subtitle={
-                    state === undefined ? "" : `Name for ${stringifyS3Uri(state.s3Uri)}`
-                }
+                title="Bookmark Name"
+                subtitle={state === undefined ? "" : stringifyS3Uri(state.s3Uri)}
+                classes={{
+                    body: classes.dialogBody
+                }}
                 body={
                     state !== undefined && (
                         <div className={classes.body}>
                             <TextField
+                                className={classes.textField}
                                 inputProps_autoFocus={true}
                                 selectAllTextOnFocus={true}
                                 label="Name"
@@ -185,8 +187,20 @@ CreateOrRenameBookmarkDialog.displayName = symToStr({
 });
 
 const useStyles = tss.withName({ CreateOrRenameBookmarkDialog }).create(({ theme }) => ({
+    dialogBody: {
+        width: "100%"
+    },
     body: {
         minWidth: 320,
+        width: "100%",
         paddingTop: theme.spacing(2)
+        /*
+        "& .MuiTextField-root": {
+            width: "100%"
+        }
+            */
+    },
+    textField: {
+        width: "100%"
     }
 }));
