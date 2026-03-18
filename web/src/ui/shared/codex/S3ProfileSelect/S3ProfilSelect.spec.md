@@ -47,6 +47,8 @@ The component is made of 2 visible blocks:
 ### Dropdown panel
 
 - displayed below the trigger when open,
+- positioned as an overlay above subsequent content,
+- does not push surrounding content or change the component height,
 - contains:
     - the list of available profiles,
     - a final action row to create a new profile.
