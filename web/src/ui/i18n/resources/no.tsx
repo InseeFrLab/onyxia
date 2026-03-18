@@ -191,6 +191,13 @@ export const translations: Translations<"no"> = {
         "failed body": ({ bucket }) => `Kunne ikke opprette ${bucket}.`,
         ok: "Ok"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Bokmerkenavn",
+        "bookmarkName textField label": "Navn",
+        "bookmarkName textField empty error": "Bokmerkenavnet kan ikke være tomt",
+        cancel: "Avbryt",
+        ok: "Ok"
+    },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":

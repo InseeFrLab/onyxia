@@ -194,6 +194,13 @@ export const translations: Translations<"nl"> = {
         "failed body": ({ bucket }) => `Aanmaken van ${bucket} is mislukt.`,
         ok: "Ok"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Bladwijzernaam",
+        "bookmarkName textField label": "Naam",
+        "bookmarkName textField empty error": "De bladwijzernaam mag niet leeg zijn",
+        cancel: "Annuleren",
+        ok: "Ok"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

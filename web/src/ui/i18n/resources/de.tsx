@@ -198,6 +198,14 @@ export const translations: Translations<"de"> = {
         "failed body": ({ bucket }) => `Bucket ${bucket} konnte nicht erstellt werden.`,
         ok: "Ok"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Name des Lesezeichens",
+        "bookmarkName textField label": "Name",
+        "bookmarkName textField empty error":
+            "Der Name des Lesezeichens darf nicht leer sein",
+        cancel: "Abbrechen",
+        ok: "Ok"
+    },
     MySecrets: {
         "page title - my secrets": "Meine Geheimnisse",
         "what this page is used for - my secrets":

@@ -171,6 +171,13 @@ export const translations: Translations<"zh-CN"> = {
         "failed body": ({ bucket }) => `创建 ${bucket} 失败。`,
         ok: "确定"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "书签名称",
+        "bookmarkName textField label": "名称",
+        "bookmarkName textField empty error": "书签名称不能为空",
+        cancel: "取消",
+        ok: "确定"
+    },
     MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
