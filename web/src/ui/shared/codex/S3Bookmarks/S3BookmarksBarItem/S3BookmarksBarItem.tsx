@@ -141,41 +141,17 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
             underline="none"
             aria-current={isActive ? "page" : undefined}
         >
-            {callbacks !== undefined && (
-                <span
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Remove bookmark"
-                    className={cx(
-                        classes.pinButton,
-                        variant === "entryPoint" && classes.pinButtonEntryPoint
-                    )}
-                    onClick={event => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        callbacks.onDelete();
-                    }}
-                    onKeyDown={event => {
-                        if (event.key !== "Enter" && event.key !== " ") {
-                            return;
-                        }
-                        event.preventDefault();
-                        event.stopPropagation();
-                        callbacks.onDelete();
-                    }}
-                >
-                    <span
-                        className={`material-symbols-outlined ${classes.pinIcon} pinIconDefault`}
-                    >
-                        keep
-                    </span>
-                    <span
-                        className={`material-symbols-outlined ${classes.pinIcon} pinIconHover`}
-                    >
-                        keep_off
-                    </span>
+            <span
+                className={cx(
+                    classes.pinIconWrapper,
+                    variant === "entryPoint" && classes.pinIconWrapperEntryPoint
+                )}
+                aria-hidden="true"
+            >
+                <span className={`material-symbols-outlined ${classes.pinIcon}`}>
+                    keep
                 </span>
-            )}
+            </span>
             <span
                 className={cx(
                     classes.labelWrapper,
@@ -305,15 +281,28 @@ const useStyles = tss
     .withName({ S3BookmarkItem })
     .withParams<{ isActive: boolean; isDeletable: boolean }>()
     .create(({ theme, isActive, isDeletable }) => {
+        const surfaces = theme.colors.useCases.surfaces as unknown as Partial<
+            Record<"surfaceFocus1" | "surfaceFocus2", string>
+        >;
+        const focusSurface1 =
+            surfaces.surfaceFocus1 ?? theme.colors.useCases.surfaces.surface1;
+        const focusSurface2 =
+            surfaces.surfaceFocus2 ?? theme.colors.useCases.surfaces.surface2;
+        const actionHoverPrimary =
+            (
+                theme.colors.useCases.buttons as unknown as Partial<
+                    Record<"actionHoverPrimary", string>
+                >
+            ).actionHoverPrimary ?? theme.colors.useCases.buttons.actionActive;
         const baseBackground = isDeletable
-            ? theme.colors.palette.focus.mainAlpha10
+            ? focusSurface1
             : theme.colors.useCases.surfaces.surface1;
         const hoverBackground = isDeletable
-            ? theme.colors.palette.focus.mainAlpha20
+            ? focusSurface2
             : theme.colors.useCases.surfaces.surface2;
         const activeBackground = isDeletable
-            ? theme.colors.palette.focus.mainAlpha20
-            : theme.colors.useCases.surfaces.surface2;
+            ? focusSurface1
+            : theme.colors.useCases.surfaces.surface1;
         const labelStyle = theme.typography.variants["label 1"].style;
         const label2Style = theme.typography.variants["label 2"].style;
         const uriStyle = theme.typography.variants["body 1"].style;
@@ -325,6 +314,10 @@ const useStyles = tss
                 backgroundColor: isActive ? activeBackground : baseBackground,
                 color: theme.colors.useCases.typography.textPrimary,
                 boxSizing: "border-box",
+                borderRight: "2px solid transparent",
+                borderBottom: "2px solid transparent",
+                borderRightColor: isActive ? actionHoverPrimary : "transparent",
+                borderBottomColor: isActive ? actionHoverPrimary : "transparent",
                 textDecoration: "none",
                 transition: "background-color 120ms ease",
                 position: "relative",
@@ -354,11 +347,8 @@ const useStyles = tss
                 width: "100%",
                 minWidth: 0
             },
-            pinButton: {
-                border: "none",
-                background: "transparent",
+            pinIconWrapper: {
                 color: "inherit",
-                cursor: "pointer",
                 width: 24,
                 height: 24,
                 borderRadius: 8,
@@ -366,21 +356,9 @@ const useStyles = tss
                 alignItems: "center",
                 justifyContent: "center",
                 padding: 0,
-                flexShrink: 0,
-                "&:hover": {
-                    backgroundColor: theme.colors.palette.focus.mainAlpha20
-                },
-                "& .pinIconHover": {
-                    display: "none"
-                },
-                "&:hover .pinIconDefault": {
-                    display: "none"
-                },
-                "&:hover .pinIconHover": {
-                    display: "inline-flex"
-                }
+                flexShrink: 0
             },
-            pinButtonEntryPoint: {
+            pinIconWrapperEntryPoint: {
                 position: "absolute",
                 top: 24,
                 right: 24
@@ -492,7 +470,7 @@ const useStyles = tss
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: theme.spacing(2),
+                gap: theme.spacing(3),
                 minWidth: 0
             },
             tooltipLabel: {
@@ -507,6 +485,7 @@ const useStyles = tss
                 display: "flex",
                 alignItems: "center",
                 gap: theme.spacing(1),
+                marginLeft: theme.spacing(4),
                 flexShrink: 0
             },
             tooltipUrl: {
