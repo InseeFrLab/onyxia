@@ -118,71 +118,90 @@ function PageComponent() {
 
                 return (
                     <>
-                        <S3ProfileSelect
-                            availableProfileNames={
-                                mainView.profileSelect.availableProfileNames
-                            }
-                            selectedProfile={mainView.profileSelect.selectedProfile}
-                            onSelectedProfileChange={
-                                s3ExplorerUiController.updateSelectedS3Profile
-                            }
-                            onEditProfile={() => {
-                                assert(mainView.profileSelect !== undefined);
-                                dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
-                                    profileName_toUpdate:
-                                        mainView.profileSelect.selectedProfile.name
-                                });
-                            }}
-                            onCreateNewProfile={() => {
-                                dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
-                                    profileName_toUpdate: undefined
-                                });
-                            }}
-                        />
-                        <S3UriBar
-                            s3Uri={mainView.uriBar.s3Uri}
-                            hints={mainView.uriBar.hints}
-                            areHintsLoading={mainView.isListing}
-                            onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
-                                s3ExplorerUiController.listPrefix({
-                                    s3Uri,
-                                    debounce:
-                                        !isHintSelection && !s3Uri?.isDelimiterTerminated
-                                })
-                            }
-                            onToggleBookmark={(() => {
-                                if (
-                                    mainView.uriBar.bookmarkStatus.isBookmarked &&
-                                    mainView.uriBar.bookmarkStatus.isReadonly
-                                ) {
-                                    return undefined;
+                        <div
+                            className={css({
+                                display: "flex",
+                                alignItems: "center",
+                                gap: theme.spacing(3),
+                                width: "100%"
+                            })}
+                        >
+                            <S3ProfileSelect
+                                className={css({
+                                    width: "fit-content",
+                                    minWidth: 180,
+                                    maxWidth: 360
+                                })}
+                                availableProfileNames={
+                                    mainView.profileSelect.availableProfileNames
                                 }
-
-                                return ({ s3Uri }) => {
-                                    const getDisplayName = () => {
-                                        const dResult = new Deferred<
-                                            | { doProceed: true; displayName: string }
-                                            | { doProceed: false }
-                                        >();
-
-                                        dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
-                                            {
-                                                s3Uri,
-                                                currentDisplayName: undefined,
-                                                resolveDoProceed: dResult.resolve
-                                            }
-                                        );
-
-                                        return dResult.pr;
-                                    };
-
-                                    s3ExplorerUiController.toggleIsS3UriBookmarked({
-                                        getDisplayName
+                                selectedProfile={mainView.profileSelect.selectedProfile}
+                                onSelectedProfileChange={
+                                    s3ExplorerUiController.updateSelectedS3Profile
+                                }
+                                onEditProfile={() => {
+                                    assert(mainView.profileSelect !== undefined);
+                                    dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
+                                        profileName_toUpdate:
+                                            mainView.profileSelect.selectedProfile.name
                                     });
-                                };
-                            })()}
-                            isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
-                        />
+                                }}
+                                onCreateNewProfile={() => {
+                                    dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
+                                        profileName_toUpdate: undefined
+                                    });
+                                }}
+                            />
+                            <S3UriBar
+                                className={css({
+                                    flex: 1,
+                                    minWidth: 0
+                                })}
+                                s3Uri={mainView.uriBar.s3Uri}
+                                hints={mainView.uriBar.hints}
+                                areHintsLoading={mainView.isListing}
+                                onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
+                                    s3ExplorerUiController.listPrefix({
+                                        s3Uri,
+                                        debounce:
+                                            !isHintSelection &&
+                                            !s3Uri?.isDelimiterTerminated
+                                    })
+                                }
+                                onToggleBookmark={(() => {
+                                    if (
+                                        mainView.uriBar.bookmarkStatus.isBookmarked &&
+                                        mainView.uriBar.bookmarkStatus.isReadonly
+                                    ) {
+                                        return undefined;
+                                    }
+
+                                    return ({ s3Uri }) => {
+                                        const getDisplayName = () => {
+                                            const dResult = new Deferred<
+                                                | { doProceed: true; displayName: string }
+                                                | { doProceed: false }
+                                            >();
+
+                                            dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                                {
+                                                    s3Uri,
+                                                    currentDisplayName: undefined,
+                                                    resolveDoProceed: dResult.resolve
+                                                }
+                                            );
+
+                                            return dResult.pr;
+                                        };
+
+                                        s3ExplorerUiController.toggleIsS3UriBookmarked({
+                                            getDisplayName
+                                        });
+                                    };
+                                })()}
+                                isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
+                            />
+                        </div>
                         <S3BookmarksBar
                             className={css({ marginTop: theme.spacing(3) })}
                             items={mainView.bookmarks.items}
