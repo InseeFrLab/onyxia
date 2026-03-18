@@ -15,10 +15,6 @@ type S3ProfileSelectProps = {
     className?: string;
     /** Assert at least one profile */
     availableProfileNames: string[];
-    /**
-     * Optional list of readonly profiles (no UI indicator).
-     */
-    readonlyProfileNames?: string[];
     selectedProfile: {
         /** Assert match one of the  availableProfiles */
         name: string;
