@@ -1567,7 +1567,7 @@ const useStyles = tss
                 paddingRight: "10px",
                 borderRadius: "12px",
                 boxSizing: "border-box",
-                backgroundColor: theme.colors.useCases.surfaces.background,
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
                 boxShadow: `inset 0 0 0 1px ${theme.colors.useCases.surfaces.surface2}`
             },
             crumbItem: {
@@ -1590,7 +1590,7 @@ const useStyles = tss
             },
             segmentGroupTagKey: {
                 color: theme.colors.useCases.typography.textPrimary,
-                backgroundColor: theme.colors.useCases.surfaces.background
+                backgroundColor: "transparent"
             },
             keyEditButton: {
                 margin: 0,
@@ -1625,18 +1625,18 @@ const useStyles = tss
                 cursor: "pointer",
                 textDecoration: "none",
                 "&:hover": {
-                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                    backgroundColor: theme.colors.useCases.surfaces.surface3
                 }
             },
             segmentRoot: {
                 fontWeight: 600,
                 borderColor: theme.colors.useCases.surfaces.surface2,
-                backgroundColor: theme.colors.useCases.surfaces.background
+                backgroundColor: theme.colors.useCases.surfaces.surface2
             },
             segmentBucket: {
                 fontWeight: 700,
                 borderColor: theme.colors.useCases.surfaces.surface2,
-                backgroundColor: theme.colors.useCases.surfaces.background,
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
                 paddingRight: "14px"
             },
             segmentPrefix: {
