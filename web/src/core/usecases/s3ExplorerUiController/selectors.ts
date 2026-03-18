@@ -18,9 +18,13 @@ export type MainView = {
     // NOTE: Undefined is when no profile (user should be prompted to create one)
     profileSelect:
         | {
-              value: string;
-              options: string[];
-              isEditable: boolean;
+              availableProfileNames: string[];
+              selectedProfile: {
+                  /** Assert match one of the  availableProfiles */
+                  name: string;
+                  url: string;
+                  isReadonly: boolean;
+              };
           }
         | undefined;
 
@@ -156,10 +160,12 @@ const profileSelect = createSelector(
         }
 
         return {
-            value: ambientS3Profile.profileName,
-            options: s3Profiles.map(s3Profile => s3Profile.profileName),
-            isEditable:
-                ambientS3Profile.origin === "created by user (or group project member)"
+            selectedProfile: {
+                name: ambientS3Profile.profileName,
+                url: ambientS3Profile.paramsOfCreateS3Client.url,
+                isReadonly: ambientS3Profile.origin === "defined in region"
+            },
+            availableProfileNames: s3Profiles.map(s3Profile => s3Profile.profileName)
         };
     }
 );

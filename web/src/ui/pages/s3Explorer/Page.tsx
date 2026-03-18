@@ -16,6 +16,7 @@ import { useStyles } from "tss";
 import { S3BookmarksBar } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import { Deferred } from "evt/tools/Deferred";
+import { S3ProfileSelect } from "ui/shared/codex/S3ProfileSelect";
 
 const Page = withLoader({
     loader,
@@ -117,6 +118,27 @@ function PageComponent() {
 
                 return (
                     <>
+                        <S3ProfileSelect
+                            availableProfileNames={
+                                mainView.profileSelect.availableProfileNames
+                            }
+                            selectedProfile={mainView.profileSelect.selectedProfile}
+                            onSelectedProfileChange={
+                                s3ExplorerUiController.updateSelectedS3Profile
+                            }
+                            onEditProfile={() => {
+                                assert(mainView.profileSelect !== undefined);
+                                dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
+                                    profileName_toUpdate:
+                                        mainView.profileSelect.selectedProfile.name
+                                });
+                            }}
+                            onCreateNewProfile={() => {
+                                dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
+                                    profileName_toUpdate: undefined
+                                });
+                            }}
+                        />
                         <S3UriBar
                             s3Uri={mainView.uriBar.s3Uri}
                             hints={mainView.uriBar.hints}

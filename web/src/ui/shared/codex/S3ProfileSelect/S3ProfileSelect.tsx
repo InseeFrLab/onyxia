@@ -221,9 +221,6 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
 
     return {
         root: {
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(1.5),
             width: "100%",
             position: "relative"
         },
@@ -299,13 +296,18 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             }
         },
         dropdown: {
+            position: "absolute",
+            top: `calc(100% + ${theme.spacing(1.5)}px)`,
+            left: 0,
+            right: 0,
+            zIndex: theme.muiTheme.zIndex.modal,
             display: "flex",
             flexDirection: "column",
             gap: theme.spacing(1.5),
             padding: theme.spacing(1.5),
             borderRadius: 12,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
-            boxShadow: theme.shadows[2],
+            boxShadow: theme.shadows[3],
             boxSizing: "border-box"
         },
         divider: {
