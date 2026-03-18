@@ -20,6 +20,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import s3UriBucketSvgUrl from "ui/assets/svg/S3UriBucket.svg";
 import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
+import { assert } from "tsafe";
 
 export type S3UriBarProps = {
     className?: string;
@@ -35,7 +36,7 @@ export type S3UriBarProps = {
     }[];
     areHintsLoading: boolean;
     isBookmarked: boolean;
-    onToggleBookmark?: () => void;
+    onToggleBookmark?: (props: { s3Uri: S3Uri }) => void;
 };
 
 type NavigationCrumb = {
@@ -1415,7 +1416,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                     size="small"
                                     onClick={event => {
                                         event.stopPropagation();
-                                        onToggleBookmark?.();
+                                        assert(s3Uri !== undefined);
+                                        onToggleBookmark?.({ s3Uri });
                                     }}
                                     disabled={!onToggleBookmark}
                                     className={cx(

@@ -15,6 +15,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useStyles } from "tss";
 import { S3BookmarksBar } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
 import { stringifyS3Uri } from "core/tools/S3Uri";
+import { Deferred } from "evt/tools/Deferred";
 
 const Page = withLoader({
     loader,
@@ -70,6 +71,7 @@ function PageComponent() {
         (): S3ExplorerDialogsProps => ({
             evtConfirmBucketCreationAttemptDialogOpen: new Evt(),
             evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
+            evtCreateOrRenameBookmarkDialogOpen: new Evt(),
             evtCreateOrUpdateProfileDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
@@ -126,12 +128,36 @@ function PageComponent() {
                                         !isHintSelection && !s3Uri?.isDelimiterTerminated
                                 })
                             }
-                            onToggleBookmark={
-                                mainView.uriBar.bookmarkStatus.isBookmarked &&
-                                mainView.uriBar.bookmarkStatus.isReadonly
-                                    ? undefined
-                                    : s3ExplorerUiController.toggleIsS3UriBookmarked
-                            }
+                            onToggleBookmark={(() => {
+                                if (
+                                    mainView.uriBar.bookmarkStatus.isBookmarked &&
+                                    mainView.uriBar.bookmarkStatus.isReadonly
+                                ) {
+                                    return undefined;
+                                }
+
+                                return ({ s3Uri }) => {
+                                    const getDisplayName = () => {
+                                        const dResult = new Deferred<
+                                            | { doProceed: true; displayName: string }
+                                            | { doProceed: false }
+                                        >();
+
+                                        dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                            {
+                                                s3Uri,
+                                                resolveDoProceed: dResult.resolve
+                                            }
+                                        );
+
+                                        return dResult.pr;
+                                    };
+
+                                    s3ExplorerUiController.toggleIsS3UriBookmarked({
+                                        getDisplayName
+                                    });
+                                };
+                            })()}
                             isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
                         />
                         <S3BookmarksBar
@@ -150,8 +176,27 @@ function PageComponent() {
                                 }).link;
                             }}
                             onDelete={s3ExplorerUiController.deleteBookmark}
-                            onRename={() => {
-                                alert("TODO");
+                            onRename={async ({ s3Uri }) => {
+                                const dResult = new Deferred<
+                                    | { doProceed: true; displayName: string }
+                                    | { doProceed: false }
+                                >();
+
+                                dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
+                                    s3Uri,
+                                    resolveDoProceed: dResult.resolve
+                                });
+
+                                const result = await dResult.pr;
+
+                                if (!result.doProceed) {
+                                    return;
+                                }
+
+                                s3ExplorerUiController.updateBookmarkDisplayName({
+                                    s3Uri,
+                                    displayName: result.displayName
+                                });
                             }}
                         />
                         {mainView.fullyQualifiedUri.isFullyQualifiedUri &&

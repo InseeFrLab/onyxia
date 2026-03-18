@@ -174,16 +174,46 @@ export const thunks = {
                 isRunning = false;
             };
     })(),
+    updateBookmarkDisplayName:
+        (params: { s3Uri: S3Uri; displayName: string }) =>
+        async (...args) => {
+            const { s3Uri, displayName } = params;
+
+            const [dispatch, getState] = args;
+
+            const s3Profile = s3ProfileManagement.selectors.ambientS3Profile(getState());
+
+            assert(s3Profile !== undefined);
+
+            await dispatch(
+                s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
+                    profileName: s3Profile.profileName,
+                    s3Uri,
+                    action: {
+                        type: "create or update",
+                        displayName
+                    }
+                })
+            );
+        },
     toggleIsS3UriBookmarked: (() => {
         let isRunning = false;
 
-        return () =>
+        return (params: {
+                getDisplayName: (params: {
+                    s3Uri: S3Uri;
+                }) => Promise<
+                    { doProceed: true; displayName: string } | { doProceed: false }
+                >;
+            }) =>
             async (...args) => {
                 if (isRunning) {
                     return;
                 }
 
                 isRunning = true;
+
+                const { getDisplayName } = params;
 
                 const [dispatch, getState] = args;
 
@@ -198,18 +228,31 @@ export const thunks = {
                     same(bookmark.s3Uri, s3Uri)
                 );
 
+                let action:
+                    | { type: "create or update"; displayName: string | undefined }
+                    | { type: "delete" };
+
+                if (isBookmarked) {
+                    action = { type: "delete" };
+                } else {
+                    const resultOfGetDisplayName = await getDisplayName({ s3Uri });
+
+                    if (!resultOfGetDisplayName.doProceed) {
+                        isRunning = false;
+                        return;
+                    }
+
+                    action = {
+                        type: "create or update",
+                        displayName: resultOfGetDisplayName.displayName
+                    };
+                }
+
                 await dispatch(
                     s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
                         profileName: s3Profile.profileName,
                         s3Uri,
-                        action: isBookmarked
-                            ? {
-                                  type: "delete"
-                              }
-                            : {
-                                  type: "create or update",
-                                  displayName: undefined
-                              }
+                        action
                     })
                 );
 
