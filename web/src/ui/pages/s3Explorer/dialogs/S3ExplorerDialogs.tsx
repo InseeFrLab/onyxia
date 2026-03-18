@@ -11,6 +11,10 @@ import {
     type ConfirmBucketCreationAttemptDialogProps
 } from "./ConfirmBucketCreationAttemptDialog";
 import {
+    CreateOrRenameBookmarkDialog,
+    type CreateOrRenameBookmarkDialogProps
+} from "./CreateOrRenameBookmarkDialog";
+import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
@@ -19,6 +23,7 @@ export type S3ExplorerDialogsProps = {
     evtConfirmCustomS3ConfigDeletionDialogOpen: ConfirmCustomS3ConfigDeletionDialogProps["evtOpen"];
     evtCreateOrUpdateProfileDialogOpen: CreateOrUpdateProfileDialogProps["evtOpen"];
     evtConfirmBucketCreationAttemptDialogOpen: ConfirmBucketCreationAttemptDialogProps["evtOpen"];
+    evtCreateOrRenameBookmarkDialogOpen: CreateOrRenameBookmarkDialogProps["evtOpen"];
     evtMaybeAcknowledgeConfigVolatilityDialogOpen: MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"];
 };
 
@@ -27,6 +32,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
         evtConfirmCustomS3ConfigDeletionDialogOpen,
         evtCreateOrUpdateProfileDialogOpen,
         evtConfirmBucketCreationAttemptDialogOpen,
+        evtCreateOrRenameBookmarkDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = props;
 
@@ -39,6 +45,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
             <ConfirmBucketCreationAttemptDialog
                 evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
             />
+            <CreateOrRenameBookmarkDialog evtOpen={evtCreateOrRenameBookmarkDialogOpen} />
             <MaybeAcknowledgeConfigVolatilityDialog
                 evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
             />
