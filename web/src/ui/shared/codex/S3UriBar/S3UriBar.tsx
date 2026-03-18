@@ -56,6 +56,7 @@ const longPressDelayMs = 200;
 const hintsPanelHorizontalEdgePaddingPx = 8;
 const hintsPanelVerticalOffsetPx = 6;
 const hintsPanelFallbackWidthPx = 280;
+const defaultDraftS3Uri = "s3://";
 type CrumbKind = DisplayCrumb["kind"];
 type HintType = S3UriBarProps["hints"][number]["type"];
 type DisplayedHint =
@@ -260,6 +261,10 @@ function tryParseS3Uri(params: { s3Uri: string; delimiter: string }): S3Uri | un
     }
 }
 
+function getCanonicalS3UriValue(s3Uri: S3Uri | undefined): string {
+    return s3Uri === undefined ? defaultDraftS3Uri : stringifyS3Uri(s3Uri);
+}
+
 function getBreadcrumbs(params: { s3Uri: S3Uri }): NavigationCrumb[] {
     const { s3Uri } = params;
     const { bucket, delimiter } = s3Uri;
@@ -314,7 +319,6 @@ export function S3UriBar(props: S3UriBarProps) {
         onToggleBookmark
     } = props;
 
-    const defaultDraftS3Uri = "s3://";
     const normalizedS3Uri = useMemo<S3Uri>(() => {
         if (s3Uri !== undefined) {
             return s3Uri;
@@ -328,11 +332,7 @@ export function S3UriBar(props: S3UriBarProps) {
         };
     }, [s3Uri]);
     const isUndefinedPrefixMode = s3Uri === undefined;
-    const canonicalS3Uri = useMemo(
-        () =>
-            isUndefinedPrefixMode ? defaultDraftS3Uri : stringifyS3Uri(normalizedS3Uri),
-        [isUndefinedPrefixMode, normalizedS3Uri]
-    );
+    const canonicalS3Uri = useMemo(() => getCanonicalS3UriValue(s3Uri), [s3Uri]);
     const crumbs = useMemo(
         () => (isUndefinedPrefixMode ? [] : getBreadcrumbs({ s3Uri: normalizedS3Uri })),
         [isUndefinedPrefixMode, normalizedS3Uri]
@@ -350,6 +350,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const wasEditingRef = useRef(false);
     const ignoreNextBlurRef = useRef(false);
     const preserveNextDraftResetRef = useRef(false);
+    const lastRequestedCanonicalS3UriRef = useRef(canonicalS3Uri);
     const pendingInputSelectionRef = useRef<
         | {
               start: number;
@@ -491,11 +492,19 @@ export function S3UriBar(props: S3UriBarProps) {
 
         if (preserveNextDraftResetRef.current) {
             preserveNextDraftResetRef.current = false;
-        } else if (!isEditing || !wasEditingRef.current) {
-            setDraftS3Uri(canonicalS3Uri);
+        } else {
+            const shouldSyncDraft =
+                !isEditing ||
+                !wasEditingRef.current ||
+                lastRequestedCanonicalS3UriRef.current !== canonicalS3Uri;
+
+            if (shouldSyncDraft) {
+                setDraftS3Uri(canonicalS3Uri);
+            }
         }
 
         wasEditingRef.current = isEditing;
+        lastRequestedCanonicalS3UriRef.current = canonicalS3Uri;
     }, [canonicalS3Uri, isEditing]);
 
     useEffect(() => {
@@ -745,6 +754,7 @@ export function S3UriBar(props: S3UriBarProps) {
         s3Uri: S3Uri | undefined;
         isHintSelection: boolean;
     }) => {
+        lastRequestedCanonicalS3UriRef.current = getCanonicalS3UriValue(params.s3Uri);
         onS3UriPrefixChange(params);
     };
 
@@ -754,7 +764,7 @@ export function S3UriBar(props: S3UriBarProps) {
     }) => {
         const { nextDraftS3Uri, isHintSelection } = params;
 
-        onS3UriPrefixChange({
+        emitS3UriChange({
             s3Uri: tryParseS3Uri({
                 s3Uri: nextDraftS3Uri.trim(),
                 delimiter: normalizedS3Uri.delimiter

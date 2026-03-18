@@ -149,6 +149,7 @@ export type S3UriBarProps = {
     - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.
+    - If the parent updates `s3Uri` externally while edit mode is open, the input draft must resync to that external value.
     - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined, isHintSelection: false })`.
     - Hints are selectable (pointer and keyboard).
     - The hints overlay is shown only when the caret is at the end of the current input value.
