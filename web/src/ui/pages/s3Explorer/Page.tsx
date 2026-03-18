@@ -1,4 +1,5 @@
-import { routes, getRoute } from "ui/routes";
+import { useEffect } from "react";
+import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe/assert";
 import { withLoader } from "ui/tools/withLoader";
@@ -16,25 +17,55 @@ import { S3BookmarksBar } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 
 const Page = withLoader({
-    loader: async () => {
-        await enforceLogin();
-
-        const core = await getCore();
-
-        const route = getRoute();
-        assert(routeGroup.has(route));
-
-        const { routeParams_toSet } = core.functions.s3ExplorerUiController.load({
-            routeParams: route.params
-        });
-
-        routes.s3Explorer(routeParams_toSet).replace();
-    },
+    loader,
     Component: PageComponent
 });
 export default Page;
 
+async function loader() {
+    await enforceLogin();
+
+    const core = await getCore();
+
+    const route = getRoute();
+    assert(routeGroup.has(route));
+
+    const { routeParams_toSet } = core.functions.s3ExplorerUiController.load({
+        routeParams: route.params
+    });
+
+    routes.s3Explorer(routeParams_toSet).replace();
+}
+
+function useRouteSync() {
+    const {
+        functions: { s3ExplorerUiController },
+        evts: { evtS3ExplorerUiController }
+    } = getCoreSync();
+
+    useEffect(
+        () =>
+            session.listen(route => {
+                if (routeGroup.has(route)) {
+                    s3ExplorerUiController.notifyRouteParamsExternallyUpdated({
+                        routeParams: route.params
+                    });
+                }
+            }),
+        []
+    );
+
+    useEvt(ctx => {
+        evtS3ExplorerUiController.pipe(ctx).attach(
+            action => action.action === "updateRoute",
+            ({ routeParams, method }) => routes.s3Explorer(routeParams)[method]()
+        );
+    }, []);
+}
+
 function PageComponent() {
+    useRouteSync();
+
     const dialogProps = useConst(
         (): S3ExplorerDialogsProps => ({
             evtConfirmBucketCreationAttemptDialogOpen: new Evt(),
@@ -50,20 +81,14 @@ function PageComponent() {
     } = getCoreSync();
 
     useEvt(ctx => {
-        evtS3ExplorerUiController
-            .pipe(ctx)
-            .attach(
-                action => action.action === "updateRoute",
-                ({ routeParams, method }) => routes.s3Explorer(routeParams)[method]()
-            )
-            .attach(
-                data => data.action === "ask confirmation for bucket creation attempt",
-                ({ bucket, createBucket }) =>
-                    dialogProps.evtConfirmBucketCreationAttemptDialogOpen.post({
-                        bucket,
-                        createBucket
-                    })
-            );
+        evtS3ExplorerUiController.pipe(ctx).attach(
+            data => data.action === "ask confirmation for bucket creation attempt",
+            ({ bucket, createBucket }) =>
+                dialogProps.evtConfirmBucketCreationAttemptDialogOpen.post({
+                    bucket,
+                    createBucket
+                })
+        );
     }, []);
 
     const mainView = useCoreState("s3ExplorerUiController", "mainView");
