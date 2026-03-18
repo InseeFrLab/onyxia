@@ -31,7 +31,7 @@ export type CreateOrRenameBookmarkDialogProps = {
 function getDefaultDisplayName(props: { s3Uri: S3Uri }): string {
     const { s3Uri } = props;
 
-    if (s3Uri.keySegments.length <= 2) {
+    if (s3Uri.keySegments.length <= 1) {
         return stringifyS3Uri(s3Uri).slice("s3://".length);
     }
 
