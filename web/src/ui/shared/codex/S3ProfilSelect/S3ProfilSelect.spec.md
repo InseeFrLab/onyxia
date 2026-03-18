@@ -16,7 +16,7 @@ type S3ProfileSelectProps = {
     /** Assert at least one profile */
     availableProfileNames: string[];
     /**
-     * Optional list of readonly profiles to display the indicator in the dropdown.
+     * Optional list of readonly profiles (no UI indicator).
      */
     readonlyProfileNames?: string[];
     selectedProfile: {
@@ -43,15 +43,15 @@ The component is made of 2 visible blocks:
 
 - displays the selected profile name,
 - displays a chevron icon indicating the dropdown state,
-- displays an edit button on the right,
+- displays a parameters button on the right,
 - clicking the trigger opens / closes the dropdown,
-- clicking the edit button does not open the dropdown.
+- clicking the parameters button does not open the dropdown.
+- hover uses `surface3` and adds a drop-shadow (`theme.shadows[4]`, same as S3UriBar) when hovering the trigger area.
 
 ### Dropdown panel
 
 - displayed below the trigger when open,
 - contains:
-    - the selected profile URL at the top,
     - the list of available profiles,
     - a final action row to create a new profile.
 
@@ -69,13 +69,13 @@ Expected keyboard behavior:
 - `Escape`: close dropdown,
 - `Tab`: move focus normally.
 
-### Edit button behavior
+### Parameters button behavior
 
-The edit button:
+The parameters button:
 
 - is always visible,
-- is disabled when the selected profile is readonly,
-- calls `props.onEditProfile()` when clicked,
+- is always enabled (readonly does not disable it),
+- calls `props.onEditProfile()` when clicked (opens a modal to view S3 profile details and edit some fields),
 - must not toggle the dropdown.
 
 ### Profile item behavior
@@ -113,23 +113,16 @@ Style:
 - single line,
 - ellipsis when too long.
 
-### URL header
+### URL header (cancelled)
 
-At the top of the dropdown, display the url of the selected profile.
-
-Style:
-
-- secondary / less emphasized typography than the profile names
-- single line,
-- ellipsis when too long.
-- add an icon "swapvert" on the right of this row.
+Do not display the selected profile URL in the dropdown.
+The swap icon is also removed.
 
 ### Dropdown list items
 
 Each profile item displays:
 
 - the profile name,
-- an optional readonly indicator,
 - a selected indicator when active.
 
 ### Selected item
@@ -138,18 +131,10 @@ The currently selected profile item must be visually highlighted.
 
 It also displays a check icon on the right.
 
-### Readonly indicator
+### Readonly indicator (cancelled)
 
-Readonly profiles display a dedicated icon next to the check area, as shown : `AdminPanelSettings`
-
-This icon is only informative.
-It is not clickable.
-
-Recommended tooltip: "Read-only profile"
-
-### Non-readonly items
-
-No readonly icon is shown.
+Do not display any readonly icon.
+There is no visual difference between custom profiles and others.
 
 ### Create new profile row
 
@@ -168,13 +153,14 @@ This row behaves like a menu action, not like a list item selection.
 - default color surface : `theme.colors.useCases.surfaces.surface1`
 - hover color surface : `theme.colors.useCases.surfaces.surface2`
 - Active color surface : `theme.colors.palette.focus.mainAlpha10`
-- color background for edit button and "read only" icon background : `theme.colors.useCases.surfaces.surface3`
+- hover on Active color surface : `theme.colors.palette.focus.mainAlpha20`
+- color background for edit button : `theme.colors.useCases.surfaces.surface2`
+- hover background for parameters button : `theme.colors.useCases.surfaces.surface3`
 
 ### Typography spec :
 
 - S3 Profile Name : `theme.typography.variants["label 1"]`
 - Create new profile label : `theme.typography.variants["label 1"]`
-- Current S3 Profile URL : `theme.typography.variants["caption"]`
 
 The radius of the component is `12px`
 When the dop down is open also use drop-shadow: `theme.shadows[3]`

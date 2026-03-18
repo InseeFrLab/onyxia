@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
-import { Tooltip } from "onyxia-ui/Tooltip";
 import { getIconUrlByName } from "lazy-icons";
 import { useClickAway } from "powerhooks/useClickAway";
 
@@ -32,7 +31,6 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
     const {
         className,
         availableProfileNames,
-        readonlyProfileNames,
         selectedProfile,
         onSelectedProfileChange,
         onEditProfile,
@@ -41,6 +39,7 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
 
     const { classes, cx } = useStyles();
     const [isOpen, setIsOpen] = useState(false);
+    const [isTriggerHover, setIsTriggerHover] = useState(false);
     const rootRef = useRef<HTMLDivElement | null>(null);
     const listRef = useRef<HTMLDivElement | null>(null);
     const focusFirstOnOpenRef = useRef(false);
@@ -112,7 +111,12 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
 
     return (
         <div className={cx(classes.root, className)} ref={rootRef}>
-            <div className={classes.triggerRow}>
+            <div
+                className={cx(
+                    classes.triggerRow,
+                    isTriggerHover && classes.triggerRowHover
+                )}
+            >
                 <div
                     className={classes.trigger}
                     role="button"
@@ -121,18 +125,10 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                     aria-expanded={isOpen}
                     onClick={toggleDropdown}
                     onKeyDown={handleTriggerKeyDown}
+                    onMouseEnter={() => setIsTriggerHover(true)}
+                    onMouseLeave={() => setIsTriggerHover(false)}
                 >
                     <span className={classes.triggerMain}>
-                        {selectedProfile.isReadonly && (
-                            <Tooltip title="Read-only profile">
-                                <span className={classes.readonlyBadge}>
-                                    <Icon
-                                        icon={getIconUrlByName("AdminPanelSettings")}
-                                        size="extra small"
-                                    />
-                                </span>
-                            </Tooltip>
-                        )}
                         <span
                             className={classes.triggerLabel}
                             title={selectedProfile.name}
@@ -150,10 +146,9 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                     type="button"
                     className={classes.editButton}
                     onClick={onEditProfile}
-                    disabled={selectedProfile.isReadonly}
-                    aria-label="Edit profile"
+                    aria-label="Profile settings"
                 >
-                    <Icon icon={getIconUrlByName("Edit")} size="extra small" />
+                    <Icon icon={getIconUrlByName("Settings")} size="extra small" />
                 </button>
             </div>
 
@@ -170,25 +165,9 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                         setIsOpen(false);
                     }}
                 >
-                    <div className={classes.urlRow}>
-                        <span className={classes.urlText} title={selectedProfile.url}>
-                            {selectedProfile.url}
-                        </span>
-                        <span className={classes.iconSlot}>
-                            <Icon
-                                className={classes.urlIcon}
-                                icon={getIconUrlByName("SwapVert")}
-                                size="extra small"
-                            />
-                        </span>
-                    </div>
-                    <div className={classes.divider} />
                     <div className={classes.list} ref={listRef}>
                         {availableProfileNames.map((profileName, index) => {
                             const isSelected = profileName === selectedProfile.name;
-                            const isReadonly =
-                                readonlyProfileNames?.includes(profileName) ||
-                                (isSelected && selectedProfile.isReadonly);
 
                             return (
                                 <button
@@ -203,18 +182,6 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                                     role="option"
                                     aria-selected={isSelected}
                                 >
-                                    {isReadonly && (
-                                        <Tooltip title="Read-only profile">
-                                            <span className={classes.readonlyBadge}>
-                                                <Icon
-                                                    icon={getIconUrlByName(
-                                                        "AdminPanelSettings"
-                                                    )}
-                                                    size="extra small"
-                                                />
-                                            </span>
-                                        </Tooltip>
-                                    )}
                                     <span
                                         className={classes.profileName}
                                         title={profileName}
@@ -255,7 +222,6 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
 
 const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
     const labelStyle = theme.typography.variants["label 1"].style;
-    const captionStyle = theme.typography.variants["caption"].style;
 
     return {
         root: {
@@ -273,11 +239,11 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             paddingLeft: theme.spacing(5),
             borderRadius: 12,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
-            transition: "box-shadow 120ms ease",
-            boxSizing: "border-box",
-            "&:hover": {
-                boxShadow: theme.shadows[2]
-            }
+            transition: "background-color 120ms ease, box-shadow 120ms ease",
+            boxSizing: "border-box"
+        },
+        triggerRowHover: {
+            boxShadow: theme.shadows[4]
         },
         trigger: {
             flex: 1,
@@ -321,7 +287,7 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
         },
         editButton: {
             border: "none",
-            backgroundColor: theme.colors.useCases.surfaces.surface3,
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
             color: theme.colors.useCases.typography.textPrimary,
             width: 36,
             height: 36,
@@ -331,10 +297,9 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             justifyContent: "center",
             cursor: "pointer",
             flexShrink: 0,
-            transition: "opacity 120ms ease",
-            "&:disabled": {
-                cursor: "not-allowed",
-                opacity: 0.5
+            transition: "background-color 120ms ease, opacity 120ms ease",
+            "&:hover": {
+                backgroundColor: theme.colors.useCases.surfaces.surface3
             }
         },
         dropdown: {
@@ -351,28 +316,6 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             width: "100%",
             height: 1,
             backgroundColor: theme.colors.useCases.surfaces.surface2
-        },
-        urlRow: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: theme.spacing(1),
-            padding: theme.spacing(1),
-            paddingLeft: theme.spacing(5),
-            borderRadius: 10,
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
-            color: theme.colors.useCases.typography.textSecondary
-        },
-        urlText: {
-            ...captionStyle,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            minWidth: 0
-        },
-        urlIcon: {
-            color: theme.colors.useCases.typography.textSecondary,
-            flexShrink: 0
         },
         list: {
             display: "flex",
@@ -402,7 +345,7 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
         profileRowSelected: {
             backgroundColor: theme.colors.palette.focus.mainAlpha10,
             "&:hover": {
-                backgroundColor: theme.colors.palette.focus.mainAlpha10
+                backgroundColor: theme.colors.palette.focus.mainAlpha20
             }
         },
         profileName: {
@@ -420,17 +363,6 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            flexShrink: 0
-        },
-        readonlyBadge: {
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            backgroundColor: theme.colors.useCases.surfaces.surface3,
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: theme.colors.useCases.typography.textPrimary,
             flexShrink: 0
         },
         checkIcon: {
