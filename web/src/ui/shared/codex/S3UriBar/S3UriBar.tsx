@@ -1541,7 +1541,7 @@ const useStyles = tss
                 transition: "box-shadow 0.2s ease, border-color 0.2s ease",
                 boxShadow: isEditing ? `inset 0 -2px 0 ${accentColor}` : undefined,
                 "&:hover": {
-                    boxShadow: !isEditing ? theme.shadows[6] : undefined
+                    boxShadow: !isEditing ? theme.shadows[4] : undefined
                 }
             },
             pathDisplay: {
@@ -1715,7 +1715,7 @@ const useStyles = tss
                 borderRadius: "10px",
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
                 backgroundColor: theme.colors.useCases.surfaces.surface1,
-                boxShadow: theme.shadows[6]
+                boxShadow: theme.shadows[4]
             },
             hintsList: {
                 display: "flex",
