@@ -17,6 +17,7 @@ export type ComponentKey =
     | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
     | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
     | import("ui/pages/s3Explorer/dialogs/ConfirmBucketCreationAttemptDialog").I18n
+    | import("ui/pages/s3Explorer/dialogs/CreateOrRenameBookmarkDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/CreateOrUpdateProfileDialog").I18n
     /*
     | import("ui/pages/s3Explorer/Explorer").I18n

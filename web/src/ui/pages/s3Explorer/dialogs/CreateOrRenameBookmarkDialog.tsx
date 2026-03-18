@@ -10,6 +10,7 @@ import { useEvt } from "evt/hooks";
 import { useConst } from "powerhooks/useConst";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { tss } from "tss";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type CreateOrRenameBookmarkDialogResult =
     | {
@@ -45,6 +46,8 @@ function getDefaultDisplayName(props: { s3Uri: S3Uri }): string {
 export const CreateOrRenameBookmarkDialog = memo(
     (props: CreateOrRenameBookmarkDialogProps) => {
         const { evtOpen } = props;
+
+        const { t } = useTranslation({ CreateOrRenameBookmarkDialog });
 
         const [state, setState] = useState<
             | (UnpackEvt<CreateOrRenameBookmarkDialogProps["evtOpen"]> & {
@@ -101,7 +104,7 @@ export const CreateOrRenameBookmarkDialog = memo(
 
         return (
             <Dialog
-                title="Bookmark Name"
+                title={t("dialog title")}
                 subtitle={state === undefined ? "" : stringifyS3Uri(state.s3Uri)}
                 classes={{
                     body: classes.dialogBody
@@ -113,7 +116,7 @@ export const CreateOrRenameBookmarkDialog = memo(
                                 className={classes.textField}
                                 inputProps_autoFocus={true}
                                 selectAllTextOnFocus={true}
-                                label="Name"
+                                label={t("bookmarkName textField label")}
                                 defaultValue={state.displayName}
                                 getIsValidValue={value => {
                                     const normalizedValue = value.trim();
@@ -121,7 +124,9 @@ export const CreateOrRenameBookmarkDialog = memo(
                                     if (normalizedValue === "") {
                                         return {
                                             isValidValue: false,
-                                            message: "Bookmark name can't be empty"
+                                            message: t(
+                                                "bookmarkName textField empty error"
+                                            )
                                         };
                                     }
 
@@ -165,13 +170,13 @@ export const CreateOrRenameBookmarkDialog = memo(
                             onClick={() => close({ doProceed: false })}
                             variant="secondary"
                         >
-                            Cancel
+                            {t("cancel")}
                         </Button>
                         <Button
                             onClick={state?.isDisplayNameValid ? submit : undefined}
                             disabled={!state?.isDisplayNameValid}
                         >
-                            Ok
+                            {t("ok")}
                         </Button>
                     </>
                 }
@@ -185,6 +190,15 @@ export const CreateOrRenameBookmarkDialog = memo(
 CreateOrRenameBookmarkDialog.displayName = symToStr({
     CreateOrRenameBookmarkDialog
 });
+
+const { i18n } = declareComponentKeys<
+    | "dialog title"
+    | "bookmarkName textField label"
+    | "bookmarkName textField empty error"
+    | "cancel"
+    | "ok"
+>()({ CreateOrRenameBookmarkDialog });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ CreateOrRenameBookmarkDialog }).create(({ theme }) => ({
     dialogBody: {

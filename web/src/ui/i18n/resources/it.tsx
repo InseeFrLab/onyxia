@@ -193,6 +193,14 @@ export const translations: Translations<"it"> = {
         "failed body": ({ bucket }) => `Creazione di ${bucket} non riuscita.`,
         ok: "Ok"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Nome del segnalibro",
+        "bookmarkName textField label": "Nome",
+        "bookmarkName textField empty error":
+            "Il nome del segnalibro non può essere vuoto",
+        cancel: "Annulla",
+        ok: "Ok"
+    },
     MySecrets: {
         "page title - my secrets": "I miei segreti",
         "what this page is used for - my secrets":
@@ -205,8 +213,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

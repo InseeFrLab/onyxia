@@ -195,6 +195,14 @@ export const translations: Translations<"en"> = {
         "failed body": ({ bucket }) => `No se pudo crear ${bucket}.`,
         ok: "Ok"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Nombre del marcador",
+        "bookmarkName textField label": "Nombre",
+        "bookmarkName textField empty error":
+            "El nombre del marcador no puede estar vacío",
+        cancel: "Cancelar",
+        ok: "Ok"
+    },
     MySecrets: {
         "page title - my secrets": "Mis Secretos",
         "what this page is used for - my secrets":

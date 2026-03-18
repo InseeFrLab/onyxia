@@ -191,6 +191,13 @@ export const translations: Translations<"fi"> = {
         "failed body": ({ bucket }) => `Kohteen ${bucket} luonti epäonnistui.`,
         ok: "Ok"
     },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Kirjanmerkin nimi",
+        "bookmarkName textField label": "Nimi",
+        "bookmarkName textField empty error": "Kirjanmerkin nimi ei voi olla tyhjä",
+        cancel: "Peruuta",
+        ok: "Ok"
+    },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
