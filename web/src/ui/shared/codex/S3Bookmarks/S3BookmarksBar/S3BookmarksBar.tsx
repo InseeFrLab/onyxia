@@ -4,13 +4,14 @@ import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import type { LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
 import { S3BookmarkItem } from "../S3BookmarksBarItem";
+import { useResolveLocalizedString } from "ui/i18n";
 
 export type S3BookmarksBarProps = {
     className?: string;
     items: S3BookmarksBarProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
     onDelete: (props: { s3Uri: S3Uri }) => void;
-    onRename: (props: { s3Uri: S3Uri }) => void;
+    onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
@@ -53,6 +54,8 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
         };
     }, [items.length]);
 
+    const { resolveLocalizedString } = useResolveLocalizedString();
+
     return (
         <div
             className={cx(classes.root, showRightFade && classes.fadeRight, className)}
@@ -74,7 +77,16 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                     ? undefined
                                     : {
                                           onDelete: () => onDelete({ s3Uri: item.s3Uri }),
-                                          onRename: () => onRename({ s3Uri: item.s3Uri })
+                                          onRename: () =>
+                                              onRename({
+                                                  s3Uri: item.s3Uri,
+                                                  currentDisplayName:
+                                                      item.displayName === undefined
+                                                          ? undefined
+                                                          : resolveLocalizedString(
+                                                                item.displayName
+                                                            )
+                                              })
                                       }
                             }
                             isActive={

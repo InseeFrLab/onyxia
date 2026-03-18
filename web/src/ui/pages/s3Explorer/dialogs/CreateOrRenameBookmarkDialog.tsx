@@ -23,6 +23,7 @@ export type CreateOrRenameBookmarkDialogResult =
 export type CreateOrRenameBookmarkDialogProps = {
     evtOpen: Evt<{
         s3Uri: S3Uri;
+        currentDisplayName: string | undefined;
         resolveDoProceed: (result: CreateOrRenameBookmarkDialogResult) => void;
     }>;
 };
@@ -60,9 +61,11 @@ export const CreateOrRenameBookmarkDialog = memo(
         useEvt(
             ctx => {
                 evtOpen.attach(ctx, eventData => {
-                    const displayName = getDefaultDisplayName({
-                        s3Uri: eventData.s3Uri
-                    });
+                    const displayName =
+                        eventData.currentDisplayName ??
+                        getDefaultDisplayName({
+                            s3Uri: eventData.s3Uri
+                        });
 
                     setState({
                         ...eventData,

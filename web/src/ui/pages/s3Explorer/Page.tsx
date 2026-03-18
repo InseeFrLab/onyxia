@@ -146,6 +146,7 @@ function PageComponent() {
                                         dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
                                             {
                                                 s3Uri,
+                                                currentDisplayName: undefined,
                                                 resolveDoProceed: dResult.resolve
                                             }
                                         );
@@ -176,7 +177,7 @@ function PageComponent() {
                                 }).link;
                             }}
                             onDelete={s3ExplorerUiController.deleteBookmark}
-                            onRename={async ({ s3Uri }) => {
+                            onRename={async ({ s3Uri, currentDisplayName }) => {
                                 const dResult = new Deferred<
                                     | { doProceed: true; displayName: string }
                                     | { doProceed: false }
@@ -184,6 +185,7 @@ function PageComponent() {
 
                                 dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
                                     s3Uri,
+                                    currentDisplayName,
                                     resolveDoProceed: dResult.resolve
                                 });
 
