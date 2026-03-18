@@ -8,10 +8,6 @@ export type S3ProfileSelectProps = {
     className?: string;
     /** Assert at least one profile */
     availableProfileNames: string[];
-    /**
-     * Optional list of readonly profiles to display the indicator in the dropdown.
-     */
-    readonlyProfileNames?: string[];
     selectedProfile: {
         /** Assert match one of the  availableProfiles */
         name: string;

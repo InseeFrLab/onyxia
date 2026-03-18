@@ -71,9 +71,6 @@ const baseProfiles: Profile[] = [
 
 const baseArgs: S3ProfileSelectProps = {
     availableProfileNames: baseProfiles.map(profile => profile.name),
-    readonlyProfileNames: baseProfiles
-        .filter(profile => profile.isReadonly)
-        .map(profile => profile.name),
     selectedProfile: baseProfiles[1],
     onSelectedProfileChange: action("selectedProfileChange"),
     onEditProfile: action("editProfile"),
@@ -111,9 +108,6 @@ const longProfiles: Profile[] = [
 export const LongNames: Story = {
     args: {
         availableProfileNames: longProfiles.map(profile => profile.name),
-        readonlyProfileNames: longProfiles
-            .filter(profile => profile.isReadonly)
-            .map(profile => profile.name),
         selectedProfile: longProfiles[0],
         onSelectedProfileChange: action("selectedProfileChange"),
         onEditProfile: action("editProfile"),
