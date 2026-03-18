@@ -6,7 +6,7 @@ It allows users to:
 
 - navigate to a bookmarked S3 location,
 - identify the current active bookmark,
-- optionally unpin a bookmark,
+- optionally unpin a bookmark (from the tooltip in variant `bar`),
 - optionally rename a bookmark.
 
 This component can be rendered using 2 visual variants depending on the navigation context:
@@ -82,7 +82,7 @@ The component supports 2 visual variants:
 ### Variant `bar`
 
 This variant looks like a button.
-There is a left icon of a pin and a text label.
+There is a left icon of a pin and a text label (icon is decorative).
 
 ### Variant `entryPoint`
 
@@ -92,7 +92,7 @@ Inside the card:
 
 - the bookmark label is displayed in the content area,
 - the S3 URI is displayed below the label,
-- the pin icon is displayed in the top-right corner when deletion is available.
+- the pin icon is displayed in the top-right corner (icon is decorative).
 
 # Interactions
 
@@ -100,19 +100,8 @@ The interaction logic is the same for both variants.
 
 When clicking on the main area, the component behaves like a link and uses `props.link`.
 
-But when clicking on the pin icon, the behavior changes.
-
-First the pin icon is only visible when `props.callbacks` is defined.
-
-When the cursor is over the pin icon:
-
-- the icon turns into an "unpin icon",
-- a hover surface is added like an icon button (`theme.colors.palette.focus.mainAlpha20`).
-
-When clicked:
-
-- `props.callbacks.onDelete()` should be called,
-- the click on the icon must not trigger the anchor navigation.
+The pin icon is decorative and is not clickable.
+Unpin is only available from the tooltip actions in variant `bar` when `props.callbacks` is defined.
 
 ### Variant `bar`
 
@@ -155,17 +144,22 @@ When `variant="entryPoint"`, the serialized S3 URI is also displayed below the m
 
 # Style
 
-### Color surfaces specs if the component can be deleted
+### Color surfaces specs if the component can be deleted (not read-only)
 
-- default color surface: `theme.colors.palette.focus.mainAlpha10`
-- hover color surface: `theme.colors.palette.focus.mainAlpha20`
-- active color surface: `theme.colors.palette.focus.mainAlpha20`
+- default color surface: `theme.colors.useCases.surfaces.surfaceFocus1`
+- hover color surface: `theme.colors.useCases.surfaces.surfaceFocus2`
+- active color surface: `theme.colors.useCases.surfaces.surfaceFocus1`
 
-### Color surfaces specs if the component can't be deleted
+### Color surfaces specs if the component can't be deleted (read-only)
 
 - default color surface: `theme.colors.useCases.surfaces.surface1`
 - hover color surface: `theme.colors.useCases.surfaces.surface2`
-- active color surface: `theme.colors.useCases.surfaces.surface2`
+- active color surface: `theme.colors.useCases.surfaces.surface1`
+
+### Active state border
+
+On active state (both variants), add a `2px` border stroke on the right and bottom with:
+`theme.colors.useCases.buttons.actionHoverPrimary`
 
 ### Typography spec
 
