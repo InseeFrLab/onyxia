@@ -9,6 +9,7 @@ It is a partially controlled UI component:
 - Listing state and listed items come from props.
 - Navigation, upload, create-directory, delete, and direct-link generation are delegated through callbacks.
 - Sorting, selection, dialogs, drag-and-drop feedback, and upload affordances are internal UI concerns.
+- The component should size itself to its content and must not reserve large empty vertical space by default.
 
 This component is intentionally not responsible for displaying the current S3 URI. That context is provided by surrounding UI.
 

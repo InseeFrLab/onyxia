@@ -1290,7 +1290,6 @@ const useStyles = tss
             marginTop: theme.spacing(3),
             display: "flex",
             flexDirection: "column",
-            minHeight: 440,
             width: "100%",
             borderRadius: 20,
             overflow: "hidden",
@@ -1355,8 +1354,6 @@ const useStyles = tss
         },
         contentShell: {
             position: "relative",
-            minHeight: 320,
-            flex: 1,
             backgroundColor: theme.colors.useCases.surfaces.surface1
         },
         dropOverlay: {
@@ -1391,13 +1388,12 @@ const useStyles = tss
             lineHeight: 1.6
         },
         emptyState: {
-            minHeight: 320,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: theme.spacing(5),
+            padding: theme.spacing(4),
             gap: theme.spacing(1.5)
         },
         emptyStateIcon: {
@@ -1428,8 +1424,7 @@ const useStyles = tss
         },
         tableScrollArea: {
             overflow: "auto",
-            width: "100%",
-            height: "100%"
+            width: "100%"
         },
         table: {
             width: "100%",
@@ -1602,13 +1597,12 @@ const useStyles = tss
             display: "inline-flex"
         },
         errorState: {
-            minHeight: 360,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: theme.spacing(5),
+            padding: theme.spacing(4),
             gap: theme.spacing(1.5),
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             borderRadius: 20,
