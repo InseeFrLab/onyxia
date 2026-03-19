@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useMemo,
     useRef,
     useState,
     type ChangeEvent,
@@ -13,6 +14,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
+import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { Button } from "onyxia-ui/Button";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Icon } from "onyxia-ui/Icon";
@@ -108,6 +110,10 @@ type ShareLinkDialogState =
           item: S3ExplorerMainViewProps.Item.Object;
           errorMessage: string;
       };
+
+const toolbarButtonIds = ["upload files", "new folder", "get link", "delete"] as const;
+
+type ToolbarButtonId = (typeof toolbarButtonIds)[number];
 
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
@@ -787,6 +793,37 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             return progressPercent === undefined || progressPercent === 100;
         })();
 
+    const toolbarButtons = useMemo(
+        (): ButtonBarProps<ToolbarButtonId>["buttons"] =>
+            toolbarButtonIds.map(buttonId => ({
+                buttonId,
+                icon: (() => {
+                    switch (buttonId) {
+                        case "upload files":
+                        case "new folder":
+                            return getIconUrlByName("Add");
+                        case "get link":
+                            return getIconUrlByName("Link");
+                        case "delete":
+                            return getIconUrlByName("Delete");
+                    }
+                })(),
+                isDisabled: (() => {
+                    switch (buttonId) {
+                        case "upload files":
+                        case "new folder":
+                            return false;
+                        case "get link":
+                            return !isSelectedObjectShareable;
+                        case "delete":
+                            return selectedItems.length === 0;
+                    }
+                })(),
+                label: buttonId[0].toUpperCase() + buttonId.slice(1)
+            })),
+        [isSelectedObjectShareable, selectedItems.length]
+    );
+
     const setSelectionToSingleItem = (itemKey: string) => {
         setSelectedItemKeys([itemKey]);
         lastSelectedItemKeyRef.current = itemKey;
@@ -1057,45 +1094,29 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 {isListing && <LinearProgress className={classes.listingProgress} />}
 
                 <div className={classes.toolbar}>
-                    <div className={classes.toolbarPrimaryActions}>
-                        <Button
-                            startIcon={getIconUrlByName("Add")}
-                            onClick={openFilePicker}
-                        >
-                            Upload files
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            startIcon={getIconUrlByName("Add")}
-                            onClick={() => setIsCreateDirectoryDialogOpen(true)}
-                        >
-                            New folder
-                        </Button>
-                    </div>
+                    <ButtonBar
+                        buttons={toolbarButtons}
+                        onClick={buttonId => {
+                            switch (buttonId) {
+                                case "upload files":
+                                    openFilePicker();
+                                    break;
+                                case "new folder":
+                                    setIsCreateDirectoryDialogOpen(true);
+                                    break;
+                                case "get link":
+                                    if (selectedObjectForShare === undefined) {
+                                        return;
+                                    }
 
-                    <div className={classes.toolbarSecondaryActions}>
-                        <Button
-                            variant="secondary"
-                            startIcon={getIconUrlByName("Link")}
-                            disabled={!isSelectedObjectShareable}
-                            onClick={
-                                !isSelectedObjectShareable ||
-                                selectedObjectForShare === undefined
-                                    ? undefined
-                                    : () => requestShareLink(selectedObjectForShare)
+                                    requestShareLink(selectedObjectForShare);
+                                    break;
+                                case "delete":
+                                    requestDeletionForItems(selectedItems);
+                                    break;
                             }
-                        >
-                            Get link
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            startIcon={getIconUrlByName("Delete")}
-                            disabled={selectedItems.length === 0}
-                            onClick={() => requestDeletionForItems(selectedItems)}
-                        >
-                            Delete
-                        </Button>
-                    </div>
+                        }}
+                    />
                 </div>
 
                 <div className={classes.summaryBar}>
@@ -1311,18 +1332,6 @@ const useStyles = tss
             gap: theme.spacing(2),
             padding: theme.spacing(2),
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            flexWrap: "wrap"
-        },
-        toolbarPrimaryActions: {
-            display: "flex",
-            alignItems: "center",
-            gap: theme.spacing(1.5),
-            flexWrap: "wrap"
-        },
-        toolbarSecondaryActions: {
-            display: "flex",
-            alignItems: "center",
-            gap: theme.spacing(1.5),
             flexWrap: "wrap"
         },
         summaryBar: {
