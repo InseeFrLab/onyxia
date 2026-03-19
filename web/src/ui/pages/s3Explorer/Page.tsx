@@ -118,131 +118,153 @@ function PageComponent() {
                 }
 
                 return (
-                    <>
-                        <div
-                            className={css({
-                                display: "flex",
-                                alignItems: "center",
-                                gap: theme.spacing(3),
-                                width: "100%"
-                            })}
-                        >
-                            <S3ProfileSelect
+                    <div
+                        className={css({
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        })}
+                    >
+                        <div>
+                            <div
                                 className={css({
-                                    width: "fit-content",
-                                    minWidth: 180,
-                                    maxWidth: 360
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: theme.spacing(3),
+                                    width: "100%"
                                 })}
-                                availableProfileNames={
-                                    mainView.profileSelect.availableProfileNames
-                                }
-                                selectedProfile={mainView.profileSelect.selectedProfile}
-                                onSelectedProfileChange={
-                                    s3ExplorerUiController.updateSelectedS3Profile
-                                }
-                                onEditProfile={() => {
-                                    assert(mainView.profileSelect !== undefined);
-                                    dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
-                                        profileName_toUpdate:
-                                            mainView.profileSelect.selectedProfile.name
-                                    });
-                                }}
-                                onCreateNewProfile={() => {
-                                    dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
-                                        profileName_toUpdate: undefined
-                                    });
-                                }}
-                            />
-                            <S3UriBar
-                                className={css({
-                                    flex: 1,
-                                    minWidth: 0
-                                })}
-                                s3Uri={mainView.uriBar.s3Uri}
-                                hints={mainView.uriBar.hints}
-                                areHintsLoading={mainView.isListing}
-                                onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
-                                    s3ExplorerUiController.listPrefix({
-                                        s3Uri,
-                                        debounce:
-                                            !isHintSelection &&
-                                            !s3Uri?.isDelimiterTerminated
-                                    })
-                                }
-                                onToggleBookmark={(() => {
-                                    if (
-                                        mainView.uriBar.bookmarkStatus.isBookmarked &&
-                                        mainView.uriBar.bookmarkStatus.isReadonly
-                                    ) {
-                                        return undefined;
+                            >
+                                <S3ProfileSelect
+                                    className={css({
+                                        width: "fit-content",
+                                        minWidth: 180,
+                                        maxWidth: 360
+                                    })}
+                                    availableProfileNames={
+                                        mainView.profileSelect.availableProfileNames
                                     }
+                                    selectedProfile={
+                                        mainView.profileSelect.selectedProfile
+                                    }
+                                    onSelectedProfileChange={
+                                        s3ExplorerUiController.updateSelectedS3Profile
+                                    }
+                                    onEditProfile={() => {
+                                        assert(mainView.profileSelect !== undefined);
+                                        dialogProps.evtCreateOrUpdateProfileDialogOpen.post(
+                                            {
+                                                profileName_toUpdate:
+                                                    mainView.profileSelect.selectedProfile
+                                                        .name
+                                            }
+                                        );
+                                    }}
+                                    onCreateNewProfile={() => {
+                                        dialogProps.evtCreateOrUpdateProfileDialogOpen.post(
+                                            {
+                                                profileName_toUpdate: undefined
+                                            }
+                                        );
+                                    }}
+                                />
+                                <S3UriBar
+                                    className={css({
+                                        flex: 1,
+                                        minWidth: 0
+                                    })}
+                                    s3Uri={mainView.uriBar.s3Uri}
+                                    hints={mainView.uriBar.hints}
+                                    areHintsLoading={mainView.isListing}
+                                    onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
+                                        s3ExplorerUiController.listPrefix({
+                                            s3Uri,
+                                            debounce:
+                                                !isHintSelection &&
+                                                !s3Uri?.isDelimiterTerminated
+                                        })
+                                    }
+                                    onToggleBookmark={(() => {
+                                        if (
+                                            mainView.uriBar.bookmarkStatus.isBookmarked &&
+                                            mainView.uriBar.bookmarkStatus.isReadonly
+                                        ) {
+                                            return undefined;
+                                        }
 
-                                    return ({ s3Uri }) => {
-                                        const getDisplayName = () => {
-                                            const dResult = new Deferred<
-                                                | { doProceed: true; displayName: string }
-                                                | { doProceed: false }
-                                            >();
+                                        return ({ s3Uri }) => {
+                                            const getDisplayName = () => {
+                                                const dResult = new Deferred<
+                                                    | {
+                                                          doProceed: true;
+                                                          displayName: string;
+                                                      }
+                                                    | { doProceed: false }
+                                                >();
 
-                                            dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                                dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                                    {
+                                                        s3Uri,
+                                                        currentDisplayName: undefined,
+                                                        resolveDoProceed: dResult.resolve
+                                                    }
+                                                );
+
+                                                return dResult.pr;
+                                            };
+
+                                            s3ExplorerUiController.toggleIsS3UriBookmarked(
                                                 {
-                                                    s3Uri,
-                                                    currentDisplayName: undefined,
-                                                    resolveDoProceed: dResult.resolve
+                                                    getDisplayName
                                                 }
                                             );
-
-                                            return dResult.pr;
                                         };
+                                    })()}
+                                    isBookmarked={
+                                        mainView.uriBar.bookmarkStatus.isBookmarked
+                                    }
+                                />
+                            </div>
+                            <S3BookmarksBar
+                                className={css({ marginTop: theme.spacing(3) })}
+                                items={mainView.bookmarks.items}
+                                activeItemS3Uri={mainView.bookmarks.activeItemS3Uri}
+                                getItemLink={({ s3Uri }) => {
+                                    const route = getRoute();
+                                    assert(routeGroup.has(route));
 
-                                        s3ExplorerUiController.toggleIsS3UriBookmarked({
-                                            getDisplayName
-                                        });
-                                    };
-                                })()}
-                                isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
+                                    return routes.s3Explorer({
+                                        ...route.params,
+                                        s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice(
+                                            "s3://".length
+                                        )
+                                    }).link;
+                                }}
+                                onDelete={s3ExplorerUiController.deleteBookmark}
+                                onRename={async ({ s3Uri, currentDisplayName }) => {
+                                    const dResult = new Deferred<
+                                        | { doProceed: true; displayName: string }
+                                        | { doProceed: false }
+                                    >();
+
+                                    dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
+                                        s3Uri,
+                                        currentDisplayName,
+                                        resolveDoProceed: dResult.resolve
+                                    });
+
+                                    const result = await dResult.pr;
+
+                                    if (!result.doProceed) {
+                                        return;
+                                    }
+
+                                    s3ExplorerUiController.updateBookmarkDisplayName({
+                                        s3Uri,
+                                        displayName: result.displayName
+                                    });
+                                }}
                             />
                         </div>
-                        <S3BookmarksBar
-                            className={css({ marginTop: theme.spacing(3) })}
-                            items={mainView.bookmarks.items}
-                            activeItemS3Uri={mainView.bookmarks.activeItemS3Uri}
-                            getItemLink={({ s3Uri }) => {
-                                const route = getRoute();
-                                assert(routeGroup.has(route));
-
-                                return routes.s3Explorer({
-                                    ...route.params,
-                                    s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice(
-                                        "s3://".length
-                                    )
-                                }).link;
-                            }}
-                            onDelete={s3ExplorerUiController.deleteBookmark}
-                            onRename={async ({ s3Uri, currentDisplayName }) => {
-                                const dResult = new Deferred<
-                                    | { doProceed: true; displayName: string }
-                                    | { doProceed: false }
-                                >();
-
-                                dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
-                                    s3Uri,
-                                    currentDisplayName,
-                                    resolveDoProceed: dResult.resolve
-                                });
-
-                                const result = await dResult.pr;
-
-                                if (!result.doProceed) {
-                                    return;
-                                }
-
-                                s3ExplorerUiController.updateBookmarkDisplayName({
-                                    s3Uri,
-                                    displayName: result.displayName
-                                });
-                            }}
-                        />
                         {mainView.listedPrefix !== undefined && (
                             <S3ExplorerMainView
                                 isListing={mainView.isListing}
@@ -262,28 +284,36 @@ function PageComponent() {
                             />
                         )}
                         {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
-                            mainView.fullyQualifiedUri.isDataObject && <DataExplorer />}
-                    </>
+                            mainView.fullyQualifiedUri.isDataObject && (
+                                <DataExplorer
+                                    className={css({ flex: 1, overflow: "hidden" })}
+                                />
+                            )}
+                    </div>
                 );
             })()}
         </>
     );
 }
 
-function DataExplorer() {
+function DataExplorer(props: { className?: string }) {
+    const { className } = props;
+
     const { dataGridView } = useCoreState("dataExplorer", "view");
 
-    const { css, theme } = useStyles();
+    const { cx, css, theme } = useStyles();
 
     if (dataGridView === undefined) {
         return (
             <div
-                className={css({
-                    height: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center"
-                })}
+                className={cx(
+                    css({
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }),
+                    className
+                )}
             >
                 <CircularProgress />
             </div>
@@ -292,13 +322,14 @@ function DataExplorer() {
 
     return (
         <div
-            className={css({
-                marginTop: theme.spacing(3),
-                width: "100%",
-                height: `calc(100% - ${theme.spacing(4)}px)`,
-                overflowY: "hidden",
-                overflowX: "auto"
-            })}
+            className={cx(
+                css({
+                    marginTop: theme.spacing(3),
+                    overflowY: "hidden",
+                    overflowX: "auto"
+                }),
+                className
+            )}
         >
             <DataGrid />
         </div>
