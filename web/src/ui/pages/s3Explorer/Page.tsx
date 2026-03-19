@@ -257,7 +257,18 @@ function DataExplorer() {
     const { css, theme } = useStyles();
 
     if (dataGridView === undefined) {
-        return <CircularProgress />;
+        return (
+            <div
+                className={css({
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                })}
+            >
+                <CircularProgress />
+            </div>
+        );
     }
 
     return (
