@@ -1387,7 +1387,12 @@ const useStyles = tss
             outlineOffset: -2
         },
         listingProgress: {
-            width: "100%"
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 3,
+            pointerEvents: "none"
         },
         toolbar: {
             display: "flex",
