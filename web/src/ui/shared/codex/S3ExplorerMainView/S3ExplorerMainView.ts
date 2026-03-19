@@ -30,7 +30,6 @@ export type S3ExplorerMainViewProps = {
 
     getDirectDownloadUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
-        validityDurationSecond?: number;
     }) => Promise<string>;
 };
 
