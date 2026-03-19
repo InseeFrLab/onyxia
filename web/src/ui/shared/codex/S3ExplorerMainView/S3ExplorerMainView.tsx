@@ -1287,7 +1287,6 @@ const useStyles = tss
     .withNestedSelectors<"rowActions">()
     .create(({ theme, classes, isDragActive }) => ({
         root: {
-            marginTop: theme.spacing(3),
             display: "flex",
             flexDirection: "column",
             width: "100%",
