@@ -1331,7 +1331,7 @@ const useStyles = tss
             justifyContent: "space-between",
             alignItems: "center",
             gap: theme.spacing(2),
-            padding: theme.spacing(2),
+            padding: `${theme.spacing(2)} ${theme.spacing(2)} 0`,
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             flexWrap: "wrap"
         },
