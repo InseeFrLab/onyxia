@@ -225,7 +225,7 @@ function PageComponent() {
                                 />
                             </div>
                             <S3BookmarksBar
-                                className={css({ marginTop: theme.spacing(3) })}
+                                className={css({ marginTop: theme.spacing(2) })}
                                 items={mainView.bookmarks.items}
                                 activeItemS3Uri={mainView.bookmarks.activeItemS3Uri}
                                 getItemLink={({ s3Uri }) => {
