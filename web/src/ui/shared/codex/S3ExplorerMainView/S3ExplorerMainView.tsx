@@ -1095,6 +1095,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
                 <div className={classes.toolbar}>
                     <ButtonBar
+                        className={classes.toolbarButtonBar}
                         buttons={toolbarButtons}
                         onClick={buttonId => {
                             switch (buttonId) {
@@ -1333,6 +1334,12 @@ const useStyles = tss
             padding: theme.spacing(2),
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             flexWrap: "wrap"
+        },
+        toolbarButtonBar: {
+            width: "100%",
+            backgroundColor: "transparent",
+            boxShadow: "none",
+            borderRadius: 0
         },
         summaryBar: {
             display: "flex",
