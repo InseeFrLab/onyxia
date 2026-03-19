@@ -17,6 +17,7 @@ import { S3BookmarksBar } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import { Deferred } from "evt/tools/Deferred";
 import { S3ProfileSelect } from "ui/shared/codex/S3ProfileSelect";
+import { S3ExplorerMainView } from "ui/shared/codex/S3ExplorerMainView";
 
 const Page = withLoader({
     loader,
@@ -242,6 +243,24 @@ function PageComponent() {
                                 });
                             }}
                         />
+                        {mainView.listedPrefix !== undefined && (
+                            <S3ExplorerMainView
+                                isListing={mainView.isListing}
+                                listedPrefix={mainView.listedPrefix}
+                                onNavigate={({ s3Uri }) =>
+                                    s3ExplorerUiController.listPrefix({
+                                        s3Uri,
+                                        debounce: false
+                                    })
+                                }
+                                onPutObjects={s3ExplorerUiController.putObjects}
+                                onCreateDirectory={s3ExplorerUiController.createDirectory}
+                                onDelete={s3ExplorerUiController.delete}
+                                getDirectDownloadUrl={
+                                    s3ExplorerUiController.getPreSignedUrl
+                                }
+                            />
+                        )}
                         {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
                             mainView.fullyQualifiedUri.isDataObject && <DataExplorer />}
                     </>
