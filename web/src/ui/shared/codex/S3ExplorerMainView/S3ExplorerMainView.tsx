@@ -1341,7 +1341,8 @@ const useStyles = tss
         },
         summaryTextMuted: {
             color: theme.colors.useCases.typography.textSecondary,
-            fontSize: 13
+            fontSize: 13,
+            ...theme.spacing.topBottom("margin", 2)
         },
         clearSelectionButton: {
             marginLeft: "auto",
@@ -1457,7 +1458,8 @@ const useStyles = tss
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             color: theme.colors.useCases.typography.textSecondary,
-            fontSize: 13
+            fontSize: 13,
+            paddingRight: theme.spacing(3)
         },
         sortButton: {
             border: "none",
@@ -1517,7 +1519,7 @@ const useStyles = tss
         },
         itemIdentity: {
             display: "flex",
-            alignItems: "flex-start",
+            alignItems: "center",
             gap: theme.spacing(1.5),
             minWidth: 0
         },
