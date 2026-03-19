@@ -62,7 +62,9 @@ if (import.meta.env.DEV) {
         enableScreenScaler({
             rootDivId: "root",
             getTargetWindowInnerWidth: ({ zoomFactor, isPortraitOrientation }) =>
-                isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
+                window.matchMedia("(pointer: coarse)").matches && isPortraitOrientation
+                    ? undefined
+                    : targetWindowInnerWidth * zoomFactor
         });
     }
 

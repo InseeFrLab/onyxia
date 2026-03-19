@@ -13,6 +13,19 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    # parentRefs must reference the Gateway configured by the cluster administrator.
+    # parentRefs[0].name is required when httpRoute.enabled=true.
+    - name: onyxia-gateway
+      # namespace:
+      # sectionName:
+      # port:
+  hostnames:
+    - chart-example.local
+
 route:
   enabled: false
   annotations: {} # route.openshift.io/termination: "reencrypt"
@@ -30,8 +43,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 4.58.5
-
+    tag: 4.58.6
     pullPolicy: IfNotPresent
 
   ## Pod priority settings
@@ -320,7 +332,7 @@ onboarding:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-onboarding
-    tag: "0.1.10"
+    tag: "0.1.19"
     pullPolicy: IfNotPresent
 
   hostAliases: []
@@ -392,21 +404,21 @@ onboarding:
 
   livenessProbe:
     enabled: true
-    path: /
+    path: /healthz
     failureThreshold: 3
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
   readinessProbe:
     enabled: true
-    path: /
+    path: /healthz
     failureThreshold: 3
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
   startupProbe:
     enabled: false
-    path: /
+    path: /healthz
     failureThreshold: 3
     periodSeconds: 10
     successThreshold: 1
