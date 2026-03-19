@@ -1416,7 +1416,8 @@ const useStyles = tss
             padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             backgroundColor: theme.colors.useCases.surfaces.surface2,
-            flexWrap: "wrap"
+            flexWrap: "wrap",
+            paddingLeft: theme.spacing(3)
         },
         summaryText: {
             ...theme.typography.variants["label 1"].style,
