@@ -200,6 +200,28 @@ function getSortedItems(params: {
     });
 }
 
+function getSortIndicatorProps(params: { sortState: SortState; key: SortState["key"] }) {
+    const { sortState, key } = params;
+
+    const isActive = sortState.key === key;
+
+    return {
+        isActive,
+        ariaSort: isActive
+            ? sortState.direction === "asc"
+                ? "ascending"
+                : "descending"
+            : "none",
+        icon: getIconUrlByName(
+            !isActive
+                ? "UnfoldMore"
+                : sortState.direction === "asc"
+                  ? "ArrowUpward"
+                  : "ArrowDownward"
+        )
+    } as const;
+}
+
 function CreateDirectoryDialog(props: {
     open: boolean;
     onClose: () => void;
@@ -992,6 +1014,21 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onNavigate({ s3Uri });
     };
 
+    const nameSortIndicator = getSortIndicatorProps({
+        sortState,
+        key: "name"
+    });
+
+    const sizeSortIndicator = getSortIndicatorProps({
+        sortState,
+        key: "size"
+    });
+
+    const lastModifiedSortIndicator = getSortIndicatorProps({
+        sortState,
+        key: "lastModified"
+    });
+
     if (listedPrefix.isErrored) {
         return (
             <div className={cx(classes.root, className)}>
@@ -1206,39 +1243,58 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 }}
                                             />
                                         </th>
-                                        <th className={classes.headerCell}>
+                                        <th
+                                            className={classes.headerCell}
+                                            aria-sort={nameSortIndicator.ariaSort}
+                                        >
                                             <button
                                                 type="button"
                                                 className={classes.sortButton}
                                                 onClick={() => handleSortToggle("name")}
                                             >
                                                 Name
-                                                <span className={classes.sortDirection}>
-                                                    {sortState.key === "name"
-                                                        ? sortState.direction === "asc"
-                                                            ? "ASC"
-                                                            : "DESC"
-                                                        : ""}
+                                                <span
+                                                    className={cx(
+                                                        classes.sortDirection,
+                                                        nameSortIndicator.isActive &&
+                                                            classes.sortDirectionActive
+                                                    )}
+                                                >
+                                                    <Icon
+                                                        icon={nameSortIndicator.icon}
+                                                        size="small"
+                                                    />
                                                 </span>
                                             </button>
                                         </th>
-                                        <th className={classes.headerCell}>
+                                        <th
+                                            className={classes.headerCell}
+                                            aria-sort={sizeSortIndicator.ariaSort}
+                                        >
                                             <button
                                                 type="button"
                                                 className={classes.sortButton}
                                                 onClick={() => handleSortToggle("size")}
                                             >
                                                 Size
-                                                <span className={classes.sortDirection}>
-                                                    {sortState.key === "size"
-                                                        ? sortState.direction === "asc"
-                                                            ? "ASC"
-                                                            : "DESC"
-                                                        : ""}
+                                                <span
+                                                    className={cx(
+                                                        classes.sortDirection,
+                                                        sizeSortIndicator.isActive &&
+                                                            classes.sortDirectionActive
+                                                    )}
+                                                >
+                                                    <Icon
+                                                        icon={sizeSortIndicator.icon}
+                                                        size="small"
+                                                    />
                                                 </span>
                                             </button>
                                         </th>
-                                        <th className={classes.headerCell}>
+                                        <th
+                                            className={classes.headerCell}
+                                            aria-sort={lastModifiedSortIndicator.ariaSort}
+                                        >
                                             <button
                                                 type="button"
                                                 className={classes.sortButton}
@@ -1247,12 +1303,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 }
                                             >
                                                 Last modified
-                                                <span className={classes.sortDirection}>
-                                                    {sortState.key === "lastModified"
-                                                        ? sortState.direction === "asc"
-                                                            ? "ASC"
-                                                            : "DESC"
-                                                        : ""}
+                                                <span
+                                                    className={cx(
+                                                        classes.sortDirection,
+                                                        lastModifiedSortIndicator.isActive &&
+                                                            classes.sortDirectionActive
+                                                    )}
+                                                >
+                                                    <Icon
+                                                        icon={
+                                                            lastModifiedSortIndicator.icon
+                                                        }
+                                                        size="small"
+                                                    />
                                                 </span>
                                             </button>
                                         </th>
@@ -1489,10 +1552,16 @@ const useStyles = tss
             fontWeight: 600
         },
         sortDirection: {
-            minWidth: 32,
-            color: theme.colors.useCases.typography.textPrimary,
-            fontSize: 11,
-            letterSpacing: "0.04em"
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: 18,
+            color: theme.colors.useCases.typography.textSecondary,
+            lineHeight: 0,
+            flexShrink: 0
+        },
+        sortDirectionActive: {
+            color: theme.colors.useCases.typography.textPrimary
         },
         tableRow: {
             "& td": {
