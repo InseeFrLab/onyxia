@@ -36,7 +36,7 @@ The parent or usecase layer is responsible for:
     - last modified time
 - Keep folder-like entries grouped before files.
 - Allow multi-selection and bulk deletion.
-- Allow navigation into folders through `onNavigate`.
+- Allow navigation into folders and files through `onNavigate`.
 - Allow file uploads through:
     - drag and drop onto the explorer
     - a button that opens the native OS file picker
@@ -53,10 +53,12 @@ The parent or usecase layer is responsible for:
     - `Delete` is enabled when one or more items are selected.
 - Listing:
     - Clicking a row selects it.
+    - Double clicking a row requests navigation for the clicked item when that item is navigable.
     - `Ctrl` / `Cmd` click toggles a row in the selection.
     - `Shift` click selects a range.
     - The checkbox in the header selects or clears all non-deleting items.
-    - Folder names are clickable and request navigation via `onNavigate`.
+    - Folder and file names are clickable and request navigation via `onNavigate`.
+    - Row actions expose an explicit open affordance for both folders and files.
     - Row-level delete actions can target a single item without changing the external data model.
 - Uploads:
     - Dragging files over the explorer shows a drop overlay.

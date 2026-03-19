@@ -517,6 +517,8 @@ function ItemRow(props: ItemRowProps) {
     const progressPercent = getProgressPercent(item);
     const isUploadInProgress =
         progressPercent !== undefined && progressPercent < 100 && !item.isDeleting;
+    const canNavigate =
+        !item.isDeleting && !(item.type === "object" && isUploadInProgress);
 
     const { classes, cx } = useStyles({
         isDragActive: false
@@ -531,7 +533,7 @@ function ItemRow(props: ItemRowProps) {
             )}
             onClick={onRowClick}
             onDoubleClick={() => {
-                if (item.type === "prefix segment") {
+                if (canNavigate) {
                     onNavigate();
                 }
             }}
@@ -563,23 +565,22 @@ function ItemRow(props: ItemRowProps) {
                         />
                     </div>
                     <div className={classes.itemNameBlock}>
-                        {item.type === "prefix segment" ? (
-                            <button
-                                type="button"
-                                className={classes.itemNameButton}
-                                title={`${item.displayName}/`}
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    onNavigate();
-                                }}
-                            >
-                                {item.displayName}
-                            </button>
-                        ) : (
-                            <div className={classes.itemName} title={item.displayName}>
-                                {item.displayName}
-                            </div>
-                        )}
+                        <button
+                            type="button"
+                            className={classes.itemNameButton}
+                            title={
+                                item.type === "prefix segment"
+                                    ? `${item.displayName}/`
+                                    : item.displayName
+                            }
+                            disabled={!canNavigate}
+                            onClick={event => {
+                                event.stopPropagation();
+                                onNavigate();
+                            }}
+                        >
+                            {item.displayName}
+                        </button>
 
                         {(item.isDeleting ||
                             isUploadInProgress ||
@@ -635,17 +636,24 @@ function ItemRow(props: ItemRowProps) {
             </td>
             <td className={classes.actionsCell}>
                 <div className={classes.rowActions}>
-                    {item.type === "prefix segment" ? (
-                        <Tooltip title="Open folder">
+                    <Tooltip
+                        title={
+                            item.type === "prefix segment" ? "Open folder" : "Open file"
+                        }
+                    >
+                        <span className={classes.inlineActionWrapper}>
                             <IconButton
                                 icon={getIconUrlByName("OpenInNew")}
+                                disabled={!canNavigate}
                                 onClick={event => {
                                     event.stopPropagation();
                                     onNavigate();
                                 }}
                             />
-                        </Tooltip>
-                    ) : (
+                        </span>
+                    </Tooltip>
+
+                    {item.type === "object" && (
                         <Tooltip title="Get shareable link">
                             <span className={classes.inlineActionWrapper}>
                                 <IconButton
@@ -942,7 +950,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         lastSelectedItemKeyRef.current = undefined;
     };
 
-    const handleNavigate = (s3Uri: S3Uri.TerminatedByDelimiter) => {
+    const handleNavigate = (s3Uri: S3Uri) => {
         clearSelection();
         onNavigate({ s3Uri });
     };
@@ -1250,9 +1258,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     toggleSelectionForItem(itemKey)
                                                 }
                                                 onNavigate={() =>
-                                                    item.type === "prefix segment"
-                                                        ? handleNavigate(item.s3Uri)
-                                                        : undefined
+                                                    handleNavigate(item.s3Uri)
                                                 }
                                                 onDelete={() =>
                                                     requestDeletionForItems([item])
@@ -1547,14 +1553,11 @@ const useStyles = tss
             textAlign: "left",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            whiteSpace: "nowrap"
-        },
-        itemName: {
-            ...theme.typography.variants["label 1"].style,
-            color: theme.colors.useCases.typography.textPrimary,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap"
+            whiteSpace: "nowrap",
+            "&:disabled": {
+                cursor: "default",
+                opacity: 0.72
+            }
         },
         itemMetaRow: {
             display: "flex",

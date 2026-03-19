@@ -231,13 +231,9 @@ function StatefulExplorer(
                 onNavigate={({ s3Uri }) => {
                     action("navigate")(s3Uri);
 
-                    if (!s3Uri.isDelimiterTerminated) {
-                        throw new Error(
-                            "Story explorer navigation expects prefixes only"
-                        );
+                    if (s3Uri.isDelimiterTerminated) {
+                        setCurrentPrefix(s3Uri);
                     }
-
-                    setCurrentPrefix(s3Uri);
                 }}
                 onCreateDirectory={({ prefixSegment }) => {
                     action("createDirectory")(prefixSegment);

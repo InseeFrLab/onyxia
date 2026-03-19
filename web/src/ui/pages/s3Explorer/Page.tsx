@@ -247,12 +247,13 @@ function PageComponent() {
                             <S3ExplorerMainView
                                 isListing={mainView.isListing}
                                 listedPrefix={mainView.listedPrefix}
-                                onNavigate={({ s3Uri }) =>
+                                onNavigate={({ s3Uri }) => {
+                                    console.log(JSON.stringify(s3Uri, null, 2));
                                     s3ExplorerUiController.listPrefix({
                                         s3Uri,
                                         debounce: false
-                                    })
-                                }
+                                    });
+                                }}
                                 onPutObjects={s3ExplorerUiController.putObjects}
                                 onCreateDirectory={s3ExplorerUiController.createDirectory}
                                 onDelete={s3ExplorerUiController.delete}
