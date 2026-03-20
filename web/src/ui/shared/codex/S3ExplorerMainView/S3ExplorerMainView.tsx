@@ -1403,7 +1403,7 @@ const useStyles = tss
             borderRadius: 20,
             overflow: isDragActive ? "visible" : "hidden",
             position: "relative",
-            zIndex: isDragActive ? 1 : "auto",
+            zIndex: 0,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             boxShadow: theme.shadows[1],
             boxSizing: "border-box",
