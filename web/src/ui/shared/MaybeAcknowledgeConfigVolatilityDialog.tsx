@@ -1,14 +1,14 @@
 import { useState, memo } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
-import type { NonPostableEvt, UnpackEvt } from "evt";
+import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
 import { useCoreState, getCoreSync } from "core";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type MaybeAcknowledgeConfigVolatilityDialogProps = {
-    evtOpen: NonPostableEvt<{
+    evtOpen: Evt<{
         resolve: (params: { doProceed: boolean }) => void;
     }>;
 };

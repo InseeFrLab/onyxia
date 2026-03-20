@@ -120,123 +120,6 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "expires in": ({ howMuchTime }) => `该令牌有效期至 ${howMuchTime}`
     },
-    ProjectSettings: {
-        "page header title": "项目设置",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "您个人项目的设置"
-                : `“${groupProjectName}”的设置`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                本页面允许您配置适用于
-                {groupProjectName === undefined
-                    ? " 您的个人项目"
-                    : ` ${groupProjectName}项目`}{" "}
-                的设置。
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        请注意，${groupProjectName}是一个与其他用户共享的团队项目；
-                        您在此处所做的设置更改将适用于所有项目成员。
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        您可以使用标题中的下拉菜单在您的项目之间切换。
-                        <br />
-                    </>
-                )}
-                请注意，只有您的Onyxia实例管理员可以创建新项目。
-            </>
-        ),
-        "security-info": "安全信息",
-        "s3-configs": "S3 配置"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "添加自定义S3配置"
-    },
-    S3ConfigCard: {
-        "data source": "数据源",
-        credentials: "凭证",
-        "sts credentials": "由Onyxia代表您动态请求的令牌 (STS)",
-        account: "账户",
-        "use in services": "在服务中使用",
-        "use in services helper": `如果启用，此配置将默认用于实现S3集成的服务中。`,
-        "use for onyxia explorers": "用于Onyxia探索器",
-        "use for onyxia explorers helper": `如果启用，此配置将被文件浏览器和数据浏览器使用。`,
-        edit: "编辑",
-        delete: "删除"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "新的自定义 S3 配置",
-        "dialog subtitle": "指定自定义服务账户或连接到另一个兼容 S3 的服务",
-        cancel: "取消",
-        "save config": "保存配置",
-        "update config": "更新配置",
-        "is required": "此字段为必填项",
-        "must be an url": "不是有效的 URL",
-        "not a valid access key id": "这不像是一个有效的访问密钥 ID",
-        "url textField label": "URL",
-        "url textField helper text": "S3 服务的 URL",
-        "region textField label": "AWS S3 区域",
-        "region textField helper text": "例如：eu-west-1，如果不确定，请留空",
-        "workingDirectoryPath textField label": "工作目录路径",
-        "workingDirectoryPath textField helper text": (
-            <>
-                这可以让你指定在 S3 服务上你拥有的桶和 S3 对象前缀。 <br />
-                例如：<code>我的桶/我的前缀/</code> 或 <code>仅我的桶/</code>{" "}
-                如果你拥有整个桶。
-            </>
-        ),
-        "account credentials": "账户凭证",
-        "friendlyName textField label": "配置名称",
-        "friendlyName textField helper text":
-            "这只是帮助您识别此配置。例如：我的 AWS 存储桶",
-        "isAnonymous switch label": "匿名访问",
-        "isAnonymous switch helper text": "如果不需要密钥，请将其设置为开启",
-        "accessKeyId textField label": "访问密钥 ID",
-        "accessKeyId textField helper text": "例如：1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "秘密访问密钥",
-        "sessionToken textField label": "会话令牌",
-        "sessionToken textField helper text": "可选的，如果不确定请留空",
-        "url style": "URL 样式",
-        "url style helper text": `指定您的 S3 服务器如何格式化下载文件的 URL。`,
-        "path style label": ({ example }) => (
-            <>
-                路径样式
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}我的数据集.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                虚拟托管样式
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}我的数据集.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "测试连接",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                测试连接失败，错误信息： <br />
-                {errorMessage}
-            </>
-        )
-    },
     AccountUserInterfaceTab: {
         title: "配置界面模式",
         "enable dark mode": "开启深色模式",
@@ -277,63 +160,23 @@ export const translations: Translations<"zh-CN"> = {
         reset: "重置",
         "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
     },
-    FileExplorerEntry: {
-        "page title - file explorer": "文件资源管理器",
-        "what this page is used for - file explorer": "在此处存储您的数据.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                阅读{" "}
-                <MuiLink href={docHref} target="_blank">
-                    我们的文档
-                </MuiLink>
-                。&nbsp;
-                <MuiLink {...accountTabLink}>配置 Minio 客户端</MuiLink>。
-            </>
-        ),
-        "title personal": "我的数据",
-        "description personal": "您自己的文件和数据集。",
-        "title project": ({ projectName }) => `项目 ${projectName}`,
-        "description project": ({ projectName }) => `项目 ${projectName} 的共享存储空间`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "我的数据";
-                case "project":
-                    return "群组数据";
-            }
-        }
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `存储桶 ${bucket} 不存在`,
+        "bucket does not exist body": "要立即尝试创建吗？",
+        no: "否",
+        yes: "是",
+        "success title": "成功",
+        "failed title": "失败",
+        "success body": ({ bucket }) => `存储桶 ${bucket} 创建成功。`,
+        "failed body": ({ bucket }) => `创建 ${bucket} 失败。`,
+        ok: "确定"
     },
-    S3EntryCard: {
-        "space path": "空间路径"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "未配置S3服务器",
-        "dialog body": "此实例未配置S3服务器。但您可以手动添加一个，以启用S3文件浏览器。",
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "书签名称",
+        "bookmarkName textField label": "名称",
+        "bookmarkName textField empty error": "书签名称不能为空",
         cancel: "取消",
-        "go to settings": "前往设置"
-    },
-    ShareDialog: {
-        title: "分享您的数据",
-        close: "关闭",
-        "create and copy link": "创建并复制链接",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "您的文件是公开的，任何拥有链接的人都可以下载。"
-                : "您的文件当前是私密的。",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "要限制访问，请更改文件的共享状态。"
-                : "要分享并提供对文件的访问，请更改共享状态或创建一个临时访问链接。",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "只要文件是公开的，您的链接就可用。"
-                : `此链接将在 ${expiration} 内提供对您的数据的访问权限。`,
-        "label input link": "访问链接"
-    },
-    SelectTime: {
-        "validity duration label": "有效期"
+        ok: "确定"
     },
     MySecrets: {
         "page title - my secrets": "我的密钥",
@@ -351,27 +194,8 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    ExplorerItem: {
-        description: "描述"
-    },
     SecretsExplorerItem: {
         description: "描述"
-    },
-    ExplorerButtonBar: {
-        file: "文件",
-        delete: "删除",
-        "download directory": "下载",
-        "upload file": "上传文件",
-        "copy path": "复制 S3 对象名称",
-        "create new empty directory": "创建目录",
-        refresh: "刷新",
-        new: "新建",
-        share: "分享",
-        "alt list view": "显示列表",
-        "alt block view": "显示块"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "下载准备中 ..."
     },
     SecretsExplorerButtonBar: {
         secret: "密码",
@@ -383,32 +207,6 @@ export const translations: Translations<"zh-CN"> = {
         refresh: "刷新",
         "create what": ({ what }) => `新 ${what}`,
         new: "新建"
-    },
-    Explorer: {
-        file: "文档",
-        secret: "密码",
-        cancel: "取消",
-        delete: "删除",
-        "do not display again": "不要再显示",
-        "untitled what": ({ what }) => `untitled_${what}`,
-        directory: "目录",
-        multiple: "项目",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `删除${isPlural ? "这些" : "此"}${deleteWhat}？`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        您将要删除${isPlural ? "这些" : "此"}${deleteWhat}。
-        此操作可能导致与${isPlural ? "这些" : "此"}${deleteWhat}相关的数据丢失。
-        `,
-        "already a directory with this name": "已经有一个同名的文件夹",
-        "can't be empty": "不能为空",
-        create: "建立",
-        "new directory": "新建文件夹"
-    },
-    ListExplorerItems: {
-        "header name": "名称",
-        "header modified date": "修改日期",
-        "header size": "大小",
-        "header policy": "策略"
     },
     SecretsExplorer: {
         file: "文档",
@@ -428,12 +226,57 @@ export const translations: Translations<"zh-CN"> = {
         create: "建立",
         "new directory": "新建文件夹"
     },
-    ExplorerItems: {
-        "empty directory": "此目录为空"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "此目录为空"
+    },
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "新的自定义 S3 配置",
+        "dialog subtitle": "指定自定义服务账号或连接到其他兼容 S3 的服务",
+        cancel: "取消",
+        "save config": "保存配置",
+        "update config": "更新配置",
+        "is required": "此字段为必填项",
+        "must be an url": "不是有效的 URL",
+        "profile name already used": "已存在同名的配置文件",
+        "not a valid access key id": "看起来不是有效的 Access Key ID",
+        "url textField label": "URL",
+        "url textField helper text": "S3 服务的 URL",
+        "region textField label": "AWS S3 区域",
+        "region textField helper text": "示例：eu-west-1，不确定可留空",
+        "account credentials": "账号凭证",
+        "profileName textField label": "配置文件名称",
+        "profileName textField helper text": "此 S3 配置文件的唯一标识",
+        "isAnonymous switch label": "匿名访问",
+        "isAnonymous switch helper text": "若不需要 Secret Access Key，请设为开",
+        "accessKeyId textField label": "Access Key ID",
+        "accessKeyId textField helper text": "示例：1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Secret Access Key",
+        "sessionToken textField label": "会话令牌",
+        "sessionToken textField helper text": "可选，不确定可留空",
+        "url style": "URL 样式",
+        "url style helper text": "指定你的 S3 服务器用于下载文件的 URL 格式。",
+        "path style label": ({ example }) => (
+            <>
+                路径样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                虚拟主机样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     MySecretsEditor: {
         "do not display again": "不要再显示",
@@ -461,19 +304,6 @@ export const translations: Translations<"zh-CN"> = {
         "key input desc": "环境变量名称",
         "value input desc": "环境变量值"
     },
-    ExplorerUploadModalDropArea: {
-        "browse files": "浏览您的文件",
-        "drag and drop or": "拖拽，放置或"
-    },
-    ExplorerUploadProgress: {
-        over: "over",
-        importing: "导入"
-    },
-    ExplorerUploadModal: {
-        "import files": "导入文件",
-        cancel: "取消",
-        minimize: "最小化"
-    },
     Header: {
         login: "登录",
         logout: "登出",
@@ -484,16 +314,13 @@ export const translations: Translations<"zh-CN"> = {
         reduce: "缩小",
         home: "我的主页",
         account: "我的账号",
-        projectSettings: "项目设置",
         catalog: "服务目录",
         myServices: "我的服务",
         mySecrets: "我的密钥",
-        myFiles: "我的文档",
         "divider: services features": "服务功能",
         "divider: external services features": "外部服务功能",
         "divider: onyxia instance specific features": "Onyxia实例特定功能",
         dataExplorer: "数据浏览器",
-        fileExplorer: "文件浏览器",
         dataCollection: "集合浏览器",
         sqlOlapShell: "SQL OLAP 外壳"
     },
@@ -737,6 +564,65 @@ ${
         "external monitoring": "外部监控",
         "helm values": "Helm 值",
         reduce: "减少"
+    },
+    S3ExplorerMainView: {
+        "upload files": "Upload files",
+        "new folder": "New folder",
+        "get link": "Get link",
+        delete: "Delete",
+        "create folder": "Create folder",
+        "create folder subtitle":
+            "Folders are created relative to the prefix currently being listed.",
+        "folder name": "Folder name",
+        "folder name cannot be empty": "Folder name cannot be empty.",
+        cancel: "Cancel",
+        "delete selection": "Delete selection",
+        "delete selection subtitle": ({ count }) =>
+            `This will permanently delete ${count} selected item${count > 1 ? "s" : ""}.`,
+        "deleted folders remove everything inside them":
+            "Deleted folders remove everything inside them.",
+        "shareable link": "Shareable link",
+        "shareable link loading": "Generating a direct download URL...",
+        "shareable link ready description":
+            "Anyone with this URL can download the file until it expires.",
+        close: "Close",
+        retry: "Retry",
+        open: "Open",
+        "copy link": "Copy link",
+        "access denied": "Access denied",
+        "bucket not found": "Bucket not found",
+        "access denied description":
+            "You do not have permission to list this S3 location.",
+        "bucket not found description":
+            "The requested bucket does not exist or is not reachable with the current profile.",
+        "select item": ({ itemName }) => `Select ${itemName}`,
+        deleting: "Deleting...",
+        "uploading label": "Uploading",
+        uploading: ({ percent }) => `Uploading ${percent}%`,
+        uploaded: "Uploaded",
+        folder: "Folder",
+        "open folder": "Open folder",
+        "open file": "Open file",
+        "get shareable link": "Get shareable link",
+        "selected items": ({ count }) => `${count} selected`,
+        items: ({ count }) => `${count} item${count > 1 ? "s" : ""}`,
+        "refreshing listing": "Refreshing listing...",
+        "drag files anywhere in this panel to upload":
+            "Drag files anywhere in this panel to upload.",
+        "clear selection": "Clear selection",
+        "drop files to upload": "Drop files to upload",
+        "files will be uploaded into the currently listed prefix":
+            "Files will be uploaded into the currently listed prefix.",
+        "this prefix is empty": "This prefix is empty",
+        "upload files or create a folder to start populating this location":
+            "Upload files or create a folder to start populating this location.",
+        "select all items": "Select all items",
+        name: "Name",
+        size: "Size",
+        "last modified": "Last modified",
+        actions: "Actions",
+        "shareable link generation failed":
+            "Unable to generate a shareable link for this file."
     },
     LauncherMainCard: {
         "friendly name": "自定义名称",

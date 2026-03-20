@@ -90,12 +90,12 @@ function Launcher() {
         launchScript,
         commandLogsEntries,
         groupProjectName,
-        s3ConfigSelect,
+        s3ProfileSelect,
         labeledHelmChartSourceUrls,
         helmValues,
         helmValuesSchema_forDataTextEditor,
         infoAmountInHelmValues
-    } = useCoreState("launcher", "main");
+    } = useCoreState("launcher", "mainView");
 
     const {
         functions: { launcher, restorableConfigManagement, k8sCodeSnippets },
@@ -134,7 +134,7 @@ function Launcher() {
                 chartVersion: route.params.version,
                 friendlyName: route.params.name,
                 isShared: route.params.shared,
-                s3ConfigId: route.params.s3,
+                s3ProfileName: route.params.s3,
                 helmValuesPatch: route.params.helmValuesPatch
             },
             autoLaunch
@@ -154,7 +154,7 @@ function Launcher() {
             chartVersion,
             friendlyName,
             isShared,
-            s3ConfigId,
+            s3ProfileName,
             helmValuesPatch,
             ...rest
         } = restorableConfig;
@@ -168,7 +168,7 @@ function Launcher() {
             version: chartVersion,
             name: friendlyName,
             shared: isShared,
-            s3: s3ConfigId,
+            s3: s3ProfileName,
             helmValuesPatch
         }).replace();
     }, [restorableConfig]);
@@ -266,10 +266,7 @@ function Launcher() {
         myServicesSavedConfigsExtendedLink: routes.myServices({
             isSavedConfigsExtended: true
         }).link,
-
-        projectS3ConfigLink: routes.projectSettings({
-            tabId: "s3-configs"
-        }).link
+        projectS3ConfigLink: routes.s3Explorer_root().link
     }));
 
     const { resolveLocalizedString } = useResolveLocalizedString({
@@ -448,14 +445,19 @@ function Launcher() {
                             ? undefined
                             : onRequestCopyLaunchUrl
                     }
-                    s3ConfigsSelect={
-                        s3ConfigSelect === undefined
+                    s3ProfileSelect={
+                        s3ProfileSelect === undefined
                             ? undefined
                             : {
                                   projectS3ConfigLink,
-                                  selectedOption: s3ConfigSelect.selectedOptionValue,
-                                  options: s3ConfigSelect.options,
-                                  onSelectedS3ConfigChange: launcher.changeS3Config
+                                  selectedProfileName:
+                                      s3ProfileSelect.selectedProfileName,
+                                  availableProfileNames:
+                                      s3ProfileSelect.availableProfileNames,
+                                  onSelectedS3ConfigChange: ({ profileName }) =>
+                                      launcher.changeS3Profile({
+                                          s3ProfileName: profileName
+                                      })
                               }
                     }
                     erroredFormFields={erroredFormFields}
