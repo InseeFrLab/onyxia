@@ -1257,6 +1257,13 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     ) : (
                         <div className={classes.tableScrollArea}>
                             <table className={classes.table}>
+                                <colgroup>
+                                    <col className={classes.checkboxColumn} />
+                                    <col className={classes.nameColumn} />
+                                    <col className={classes.sizeColumn} />
+                                    <col className={classes.lastModifiedColumn} />
+                                    <col className={classes.actionsColumn} />
+                                </colgroup>
                                 <thead>
                                     <tr className={classes.headerRow}>
                                         <th className={classes.checkboxHeaderCell}>
@@ -1546,13 +1553,28 @@ const useStyles = tss
             marginTop: theme.spacing(1)
         },
         tableScrollArea: {
-            overflow: "auto",
+            overflowY: "auto",
+            overflowX: "hidden",
             width: "100%"
         },
         table: {
             width: "100%",
+            tableLayout: "fixed",
             borderCollapse: "separate",
             borderSpacing: 0
+        },
+        checkboxColumn: {
+            width: 68
+        },
+        nameColumn: {},
+        sizeColumn: {
+            width: 140
+        },
+        lastModifiedColumn: {
+            width: 300
+        },
+        actionsColumn: {
+            width: 120
         },
         headerRow: {
             position: "sticky",
