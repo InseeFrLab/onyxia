@@ -23,6 +23,8 @@ import { S3ProfileSelect } from "ui/shared/codex/S3ProfileSelect";
 import { S3ExplorerMainView } from "ui/shared/codex/S3ExplorerMainView";
 import { CommandBar } from "ui/shared/CommandBar";
 import { S3BookmarksEntryPointList } from "ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem";
+import { PageHeader } from "onyxia-ui/PageHeader";
+import { customIcons } from "lazy-icons";
 
 const Page = withLoader({
     loader,
@@ -109,45 +111,86 @@ function PageComponent() {
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
-            {(() => {
-                if (mainView.profileSelect === undefined) {
-                    return (
-                        <button
-                            onClick={() =>
-                                dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
-                                    profileName_toUpdate: undefined
-                                })
-                            }
-                        >
-                            Create Profile
-                        </button>
-                    );
-                }
-
-                return (
+            <div
+                className={css({
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column"
+                })}
+            >
+                <div
+                    className={css({
+                        display: "flex",
+                        flexWrap: "wrap",
+                        alignItems: "flex-start",
+                        gap: theme.spacing(3),
+                        marginBottom: theme.spacing(2)
+                    })}
+                >
                     <div
                         className={css({
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column"
+                            flex: 1,
+                            minWidth: 0
                         })}
                     >
-                        {isCommandBarEnabled &&
-                            mainView.commandLogsEntries.length !== 0 && (
-                                <CommandBar
-                                    className={css({
-                                        position: "absolute",
-                                        right: 0,
-                                        width: "40%",
-                                        zIndex: 1,
-                                        transition: "opacity 750ms linear"
-                                    })}
-                                    entries={mainView.commandLogsEntries}
-                                    maxHeight={300}
-                                />
-                            )}
+                        <PageHeader
+                            classes={{
+                                root: css({ marginBottom: 0 }),
+                                title: css({ paddingBottom: 3 })
+                            }}
+                            mainIcon={customIcons.filesSvgUrl}
+                            title="S3 Explorer"
+                            helpTitle={undefined}
+                            helpContent={<></>}
+                            titleCollapseParams={{
+                                behavior: "controlled",
+                                isCollapsed: false
+                            }}
+                            helpCollapseParams={{
+                                behavior: "controlled",
+                                isCollapsed: true
+                            }}
+                        />
+                    </div>
 
-                        <div>
+                    {isCommandBarEnabled && mainView.commandLogsEntries.length !== 0 && (
+                        <CommandBar
+                            className={css({
+                                width: "min(100%, 640px)",
+                                maxWidth: "100%",
+                                marginLeft: "auto",
+                                transition: "opacity 750ms linear"
+                            })}
+                            entries={mainView.commandLogsEntries}
+                            maxHeight={300}
+                        />
+                    )}
+                </div>
+
+                {(() => {
+                    if (mainView.profileSelect === undefined) {
+                        return (
+                            <button
+                                onClick={() =>
+                                    dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
+                                        profileName_toUpdate: undefined
+                                    })
+                                }
+                            >
+                                Create Profile
+                            </button>
+                        );
+                    }
+
+                    return (
+                        <div
+                            className={css({
+                                flex: 1,
+                                minHeight: 0,
+                                display: "flex",
+                                flexDirection: "column"
+                            })}
+                        >
                             <div
                                 className={css({
                                     display: "flex",
@@ -296,34 +339,36 @@ function PageComponent() {
                                     <S3BookmarksEntryPointList {...props} />
                                 );
                             })()}
-                        </div>
-                        {mainView.listedPrefix !== undefined && (
-                            <S3ExplorerMainView
-                                isListing={mainView.isListing}
-                                listedPrefix={mainView.listedPrefix}
-                                onNavigate={({ s3Uri }) =>
-                                    s3ExplorerUiController.listPrefix({
-                                        s3Uri,
-                                        debounce: false
-                                    })
-                                }
-                                onPutObjects={s3ExplorerUiController.putObjects}
-                                onCreateDirectory={s3ExplorerUiController.createDirectory}
-                                onDelete={s3ExplorerUiController.delete}
-                                getDirectDownloadUrl={
-                                    s3ExplorerUiController.getPreSignedUrl
-                                }
-                            />
-                        )}
-                        {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
-                            mainView.fullyQualifiedUri.isDataObject && (
-                                <DataExplorer
-                                    className={css({ flex: 1, overflow: "hidden" })}
+                            {mainView.listedPrefix !== undefined && (
+                                <S3ExplorerMainView
+                                    isListing={mainView.isListing}
+                                    listedPrefix={mainView.listedPrefix}
+                                    onNavigate={({ s3Uri }) =>
+                                        s3ExplorerUiController.listPrefix({
+                                            s3Uri,
+                                            debounce: false
+                                        })
+                                    }
+                                    onPutObjects={s3ExplorerUiController.putObjects}
+                                    onCreateDirectory={
+                                        s3ExplorerUiController.createDirectory
+                                    }
+                                    onDelete={s3ExplorerUiController.delete}
+                                    getDirectDownloadUrl={
+                                        s3ExplorerUiController.getPreSignedUrl
+                                    }
                                 />
                             )}
-                    </div>
-                );
-            })()}
+                            {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
+                                mainView.fullyQualifiedUri.isDataObject && (
+                                    <DataExplorer
+                                        className={css({ flex: 1, overflow: "hidden" })}
+                                    />
+                                )}
+                        </div>
+                    );
+                })()}
+            </div>
         </>
     );
 }
