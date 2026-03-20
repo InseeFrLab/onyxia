@@ -213,9 +213,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -647,6 +646,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "The requested bucket does not exist or is not reachable with the current profile.",
         "select item": ({ itemName }) => `Select ${itemName}`,
         deleting: "Deleting...",
+        "uploading label": "Uploading",
         uploading: ({ percent }) => `Uploading ${percent}%`,
         uploaded: "Uploaded",
         folder: "Folder",
