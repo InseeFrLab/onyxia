@@ -622,6 +622,64 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "helm values": "Valeurs de Helm",
         reduce: "Réduire"
     },
+    S3ExplorerMainView: {
+        "upload files": "Upload files",
+        "new folder": "New folder",
+        "get link": "Get link",
+        delete: "Delete",
+        "create folder": "Create folder",
+        "create folder subtitle":
+            "Folders are created relative to the prefix currently being listed.",
+        "folder name": "Folder name",
+        "folder name cannot be empty": "Folder name cannot be empty.",
+        cancel: "Cancel",
+        "delete selection": "Delete selection",
+        "delete selection subtitle": ({ count }) =>
+            `This will permanently delete ${count} selected item${count > 1 ? "s" : ""}.`,
+        "deleted folders remove everything inside them":
+            "Deleted folders remove everything inside them.",
+        "shareable link": "Shareable link",
+        "shareable link loading": "Generating a direct download URL...",
+        "shareable link ready description":
+            "Anyone with this URL can download the file until it expires.",
+        close: "Close",
+        retry: "Retry",
+        open: "Open",
+        "copy link": "Copy link",
+        "access denied": "Access denied",
+        "bucket not found": "Bucket not found",
+        "access denied description":
+            "You do not have permission to list this S3 location.",
+        "bucket not found description":
+            "The requested bucket does not exist or is not reachable with the current profile.",
+        "select item": ({ itemName }) => `Select ${itemName}`,
+        deleting: "Deleting...",
+        uploading: ({ percent }) => `Uploading ${percent}%`,
+        uploaded: "Uploaded",
+        folder: "Folder",
+        "open folder": "Open folder",
+        "open file": "Open file",
+        "get shareable link": "Get shareable link",
+        "selected items": ({ count }) => `${count} selected`,
+        items: ({ count }) => `${count} item${count > 1 ? "s" : ""}`,
+        "refreshing listing": "Refreshing listing...",
+        "drag files anywhere in this panel to upload":
+            "Drag files anywhere in this panel to upload.",
+        "clear selection": "Clear selection",
+        "drop files to upload": "Drop files to upload",
+        "files will be uploaded into the currently listed prefix":
+            "Files will be uploaded into the currently listed prefix.",
+        "this prefix is empty": "This prefix is empty",
+        "upload files or create a folder to start populating this location":
+            "Upload files or create a folder to start populating this location.",
+        "select all items": "Select all items",
+        name: "Name",
+        size: "Size",
+        "last modified": "Last modified",
+        actions: "Actions",
+        "shareable link generation failed":
+            "Unable to generate a shareable link for this file."
+    },
     LauncherMainCard: {
         "friendly name": "Nom personnalisé",
         launch: "Lancer",

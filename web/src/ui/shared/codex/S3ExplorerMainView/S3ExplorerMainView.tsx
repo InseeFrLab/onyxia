@@ -26,7 +26,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { getFormattedDate } from "ui/shared/formattedDate/getFormattedDate";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useLang } from "ui/i18n";
+import { declareComponentKeys, useLang, useTranslation } from "ui/i18n";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -138,12 +138,17 @@ function getFormattedSize(size: number): string {
     return bytes(size) ?? `${size}B`;
 }
 
-function getUserFacingErrorMessage(error: unknown): string {
+function getUserFacingErrorMessage(params: {
+    error: unknown;
+    fallbackMessage: string;
+}): string {
+    const { error, fallbackMessage } = params;
+
     if (error instanceof Error && error.message !== "") {
         return error.message;
     }
 
-    return "Unable to generate a shareable link for this file.";
+    return fallbackMessage;
 }
 
 function getProgressPercent(item: S3ExplorerMainViewProps.Item): number | undefined {
@@ -228,6 +233,7 @@ function CreateDirectoryDialog(props: {
     onSubmit: (params: { prefixSegment: string }) => void;
 }) {
     const { open, onClose, onSubmit } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     const [draft, setDraft] = useState("");
     const [isDraftValid, setIsDraftValid] = useState(false);
@@ -259,13 +265,13 @@ function CreateDirectoryDialog(props: {
         <Dialog
             isOpen={open}
             onClose={onClose}
-            title="Create folder"
-            subtitle="Folders are created relative to the prefix currently being listed."
+            title={t("create folder")}
+            subtitle={t("create folder subtitle")}
             body={
                 open && (
                     <TextField
                         inputProps_autoFocus={true}
-                        label="Folder name"
+                        label={t("folder name")}
                         defaultValue=""
                         evtAction={evtTextFieldAction}
                         getIsValidValue={value => {
@@ -274,7 +280,7 @@ function CreateDirectoryDialog(props: {
                             if (normalizedValue === "") {
                                 return {
                                     isValidValue: false,
-                                    message: "Folder name cannot be empty."
+                                    message: t("folder name cannot be empty")
                                 };
                             }
 
@@ -304,7 +310,7 @@ function CreateDirectoryDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button
                         disabled={!isDraftValid}
@@ -314,7 +320,7 @@ function CreateDirectoryDialog(props: {
                                 : undefined
                         }
                     >
-                        Create folder
+                        {t("create folder")}
                     </Button>
                 </>
             }
@@ -328,16 +334,19 @@ function DeleteSelectionDialog(props: {
     onConfirm: () => void;
 }) {
     const { state, onClose, onConfirm } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     return (
         <Dialog
             isOpen={state !== undefined}
             onClose={onClose}
-            title="Delete selection"
+            title={t("delete selection")}
             subtitle={
                 state === undefined
                     ? ""
-                    : `This will permanently delete ${state.items.length} selected item${state.items.length > 1 ? "s" : ""}.`
+                    : t("delete selection subtitle", {
+                          count: state.items.length
+                      })
             }
             body={
                 state !== undefined && (
@@ -348,7 +357,7 @@ function DeleteSelectionDialog(props: {
                                 lineHeight: 1.5
                             }}
                         >
-                            Deleted folders remove everything inside them.
+                            {t("deleted folders remove everything inside them")}
                         </div>
                         <div
                             style={{
@@ -372,9 +381,9 @@ function DeleteSelectionDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        Cancel
+                        {t("cancel")}
                     </Button>
-                    <Button onClick={onConfirm}>Delete</Button>
+                    <Button onClick={onConfirm}>{t("delete")}</Button>
                 </>
             }
         />
@@ -387,12 +396,13 @@ function ShareLinkDialog(props: {
     onRetry: () => void;
 }) {
     const { state, onClose, onRetry } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     return (
         <Dialog
             isOpen={state !== undefined}
             onClose={onClose}
-            title="Shareable link"
+            title={t("shareable link")}
             subtitle={state === undefined ? "" : state.item.displayName}
             body={
                 state !== undefined && (
@@ -414,7 +424,7 @@ function ShareLinkDialog(props: {
                                 }}
                             >
                                 <CircularProgress size={18} />
-                                <span>Generating a direct download URL...</span>
+                                <span>{t("shareable link loading")}</span>
                             </div>
                         )}
 
@@ -435,8 +445,7 @@ function ShareLinkDialog(props: {
                                         lineHeight: 1.6
                                     }}
                                 >
-                                    Anyone with this URL can download the file until it
-                                    expires.
+                                    {t("shareable link ready description")}
                                 </div>
                                 <div
                                     style={{
@@ -460,10 +469,10 @@ function ShareLinkDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        Close
+                        {t("close")}
                     </Button>
                     {state?.status === "error" && (
-                        <Button onClick={onRetry}>Retry</Button>
+                        <Button onClick={onRetry}>{t("retry")}</Button>
                     )}
                     {state?.status === "ready" && (
                         <>
@@ -478,10 +487,10 @@ function ShareLinkDialog(props: {
                                     )
                                 }
                             >
-                                Open
+                                {t("open")}
                             </Button>
                             <Button onClick={() => copyToClipboard(state.url)}>
-                                Copy link
+                                {t("copy link")}
                             </Button>
                         </>
                     )}
@@ -498,6 +507,7 @@ function ErrorState(props: {
     >["errorCase"];
 }) {
     const { errorCase } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
     const { classes } = useStyles({
         isDragActive: false
     });
@@ -508,12 +518,14 @@ function ErrorState(props: {
                 <Icon icon={getIconUrlByName("ErrorOutline")} size="large" />
             </div>
             <div className={classes.errorTitle}>
-                {errorCase === "access denied" ? "Access denied" : "Bucket not found"}
+                {errorCase === "access denied"
+                    ? t("access denied")
+                    : t("bucket not found")}
             </div>
             <div className={classes.errorDescription}>
                 {errorCase === "access denied"
-                    ? "You do not have permission to list this S3 location."
-                    : "The requested bucket does not exist or is not reachable with the current profile."}
+                    ? t("access denied description")
+                    : t("bucket not found description")}
             </div>
         </div>
     );
@@ -541,6 +553,7 @@ function ItemRow(props: ItemRowProps) {
         onShare,
         onCheckboxChange
     } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     const progressPercent = getProgressPercent(item);
     const isUploadInProgress =
@@ -578,7 +591,7 @@ function ItemRow(props: ItemRowProps) {
                         onCheckboxChange();
                     }}
                     inputProps={{
-                        "aria-label": `Select ${item.displayName}`
+                        "aria-label": t("select item", { itemName: item.displayName })
                     }}
                 />
             </td>
@@ -621,19 +634,21 @@ function ItemRow(props: ItemRowProps) {
                                             classes.statusPillWarning
                                         )}
                                     >
-                                        Deleting...
+                                        {t("deleting")}
                                     </span>
                                 )}
                                 {!item.isDeleting && isUploadInProgress && (
                                     <span className={classes.statusPill}>
-                                        Uploading {Math.round(progressPercent)}%
+                                        {t("uploading", {
+                                            percent: Math.round(progressPercent)
+                                        })}
                                     </span>
                                 )}
                                 {!item.isDeleting &&
                                     !isUploadInProgress &&
                                     progressPercent === 100 && (
                                         <span className={classes.statusPill}>
-                                            Uploaded
+                                            {t("uploaded")}
                                         </span>
                                     )}
                             </div>
@@ -652,7 +667,7 @@ function ItemRow(props: ItemRowProps) {
                 </div>
             </td>
             <td className={classes.metaCell}>
-                {item.type === "object" ? getFormattedSize(item.size) : "Folder"}
+                {item.type === "object" ? getFormattedSize(item.size) : t("folder")}
             </td>
             <td className={classes.metaCell}>
                 {item.type === "object"
@@ -666,7 +681,9 @@ function ItemRow(props: ItemRowProps) {
                 <div className={classes.rowActions}>
                     <Tooltip
                         title={
-                            item.type === "prefix segment" ? "Open folder" : "Open file"
+                            item.type === "prefix segment"
+                                ? t("open folder")
+                                : t("open file")
                         }
                     >
                         <span className={classes.inlineActionWrapper}>
@@ -682,7 +699,7 @@ function ItemRow(props: ItemRowProps) {
                     </Tooltip>
 
                     {item.type === "object" && (
-                        <Tooltip title="Get shareable link">
+                        <Tooltip title={t("get shareable link")}>
                             <span className={classes.inlineActionWrapper}>
                                 <IconButton
                                     icon={getIconUrlByName("Link")}
@@ -705,7 +722,7 @@ function ItemRow(props: ItemRowProps) {
                         </Tooltip>
                     )}
 
-                    <Tooltip title="Delete">
+                    <Tooltip title={t("delete")}>
                         <span className={classes.inlineActionWrapper}>
                             <IconButton
                                 icon={getIconUrlByName("Delete")}
@@ -755,6 +772,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const shareRequestIdRef = useRef(0);
 
     const { lang } = useLang();
+    const { t } = useTranslation({ S3ExplorerMainView });
     const { classes, cx } = useStyles({ isDragActive });
 
     useEffect(() => {
@@ -841,9 +859,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             return selectedItems.length === 0;
                     }
                 })(),
-                label: buttonId[0].toUpperCase() + buttonId.slice(1)
+                label: t(buttonId)
             })),
-        [isSelectedObjectShareable, selectedItems.length]
+        [isSelectedObjectShareable, selectedItems.length, t]
     );
 
     const setSelectionToSingleItem = (itemKey: string) => {
@@ -985,7 +1003,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             setShareLinkDialogState({
                 status: "error",
                 item,
-                errorMessage: getUserFacingErrorMessage(error)
+                errorMessage: getUserFacingErrorMessage({
+                    error,
+                    fallbackMessage: t("shareable link generation failed")
+                })
             });
         }
     };
@@ -1160,13 +1181,13 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 <div className={classes.summaryBar}>
                     <div className={classes.summaryText}>
                         {selectedItems.length > 0
-                            ? `${selectedItems.length} selected`
-                            : `${items.length} item${items.length > 1 ? "s" : ""}`}
+                            ? t("selected items", { count: selectedItems.length })
+                            : t("items", { count: items.length })}
                     </div>
                     <div className={classes.summaryTextMuted}>
                         {isListing
-                            ? "Refreshing listing..."
-                            : "Drag files anywhere in this panel to upload."}
+                            ? t("refreshing listing")
+                            : t("drag files anywhere in this panel to upload")}
                     </div>
                     {selectedItems.length > 0 && (
                         <button
@@ -1174,7 +1195,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             className={classes.clearSelectionButton}
                             onClick={clearSelection}
                         >
-                            Clear selection
+                            {t("clear selection")}
                         </button>
                     )}
                 </div>
@@ -1185,11 +1206,12 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             <div className={classes.dropOverlayCard}>
                                 <Icon icon={getIconUrlByName("Add")} size="large" />
                                 <div className={classes.dropOverlayTitle}>
-                                    Drop files to upload
+                                    {t("drop files to upload")}
                                 </div>
                                 <div className={classes.dropOverlayDescription}>
-                                    Files will be uploaded into the currently listed
-                                    prefix.
+                                    {t(
+                                        "files will be uploaded into the currently listed prefix"
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -1201,19 +1223,22 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 <Icon icon={getIconUrlByName("Folder")} size="large" />
                             </div>
                             <div className={classes.emptyStateTitle}>
-                                This prefix is empty
+                                {t("this prefix is empty")}
                             </div>
                             <div className={classes.emptyStateDescription}>
-                                Upload files or create a folder to start populating this
-                                location.
+                                {t(
+                                    "upload files or create a folder to start populating this location"
+                                )}
                             </div>
                             <div className={classes.emptyStateActions}>
-                                <Button onClick={openFilePicker}>Upload files</Button>
+                                <Button onClick={openFilePicker}>
+                                    {t("upload files")}
+                                </Button>
                                 <Button
                                     variant="secondary"
                                     onClick={() => setIsCreateDirectoryDialogOpen(true)}
                                 >
-                                    New folder
+                                    {t("new folder")}
                                 </Button>
                             </div>
                         </div>
@@ -1239,7 +1264,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     );
                                                 }}
                                                 inputProps={{
-                                                    "aria-label": "Select all items"
+                                                    "aria-label": t("select all items")
                                                 }}
                                             />
                                         </th>
@@ -1252,7 +1277,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 className={classes.sortButton}
                                                 onClick={() => handleSortToggle("name")}
                                             >
-                                                Name
+                                                {t("name")}
                                                 <span
                                                     className={cx(
                                                         classes.sortDirection,
@@ -1276,7 +1301,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 className={classes.sortButton}
                                                 onClick={() => handleSortToggle("size")}
                                             >
-                                                Size
+                                                {t("size")}
                                                 <span
                                                     className={cx(
                                                         classes.sortDirection,
@@ -1302,7 +1327,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     handleSortToggle("lastModified")
                                                 }
                                             >
-                                                Last modified
+                                                {t("last modified")}
                                                 <span
                                                     className={cx(
                                                         classes.sortDirection,
@@ -1320,7 +1345,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                             </button>
                                         </th>
                                         <th className={classes.actionsHeaderCell}>
-                                            Actions
+                                            {t("actions")}
                                         </th>
                                     </tr>
                                 </thead>
@@ -1720,3 +1745,50 @@ const useStyles = tss
             lineHeight: 1.6
         }
     }));
+
+const { i18n } = declareComponentKeys<
+    | ToolbarButtonId
+    | "create folder"
+    | "create folder subtitle"
+    | "folder name"
+    | "folder name cannot be empty"
+    | "cancel"
+    | "delete selection"
+    | "deleted folders remove everything inside them"
+    | "shareable link"
+    | "shareable link loading"
+    | "shareable link ready description"
+    | "close"
+    | "retry"
+    | "open"
+    | "copy link"
+    | "access denied"
+    | "bucket not found"
+    | "access denied description"
+    | "bucket not found description"
+    | "deleting"
+    | "uploaded"
+    | "folder"
+    | "open folder"
+    | "open file"
+    | "get shareable link"
+    | "refreshing listing"
+    | "drag files anywhere in this panel to upload"
+    | "clear selection"
+    | "drop files to upload"
+    | "files will be uploaded into the currently listed prefix"
+    | "this prefix is empty"
+    | "upload files or create a folder to start populating this location"
+    | "select all items"
+    | "name"
+    | "size"
+    | "last modified"
+    | "actions"
+    | "shareable link generation failed"
+    | { K: "delete selection subtitle"; P: { count: number } }
+    | { K: "select item"; P: { itemName: string } }
+    | { K: "uploading"; P: { percent: number } }
+    | { K: "selected items"; P: { count: number } }
+    | { K: "items"; P: { count: number } }
+>()({ S3ExplorerMainView });
+export type I18n = typeof i18n;
