@@ -606,63 +606,75 @@ function ItemRow(props: ItemRowProps) {
                         />
                     </div>
                     <div className={classes.itemNameBlock}>
-                        <button
-                            type="button"
-                            className={classes.itemNameButton}
-                            title={
-                                item.type === "prefix segment"
-                                    ? `${item.displayName}/`
-                                    : item.displayName
-                            }
-                            disabled={!canNavigate}
-                            onClick={event => {
-                                event.stopPropagation();
-                                onNavigate();
-                            }}
-                        >
-                            {item.displayName}
-                        </button>
+                        <div className={classes.itemPrimaryRow}>
+                            <button
+                                type="button"
+                                className={classes.itemNameButton}
+                                title={
+                                    item.type === "prefix segment"
+                                        ? `${item.displayName}/`
+                                        : item.displayName
+                                }
+                                disabled={!canNavigate}
+                                onClick={event => {
+                                    event.stopPropagation();
+                                    onNavigate();
+                                }}
+                            >
+                                {item.displayName}
+                            </button>
 
-                        {(item.isDeleting ||
-                            isUploadInProgress ||
-                            progressPercent === 100) && (
-                            <div className={classes.itemMetaRow}>
-                                {item.isDeleting && (
-                                    <span
-                                        className={cx(
-                                            classes.statusPill,
-                                            classes.statusPillWarning
-                                        )}
-                                    >
-                                        {t("deleting")}
-                                    </span>
-                                )}
-                                {!item.isDeleting && isUploadInProgress && (
-                                    <span className={classes.statusPill}>
-                                        {t("uploading", {
-                                            percent: Math.round(progressPercent)
-                                        })}
-                                    </span>
-                                )}
-                                {!item.isDeleting &&
-                                    !isUploadInProgress &&
-                                    progressPercent === 100 && (
-                                        <span className={classes.statusPill}>
-                                            {t("uploaded")}
+                            {(item.isDeleting ||
+                                isUploadInProgress ||
+                                progressPercent === 100) && (
+                                <div className={classes.itemMetaRow}>
+                                    {item.isDeleting && (
+                                        <span
+                                            className={cx(
+                                                classes.statusPill,
+                                                classes.statusPillWarning
+                                            )}
+                                        >
+                                            {t("deleting")}
                                         </span>
                                     )}
-                            </div>
-                        )}
-                        {isUploadInProgress && (
-                            <div className={classes.inlineProgressTrack}>
-                                <div
-                                    className={classes.inlineProgressFill}
-                                    style={{
-                                        width: `${progressPercent}%`
-                                    }}
-                                />
-                            </div>
-                        )}
+                                    {!item.isDeleting && isUploadInProgress && (
+                                        <>
+                                            <span
+                                                className={cx(
+                                                    classes.statusPill,
+                                                    classes.statusPillUploading
+                                                )}
+                                            >
+                                                <span className={classes.statusPillLabel}>
+                                                    {t("uploading label")}
+                                                </span>
+                                                <span
+                                                    className={classes.statusPillPercent}
+                                                >
+                                                    {Math.round(progressPercent)}%
+                                                </span>
+                                            </span>
+                                            <div className={classes.inlineProgressTrack}>
+                                                <div
+                                                    className={classes.inlineProgressFill}
+                                                    style={{
+                                                        width: `${progressPercent}%`
+                                                    }}
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+                                    {!item.isDeleting &&
+                                        !isUploadInProgress &&
+                                        progressPercent === 100 && (
+                                            <span className={classes.statusPill}>
+                                                {t("uploaded")}
+                                            </span>
+                                        )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </td>
@@ -1651,9 +1663,14 @@ const useStyles = tss
         },
         itemNameBlock: {
             minWidth: 0,
+            flex: 1
+        },
+        itemPrimaryRow: {
             display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(0.75)
+            alignItems: "center",
+            gap: theme.spacing(1),
+            minWidth: 0,
+            paddingRight: theme.spacing(2)
         },
         itemNameButton: {
             ...theme.typography.variants["label 1"].style,
@@ -1667,37 +1684,55 @@ const useStyles = tss
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
+            minWidth: 0,
+            flex: 1,
             "&:disabled": {
                 cursor: "default",
                 opacity: 0.72
             }
         },
         itemMetaRow: {
-            display: "flex",
+            display: "inline-flex",
             alignItems: "center",
             gap: theme.spacing(1),
-            flexWrap: "wrap"
+            flexShrink: 0
         },
         statusPill: {
             display: "inline-flex",
             alignItems: "center",
-            minHeight: 22,
+            minHeight: 24,
             borderRadius: 999,
-            padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
+            padding: `${theme.spacing(0.5)} ${theme.spacing(1.25)}`,
             fontSize: 12,
             fontWeight: 600,
+            lineHeight: 1,
+            whiteSpace: "nowrap",
             backgroundColor: theme.colors.useCases.surfaces.surface2,
             color: theme.colors.useCases.typography.textPrimary
         },
         statusPillWarning: {
             backgroundColor: theme.colors.useCases.surfaces.surface3
         },
+        statusPillUploading: {
+            gap: theme.spacing(0.5)
+        },
+        statusPillLabel: {
+            display: "inline-block"
+        },
+        statusPillPercent: {
+            display: "inline-block",
+            minWidth: "4ch",
+            textAlign: "right",
+            fontVariantNumeric: "tabular-nums",
+            fontFeatureSettings: '"tnum"'
+        },
         inlineProgressTrack: {
-            width: 140,
+            width: 96,
             height: 6,
             borderRadius: 999,
             backgroundColor: theme.colors.useCases.surfaces.surface2,
-            overflow: "hidden"
+            overflow: "hidden",
+            flexShrink: 0
         },
         inlineProgressFill: {
             height: "100%",
@@ -1767,6 +1802,7 @@ const { i18n } = declareComponentKeys<
     | "access denied description"
     | "bucket not found description"
     | "deleting"
+    | "uploading label"
     | "uploaded"
     | "folder"
     | "open folder"

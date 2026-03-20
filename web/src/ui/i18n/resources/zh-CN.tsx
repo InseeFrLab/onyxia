@@ -597,6 +597,7 @@ ${
             "The requested bucket does not exist or is not reachable with the current profile.",
         "select item": ({ itemName }) => `Select ${itemName}`,
         deleting: "Deleting...",
+        "uploading label": "Uploading",
         uploading: ({ percent }) => `Uploading ${percent}%`,
         uploaded: "Uploaded",
         folder: "Folder",
