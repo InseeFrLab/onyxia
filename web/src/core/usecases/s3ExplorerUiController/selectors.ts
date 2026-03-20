@@ -77,6 +77,8 @@ export type MainView = {
               items: MainView.Item[];
           }
         | undefined;
+
+    commandLogsEntries: State.CommandLogsEntry[];
 };
 
 export namespace MainView {
@@ -559,6 +561,11 @@ const uriBar = createSelector(
     }
 );
 
+const commandLogsEntries = createSelector(
+    state,
+    (state): MainView["commandLogsEntries"] => state.commandLogsEntries
+);
+
 const mainView = createSelector(
     profileSelect,
     bookmarks,
@@ -567,6 +574,7 @@ const mainView = createSelector(
     fullyQualifiedUri,
     isListing,
     listedPrefix,
+    commandLogsEntries,
     (
         profileSelect,
         bookmarks,
@@ -574,7 +582,8 @@ const mainView = createSelector(
         uriBar,
         fullyQualifiedUri,
         isListing,
-        listedPrefix
+        listedPrefix,
+        commandLogsEntries
     ): MainView => ({
         profileSelect,
         bookmarks,
@@ -582,7 +591,8 @@ const mainView = createSelector(
         uriBar,
         fullyQualifiedUri,
         isListing,
-        listedPrefix
+        listedPrefix,
+        commandLogsEntries
     })
 );
 
