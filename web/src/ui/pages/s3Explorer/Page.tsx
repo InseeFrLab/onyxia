@@ -18,6 +18,7 @@ import { stringifyS3Uri } from "core/tools/S3Uri";
 import { Deferred } from "evt/tools/Deferred";
 import { S3ProfileSelect } from "ui/shared/codex/S3ProfileSelect";
 import { S3ExplorerMainView } from "ui/shared/codex/S3ExplorerMainView";
+import { CommandBar } from "ui/shared/CommandBar";
 
 const Page = withLoader({
     loader,
@@ -99,6 +100,8 @@ function PageComponent() {
 
     const { css, theme } = useStyles();
 
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
+
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
@@ -125,6 +128,20 @@ function PageComponent() {
                             flexDirection: "column"
                         })}
                     >
+                        {isCommandBarEnabled && (
+                            <CommandBar
+                                className={css({
+                                    position: "absolute",
+                                    right: 0,
+                                    width: "40%",
+                                    zIndex: 1,
+                                    transition: "opacity 750ms linear"
+                                })}
+                                entries={mainView.commandLogsEntries}
+                                maxHeight={300}
+                            />
+                        )}
+
                         <div>
                             <div
                                 className={css({
