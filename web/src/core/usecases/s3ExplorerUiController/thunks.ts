@@ -492,6 +492,14 @@ export const thunks = {
                         blob: file.blob,
                         onUploadProgress: ({ uploadPercent }) => {
                             dispatch(
+                                actions.putObjectProgressReported({
+                                    profileName,
+                                    s3Uri: s3Uri_object,
+                                    completionPercent: uploadPercent
+                                })
+                            );
+
+                            dispatch(
                                 actions.commandLogResponseReceived({
                                     cmdId,
                                     resp: `... ${uploadPercent}% of ${file.blob.size} Bytes uploaded`
