@@ -350,6 +350,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const longPressTriggeredRef = useRef(false);
     const wasEditingRef = useRef(false);
     const wasUndefinedPrefixModeRef = useRef(isUndefinedPrefixMode);
+    const shouldFocusInputOnNextEditRef = useRef(false);
     const ignoreNextBlurRef = useRef(false);
     const preserveNextDraftResetRef = useRef(false);
     const lastRequestedCanonicalS3UriRef = useRef(canonicalS3Uri);
@@ -505,6 +506,7 @@ export function S3UriBar(props: S3UriBarProps) {
 
     useEffect(() => {
         if (!isEditing) {
+            shouldFocusInputOnNextEditRef.current = false;
             ignoreNextBlurRef.current = false;
             lastEnterEditRequestTimeRef.current = Number.NEGATIVE_INFINITY;
         }
@@ -556,16 +558,20 @@ export function S3UriBar(props: S3UriBarProps) {
                 return;
             }
 
-            input.focus();
+            if (shouldFocusInputOnNextEditRef.current) {
+                input.focus();
+            }
+
+            shouldFocusInputOnNextEditRef.current = false;
             const selection = pendingInputSelectionRef.current;
             pendingInputSelectionRef.current = undefined;
 
-            if (selection !== undefined) {
+            if (input === document.activeElement && selection !== undefined) {
                 input.setSelectionRange(
                     Math.min(selection.start, input.value.length),
                     Math.min(selection.end, input.value.length)
                 );
-            } else {
+            } else if (input === document.activeElement) {
                 const cursorPosition = input.value.length;
                 input.setSelectionRange(cursorPosition, cursorPosition);
             }
@@ -765,6 +771,7 @@ export function S3UriBar(props: S3UriBarProps) {
         longPressTimeoutRef.current = window.setTimeout(() => {
             longPressTriggeredRef.current = true;
             lastEnterEditRequestTimeRef.current = performance.now();
+            shouldFocusInputOnNextEditRef.current = true;
             setIsEditing(true);
         }, longPressDelayMs);
     };
@@ -819,6 +826,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const enterRootEditing = () => {
         preserveNextDraftResetRef.current = true;
         lastEnterEditRequestTimeRef.current = performance.now();
+        shouldFocusInputOnNextEditRef.current = true;
         setDraftS3Uri(defaultDraftS3Uri);
         setIsEditing(true);
         emitS3UriChange({
@@ -835,6 +843,7 @@ export function S3UriBar(props: S3UriBarProps) {
             end: canonicalS3Uri.length
         };
         lastEnterEditRequestTimeRef.current = performance.now();
+        shouldFocusInputOnNextEditRef.current = true;
         setIsEditing(true);
     };
 
@@ -952,6 +961,7 @@ export function S3UriBar(props: S3UriBarProps) {
         }
 
         lastEnterEditRequestTimeRef.current = performance.now();
+        shouldFocusInputOnNextEditRef.current = true;
         setIsEditing(true);
     };
 
