@@ -65,8 +65,14 @@ const onDelete: S3BookmarksEntryPointListProps["onDelete"] = ({ s3Uri }) => {
     action("delete bookmark")(stringifyS3Uri(s3Uri));
 };
 
-const onRename: S3BookmarksEntryPointListProps["onRename"] = ({ s3Uri }) => {
-    action("rename bookmark")(stringifyS3Uri(s3Uri));
+const onRename: S3BookmarksEntryPointListProps["onRename"] = ({
+    s3Uri,
+    currentDisplayName
+}) => {
+    action("rename bookmark")({
+        s3Uri: stringifyS3Uri(s3Uri),
+        currentDisplayName
+    });
 };
 
 export const Default: Story = {
