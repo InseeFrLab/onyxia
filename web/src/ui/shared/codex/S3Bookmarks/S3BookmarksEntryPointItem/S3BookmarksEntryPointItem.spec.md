@@ -18,7 +18,7 @@ export type S3BookmarksEntryPointListProps = {
     items: S3BookmarksEntryPointListProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
     onDelete: (props: { s3Uri: S3Uri }) => void;
-    onRename: (props: { s3Uri: S3Uri }) => void;
+    onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
@@ -62,9 +62,15 @@ Otherwise `callbacks` must be:
 ```ts
 {
     onDelete: () => props.onDelete({ s3Uri: item.s3Uri }),
-    onRename: () => props.onRename({ s3Uri: item.s3Uri })
+    onRename: () =>
+        props.onRename({
+            s3Uri: item.s3Uri,
+            currentDisplayName: resolvedDisplayName
+        })
 }
 ```
+
+Where `resolvedDisplayName` is the resolved string value of `item.displayName`, or `undefined` when no display name is set.
 
 # Layout rules
 

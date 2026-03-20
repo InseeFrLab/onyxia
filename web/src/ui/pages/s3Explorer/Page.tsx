@@ -13,12 +13,16 @@ import { S3UriBar } from "ui/shared/codex/S3UriBar";
 import { DataGrid } from "ui/pages/dataExplorer/DataGrid";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useStyles } from "tss";
-import { S3BookmarksBar } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
+import {
+    S3BookmarksBar,
+    type S3BookmarksBarProps
+} from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import { Deferred } from "evt/tools/Deferred";
 import { S3ProfileSelect } from "ui/shared/codex/S3ProfileSelect";
 import { S3ExplorerMainView } from "ui/shared/codex/S3ExplorerMainView";
 import { CommandBar } from "ui/shared/CommandBar";
+import { S3BookmarksEntryPointList } from "ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem";
 
 const Page = withLoader({
     loader,
@@ -241,46 +245,56 @@ function PageComponent() {
                                     }
                                 />
                             </div>
-                            <S3BookmarksBar
-                                className={css({ marginTop: theme.spacing(2) })}
-                                items={mainView.bookmarks.items}
-                                activeItemS3Uri={mainView.bookmarks.activeItemS3Uri}
-                                getItemLink={({ s3Uri }) => {
-                                    const route = getRoute();
-                                    assert(routeGroup.has(route));
+                            {(() => {
+                                const props: S3BookmarksBarProps = {
+                                    className: css({ marginTop: theme.spacing(2) }),
+                                    items: mainView.bookmarks.items,
+                                    activeItemS3Uri: mainView.bookmarks.activeItemS3Uri,
+                                    getItemLink: ({ s3Uri }) => {
+                                        const route = getRoute();
+                                        assert(routeGroup.has(route));
 
-                                    return routes.s3Explorer({
-                                        ...route.params,
-                                        s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice(
-                                            "s3://".length
-                                        )
-                                    }).link;
-                                }}
-                                onDelete={s3ExplorerUiController.deleteBookmark}
-                                onRename={async ({ s3Uri, currentDisplayName }) => {
-                                    const dResult = new Deferred<
-                                        | { doProceed: true; displayName: string }
-                                        | { doProceed: false }
-                                    >();
+                                        return routes.s3Explorer({
+                                            ...route.params,
+                                            s3UriWithoutScheme: stringifyS3Uri(
+                                                s3Uri
+                                            ).slice("s3://".length)
+                                        }).link;
+                                    },
+                                    onDelete: s3ExplorerUiController.deleteBookmark,
+                                    onRename: async ({ s3Uri, currentDisplayName }) => {
+                                        const dResult = new Deferred<
+                                            | { doProceed: true; displayName: string }
+                                            | { doProceed: false }
+                                        >();
 
-                                    dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
-                                        s3Uri,
-                                        currentDisplayName,
-                                        resolveDoProceed: dResult.resolve
-                                    });
+                                        dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                            {
+                                                s3Uri,
+                                                currentDisplayName,
+                                                resolveDoProceed: dResult.resolve
+                                            }
+                                        );
 
-                                    const result = await dResult.pr;
+                                        const result = await dResult.pr;
 
-                                    if (!result.doProceed) {
-                                        return;
+                                        if (!result.doProceed) {
+                                            return;
+                                        }
+
+                                        s3ExplorerUiController.updateBookmarkDisplayName({
+                                            s3Uri,
+                                            displayName: result.displayName
+                                        });
                                     }
+                                };
 
-                                    s3ExplorerUiController.updateBookmarkDisplayName({
-                                        s3Uri,
-                                        displayName: result.displayName
-                                    });
-                                }}
-                            />
+                                return mainView.uriBar.s3Uri !== undefined ? (
+                                    <S3BookmarksBar {...props} />
+                                ) : (
+                                    <S3BookmarksEntryPointList {...props} />
+                                );
+                            })()}
                         </div>
                         {mainView.listedPrefix !== undefined && (
                             <S3ExplorerMainView

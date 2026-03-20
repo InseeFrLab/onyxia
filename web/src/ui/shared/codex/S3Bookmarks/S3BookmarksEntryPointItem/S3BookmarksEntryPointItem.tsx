@@ -3,13 +3,14 @@ import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import type { LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
 import { S3BookmarkItem } from "../S3BookmarksBarItem";
+import { useResolveLocalizedString } from "ui/i18n";
 
 export type S3BookmarksEntryPointListProps = {
     className?: string;
     items: S3BookmarksEntryPointListProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
     onDelete: (props: { s3Uri: S3Uri }) => void;
-    onRename: (props: { s3Uri: S3Uri }) => void;
+    onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
@@ -25,6 +26,7 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
     const { className, items, activeItemS3Uri, onDelete, onRename, getItemLink } = props;
 
     const { classes, cx } = useStyles();
+    const { resolveLocalizedString } = useResolveLocalizedString();
 
     const activeItemKey = activeItemS3Uri ? stringifyS3Uri(activeItemS3Uri) : undefined;
 
@@ -48,7 +50,16 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
                                 ? undefined
                                 : {
                                       onDelete: () => onDelete({ s3Uri: item.s3Uri }),
-                                      onRename: () => onRename({ s3Uri: item.s3Uri })
+                                      onRename: () =>
+                                          onRename({
+                                              s3Uri: item.s3Uri,
+                                              currentDisplayName:
+                                                  item.displayName === undefined
+                                                      ? undefined
+                                                      : resolveLocalizedString(
+                                                            item.displayName
+                                                        )
+                                          })
                                   }
                         }
                         isActive={
