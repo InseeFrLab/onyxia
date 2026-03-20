@@ -137,23 +137,23 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             display: "flex",
             alignItems: "center",
             width: "100%",
-            height: barHeight,
-            padding: `0 ${theme.spacing(2)}`,
+            padding: theme.spacing(2),
             borderRadius: 9999,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             boxSizing: "border-box",
-            gap: theme.spacing(2),
+            gap: theme.spacing(7),
             minWidth: 0
         },
         summaryPill: {
             display: "inline-flex",
             alignItems: "center",
             gap: theme.spacing(2),
-            padding: `${theme.spacing(0.5)} ${theme.spacing(1.5)}`,
+            padding: theme.spacing(1),
             borderRadius: 9999,
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
             color: theme.colors.useCases.typography.textPrimary,
-            minWidth: 0
+            minWidth: 0,
+            paddingRight: theme.spacing(4)
         },
         clearButton: {
             border: "none",
@@ -179,7 +179,6 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(1.5),
-            marginLeft: "auto",
             flexWrap: "nowrap",
             minWidth: 0
         },
@@ -189,17 +188,18 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             display: "inline-flex",
             alignItems: "center",
             gap: theme.spacing(1),
-            padding: `${theme.spacing(0.5)} ${theme.spacing(1.5)}`,
+            padding: theme.spacing(2.5),
             borderRadius: 9999,
             cursor: "pointer",
             color: theme.colors.useCases.typography.textPrimary,
             transition: "background-color 120ms ease, color 120ms ease",
+            paddingRight: theme.spacing(3.5),
+            paddingLeft: theme.spacing(3),
             "&:hover": {
                 backgroundColor: theme.colors.useCases.surfaces.surface3
             },
             "&:active": {
-                backgroundColor: theme.colors.useCases.surfaces.surface3,
-                color: theme.colors.useCases.typography.textFocus
+                backgroundColor: theme.colors.useCases.surfaces.surface2
             }
         },
         actionIcon: {

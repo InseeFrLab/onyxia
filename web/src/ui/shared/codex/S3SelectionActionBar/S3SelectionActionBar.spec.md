@@ -46,7 +46,7 @@ The component is composed of two main areas:
 
 A left section displaying the selection summary
 
-A right section displaying the available actions
+A section displaying the available actions, aligned to the left of the bar
 
 The layout is horizontal and must remain on a single line.
 
@@ -133,7 +133,7 @@ Hidden actions:
 - The component is a horizontal container that spans the full width.
 - The layout is displayed on a single line.
 - The selection summary is left-aligned.
-- The actions are slightly spaced out to the right.
+- The actions are left-aligned, with a noticeable gap from the selection summary.
 - The actions are displayed in a single row with uniform spacing.
 
 # Visual rules
@@ -178,7 +178,7 @@ The selection summary is displayed inside a pill container.
 
 ---
 
-## Actions (right section)
+## Actions (left section)
 
 Each action is composed of:
 
