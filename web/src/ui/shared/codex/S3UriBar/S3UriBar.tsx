@@ -349,6 +349,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const longPressTimeoutRef = useRef<number | undefined>(undefined);
     const longPressTriggeredRef = useRef(false);
     const wasEditingRef = useRef(false);
+    const wasUndefinedPrefixModeRef = useRef(isUndefinedPrefixMode);
     const ignoreNextBlurRef = useRef(false);
     const preserveNextDraftResetRef = useRef(false);
     const lastRequestedCanonicalS3UriRef = useRef(canonicalS3Uri);
@@ -483,6 +484,23 @@ export function S3UriBar(props: S3UriBarProps) {
         if (isUndefinedPrefixMode && !isEditing) {
             setIsEditing(true);
         }
+    }, [isEditing, isUndefinedPrefixMode]);
+
+    useEffect(() => {
+        const didExitUndefinedPrefixMode =
+            wasUndefinedPrefixModeRef.current && !isUndefinedPrefixMode;
+
+        wasUndefinedPrefixModeRef.current = isUndefinedPrefixMode;
+
+        if (!didExitUndefinedPrefixMode || !isEditing) {
+            return;
+        }
+
+        if (inputRef.current === document.activeElement) {
+            return;
+        }
+
+        setIsEditing(false);
     }, [isEditing, isUndefinedPrefixMode]);
 
     useEffect(() => {
