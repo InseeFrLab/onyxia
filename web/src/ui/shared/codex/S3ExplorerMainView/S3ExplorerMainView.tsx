@@ -1714,7 +1714,9 @@ const useStyles = tss
             backgroundColor: theme.colors.useCases.surfaces.surface3
         },
         statusPillUploading: {
-            gap: theme.spacing(0.5)
+            gap: theme.spacing(0.5),
+            paddingLeft: theme.spacing(1.5),
+            paddingRight: theme.spacing(1.5)
         },
         statusPillLabel: {
             display: "inline-block"
