@@ -132,19 +132,20 @@ function PageComponent() {
                             flexDirection: "column"
                         })}
                     >
-                        {isCommandBarEnabled && (
-                            <CommandBar
-                                className={css({
-                                    position: "absolute",
-                                    right: 0,
-                                    width: "40%",
-                                    zIndex: 1,
-                                    transition: "opacity 750ms linear"
-                                })}
-                                entries={mainView.commandLogsEntries}
-                                maxHeight={300}
-                            />
-                        )}
+                        {isCommandBarEnabled &&
+                            mainView.commandLogsEntries.length !== 0 && (
+                                <CommandBar
+                                    className={css({
+                                        position: "absolute",
+                                        right: 0,
+                                        width: "40%",
+                                        zIndex: 1,
+                                        transition: "opacity 750ms linear"
+                                    })}
+                                    entries={mainView.commandLogsEntries}
+                                    maxHeight={300}
+                                />
+                            )}
 
                         <div>
                             <div
