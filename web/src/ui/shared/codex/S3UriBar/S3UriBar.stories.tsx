@@ -138,6 +138,14 @@ export const BookmarkedReadonlyIndicator: Story = {
     render: args => <StatefulS3UriBar {...args} />
 };
 
+export const BookmarkedActive: Story = {
+    args: {
+        ...baseArgs,
+        isBookmarked: true
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
 export const RootPrefix: Story = {
     args: {
         ...baseArgs,
