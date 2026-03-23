@@ -1,6 +1,5 @@
 import {
     useEffect,
-    useMemo,
     useRef,
     useState,
     type ChangeEvent,
@@ -14,7 +13,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
-import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { Button } from "onyxia-ui/Button";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Icon } from "onyxia-ui/Icon";
@@ -24,9 +22,8 @@ import { Tooltip } from "onyxia-ui/Tooltip";
 import { useConst } from "powerhooks/useConst";
 import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
-import { getFormattedDate } from "ui/shared/formattedDate/getFormattedDate";
+import { S3SelectionActionBar } from "ui/shared/codex/S3SelectionActionBar";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { declareComponentKeys, useLang, useTranslation } from "ui/i18n";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -111,10 +108,6 @@ type ShareLinkDialogState =
           errorMessage: string;
       };
 
-const toolbarButtonIds = ["upload files", "new folder", "get link", "delete"] as const;
-
-type ToolbarButtonId = (typeof toolbarButtonIds)[number];
-
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
 }
@@ -136,6 +129,34 @@ function getObjectsToUploadFromFiles(files: readonly File[]) {
 
 function getFormattedSize(size: number): string {
     return bytes(size) ?? `${size}B`;
+}
+
+function getDayStamp(date: Date): number {
+    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function getFormattedLastModified(params: { time: number }): string {
+    const { time } = params;
+
+    const date = new Date(time);
+    const today = new Date();
+    const diffDays = Math.floor(
+        (getDayStamp(today) - getDayStamp(date)) / (24 * 60 * 60 * 1000)
+    );
+
+    if (diffDays === 0) {
+        return "Today";
+    }
+
+    if (diffDays === 1) {
+        return "Yesterday";
+    }
+
+    return new Intl.DateTimeFormat(undefined, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    }).format(date);
 }
 
 function getUserFacingErrorMessage(params: {
@@ -233,7 +254,6 @@ function CreateDirectoryDialog(props: {
     onSubmit: (params: { prefixSegment: string }) => void;
 }) {
     const { open, onClose, onSubmit } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
 
     const [draft, setDraft] = useState("");
     const [isDraftValid, setIsDraftValid] = useState(false);
@@ -265,13 +285,13 @@ function CreateDirectoryDialog(props: {
         <Dialog
             isOpen={open}
             onClose={onClose}
-            title={t("create folder")}
-            subtitle={t("create folder subtitle")}
+            title="Create folder"
+            subtitle="Folders are created relative to the prefix currently being listed."
             body={
                 open && (
                     <TextField
                         inputProps_autoFocus={true}
-                        label={t("folder name")}
+                        label="Folder name"
                         defaultValue=""
                         evtAction={evtTextFieldAction}
                         getIsValidValue={value => {
@@ -280,7 +300,7 @@ function CreateDirectoryDialog(props: {
                             if (normalizedValue === "") {
                                 return {
                                     isValidValue: false,
-                                    message: t("folder name cannot be empty")
+                                    message: "Folder name cannot be empty."
                                 };
                             }
 
@@ -310,7 +330,7 @@ function CreateDirectoryDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        {t("cancel")}
+                        Cancel
                     </Button>
                     <Button
                         disabled={!isDraftValid}
@@ -320,7 +340,7 @@ function CreateDirectoryDialog(props: {
                                 : undefined
                         }
                     >
-                        {t("create folder")}
+                        Create folder
                     </Button>
                 </>
             }
@@ -334,19 +354,16 @@ function DeleteSelectionDialog(props: {
     onConfirm: () => void;
 }) {
     const { state, onClose, onConfirm } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
 
     return (
         <Dialog
             isOpen={state !== undefined}
             onClose={onClose}
-            title={t("delete selection")}
+            title="Delete selection"
             subtitle={
                 state === undefined
                     ? ""
-                    : t("delete selection subtitle", {
-                          count: state.items.length
-                      })
+                    : `This will permanently delete ${state.items.length} selected item${state.items.length > 1 ? "s" : ""}.`
             }
             body={
                 state !== undefined && (
@@ -357,7 +374,7 @@ function DeleteSelectionDialog(props: {
                                 lineHeight: 1.5
                             }}
                         >
-                            {t("deleted folders remove everything inside them")}
+                            Deleted folders remove everything inside them.
                         </div>
                         <div
                             style={{
@@ -381,9 +398,9 @@ function DeleteSelectionDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        {t("cancel")}
+                        Cancel
                     </Button>
-                    <Button onClick={onConfirm}>{t("delete")}</Button>
+                    <Button onClick={onConfirm}>Delete</Button>
                 </>
             }
         />
@@ -396,13 +413,12 @@ function ShareLinkDialog(props: {
     onRetry: () => void;
 }) {
     const { state, onClose, onRetry } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
 
     return (
         <Dialog
             isOpen={state !== undefined}
             onClose={onClose}
-            title={t("shareable link")}
+            title="Shareable link"
             subtitle={state === undefined ? "" : state.item.displayName}
             body={
                 state !== undefined && (
@@ -424,7 +440,7 @@ function ShareLinkDialog(props: {
                                 }}
                             >
                                 <CircularProgress size={18} />
-                                <span>{t("shareable link loading")}</span>
+                                <span>Generating a direct download URL...</span>
                             </div>
                         )}
 
@@ -445,7 +461,8 @@ function ShareLinkDialog(props: {
                                         lineHeight: 1.6
                                     }}
                                 >
-                                    {t("shareable link ready description")}
+                                    Anyone with this URL can download the file until it
+                                    expires.
                                 </div>
                                 <div
                                     style={{
@@ -469,10 +486,10 @@ function ShareLinkDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        {t("close")}
+                        Close
                     </Button>
                     {state?.status === "error" && (
-                        <Button onClick={onRetry}>{t("retry")}</Button>
+                        <Button onClick={onRetry}>Retry</Button>
                     )}
                     {state?.status === "ready" && (
                         <>
@@ -487,10 +504,10 @@ function ShareLinkDialog(props: {
                                     )
                                 }
                             >
-                                {t("open")}
+                                Open
                             </Button>
                             <Button onClick={() => copyToClipboard(state.url)}>
-                                {t("copy link")}
+                                Copy link
                             </Button>
                         </>
                     )}
@@ -507,7 +524,6 @@ function ErrorState(props: {
     >["errorCase"];
 }) {
     const { errorCase } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
     const { classes } = useStyles({
         isDragActive: false
     });
@@ -518,14 +534,12 @@ function ErrorState(props: {
                 <Icon icon={getIconUrlByName("ErrorOutline")} size="large" />
             </div>
             <div className={classes.errorTitle}>
-                {errorCase === "access denied"
-                    ? t("access denied")
-                    : t("bucket not found")}
+                {errorCase === "access denied" ? "Access denied" : "Bucket not found"}
             </div>
             <div className={classes.errorDescription}>
                 {errorCase === "access denied"
-                    ? t("access denied description")
-                    : t("bucket not found description")}
+                    ? "You do not have permission to list this S3 location."
+                    : "The requested bucket does not exist or is not reachable with the current profile."}
             </div>
         </div>
     );
@@ -533,33 +547,45 @@ function ErrorState(props: {
 
 type ItemRowProps = {
     item: S3ExplorerMainViewProps.Item;
-    lang: string;
     isSelected: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
     onShare: (() => void) | undefined;
+    onDownload: (() => void) | undefined;
+    onCopyS3Uri: () => void;
     onCheckboxChange: () => void;
 };
 
 function ItemRow(props: ItemRowProps) {
     const {
         item,
-        lang,
         isSelected,
         onRowClick,
         onNavigate,
         onDelete,
         onShare,
+        onDownload,
+        onCopyS3Uri,
         onCheckboxChange
     } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
 
     const progressPercent = getProgressPercent(item);
     const isUploadInProgress =
         progressPercent !== undefined && progressPercent < 100 && !item.isDeleting;
     const canNavigate =
         !item.isDeleting && !(item.type === "object" && isUploadInProgress);
+    const isDownloadAvailable =
+        onDownload !== undefined &&
+        !item.isDeleting &&
+        !isUploadInProgress &&
+        (progressPercent === undefined || progressPercent === 100);
+    const isShareAvailable =
+        onShare !== undefined &&
+        !item.isDeleting &&
+        !isUploadInProgress &&
+        (progressPercent === undefined || progressPercent === 100);
+    const isCopyAvailable = !item.isDeleting;
 
     const { classes, cx } = useStyles({
         isDragActive: false
@@ -591,162 +617,199 @@ function ItemRow(props: ItemRowProps) {
                         onCheckboxChange();
                     }}
                     inputProps={{
-                        "aria-label": t("select item", { itemName: item.displayName })
+                        "aria-label": `Select ${item.displayName}`
                     }}
                 />
             </td>
             <td className={classes.nameCell}>
-                <div className={classes.itemIdentity}>
-                    <div className={classes.itemIconWrapper}>
-                        <Icon
-                            icon={getIconUrlByName(
-                                item.type === "prefix segment" ? "Folder" : "Description"
-                            )}
-                            size="small"
-                        />
-                    </div>
-                    <div className={classes.itemNameBlock}>
-                        <div className={classes.itemPrimaryRow}>
-                            <button
-                                type="button"
-                                className={classes.itemNameButton}
-                                title={
+                <div className={classes.nameCellContent}>
+                    <div className={classes.itemIdentity}>
+                        <div className={classes.itemIconWrapper}>
+                            <Icon
+                                icon={getIconUrlByName(
                                     item.type === "prefix segment"
-                                        ? `${item.displayName}/`
-                                        : item.displayName
-                                }
-                                disabled={!canNavigate}
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    onNavigate();
-                                }}
-                            >
-                                {item.displayName}
-                            </button>
+                                        ? "Folder"
+                                        : "Description"
+                                )}
+                                size="small"
+                            />
+                        </div>
+                        <div className={classes.itemNameBlock}>
+                            <div className={classes.itemPrimaryRow}>
+                                <button
+                                    type="button"
+                                    className={classes.itemNameButton}
+                                    title={
+                                        item.type === "prefix segment"
+                                            ? `${item.displayName}/`
+                                            : item.displayName
+                                    }
+                                    disabled={!canNavigate}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        onNavigate();
+                                    }}
+                                >
+                                    {item.displayName}
+                                </button>
 
-                            {(item.isDeleting ||
-                                isUploadInProgress ||
-                                progressPercent === 100) && (
-                                <div className={classes.itemMetaRow}>
-                                    {item.isDeleting && (
-                                        <span
-                                            className={cx(
-                                                classes.statusPill,
-                                                classes.statusPillWarning
-                                            )}
-                                        >
-                                            {t("deleting")}
-                                        </span>
-                                    )}
-                                    {!item.isDeleting && isUploadInProgress && (
-                                        <>
+                                {(item.isDeleting ||
+                                    isUploadInProgress ||
+                                    progressPercent === 100) && (
+                                    <div className={classes.itemMetaRow}>
+                                        {item.isDeleting && (
                                             <span
                                                 className={cx(
                                                     classes.statusPill,
-                                                    classes.statusPillUploading
+                                                    classes.statusPillWarning
                                                 )}
                                             >
-                                                <span className={classes.statusPillLabel}>
-                                                    {t("uploading label")}
-                                                </span>
-                                                <span
-                                                    className={classes.statusPillPercent}
-                                                >
-                                                    {Math.round(progressPercent)}%
-                                                </span>
-                                            </span>
-                                            <div className={classes.inlineProgressTrack}>
-                                                <div
-                                                    className={classes.inlineProgressFill}
-                                                    style={{
-                                                        width: `${progressPercent}%`
-                                                    }}
-                                                />
-                                            </div>
-                                        </>
-                                    )}
-                                    {!item.isDeleting &&
-                                        !isUploadInProgress &&
-                                        progressPercent === 100 && (
-                                            <span className={classes.statusPill}>
-                                                {t("uploaded")}
+                                                Deleting...
                                             </span>
                                         )}
-                                </div>
-                            )}
+                                        {!item.isDeleting && isUploadInProgress && (
+                                            <>
+                                                <span
+                                                    className={cx(
+                                                        classes.statusPill,
+                                                        classes.statusPillUploading
+                                                    )}
+                                                >
+                                                    <span
+                                                        className={
+                                                            classes.statusPillLabel
+                                                        }
+                                                    >
+                                                        Uploading
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            classes.statusPillPercent
+                                                        }
+                                                    >
+                                                        {Math.round(progressPercent)}%
+                                                    </span>
+                                                </span>
+                                                <div
+                                                    className={
+                                                        classes.inlineProgressTrack
+                                                    }
+                                                >
+                                                    <div
+                                                        className={
+                                                            classes.inlineProgressFill
+                                                        }
+                                                        style={{
+                                                            width: `${progressPercent}%`
+                                                        }}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                        {!item.isDeleting &&
+                                            !isUploadInProgress &&
+                                            progressPercent === 100 && (
+                                                <span className={classes.statusPill}>
+                                                    Uploaded
+                                                </span>
+                                            )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </td>
-            <td className={classes.metaCell}>
-                {item.type === "object" ? getFormattedSize(item.size) : t("folder")}
-            </td>
-            <td className={classes.metaCell}>
-                {item.type === "object"
-                    ? getFormattedDate({
-                          time: item.lastModified,
-                          lang
-                      })
-                    : " "}
-            </td>
-            <td className={classes.actionsCell}>
-                <div className={classes.rowActions}>
-                    <Tooltip
-                        title={
-                            item.type === "prefix segment"
-                                ? t("open folder")
-                                : t("open file")
-                        }
-                    >
-                        <span className={classes.inlineActionWrapper}>
-                            <IconButton
-                                icon={getIconUrlByName("OpenInNew")}
-                                disabled={!canNavigate}
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    onNavigate();
-                                }}
-                            />
-                        </span>
-                    </Tooltip>
+                    <div className={classes.rowActions}>
+                        {onShare !== undefined && (
+                            <Tooltip title="Get shareable link">
+                                <span className={classes.inlineActionWrapper}>
+                                    <IconButton
+                                        className={classes.rowActionButton}
+                                        icon={getIconUrlByName("Share")}
+                                        aria-label="Get shareable link"
+                                        disabled={!isShareAvailable}
+                                        onClick={event => {
+                                            event.stopPropagation();
 
-                    {item.type === "object" && (
-                        <Tooltip title={t("get shareable link")}>
+                                            if (
+                                                !isShareAvailable ||
+                                                onShare === undefined
+                                            ) {
+                                                return;
+                                            }
+
+                                            onShare();
+                                        }}
+                                    />
+                                </span>
+                            </Tooltip>
+                        )}
+                        {onDownload !== undefined && (
+                            <Tooltip title="Download">
+                                <span className={classes.inlineActionWrapper}>
+                                    <IconButton
+                                        className={classes.rowActionButton}
+                                        icon={getIconUrlByName("FileDownload")}
+                                        aria-label="Download"
+                                        disabled={!isDownloadAvailable}
+                                        onClick={event => {
+                                            event.stopPropagation();
+
+                                            if (
+                                                !isDownloadAvailable ||
+                                                onDownload === undefined
+                                            ) {
+                                                return;
+                                            }
+
+                                            onDownload();
+                                        }}
+                                    />
+                                </span>
+                            </Tooltip>
+                        )}
+                        <Tooltip title="Copy S3 path">
                             <span className={classes.inlineActionWrapper}>
                                 <IconButton
-                                    icon={getIconUrlByName("Link")}
-                                    disabled={
-                                        onShare === undefined ||
-                                        item.isDeleting ||
-                                        isUploadInProgress
-                                    }
+                                    className={classes.rowActionButton}
+                                    icon={getIconUrlByName("ContentCopy")}
+                                    aria-label="Copy S3 path"
+                                    disabled={!isCopyAvailable}
                                     onClick={event => {
                                         event.stopPropagation();
 
-                                        if (onShare === undefined) {
+                                        if (!isCopyAvailable) {
                                             return;
                                         }
 
-                                        onShare();
+                                        onCopyS3Uri();
                                     }}
                                 />
                             </span>
                         </Tooltip>
-                    )}
-
-                    <Tooltip title={t("delete")}>
-                        <span className={classes.inlineActionWrapper}>
-                            <IconButton
-                                icon={getIconUrlByName("Delete")}
-                                disabled={item.isDeleting}
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    onDelete();
-                                }}
-                            />
-                        </span>
-                    </Tooltip>
+                        <Tooltip title="Delete">
+                            <span className={classes.inlineActionWrapper}>
+                                <IconButton
+                                    className={classes.rowActionButton}
+                                    icon={getIconUrlByName("Delete")}
+                                    aria-label="Delete"
+                                    disabled={item.isDeleting}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        onDelete();
+                                    }}
+                                />
+                            </span>
+                        </Tooltip>
+                    </div>
                 </div>
+            </td>
+            <td className={classes.metaCell}>
+                {item.type === "object"
+                    ? getFormattedLastModified({ time: item.lastModified })
+                    : "\u00A0"}
+            </td>
+            <td className={cx(classes.metaCell, classes.sizeCell)}>
+                {item.type === "object" ? getFormattedSize(item.size) : "Folder"}
             </td>
         </tr>
     );
@@ -783,8 +846,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const shareRequestIdRef = useRef(0);
 
-    const { lang } = useLang();
-    const { t } = useTranslation({ S3ExplorerMainView });
     const { classes, cx } = useStyles({ isDragActive });
 
     useEffect(() => {
@@ -825,6 +886,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const selectedObjects = selectedItems.filter(
         (item): item is S3ExplorerMainViewProps.Item.Object => item.type === "object"
     );
+    const selectedS3Uris = selectedItems.map(item => item.s3Uri);
 
     const isAllSelected =
         selectableItems.length > 0 &&
@@ -844,37 +906,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
             return progressPercent === undefined || progressPercent === 100;
         })();
-
-    const toolbarButtons = useMemo(
-        (): ButtonBarProps<ToolbarButtonId>["buttons"] =>
-            toolbarButtonIds.map(buttonId => ({
-                buttonId,
-                icon: (() => {
-                    switch (buttonId) {
-                        case "upload files":
-                        case "new folder":
-                            return getIconUrlByName("Add");
-                        case "get link":
-                            return getIconUrlByName("Link");
-                        case "delete":
-                            return getIconUrlByName("Delete");
-                    }
-                })(),
-                isDisabled: (() => {
-                    switch (buttonId) {
-                        case "upload files":
-                        case "new folder":
-                            return false;
-                        case "get link":
-                            return !isSelectedObjectShareable;
-                        case "delete":
-                            return selectedItems.length === 0;
-                    }
-                })(),
-                label: t(buttonId)
-            })),
-        [isSelectedObjectShareable, selectedItems.length, t]
-    );
 
     const setSelectionToSingleItem = (itemKey: string) => {
         setSelectedItemKeys([itemKey]);
@@ -1017,10 +1048,48 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 item,
                 errorMessage: getUserFacingErrorMessage({
                     error,
-                    fallbackMessage: t("shareable link generation failed")
+                    fallbackMessage: "Unable to generate a shareable link for this file."
                 })
             });
         }
+    };
+
+    const requestDownloadForItems = async (
+        itemsToDownload: S3ExplorerMainViewProps.Item[]
+    ) => {
+        const downloadableObjects = itemsToDownload.filter(
+            (item): item is S3ExplorerMainViewProps.Item.Object => {
+                if (item.type !== "object") {
+                    return false;
+                }
+
+                if (item.isDeleting) {
+                    return false;
+                }
+
+                const progressPercent = getProgressPercent(item);
+
+                return progressPercent === undefined || progressPercent === 100;
+            }
+        );
+
+        if (downloadableObjects.length === 0) {
+            return;
+        }
+
+        await Promise.all(
+            downloadableObjects.map(async item => {
+                try {
+                    const url = await getDirectDownloadUrl({
+                        s3Uri: item.s3Uri
+                    });
+
+                    window.open(url, "_blank", "noopener,noreferrer");
+                } catch {
+                    return;
+                }
+            })
+        );
     };
 
     const requestDeletionForItems = (itemsToDelete: S3ExplorerMainViewProps.Item[]) => {
@@ -1040,6 +1109,14 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const clearSelection = () => {
         setSelectedItemKeys([]);
         lastSelectedItemKeyRef.current = undefined;
+    };
+
+    const copySelectedS3Uri = () => {
+        if (selectedItems.length !== 1) {
+            return;
+        }
+
+        copyToClipboard(stringifyS3Uri(selectedItems[0].s3Uri));
     };
 
     const handleNavigate = (s3Uri: S3Uri) => {
@@ -1116,6 +1193,31 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 }}
             />
 
+            <div className={classes.selectionBarSlot}>
+                {selectedItems.length > 0 && (
+                    <S3SelectionActionBar
+                        selectedS3Uris={selectedS3Uris}
+                        onClear={clearSelection}
+                        onDownload={() => requestDownloadForItems(selectedItems)}
+                        onDelete={() => requestDeletionForItems(selectedItems)}
+                        onCopyS3Uri={copySelectedS3Uri}
+                        onShare={() => {
+                            if (
+                                selectedObjectForShare === undefined ||
+                                !isSelectedObjectShareable
+                            ) {
+                                return;
+                            }
+
+                            requestShareLink(selectedObjectForShare);
+                        }}
+                        onRename={() => {
+                            return;
+                        }}
+                    />
+                )}
+            </div>
+
             <div
                 className={cx(classes.root, className)}
                 aria-busy={isListing}
@@ -1163,67 +1265,17 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             >
                 {isListing && <LinearProgress className={classes.listingProgress} />}
 
-                <div className={classes.toolbar}>
-                    <ButtonBar
-                        className={classes.toolbarButtonBar}
-                        buttons={toolbarButtons}
-                        onClick={buttonId => {
-                            switch (buttonId) {
-                                case "upload files":
-                                    openFilePicker();
-                                    break;
-                                case "new folder":
-                                    setIsCreateDirectoryDialogOpen(true);
-                                    break;
-                                case "get link":
-                                    if (selectedObjectForShare === undefined) {
-                                        return;
-                                    }
-
-                                    requestShareLink(selectedObjectForShare);
-                                    break;
-                                case "delete":
-                                    requestDeletionForItems(selectedItems);
-                                    break;
-                            }
-                        }}
-                    />
-                </div>
-
-                <div className={classes.summaryBar}>
-                    <div className={classes.summaryText}>
-                        {selectedItems.length > 0
-                            ? t("selected items", { count: selectedItems.length })
-                            : t("items", { count: items.length })}
-                    </div>
-                    <div className={classes.summaryTextMuted}>
-                        {isListing
-                            ? t("refreshing listing")
-                            : t("drag files anywhere in this panel to upload")}
-                    </div>
-                    {selectedItems.length > 0 && (
-                        <button
-                            type="button"
-                            className={classes.clearSelectionButton}
-                            onClick={clearSelection}
-                        >
-                            {t("clear selection")}
-                        </button>
-                    )}
-                </div>
-
                 <div className={classes.contentShell}>
                     {isDragActive && (
                         <div className={classes.dropOverlay}>
                             <div className={classes.dropOverlayCard}>
                                 <Icon icon={getIconUrlByName("Add")} size="large" />
                                 <div className={classes.dropOverlayTitle}>
-                                    {t("drop files to upload")}
+                                    Drop files to upload
                                 </div>
                                 <div className={classes.dropOverlayDescription}>
-                                    {t(
-                                        "files will be uploaded into the currently listed prefix"
-                                    )}
+                                    Files will be uploaded into the currently listed
+                                    prefix.
                                 </div>
                             </div>
                         </div>
@@ -1235,22 +1287,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 <Icon icon={getIconUrlByName("Folder")} size="large" />
                             </div>
                             <div className={classes.emptyStateTitle}>
-                                {t("this prefix is empty")}
+                                This prefix is empty
                             </div>
                             <div className={classes.emptyStateDescription}>
-                                {t(
-                                    "upload files or create a folder to start populating this location"
-                                )}
+                                Upload files or create a folder to start populating this
+                                location.
                             </div>
                             <div className={classes.emptyStateActions}>
-                                <Button onClick={openFilePicker}>
-                                    {t("upload files")}
-                                </Button>
+                                <Button onClick={openFilePicker}>Upload files</Button>
                                 <Button
                                     variant="secondary"
                                     onClick={() => setIsCreateDirectoryDialogOpen(true)}
                                 >
-                                    {t("new folder")}
+                                    New folder
                                 </Button>
                             </div>
                         </div>
@@ -1260,9 +1309,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 <colgroup>
                                     <col className={classes.checkboxColumn} />
                                     <col className={classes.nameColumn} />
-                                    <col className={classes.sizeColumn} />
                                     <col className={classes.lastModifiedColumn} />
-                                    <col className={classes.actionsColumn} />
+                                    <col className={classes.sizeColumn} />
                                 </colgroup>
                                 <thead>
                                     <tr className={classes.headerRow}>
@@ -1283,7 +1331,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     );
                                                 }}
                                                 inputProps={{
-                                                    "aria-label": t("select all items")
+                                                    "aria-label": "Select all items"
                                                 }}
                                             />
                                         </th>
@@ -1296,7 +1344,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 className={classes.sortButton}
                                                 onClick={() => handleSortToggle("name")}
                                             >
-                                                {t("name")}
+                                                Name
                                                 <span
                                                     className={cx(
                                                         classes.sortDirection,
@@ -1313,30 +1361,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                         </th>
                                         <th
                                             className={classes.headerCell}
-                                            aria-sort={sizeSortIndicator.ariaSort}
-                                        >
-                                            <button
-                                                type="button"
-                                                className={classes.sortButton}
-                                                onClick={() => handleSortToggle("size")}
-                                            >
-                                                {t("size")}
-                                                <span
-                                                    className={cx(
-                                                        classes.sortDirection,
-                                                        sizeSortIndicator.isActive &&
-                                                            classes.sortDirectionActive
-                                                    )}
-                                                >
-                                                    <Icon
-                                                        icon={sizeSortIndicator.icon}
-                                                        size="small"
-                                                    />
-                                                </span>
-                                            </button>
-                                        </th>
-                                        <th
-                                            className={classes.headerCell}
                                             aria-sort={lastModifiedSortIndicator.ariaSort}
                                         >
                                             <button
@@ -1346,7 +1370,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     handleSortToggle("lastModified")
                                                 }
                                             >
-                                                {t("last modified")}
+                                                Last modified
                                                 <span
                                                     className={cx(
                                                         classes.sortDirection,
@@ -1363,8 +1387,32 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 </span>
                                             </button>
                                         </th>
-                                        <th className={classes.actionsHeaderCell}>
-                                            {t("actions")}
+                                        <th
+                                            className={cx(
+                                                classes.headerCell,
+                                                classes.sizeHeaderCell
+                                            )}
+                                            aria-sort={sizeSortIndicator.ariaSort}
+                                        >
+                                            <button
+                                                type="button"
+                                                className={classes.sortButton}
+                                                onClick={() => handleSortToggle("size")}
+                                            >
+                                                Size
+                                                <span
+                                                    className={cx(
+                                                        classes.sortDirection,
+                                                        sizeSortIndicator.isActive &&
+                                                            classes.sortDirectionActive
+                                                    )}
+                                                >
+                                                    <Icon
+                                                        icon={sizeSortIndicator.icon}
+                                                        size="small"
+                                                    />
+                                                </span>
+                                            </button>
                                         </th>
                                     </tr>
                                 </thead>
@@ -1376,7 +1424,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                             <ItemRow
                                                 key={itemKey}
                                                 item={item}
-                                                lang={lang}
                                                 isSelected={selectedItemKeySet.has(
                                                     itemKey
                                                 )}
@@ -1396,6 +1443,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     item.type === "object"
                                                         ? () => requestShareLink(item)
                                                         : undefined
+                                                }
+                                                onDownload={
+                                                    item.type === "object"
+                                                        ? () =>
+                                                              requestDownloadForItems([
+                                                                  item
+                                                              ])
+                                                        : undefined
+                                                }
+                                                onCopyS3Uri={() =>
+                                                    copyToClipboard(
+                                                        stringifyS3Uri(item.s3Uri)
+                                                    )
                                                 }
                                             />
                                         );
@@ -1424,7 +1484,6 @@ const useStyles = tss
             position: "relative",
             zIndex: 0,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
-            boxShadow: theme.shadows[1],
             boxSizing: "border-box",
             outline: isDragActive
                 ? `2px solid ${theme.colors.useCases.typography.textFocus}`
@@ -1439,48 +1498,13 @@ const useStyles = tss
             zIndex: 3,
             pointerEvents: "none"
         },
-        toolbar: {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: theme.spacing(2),
-            padding: `${theme.spacing(2)} ${theme.spacing(2)} 0`,
-            borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            flexWrap: "wrap"
-        },
-        toolbarButtonBar: {
-            width: "100%",
-            backgroundColor: "transparent",
-            boxShadow: "none",
-            borderRadius: 0
-        },
-        summaryBar: {
+        selectionBarSlot: {
             display: "flex",
             alignItems: "center",
-            gap: theme.spacing(2),
-            padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
-            borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            flexWrap: "wrap",
-            paddingLeft: theme.spacing(3)
-        },
-        summaryText: {
-            ...theme.typography.variants["label 1"].style,
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        summaryTextMuted: {
-            color: theme.colors.useCases.typography.textSecondary,
-            fontSize: 13,
-            ...theme.spacing.topBottom("margin", 2)
-        },
-        clearSelectionButton: {
-            marginLeft: "auto",
-            border: "none",
-            background: "transparent",
-            padding: 0,
-            cursor: "pointer",
-            color: theme.colors.useCases.typography.textPrimary,
-            ...theme.typography.variants["label 1"].style
+            minHeight: theme.spacing(7),
+            padding: `0 ${theme.spacing(2)}`,
+            boxSizing: "border-box",
+            marginBottom: theme.spacing(2)
         },
         contentShell: {
             position: "relative",
@@ -1571,40 +1595,35 @@ const useStyles = tss
             width: 140
         },
         lastModifiedColumn: {
-            width: 300
-        },
-        actionsColumn: {
-            width: 120
+            width: 200
         },
         headerRow: {
             position: "sticky",
             top: 0,
             zIndex: 1,
-            backgroundColor: theme.colors.useCases.surfaces.surface1
+            backgroundColor: "transparent",
+            "& th:last-of-type": {
+                paddingRight: theme.spacing(3)
+            }
         },
         checkboxHeaderCell: {
             width: 68,
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             textAlign: "left",
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            backgroundColor: theme.colors.useCases.surfaces.surface1
+            backgroundColor: "transparent",
+            ...theme.typography.variants["label 1"].style,
+            color: theme.colors.useCases.typography.textSecondary
         },
         headerCell: {
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             textAlign: "left",
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            backgroundColor: theme.colors.useCases.surfaces.surface1
+            backgroundColor: "transparent",
+            ...theme.typography.variants["label 1"].style,
+            color: theme.colors.useCases.typography.textSecondary
         },
-        actionsHeaderCell: {
-            width: 120,
-            padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
-            textAlign: "right",
-            borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
-            color: theme.colors.useCases.typography.textSecondary,
-            fontSize: 13,
-            paddingRight: theme.spacing(3)
-        },
+        sizeHeaderCell: {},
         sortButton: {
             border: "none",
             background: "transparent",
@@ -1613,9 +1632,8 @@ const useStyles = tss
             display: "inline-flex",
             alignItems: "center",
             gap: theme.spacing(1),
-            color: theme.colors.useCases.typography.textSecondary,
-            fontSize: 13,
-            fontWeight: 600
+            color: "inherit",
+            ...theme.typography.variants["label 1"].style
         },
         sortDirection: {
             display: "inline-flex",
@@ -1627,21 +1645,39 @@ const useStyles = tss
             flexShrink: 0
         },
         sortDirectionActive: {
-            color: theme.colors.useCases.typography.textPrimary
+            color: theme.colors.useCases.typography.textFocus
         },
         tableRow: {
             "& td": {
                 borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
             },
+            "& td:last-of-type": {
+                paddingRight: theme.spacing(3)
+            },
             "&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
+                backgroundColor: theme.colors.useCases.surfaces.surface3
             },
             [`&:hover .${classes.rowActions}`]: {
-                opacity: 1
+                opacity: 1,
+                visibility: "visible",
+                pointerEvents: "auto"
+            },
+            [`&:focus-within .${classes.rowActions}`]: {
+                opacity: 1,
+                visibility: "visible",
+                pointerEvents: "auto"
             }
         },
         tableRowSelected: {
-            backgroundColor: theme.colors.useCases.surfaces.surface2
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
+            [`&:hover`]: {
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+            },
+            [`& .${classes.rowActions}`]: {
+                opacity: 1,
+                visibility: "visible",
+                pointerEvents: "auto"
+            }
         },
         tableRowBusy: {
             opacity: 0.66
@@ -1655,32 +1691,36 @@ const useStyles = tss
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             minWidth: 240
         },
+        nameCellContent: {
+            display: "flex",
+            alignItems: "center",
+            gap: theme.spacing(2),
+            minWidth: 0
+        },
         metaCell: {
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             color: theme.colors.useCases.typography.textSecondary,
             whiteSpace: "nowrap",
             verticalAlign: "middle",
-            fontSize: 13
+            ...theme.typography.variants["body 2"].style
         },
-        actionsCell: {
-            padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
-            textAlign: "right",
-            verticalAlign: "middle"
-        },
+        sizeCell: {},
         itemIdentity: {
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(1.5),
-            minWidth: 0
+            minWidth: 0,
+            flex: 1
         },
         itemIconWrapper: {
             width: 32,
             height: 32,
-            borderRadius: 10,
+            borderRadius: 8,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             backgroundColor: theme.colors.useCases.surfaces.surface2,
+            color: theme.colors.useCases.typography.textPrimary,
             flexShrink: 0
         },
         itemNameBlock: {
@@ -1691,8 +1731,7 @@ const useStyles = tss
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(1),
-            minWidth: 0,
-            paddingRight: theme.spacing(2)
+            minWidth: 0
         },
         itemNameButton: {
             ...theme.typography.variants["label 1"].style,
@@ -1766,9 +1805,27 @@ const useStyles = tss
         rowActions: {
             display: "inline-flex",
             alignItems: "center",
-            gap: theme.spacing(0.5),
-            opacity: 0.3,
-            transition: "opacity 120ms ease"
+            gap: theme.spacing(2),
+            opacity: 0,
+            visibility: "hidden",
+            pointerEvents: "none",
+            transition: "opacity 120ms ease",
+            minWidth: 160,
+            justifyContent: "flex-end",
+            color: theme.colors.useCases.typography.textSecondary,
+            flexShrink: 0,
+            paddingRight: theme.spacing(4)
+        },
+        rowActionButton: {
+            color: "inherit",
+            borderRadius: 9999,
+            padding: theme.spacing(0.5),
+            "&:hover": {
+                backgroundColor: theme.colors.useCases.surfaces.surface3
+            },
+            "&:active": {
+                backgroundColor: theme.colors.useCases.surfaces.surface2
+            }
         },
         inlineActionWrapper: {
             display: "inline-flex"
@@ -1782,8 +1839,7 @@ const useStyles = tss
             padding: theme.spacing(4),
             gap: theme.spacing(1.5),
             backgroundColor: theme.colors.useCases.surfaces.surface1,
-            borderRadius: 20,
-            boxShadow: theme.shadows[1]
+            borderRadius: 20
         },
         errorIcon: {
             width: 56,
@@ -1804,51 +1860,3 @@ const useStyles = tss
             lineHeight: 1.6
         }
     }));
-
-const { i18n } = declareComponentKeys<
-    | ToolbarButtonId
-    | "create folder"
-    | "create folder subtitle"
-    | "folder name"
-    | "folder name cannot be empty"
-    | "cancel"
-    | "delete selection"
-    | "deleted folders remove everything inside them"
-    | "shareable link"
-    | "shareable link loading"
-    | "shareable link ready description"
-    | "close"
-    | "retry"
-    | "open"
-    | "copy link"
-    | "access denied"
-    | "bucket not found"
-    | "access denied description"
-    | "bucket not found description"
-    | "deleting"
-    | "uploading label"
-    | "uploaded"
-    | "folder"
-    | "open folder"
-    | "open file"
-    | "get shareable link"
-    | "refreshing listing"
-    | "drag files anywhere in this panel to upload"
-    | "clear selection"
-    | "drop files to upload"
-    | "files will be uploaded into the currently listed prefix"
-    | "this prefix is empty"
-    | "upload files or create a folder to start populating this location"
-    | "select all items"
-    | "name"
-    | "size"
-    | "last modified"
-    | "actions"
-    | "shareable link generation failed"
-    | { K: "delete selection subtitle"; P: { count: number } }
-    | { K: "select item"; P: { itemName: string } }
-    | { K: "uploading"; P: { percent: number } }
-    | { K: "selected items"; P: { count: number } }
-    | { K: "items"; P: { count: number } }
->()({ S3ExplorerMainView });
-export type I18n = typeof i18n;
