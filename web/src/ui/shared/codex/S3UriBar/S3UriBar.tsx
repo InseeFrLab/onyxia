@@ -375,6 +375,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const [isCursorAtEnd, setIsCursorAtEnd] = useState(true);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
+    const [isBookmarkHovered, setIsBookmarkHovered] = useState(false);
     const [hintsPanelPosition, setHintsPanelPosition] = useState({
         left: hintsPanelHorizontalEdgePaddingPx,
         top: 0
@@ -486,6 +487,12 @@ export function S3UriBar(props: S3UriBarProps) {
             setIsEditing(true);
         }
     }, [isEditing, isUndefinedPrefixMode]);
+
+    useEffect(() => {
+        if (!isBookmarked) {
+            setIsBookmarkHovered(false);
+        }
+    }, [isBookmarked]);
 
     useEffect(() => {
         const didExitUndefinedPrefixMode =
@@ -1006,6 +1013,13 @@ export function S3UriBar(props: S3UriBarProps) {
         Math.min(2, displayCrumbs.length)
     );
     const displayKeyCrumbs = displayCrumbs.slice(2);
+    const shouldShowUnpinnedIcon =
+        isBookmarked && isBookmarkHovered && onToggleBookmark !== undefined;
+    const bookmarkIconName = shouldShowUnpinnedIcon
+        ? "PushPinOutlined"
+        : isBookmarked
+          ? "PushPin"
+          : "PushPinOutlined";
 
     return (
         <div
@@ -1438,10 +1452,19 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 : "Add bookmark"
                                             : "Bookmarked"
                                     }
-                                    icon={getIconUrlByName(
-                                        isBookmarked ? "PushPin" : "PushPinOutlined"
-                                    )}
-                                    size="small"
+                                    icon={getIconUrlByName(bookmarkIconName)}
+                                    size="default"
+                                    onMouseEnter={() => {
+                                        if (
+                                            isBookmarked &&
+                                            onToggleBookmark !== undefined
+                                        ) {
+                                            setIsBookmarkHovered(true);
+                                        }
+                                    }}
+                                    onMouseLeave={() => {
+                                        setIsBookmarkHovered(false);
+                                    }}
                                     onClick={event => {
                                         event.stopPropagation();
                                         assert(s3Uri !== undefined);
@@ -1544,7 +1567,7 @@ const useStyles = tss
     .withName({ S3UriBar })
     .withParams<{ isEditing: boolean }>()
     .create(({ theme, isEditing }) => {
-        const barHeight = "56px";
+        const barHeight = "auto";
         const accentColor = theme.colors.useCases.buttons.actionActive;
 
         return {
@@ -1560,10 +1583,10 @@ const useStyles = tss
                 width: "100%",
                 minWidth: 0,
                 height: barHeight,
-                paddingTop: "6px",
-                paddingBottom: "6px",
-                paddingLeft: theme.spacing(2),
-                paddingRight: theme.spacing(2),
+                paddingTop: theme.spacing(3),
+                paddingBottom: theme.spacing(3),
+                paddingLeft: theme.spacing(3),
+                paddingRight: theme.spacing(3),
                 boxSizing: "border-box",
                 borderRadius: "16px",
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
@@ -1643,8 +1666,8 @@ const useStyles = tss
                 height: "36px",
                 paddingTop: "6px",
                 paddingBottom: "6px",
-                paddingLeft: "10px",
-                paddingRight: "10px",
+                paddingLeft: "8px",
+                paddingRight: "8px",
                 margin: 0,
                 border: "1px solid transparent",
                 borderRadius: "12px",
@@ -1712,21 +1735,38 @@ const useStyles = tss
                 flexShrink: 0
             },
             bookmarkButton: {
-                borderRadius: "10px",
+                margin: 0,
+                width: "36px",
+                height: "36px",
+                minWidth: "36px",
+                borderRadius: "12px",
                 backgroundColor: "transparent",
-                width: "31px",
-                height: "31px",
-                minWidth: "31px",
+                boxSizing: "border-box",
                 padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
                 "&:hover": {
                     backgroundColor: theme.colors.useCases.surfaces.surface2
+                },
+                "& .MuiSvgIcon-root, & svg, & img": {
+                    width: "20px",
+                    height: "20px",
+                    fontSize: "20px"
                 }
             },
             bookmarkButtonActive: {
-                "& .MuiSvgIcon-root, & img": {
-                    color: accentColor
+                backgroundColor: theme.colors.palette.focus.mainAlpha10,
+                "&:hover": {
+                    backgroundColor: theme.colors.palette.focus.mainAlpha20
+                },
+                color: accentColor,
+                "& .MuiSvgIcon-root, & img, & svg, & path": {
+                    color: accentColor,
+                    fill: accentColor
                 }
             },
+
             bookmarkButtonReadonly: {
                 opacity: 0.65
             },
