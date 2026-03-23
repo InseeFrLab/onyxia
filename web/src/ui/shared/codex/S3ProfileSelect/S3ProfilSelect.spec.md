@@ -1,12 +1,12 @@
 #Intent
 
-S3ProfileSelect is a Drop Dow nList Component used to:
+`S3ProfileSelect` is an inline profile selection component used to:
 
 - display the currently selected S3 profile,
-- optionally edit the selected profile,
 - open a dropdown menu listing all available S3 profiles,
 - switch the active profile,
-- create a new profile.
+- expose a separate settings action for the selected profile,
+- optionally create a new profile.
 
 # Props
 
@@ -24,7 +24,7 @@ type S3ProfileSelectProps = {
 
     onSelectedProfileChange: (params: { profileName: string }) => void;
 
-    /** Assert profile name match an entry with readonly false */
+    /** Opens the settings/details view for the currently selected profile */
     onEditProfile: () => void;
 
     onCreateNewProfile: () => void;
@@ -33,7 +33,15 @@ type S3ProfileSelectProps = {
 
 # General Structure
 
-The component is made of 2 visible blocks:
+The component is made of 3 visible blocks:
+
+### A Label
+
+A static text label: `S3 Profile :`
+
+- outside of the trigger
+- not clickable
+- aligned vertically with the trigger and settings button
 
 ### Top trigger row
 
@@ -87,6 +95,9 @@ If the clicked profile is already selected:
 
 - it may still close the dropdown,
 - it should not call `onSelectedProfileChange` again unless you explicitly want this behavior.
+
+The static label `S3 Profile :` is not interactive.
+Only the selection trigger toggles the dropdown.
 
 ### Create new profile behavior
 
@@ -148,12 +159,17 @@ This row behaves like a menu action, not like a list item selection.
 
 ### Color surfaces specs :
 
-- default color surface : `theme.colors.useCases.surfaces.surface1`
-- hover color surface : `theme.colors.useCases.surfaces.surface2`
+- default color surface : `theme.colors.useCases.surfaces.surface2`
+- Top trigger row active color surface (when the dropdown panel is open) : `theme.colors.useCases.surfaces.surface1`
+- default item color surface : `theme.colors.useCases.surfaces.surface1`
+- hover color surface : `theme.colors.useCases.surfaces.surface1`
+- hover item color surface : `theme.colors.useCases.surfaces.surface2`
 - Active color surface : `theme.colors.palette.focus.mainAlpha10`
 - hover on Active color surface : `theme.colors.palette.focus.mainAlpha20`
 - color background for edit button : `theme.colors.useCases.surfaces.surface2`
 - hover background for parameters button : `theme.colors.useCases.surfaces.surface3`
+
+The static label has no background surface.
 
 ### Typography spec :
 
