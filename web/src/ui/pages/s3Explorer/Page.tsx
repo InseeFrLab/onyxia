@@ -154,16 +154,33 @@ function PageComponent() {
                     </div>
 
                     {isCommandBarEnabled && mainView.commandLogsEntries.length !== 0 && (
-                        <CommandBar
+                        <div
                             className={css({
+                                position: "relative",
                                 width: "min(100%, 640px)",
                                 maxWidth: "100%",
-                                marginLeft: "auto",
-                                transition: "opacity 750ms linear"
+                                height: 40,
+                                marginLeft: "auto"
                             })}
-                            entries={mainView.commandLogsEntries}
-                            maxHeight={300}
-                        />
+                        >
+                            <CommandBar
+                                classes={{
+                                    root: css({
+                                        position: "absolute",
+                                        top: 0,
+                                        right: 0,
+                                        width: "100%",
+                                        zIndex: 4,
+                                        transition: "opacity 750ms linear"
+                                    }),
+                                    rootWhenExpended: css({
+                                        width: "100%"
+                                    })
+                                }}
+                                entries={mainView.commandLogsEntries}
+                                maxHeight={300}
+                            />
+                        </div>
                     )}
                 </div>
 
