@@ -136,7 +136,7 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             display: "flex",
             alignItems: "center",
             width: "100%",
-            padding: theme.spacing(2),
+            padding: theme.spacing(1),
             borderRadius: 9999,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             boxSizing: "border-box",
@@ -152,7 +152,10 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
             color: theme.colors.useCases.typography.textPrimary,
             minWidth: 0,
-            paddingRight: theme.spacing(4)
+            paddingRight: theme.spacing(4),
+            "&:hover": {
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2
+            }
         },
         clearButton: {
             border: "none",
@@ -167,7 +170,8 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             cursor: "pointer",
             color: "inherit",
             "&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
+                color: theme.colors.useCases.typography.textFocus
             }
         },
         summaryLabel: {
@@ -187,7 +191,7 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             display: "inline-flex",
             alignItems: "center",
             gap: theme.spacing(1),
-            padding: theme.spacing(2.5),
+            padding: theme.spacing(1.5),
             borderRadius: 9999,
             cursor: "pointer",
             color: theme.colors.useCases.typography.textPrimary,
