@@ -548,6 +548,7 @@ function ErrorState(props: {
 type ItemRowProps = {
     item: S3ExplorerMainViewProps.Item;
     isSelected: boolean;
+    showRowActions: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
@@ -561,6 +562,7 @@ function ItemRow(props: ItemRowProps) {
     const {
         item,
         isSelected,
+        showRowActions,
         onRowClick,
         onNavigate,
         onDelete,
@@ -719,87 +721,91 @@ function ItemRow(props: ItemRowProps) {
                         </div>
                     </div>
                     <div className={classes.rowActions}>
-                        {onShare !== undefined && (
-                            <Tooltip title="Get shareable link">
-                                <span className={classes.inlineActionWrapper}>
-                                    <IconButton
-                                        className={classes.rowActionButton}
-                                        icon={getIconUrlByName("Share")}
-                                        aria-label="Get shareable link"
-                                        disabled={!isShareAvailable}
-                                        onClick={event => {
-                                            event.stopPropagation();
+                        {showRowActions && (
+                            <>
+                                {onShare !== undefined && (
+                                    <Tooltip title="Get shareable link">
+                                        <span className={classes.inlineActionWrapper}>
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName("Share")}
+                                                aria-label="Get shareable link"
+                                                disabled={!isShareAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
 
-                                            if (
-                                                !isShareAvailable ||
-                                                onShare === undefined
-                                            ) {
-                                                return;
-                                            }
+                                                    if (
+                                                        !isShareAvailable ||
+                                                        onShare === undefined
+                                                    ) {
+                                                        return;
+                                                    }
 
-                                            onShare();
-                                        }}
-                                    />
-                                </span>
-                            </Tooltip>
+                                                    onShare();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                                {onDownload !== undefined && (
+                                    <Tooltip title="Download">
+                                        <span className={classes.inlineActionWrapper}>
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName("FileDownload")}
+                                                aria-label="Download"
+                                                disabled={!isDownloadAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (
+                                                        !isDownloadAvailable ||
+                                                        onDownload === undefined
+                                                    ) {
+                                                        return;
+                                                    }
+
+                                                    onDownload();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                                <Tooltip title="Copy S3 path">
+                                    <span className={classes.inlineActionWrapper}>
+                                        <IconButton
+                                            className={classes.rowActionButton}
+                                            icon={getIconUrlByName("ContentCopy")}
+                                            aria-label="Copy S3 path"
+                                            disabled={!isCopyAvailable}
+                                            onClick={event => {
+                                                event.stopPropagation();
+
+                                                if (!isCopyAvailable) {
+                                                    return;
+                                                }
+
+                                                onCopyS3Uri();
+                                            }}
+                                        />
+                                    </span>
+                                </Tooltip>
+                                <Tooltip title="Delete">
+                                    <span className={classes.inlineActionWrapper}>
+                                        <IconButton
+                                            className={classes.rowActionButton}
+                                            icon={getIconUrlByName("Delete")}
+                                            aria-label="Delete"
+                                            disabled={item.isDeleting}
+                                            onClick={event => {
+                                                event.stopPropagation();
+                                                onDelete();
+                                            }}
+                                        />
+                                    </span>
+                                </Tooltip>
+                            </>
                         )}
-                        {onDownload !== undefined && (
-                            <Tooltip title="Download">
-                                <span className={classes.inlineActionWrapper}>
-                                    <IconButton
-                                        className={classes.rowActionButton}
-                                        icon={getIconUrlByName("FileDownload")}
-                                        aria-label="Download"
-                                        disabled={!isDownloadAvailable}
-                                        onClick={event => {
-                                            event.stopPropagation();
-
-                                            if (
-                                                !isDownloadAvailable ||
-                                                onDownload === undefined
-                                            ) {
-                                                return;
-                                            }
-
-                                            onDownload();
-                                        }}
-                                    />
-                                </span>
-                            </Tooltip>
-                        )}
-                        <Tooltip title="Copy S3 path">
-                            <span className={classes.inlineActionWrapper}>
-                                <IconButton
-                                    className={classes.rowActionButton}
-                                    icon={getIconUrlByName("ContentCopy")}
-                                    aria-label="Copy S3 path"
-                                    disabled={!isCopyAvailable}
-                                    onClick={event => {
-                                        event.stopPropagation();
-
-                                        if (!isCopyAvailable) {
-                                            return;
-                                        }
-
-                                        onCopyS3Uri();
-                                    }}
-                                />
-                            </span>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                            <span className={classes.inlineActionWrapper}>
-                                <IconButton
-                                    className={classes.rowActionButton}
-                                    icon={getIconUrlByName("Delete")}
-                                    aria-label="Delete"
-                                    disabled={item.isDeleting}
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        onDelete();
-                                    }}
-                                />
-                            </span>
-                        </Tooltip>
                     </div>
                 </div>
             </td>
@@ -887,6 +893,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         (item): item is S3ExplorerMainViewProps.Item.Object => item.type === "object"
     );
     const selectedS3Uris = selectedItems.map(item => item.s3Uri);
+    const showRowActions = selectedItems.length <= 1;
 
     const isAllSelected =
         selectableItems.length > 0 &&
@@ -1427,6 +1434,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                 isSelected={selectedItemKeySet.has(
                                                     itemKey
                                                 )}
+                                                showRowActions={showRowActions}
                                                 onRowClick={event =>
                                                     handleRowSelection({ item, event })
                                                 }
