@@ -358,10 +358,6 @@ function PageComponent() {
                             })()}
                             {mainView.listedPrefix !== undefined && (
                                 <S3ExplorerMainView
-                                    className={css({
-                                        position: "relative",
-                                        top: -73
-                                    })}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
                                     onNavigate={({ s3Uri }) =>
