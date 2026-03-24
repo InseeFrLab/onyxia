@@ -1,5 +1,5 @@
 import type { S3Uri } from "core/tools/S3Uri";
-import { getIconUrlByName } from "lazy-icons";
+import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { tss } from "tss";
 
@@ -40,10 +40,6 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         onShare,
         onRename
     } = props;
-
-    if (selectedS3Uris.length === 0) {
-        return null;
-    }
 
     const { classes, cx } = useStyles();
 
@@ -92,6 +88,10 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const selectedLabel =
         selectedS3Uris.length === 1 ? "1 selected" : `${selectedS3Uris.length} selected`;
 
+    if (selectedS3Uris.length === 0) {
+        return null;
+    }
+
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.summaryPill}>
@@ -117,7 +117,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                         >
                             <Icon
                                 className={classes.actionIcon}
-                                icon={getIconUrlByName(action.iconName)}
+                                icon={getIconUrl(action.iconName)}
                                 size="small"
                             />
                             <span className={classes.actionLabel}>{action.label}</span>
@@ -130,7 +130,6 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 
 const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
     const label2Style = theme.typography.variants["label 2"].style;
-    const barHeight = "56px";
 
     return {
         root: {
