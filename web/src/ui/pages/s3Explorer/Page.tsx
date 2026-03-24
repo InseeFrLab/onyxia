@@ -308,7 +308,7 @@ function PageComponent() {
                             </div>
                             {(() => {
                                 const props: S3BookmarksBarProps = {
-                                    className: css({ marginTop: theme.spacing(2) }),
+                                    className: css({ marginTop: theme.spacing(4) }),
                                     items: mainView.bookmarks.items,
                                     activeItemS3Uri: mainView.bookmarks.activeItemS3Uri,
                                     getItemLink: ({ s3Uri }) => {
@@ -358,6 +358,10 @@ function PageComponent() {
                             })()}
                             {mainView.listedPrefix !== undefined && (
                                 <S3ExplorerMainView
+                                    className={css({
+                                        position: "relative",
+                                        top: -73
+                                    })}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
                                     onNavigate={({ s3Uri }) =>
