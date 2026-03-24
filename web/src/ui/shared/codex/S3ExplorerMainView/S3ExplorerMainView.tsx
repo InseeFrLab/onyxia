@@ -1149,7 +1149,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     if (listedPrefix.isErrored) {
         return (
             <div className={cx(classes.root, className)}>
-                <ErrorState errorCase={listedPrefix.errorCase} />
+                <div className={classes.surface}>
+                    <ErrorState errorCase={listedPrefix.errorCase} />
+                </div>
             </div>
         );
     }
@@ -1200,278 +1202,295 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 }}
             />
 
-            <div className={classes.selectionBarSlot}>
-                {selectedItems.length > 0 && (
-                    <S3SelectionActionBar
-                        selectedS3Uris={selectedS3Uris}
-                        onClear={clearSelection}
-                        onDownload={() => requestDownloadForItems(selectedItems)}
-                        onDelete={() => requestDeletionForItems(selectedItems)}
-                        onCopyS3Uri={copySelectedS3Uri}
-                        onShare={() => {
-                            if (
-                                selectedObjectForShare === undefined ||
-                                !isSelectedObjectShareable
-                            ) {
+            <div className={cx(classes.root, className)} aria-busy={isListing}>
+                <div className={classes.selectionBarSlot}>
+                    {selectedItems.length > 0 && (
+                        <S3SelectionActionBar
+                            selectedS3Uris={selectedS3Uris}
+                            onClear={clearSelection}
+                            onDownload={() => requestDownloadForItems(selectedItems)}
+                            onDelete={() => requestDeletionForItems(selectedItems)}
+                            onCopyS3Uri={copySelectedS3Uri}
+                            onShare={() => {
+                                if (
+                                    selectedObjectForShare === undefined ||
+                                    !isSelectedObjectShareable
+                                ) {
+                                    return;
+                                }
+
+                                requestShareLink(selectedObjectForShare);
+                            }}
+                            onRename={() => {
                                 return;
-                            }
+                            }}
+                        />
+                    )}
+                </div>
 
-                            requestShareLink(selectedObjectForShare);
-                        }}
-                        onRename={() => {
+                <div
+                    className={classes.surface}
+                    onDragEnter={(event: DragEvent<HTMLDivElement>) => {
+                        if (!event.dataTransfer.types.includes("Files")) {
                             return;
-                        }}
-                    />
-                )}
-            </div>
+                        }
 
-            <div
-                className={cx(classes.root, className)}
-                aria-busy={isListing}
-                onDragEnter={(event: DragEvent<HTMLDivElement>) => {
-                    if (!event.dataTransfer.types.includes("Files")) {
-                        return;
-                    }
+                        event.preventDefault();
+                        dragDepthRef.current += 1;
+                        setIsDragActive(true);
+                    }}
+                    onDragOver={(event: DragEvent<HTMLDivElement>) => {
+                        if (!event.dataTransfer.types.includes("Files")) {
+                            return;
+                        }
 
-                    event.preventDefault();
-                    dragDepthRef.current += 1;
-                    setIsDragActive(true);
-                }}
-                onDragOver={(event: DragEvent<HTMLDivElement>) => {
-                    if (!event.dataTransfer.types.includes("Files")) {
-                        return;
-                    }
+                        event.preventDefault();
+                        event.dataTransfer.dropEffect = "copy";
+                        setIsDragActive(true);
+                    }}
+                    onDragLeave={(event: DragEvent<HTMLDivElement>) => {
+                        if (!event.dataTransfer.types.includes("Files")) {
+                            return;
+                        }
 
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = "copy";
-                    setIsDragActive(true);
-                }}
-                onDragLeave={(event: DragEvent<HTMLDivElement>) => {
-                    if (!event.dataTransfer.types.includes("Files")) {
-                        return;
-                    }
+                        event.preventDefault();
+                        dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
 
-                    event.preventDefault();
-                    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+                        if (dragDepthRef.current === 0) {
+                            setIsDragActive(false);
+                        }
+                    }}
+                    onDrop={(event: DragEvent<HTMLDivElement>) => {
+                        if (!event.dataTransfer.types.includes("Files")) {
+                            return;
+                        }
 
-                    if (dragDepthRef.current === 0) {
+                        event.preventDefault();
+                        dragDepthRef.current = 0;
                         setIsDragActive(false);
-                    }
-                }}
-                onDrop={(event: DragEvent<HTMLDivElement>) => {
-                    if (!event.dataTransfer.types.includes("Files")) {
-                        return;
-                    }
 
-                    event.preventDefault();
-                    dragDepthRef.current = 0;
-                    setIsDragActive(false);
+                        handleUploadFiles(Array.from(event.dataTransfer.files));
+                    }}
+                >
+                    {isListing && <LinearProgress className={classes.listingProgress} />}
 
-                    handleUploadFiles(Array.from(event.dataTransfer.files));
-                }}
-            >
-                {isListing && <LinearProgress className={classes.listingProgress} />}
-
-                <div className={classes.contentShell}>
-                    {isDragActive && (
-                        <div className={classes.dropOverlay}>
-                            <div className={classes.dropOverlayCard}>
-                                <Icon icon={getIconUrlByName("Add")} size="large" />
-                                <div className={classes.dropOverlayTitle}>
-                                    Drop files to upload
-                                </div>
-                                <div className={classes.dropOverlayDescription}>
-                                    Files will be uploaded into the currently listed
-                                    prefix.
+                    <div className={classes.contentShell}>
+                        {isDragActive && (
+                            <div className={classes.dropOverlay}>
+                                <div className={classes.dropOverlayCard}>
+                                    <Icon icon={getIconUrlByName("Add")} size="large" />
+                                    <div className={classes.dropOverlayTitle}>
+                                        Drop files to upload
+                                    </div>
+                                    <div className={classes.dropOverlayDescription}>
+                                        Files will be uploaded into the currently listed
+                                        prefix.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {items.length === 0 ? (
-                        <div className={classes.emptyState}>
-                            <div className={classes.emptyStateIcon}>
-                                <Icon icon={getIconUrlByName("Folder")} size="large" />
+                        {items.length === 0 ? (
+                            <div className={classes.emptyState}>
+                                <div className={classes.emptyStateIcon}>
+                                    <Icon
+                                        icon={getIconUrlByName("Folder")}
+                                        size="large"
+                                    />
+                                </div>
+                                <div className={classes.emptyStateTitle}>
+                                    This prefix is empty
+                                </div>
+                                <div className={classes.emptyStateDescription}>
+                                    Upload files or create a folder to start populating
+                                    this location.
+                                </div>
+                                <div className={classes.emptyStateActions}>
+                                    <Button onClick={openFilePicker}>Upload files</Button>
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() =>
+                                            setIsCreateDirectoryDialogOpen(true)
+                                        }
+                                    >
+                                        New folder
+                                    </Button>
+                                </div>
                             </div>
-                            <div className={classes.emptyStateTitle}>
-                                This prefix is empty
-                            </div>
-                            <div className={classes.emptyStateDescription}>
-                                Upload files or create a folder to start populating this
-                                location.
-                            </div>
-                            <div className={classes.emptyStateActions}>
-                                <Button onClick={openFilePicker}>Upload files</Button>
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => setIsCreateDirectoryDialogOpen(true)}
-                                >
-                                    New folder
-                                </Button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className={classes.tableScrollArea}>
-                            <table className={classes.table}>
-                                <colgroup>
-                                    <col className={classes.checkboxColumn} />
-                                    <col className={classes.nameColumn} />
-                                    <col className={classes.lastModifiedColumn} />
-                                    <col className={classes.sizeColumn} />
-                                </colgroup>
-                                <thead>
-                                    <tr className={classes.headerRow}>
-                                        <th className={classes.checkboxHeaderCell}>
-                                            <Checkbox
-                                                checked={isAllSelected}
-                                                indeterminate={isSelectionIndeterminate}
-                                                onChange={() => {
-                                                    if (isAllSelected) {
-                                                        clearSelection();
-                                                        return;
+                        ) : (
+                            <div className={classes.tableScrollArea}>
+                                <table className={classes.table}>
+                                    <colgroup>
+                                        <col className={classes.checkboxColumn} />
+                                        <col className={classes.nameColumn} />
+                                        <col className={classes.lastModifiedColumn} />
+                                        <col className={classes.sizeColumn} />
+                                    </colgroup>
+                                    <thead>
+                                        <tr className={classes.headerRow}>
+                                            <th className={classes.checkboxHeaderCell}>
+                                                <Checkbox
+                                                    checked={isAllSelected}
+                                                    indeterminate={
+                                                        isSelectionIndeterminate
                                                     }
-
-                                                    setSelectedItemKeys(
-                                                        selectableItems.map(item =>
-                                                            getItemKey(item)
-                                                        )
-                                                    );
-                                                }}
-                                                inputProps={{
-                                                    "aria-label": "Select all items"
-                                                }}
-                                            />
-                                        </th>
-                                        <th
-                                            className={classes.headerCell}
-                                            aria-sort={nameSortIndicator.ariaSort}
-                                        >
-                                            <button
-                                                type="button"
-                                                className={classes.sortButton}
-                                                onClick={() => handleSortToggle("name")}
-                                            >
-                                                Name
-                                                <span
-                                                    className={cx(
-                                                        classes.sortDirection,
-                                                        nameSortIndicator.isActive &&
-                                                            classes.sortDirectionActive
-                                                    )}
-                                                >
-                                                    <Icon
-                                                        icon={nameSortIndicator.icon}
-                                                        size="small"
-                                                    />
-                                                </span>
-                                            </button>
-                                        </th>
-                                        <th
-                                            className={classes.headerCell}
-                                            aria-sort={lastModifiedSortIndicator.ariaSort}
-                                        >
-                                            <button
-                                                type="button"
-                                                className={classes.sortButton}
-                                                onClick={() =>
-                                                    handleSortToggle("lastModified")
-                                                }
-                                            >
-                                                Last modified
-                                                <span
-                                                    className={cx(
-                                                        classes.sortDirection,
-                                                        lastModifiedSortIndicator.isActive &&
-                                                            classes.sortDirectionActive
-                                                    )}
-                                                >
-                                                    <Icon
-                                                        icon={
-                                                            lastModifiedSortIndicator.icon
+                                                    onChange={() => {
+                                                        if (isAllSelected) {
+                                                            clearSelection();
+                                                            return;
                                                         }
-                                                        size="small"
-                                                    />
-                                                </span>
-                                            </button>
-                                        </th>
-                                        <th
-                                            className={cx(
-                                                classes.headerCell,
-                                                classes.sizeHeaderCell
-                                            )}
-                                            aria-sort={sizeSortIndicator.ariaSort}
-                                        >
-                                            <button
-                                                type="button"
-                                                className={classes.sortButton}
-                                                onClick={() => handleSortToggle("size")}
-                                            >
-                                                Size
-                                                <span
-                                                    className={cx(
-                                                        classes.sortDirection,
-                                                        sizeSortIndicator.isActive &&
-                                                            classes.sortDirectionActive
-                                                    )}
-                                                >
-                                                    <Icon
-                                                        icon={sizeSortIndicator.icon}
-                                                        size="small"
-                                                    />
-                                                </span>
-                                            </button>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {items.map(item => {
-                                        const itemKey = getItemKey(item);
 
-                                        return (
-                                            <ItemRow
-                                                key={itemKey}
-                                                item={item}
-                                                isSelected={selectedItemKeySet.has(
-                                                    itemKey
+                                                        setSelectedItemKeys(
+                                                            selectableItems.map(item =>
+                                                                getItemKey(item)
+                                                            )
+                                                        );
+                                                    }}
+                                                    inputProps={{
+                                                        "aria-label": "Select all items"
+                                                    }}
+                                                />
+                                            </th>
+                                            <th
+                                                className={classes.headerCell}
+                                                aria-sort={nameSortIndicator.ariaSort}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className={classes.sortButton}
+                                                    onClick={() =>
+                                                        handleSortToggle("name")
+                                                    }
+                                                >
+                                                    Name
+                                                    <span
+                                                        className={cx(
+                                                            classes.sortDirection,
+                                                            nameSortIndicator.isActive &&
+                                                                classes.sortDirectionActive
+                                                        )}
+                                                    >
+                                                        <Icon
+                                                            icon={nameSortIndicator.icon}
+                                                            size="small"
+                                                        />
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            <th
+                                                className={classes.headerCell}
+                                                aria-sort={
+                                                    lastModifiedSortIndicator.ariaSort
+                                                }
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className={classes.sortButton}
+                                                    onClick={() =>
+                                                        handleSortToggle("lastModified")
+                                                    }
+                                                >
+                                                    Last modified
+                                                    <span
+                                                        className={cx(
+                                                            classes.sortDirection,
+                                                            lastModifiedSortIndicator.isActive &&
+                                                                classes.sortDirectionActive
+                                                        )}
+                                                    >
+                                                        <Icon
+                                                            icon={
+                                                                lastModifiedSortIndicator.icon
+                                                            }
+                                                            size="small"
+                                                        />
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            <th
+                                                className={cx(
+                                                    classes.headerCell,
+                                                    classes.sizeHeaderCell
                                                 )}
-                                                showRowActions={showRowActions}
-                                                onRowClick={event =>
-                                                    handleRowSelection({ item, event })
-                                                }
-                                                onCheckboxChange={() =>
-                                                    toggleSelectionForItem(itemKey)
-                                                }
-                                                onNavigate={() =>
-                                                    handleNavigate(item.s3Uri)
-                                                }
-                                                onDelete={() =>
-                                                    requestDeletionForItems([item])
-                                                }
-                                                onShare={
-                                                    item.type === "object"
-                                                        ? () => requestShareLink(item)
-                                                        : undefined
-                                                }
-                                                onDownload={
-                                                    item.type === "object"
-                                                        ? () =>
-                                                              requestDownloadForItems([
-                                                                  item
-                                                              ])
-                                                        : undefined
-                                                }
-                                                onCopyS3Uri={() =>
-                                                    copyToClipboard(
-                                                        stringifyS3Uri(item.s3Uri)
-                                                    )
-                                                }
-                                            />
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                                                aria-sort={sizeSortIndicator.ariaSort}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className={classes.sortButton}
+                                                    onClick={() =>
+                                                        handleSortToggle("size")
+                                                    }
+                                                >
+                                                    Size
+                                                    <span
+                                                        className={cx(
+                                                            classes.sortDirection,
+                                                            sizeSortIndicator.isActive &&
+                                                                classes.sortDirectionActive
+                                                        )}
+                                                    >
+                                                        <Icon
+                                                            icon={sizeSortIndicator.icon}
+                                                            size="small"
+                                                        />
+                                                    </span>
+                                                </button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {items.map(item => {
+                                            const itemKey = getItemKey(item);
+
+                                            return (
+                                                <ItemRow
+                                                    key={itemKey}
+                                                    item={item}
+                                                    isSelected={selectedItemKeySet.has(
+                                                        itemKey
+                                                    )}
+                                                    showRowActions={showRowActions}
+                                                    onRowClick={event =>
+                                                        handleRowSelection({
+                                                            item,
+                                                            event
+                                                        })
+                                                    }
+                                                    onCheckboxChange={() =>
+                                                        toggleSelectionForItem(itemKey)
+                                                    }
+                                                    onNavigate={() =>
+                                                        handleNavigate(item.s3Uri)
+                                                    }
+                                                    onDelete={() =>
+                                                        requestDeletionForItems([item])
+                                                    }
+                                                    onShare={
+                                                        item.type === "object"
+                                                            ? () => requestShareLink(item)
+                                                            : undefined
+                                                    }
+                                                    onDownload={
+                                                        item.type === "object"
+                                                            ? () =>
+                                                                  requestDownloadForItems(
+                                                                      [item]
+                                                                  )
+                                                            : undefined
+                                                    }
+                                                    onCopyS3Uri={() =>
+                                                        copyToClipboard(
+                                                            stringifyS3Uri(item.s3Uri)
+                                                        )
+                                                    }
+                                                />
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </>
@@ -1487,6 +1506,15 @@ const useStyles = tss
             display: "flex",
             flexDirection: "column",
             width: "100%",
+            minWidth: 0
+        },
+        surface: {
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            minWidth: 0,
+            flex: 1,
+            minHeight: 0,
             borderRadius: 20,
             overflow: isDragActive ? "visible" : "hidden",
             position: "relative",
