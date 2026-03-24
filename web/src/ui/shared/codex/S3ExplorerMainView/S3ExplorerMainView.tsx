@@ -1537,7 +1537,7 @@ const useStyles = tss
         selectionBarSlot: {
             display: "flex",
             alignItems: "center",
-            minHeight: theme.spacing(7),
+            minHeight: theme.spacing(6),
             padding: `0 ${theme.spacing(2)}`,
             boxSizing: "border-box",
             marginBottom: theme.spacing(2)
