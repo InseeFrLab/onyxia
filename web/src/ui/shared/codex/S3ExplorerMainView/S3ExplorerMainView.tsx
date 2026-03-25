@@ -548,6 +548,7 @@ function ErrorState(props: {
 type ItemRowProps = {
     item: S3ExplorerMainViewProps.Item;
     isSelected: boolean;
+    isStriped: boolean;
     showRowActions: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
@@ -562,6 +563,7 @@ function ItemRow(props: ItemRowProps) {
     const {
         item,
         isSelected,
+        isStriped,
         showRowActions,
         onRowClick,
         onNavigate,
@@ -597,6 +599,7 @@ function ItemRow(props: ItemRowProps) {
         <tr
             className={cx(
                 classes.tableRow,
+                isStriped && classes.tableRowStriped,
                 isSelected && classes.tableRowSelected,
                 item.isDeleting && classes.tableRowBusy
             )}
@@ -1439,7 +1442,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {items.map(item => {
+                                        {items.map((item, index) => {
                                             const itemKey = getItemKey(item);
 
                                             return (
@@ -1449,6 +1452,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isSelected={selectedItemKeySet.has(
                                                         itemKey
                                                     )}
+                                                    isStriped={index % 2 === 1}
                                                     showRowActions={showRowActions}
                                                     onRowClick={event =>
                                                         handleRowSelection({
@@ -1515,11 +1519,11 @@ const useStyles = tss
             minWidth: 0,
             flex: 1,
             minHeight: 0,
-            borderRadius: 20,
+            borderRadius: 0,
             overflow: isDragActive ? "visible" : "hidden",
             position: "relative",
             zIndex: 0,
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            backgroundColor: "transparent",
             boxSizing: "border-box",
             outline: isDragActive
                 ? `2px solid ${theme.colors.useCases.typography.textFocus}`
@@ -1544,7 +1548,7 @@ const useStyles = tss
         },
         contentShell: {
             position: "relative",
-            backgroundColor: theme.colors.useCases.surfaces.surface1
+            backgroundColor: "transparent"
         },
         dropOverlay: {
             position: "absolute",
@@ -1684,6 +1688,7 @@ const useStyles = tss
             color: theme.colors.useCases.typography.textFocus
         },
         tableRow: {
+            backgroundColor: "transparent",
             "& td": {
                 borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
             },
@@ -1691,7 +1696,7 @@ const useStyles = tss
                 paddingRight: theme.spacing(3)
             },
             "&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surface3
+                backgroundColor: theme.colors.useCases.surfaces.surface2
             },
             [`&:hover .${classes.rowActions}`]: {
                 opacity: 1,
@@ -1703,6 +1708,9 @@ const useStyles = tss
                 visibility: "visible",
                 pointerEvents: "auto"
             }
+        },
+        tableRowStriped: {
+            backgroundColor: theme.colors.useCases.surfaces.surface2
         },
         tableRowSelected: {
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
