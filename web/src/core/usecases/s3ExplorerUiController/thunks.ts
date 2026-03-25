@@ -375,11 +375,11 @@ export const thunks = {
                     resp: (() => {
                         if (listObjectResult.isSuccess) {
                             return [
-                                listObjectResult.prefixes.map(
+                                ...listObjectResult.prefixes.map(
                                     s3Uri =>
                                         `PRE ${s3Uri.keySegments.at(-1)}${s3Uri.delimiter}`
                                 ),
-                                listObjectResult.objects.map(
+                                ...listObjectResult.objects.map(
                                     ({ s3Uri }) => `OBJ ${s3Uri.keySegments.at(-1)}`
                                 )
                             ].join("\n");
