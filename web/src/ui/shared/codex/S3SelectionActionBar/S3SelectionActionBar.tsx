@@ -130,6 +130,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 
 const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
     const label2Style = theme.typography.variants["label 2"].style;
+    const label1Style = theme.typography.variants["label 1"].style;
 
     return {
         root: {
@@ -138,7 +139,8 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             width: "100%",
             padding: theme.spacing(1),
             borderRadius: 9999,
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            backgroundColor: theme.colors.useCases.surfaces.background,
+            boxShadow: theme.shadows[3],
             boxSizing: "border-box",
             gap: theme.spacing(7),
             minWidth: 0
@@ -149,12 +151,13 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             gap: theme.spacing(2),
             padding: theme.spacing(1),
             borderRadius: 9999,
-            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
+            backgroundColor: "transparent",
             color: theme.colors.useCases.typography.textPrimary,
+            border: `1px solid ${theme.colors.useCases.typography.textFocus}`,
             minWidth: 0,
             paddingRight: theme.spacing(4),
             "&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2
+                backgroundColor: "transparent"
             }
         },
         clearButton: {
@@ -175,7 +178,7 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             }
         },
         summaryLabel: {
-            ...label2Style,
+            ...label1Style,
             whiteSpace: "nowrap"
         },
         actions: {
@@ -210,7 +213,7 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             flexShrink: 0
         },
         actionLabel: {
-            ...label2Style,
+            ...label1Style,
             whiteSpace: "nowrap"
         }
     };
