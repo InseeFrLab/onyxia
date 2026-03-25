@@ -1696,7 +1696,7 @@ const useStyles = tss
                 paddingRight: theme.spacing(3)
             },
             "&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
+                backgroundColor: theme.colors.useCases.surfaces.surface3
             },
             [`&:hover .${classes.rowActions}`]: {
                 opacity: 1,
