@@ -110,12 +110,19 @@ export function S3Uploads(props: S3UploadsProps) {
                         upload.message !== undefined && upload.message !== ""
                             ? ` - ${upload.message}`
                             : "";
-                    const metaLabel = `${upload.profileName} - ${sizeLabel} - ${statusLabel}${progressSuffix}${messageSuffix}`;
+                    const metaPrefix = `${upload.profileName} - ${sizeLabel}`;
+                    const metaStatus = `${statusLabel}${progressSuffix}${messageSuffix}`;
+                    const metaLabel = `${metaPrefix} - ${metaStatus}`;
 
                     return (
                         <div key={upload.id} className={classes.item}>
                             <div className={classes.itemContent}>
-                                <div className={classes.iconWrapper}>
+                                <div
+                                    className={cx(
+                                        classes.iconWrapper,
+                                        !isCompleted && classes.iconMuted
+                                    )}
+                                >
                                     <Icon
                                         icon={getIconUrlByName("Description")}
                                         size="small"
@@ -128,24 +135,55 @@ export function S3Uploads(props: S3UploadsProps) {
                                     >
                                         {getFileName(upload.s3Uri)}
                                     </div>
+                                    <div className={classes.meta} title={metaLabel}>
+                                        <span className={classes.metaPrefix}>
+                                            {metaPrefix}
+                                        </span>
+                                        <span className={classes.metaSeparator}>-</span>
+                                        <span
+                                            className={cx(
+                                                classes.metaStatus,
+                                                isCompleted && classes.metaStatusSuccess,
+                                                isError && classes.metaStatusError,
+                                                isCancelled && classes.metaStatusCancelled
+                                            )}
+                                        >
+                                            {isCompleted && (
+                                                <span className={classes.metaStatusIcon}>
+                                                    <Icon
+                                                        icon={getIconUrlByName(
+                                                            "CheckCircleOutline"
+                                                        )}
+                                                        size="extra small"
+                                                    />
+                                                </span>
+                                            )}
+                                            {isError && (
+                                                <span className={classes.metaStatusIcon}>
+                                                    <Icon
+                                                        icon={getIconUrlByName(
+                                                            "ErrorOutline"
+                                                        )}
+                                                        size="extra small"
+                                                    />
+                                                </span>
+                                            )}
+                                            <span className={classes.metaStatusLabel}>
+                                                {metaStatus}
+                                            </span>
+                                        </span>
+                                    </div>
                                     <div
                                         className={cx(
-                                            classes.meta,
-                                            isCompleted && classes.metaCompleted,
-                                            isError && classes.metaError,
-                                            isCancelled && classes.metaCancelled
+                                            classes.progressTrack,
+                                            !isUploading && classes.progressTrackHidden
                                         )}
                                     >
-                                        {metaLabel}
+                                        <div
+                                            className={classes.progressFill}
+                                            style={{ width: `${percent}%` }}
+                                        />
                                     </div>
-                                    {isUploading && (
-                                        <div className={classes.progressTrack}>
-                                            <div
-                                                className={classes.progressFill}
-                                                style={{ width: `${percent}%` }}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                             {isCompleted ? (
@@ -292,10 +330,13 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         color: theme.colors.useCases.typography.textPrimary,
         flexShrink: 0
     },
+    iconMuted: {
+        opacity: 0.3
+    },
     itemText: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(0.5),
+        gap: theme.spacing(0.25),
         minWidth: 0,
         flex: 1
     },
@@ -311,15 +352,50 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         color: theme.colors.useCases.typography.textSecondary,
         whiteSpace: "nowrap",
         overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(0.5),
+        minWidth: 0
+    },
+    metaPrefix: {
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        flex: 1
+    },
+    metaSeparator: {
+        flexShrink: 0
+    },
+    metaStatus: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: theme.spacing(0.5),
+        minWidth: 0,
+        overflow: "hidden",
+        whiteSpace: "nowrap",
         textOverflow: "ellipsis"
     },
-    metaCompleted: {
+    metaStatusLabel: {
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+    },
+    metaStatusIcon: {
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0
+    },
+    metaStatusSuccess: {
         color: theme.colors.useCases.alertSeverity.success.main
     },
-    metaError: {
+    metaStatusError: {
         color: theme.colors.useCases.alertSeverity.error.main
     },
-    metaCancelled: {
+    metaStatusCancelled: {
         color: theme.colors.useCases.typography.textDisabled
     },
     progressTrack: {
@@ -327,7 +403,10 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         borderRadius: 999,
         backgroundColor: theme.colors.useCases.surfaces.surface3,
         overflow: "hidden",
-        marginTop: theme.spacing(1)
+        marginTop: theme.spacing(0.5)
+    },
+    progressTrackHidden: {
+        visibility: "hidden"
     },
     progressFill: {
         height: "100%",
@@ -347,6 +426,7 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         background: "transparent",
         padding: 0,
         cursor: "pointer",
+        alignSelf: "center",
         flexShrink: 0,
         transition: "background-color 120ms ease, color 120ms ease",
         "&:hover": {
