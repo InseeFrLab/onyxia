@@ -1452,7 +1452,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isSelected={selectedItemKeySet.has(
                                                         itemKey
                                                     )}
-                                                    isStriped={index % 2 === 1}
+                                                    isStriped={index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     onRowClick={event =>
                                                         handleRowSelection({
@@ -1716,6 +1716,9 @@ const useStyles = tss
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
             [`&:hover`]: {
                 backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+            },
+            [`& .${classes.itemIconWrapper}`]: {
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2
             },
             [`& .${classes.rowActions}`]: {
                 opacity: 1,
