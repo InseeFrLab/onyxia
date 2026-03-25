@@ -1,4 +1,5 @@
 import type { S3Uri } from "core/tools/S3Uri";
+import type { NonPostableEvt } from "evt";
 
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<
@@ -21,6 +22,7 @@ export type S3Client = {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         blob: Blob;
         onUploadProgress: (params: { uploadPercent: number }) => void;
+        evtCancel: NonPostableEvt<void>;
     }) => Promise<void>;
 
     deleteObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => Promise<void>;

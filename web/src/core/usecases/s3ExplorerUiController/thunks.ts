@@ -11,6 +11,8 @@ import { type S3Uri, parseS3Uri, stringifyS3Uri, getIsInside } from "core/tools/
 import { same } from "evt/tools/inDepth/same";
 import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import type { State } from "./state";
+import { Evt } from "evt";
+import { onlyIfChanged } from "evt/operators";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -441,7 +443,7 @@ export const thunks = {
         async (...args) => {
             const { files } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             const profileName = privateSelectors.profileName(getState());
 
@@ -487,6 +489,25 @@ export const thunks = {
                         })
                     );
 
+                    const evtCancel = Evt.create();
+
+                    const ctx = Evt.newCtx();
+
+                    evtAction
+                        .pipe(ctx, () => [privateSelectors.uploads(getState())])
+                        .pipe(onlyIfChanged())
+                        .attach(uploads => {
+                            const upload = uploads.find(
+                                upload =>
+                                    upload.profileName === profileName &&
+                                    same(upload.s3Uri, s3Uri_object)
+                            );
+
+                            if (upload === undefined) {
+                                evtCancel.post();
+                            }
+                        });
+
                     await s3Client.putObject({
                         s3Uri: s3Uri_object,
                         blob: file.blob,
@@ -505,8 +526,11 @@ export const thunks = {
                                     resp: `... ${uploadPercent}% of ${file.blob.size} Bytes uploaded`
                                 })
                             );
-                        }
+                        },
+                        evtCancel
                     });
+
+                    ctx.done();
                 })
             );
         },
