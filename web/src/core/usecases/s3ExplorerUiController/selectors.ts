@@ -637,5 +637,6 @@ export const privateSelectors = {
     s3Uri_currentlyListing,
     doesListedPrefixHaveFinishedUpload,
     listedPrefix_state,
-    isFullyQualifiedDataFileUri
+    isFullyQualifiedDataFileUri,
+    uploads: createSelector(state, state => state.uploads)
 };

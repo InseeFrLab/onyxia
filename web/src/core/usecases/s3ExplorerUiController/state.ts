@@ -324,6 +324,17 @@ export const { reducer, actions } = createUsecaseActions({
                 profileName,
                 s3Uri
             });
+
+            {
+                const i = state.uploads.findIndex(
+                    upload =>
+                        upload.profileName === profileName && same(upload.s3Uri, s3Uri)
+                );
+
+                if (i !== -1) {
+                    state.uploads.splice(i, 1);
+                }
+            }
         },
         deletionCompleted: (
             state,

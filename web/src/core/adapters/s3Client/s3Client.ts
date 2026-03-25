@@ -9,6 +9,7 @@ import { getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
 import { exclude, id } from "tsafe";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi";
+import { Evt } from "evt";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -316,7 +317,7 @@ export function createS3Client(
                     })
             });
         },
-        putObject: async ({ s3Uri, blob, onUploadProgress }) => {
+        putObject: async ({ s3Uri, blob, onUploadProgress, evtCancel }) => {
             const { getAwsS3Client } = await prApi;
 
             const [{ awsS3Client }, Upload] = await Promise.all([
@@ -354,9 +355,21 @@ export function createS3Client(
                 }
             });
 
-            await upload.done();
+            const ctx = Evt.newCtx();
 
-            onUploadProgress?.({ uploadPercent: 100 });
+            evtCancel.attachOnce(ctx, () => {
+                upload.abort();
+            });
+
+            const isAborted = await Promise.race([
+                evtCancel.waitFor().then(() => true),
+                upload.done().then(() => false)
+            ]);
+
+            if (!isAborted) {
+                ctx.done();
+                onUploadProgress?.({ uploadPercent: 100 });
+            }
         },
         deleteObject: async ({ s3Uri }) => {
             const { getAwsS3Client } = await prApi;
