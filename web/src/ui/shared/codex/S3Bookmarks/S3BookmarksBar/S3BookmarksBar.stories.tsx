@@ -3,6 +3,7 @@ import { action } from "@storybook/addon-actions";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3BookmarksBar, type S3BookmarksBarProps } from "./S3BookmarksBar";
 import { assert } from "tsafe";
+import { userEvent, within } from "@storybook/test";
 
 const meta = {
     title: "Shared/S3BookmarksBar",
@@ -88,10 +89,31 @@ const onRename: S3BookmarksBarProps["onRename"] = ({ s3Uri }) => {
     action("rename bookmark")(stringifyS3Uri(s3Uri));
 };
 
+const renderNarrow: Story["render"] = args => (
+    <div style={{ maxWidth: 360 }}>
+        <S3BookmarksBar {...args} />
+    </div>
+);
+
+const renderFullWidth: Story["render"] = args => (
+    <div style={{ width: "100vw", maxWidth: "100%", padding: "0 24px" }}>
+        <S3BookmarksBar {...args} />
+    </div>
+);
+
+const manyItems: S3BookmarksBarProps["items"] = Array.from(
+    { length: 14 },
+    (_, index) => ({
+        displayName: `Bookmark ${index + 1}`,
+        s3Uri: parsePrefixOrThrow(`s3://analytics-data/exports/${index + 1}/`),
+        isReadonly: false
+    })
+);
+
 export const Default: Story = {
     args: {
         items: baseItems,
-        activeItemS3Uri: baseItems[0].s3Uri,
+        activeItemS3Uri: undefined,
         getItemLink,
         onDelete,
         onRename
@@ -101,27 +123,79 @@ export const Default: Story = {
 export const Overflow: Story = {
     args: {
         items: overflowItems,
-        activeItemS3Uri: overflowItems[3].s3Uri,
+        activeItemS3Uri: undefined,
         getItemLink,
         onDelete,
         onRename
     },
-    render: args => (
-        <div style={{ maxWidth: 520 }}>
-            <S3BookmarksBar {...args} />
-        </div>
-    )
+    render: renderNarrow
 };
 
-export const ReadonlyOnly: Story = {
+export const OverflowFullWidth: Story = {
+    args: {
+        items: manyItems,
+        activeItemS3Uri: undefined,
+        getItemLink,
+        onDelete,
+        onRename
+    },
+    render: renderFullWidth
+};
+
+export const PanelOpen: Story = {
+    args: {
+        items: overflowItems,
+        activeItemS3Uri: undefined,
+        getItemLink,
+        onDelete,
+        onRename
+    },
+    render: renderNarrow,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.click(
+            canvas.getByRole("button", { name: /show more bookmarks/i })
+        );
+    }
+};
+
+export const PanelHoverExpanded: Story = {
+    args: {
+        items: overflowItems,
+        activeItemS3Uri: undefined,
+        getItemLink,
+        onDelete,
+        onRename
+    },
+    render: renderNarrow,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.click(
+            canvas.getByRole("button", { name: /show more bookmarks/i })
+        );
+        const body = within(canvasElement.ownerDocument.body);
+        await userEvent.hover(body.getByText("Deeply nested prefix"));
+    }
+};
+
+export const ReadonlyInPanel: Story = {
     args: {
         items: overflowItems.map(item => ({
             ...item,
             isReadonly: true
         })),
-        activeItemS3Uri: overflowItems[2].s3Uri,
+        activeItemS3Uri: undefined,
         getItemLink,
         onDelete,
         onRename
+    },
+    render: renderNarrow,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.click(
+            canvas.getByRole("button", { name: /show more bookmarks/i })
+        );
+        const body = within(canvasElement.ownerDocument.body);
+        await userEvent.hover(body.getByText("Deeply nested prefix"));
     }
 };

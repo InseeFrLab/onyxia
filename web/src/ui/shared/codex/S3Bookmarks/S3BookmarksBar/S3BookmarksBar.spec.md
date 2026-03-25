@@ -18,6 +18,8 @@ export type S3BookmarksBarProps = {
     onDelete: (props: { s3Uri: S3Uri }) => void;
     onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
+    showItemIcons?: boolean;
+    showLeadingIcon?: boolean;
 };
 
 namespace S3BookmarksBarProps {
@@ -39,10 +41,9 @@ Each item in the list is rendered as an `S3BookmarkItem`.
 
 The list must always remain on a single line.
 
-If the number of items exceeds the available width, horizontal scrolling must be enabled.
-The scrollbar must not overlap the bookmark items.
-
-When the list extends beyond the visible area, a subtle gradient should appear on the right edge of the container to indicate that more content is available off-screen.
+If the number of items exceeds the available width, a trailing "more" button must appear.
+Clicking the button opens a panel that lists the remaining bookmarks vertically.
+The panel grows to fit its content without internal scrolling.
 
 # Rendering rules
 
@@ -76,5 +77,4 @@ Where `resolvedDisplayName` is the resolved string value of `item.displayName`, 
 - the list is horizontal,
 - the list stays on a single row,
 - items must not shrink in a way that breaks their internal layout,
-- horizontal scrolling must be available when needed,
-- the right gradient indicator is only shown when content overflows.
+- no horizontal scrolling or gradient indicators are used.
