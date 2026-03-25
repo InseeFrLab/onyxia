@@ -370,24 +370,17 @@ const useStyles = tss
             surfaces.surfaceFocus1 ?? theme.colors.useCases.surfaces.surface1;
         const focusSurface2 =
             surfaces.surfaceFocus2 ?? theme.colors.useCases.surfaces.surface2;
-        const actionHoverPrimary =
-            (
-                theme.colors.useCases.buttons as unknown as Partial<
-                    Record<"actionHoverPrimary", string>
-                >
-            ).actionHoverPrimary ?? theme.colors.useCases.buttons.actionActive;
         const baseBackground = isDeletable
-            ? focusSurface1
+            ? theme.colors.useCases.surfaces.surface1
             : theme.colors.useCases.surfaces.surface2;
         const hoverBackground = isDeletable
-            ? focusSurface2
-            : theme.colors.useCases.surfaces.surface1;
+            ? theme.colors.useCases.surfaces.surface3
+            : theme.colors.useCases.surfaces.surface3;
         const pressedBackground = isDeletable
-            ? focusSurface2
+            ? theme.colors.useCases.surfaces.surface2
             : theme.colors.useCases.surfaces.surface1;
-        const activeBackground = isDeletable
-            ? focusSurface1
-            : theme.colors.useCases.surfaces.surface1;
+        const activeBackground = focusSurface1;
+        const activeHoverBackground = focusSurface2;
         const labelStyle = theme.typography.variants["label 1"].style;
         const label2Style = theme.typography.variants["label 2"].style;
         const uriStyle = theme.typography.variants["body 1"].style;
@@ -400,21 +393,19 @@ const useStyles = tss
                 backgroundColor: isActive ? activeBackground : baseBackground,
                 color: theme.colors.useCases.typography.textPrimary,
                 boxSizing: "border-box",
-                borderRight: "2px solid transparent",
-                borderBottom: "2px solid transparent",
-                borderRightColor: isActive ? actionHoverPrimary : "transparent",
-                borderBottomColor: isActive ? actionHoverPrimary : "transparent",
                 textDecoration: "none",
                 transition: "background-color 120ms ease",
                 position: "relative",
                 "&:hover": {
-                    backgroundColor: isActive ? activeBackground : hoverBackground,
+                    backgroundColor: isActive ? activeHoverBackground : hoverBackground,
                     textDecoration: "none"
+                },
+                "&:focus-within": {
+                    backgroundColor: isActive ? activeHoverBackground : hoverBackground
                 },
                 "&:active": {
                     backgroundColor: pressedBackground,
-                    borderRightColor: "transparent",
-                    borderBottomColor: "transparent"
+                    textDecoration: "none"
                 }
             },
             rootInline: {
