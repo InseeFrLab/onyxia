@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, type SyntheticEvent } from "react";
 import MuiLink from "@mui/material/Link";
 import MuiTooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { tss } from "tss";
@@ -9,6 +9,10 @@ import type { Link } from "type-route";
 export type S3BookmarkItemProps = {
     className?: string;
     variant?: "bar" | "entryPoint";
+    showPinIcon?: boolean;
+    showActiveState?: boolean;
+    disableTooltip?: boolean;
+    showInlinePath?: boolean;
     /**
      * Not always provided, a friendly name for the bookmark.
      */
@@ -99,6 +103,10 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     const {
         className,
         variant = "bar",
+        showPinIcon = true,
+        showActiveState = true,
+        disableTooltip = false,
+        showInlinePath = false,
         displayName,
         s3Uri,
         link,
@@ -107,6 +115,10 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     } = props;
 
     const { resolveLocalizedString } = useResolveLocalizedString();
+    const stopEvent = (event: SyntheticEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
 
     useEffect(() => {
         ensureMaterialSymbols();
@@ -125,8 +137,10 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
         return getShortS3UriLabel(s3Uri);
     }, [displayName, resolveLocalizedString, s3Uri]);
 
+    const shouldInlineExpand = variant === "bar" && showInlinePath;
+    const isActiveStyle = showActiveState && isActive;
     const { classes, cx } = useStyles({
-        isActive,
+        isActive: isActiveStyle,
         isDeletable: callbacks !== undefined
     });
 
@@ -136,29 +150,38 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
             className={cx(
                 classes.root,
                 variant === "bar" ? classes.rootBar : classes.rootEntryPoint,
+                shouldInlineExpand && classes.rootInline,
+                shouldInlineExpand && isActiveStyle && classes.rootInlineActive,
                 className
             )}
             underline="none"
             aria-current={isActive ? "page" : undefined}
         >
-            <span
-                className={cx(
-                    classes.pinIconWrapper,
-                    variant === "entryPoint" && classes.pinIconWrapperEntryPoint
-                )}
-                aria-hidden="true"
-            >
-                <span className={`material-symbols-outlined ${classes.pinIcon}`}>
-                    keep
+            {showPinIcon && (
+                <span
+                    className={cx(
+                        classes.pinIconWrapper,
+                        variant === "entryPoint" && classes.pinIconWrapperEntryPoint
+                    )}
+                    aria-hidden="true"
+                >
+                    <span className={`material-symbols-outlined ${classes.pinIcon}`}>
+                        keep
+                    </span>
                 </span>
-            </span>
+            )}
             <span
                 className={cx(
                     classes.labelWrapper,
                     variant === "entryPoint" && classes.labelWrapperEntryPoint
                 )}
             >
-                <span className={classes.labelRow}>
+                <span
+                    className={cx(
+                        classes.labelRow,
+                        shouldInlineExpand && classes.labelRowInline
+                    )}
+                >
                     <span className={classes.labelText}>{label}</span>
                     {callbacks !== undefined && variant === "entryPoint" && (
                         <span
@@ -167,16 +190,16 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             aria-label="Rename bookmark"
                             className={classes.renameButton}
                             onClick={event => {
-                                event.preventDefault();
-                                event.stopPropagation();
+                                stopEvent(event);
                                 callbacks.onRename();
                             }}
+                            onMouseDown={stopEvent}
+                            onPointerDown={stopEvent}
                             onKeyDown={event => {
                                 if (event.key !== "Enter" && event.key !== " ") {
                                     return;
                                 }
-                                event.preventDefault();
-                                event.stopPropagation();
+                                stopEvent(event);
                                 callbacks.onRename();
                             }}
                         >
@@ -187,9 +210,68 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             </span>
                         </span>
                     )}
+                    {callbacks !== undefined && shouldInlineExpand && (
+                        <span className={classes.inlineActions}>
+                            <span
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Rename bookmark"
+                                className={classes.inlineActionButton}
+                                onClick={event => {
+                                    stopEvent(event);
+                                    callbacks.onRename();
+                                }}
+                                onMouseDown={stopEvent}
+                                onPointerDown={stopEvent}
+                                onKeyDown={event => {
+                                    if (event.key !== "Enter" && event.key !== " ") {
+                                        return;
+                                    }
+                                    stopEvent(event);
+                                    callbacks.onRename();
+                                }}
+                            >
+                                <span
+                                    className={`material-symbols-outlined ${classes.inlineActionIcon}`}
+                                >
+                                    edit
+                                </span>
+                            </span>
+                            <span
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Unpin bookmark"
+                                className={classes.inlineActionButton}
+                                onClick={event => {
+                                    stopEvent(event);
+                                    callbacks.onDelete();
+                                }}
+                                onMouseDown={stopEvent}
+                                onPointerDown={stopEvent}
+                                onKeyDown={event => {
+                                    if (event.key !== "Enter" && event.key !== " ") {
+                                        return;
+                                    }
+                                    stopEvent(event);
+                                    callbacks.onDelete();
+                                }}
+                            >
+                                <span
+                                    className={`material-symbols-outlined ${classes.inlineActionIcon}`}
+                                >
+                                    keep_off
+                                </span>
+                            </span>
+                        </span>
+                    )}
                 </span>
                 {variant === "entryPoint" && (
                     <span className={classes.uriText} title={fullS3Uri}>
+                        {fullS3Uri}
+                    </span>
+                )}
+                {shouldInlineExpand && (
+                    <span className={classes.inlinePath} title={fullS3Uri}>
                         {fullS3Uri}
                     </span>
                 )}
@@ -197,7 +279,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
         </MuiLink>
     );
 
-    if (variant !== "bar") {
+    if (variant !== "bar" || disableTooltip || shouldInlineExpand) {
         return linkNode;
     }
 
@@ -213,16 +295,16 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             aria-label="Rename bookmark"
                             className={classes.renameButton}
                             onClick={event => {
-                                event.preventDefault();
-                                event.stopPropagation();
+                                stopEvent(event);
                                 callbacks.onRename();
                             }}
+                            onMouseDown={stopEvent}
+                            onPointerDown={stopEvent}
                             onKeyDown={event => {
                                 if (event.key !== "Enter" && event.key !== " ") {
                                     return;
                                 }
-                                event.preventDefault();
-                                event.stopPropagation();
+                                stopEvent(event);
                                 callbacks.onRename();
                             }}
                         >
@@ -238,16 +320,16 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             aria-label="Unpin bookmark"
                             className={classes.renameButton}
                             onClick={event => {
-                                event.preventDefault();
-                                event.stopPropagation();
+                                stopEvent(event);
                                 callbacks.onDelete();
                             }}
+                            onMouseDown={stopEvent}
+                            onPointerDown={stopEvent}
                             onKeyDown={event => {
                                 if (event.key !== "Enter" && event.key !== " ") {
                                     return;
                                 }
-                                event.preventDefault();
-                                event.stopPropagation();
+                                stopEvent(event);
                                 callbacks.onDelete();
                             }}
                         >
@@ -296,10 +378,13 @@ const useStyles = tss
             ).actionHoverPrimary ?? theme.colors.useCases.buttons.actionActive;
         const baseBackground = isDeletable
             ? focusSurface1
-            : theme.colors.useCases.surfaces.surface1;
+            : theme.colors.useCases.surfaces.surface2;
         const hoverBackground = isDeletable
             ? focusSurface2
-            : theme.colors.useCases.surfaces.surface2;
+            : theme.colors.useCases.surfaces.surface1;
+        const pressedBackground = isDeletable
+            ? focusSurface2
+            : theme.colors.useCases.surfaces.surface1;
         const activeBackground = isDeletable
             ? focusSurface1
             : theme.colors.useCases.surfaces.surface1;
@@ -307,6 +392,7 @@ const useStyles = tss
         const label2Style = theme.typography.variants["label 2"].style;
         const uriStyle = theme.typography.variants["body 1"].style;
         const captionStyle = theme.typography.variants["caption"].style;
+        const inlineRevealHeight = 22;
 
         return {
             root: {
@@ -324,14 +410,53 @@ const useStyles = tss
                 "&:hover": {
                     backgroundColor: isActive ? activeBackground : hoverBackground,
                     textDecoration: "none"
+                },
+                "&:active": {
+                    backgroundColor: pressedBackground,
+                    borderRightColor: "transparent",
+                    borderBottomColor: "transparent"
+                }
+            },
+            rootInline: {
+                alignItems: "flex-start",
+                "& .inlineActions": {
+                    opacity: 0,
+                    pointerEvents: "none",
+                    transition: "opacity 120ms ease"
+                },
+                "& .inlinePath": {
+                    maxHeight: 0,
+                    opacity: 0,
+                    marginTop: 0,
+                    transition:
+                        "max-height 160ms ease, opacity 160ms ease, margin-top 160ms ease"
+                },
+                "&:hover .inlineActions, &:focus-within .inlineActions": {
+                    opacity: 1,
+                    pointerEvents: "auto"
+                },
+                "&:hover .inlinePath, &:focus-within .inlinePath": {
+                    maxHeight: inlineRevealHeight,
+                    opacity: 1,
+                    marginTop: theme.spacing(0.5)
+                }
+            },
+            rootInlineActive: {
+                "& .inlineActions": {
+                    opacity: 1,
+                    pointerEvents: "auto"
+                },
+                "& .inlinePath": {
+                    maxHeight: inlineRevealHeight,
+                    opacity: 1
                 }
             },
             rootBar: {
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 8,
+
                 borderRadius: 9999,
-                padding: "8px 16px",
+                padding: "4px 10px",
                 maxWidth: 300,
                 flexShrink: 0,
                 minWidth: 0
@@ -419,6 +544,9 @@ const useStyles = tss
                 minWidth: 0,
                 width: "100%"
             },
+            labelRowInline: {
+                alignItems: "flex-start"
+            },
             labelText: {
                 ...labelStyle,
                 display: "block",
@@ -439,12 +567,49 @@ const useStyles = tss
                 overflow: "hidden",
                 textOverflow: "ellipsis"
             },
+            inlineActions: {
+                display: "inline-flex",
+                alignItems: "center",
+                gap: theme.spacing(0.5),
+                flexShrink: 0
+            },
+            inlineActionButton: {
+                border: "none",
+                background: "transparent",
+                color: "inherit",
+                cursor: "pointer",
+                width: 24,
+                height: 24,
+                borderRadius: 8,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+                transition: "opacity 120ms ease",
+                "&:hover": {
+                    backgroundColor: theme.colors.palette.focus.mainAlpha20
+                }
+            },
+            inlineActionIcon: {
+                fontSize: 16,
+                lineHeight: "16px",
+                fontFamily: '"Material Symbols Outlined"',
+                fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+            },
+            inlinePath: {
+                ...captionStyle,
+                color: theme.colors.useCases.typography.textSecondary,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "block"
+            },
             tooltip: {
                 backgroundColor: theme.colors.useCases.surfaces.surface1,
                 color: theme.colors.useCases.typography.textPrimary,
                 boxShadow: theme.shadows[1],
                 borderRadius: 10,
-                padding: theme.spacing(3),
+                padding: theme.spacing(2),
                 maxWidth: 320,
                 margin: 0,
                 [`.${tooltipClasses.popper}[data-popper-placement*="bottom"] &`]: {
@@ -474,7 +639,7 @@ const useStyles = tss
                 minWidth: 0
             },
             tooltipLabel: {
-                ...label2Style,
+                ...labelStyle,
                 flex: 1,
                 minWidth: 0,
                 whiteSpace: "nowrap",
