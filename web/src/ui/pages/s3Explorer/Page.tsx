@@ -299,7 +299,7 @@ function PageComponent() {
                             </div>
                             <S3UriBar
                                 className={css({
-                                    marginTop: theme.spacing(1),
+                                    marginTop: theme.spacing(2),
                                     marginBottom: theme.spacing(2)
                                 })}
                                 s3Uri={mainView.uriBar.s3Uri}
