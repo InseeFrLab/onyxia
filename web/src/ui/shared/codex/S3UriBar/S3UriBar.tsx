@@ -1582,10 +1582,10 @@ const useStyles = tss
                 width: "100%",
                 minWidth: 0,
                 height: barHeight,
-                paddingTop: theme.spacing(1.5),
-                paddingBottom: theme.spacing(1.5),
-                paddingLeft: theme.spacing(1.5),
-                paddingRight: theme.spacing(1.5),
+                paddingTop: theme.spacing(2),
+                paddingBottom: theme.spacing(2),
+                paddingLeft: theme.spacing(2),
+                paddingRight: theme.spacing(2),
                 boxSizing: "border-box",
                 borderRadius: "16px",
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
@@ -1608,7 +1608,7 @@ const useStyles = tss
             crumbs: {
                 display: "inline-flex",
                 alignItems: "center",
-                gap: theme.spacing(1)
+                gap: theme.spacing(2)
             },
             keyGroup: {
                 display: "inline-flex",
