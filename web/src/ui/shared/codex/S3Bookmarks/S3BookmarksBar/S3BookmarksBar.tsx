@@ -217,7 +217,6 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                         <S3BookmarkItem
                             variant="bar"
                             showPinIcon={showItemIcons}
-                            showActiveState={false}
                             displayName={item.displayName}
                             s3Uri={item.s3Uri}
                             link={link}
@@ -264,7 +263,6 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                         s3Uri: item.s3Uri
                                     });
                                     const itemKey = getItemKey(item);
-                                    const isEditable = !item.isReadonly;
                                     const isPanelActive =
                                         activeItemKey !== undefined &&
                                         itemKey === activeItemKey;
@@ -283,7 +281,6 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                             disableTooltip={true}
                                             showInlinePath={true}
                                             showPinIcon={showItemIcons}
-                                            showActiveState={false}
                                             displayName={item.displayName}
                                             s3Uri={item.s3Uri}
                                             link={panelLink}
@@ -291,8 +288,8 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                             isActive={isPanelActive}
                                             className={cx(
                                                 classes.panelItem,
-                                                isEditable && classes.panelItemEditable,
-                                                item.isReadonly &&
+                                                !isPanelActive &&
+                                                    item.isReadonly &&
                                                     classes.panelItemReadonly
                                             )}
                                         />
@@ -308,12 +305,6 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
 }
 
 const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
-    const surfaces = theme.colors.useCases.surfaces as unknown as Partial<
-        Record<"surfaceFocus2", string>
-    >;
-    const focusSurface2 =
-        surfaces.surfaceFocus2 ?? theme.colors.useCases.surfaces.surface2;
-
     return {
         root: {
             position: "relative",
@@ -322,7 +313,6 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
             gap: ITEM_GAP,
             width: "100%",
             minWidth: 260,
-            maxWidth: 960,
             flex: "1 1 auto",
             overflow: "hidden",
             flexWrap: "nowrap",
@@ -395,17 +385,9 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
                 minHeight: PANEL_ROW_HEIGHT
             }
         },
-        panelItemEditable: {
-            "&&:focus-within": {
-                backgroundColor: focusSurface2
-            },
-            "&&:hover": {
-                backgroundColor: focusSurface2
-            }
-        },
         panelItemReadonly: {
             "&&": {
-                backgroundColor: theme.colors.useCases.surfaces.surface1
+                backgroundColor: theme.colors.useCases.surfaces.surface2
             },
             "&&:hover": {
                 backgroundColor: theme.colors.useCases.surfaces.surface3
