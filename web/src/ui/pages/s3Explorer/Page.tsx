@@ -251,7 +251,8 @@ function PageComponent() {
                                     display: "flex",
                                     alignItems: "center",
                                     gap: theme.spacing(3),
-                                    width: "100%"
+                                    width: "100%",
+                                    minWidth: 0
                                 })}
                             >
                                 <S3ProfileSelect
@@ -289,7 +290,8 @@ function PageComponent() {
                                     <S3BookmarksBar
                                         {...props}
                                         className={css({
-                                            flex: 1
+                                            flex: 1,
+                                            minWidth: 0
                                         })}
                                     />
                                 )}
