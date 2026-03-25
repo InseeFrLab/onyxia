@@ -297,6 +297,10 @@ function PageComponent() {
                                 )}
                             </div>
                             <S3UriBar
+                                className={css({
+                                    marginTop: theme.spacing(1),
+                                    marginBottom: theme.spacing(2)
+                                })}
                                 s3Uri={mainView.uriBar.s3Uri}
                                 hints={mainView.uriBar.hints}
                                 areHintsLoading={mainView.isListing}
