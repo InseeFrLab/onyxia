@@ -125,6 +125,7 @@ function MyService() {
                                         serviceDetails.collapseCommandBar();
                                     }
                                 }}
+                                doCollapseOnClickAway={false}
                             />
                         )}
                         <Tabs

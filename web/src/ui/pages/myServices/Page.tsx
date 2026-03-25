@@ -345,6 +345,7 @@ function MyServices() {
                                     }).href
                                 })
                             }}
+                            doCollapseOnClickAway={false}
                         />
                     )}
                     <div className={classes.cardsAndSavedConfigs}>

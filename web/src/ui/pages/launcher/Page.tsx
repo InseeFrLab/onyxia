@@ -403,6 +403,7 @@ function Launcher() {
                                 }).href
                             })
                         }}
+                        doCollapseOnClickAway={true}
                     />
                 )}
                 <LauncherMainCard

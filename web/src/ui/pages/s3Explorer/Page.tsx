@@ -217,6 +217,7 @@ function PageComponent() {
                                 }}
                                 entries={mainView.commandLogsEntries}
                                 maxHeight={300}
+                                doCollapseOnClickAway={false}
                             />
                         </div>
                     )}
