@@ -9,13 +9,19 @@ import type { Link } from "type-route";
 export type S3UploadsProps = {
     className?: string;
     uploads: {
+        id: string;
         profileName: string;
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         directoryLink: Link;
         size: number;
         completionPercent: number;
+        status: "uploading" | "completed" | "cancelled" | "error";
+        message?: string;
     }[];
     onClearCompleted: () => void;
+    onCancelUpload: (params: { uploadId: string }) => void;
+    onDeleteUpload: (params: { uploadId: string }) => void;
+    onRetryUpload: (params: { uploadId: string }) => void;
 };
 
 function getFormattedSize(size: number): string {
@@ -33,13 +39,18 @@ function getFileName(s3Uri: S3Uri.NonTerminatedByDelimiter): string {
 }
 
 export function S3Uploads(props: S3UploadsProps) {
-    const { className, uploads, onClearCompleted } = props;
+    const {
+        className,
+        uploads,
+        onClearCompleted,
+        onCancelUpload,
+        onDeleteUpload,
+        onRetryUpload
+    } = props;
     const { classes, cx } = useStyles();
 
-    const completedUploads = uploads.filter(upload => upload.completionPercent >= 100);
-    const uploadingCount = uploads.filter(
-        upload => upload.completionPercent < 100
-    ).length;
+    const completedUploads = uploads.filter(upload => upload.status === "completed");
+    const uploadingCount = uploads.filter(upload => upload.status === "uploading").length;
     const uploadCount = uploads.length;
 
     const headerTitle =
@@ -68,21 +79,41 @@ export function S3Uploads(props: S3UploadsProps) {
             </div>
             <div className={classes.divider} />
             <div className={classes.list}>
-                {uploads.map((upload, index) => {
+                {uploads.map(upload => {
                     const percent = Math.max(0, Math.min(100, upload.completionPercent));
-                    const isCompleted = percent >= 100;
+                    const isUploading = upload.status === "uploading";
+                    const isCompleted = upload.status === "completed";
+                    const isCancelled = upload.status === "cancelled";
+                    const isError = upload.status === "error";
                     const uploadedSize = Math.round((upload.size * percent) / 100);
                     const totalSizeLabel = getFormattedSize(upload.size);
                     const uploadedSizeLabel = getFormattedSize(uploadedSize);
-                    const metaLabel = isCompleted
-                        ? `${upload.profileName} - ${totalSizeLabel} - Completed`
-                        : `${upload.profileName} - ${uploadedSizeLabel} of ${totalSizeLabel} - Uploading... ${Math.round(percent)}%`;
+                    const statusLabel = (() => {
+                        switch (upload.status) {
+                            case "uploading":
+                                return "Uploading...";
+                            case "completed":
+                                return "Completed";
+                            case "cancelled":
+                                return "Cancelled";
+                            case "error":
+                                return "Error";
+                            default:
+                                return "Uploading...";
+                        }
+                    })();
+                    const progressSuffix = isUploading ? ` ${Math.round(percent)}%` : "";
+                    const sizeLabel = isUploading
+                        ? `${uploadedSizeLabel} of ${totalSizeLabel}`
+                        : totalSizeLabel;
+                    const messageSuffix =
+                        upload.message !== undefined && upload.message !== ""
+                            ? ` - ${upload.message}`
+                            : "";
+                    const metaLabel = `${upload.profileName} - ${sizeLabel} - ${statusLabel}${progressSuffix}${messageSuffix}`;
 
                     return (
-                        <div
-                            key={`${stringifyS3Uri(upload.s3Uri)}-${index}`}
-                            className={classes.item}
-                        >
+                        <div key={upload.id} className={classes.item}>
                             <div className={classes.itemContent}>
                                 <div className={classes.iconWrapper}>
                                     <Icon
@@ -100,12 +131,14 @@ export function S3Uploads(props: S3UploadsProps) {
                                     <div
                                         className={cx(
                                             classes.meta,
-                                            isCompleted && classes.metaCompleted
+                                            isCompleted && classes.metaCompleted,
+                                            isError && classes.metaError,
+                                            isCancelled && classes.metaCancelled
                                         )}
                                     >
                                         {metaLabel}
                                     </div>
-                                    {!isCompleted && (
+                                    {isUploading && (
                                         <div className={classes.progressTrack}>
                                             <div
                                                 className={classes.progressFill}
@@ -115,7 +148,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                     )}
                                 </div>
                             </div>
-                            {isCompleted && (
+                            {isCompleted ? (
                                 <a
                                     className={classes.itemAction}
                                     {...upload.directoryLink}
@@ -126,7 +159,44 @@ export function S3Uploads(props: S3UploadsProps) {
                                         size="small"
                                     />
                                 </a>
-                            )}
+                            ) : isUploading ? (
+                                <button
+                                    type="button"
+                                    className={classes.itemAction}
+                                    onClick={() =>
+                                        onCancelUpload({ uploadId: upload.id })
+                                    }
+                                    aria-label="Cancel upload"
+                                >
+                                    <Icon icon={getIconUrlByName("Close")} size="small" />
+                                </button>
+                            ) : isError ? (
+                                <button
+                                    type="button"
+                                    className={classes.itemAction}
+                                    onClick={() => onRetryUpload({ uploadId: upload.id })}
+                                    aria-label="Retry upload"
+                                >
+                                    <Icon
+                                        icon={getIconUrlByName("Replay")}
+                                        size="small"
+                                    />
+                                </button>
+                            ) : isCancelled ? (
+                                <button
+                                    type="button"
+                                    className={classes.itemAction}
+                                    onClick={() =>
+                                        onDeleteUpload({ uploadId: upload.id })
+                                    }
+                                    aria-label="Delete upload"
+                                >
+                                    <Icon
+                                        icon={getIconUrlByName("Delete")}
+                                        size="small"
+                                    />
+                                </button>
+                            ) : null}
                         </div>
                     );
                 })}
@@ -246,6 +316,12 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
     metaCompleted: {
         color: theme.colors.useCases.alertSeverity.success.main
     },
+    metaError: {
+        color: theme.colors.useCases.alertSeverity.error.main
+    },
+    metaCancelled: {
+        color: theme.colors.useCases.typography.textDisabled
+    },
     progressTrack: {
         height: 6,
         borderRadius: 999,
@@ -267,6 +343,10 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         justifyContent: "center",
         color: theme.colors.useCases.typography.textSecondary,
         textDecoration: "none",
+        border: "none",
+        background: "transparent",
+        padding: 0,
+        cursor: "pointer",
         flexShrink: 0,
         transition: "background-color 120ms ease, color 120ms ease",
         "&:hover": {
