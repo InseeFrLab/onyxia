@@ -119,11 +119,14 @@ Each upload item is derived from one entry in `props.uploads`.
 
 Available data per item:
 
+- `id`
 - `profileName`
 - `s3Uri`
 - `directoryLink`
 - `size`
 - `completionPercent`
+- `status`
+- `message` (optional)
 
 ## Upload States
 
@@ -134,22 +137,12 @@ The mockups show four main visual states:
 3. Completed
 4. Error
 
-The current props contract explicitly supports only:
-
-- in-progress uploads (`completionPercent < 100`)
-- completed uploads (`completionPercent === 100`)
-
-Cancelled and error states are visible in the mockups but are not represented in the current props contract.
-
-If those states are required, the item model must be extended.
+Upload state is driven by `status`. `completionPercent` remains the source of truth
+for progress display when `status === "uploading"`.
 
 ### Uploading state
 
-An item is considered uploading when:
-
-```ts
-completionPercent < 100;
-```
+An item is considered uploading when `status === "uploading"`.
 
 #### Expected UI
 
@@ -179,11 +172,7 @@ Progress fill uses accent color
 
 ### Completed state
 
-An item is considered completed when:
-
-```ts
-completionPercent === 100;
-```
+An item is considered completed when `status === "completed"`.
 
 Expected UI
 
@@ -210,7 +199,7 @@ Includes :
 - retry-like affordance
 - explicit error status (rattached to the core)
 
-This state is not represented in the current props contract.
+This state is represented via `status === "error"` and may include `message`.
 
 # Rendering Rules
 
@@ -235,7 +224,7 @@ Possible action:
 
 - cancel
 
-Not currently represented in props.
+Handled via `onCancelUpload`.
 
 ## Completed
 
@@ -251,7 +240,7 @@ Possible action:
 
 - retry
 
-Not currently represented in props.
+Handled via `onRetryUpload`.
 
 ## Cancelled
 
@@ -259,7 +248,7 @@ Possible action:
 
 - delete / dismiss row
 
-Not currently represented in props.
+Handled via `onDeleteUpload`.
 
 ## Clear Completed
 

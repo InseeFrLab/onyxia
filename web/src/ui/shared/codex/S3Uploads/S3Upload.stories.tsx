@@ -57,21 +57,28 @@ const makeDirectoryLink = (s3Uri: S3Uri.NonTerminatedByDelimiter): Link => {
 const baseArgs: S3UploadsProps = {
     uploads: [
         {
+            id: "upload-1",
             profileName: "prod",
             s3Uri: reportCsv,
             directoryLink: makeDirectoryLink(reportCsv),
             size: 7_800_000,
-            completionPercent: 72
+            completionPercent: 72,
+            status: "uploading"
         },
         {
+            id: "upload-2",
             profileName: "prod",
             s3Uri: rawEvents,
             directoryLink: makeDirectoryLink(rawEvents),
             size: 5_400_000,
-            completionPercent: 28
+            completionPercent: 28,
+            status: "uploading"
         }
     ],
-    onClearCompleted: action("clear completed")
+    onClearCompleted: action("clear completed"),
+    onCancelUpload: ({ uploadId }) => action("cancel upload")(uploadId),
+    onDeleteUpload: ({ uploadId }) => action("delete upload")(uploadId),
+    onRetryUpload: ({ uploadId }) => action("retry upload")(uploadId)
 };
 
 const renderPanel: Story["render"] = args => (
@@ -92,18 +99,22 @@ export const Completed: Story = {
         ...baseArgs,
         uploads: [
             {
+                id: "upload-3",
                 profileName: "prod",
                 s3Uri: reportCsv,
                 directoryLink: makeDirectoryLink(reportCsv),
                 size: 7_800_000,
-                completionPercent: 100
+                completionPercent: 100,
+                status: "completed"
             },
             {
+                id: "upload-4",
                 profileName: "research",
                 s3Uri: modelBin,
                 directoryLink: makeDirectoryLink(modelBin),
                 size: 12_400_000,
-                completionPercent: 100
+                completionPercent: 100,
+                status: "completed"
             }
         ]
     },
@@ -115,25 +126,42 @@ export const Mixed: Story = {
         ...baseArgs,
         uploads: [
             {
+                id: "upload-5",
                 profileName: "prod",
                 s3Uri: reportCsv,
                 directoryLink: makeDirectoryLink(reportCsv),
                 size: 7_800_000,
-                completionPercent: 100
+                completionPercent: 100,
+                status: "completed"
             },
             {
+                id: "upload-6",
                 profileName: "prod",
                 s3Uri: rawEvents,
                 directoryLink: makeDirectoryLink(rawEvents),
                 size: 5_400_000,
-                completionPercent: 38
+                completionPercent: 38,
+                status: "uploading"
             },
             {
+                id: "upload-7",
                 profileName: "research",
                 s3Uri: modelBin,
                 directoryLink: makeDirectoryLink(modelBin),
                 size: 12_400_000,
-                completionPercent: 100
+                completionPercent: 100,
+                status: "error",
+                message: "Network error"
+            },
+            {
+                id: "upload-8",
+                profileName: "research",
+                s3Uri: modelBin,
+                directoryLink: makeDirectoryLink(modelBin),
+                size: 12_400_000,
+                completionPercent: 46,
+                status: "cancelled",
+                message: "Cancelled by user"
             }
         ]
     },
