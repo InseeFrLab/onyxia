@@ -2,13 +2,11 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Optimize caching by installing dependencies first
-ENV YARN_CACHE_FOLDER=~/.cache/yarn
 COPY package.json yarn.lock ./
 
 # Mount cache and install all dependencies
-RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
-    YARN_CACHE_FOLDER=$YARN_CACHE_FOLDER yarn install \
-        --frozen-lockfile --ignore-scripts --network-timeout 1000000
+RUN --mount=type=cache,target=/root/.cache/yarn \
+    yarn install --frozen-lockfile --ignore-scripts --network-timeout 100000
 
 # Copy source files and build
 COPY . .  
