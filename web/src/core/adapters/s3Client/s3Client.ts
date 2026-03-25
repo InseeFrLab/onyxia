@@ -349,10 +349,14 @@ export function createS3Client(
 
                 const uploadPercent = Math.floor((loaded / total) * 100);
 
-                onUploadProgress?.({ uploadPercent });
+                if (uploadPercent !== 100) {
+                    onUploadProgress?.({ uploadPercent });
+                }
             });
 
             await upload.done();
+
+            onUploadProgress?.({ uploadPercent: 100 });
         },
         deleteObject: async ({ s3Uri }) => {
             const { getAwsS3Client } = await prApi;
