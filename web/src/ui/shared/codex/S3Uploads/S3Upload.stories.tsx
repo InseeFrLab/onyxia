@@ -167,11 +167,3 @@ export const Mixed: Story = {
     },
     render: renderPanel
 };
-
-export const Empty: Story = {
-    args: {
-        ...baseArgs,
-        uploads: []
-    },
-    render: renderPanel
-};

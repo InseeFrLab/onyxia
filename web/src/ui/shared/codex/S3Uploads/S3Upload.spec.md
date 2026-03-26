@@ -57,6 +57,8 @@ It is displayed as an overlay panel and does not affect surrounding layout.
 
 The panel is intended to remain visually compact, readable, and secondary to the main storage view.
 
+If `uploads` is empty, the component does not render.
+
 # Header
 
 The header displays a summary of the current upload activity.
@@ -82,20 +84,7 @@ The exact wording may vary depending on localization rules.
 The panel may be collapsible.
 
 Clicking the collapse icon toggles the visibility of the upload list while keeping the header visible.
-
-#### Close
-
-The close icon dismisses the panel from the current view.
-
-#### Open Question
-
-The current props contract does not expose:
-
-- `onClose`
-- `isCollapsed`
-- `onToggleCollapsed`
-
-If these interactions are required in implementation, they must be added to the props contract or handled externally.
+This behavior is managed internally by the component.
 
 # Upload
 
