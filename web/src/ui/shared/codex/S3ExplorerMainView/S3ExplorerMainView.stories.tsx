@@ -30,6 +30,7 @@ type MockNode =
       };
 
 const delimiter = "/";
+const defaultPrefix = parsePrefixOrThrow("s3://analytics-data/");
 
 function parsePrefixOrThrow(value: string): S3Uri.TerminatedByDelimiter {
     const s3Uri = parseS3Uri({
@@ -142,6 +143,7 @@ const nestedNodes: MockNode[] = [
 ];
 
 const placeholderArgs: S3ExplorerMainViewProps = {
+    currentS3Uri: defaultPrefix,
     isListing: false,
     listedPrefix: {
         isErrored: false,
@@ -208,13 +210,12 @@ function StatefulExplorer(
         | "getDirectDownloadUrl"
     >
 ) {
-    const [currentPrefix, setCurrentPrefix] = useState<S3Uri.TerminatedByDelimiter>(
-        parsePrefixOrThrow("s3://analytics-data/")
-    );
+    const [currentPrefix, setCurrentPrefix] =
+        useState<S3Uri.TerminatedByDelimiter>(defaultPrefix);
     const [nodes, setNodes] = useState<MockNode[]>(baseNodes);
 
     useEffect(() => {
-        setCurrentPrefix(parsePrefixOrThrow("s3://analytics-data/"));
+        setCurrentPrefix(defaultPrefix);
         setNodes(baseNodes);
     }, []);
 
@@ -222,6 +223,7 @@ function StatefulExplorer(
         <div style={{ maxWidth: 1200, padding: 24 }}>
             <S3ExplorerMainView
                 {...props}
+                currentS3Uri={currentPrefix}
                 listedPrefix={toListedItems(
                     currentPrefix.keySegments.length === 0
                         ? nodes
@@ -335,6 +337,7 @@ export const ListingInProgress: Story = {
 
 export const EmptyPrefix: Story = {
     args: {
+        currentS3Uri: defaultPrefix,
         isListing: false,
         listedPrefix: {
             isErrored: false,
@@ -355,6 +358,7 @@ export const EmptyPrefix: Story = {
 
 export const AccessDenied: Story = {
     args: {
+        currentS3Uri: defaultPrefix,
         isListing: false,
         listedPrefix: {
             isErrored: true,

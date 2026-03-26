@@ -24,6 +24,7 @@ This context is handled by surrounding components such as:
 ```ts
 export type S3ExplorerMainViewProps = {
     className?: string;
+    currentS3Uri?: S3Uri;
 
     isListing: boolean;
     listedPrefix:
