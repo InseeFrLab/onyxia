@@ -47,8 +47,8 @@ export declare namespace State {
             | { isChartUsingS3: false }
             | {
                   isChartUsingS3: true;
-                  s3ConfigId: string | undefined;
-                  s3ConfigId_default: string | undefined;
+                  s3ProfileName: string | undefined;
+                  s3ProfileName_default: string | undefined;
               };
 
         helmDependencies: {

@@ -130,134 +130,6 @@ export const translations: Translations<"fi"> = {
         ),
         "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
     },
-    ProjectSettings: {
-        "page header title": "Projektiasetukset",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Henkilökohtaisen projektisi asetukset"
-                : `Asetukset "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Tällä sivulla voit määrittää asetuksia, jotka koskevat
-                {groupProjectName === undefined
-                    ? " henkilökohtaista projektiasi"
-                    : ` ${groupProjectName} projektia`}
-                .
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Huomaa, että {groupProjectName} on ryhmäprojekti, joka on jaettu
-                        muiden käyttäjien kanssa; tällä sivulla tekemäsi muutokset
-                        koskevat kaikkia projektin jäseniä.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        Voit vaihtaa projekteja käyttämällä pudotusvalikkoa
-                        otsikkopalkissa.
-                        <br />
-                    </>
-                )}
-                Huomaa, että vain Onyxia-instanssisi ylläpitäjä voi luoda uusia
-                projekteja.
-            </>
-        ),
-        "security-info": "Turvallisuustiedot",
-        "s3-configs": "S3-konfiguraatiot"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Lisää mukautettu S3-kokoonpano"
-    },
-    S3ConfigCard: {
-        "data source": "Tietolähde",
-        credentials: "Tunnistetiedot",
-        "sts credentials":
-            "Dynaamisesti pyydetyt tokenit puolestasi Onyxian toimesta (STS)",
-        account: "Tili",
-        "use in services": "Käytä palveluissa",
-        "use in services helper": `Jos otettu käyttöön, tätä konfiguraatiota käytetään
-            oletusarvoisesti palveluissasi, jotka toteuttavat S3-integraation.`,
-        "use for onyxia explorers": "Käytä Onyxia-tutkijoille",
-        "use for onyxia explorers helper": `Jos otettu käyttöön, tätä konfiguraatiota käytetään
-            tiedostonhallintaohjelmassa ja data-analysaattorissa.`,
-        edit: "Muokkaa",
-        delete: "Poista"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Uusi mukautettu S3-kokoonpano",
-        "dialog subtitle":
-            "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
-        cancel: "Peruuta",
-        "save config": "Tallenna kokoonpano",
-        "update config": "Päivitä kokoonpano",
-        "is required": "Tämä kenttä on pakollinen",
-        "must be an url": "Ei ole kelvollinen URL-osoite",
-        "not a valid access key id": "Tämä ei näytä kelvolliselta pääsyavain-ID:ltä",
-        "url textField label": "URL",
-        "url textField helper text": "S3-palvelun URL-osoite",
-        "region textField label": "AWS S3-alue",
-        "region textField helper text":
-            "Esimerkki: eu-west-1, jos epävarma, jätä tyhjäksi",
-        "workingDirectoryPath textField label": "Työkansion polku",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Tämän avulla voit määrittää ämpärin ja S3-objektin etuliitteen, joka
-                sinulla on S3-palvelussa. <br />
-                Esimerkki: <code>minun-ämpäri/etuliitteeni/</code> tai{" "}
-                <code>vain minun-ämpäri/</code> jos omistat koko ämpärin.
-            </>
-        ),
-        "account credentials": "Tilin tunnistetiedot",
-        "friendlyName textField label": "Konfiguraation nimi",
-        "friendlyName textField helper text":
-            "Tämä auttaa sinua tunnistamaan tämän konfiguraation. Esimerkki: Minun AWS-bucket",
-        "isAnonymous switch label": "Anonyymi pääsy",
-        "isAnonymous switch helper text":
-            "Aseta PÄÄLLE, jos salainen pääsyavain ei ole tarpeen",
-
-        "accessKeyId textField label": "Pääsyavaimen tunnus",
-        "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Salainen pääsyavain",
-        "sessionToken textField label": "Istuntotunnus",
-        "sessionToken textField helper text": "Valinnainen, jätä tyhjäksi, jos epävarma",
-        "url style": "URL-tyyli",
-        "url style helper text": `Määritä, miten S3-palvelimesi muotoilee tiedostojen lataamisen URL-osoitteita.`,
-        "path style label": ({ example }) => (
-            <>
-                Polkutyyli
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}tietoaineisto.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtual-hosted tyyli
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}tietoaineisto.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Testaa yhteys",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Yhteystestaus epäonnistui virheellä: <br />
-                {errorMessage}
-            </>
-        )
-    },
     AccountUserInterfaceTab: {
         title: "Käyttöliittymän asetukset",
         "enable dark mode": "Ota tumma tila käyttöön",
@@ -308,66 +180,23 @@ export const translations: Translations<"fi"> = {
         "reset helper dialogs helper text":
             "Nollaa ohjeviestit, joista on pyydetty, ettei niitä näytetä uudelleen"
     },
-    FileExplorerEntry: {
-        "page title - file explorer": "Tiedostoselain",
-        "what this page is used for - file explorer":
-            "Täällä voit selata S3 Bucket -tiedostojasi.",
-        "help content": ({ accountTabLink, docHref }) => (
-            <>
-                Lue{" "}
-                <MuiLink href={docHref} target="_blank">
-                    dokumentaatiomme
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
-            </>
-        ),
-        "title personal": "Omat tietoni",
-        "description personal": "Omat tiedostosi ja tietoaineistosi.",
-        "title project": ({ projectName }) => `Projekti ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Projektin ${projectName} yhteinen tallennustila`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Omat tiedot";
-                case "project":
-                    return "Ryhmän tiedot";
-            }
-        }
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `Bucket ${bucket} ei ole olemassa`,
+        "bucket does not exist body": "Haluatko yrittää luoda sen nyt?",
+        no: "Ei",
+        yes: "Kyllä",
+        "success title": "Onnistui",
+        "failed title": "Epäonnistui",
+        "success body": ({ bucket }) => `Bucket ${bucket} luotiin onnistuneesti.`,
+        "failed body": ({ bucket }) => `Kohteen ${bucket} luonti epäonnistui.`,
+        ok: "Ok"
     },
-    S3EntryCard: {
-        "space path": "Tilapolku"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "S3-palvelinta ei ole määritetty",
-        "dialog body":
-            "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Kirjanmerkin nimi",
+        "bookmarkName textField label": "Nimi",
+        "bookmarkName textField empty error": "Kirjanmerkin nimi ei voi olla tyhjä",
         cancel: "Peruuta",
-        "go to settings": "Siirry asetuksiin"
-    },
-    ShareDialog: {
-        title: "Jaa tietosi",
-        close: "Sulje",
-        "create and copy link": "Luo ja kopioi linkki",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Tiedostosi on julkinen, kuka tahansa linkin omistava voi ladata sen."
-                : "Tiedostosi on tällä hetkellä yksityinen.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Rajoittaaksesi pääsyä muuta tiedostosi jakamisen tilaa."
-                : "Jaa tiedosto ja anna pääsy muuttamalla jakamisen tilaa tai luomalla väliaikainen linkki.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Linkkisi on käytettävissä niin kauan kuin tiedosto on julkinen."
-                : `Tämä linkki antaa pääsyn tietoihisi ${expiration} ajaksi.`,
-        "label input link": "Pääsylinkki"
-    },
-    SelectTime: {
-        "validity duration label": "Voimassaoloaika"
+        ok: "Ok"
     },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
@@ -390,9 +219,6 @@ export const translations: Translations<"fi"> = {
     SecretsExplorerItem: {
         description: "kuvaus"
     },
-    ExplorerItem: {
-        description: "kuvaus"
-    },
     SecretsExplorerButtonBar: {
         secret: "salaisuus",
         rename: "nimeä uudelleen",
@@ -404,26 +230,6 @@ export const translations: Translations<"fi"> = {
         "create what": ({ what }) => `Luo ${what}`,
         new: "Uusi"
     },
-    ExplorerButtonBar: {
-        file: "tiedosto",
-        delete: "poista",
-        "download directory": "Lataa",
-        "upload file": "Lataa tiedosto",
-        "copy path": "Kopioi S3-objektin nimi",
-        "create new empty directory": "Luo hakemisto",
-        refresh: "päivitä",
-        new: "Uusi",
-        share: "Jaa",
-        "alt list view": "Näytä lista",
-        "alt block view": "Näytä lohko"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Latauksen valmistelu ..."
-    },
-    ExplorerItems: {
-        "empty directory": "Tämä hakemisto on tyhjä"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Tämä hakemisto on tyhjä"
     },
@@ -444,25 +250,59 @@ export const translations: Translations<"fi"> = {
         "can't be empty": "Ei voi olla tyhjä",
         "new directory": "Uusi hakemisto"
     },
-    Explorer: {
-        file: "tiedosto",
-        secret: "salaisuus",
-        create: "luo",
-        cancel: "peruuta",
-        delete: "poista",
-        "do not display again": "Älä näytä uudelleen",
-        "untitled what": ({ what }) => `nimetön_${what}`,
-        directory: "hakemisto",
-        multiple: "kohteet",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Poistetaanko ${isPlural ? "nämä" : "tämä"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        Olet poistamassa ${isPlural ? "näitä" : "tätä"} ${deleteWhat}.
-        Tämä toiminto voi johtaa näihin liittyvien tietojen menetykseen ${isPlural ? "näihin" : "tähän"} ${deleteWhat}.
-        `,
-        "already a directory with this name": "Tämän niminen hakemisto on jo olemassa",
-        "can't be empty": "Ei voi olla tyhjä",
-        "new directory": "Uusi hakemisto"
+    CreateOrUpdateProfileDialog: {
+        "dialog title": "Uusi mukautettu S3-määritys",
+        "dialog subtitle":
+            "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
+        cancel: "Peruuta",
+        "save config": "Tallenna määritys",
+        "update config": "Päivitä määritys",
+        "is required": "Tämä kenttä on pakollinen",
+        "must be an url": "Ei kelvollinen URL-osoite",
+        "profile name already used": "Samanniminen profiili on jo olemassa",
+        "not a valid access key id":
+            "Tämä ei näytä kelvolliselta access key -tunnukselta",
+        "url textField label": "URL",
+        "url textField helper text": "S3-palvelun URL-osoite",
+        "region textField label": "AWS S3 -alue",
+        "region textField helper text":
+            "Esimerkki: eu-west-1, jos et ole varma, jätä tyhjäksi",
+        "account credentials": "Tilin tunnistetiedot",
+        "profileName textField label": "Profiilin nimi",
+        "profileName textField helper text": "Tämän S3-profiilin yksilöllinen tunniste",
+        "isAnonymous switch label": "Anonyymi pääsy",
+        "isAnonymous switch helper text":
+            "Aseta ON, jos salainen access key ei ole tarpeen",
+        "accessKeyId textField label": "Access key -tunnus",
+        "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Salainen access key",
+        "sessionToken textField label": "Istuntotunnus",
+        "sessionToken textField helper text":
+            "Valinnainen, jätä tyhjäksi jos et ole varma",
+        "url style": "URL-tyyli",
+        "url style helper text": "Määritä, miten S3-palvelimesi muotoilee lataus-URL:n.",
+        "path style label": ({ example }) => (
+            <>
+                Polkutyylinen
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted-tyyli
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     MySecretsEditor: {
         "do not display again": "Älä näytä uudelleen",
@@ -488,30 +328,10 @@ export const translations: Translations<"fi"> = {
             `,
         "use secret dialog ok": "Selvä"
     },
-    ListExplorerItems: {
-        "header name": "Nimi",
-        "header modified date": "Muokattu",
-        "header size": "Koko",
-        "header policy": "Käytäntö"
-    },
     MySecretsEditorRow: {
         "key input desc": "Ympäristömuuttujan nimi",
         "value input desc": "Ympäristömuuttujan arvo"
     },
-    ExplorerUploadModalDropArea: {
-        "browse files": "Selaa tiedostoja",
-        "drag and drop or": "Vedä ja pudota tai"
-    },
-    ExplorerUploadProgress: {
-        over: "yli",
-        importing: "Tuodaan"
-    },
-    ExplorerUploadModal: {
-        "import files": "Tuo tiedostoja",
-        cancel: "Peruuta",
-        minimize: "Pienennä"
-    },
-
     Header: {
         login: "Kirjaudu sisään",
         logout: "Kirjaudu ulos",
@@ -522,17 +342,14 @@ export const translations: Translations<"fi"> = {
         reduce: "Pienennä",
         home: "Koti",
         account: "Oma tili",
-        projectSettings: "Projektin asetukset",
         catalog: "Palvelukatalogi",
         myServices: "Omat palvelut",
         mySecrets: "Omat salaisuudet",
-        myFiles: "Omat tiedostot",
         "divider: services features": "Palvelun ominaisuudet",
         "divider: external services features": "Ulkoisten palveluiden ominaisuudet",
         "divider: onyxia instance specific features":
             "Onyxia-instanssin erityisominaisuudet",
         dataExplorer: "Data Explorer",
-        fileExplorer: "Tiedostonhallinta",
         dataCollection: "Kokoelmien selains",
         sqlOlapShell: "SQL OLAP-kuori"
     },
@@ -789,6 +606,65 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "external monitoring": "Ulkoinen valvonta",
         "helm values": "Helm-arvot",
         reduce: "Vähennä"
+    },
+    S3ExplorerMainView: {
+        "upload files": "Upload files",
+        "new folder": "New folder",
+        "get link": "Get link",
+        delete: "Delete",
+        "create folder": "Create folder",
+        "create folder subtitle":
+            "Folders are created relative to the prefix currently being listed.",
+        "folder name": "Folder name",
+        "folder name cannot be empty": "Folder name cannot be empty.",
+        cancel: "Cancel",
+        "delete selection": "Delete selection",
+        "delete selection subtitle": ({ count }) =>
+            `This will permanently delete ${count} selected item${count > 1 ? "s" : ""}.`,
+        "deleted folders remove everything inside them":
+            "Deleted folders remove everything inside them.",
+        "shareable link": "Shareable link",
+        "shareable link loading": "Generating a direct download URL...",
+        "shareable link ready description":
+            "Anyone with this URL can download the file until it expires.",
+        close: "Close",
+        retry: "Retry",
+        open: "Open",
+        "copy link": "Copy link",
+        "access denied": "Access denied",
+        "bucket not found": "Bucket not found",
+        "access denied description":
+            "You do not have permission to list this S3 location.",
+        "bucket not found description":
+            "The requested bucket does not exist or is not reachable with the current profile.",
+        "select item": ({ itemName }) => `Select ${itemName}`,
+        deleting: "Deleting...",
+        "uploading label": "Uploading",
+        uploading: ({ percent }) => `Uploading ${percent}%`,
+        uploaded: "Uploaded",
+        folder: "Folder",
+        "open folder": "Open folder",
+        "open file": "Open file",
+        "get shareable link": "Get shareable link",
+        "selected items": ({ count }) => `${count} selected`,
+        items: ({ count }) => `${count} item${count > 1 ? "s" : ""}`,
+        "refreshing listing": "Refreshing listing...",
+        "drag files anywhere in this panel to upload":
+            "Drag files anywhere in this panel to upload.",
+        "clear selection": "Clear selection",
+        "drop files to upload": "Drop files to upload",
+        "files will be uploaded into the currently listed prefix":
+            "Files will be uploaded into the currently listed prefix.",
+        "this prefix is empty": "This prefix is empty",
+        "upload files or create a folder to start populating this location":
+            "Upload files or create a folder to start populating this location.",
+        "select all items": "Select all items",
+        name: "Name",
+        size: "Size",
+        "last modified": "Last modified",
+        actions: "Actions",
+        "shareable link generation failed":
+            "Unable to generate a shareable link for this file."
     },
     LauncherMainCard: {
         "friendly name": "Käyttäjäystävällinen nimi",

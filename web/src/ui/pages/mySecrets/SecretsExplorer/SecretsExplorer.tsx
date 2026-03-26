@@ -385,6 +385,7 @@ export const SecretsExplorer = memo((props: SecretsExplorerProps) => {
                         className={classes.commandBar}
                         entries={commandLogsEntries}
                         maxHeight={commandBarMaxHeight}
+                        doCollapseOnClickAway={false}
                     />
                 )}
                 {(() => {

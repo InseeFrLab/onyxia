@@ -140,7 +140,7 @@ export function DataGrid(params: { className?: string }) {
             paginationMode="server"
             rowCount={rowCount ?? 999999999}
             pageSizeOptions={(() => {
-                const pageSizeOptions = [25, 50, 100];
+                const pageSizeOptions = [25, 50];
                 assert(pageSizeOptions.includes(rowsPerPage));
                 return pageSizeOptions;
             })()}
