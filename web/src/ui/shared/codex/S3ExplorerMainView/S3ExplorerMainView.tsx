@@ -10,6 +10,7 @@ import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import CircularProgress from "@mui/material/CircularProgress";
 import Checkbox from "@mui/material/Checkbox";
+import { alpha } from "@mui/material/styles";
 import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
@@ -27,6 +28,7 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
+    currentS3Uri?: S3Uri;
 
     isListing: boolean;
     listedPrefix:
@@ -110,6 +112,19 @@ type ShareLinkDialogState =
 
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
+}
+
+function getPrefixLabel(s3Uri: S3Uri | undefined): string {
+    if (s3Uri === undefined) {
+        return "this location";
+    }
+
+    const prefixSegments = s3Uri.isDelimiterTerminated
+        ? s3Uri.keySegments
+        : s3Uri.keySegments.slice(0, -1);
+    const lastSegment = prefixSegments.at(-1);
+
+    return lastSegment && lastSegment !== "" ? lastSegment : s3Uri.bucket;
 }
 
 function getObjectsToUploadFromFiles(files: readonly File[]) {
@@ -827,6 +842,7 @@ function ItemRow(props: ItemRowProps) {
 export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const {
         className,
+        currentS3Uri,
         isListing,
         listedPrefix,
         onNavigate,
@@ -856,6 +872,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const shareRequestIdRef = useRef(0);
 
     const { classes, cx } = useStyles({ isDragActive });
+    const dropTargetLabel = getPrefixLabel(currentS3Uri);
 
     useEffect(() => {
         if (listedPrefix.isErrored) {
@@ -1276,23 +1293,36 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     }}
                 >
                     {isListing && <LinearProgress className={classes.listingProgress} />}
-
-                    <div className={classes.contentShell}>
-                        {isDragActive && (
-                            <div className={classes.dropOverlay}>
+                    {isDragActive && (
+                        <div className={classes.dropOverlay}>
+                            <div className={classes.dropOverlayFrame}>
                                 <div className={classes.dropOverlayCard}>
-                                    <Icon icon={getIconUrlByName("Add")} size="large" />
-                                    <div className={classes.dropOverlayTitle}>
-                                        Drop files to upload
+                                    <div className={classes.dropOverlayIcon}>
+                                        <Icon
+                                            icon={getIconUrlByName("Description")}
+                                            size="large"
+                                        />
                                     </div>
-                                    <div className={classes.dropOverlayDescription}>
-                                        Files will be uploaded into the currently listed
-                                        prefix.
+                                    <div className={classes.dropOverlayTitle}>
+                                        Drag and drop to import into
+                                    </div>
+                                    <div className={classes.dropOverlayPrefix}>
+                                        <span className={classes.dropOverlayPrefixIcon}>
+                                            <Icon
+                                                icon={getIconUrlByName("Folder")}
+                                                size="small"
+                                            />
+                                        </span>
+                                        <span className={classes.dropOverlayPrefixLabel}>
+                                            {dropTargetLabel}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        </div>
+                    )}
 
+                    <div className={classes.contentShell}>
                         {items.length === 0 ? (
                             <div className={classes.emptyState}>
                                 <div className={classes.emptyStateIcon}>
@@ -1510,7 +1540,9 @@ const useStyles = tss
             display: "flex",
             flexDirection: "column",
             width: "100%",
-            minWidth: 0
+            minWidth: 0,
+            flex: 1,
+            minHeight: 0
         },
         surface: {
             display: "flex",
@@ -1520,15 +1552,11 @@ const useStyles = tss
             flex: 1,
             minHeight: 0,
             borderRadius: 0,
-            overflow: isDragActive ? "visible" : "hidden",
+            overflow: "hidden",
             position: "relative",
             zIndex: 0,
             backgroundColor: "transparent",
-            boxSizing: "border-box",
-            outline: isDragActive
-                ? `2px solid ${theme.colors.useCases.typography.textFocus}`
-                : "2px solid transparent",
-            outlineOffset: -2
+            boxSizing: "border-box"
         },
         listingProgress: {
             position: "absolute",
@@ -1548,38 +1576,75 @@ const useStyles = tss
         },
         contentShell: {
             position: "relative",
-            backgroundColor: "transparent"
+            backgroundColor: "transparent",
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column"
         },
         dropOverlay: {
             position: "absolute",
             inset: 0,
             zIndex: 2,
-            backgroundColor: "rgba(255, 255, 255, 0.72)",
-            backdropFilter: "blur(3px)",
+            backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.6),
+            backdropFilter: "blur(1px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             padding: theme.spacing(3)
         },
+        dropOverlayFrame: {
+            width: "100%",
+            height: "100%",
+            borderRadius: 24,
+            border: `2px dashed ${theme.colors.useCases.typography.textFocus}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: theme.spacing(4),
+            boxSizing: "border-box"
+        },
         dropOverlayCard: {
             width: "min(440px, 100%)",
             borderRadius: 20,
-            border: `2px dashed ${theme.colors.useCases.typography.textFocus}`,
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             padding: theme.spacing(5),
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: theme.spacing(1.5),
+            gap: theme.spacing(2),
             textAlign: "center"
+        },
+        dropOverlayIcon: {
+            width: 56,
+            height: 56,
+            borderRadius: 18,
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
         },
         dropOverlayTitle: {
             ...theme.typography.variants["label 1"].style,
             color: theme.colors.useCases.typography.textPrimary
         },
-        dropOverlayDescription: {
-            color: theme.colors.useCases.typography.textSecondary,
-            lineHeight: 1.6
+        dropOverlayPrefix: {
+            display: "inline-flex",
+            alignItems: "center",
+            gap: theme.spacing(1.5)
+        },
+        dropOverlayPrefixIcon: {
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+        },
+        dropOverlayPrefixLabel: {
+            ...theme.typography.variants["label 1"].style,
+            color: theme.colors.useCases.typography.textPrimary
         },
         emptyState: {
             display: "flex",
