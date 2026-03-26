@@ -356,6 +356,7 @@ function PageComponent() {
 
                             {mainView.listedPrefix !== undefined && (
                                 <S3ExplorerMainView
+                                    currentS3Uri={mainView.uriBar.s3Uri}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
                                     onNavigate={({ s3Uri }) =>
