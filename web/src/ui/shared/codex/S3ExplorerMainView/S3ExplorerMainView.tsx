@@ -1541,7 +1541,6 @@ const useStyles = tss
             flexDirection: "column",
             width: "100%",
             minWidth: 0,
-            flex: 1,
             minHeight: 0
         },
         surface: {
