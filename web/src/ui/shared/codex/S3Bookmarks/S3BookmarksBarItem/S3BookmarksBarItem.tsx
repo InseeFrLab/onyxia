@@ -382,7 +382,6 @@ const useStyles = tss
         const activeBackground = focusSurface1;
         const activeHoverBackground = focusSurface2;
         const labelStyle = theme.typography.variants["label 1"].style;
-        const label2Style = theme.typography.variants["label 2"].style;
         const uriStyle = theme.typography.variants["body 1"].style;
         const captionStyle = theme.typography.variants["caption"].style;
         const inlineRevealHeight = 22;

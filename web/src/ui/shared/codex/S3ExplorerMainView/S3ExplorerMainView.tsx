@@ -1534,8 +1534,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 const useStyles = tss
     .withName({ S3ExplorerMainView })
     .withParams<{ isDragActive: boolean }>()
-    .withNestedSelectors<"rowActions">()
-    .create(({ theme, classes, isDragActive }) => ({
+    .withNestedSelectors<"rowActions" | "itemIconWrapper">()
+    .create(({ theme, classes /*isDragActive*/ }) => ({
         root: {
             display: "flex",
             flexDirection: "column",

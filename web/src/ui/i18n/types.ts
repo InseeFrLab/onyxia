@@ -88,7 +88,6 @@ export type ComponentKey =
     | import("ui/pages/dataCollection/Page").I18n
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
-    | import("ui/shared/codex/S3ExplorerMainView").I18n
     | import("ui/shared/formattedDate/type").I18n
     | import("ui/shared/CopyToClipboardIconButton").I18n
     | import("ui/shared/Datagrid/CustomDataGrid").I18n

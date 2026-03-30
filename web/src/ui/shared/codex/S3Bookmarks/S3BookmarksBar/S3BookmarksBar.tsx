@@ -268,7 +268,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                         itemKey === activeItemKey;
                                     const panelLink = {
                                         ...link,
-                                        onClick: event => {
+                                        onClick: (event: any) => {
                                             link.onClick?.(event);
                                             closePanel();
                                         }
