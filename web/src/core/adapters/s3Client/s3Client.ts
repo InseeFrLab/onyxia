@@ -338,13 +338,19 @@ export function createS3Client(
                 partSize: 5 * 1024 * 1024, // optional size of each part
                 leavePartsOnError: false // optional manually handle dropped parts
             });
-            upload.on("httpUploadProgress", ({ total, loaded }) => {
+
+            const onHttpUploadProgress = (params: {
+                total?: number;
+                loaded?: number;
+            }) => {
+                const { total, loaded } = params;
+
                 if (total === undefined || loaded === undefined) {
                     return;
                 }
 
                 if (total === 0) {
-                    onUploadProgress?.({ uploadPercent: 100 });
+                    onUploadProgress?.({ uploadPercent: 99 });
                     return;
                 }
 
@@ -353,11 +359,14 @@ export function createS3Client(
                 if (uploadPercent !== 100) {
                     onUploadProgress?.({ uploadPercent });
                 }
-            });
+            };
+
+            upload.on("httpUploadProgress", onHttpUploadProgress);
 
             const ctx = Evt.newCtx();
 
             evtCancel.attachOnce(ctx, () => {
+                upload.off("httpUploadProgress", onHttpUploadProgress);
                 upload.abort();
             });
 
