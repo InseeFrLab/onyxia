@@ -1443,7 +1443,17 @@ export function S3UriBar(props: S3UriBarProps) {
                                     : "Bookmarked"
                             }
                         >
-                            <div data-s3-uri-ignore-edit="true">
+                            <div
+                                data-s3-uri-ignore-edit="true"
+                                onMouseEnter={() => {
+                                    if (isBookmarked && onToggleBookmark !== undefined) {
+                                        setIsBookmarkHovered(true);
+                                    }
+                                }}
+                                onMouseLeave={() => {
+                                    setIsBookmarkHovered(false);
+                                }}
+                            >
                                 <IconButton
                                     aria-label={
                                         onToggleBookmark
@@ -1454,17 +1464,6 @@ export function S3UriBar(props: S3UriBarProps) {
                                     }
                                     icon={getIconUrlByName(bookmarkIconName)}
                                     size="default"
-                                    onMouseEnter={() => {
-                                        if (
-                                            isBookmarked &&
-                                            onToggleBookmark !== undefined
-                                        ) {
-                                            setIsBookmarkHovered(true);
-                                        }
-                                    }}
-                                    onMouseLeave={() => {
-                                        setIsBookmarkHovered(false);
-                                    }}
                                     onClick={event => {
                                         event.stopPropagation();
                                         assert(s3Uri !== undefined);

@@ -129,7 +129,6 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 }
 
 const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
-    const label2Style = theme.typography.variants["label 2"].style;
     const label1Style = theme.typography.variants["label 1"].style;
 
     return {
