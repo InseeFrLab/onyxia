@@ -508,6 +508,12 @@ export const thunks = {
                             }
                         });
 
+                    evtCancel.attachOnce(() => {
+                        actions.commandLogCancelled({
+                            cmdId
+                        });
+                    });
+
                     await s3Client.putObject({
                         s3Uri: s3Uri_object,
                         blob: file.blob,
