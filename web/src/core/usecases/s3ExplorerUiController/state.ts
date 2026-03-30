@@ -1,6 +1,6 @@
 import { assert, id } from "tsafe";
 import { createUsecaseActions } from "clean-architecture";
-import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
+import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 
 //All explorer paths are expected to be absolute (start with /)
@@ -326,14 +326,21 @@ export const { reducer, actions } = createUsecaseActions({
             });
 
             {
-                const i = state.uploads.findIndex(
-                    upload =>
-                        upload.profileName === profileName && same(upload.s3Uri, s3Uri)
-                );
+                state.uploads
+                    .filter(
+                        upload =>
+                            upload.profileName === profileName &&
+                            (same(s3Uri, upload.s3Uri) ||
+                                getIsInside({ s3UriPrefix: s3Uri, s3Uri: upload.s3Uri })
+                                    .isInside)
+                    )
+                    .forEach(upload => {
+                        const index = state.uploads.indexOf(upload);
 
-                if (i !== -1) {
-                    state.uploads.splice(i, 1);
-                }
+                        assert(index !== -1);
+
+                        state.uploads.splice(index, 1);
+                    });
             }
         },
         deletionCompleted: (
