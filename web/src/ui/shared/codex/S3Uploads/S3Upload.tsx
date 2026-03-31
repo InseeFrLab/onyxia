@@ -21,7 +21,6 @@ export type S3UploadsProps = {
     }[];
     onClearCompleted: () => void;
     onCancelUpload: (params: { uploadId: string }) => void;
-    onDeleteUpload: (params: { uploadId: string }) => void;
     onRetryUpload: (params: { uploadId: string }) => void;
 };
 
@@ -40,14 +39,7 @@ function getFileName(s3Uri: S3Uri.NonTerminatedByDelimiter): string {
 }
 
 export function S3Uploads(props: S3UploadsProps) {
-    const {
-        className,
-        uploads,
-        onClearCompleted,
-        onCancelUpload,
-        onDeleteUpload,
-        onRetryUpload
-    } = props;
+    const { className, uploads, onClearCompleted, onCancelUpload, onRetryUpload } = props;
     const { classes, cx } = useStyles();
     const [internalCollapsed, setInternalCollapsed] = useState(false);
     const handleToggleCollapsed = () => {
@@ -208,18 +200,6 @@ export function S3Uploads(props: S3UploadsProps) {
                                                 </span>
                                             </span>
                                         </div>
-                                        <div
-                                            className={cx(
-                                                classes.progressTrack,
-                                                !isUploading &&
-                                                    classes.progressTrackHidden
-                                            )}
-                                        >
-                                            <div
-                                                className={classes.progressFill}
-                                                style={{ width: `${percent}%` }}
-                                            />
-                                        </div>
                                     </div>
                                 </div>
                                 {isCompleted ? (
@@ -229,7 +209,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                         aria-label="Open uploaded directory"
                                     >
                                         <Icon
-                                            icon={getIconUrlByName("OpenInNew")}
+                                            icon={getIconUrlByName("Folder")}
                                             size="small"
                                         />
                                     </a>
@@ -243,7 +223,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                         aria-label="Cancel upload"
                                     >
                                         <Icon
-                                            icon={getIconUrlByName("Close")}
+                                            icon={getIconUrlByName("Cancel")}
                                             size="small"
                                         />
                                     </button>
@@ -261,21 +241,18 @@ export function S3Uploads(props: S3UploadsProps) {
                                             size="small"
                                         />
                                     </button>
-                                ) : isCancelled ? (
-                                    <button
-                                        type="button"
-                                        className={classes.itemAction}
-                                        onClick={() =>
-                                            onDeleteUpload({ uploadId: upload.id })
-                                        }
-                                        aria-label="Delete upload"
-                                    >
-                                        <Icon
-                                            icon={getIconUrlByName("Delete")}
-                                            size="small"
-                                        />
-                                    </button>
                                 ) : null}
+                                {isUploading && (
+                                    <div
+                                        className={classes.itemProgress}
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            className={classes.itemProgressFill}
+                                            style={{ width: `${percent}%` }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
@@ -347,13 +324,14 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         flexDirection: "column"
     },
     item: {
+        position: "relative",
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "space-between",
         gap: theme.spacing(2),
         padding: theme.spacing(2.5),
         "&:not(:last-of-type)": {
-            borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
+            boxShadow: `inset 0 -1px 0 ${theme.colors.useCases.surfaces.surface2}`
         }
     },
     itemContent: {
@@ -381,7 +359,8 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
     itemText: {
         display: "flex",
         flexDirection: "column",
-        gap: 0,
+        gap: theme.spacing(0.5),
+        justifyContent: "center",
         minWidth: 0,
         flex: 1
     },
@@ -442,20 +421,20 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
     metaStatusCancelled: {
         color: theme.colors.useCases.typography.textDisabled
     },
-    progressTrack: {
-        height: 6,
-        borderRadius: 999,
-        backgroundColor: theme.colors.useCases.surfaces.surface3,
+    itemProgress: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 3,
         overflow: "hidden",
-        marginTop: theme.spacing(0.5)
+        backgroundColor: theme.colors.useCases.surfaces.surface3,
+        pointerEvents: "none"
     },
-    progressTrackHidden: {
-        visibility: "hidden"
-    },
-    progressFill: {
+    itemProgressFill: {
         height: "100%",
-        borderRadius: 999,
-        backgroundColor: theme.colors.useCases.typography.textFocus
+        backgroundColor: theme.colors.useCases.typography.textFocus,
+        transition: "width 180ms ease, background-color 120ms ease"
     },
     itemAction: {
         width: 32,
