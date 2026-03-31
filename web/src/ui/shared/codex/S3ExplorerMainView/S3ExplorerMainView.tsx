@@ -1869,7 +1869,7 @@ const useStyles = tss
             position: "sticky",
             top: 0,
             zIndex: 1,
-            backgroundColor: "transparent",
+            backgroundColor: theme.colors.useCases.surfaces.background,
             "& th:last-of-type": {
                 paddingRight: theme.spacing(3)
             }
@@ -1879,7 +1879,7 @@ const useStyles = tss
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             textAlign: "left",
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            backgroundColor: "transparent",
+            backgroundColor: theme.colors.useCases.surfaces.background,
             ...theme.typography.variants["label 1"].style,
             color: theme.colors.useCases.typography.textSecondary
         },
@@ -1887,7 +1887,7 @@ const useStyles = tss
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             textAlign: "left",
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            backgroundColor: "transparent",
+            backgroundColor: theme.colors.useCases.surfaces.background,
             ...theme.typography.variants["label 1"].style,
             color: theme.colors.useCases.typography.textSecondary
         },
