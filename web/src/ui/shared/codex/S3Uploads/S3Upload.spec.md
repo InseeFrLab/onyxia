@@ -39,7 +39,6 @@ type S3UploadsProps = {
 
     onClearCompleted: () => void;
     onCancelUpload: (params: { uploadId: string }) => void;
-    onDeleteUpload: (params: { uploadId: string }) => void;
     onRetryUpload: (params: { uploadId: string }) => void;
 };
 ```
@@ -138,26 +137,27 @@ An item is considered uploading when `status === "uploading"`.
 - File icon
 - File name
 - Progress text
-- Progress bar
-- Optional cancel action
+- Bottom progress stroke
+- Optional cancel action using a cancel icon
 
 Example content:
 
 ```ts
 nyr_data.csv
 5,7 MB sur 7,8 MB - Uploading... 72%
-Progress bar
+Bottom progress stroke
 ```
 
-#### Progress bar
+#### Progress stroke
 
-A progress bar is displayed below the metadata line.
+A thin progress stroke is displayed on the bottom edge of the item.
 
 Rules:
 
-Full-width inside the item row
-Track uses neutral subtle surface
-Progress fill uses accent color
+- Full-width inside the item row
+- Track uses neutral subtle surface
+- Progress fill uses accent color
+- Visible only while `status === "uploading"`
 
 ### Completed state
 
@@ -169,7 +169,7 @@ Expected UI
 - File name
 - Completion message
 - Optional success icon
-- Action to open the uploaded directory
+- Folder action to open the uploaded directory
 
 Example content:
 
@@ -178,7 +178,7 @@ nyr_data.csv
 5,7 MB sur 7,8 MB - Completed
 ```
 
-A button action at the left with directoryLink.
+A trailing folder button uses `directoryLink`.
 
 ### Error state
 
@@ -233,11 +233,7 @@ Handled via `onRetryUpload`.
 
 ## Cancelled
 
-Possible action:
-
-- delete / dismiss row
-
-Handled via `onDeleteUpload`.
+No trailing action is displayed.
 
 ## Clear Completed
 
