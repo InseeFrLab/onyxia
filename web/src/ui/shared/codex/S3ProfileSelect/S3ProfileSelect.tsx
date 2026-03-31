@@ -324,7 +324,8 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             position: "absolute",
             top: `calc(100% + ${theme.spacing(1.5)}px)`,
             left: 0,
-            right: 0,
+            width: "100%",
+            minWidth: 300,
             zIndex: theme.muiTheme.zIndex.modal,
             display: "flex",
             flexDirection: "column",
@@ -361,6 +362,8 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             color: theme.colors.useCases.typography.textPrimary,
             transition: "background-color 120ms ease",
+            minWidth: 0,
+            overflow: "hidden",
             "&:hover": {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
             }
@@ -406,13 +409,19 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             color: theme.colors.useCases.typography.textPrimary,
             transition: "background-color 120ms ease",
+            minWidth: 0,
+            overflow: "hidden",
             "&:hover": {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
             }
         },
         createLabel: {
             ...labelStyle,
-            color: theme.colors.useCases.typography.textPrimary
+            color: theme.colors.useCases.typography.textPrimary,
+            minWidth: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
         },
         createIcon: {
             color: theme.colors.useCases.typography.textPrimary

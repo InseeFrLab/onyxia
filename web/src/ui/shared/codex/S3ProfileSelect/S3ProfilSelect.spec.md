@@ -133,6 +133,8 @@ Each profile item displays:
 
 - the profile name,
 - a selected indicator when active.
+- one line only,
+- ellipsis when the name is longer than the dropdown width.
 
 ### Selected item
 
@@ -178,3 +180,9 @@ The static label has no background surface.
 
 The radius of the component is `12px`
 When the dop down is open also use drop-shadow: `theme.shadows[3]`
+
+### Width and truncation
+
+- the dropdown uses a minimum width of `300px`,
+- profile rows stay on a single line,
+- longer profile names are truncated with ellipsis instead of wrapping.

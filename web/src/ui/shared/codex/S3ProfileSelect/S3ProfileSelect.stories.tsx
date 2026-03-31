@@ -113,5 +113,9 @@ export const LongNames: Story = {
         onEditProfile: action("editProfile"),
         onCreateNewProfile: action("createNewProfile")
     },
-    render: args => <StatefulS3ProfileSelect {...args} profiles={longProfiles} />
+    render: args => (
+        <div style={{ width: 300 }}>
+            <StatefulS3ProfileSelect {...args} profiles={longProfiles} />
+        </div>
+    )
 };
