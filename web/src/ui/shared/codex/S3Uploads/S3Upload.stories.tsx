@@ -77,7 +77,6 @@ const baseArgs: S3UploadsProps = {
     ],
     onClearCompleted: action("clear completed"),
     onCancelUpload: ({ uploadId }) => action("cancel upload")(uploadId),
-    onDeleteUpload: ({ uploadId }) => action("delete upload")(uploadId),
     onRetryUpload: ({ uploadId }) => action("retry upload")(uploadId)
 };
 
