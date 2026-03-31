@@ -514,7 +514,7 @@ export const thunks = {
                         });
                     });
 
-                    await s3Client.putObject({
+                    const resultOfPutObject = await s3Client.putObject({
                         s3Uri: s3Uri_object,
                         blob: file.blob,
                         onUploadProgress: ({ uploadPercent }) => {
@@ -537,6 +537,36 @@ export const thunks = {
                     });
 
                     ctx.done();
+
+                    switch (resultOfPutObject.status) {
+                        case "success":
+                            break;
+                        case "canceled":
+                            dispatch(
+                                actions.putObjectStopped({
+                                    profileName,
+                                    s3Uri: s3Uri_object,
+                                    stoppedStatus: { case: "canceled" }
+                                })
+                            );
+                            break;
+                        case "failed":
+                            console.error(
+                                `Error uploading ${stringifyS3Uri(s3Uri_object)}: `,
+                                resultOfPutObject.error
+                            );
+                            dispatch(
+                                actions.putObjectStopped({
+                                    profileName,
+                                    s3Uri: s3Uri_object,
+                                    stoppedStatus: {
+                                        case: "errored",
+                                        errorMessage: resultOfPutObject.error.message
+                                    }
+                                })
+                            );
+                            break;
+                    }
                 })
             );
         },

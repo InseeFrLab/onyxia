@@ -25,6 +25,10 @@ export namespace State {
         size: number;
         completionPercent: number;
         uploadStartTime: number;
+        stoppedStatus:
+            | { case: "canceled" }
+            | { case: "errored"; errorMessage: string }
+            | undefined;
     };
 
     export type Deletion = {
@@ -105,7 +109,8 @@ export const { reducer, actions } = createUsecaseActions({
                 s3Uri,
                 size,
                 completionPercent: 0,
-                uploadStartTime: Date.now()
+                uploadStartTime: Date.now(),
+                stoppedStatus: undefined
             });
         },
         putObjectProgressReported: (
@@ -127,8 +132,36 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(upload !== undefined);
+            assert(upload.stoppedStatus === undefined);
 
             upload.completionPercent = completionPercent;
+        },
+        putObjectStopped: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    s3Uri: S3Uri.NonTerminatedByDelimiter;
+                    stoppedStatus:
+                        | { case: "canceled" }
+                        | { case: "errored"; errorMessage: string }
+                        | undefined;
+                };
+            }
+        ) => {
+            const { profileName, s3Uri, stoppedStatus } = payload;
+
+            const upload = state.uploads.find(
+                upload => upload.profileName === profileName && same(upload.s3Uri, s3Uri)
+            );
+
+            assert(upload !== undefined);
+            assert(upload.stoppedStatus === undefined);
+            assert(upload.completionPercent !== 100);
+
+            upload.stoppedStatus = stoppedStatus;
         },
         listingCleared: (state, { payload }: { payload: { profileName: string } }) => {
             const { profileName } = payload;
