@@ -3,7 +3,7 @@ import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistence
 } from "core/tools/getNewlyRequestedOrCachedToken";
-import { assert, is } from "tsafe/assert";
+import { assert, is, type Equals } from "tsafe/assert";
 import type { Oidc } from "core/ports/Oidc";
 import { getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
 import { exclude, id } from "tsafe";
@@ -317,7 +317,7 @@ export function createS3Client(
                     })
             });
         },
-        putObject: async ({ s3Uri, blob, onUploadProgress, evtCancel }) => {
+        putObject: async ({ s3Uri, blob, onUploadProgress, ...params }) => {
             const { getAwsS3Client } = await prApi;
 
             const [{ awsS3Client }, Upload] = await Promise.all([
@@ -325,18 +325,14 @@ export function createS3Client(
                 import("@aws-sdk/lib-storage").then(({ Upload }) => Upload)
             ]);
 
-            const Bucket = s3Uri.bucket;
-
             const upload = new Upload({
                 client: awsS3Client,
                 params: {
-                    Bucket,
+                    Bucket: s3Uri.bucket,
                     Key: getS3UriKey(s3Uri),
                     Body: blob,
                     ContentType: blob.type
-                },
-                partSize: 5 * 1024 * 1024, // optional size of each part
-                leavePartsOnError: false // optional manually handle dropped parts
+                }
             });
 
             const onHttpUploadProgress = (params: {
@@ -365,19 +361,41 @@ export function createS3Client(
 
             const ctx = Evt.newCtx();
 
-            evtCancel.attachOnce(ctx, () => {
+            const evtCancel = params.evtCancel.pipe(ctx);
+
+            evtCancel.attachOnce(() => {
                 upload.off("httpUploadProgress", onHttpUploadProgress);
                 upload.abort();
             });
 
-            const isAborted = await Promise.race([
-                evtCancel.waitFor().then(() => true),
-                upload.done().then(() => false)
+            const completionStatus = await Promise.race([
+                (async () => {
+                    try {
+                        await upload.done();
+                    } catch (error) {
+                        assert(error instanceof Error);
+                        return {
+                            case: "failed" as const,
+                            error
+                        };
+                    }
+                    return { case: "success" as const };
+                })(),
+                evtCancel.waitFor().then(() => ({ case: "canceled" as const }))
             ]);
 
-            if (!isAborted) {
-                ctx.done();
-                onUploadProgress?.({ uploadPercent: 100 });
+            ctx.done();
+
+            switch (completionStatus.case) {
+                case "canceled":
+                    return { status: "canceled" };
+                case "failed":
+                    return { status: "failed", error: completionStatus.error };
+                case "success":
+                    onUploadProgress?.({ uploadPercent: 100 });
+                    return { status: "success" };
+                default:
+                    assert<Equals<typeof completionStatus, never>>(false);
             }
         },
         deleteObject: async ({ s3Uri }) => {

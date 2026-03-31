@@ -4,12 +4,7 @@ import type { MainView } from "../selectors";
 
 export function computeUploadStatusAtPrefix(params: {
     s3Uri: S3Uri;
-    uploads: {
-        s3Uri: S3Uri.NonTerminatedByDelimiter;
-        size: number;
-        completionPercent: number;
-        uploadStartTime: number;
-    }[];
+    uploads: MainView["uploads"];
 }): MainView.Item[] {
     const { s3Uri, uploads } = params;
 
@@ -21,6 +16,10 @@ export function computeUploadStatusAtPrefix(params: {
     > = {};
 
     for (const upload of uploads) {
+        if (upload.stoppedStatus !== undefined) {
+            continue;
+        }
+
         const { isInside, isTopLevel } = getIsInside({
             s3UriPrefix: s3Uri,
             s3Uri: upload.s3Uri

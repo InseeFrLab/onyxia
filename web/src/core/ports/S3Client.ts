@@ -23,7 +23,11 @@ export type S3Client = {
         blob: Blob;
         onUploadProgress: (params: { uploadPercent: number }) => void;
         evtCancel: NonPostableEvt<void>;
-    }) => Promise<void>;
+    }) => Promise<
+        | { status: "success" }
+        | { status: "canceled" }
+        | { status: "failed"; error: Error }
+    >;
 
     deleteObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => Promise<void>;
 
