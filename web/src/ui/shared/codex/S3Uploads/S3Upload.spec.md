@@ -1,331 +1,142 @@
 # S3Uploads Spec
 
-# Intent
+## Intent
 
-`S3Uploads` is a compact floating upload status panel used to display the current and recent upload activity for S3 objects.
+`S3Uploads` is a compact floating status panel for current and recent S3 uploads.
 
-Its primary purpose is to:
+It is responsible for:
 
-- give feedback about ongoing uploads,
-- show the status of recent uploads,
-- allow users to understand whether an upload is still running, completed, cancelled, or failed,
-- provide quick access to the uploaded directory when relevant,
-- allow clearing completed uploads.
+- surfacing upload progress,
+- showing stopped outcomes such as canceled or errored uploads,
+- exposing row-level actions for cancel, retry, and open-directory,
+- letting the parent close the panel entirely.
 
-The component is informational and action-oriented, but does not own upload execution logic.
+The component is presentational. It does not own upload execution or navigation state.
 
-# Props
+## Props
 
 ```ts
+import type { S3Uri } from "core/tools/S3Uri";
 import type { Link } from "type-route";
 
 type S3UploadsProps = {
-    // We expect the component to have a fixed with specified by the parent.
     className?: string;
-
     uploads: {
-        id: string;
         profileName: string;
         s3Uri: S3Uri.NonTerminatedByDelimiter;
-        directoryLink: Link;
-        size: number; // In Bytes
-        completionPercent: number; // From 0 to 100 - Example: 35
-
-        status: "uploading" | "completed" | "cancelled" | "error";
-
-        /** OPTIONAL */
-        message?: string;
+        size: number;
+        completionPercent: number;
+        uploadStartTime: number;
+        stoppedStatus:
+            | { case: "canceled" }
+            | { case: "errored"; errorMessage: string }
+            | undefined;
     }[];
-
-    onClearCompleted: () => void;
-    onCancelUpload: (params: { uploadId: string }) => void;
-    onRetryUpload: (params: { uploadId: string }) => void;
+    onClose: () => void;
+    onCancelUpload: (params: {
+        profileName: string;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => void;
+    onRetryUpload: (params: {
+        profileName: string;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => void;
+    getDirectoryLink: (params: {
+        profileName: string;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => Link;
 };
 ```
 
-# General Structure
+The parent owns ordering. If uploads should appear newest-first or most-relevant-first,
+the parent must provide them in that order.
 
-This component is a floating panel composed of:
+If `uploads` is empty, the component renders nothing.
 
-1. A header row
-2. A vertical list of upload items
+## Derived States
 
-The component has a fixed width defined by the parent.
+The component derives visual state from `completionPercent` and `stoppedStatus`.
 
-It is displayed as an overlay panel and does not affect surrounding layout.
+- Uploading: `stoppedStatus === undefined && completionPercent < 100`
+- Completed: `stoppedStatus === undefined && completionPercent === 100`
+- Canceled: `stoppedStatus?.case === "canceled"`
+- Error: `stoppedStatus?.case === "errored"`
 
-The panel is intended to remain visually compact, readable, and secondary to the main storage view.
+`uploadStartTime` is not displayed directly, but it is part of the upload identity and
+can be used by the parent for ordering or lifecycle management.
 
-If `uploads` is empty, the component does not render.
+## Header
 
-# Header
+The header contains:
 
-The header displays a summary of the current upload activity.
+- a summary title,
+- a collapse / expand toggle,
+- a trailing close affordance wired to `onClose`.
 
-Expected content:
+Title behavior:
 
-- Title indicating the number of uploads
-- Collapse / expand affordance
-- Close affordance
+- if at least one upload is still running, the title emphasizes the number of ongoing uploads,
+- otherwise it shows the total number of rendered uploads.
 
-Example:
+Close behavior:
 
-```ts
-Importation de 2 éléments...
-```
+- the close affordance is always enabled,
+- it must remain callable even while uploads are still running.
 
-The exact wording may vary depending on localization rules.
+Collapse behavior:
 
-### Header interactions
+- collapse / expand state is internal to the component,
+- collapsing hides the list but keeps the header visible.
 
-#### Collapse / Expand
+## Rows
 
-The panel may be collapsible.
+Each upload renders as one row with:
 
-Clicking the collapse icon toggles the visibility of the upload list while keeping the header visible.
-This behavior is managed internally by the component.
+- a leading file icon,
+- the file name derived from the last S3 key segment when available,
+- a metadata line combining size and status,
+- an optional trailing action depending on the derived state.
 
-# Upload
+### Uploading
 
-## Upload List
+Expected behavior:
 
-The body of the panel renders one row per upload entry.
+- show uploaded size over total size,
+- append the rounded progress percentage,
+- display the bottom progress bar,
+- expose a cancel action through `onCancelUpload`.
 
-Each upload row represents one uploaded file/object.
+### Completed
 
-The list is vertical and ordered from top to bottom.
+Expected behavior:
 
-The expected order is:
+- show the total size,
+- display a success status,
+- expose a folder action that uses `getDirectoryLink`.
 
-- most relevant / most recent first
+### Error
 
-If ordering rules differ, they must be enforced by the parent.
+Expected behavior:
 
-## Upload Item Model
+- show the total size,
+- display an error status,
+- append `errorMessage` when it is non-empty,
+- expose a retry action through `onRetryUpload`.
 
-Each upload item is derived from one entry in `props.uploads`.
+### Canceled
 
-Available data per item:
+Expected behavior:
 
-- `id`
-- `profileName`
-- `s3Uri`
-- `directoryLink`
-- `size`
-- `completionPercent`
-- `status`
-- `message` (optional)
+- show the total size,
+- display a canceled status,
+- render no trailing action.
 
-## Upload States
+## Layout And Visual Rules
 
-The mockups show four main visual states:
-
-1. Uploading
-2. Cancelled
-3. Completed
-4. Error
-
-Upload state is driven by `status`. `completionPercent` remains the source of truth
-for progress display when `status === "uploading"`.
-
-### Uploading state
-
-An item is considered uploading when `status === "uploading"`.
-
-#### Expected UI
-
-- File icon
-- File name
-- Progress text
-- Bottom progress stroke
-- Optional cancel action using a cancel icon
-
-Example content:
-
-```ts
-nyr_data.csv
-5,7 MB sur 7,8 MB - Uploading... 72%
-Bottom progress stroke
-```
-
-#### Progress stroke
-
-A thin progress stroke is displayed on the bottom edge of the item.
-
-Rules:
-
-- Full-width inside the item row
-- Track uses neutral subtle surface
-- Progress fill uses accent color
-- Visible only while `status === "uploading"`
-
-### Completed state
-
-An item is considered completed when `status === "completed"`.
-
-Expected UI
-
-- File icon
-- File name
-- Completion message
-- Optional success icon
-- Folder action to open the uploaded directory
-
-Example content:
-
-```ts
-nyr_data.csv
-5,7 MB sur 7,8 MB - Completed
-```
-
-A trailing folder button uses `directoryLink`.
-
-### Error state
-
-Includes :
-
-- error label
-- retry-like affordance
-- explicit error status (rattached to the core)
-
-This state is represented via `status === "error"` and may include `message`.
-
-# Rendering Rules
-
-For each entry in `props.uploads`, the component renders one upload item row.
-
-Each row displays:
-
-- file icon
-- file name
-- metadata/status line
-- optional action icon depending on state
-
-The component groups all imports regardless of the S3 profile.
-
-# Item Actions
-
-Depending on state, an upload row may expose a trailing action.
-
-## Uploading
-
-Possible action:
-
-- cancel
-
-Handled via `onCancelUpload`.
-
-## Completed
-
-Possible action:
-
-- open uploaded directory
-
-This action uses directoryLink.
-
-## Error
-
-Possible action:
-
-- retry
-
-Handled via `onRetryUpload`.
-
-## Cancelled
-
-No trailing action is displayed.
-
-## Clear Completed
-
-The component exposes a bulk cleanup action through:
-
-```ts
-onClearCompleted: () => void;
-```
-
-This action is intended to remove completed uploads from the panel. It's placed in the header.
-
-# Layout Rules
-
-### Panel container
-
-- Fixed width defined by parent
-- Vertical layout
-- Rounded corners
-- Elevated floating surface
-- Overlay panel, not inline content
-
-### Internal structure
-
-- Header at top
-- Divider below header
-- Vertical item stack
-- Items separated by subtle dividers
-
-### Item layout
-
-Each upload item uses a two-column structure:
-
-- leading icon / content block
-- trailing action
-
-For uploading items, the progress bar sits below the metadata line.
-
-# Visual Rules
-
-### Panel container
-
-- Background: `theme.colors.useCases.surfaces.surface1`
-- Border radius: `radius.xl`
-- Shadow: `shadow.md` or equivalent floating panel elevation
-- Border: subtle if needed for contrast
-
-#### Header
-
-- Typography: `theme.typography.variants["label 1"]`
-- Text color: `theme.colors.useCases.typography.primary`
-- Icons aligned right
-- Divider below header
-
-### Upload item
-
-#### Default surface
-
-- Background: `transparent`
-- Padding: `medium`
-- Divider between items
-
-#### File icon container
-
-- Rounded square
-- Background: `theme.colors.useCases.surfaces.surface2`
-- Icon centered
-
-#### File name
-
-- Typography: `theme.typography.variants["label 1"]`
-- Color:`theme.colors.useCases.typography.primary`
-- Single line
-- Ellipsis if too long
-
-#### Metadata / status line
-
-- Typography: `theme.typography.variants["caption"]`
-- Color: `theme.colors.useCases.typography.secondary`
-
-### Progress bar
-
-#### Track
-
-- Background: `theme.colors.useCases.surfaces.surface3`
-
-#### Fill
-
-- Background: `theme.colors.useCases.typography.textFocus`
-
-#### Status text
-
-- Uploading: `theme.colors.useCases.typography.secondary`
-- Completed: may include success `theme.colors.useCases.alertSeverity.success.main`
-- Error: `theme.colors.useCases.alertSeverity.error.main`
-- Cancelled: muted text
+- The panel is a floating surface with fixed width controlled by the parent.
+- The structure is header, divider, then a vertical stack of rows.
+- Rows are visually separated with subtle dividers.
+- Uploading rows show a thin bottom progress bar.
+- Completed statuses use success color treatment.
+- Errored statuses use error color treatment.
+- Canceled statuses use a muted text treatment.

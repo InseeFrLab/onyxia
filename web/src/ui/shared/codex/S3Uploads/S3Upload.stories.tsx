@@ -35,7 +35,11 @@ const modelBin: S3Uri.NonTerminatedByDelimiter = {
     isDelimiterTerminated: false
 };
 
-const makeDirectoryLink = (s3Uri: S3Uri.NonTerminatedByDelimiter): Link => {
+const makeDirectoryLink = (params: {
+    profileName: string;
+    s3Uri: S3Uri.NonTerminatedByDelimiter;
+}): Link => {
+    const { profileName, s3Uri } = params;
     const directoryUri: S3Uri.TerminatedByDelimiter = {
         bucket: s3Uri.bucket,
         delimiter: s3Uri.delimiter,
@@ -46,10 +50,12 @@ const makeDirectoryLink = (s3Uri: S3Uri.NonTerminatedByDelimiter): Link => {
     const directoryStr = stringifyS3Uri(directoryUri);
 
     return {
-        href: `/s3?path=${encodeURIComponent(directoryStr)}`,
+        href: `/s3?profile=${encodeURIComponent(profileName)}&path=${encodeURIComponent(
+            directoryStr
+        )}`,
         onClick: event => {
             event.preventDefault();
-            action("open directory")(directoryStr);
+            action("open directory")({ profileName, directoryStr });
         }
     };
 };
@@ -57,27 +63,26 @@ const makeDirectoryLink = (s3Uri: S3Uri.NonTerminatedByDelimiter): Link => {
 const baseArgs: S3UploadsProps = {
     uploads: [
         {
-            id: "upload-1",
             profileName: "prod",
             s3Uri: reportCsv,
-            directoryLink: makeDirectoryLink(reportCsv),
             size: 7_800_000,
             completionPercent: 72,
-            status: "uploading"
+            uploadStartTime: 1_712_250_000_000,
+            stoppedStatus: undefined
         },
         {
-            id: "upload-2",
             profileName: "prod",
             s3Uri: rawEvents,
-            directoryLink: makeDirectoryLink(rawEvents),
             size: 5_400_000,
             completionPercent: 28,
-            status: "uploading"
+            uploadStartTime: 1_712_250_030_000,
+            stoppedStatus: undefined
         }
     ],
-    onClearCompleted: action("clear completed"),
-    onCancelUpload: ({ uploadId }) => action("cancel upload")(uploadId),
-    onRetryUpload: ({ uploadId }) => action("retry upload")(uploadId)
+    onClose: action("close uploads"),
+    onCancelUpload: params => action("cancel upload")(params),
+    onRetryUpload: params => action("retry upload")(params),
+    getDirectoryLink: makeDirectoryLink
 };
 
 const renderPanel: Story["render"] = args => (
@@ -98,22 +103,20 @@ export const Completed: Story = {
         ...baseArgs,
         uploads: [
             {
-                id: "upload-3",
                 profileName: "prod",
                 s3Uri: reportCsv,
-                directoryLink: makeDirectoryLink(reportCsv),
                 size: 7_800_000,
                 completionPercent: 100,
-                status: "completed"
+                uploadStartTime: 1_712_250_000_000,
+                stoppedStatus: undefined
             },
             {
-                id: "upload-4",
                 profileName: "research",
                 s3Uri: modelBin,
-                directoryLink: makeDirectoryLink(modelBin),
                 size: 12_400_000,
                 completionPercent: 100,
-                status: "completed"
+                uploadStartTime: 1_712_250_060_000,
+                stoppedStatus: undefined
             }
         ]
     },
@@ -125,42 +128,41 @@ export const Mixed: Story = {
         ...baseArgs,
         uploads: [
             {
-                id: "upload-5",
                 profileName: "prod",
                 s3Uri: reportCsv,
-                directoryLink: makeDirectoryLink(reportCsv),
                 size: 7_800_000,
                 completionPercent: 100,
-                status: "completed"
+                uploadStartTime: 1_712_250_000_000,
+                stoppedStatus: undefined
             },
             {
-                id: "upload-6",
                 profileName: "prod",
                 s3Uri: rawEvents,
-                directoryLink: makeDirectoryLink(rawEvents),
                 size: 5_400_000,
                 completionPercent: 38,
-                status: "uploading"
+                uploadStartTime: 1_712_250_030_000,
+                stoppedStatus: undefined
             },
             {
-                id: "upload-7",
                 profileName: "research",
                 s3Uri: modelBin,
-                directoryLink: makeDirectoryLink(modelBin),
                 size: 12_400_000,
                 completionPercent: 100,
-                status: "error",
-                message: "Network error"
+                uploadStartTime: 1_712_250_060_000,
+                stoppedStatus: {
+                    case: "errored",
+                    errorMessage: "Network error"
+                }
             },
             {
-                id: "upload-8",
                 profileName: "research",
                 s3Uri: modelBin,
-                directoryLink: makeDirectoryLink(modelBin),
                 size: 12_400_000,
                 completionPercent: 46,
-                status: "cancelled",
-                message: "Cancelled by user"
+                uploadStartTime: 1_712_250_090_000,
+                stoppedStatus: {
+                    case: "canceled"
+                }
             }
         ]
     },
