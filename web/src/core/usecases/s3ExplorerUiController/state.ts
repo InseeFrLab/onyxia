@@ -128,6 +128,30 @@ export const { reducer, actions } = createUsecaseActions({
                 stoppedStatus: undefined
             });
         },
+        uploadFlushed: state => {
+            state.uploads = [];
+        },
+        uploadCanceled: (
+            state,
+            {
+                payload
+            }: { payload: { profileName: string; s3Uri: S3Uri.NonTerminatedByDelimiter } }
+        ) => {
+            const { profileName, s3Uri } = payload;
+
+            const upload_toDelete = state.uploads.find(
+                upload => upload.profileName === profileName && same(upload.s3Uri, s3Uri)
+            );
+
+            assert(upload_toDelete !== undefined);
+            assert(upload_toDelete.stoppedStatus === undefined);
+
+            const i = state.uploads.indexOf(upload_toDelete);
+
+            assert(i !== -1);
+
+            state.uploads.splice(i, 1);
+        },
         putObjectProgressReported: (
             state,
             {
