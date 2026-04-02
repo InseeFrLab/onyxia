@@ -355,8 +355,9 @@ const items = createSelector(
     }
 );
 
-const uploads = createSelector(state, (state): MainView["uploads"] =>
-    state.uploads.filter(upload => upload.completionPercent !== 100)
+const uploads = createSelector(
+    uploads_profile,
+    (uploads_profile): MainView["uploads"] => uploads_profile
 );
 
 const listedPrefix = createSelector(
