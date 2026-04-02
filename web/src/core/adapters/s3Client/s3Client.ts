@@ -318,89 +318,109 @@ export function createS3Client(
                     })
             });
         },
-        putObject: runExclusive.build(
-            async ({ s3Uri, blob, onUploadProgress, ...params }) => {
-                const { getAwsS3Client } = await prApi;
+        putObject: (() => {
+            const putObject_actual: S3Client["putObject"] = runExclusive.build(
+                async ({ s3Uri, blob, onUploadProgress, evtCancel }) => {
+                    const { getAwsS3Client } = await prApi;
 
-                const [{ awsS3Client }, Upload] = await Promise.all([
-                    getAwsS3Client(),
-                    import("@aws-sdk/lib-storage").then(({ Upload }) => Upload)
-                ]);
+                    const [{ awsS3Client }, Upload] = await Promise.all([
+                        getAwsS3Client(),
+                        import("@aws-sdk/lib-storage").then(({ Upload }) => Upload)
+                    ]);
 
-                const upload = new Upload({
-                    client: awsS3Client,
-                    params: {
-                        Bucket: s3Uri.bucket,
-                        Key: getS3UriKey(s3Uri),
-                        Body: blob,
-                        ContentType: blob.type
-                    }
-                });
-
-                const onHttpUploadProgress = (params: {
-                    total?: number;
-                    loaded?: number;
-                }) => {
-                    const { total, loaded } = params;
-
-                    if (total === undefined || loaded === undefined) {
-                        return;
+                    if (evtCancel.postCount !== 0) {
+                        return {
+                            status: "canceled"
+                        };
                     }
 
-                    if (total === 0) {
-                        onUploadProgress?.({ uploadPercent: 99 });
-                        return;
+                    const upload = new Upload({
+                        client: awsS3Client,
+                        params: {
+                            Bucket: s3Uri.bucket,
+                            Key: getS3UriKey(s3Uri),
+                            Body: blob,
+                            ContentType: blob.type
+                        }
+                    });
+
+                    const onHttpUploadProgress = (params: {
+                        total?: number;
+                        loaded?: number;
+                    }) => {
+                        const { total, loaded } = params;
+
+                        if (total === undefined || loaded === undefined) {
+                            return;
+                        }
+
+                        if (total === 0) {
+                            onUploadProgress?.({ uploadPercent: 99 });
+                            return;
+                        }
+
+                        const uploadPercent = Math.floor((loaded / total) * 100);
+
+                        if (uploadPercent !== 100) {
+                            onUploadProgress?.({ uploadPercent });
+                        }
+                    };
+
+                    upload.on("httpUploadProgress", onHttpUploadProgress);
+
+                    evtCancel.attachOnce(() => {
+                        upload.off("httpUploadProgress", onHttpUploadProgress);
+                        upload.abort();
+                    });
+
+                    const completionStatus = await Promise.race([
+                        (async () => {
+                            try {
+                                await upload.done();
+                            } catch (error) {
+                                assert(error instanceof Error);
+                                return {
+                                    case: "failed" as const,
+                                    error
+                                };
+                            }
+                            return { case: "success" as const };
+                        })(),
+                        evtCancel.waitFor().then(() => ({ case: "canceled" as const }))
+                    ]);
+
+                    switch (completionStatus.case) {
+                        case "canceled":
+                            return { status: "canceled" };
+                        case "failed":
+                            return { status: "failed", error: completionStatus.error };
+                        case "success":
+                            onUploadProgress?.({ uploadPercent: 100 });
+                            return { status: "success" };
+                        default:
+                            assert<Equals<typeof completionStatus, never>>(false);
                     }
+                }
+            );
 
-                    const uploadPercent = Math.floor((loaded / total) * 100);
-
-                    if (uploadPercent !== 100) {
-                        onUploadProgress?.({ uploadPercent });
-                    }
-                };
-
-                upload.on("httpUploadProgress", onHttpUploadProgress);
-
+            return async params => {
                 const ctx = Evt.newCtx();
 
                 const evtCancel = params.evtCancel.pipe(ctx);
 
-                evtCancel.attachOnce(() => {
-                    upload.off("httpUploadProgress", onHttpUploadProgress);
-                    upload.abort();
-                });
-
-                const completionStatus = await Promise.race([
-                    (async () => {
-                        try {
-                            await upload.done();
-                        } catch (error) {
-                            assert(error instanceof Error);
-                            return {
-                                case: "failed" as const,
-                                error
-                            };
-                        }
-                        return { case: "success" as const };
-                    })(),
-                    evtCancel.waitFor().then(() => ({ case: "canceled" as const }))
+                const putObjectResult = await Promise.race([
+                    putObject_actual({
+                        ...params,
+                        evtCancel
+                    }),
+                    evtCancel.waitFor().then(() => ({ status: "canceled" as const }))
                 ]);
 
                 ctx.done();
 
-                switch (completionStatus.case) {
-                    case "canceled":
-                        return { status: "canceled" };
-                    case "failed":
-                        return { status: "failed", error: completionStatus.error };
-                    case "success":
-                        onUploadProgress?.({ uploadPercent: 100 });
-                        return { status: "success" };
-                    default:
-                        assert<Equals<typeof completionStatus, never>>(false);
-                }
-            }
-        ),
+                return putObjectResult;
+            };
+        })(),
         deleteObject: async ({ s3Uri }) => {
             const { getAwsS3Client } = await prApi;
 
