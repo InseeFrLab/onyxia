@@ -497,26 +497,34 @@ export const thunks = {
             assert(s3Uri !== undefined);
 
             await Promise.all(
-                files.map(async file => {
-                    const s3Uri_object: S3Uri.NonTerminatedByDelimiter = {
-                        delimiter: s3Uri.delimiter,
-                        bucket: s3Uri.bucket,
-                        keySegments: [
-                            ...s3Uri.keySegments,
-                            ...file.relativePathSegments,
-                            file.fileBasename
-                        ],
-                        isDelimiterTerminated: false
-                    };
-
-                    await dispatch(
-                        privateThunks.putObject({
-                            profileName,
-                            s3Uri: s3Uri_object,
-                            blob: file.blob
+                files
+                    .map(file => ({
+                        file,
+                        s3Uri_object: id<S3Uri.NonTerminatedByDelimiter>({
+                            delimiter: s3Uri.delimiter,
+                            bucket: s3Uri.bucket,
+                            keySegments: [
+                                ...s3Uri.keySegments,
+                                ...file.relativePathSegments,
+                                file.fileBasename
+                            ],
+                            isDelimiterTerminated: false
                         })
-                    );
-                })
+                    }))
+                    .sort((a, b) =>
+                        stringifyS3Uri(a.s3Uri_object).localeCompare(
+                            stringifyS3Uri(b.s3Uri_object)
+                        )
+                    )
+                    .map(({ file, s3Uri_object }) =>
+                        dispatch(
+                            privateThunks.putObject({
+                                profileName,
+                                s3Uri: s3Uri_object,
+                                blob: file.blob
+                            })
+                        )
+                    )
             );
         },
 
