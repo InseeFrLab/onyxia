@@ -97,12 +97,27 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { profileName, s3Uri, size } = payload;
 
-            assert(
-                state.uploads.find(
+            retry_case: {
+                const upload = state.uploads.find(
                     upload =>
                         upload.profileName === profileName && same(upload.s3Uri, s3Uri)
-                ) === undefined
-            );
+                );
+
+                if (upload === undefined) {
+                    break retry_case;
+                }
+
+                assert(
+                    upload.stoppedStatus !== undefined &&
+                        upload.stoppedStatus.case === "errored"
+                );
+
+                upload.completionPercent = 0;
+                upload.stoppedStatus = undefined;
+                upload.uploadStartTime = Date.now();
+
+                return;
+            }
 
             state.uploads.push({
                 profileName,
@@ -134,6 +149,7 @@ export const { reducer, actions } = createUsecaseActions({
             assert(upload !== undefined);
             assert(upload.stoppedStatus === undefined);
 
+            upload.stoppedStatus = undefined;
             upload.completionPercent = completionPercent;
         },
         putObjectStopped: (

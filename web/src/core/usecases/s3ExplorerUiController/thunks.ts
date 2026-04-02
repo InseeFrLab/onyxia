@@ -23,6 +23,12 @@ const { waitForDebounce: waitForDebounce_listPrefix } = createWaitForDebounce({
     delay: 300
 });
 
+const erroredUploadBlobs: {
+    profileName: string;
+    s3Uri: S3Uri.NonTerminatedByDelimiter;
+    blob: Blob;
+}[] = [];
+
 export const thunks = {
     load:
         (params: { routeParams: RouteParams }) =>
@@ -432,6 +438,27 @@ export const thunks = {
                 })
             );
         },
+    retryPutObject:
+        (params: { profileName: string; s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
+        async (...args) => {
+            const { profileName, s3Uri } = params;
+
+            const [dispatch] = args;
+
+            const blobWrap = erroredUploadBlobs.find(
+                o => o.profileName === profileName && same(o.s3Uri, s3Uri)
+            );
+
+            assert(blobWrap !== undefined);
+
+            await dispatch(
+                privateThunks.putObject({
+                    profileName,
+                    s3Uri,
+                    blob: blobWrap.blob
+                })
+            );
+        },
     putObjects:
         (params: {
             files: {
@@ -443,15 +470,11 @@ export const thunks = {
         async (...args) => {
             const { files } = params;
 
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch, getState] = args;
 
             const profileName = privateSelectors.profileName(getState());
 
             assert(profileName !== undefined);
-
-            const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3Client({ profileName })
-            );
 
             const s3Uri = privateSelectors.s3Uri(getState());
 
@@ -470,103 +493,13 @@ export const thunks = {
                         isDelimiterTerminated: false
                     };
 
-                    const cmdId = Date.now();
-
-                    dispatch(
-                        actions.commandLogIssued({
-                            cmdId,
-                            cmd: `mc cp ./${file.fileBasename} ${stringifyS3Uri(s3Uri_object)}`
-                        })
-                    );
-
-                    const size = file.blob.size;
-
-                    dispatch(
-                        actions.putObjectStarted({
+                    await dispatch(
+                        privateThunks.putObject({
                             profileName,
                             s3Uri: s3Uri_object,
-                            size
+                            blob: file.blob
                         })
                     );
-
-                    const evtCancel = Evt.create();
-
-                    const ctx = Evt.newCtx();
-
-                    evtAction
-                        .pipe(ctx, () => [privateSelectors.uploads(getState())])
-                        .pipe(onlyIfChanged())
-                        .attach(uploads => {
-                            const upload = uploads.find(
-                                upload =>
-                                    upload.profileName === profileName &&
-                                    same(upload.s3Uri, s3Uri_object)
-                            );
-
-                            if (upload === undefined) {
-                                evtCancel.post();
-                            }
-                        });
-
-                    evtCancel.attachOnce(() => {
-                        actions.commandLogCancelled({
-                            cmdId
-                        });
-                    });
-
-                    const resultOfPutObject = await s3Client.putObject({
-                        s3Uri: s3Uri_object,
-                        blob: file.blob,
-                        onUploadProgress: ({ uploadPercent }) => {
-                            dispatch(
-                                actions.putObjectProgressReported({
-                                    profileName,
-                                    s3Uri: s3Uri_object,
-                                    completionPercent: uploadPercent
-                                })
-                            );
-
-                            dispatch(
-                                actions.commandLogResponseReceived({
-                                    cmdId,
-                                    resp: `... ${uploadPercent}% of ${file.blob.size} Bytes uploaded`
-                                })
-                            );
-                        },
-                        evtCancel
-                    });
-
-                    ctx.done();
-
-                    switch (resultOfPutObject.status) {
-                        case "success":
-                            break;
-                        case "canceled":
-                            dispatch(
-                                actions.putObjectStopped({
-                                    profileName,
-                                    s3Uri: s3Uri_object,
-                                    stoppedStatus: { case: "canceled" }
-                                })
-                            );
-                            break;
-                        case "failed":
-                            console.error(
-                                `Error uploading ${stringifyS3Uri(s3Uri_object)}: `,
-                                resultOfPutObject.error
-                            );
-                            dispatch(
-                                actions.putObjectStopped({
-                                    profileName,
-                                    s3Uri: s3Uri_object,
-                                    stoppedStatus: {
-                                        case: "errored",
-                                        errorMessage: resultOfPutObject.error.message
-                                    }
-                                })
-                            );
-                            break;
-                    }
                 })
             );
         },
@@ -711,5 +644,136 @@ export const thunks = {
             );
 
             return downloadUrl;
+        }
+} satisfies Thunks;
+
+export const privateThunks = {
+    putObject:
+        (params: {
+            profileName: string;
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            blob: Blob;
+        }) =>
+        async (...args) => {
+            const { profileName, s3Uri, blob } = params;
+
+            const [dispatch, getState, { evtAction }] = args;
+
+            {
+                const i = erroredUploadBlobs.findIndex(
+                    o => o.profileName === profileName && same(o.s3Uri, s3Uri)
+                );
+
+                if (i !== -1) {
+                    erroredUploadBlobs.splice(i, 1);
+                }
+            }
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc cp ./${s3Uri.keySegments.at(-1)} ${stringifyS3Uri(s3Uri)}`
+                })
+            );
+
+            dispatch(
+                actions.putObjectStarted({
+                    profileName,
+                    s3Uri: s3Uri,
+                    size: blob.size
+                })
+            );
+
+            const evtCancel = Evt.create();
+
+            const ctx = Evt.newCtx();
+
+            evtAction
+                .pipe(ctx, () => [privateSelectors.uploads(getState())])
+                .pipe(onlyIfChanged())
+                .attach(uploads => {
+                    const upload = uploads.find(
+                        upload =>
+                            upload.profileName === profileName &&
+                            same(upload.s3Uri, s3Uri)
+                    );
+
+                    if (upload === undefined) {
+                        evtCancel.post();
+                    }
+                });
+
+            evtCancel.attachOnce(() => {
+                actions.commandLogCancelled({
+                    cmdId
+                });
+            });
+
+            const s3Client = await dispatch(
+                s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const resultOfPutObject = await s3Client.putObject({
+                s3Uri: s3Uri,
+                blob,
+                onUploadProgress: ({ uploadPercent }) => {
+                    dispatch(
+                        actions.putObjectProgressReported({
+                            profileName,
+                            s3Uri: s3Uri,
+                            completionPercent: uploadPercent
+                        })
+                    );
+
+                    dispatch(
+                        actions.commandLogResponseReceived({
+                            cmdId,
+                            resp: `... ${uploadPercent}% of ${blob.size} Bytes uploaded`
+                        })
+                    );
+                },
+                evtCancel
+            });
+
+            ctx.done();
+
+            switch (resultOfPutObject.status) {
+                case "success":
+                    break;
+                case "canceled":
+                    dispatch(
+                        actions.putObjectStopped({
+                            profileName,
+                            s3Uri: s3Uri,
+                            stoppedStatus: { case: "canceled" }
+                        })
+                    );
+                    break;
+                case "failed":
+                    console.error(
+                        `Error uploading ${stringifyS3Uri(s3Uri)}: `,
+                        resultOfPutObject.error
+                    );
+
+                    erroredUploadBlobs.push({
+                        profileName,
+                        s3Uri: s3Uri,
+                        blob
+                    });
+
+                    dispatch(
+                        actions.putObjectStopped({
+                            profileName,
+                            s3Uri: s3Uri,
+                            stoppedStatus: {
+                                case: "errored",
+                                errorMessage: resultOfPutObject.error.message
+                            }
+                        })
+                    );
+                    break;
+            }
         }
 } satisfies Thunks;
