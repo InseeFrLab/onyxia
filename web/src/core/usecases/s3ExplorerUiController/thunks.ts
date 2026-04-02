@@ -459,6 +459,22 @@ export const thunks = {
                 })
             );
         },
+    flushUploads:
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(actions.uploadFlushed());
+        },
+
+    cancelUpload:
+        (params: { profileName: string; s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
+        (...args) => {
+            const { profileName, s3Uri } = params;
+            const [dispatch] = args;
+
+            dispatch(actions.uploadCanceled({ profileName, s3Uri }));
+        },
     putObjects:
         (params: {
             files: {
