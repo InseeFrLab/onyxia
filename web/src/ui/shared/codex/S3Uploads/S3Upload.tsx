@@ -6,6 +6,7 @@ import { getIconUrlByName } from "lazy-icons";
 import type { S3Uri } from "core/tools/S3Uri";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { Link } from "type-route";
+import { ConfirmAbortUploadDialog } from "./ConfirmAbortUploadDialog";
 
 export type S3UploadsProps = {
     className?: string;
@@ -64,14 +65,38 @@ export function S3Uploads(props: S3UploadsProps) {
     } = props;
     const { classes, cx } = useStyles();
     const [internalCollapsed, setInternalCollapsed] = useState(false);
+    const [isConfirmAbortUploadDialogOpen, setIsConfirmAbortUploadDialogOpen] =
+        useState(false);
     const handleToggleCollapsed = () => {
         setInternalCollapsed(previous => !previous);
     };
 
-    const uploadingCount = uploads.filter(
+    const runningUploads = uploads.filter(
         upload => upload.stoppedStatus === undefined && upload.completionPercent < 100
-    ).length;
+    );
+    const uploadingCount = runningUploads.length;
     const uploadCount = uploads.length;
+
+    const handleClose = () => {
+        if (runningUploads.length === 0) {
+            onClose();
+            return;
+        }
+
+        setIsConfirmAbortUploadDialogOpen(true);
+    };
+
+    const handleConfirmAbortUpload = () => {
+        runningUploads.forEach(({ profileName, s3Uri }) =>
+            onCancelUpload({
+                profileName,
+                s3Uri
+            })
+        );
+
+        setIsConfirmAbortUploadDialogOpen(false);
+        onClose();
+    };
 
     if (uploadCount === 0) {
         return null;
@@ -105,7 +130,7 @@ export function S3Uploads(props: S3UploadsProps) {
                     <button
                         type="button"
                         className={classes.headerIconButton}
-                        onClick={onClose}
+                        onClick={handleClose}
                         aria-label="Close uploads"
                     >
                         <Icon icon={getIconUrlByName("Clear")} size="small" />
@@ -298,6 +323,11 @@ export function S3Uploads(props: S3UploadsProps) {
                     })}
                 </div>
             )}
+            <ConfirmAbortUploadDialog
+                isOpen={isConfirmAbortUploadDialogOpen}
+                onClose={() => setIsConfirmAbortUploadDialogOpen(false)}
+                onConfirm={handleConfirmAbortUpload}
+            />
         </div>
     );
 }

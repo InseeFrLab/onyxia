@@ -15,6 +15,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
+import { Uploads } from "ui/pages/s3Explorer/Uploads";
 
 triggerCoreBootstrap({
     apiUrl: env.ONYXIA_API_URL,
@@ -73,6 +74,7 @@ export function App() {
                     <Main className={classes.main} />
                 </section>
                 <Footer className={classes.footer} />
+                <Uploads />
             </div>
             <AutoLogoutCountdown />
         </>
