@@ -10,18 +10,33 @@ import type { Link } from "type-route";
 export type S3UploadsProps = {
     className?: string;
     uploads: {
-        id: string;
         profileName: string;
         s3Uri: S3Uri.NonTerminatedByDelimiter;
-        directoryLink: Link;
         size: number;
         completionPercent: number;
-        status: "uploading" | "completed" | "cancelled" | "error";
-        message?: string;
+        uploadStartTime: number;
+        stoppedStatus:
+            | { case: "canceled" }
+            | { case: "errored"; errorMessage: string }
+            | undefined;
     }[];
-    onClearCompleted: () => void;
-    onCancelUpload: (params: { uploadId: string }) => void;
-    onRetryUpload: (params: { uploadId: string }) => void;
+    onClose: () => void;
+    // NOTE: We assert it refers to an upload with stoppedStatus is undefined
+    onCancelUpload: (params: {
+        profileName: string;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => void;
+
+    // NOTE: We assert that it points to an upload with stoppedStatus errored
+    onRetryUpload: (params: {
+        profileName: string;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => void;
+
+    getDirectoryLink: (params: {
+        profileName: string;
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => Link;
 };
 
 function getFormattedSize(size: number): string {
@@ -39,15 +54,23 @@ function getFileName(s3Uri: S3Uri.NonTerminatedByDelimiter): string {
 }
 
 export function S3Uploads(props: S3UploadsProps) {
-    const { className, uploads, onClearCompleted, onCancelUpload, onRetryUpload } = props;
+    const {
+        className,
+        uploads,
+        onClose,
+        onCancelUpload,
+        onRetryUpload,
+        getDirectoryLink
+    } = props;
     const { classes, cx } = useStyles();
     const [internalCollapsed, setInternalCollapsed] = useState(false);
     const handleToggleCollapsed = () => {
         setInternalCollapsed(previous => !previous);
     };
 
-    const completedUploads = uploads.filter(upload => upload.status === "completed");
-    const uploadingCount = uploads.filter(upload => upload.status === "uploading").length;
+    const uploadingCount = uploads.filter(
+        upload => upload.stoppedStatus === undefined && upload.completionPercent < 100
+    ).length;
     const uploadCount = uploads.length;
 
     if (uploadCount === 0) {
@@ -82,9 +105,8 @@ export function S3Uploads(props: S3UploadsProps) {
                     <button
                         type="button"
                         className={classes.headerIconButton}
-                        onClick={onClearCompleted}
-                        disabled={completedUploads.length === 0}
-                        aria-label="Clear completed uploads"
+                        onClick={onClose}
+                        aria-label="Close uploads"
                     >
                         <Icon icon={getIconUrlByName("Clear")} size="small" />
                     </button>
@@ -98,26 +120,29 @@ export function S3Uploads(props: S3UploadsProps) {
                             0,
                             Math.min(100, upload.completionPercent)
                         );
-                        const isUploading = upload.status === "uploading";
-                        const isCompleted = upload.status === "completed";
-                        const isCancelled = upload.status === "cancelled";
-                        const isError = upload.status === "error";
+                        const isCompleted =
+                            upload.stoppedStatus === undefined && percent === 100;
+                        const isUploading =
+                            upload.stoppedStatus === undefined && !isCompleted;
+                        const isCancelled = upload.stoppedStatus?.case === "canceled";
+                        const isError = upload.stoppedStatus?.case === "errored";
                         const uploadedSize = Math.round((upload.size * percent) / 100);
                         const totalSizeLabel = getFormattedSize(upload.size);
                         const uploadedSizeLabel = getFormattedSize(uploadedSize);
                         const statusLabel = (() => {
-                            switch (upload.status) {
-                                case "uploading":
-                                    return "Uploading...";
-                                case "completed":
-                                    return "Completed";
-                                case "cancelled":
-                                    return "Cancelled";
-                                case "error":
-                                    return "Error";
-                                default:
-                                    return "Uploading...";
+                            if (isUploading) {
+                                return "Uploading...";
                             }
+
+                            if (isCompleted) {
+                                return "Completed";
+                            }
+
+                            if (isCancelled) {
+                                return "Cancelled";
+                            }
+
+                            return "Error";
                         })();
                         const progressSuffix = isUploading
                             ? ` ${Math.round(percent)}%`
@@ -126,15 +151,21 @@ export function S3Uploads(props: S3UploadsProps) {
                             ? `${uploadedSizeLabel} of ${totalSizeLabel}`
                             : totalSizeLabel;
                         const messageSuffix =
-                            upload.message !== undefined && upload.message !== ""
-                                ? ` - ${upload.message}`
+                            upload.stoppedStatus?.case === "errored" &&
+                            upload.stoppedStatus.errorMessage !== ""
+                                ? ` - ${upload.stoppedStatus.errorMessage}`
                                 : "";
                         const metaPrefix = sizeLabel;
                         const metaStatus = `${statusLabel}${progressSuffix}${messageSuffix}`;
                         const metaLabel = `${metaPrefix} - ${metaStatus}`;
+                        const uploadKey = [
+                            upload.profileName,
+                            stringifyS3Uri(upload.s3Uri),
+                            upload.uploadStartTime
+                        ].join(":");
 
                         return (
-                            <div key={upload.id} className={classes.item}>
+                            <div key={uploadKey} className={classes.item}>
                                 <div className={classes.itemContent}>
                                     <div
                                         className={cx(
@@ -205,7 +236,10 @@ export function S3Uploads(props: S3UploadsProps) {
                                 {isCompleted ? (
                                     <a
                                         className={classes.itemAction}
-                                        {...upload.directoryLink}
+                                        {...getDirectoryLink({
+                                            profileName: upload.profileName,
+                                            s3Uri: upload.s3Uri
+                                        })}
                                         aria-label="Open uploaded directory"
                                     >
                                         <Icon
@@ -218,7 +252,10 @@ export function S3Uploads(props: S3UploadsProps) {
                                         type="button"
                                         className={classes.itemAction}
                                         onClick={() =>
-                                            onCancelUpload({ uploadId: upload.id })
+                                            onCancelUpload({
+                                                profileName: upload.profileName,
+                                                s3Uri: upload.s3Uri
+                                            })
                                         }
                                         aria-label="Cancel upload"
                                     >
@@ -232,7 +269,10 @@ export function S3Uploads(props: S3UploadsProps) {
                                         type="button"
                                         className={classes.itemAction}
                                         onClick={() =>
-                                            onRetryUpload({ uploadId: upload.id })
+                                            onRetryUpload({
+                                                profileName: upload.profileName,
+                                                s3Uri: upload.s3Uri
+                                            })
                                         }
                                         aria-label="Retry upload"
                                     >
