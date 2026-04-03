@@ -55,6 +55,7 @@ export type MainView = {
                   isReadonly: boolean;
               };
         isBackButtonDisabled: boolean;
+        isUploadButtonDisabled: boolean;
     };
 
     isListing: boolean;
@@ -440,9 +441,13 @@ const uriBar = createSelector(
         const isBackButtonDisabled =
             s3Uri === undefined || s3Uri.keySegments.length === 0;
 
+        const isUploadButtonDisabled =
+            s3Uri === undefined || !s3Uri.isDelimiterTerminated;
+
         if (s3Uri === undefined) {
             return {
                 isBackButtonDisabled,
+                isUploadButtonDisabled,
                 s3Uri: undefined,
                 hints: bookmarks.items.map(bookmark => ({
                     type: "bookmark",
@@ -500,6 +505,7 @@ const uriBar = createSelector(
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
             return {
                 isBackButtonDisabled,
+                isUploadButtonDisabled,
                 s3Uri,
                 hints,
                 bookmarkStatus
@@ -562,6 +568,7 @@ const uriBar = createSelector(
 
         return {
             isBackButtonDisabled,
+            isUploadButtonDisabled,
             s3Uri,
             hints,
             bookmarkStatus
