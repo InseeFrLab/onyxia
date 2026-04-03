@@ -25,6 +25,8 @@ import { CommandBar } from "ui/shared/CommandBar";
 import { S3BookmarksEntryPointList } from "ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { customIcons } from "lazy-icons";
+import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
+import { getIconUrlByName } from "lazy-icons";
 
 const Page = withLoader({
     loader,
@@ -298,58 +300,77 @@ function PageComponent() {
                                     />
                                 )}
                             </div>
-                            <S3UriBar
+
+                            <div
                                 className={css({
-                                    marginTop: theme.spacing(2),
-                                    marginBottom: theme.spacing(2)
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: theme.spacing(2)
                                 })}
-                                s3Uri={mainView.uriBar.s3Uri}
-                                hints={mainView.uriBar.hints}
-                                areHintsLoading={mainView.isListing}
-                                onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
-                                    s3ExplorerUiController.listPrefix({
-                                        s3Uri,
-                                        debounce:
-                                            !isHintSelection &&
-                                            !s3Uri?.isDelimiterTerminated
-                                    })
-                                }
-                                onToggleBookmark={(() => {
-                                    if (
-                                        mainView.uriBar.bookmarkStatus.isBookmarked &&
-                                        mainView.uriBar.bookmarkStatus.isReadonly
-                                    ) {
-                                        return undefined;
+                            >
+                                <S3ContextActionButton
+                                    icon={getIconUrlByName("ArrowBack")}
+                                    label="Back"
+                                    disabled={mainView.uriBar.isBackButtonDisabled}
+                                    onClick={s3ExplorerUiController.navigateBack}
+                                />
+                                <S3UriBar
+                                    className={css({
+                                        marginTop: theme.spacing(2),
+                                        marginBottom: theme.spacing(2)
+                                    })}
+                                    s3Uri={mainView.uriBar.s3Uri}
+                                    hints={mainView.uriBar.hints}
+                                    areHintsLoading={mainView.isListing}
+                                    onS3UriPrefixChange={({ s3Uri, isHintSelection }) =>
+                                        s3ExplorerUiController.listPrefix({
+                                            s3Uri,
+                                            debounce:
+                                                !isHintSelection &&
+                                                !s3Uri?.isDelimiterTerminated
+                                        })
                                     }
+                                    onToggleBookmark={(() => {
+                                        if (
+                                            mainView.uriBar.bookmarkStatus.isBookmarked &&
+                                            mainView.uriBar.bookmarkStatus.isReadonly
+                                        ) {
+                                            return undefined;
+                                        }
 
-                                    return ({ s3Uri }) => {
-                                        const getDisplayName = () => {
-                                            const dResult = new Deferred<
-                                                | {
-                                                      doProceed: true;
-                                                      displayName: string;
-                                                  }
-                                                | { doProceed: false }
-                                            >();
+                                        return ({ s3Uri }) => {
+                                            const getDisplayName = () => {
+                                                const dResult = new Deferred<
+                                                    | {
+                                                          doProceed: true;
+                                                          displayName: string;
+                                                      }
+                                                    | { doProceed: false }
+                                                >();
 
-                                            dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                                dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                                    {
+                                                        s3Uri,
+                                                        currentDisplayName: undefined,
+                                                        resolveDoProceed: dResult.resolve
+                                                    }
+                                                );
+
+                                                return dResult.pr;
+                                            };
+
+                                            s3ExplorerUiController.toggleIsS3UriBookmarked(
                                                 {
-                                                    s3Uri,
-                                                    currentDisplayName: undefined,
-                                                    resolveDoProceed: dResult.resolve
+                                                    getDisplayName
                                                 }
                                             );
-
-                                            return dResult.pr;
                                         };
-
-                                        s3ExplorerUiController.toggleIsS3UriBookmarked({
-                                            getDisplayName
-                                        });
-                                    };
-                                })()}
-                                isBookmarked={mainView.uriBar.bookmarkStatus.isBookmarked}
-                            />
+                                    })()}
+                                    isBookmarked={
+                                        mainView.uriBar.bookmarkStatus.isBookmarked
+                                    }
+                                />
+                            </div>
 
                             {mainView.uriBar.s3Uri === undefined && (
                                 <S3BookmarksEntryPointList {...props} />

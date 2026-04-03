@@ -1,11 +1,11 @@
 import { memo } from "react";
-import type { ReactNode } from "react";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { tss } from "tss";
+import { Icon, type IconProps } from "onyxia-ui/Icon";
 
 export type S3ContextActionButtonProps = {
     className?: string;
-    icon: ReactNode;
+    icon: IconProps["icon"];
     label: string;
     onClick: () => void;
     disabled?: boolean;
@@ -26,7 +26,7 @@ export const S3ContextActionButton = memo((props: S3ContextActionButtonProps) =>
                     onClick={onClick}
                     disabled={disabled}
                 >
-                    <span className={classes.icon}>{icon}</span>
+                    <Icon size="small" icon={icon} />
                 </button>
             </span>
         </Tooltip>
@@ -70,17 +70,6 @@ const useStyles = tss.withName({ S3ContextActionButton }).create(({ theme }) => 
         "&:disabled:hover, &:disabled:active": {
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             color: theme.colors.useCases.typography.textPrimary
-        }
-    },
-    icon: {
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        lineHeight: 0,
-        "& .MuiSvgIcon-root, & svg, & img": {
-            width: "20px",
-            height: "20px",
-            fontSize: "20px"
         }
     }
 }));

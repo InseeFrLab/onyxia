@@ -475,6 +475,26 @@ export const thunks = {
 
             dispatch(actions.uploadCanceled({ profileName, s3Uri }));
         },
+    navigateBack:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const s3Uri = privateSelectors.s3Uri(getState());
+
+            assert(s3Uri !== undefined);
+            assert(s3Uri.keySegments.length !== 0);
+
+            await dispatch(
+                thunks.listPrefix({
+                    s3Uri: {
+                        ...s3Uri,
+                        keySegments: s3Uri.keySegments.slice(0, -1)
+                    },
+                    debounce: false
+                })
+            );
+        },
     putObjects:
         (params: {
             files: {
