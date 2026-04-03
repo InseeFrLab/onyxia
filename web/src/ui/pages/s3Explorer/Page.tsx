@@ -110,8 +110,7 @@ function PageComponent() {
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
 
-    const props: S3BookmarksBarProps = {
-        //className: css({ marginTop: theme.spacing(4) }),
+    const props_bookmarkBar = {
         items: mainView.bookmarks.items,
         activeItemS3Uri: mainView.bookmarks.activeItemS3Uri,
         getItemLink: ({ s3Uri }) => {
@@ -146,7 +145,7 @@ function PageComponent() {
                 displayName: result.displayName
             });
         }
-    };
+    } satisfies S3BookmarksBarProps;
 
     return (
         <>
@@ -292,7 +291,7 @@ function PageComponent() {
                                 />
                                 {mainView.uriBar.s3Uri !== undefined && (
                                     <S3BookmarksBar
-                                        {...props}
+                                        {...props_bookmarkBar}
                                         className={css({
                                             flex: 1,
                                             minWidth: 0
@@ -370,10 +369,35 @@ function PageComponent() {
                                         mainView.uriBar.bookmarkStatus.isBookmarked
                                     }
                                 />
+                                <S3ContextActionButton
+                                    icon={getIconUrlByName("UploadFileOutlined")}
+                                    label="Upload"
+                                    disabled={mainView.uriBar.isUploadButtonDisabled}
+                                    onClick={() => {
+                                        //TODO: Use the file API to ask user to select the file(s)
+
+                                        alert("todo");
+                                    }}
+                                />
+                                <S3ContextActionButton
+                                    icon={getIconUrlByName("CreateNewFolderOutlined")}
+                                    label="Create new Prefix"
+                                    disabled={mainView.uriBar.isUploadButtonDisabled}
+                                    onClick={() =>
+                                        s3ExplorerUiController.createDirectory({
+                                            prefixSegment: "todo dialog for dir name"
+                                        })
+                                    }
+                                />
                             </div>
 
                             {mainView.uriBar.s3Uri === undefined && (
-                                <S3BookmarksEntryPointList {...props} />
+                                <S3BookmarksEntryPointList
+                                    {...props_bookmarkBar}
+                                    className={css({
+                                        marginTop: theme.spacing(4)
+                                    })}
+                                />
                             )}
 
                             {mainView.listedPrefix !== undefined && (
