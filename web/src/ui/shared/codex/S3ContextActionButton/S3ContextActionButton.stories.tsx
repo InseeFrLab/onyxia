@@ -1,12 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import CreateNewFolderOutlinedIcon from "@mui/icons-material/CreateNewFolderOutlined";
-import SubdirectoryArrowLeftOutlinedIcon from "@mui/icons-material/SubdirectoryArrowLeftOutlined";
-import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import { useState } from "react";
 import { parseS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3UriBar, type S3UriBarProps } from "../S3UriBar";
 import { S3ContextActionButton } from "./S3ContextActionButton";
+import { getIconUrlByName } from "lazy-icons";
 
 const meta = {
     title: "Shared/S3ContextActionButton",
@@ -88,7 +86,7 @@ function ComposedHeader() {
                 }}
             >
                 <S3ContextActionButton
-                    icon={<SubdirectoryArrowLeftOutlinedIcon />}
+                    icon={getIconUrlByName("ArrowBack")}
                     label="Go to parent prefix"
                     onClick={() => {
                         if (s3Uri === undefined || isAtBucketRoot) {
@@ -115,13 +113,13 @@ function ComposedHeader() {
                 </div>
 
                 <S3ContextActionButton
-                    icon={<UploadFileOutlinedIcon />}
+                    icon={getIconUrlByName("UploadFileOutlined")}
                     label="Upload files"
                     onClick={action("uploadFiles")}
                 />
 
                 <S3ContextActionButton
-                    icon={<CreateNewFolderOutlinedIcon />}
+                    icon={getIconUrlByName("CreateNewFolderOutlined")}
                     label="Create prefix"
                     onClick={action("createPrefix")}
                 />
@@ -132,7 +130,7 @@ function ComposedHeader() {
 
 export const WithS3UriBar: Story = {
     args: {
-        icon: <SubdirectoryArrowLeftOutlinedIcon />,
+        icon: getIconUrlByName("SubdirectoryArrowLeftOutlined"),
         label: "Context action",
         onClick: action("contextAction")
     },
