@@ -54,6 +54,10 @@ function getFileName(s3Uri: S3Uri.NonTerminatedByDelimiter): string {
     return stringifyS3Uri(s3Uri);
 }
 
+// bytes() can emit labels as wide as "1023.99KB"; reserve room to avoid text shifts.
+const MAX_FORMATTED_UPLOAD_SIZE_WIDTH_CH = 9;
+const MAX_UPLOAD_PERCENT_WIDTH_CH = 4;
+
 export function S3Uploads(props: S3UploadsProps) {
     const {
         className,
@@ -145,6 +149,7 @@ export function S3Uploads(props: S3UploadsProps) {
                             0,
                             Math.min(100, upload.completionPercent)
                         );
+                        const roundedPercent = Math.round(percent);
                         const isCompleted =
                             upload.stoppedStatus === undefined && percent === 100;
                         const isUploading =
@@ -169,9 +174,6 @@ export function S3Uploads(props: S3UploadsProps) {
 
                             return "Error";
                         })();
-                        const progressSuffix = isUploading
-                            ? ` ${Math.round(percent)}%`
-                            : "";
                         const sizeLabel = isUploading
                             ? `${uploadedSizeLabel} of ${totalSizeLabel}`
                             : totalSizeLabel;
@@ -181,7 +183,9 @@ export function S3Uploads(props: S3UploadsProps) {
                                 ? ` - ${upload.stoppedStatus.errorMessage}`
                                 : "";
                         const metaPrefix = sizeLabel;
-                        const metaStatus = `${statusLabel}${progressSuffix}${messageSuffix}`;
+                        const metaStatus = isUploading
+                            ? `${statusLabel} ${roundedPercent}%`
+                            : `${statusLabel}${messageSuffix}`;
                         const metaLabel = `${metaPrefix} - ${metaStatus}`;
                         const uploadKey = [
                             upload.profileName,
@@ -211,9 +215,34 @@ export function S3Uploads(props: S3UploadsProps) {
                                             {getFileName(upload.s3Uri)}
                                         </div>
                                         <div className={classes.meta} title={metaLabel}>
-                                            <span className={classes.metaPrefix}>
-                                                {metaPrefix}
-                                            </span>
+                                            {isUploading ? (
+                                                <span
+                                                    className={cx(
+                                                        classes.metaPrefix,
+                                                        classes.metaPrefixUploading
+                                                    )}
+                                                >
+                                                    <span
+                                                        className={
+                                                            classes.metaUploadedSize
+                                                        }
+                                                    >
+                                                        {uploadedSizeLabel}
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            classes.metaSizeConnector
+                                                        }
+                                                    >
+                                                        of
+                                                    </span>
+                                                    <span>{totalSizeLabel}</span>
+                                                </span>
+                                            ) : (
+                                                <span className={classes.metaPrefix}>
+                                                    {metaPrefix}
+                                                </span>
+                                            )}
                                             <span className={classes.metaSeparator}>
                                                 -
                                             </span>
@@ -252,8 +281,19 @@ export function S3Uploads(props: S3UploadsProps) {
                                                     </span>
                                                 )}
                                                 <span className={classes.metaStatusLabel}>
-                                                    {metaStatus}
+                                                    {isUploading
+                                                        ? statusLabel
+                                                        : metaStatus}
                                                 </span>
+                                                {isUploading && (
+                                                    <span
+                                                        className={
+                                                            classes.metaStatusPercent
+                                                        }
+                                                    >
+                                                        {`${roundedPercent}%`}
+                                                    </span>
+                                                )}
                                             </span>
                                         </div>
                                     </div>
@@ -450,13 +490,29 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(1),
-        minWidth: 0
+        minWidth: 0,
+        fontVariantNumeric: "tabular-nums",
+        fontFeatureSettings: '"tnum"'
     },
     metaPrefix: {
         minWidth: 0,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
+    },
+    metaPrefixUploading: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: theme.spacing(0.5)
+    },
+    metaUploadedSize: {
+        display: "inline-block",
+        width: `${MAX_FORMATTED_UPLOAD_SIZE_WIDTH_CH}ch`,
+        textAlign: "right",
+        flexShrink: 0
+    },
+    metaSizeConnector: {
+        flexShrink: 0
     },
     metaSeparator: {
         flexShrink: 0
@@ -475,6 +531,12 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
+    },
+    metaStatusPercent: {
+        display: "inline-block",
+        width: `${MAX_UPLOAD_PERCENT_WIDTH_CH}ch`,
+        textAlign: "right",
+        flexShrink: 0
     },
     metaStatusIcon: {
         display: "inline-flex",
