@@ -212,6 +212,8 @@ export const translations: Translations<"de"> = {
             "Verzeichnisse werden relativ zum aktuell angezeigten Präfix erstellt.",
         "directoryName textField label": "Verzeichnisname",
         "directoryName textField empty error": "Der Verzeichnisname darf nicht leer sein",
+        "directoryName textField duplicate error":
+            "Der Verzeichnisname existiert bereits",
         cancel: "Abbrechen",
         create: "Erstellen"
     },

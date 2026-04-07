@@ -54,9 +54,18 @@ export type MainView = {
                   isBookmarked: true;
                   isReadonly: boolean;
               };
-        isBackButtonDisabled: boolean;
-        isUploadButtonDisabled: boolean;
     };
+
+    isBackButtonDisabled: boolean;
+
+    directoryCreationButton:
+        | {
+              isDisabled: true;
+          }
+        | {
+              isDisabled: false;
+              exclude: string[];
+          };
 
     isListing: boolean;
 
@@ -432,22 +441,43 @@ const fullyQualifiedUri = createSelector(
     }
 );
 
+const isBackButtonDisabled = createSelector(
+    s3Uri,
+    (s3Uri): MainView["isBackButtonDisabled"] =>
+        s3Uri === undefined || s3Uri.keySegments.length === 0
+);
+
+const directoryCreationButton = createSelector(
+    s3Uri,
+    listedPrefix,
+    (s3Uri, listedPrefix): MainView["directoryCreationButton"] => {
+        const isUploadButtonDisabled =
+            s3Uri === undefined ||
+            !s3Uri.isDelimiterTerminated ||
+            listedPrefix === undefined ||
+            listedPrefix.isErrored;
+
+        if (isUploadButtonDisabled) {
+            return {
+                isDisabled: true
+            };
+        }
+
+        return {
+            isDisabled: false,
+            exclude: listedPrefix.items.map(item => item.displayName)
+        };
+    }
+);
+
 const uriBar = createSelector(
     s3Uri,
     bookmarks,
     listedPrefix,
     isListing,
     (s3Uri, bookmarks, listedPrefix, isListing): MainView["uriBar"] => {
-        const isBackButtonDisabled =
-            s3Uri === undefined || s3Uri.keySegments.length === 0;
-
-        const isUploadButtonDisabled =
-            s3Uri === undefined || !s3Uri.isDelimiterTerminated;
-
         if (s3Uri === undefined) {
             return {
-                isBackButtonDisabled,
-                isUploadButtonDisabled,
                 s3Uri: undefined,
                 hints: bookmarks.items.map(bookmark => ({
                     type: "bookmark",
@@ -504,8 +534,6 @@ const uriBar = createSelector(
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
             return {
-                isBackButtonDisabled,
-                isUploadButtonDisabled,
                 s3Uri,
                 hints,
                 bookmarkStatus
@@ -567,8 +595,6 @@ const uriBar = createSelector(
         });
 
         return {
-            isBackButtonDisabled,
-            isUploadButtonDisabled,
             s3Uri,
             hints,
             bookmarkStatus
@@ -586,6 +612,8 @@ const mainView = createSelector(
     bookmarks,
     uploads,
     uriBar,
+    isBackButtonDisabled,
+    directoryCreationButton,
     fullyQualifiedUri,
     isListing,
     listedPrefix,
@@ -595,6 +623,8 @@ const mainView = createSelector(
         bookmarks,
         uploads,
         uriBar,
+        isBackButtonDisabled,
+        directoryCreationButton,
         fullyQualifiedUri,
         isListing,
         listedPrefix,
@@ -604,6 +634,8 @@ const mainView = createSelector(
         bookmarks,
         uploads,
         uriBar,
+        isBackButtonDisabled,
+        directoryCreationButton,
         fullyQualifiedUri,
         isListing,
         listedPrefix,

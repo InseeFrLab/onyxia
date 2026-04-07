@@ -207,6 +207,7 @@ export const translations: Translations<"nl"> = {
             "Mappen worden aangemaakt relatief aan het voorvoegsel dat momenteel wordt weergegeven.",
         "directoryName textField label": "Mapnaam",
         "directoryName textField empty error": "De mapnaam mag niet leeg zijn",
+        "directoryName textField duplicate error": "De mapnaam bestaat al",
         cancel: "Annuleren",
         create: "Aanmaken"
     },

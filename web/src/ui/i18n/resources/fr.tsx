@@ -212,6 +212,7 @@ export const translations: Translations<"fr"> = {
         "directoryName textField label": "Nom du répertoire",
         "directoryName textField empty error":
             "Le nom du répertoire ne peut pas être vide",
+        "directoryName textField duplicate error": "Le nom du répertoire existe déjà",
         cancel: "Annuler",
         create: "Créer"
     },

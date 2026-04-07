@@ -183,6 +183,7 @@ export const translations: Translations<"zh-CN"> = {
         "dialog subtitle": "目录将相对于当前正在查看的前缀创建。",
         "directoryName textField label": "目录名称",
         "directoryName textField empty error": "目录名称不能为空",
+        "directoryName textField duplicate error": "目录名称已存在",
         cancel: "取消",
         create: "创建"
     },
