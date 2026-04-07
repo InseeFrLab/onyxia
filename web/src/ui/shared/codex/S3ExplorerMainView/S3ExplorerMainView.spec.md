@@ -24,7 +24,6 @@ This context is handled by surrounding components such as:
 ```ts
 export type S3ExplorerMainViewProps = {
     className?: string;
-    currentS3Uri?: S3Uri;
 
     isListing: boolean;
     listedPrefix:
@@ -221,6 +220,15 @@ Rules:
 - Existing visible content may remain visible
 - Loading must not block the whole interface
 - The component should avoid large empty placeholders when content is already available
+
+# Drag And Drop Overlay
+
+When files are dragged over the explorer, the component may render an overlay to signal that dropping will import files into the currently visible location.
+
+Rules:
+
+- The overlay should confirm the import action
+- The overlay should not repeat the current S3 URI or prefix label
 
 # Error state
 

@@ -144,7 +144,6 @@ const nestedNodes: MockNode[] = [
 ];
 
 const placeholderArgs: S3ExplorerMainViewProps = {
-    currentS3Uri: defaultPrefix,
     isListing: false,
     listedPrefix: {
         isErrored: false,
@@ -227,7 +226,6 @@ function StatefulExplorer(
         <div style={{ maxWidth: 1200, padding: 24 }}>
             <S3ExplorerMainView
                 {...props}
-                currentS3Uri={currentPrefix}
                 listedPrefix={toListedItems(
                     currentPrefix.keySegments.length === 0
                         ? nodes
@@ -342,7 +340,6 @@ export const ListingInProgress: Story = {
 
 export const EmptyPrefix: Story = {
     args: {
-        currentS3Uri: defaultPrefix,
         isListing: false,
         listedPrefix: {
             isErrored: false,
@@ -364,7 +361,6 @@ export const EmptyPrefix: Story = {
 
 export const AccessDenied: Story = {
     args: {
-        currentS3Uri: defaultPrefix,
         isListing: false,
         listedPrefix: {
             isErrored: true,
