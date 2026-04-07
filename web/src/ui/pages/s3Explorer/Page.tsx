@@ -450,6 +450,7 @@ function PageComponent() {
                                         s3ExplorerUiController.getPreSignedUrl
                                     }
                                     evtAction={evtS3ExplorerMainViewAction}
+                                    isUploadDisabled={mainView.isUploadButtonDisabled}
                                 />
                             )}
                             {mainView.fullyQualifiedUri.isFullyQualifiedUri &&

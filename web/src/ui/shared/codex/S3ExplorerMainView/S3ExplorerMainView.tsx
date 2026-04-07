@@ -62,6 +62,8 @@ export type S3ExplorerMainViewProps = {
     }) => Promise<string>;
 
     evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
+
+    isUploadDisabled: boolean;
 };
 
 export namespace S3ExplorerMainViewProps {
@@ -170,6 +172,14 @@ function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
 
 function getFileSystemEntry(item: DataTransferItem): FileSystemEntryLike | null {
     return (item as DataTransferItemWithWebkitGetAsEntry).webkitGetAsEntry?.() ?? null;
+}
+
+function getHasDraggedFiles(dataTransfer: DataTransfer): boolean {
+    if (dataTransfer.items.length !== 0) {
+        return Array.from(dataTransfer.items).some(item => item.kind === "file");
+    }
+
+    return dataTransfer.types.includes("Files");
 }
 
 function readFileEntry(entry: FileSystemFileEntryLike): Promise<File> {
@@ -987,7 +997,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onCreateDirectory,
         onDelete,
         getDirectDownloadUrl,
-        evtAction
+        evtAction,
+        isUploadDisabled
     } = props;
 
     const [sortState, setSortState] = useState<SortState>({
@@ -1063,6 +1074,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             lastSelectedItemKeyRef.current = undefined;
         }
     }, [listedPrefix]);
+
+    useEffect(() => {
+        if (!isUploadDisabled) {
+            return;
+        }
+
+        dragDepthRef.current = 0;
+        setIsDragActive(false);
+    }, [isUploadDisabled]);
 
     const items = listedPrefix.isErrored
         ? []
@@ -1195,13 +1215,17 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     };
 
     const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
-        if (!event.dataTransfer.types.includes("Files")) {
+        if (!getHasDraggedFiles(event.dataTransfer)) {
             return;
         }
 
         event.preventDefault();
         dragDepthRef.current = 0;
         setIsDragActive(false);
+
+        if (isUploadDisabled) {
+            return;
+        }
 
         const items = Array.from(event.dataTransfer.items);
         const files = Array.from(event.dataTransfer.files);
@@ -1438,29 +1462,51 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 <div
                     className={classes.surface}
                     onDragEnter={(event: DragEvent<HTMLDivElement>) => {
-                        if (!event.dataTransfer.types.includes("Files")) {
+                        if (!getHasDraggedFiles(event.dataTransfer)) {
                             return;
                         }
 
                         event.preventDefault();
+
+                        if (isUploadDisabled) {
+                            dragDepthRef.current = 0;
+                            setIsDragActive(false);
+                            return;
+                        }
+
                         dragDepthRef.current += 1;
                         setIsDragActive(true);
                     }}
                     onDragOver={(event: DragEvent<HTMLDivElement>) => {
-                        if (!event.dataTransfer.types.includes("Files")) {
+                        if (!getHasDraggedFiles(event.dataTransfer)) {
                             return;
                         }
 
                         event.preventDefault();
+
+                        if (isUploadDisabled) {
+                            dragDepthRef.current = 0;
+                            event.dataTransfer.dropEffect = "none";
+                            setIsDragActive(false);
+                            return;
+                        }
+
                         event.dataTransfer.dropEffect = "copy";
                         setIsDragActive(true);
                     }}
                     onDragLeave={(event: DragEvent<HTMLDivElement>) => {
-                        if (!event.dataTransfer.types.includes("Files")) {
+                        if (!getHasDraggedFiles(event.dataTransfer)) {
                             return;
                         }
 
                         event.preventDefault();
+
+                        if (isUploadDisabled) {
+                            dragDepthRef.current = 0;
+                            setIsDragActive(false);
+                            return;
+                        }
+
                         dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
 
                         if (dragDepthRef.current === 0) {
