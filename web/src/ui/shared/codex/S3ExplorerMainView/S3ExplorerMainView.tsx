@@ -30,7 +30,6 @@ import { useEvt } from "evt/hooks/useEvt";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
-    currentS3Uri?: S3Uri;
 
     isListing: boolean;
     listedPrefix:
@@ -152,19 +151,6 @@ type FileSystemDirectoryReaderLike = {
 
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
-}
-
-function getPrefixLabel(s3Uri: S3Uri | undefined): string {
-    if (s3Uri === undefined) {
-        return "this location";
-    }
-
-    const prefixSegments = s3Uri.isDelimiterTerminated
-        ? s3Uri.keySegments
-        : s3Uri.keySegments.slice(0, -1);
-    const lastSegment = prefixSegments.at(-1);
-
-    return lastSegment && lastSegment !== "" ? lastSegment : s3Uri.bucket;
 }
 
 function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
@@ -994,7 +980,6 @@ function ItemRow(props: ItemRowProps) {
 export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const {
         className,
-        currentS3Uri,
         isListing,
         listedPrefix,
         onNavigate,
@@ -1025,7 +1010,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const shareRequestIdRef = useRef(0);
 
     const { classes, cx } = useStyles({ isDragActive });
-    const dropTargetLabel = getPrefixLabel(currentS3Uri);
 
     const openFilePicker = () => {
         const input = fileInputRef.current;
@@ -1497,18 +1481,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                         />
                                     </div>
                                     <div className={classes.dropOverlayTitle}>
-                                        Drag and drop to import into
-                                    </div>
-                                    <div className={classes.dropOverlayPrefix}>
-                                        <span className={classes.dropOverlayPrefixIcon}>
-                                            <Icon
-                                                icon={getIconUrlByName("Folder")}
-                                                size="small"
-                                            />
-                                        </span>
-                                        <span className={classes.dropOverlayPrefixLabel}>
-                                            {dropTargetLabel}
-                                        </span>
+                                        Drag and drop to import files
                                     </div>
                                 </div>
                             </div>
@@ -1817,24 +1790,6 @@ const useStyles = tss
             justifyContent: "center"
         },
         dropOverlayTitle: {
-            ...theme.typography.variants["label 1"].style,
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        dropOverlayPrefix: {
-            display: "inline-flex",
-            alignItems: "center",
-            gap: theme.spacing(1.5)
-        },
-        dropOverlayPrefixIcon: {
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-        },
-        dropOverlayPrefixLabel: {
             ...theme.typography.variants["label 1"].style,
             color: theme.colors.useCases.typography.textPrimary
         },

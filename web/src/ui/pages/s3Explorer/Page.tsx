@@ -433,7 +433,6 @@ function PageComponent() {
                                             ? undefined
                                             : 1
                                     })}
-                                    currentS3Uri={mainView.uriBar.s3Uri}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
                                     onNavigate={({ s3Uri }) =>
