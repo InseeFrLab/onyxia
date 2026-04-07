@@ -366,9 +366,8 @@ const items = createSelector(
     }
 );
 
-const uploads = createSelector(
-    uploads_profile,
-    (uploads_profile): MainView["uploads"] => uploads_profile
+const uploads = createSelector(uploads_profile, (uploads_profile): MainView["uploads"] =>
+    uploads_profile.filter(upload => upload.s3Uri.keySegments.at(-1) !== ".keep")
 );
 
 const listedPrefix = createSelector(
