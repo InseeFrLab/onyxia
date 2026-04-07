@@ -154,7 +154,8 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onCreateDirectory: action("createDirectory"),
     onDelete: action("delete"),
     getDirectDownloadUrl: async () => "https://example.com/download/object",
-    evtAction: Evt.create<"CHOSE FILES TO UPLOAD">()
+    evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
+    isUploadDisabled: false
 };
 
 function toListedItems(
@@ -323,8 +324,12 @@ function StatefulExplorer(
 
 export const Playground: Story = {
     args: placeholderArgs,
-    render: ({ className, isListing }) => (
-        <StatefulExplorer className={className} isListing={isListing} />
+    render: ({ className, isListing, isUploadDisabled }) => (
+        <StatefulExplorer
+            className={className}
+            isListing={isListing}
+            isUploadDisabled={isUploadDisabled}
+        />
     )
 };
 
@@ -333,8 +338,12 @@ export const ListingInProgress: Story = {
         ...placeholderArgs,
         isListing: true
     },
-    render: ({ className, isListing }) => (
-        <StatefulExplorer className={className} isListing={isListing} />
+    render: ({ className, isListing, isUploadDisabled }) => (
+        <StatefulExplorer
+            className={className}
+            isListing={isListing}
+            isUploadDisabled={isUploadDisabled}
+        />
     )
 };
 
@@ -350,7 +359,8 @@ export const EmptyPrefix: Story = {
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
         getDirectDownloadUrl: async () => "https://example.com/download/object",
-        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">()
+        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
+        isUploadDisabled: false
     },
     render: args => (
         <div style={{ maxWidth: 1200, padding: 24 }}>
@@ -371,7 +381,8 @@ export const AccessDenied: Story = {
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
         getDirectDownloadUrl: async () => "https://example.com/download/object",
-        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">()
+        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
+        isUploadDisabled: false
     },
     render: args => (
         <div style={{ maxWidth: 1200, padding: 24 }}>
