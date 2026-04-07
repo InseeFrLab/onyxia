@@ -8,12 +8,22 @@ import { routes } from "ui/routes";
 export function Uploads() {
     return (
         <Suspense>
-            <UploadsActual />
+            <Uploads_1 />
         </Suspense>
     );
 }
 
-function UploadsActual() {
+function Uploads_1() {
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
+
+    if (!isUserLoggedIn) {
+        return null;
+    }
+
+    return <Uploads_2 />;
+}
+
+function Uploads_2() {
     const { uploads } = useCoreState("s3ExplorerUiController", "mainView");
 
     const {
