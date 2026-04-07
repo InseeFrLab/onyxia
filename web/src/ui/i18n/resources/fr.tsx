@@ -205,6 +205,16 @@ export const translations: Translations<"fr"> = {
         cancel: "Annuler",
         ok: "Ok"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "Créer un répertoire",
+        "dialog subtitle":
+            "Les répertoires sont créés par rapport au préfixe actuellement affiché.",
+        "directoryName textField label": "Nom du répertoire",
+        "directoryName textField empty error":
+            "Le nom du répertoire ne peut pas être vide",
+        cancel: "Annuler",
+        create: "Créer"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

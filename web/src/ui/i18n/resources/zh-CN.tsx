@@ -178,6 +178,14 @@ export const translations: Translations<"zh-CN"> = {
         cancel: "取消",
         ok: "确定"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "创建目录",
+        "dialog subtitle": "目录将相对于当前正在查看的前缀创建。",
+        "directoryName textField label": "目录名称",
+        "directoryName textField empty error": "目录名称不能为空",
+        cancel: "取消",
+        create: "创建"
+    },
     MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
