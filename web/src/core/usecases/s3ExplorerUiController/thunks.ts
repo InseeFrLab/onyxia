@@ -489,7 +489,8 @@ export const thunks = {
                 thunks.listPrefix({
                     s3Uri: {
                         ...s3Uri,
-                        keySegments: s3Uri.keySegments.slice(0, -1)
+                        keySegments: s3Uri.keySegments.slice(0, -1),
+                        isDelimiterTerminated: true
                     },
                     debounce: false
                 })
