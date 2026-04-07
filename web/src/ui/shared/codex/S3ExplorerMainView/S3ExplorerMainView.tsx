@@ -4,7 +4,10 @@ import {
     useState,
     type ChangeEvent,
     type DragEvent,
-    type MouseEvent
+    type MouseEvent,
+    type Dispatch,
+    type MutableRefObject,
+    type SetStateAction
 } from "react";
 import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -27,6 +30,7 @@ import { S3SelectionActionBar } from "ui/shared/codex/S3SelectionActionBar";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
+import { evtS3Uri_preSelected } from "./preSelectedS3Uri";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -153,6 +157,50 @@ type FileSystemDirectoryReaderLike = {
 
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
+}
+
+function tryApplyPendingPreSelection(params: {
+    isListing: boolean;
+    listedPrefix: S3ExplorerMainViewProps["listedPrefix"];
+    pendingPreSelectedS3UriRef: MutableRefObject<
+        S3Uri.NonTerminatedByDelimiter | undefined
+    >;
+    lastSelectedItemKeyRef: MutableRefObject<string | undefined>;
+    setSelectedItemKeys: Dispatch<SetStateAction<string[]>>;
+}) {
+    const {
+        isListing,
+        listedPrefix,
+        pendingPreSelectedS3UriRef,
+        lastSelectedItemKeyRef,
+        setSelectedItemKeys
+    } = params;
+
+    if (listedPrefix.isErrored || isListing) {
+        return;
+    }
+
+    const pendingPreSelectedS3Uri = pendingPreSelectedS3UriRef.current;
+
+    if (pendingPreSelectedS3Uri === undefined) {
+        return;
+    }
+
+    const preSelectedItemKey = stringifyS3Uri(pendingPreSelectedS3Uri);
+    const hasMatchingItem = listedPrefix.items.some(
+        item =>
+            item.type === "object" &&
+            !item.isDeleting &&
+            getItemKey(item) === preSelectedItemKey
+    );
+
+    if (!hasMatchingItem) {
+        return;
+    }
+
+    setSelectedItemKeys([preSelectedItemKey]);
+    lastSelectedItemKeyRef.current = preSelectedItemKey;
+    pendingPreSelectedS3UriRef.current = undefined;
 }
 
 function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
@@ -1016,6 +1064,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const [isDragActive, setIsDragActive] = useState(false);
 
     const lastSelectedItemKeyRef = useRef<string | undefined>(undefined);
+    const pendingPreSelectedS3UriRef = useRef<S3Uri.NonTerminatedByDelimiter | undefined>(
+        undefined
+    );
     const dragDepthRef = useRef(0);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const shareRequestIdRef = useRef(0);
@@ -1074,6 +1125,37 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             lastSelectedItemKeyRef.current = undefined;
         }
     }, [listedPrefix]);
+
+    useEvt(
+        ctx =>
+            evtS3Uri_preSelected.attach(ctx, s3Uri => {
+                if (s3Uri === undefined) {
+                    return;
+                }
+
+                pendingPreSelectedS3UriRef.current = s3Uri;
+                evtS3Uri_preSelected.state = undefined;
+
+                tryApplyPendingPreSelection({
+                    isListing,
+                    listedPrefix,
+                    pendingPreSelectedS3UriRef,
+                    lastSelectedItemKeyRef,
+                    setSelectedItemKeys
+                });
+            }),
+        [isListing, listedPrefix]
+    );
+
+    useEffect(() => {
+        tryApplyPendingPreSelection({
+            isListing,
+            listedPrefix,
+            pendingPreSelectedS3UriRef,
+            lastSelectedItemKeyRef,
+            setSelectedItemKeys
+        });
+    }, [isListing, listedPrefix]);
 
     useEffect(() => {
         if (!isUploadDisabled) {

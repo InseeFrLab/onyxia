@@ -4,6 +4,7 @@ import { useCoreState, getCoreSync } from "core";
 import { tss } from "tss";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import { routes } from "ui/routes";
+import { setPreSelectedS3Uri } from "ui/shared/codex/S3ExplorerMainView";
 
 export function Uploads() {
     return (
@@ -43,8 +44,8 @@ function Uploads_2() {
             onCancelUpload={s3ExplorerUiController.cancelUpload}
             onClose={s3ExplorerUiController.flushUploads}
             onRetryUpload={s3ExplorerUiController.retryPutObject}
-            getDirectoryLink={({ profileName, s3Uri }) =>
-                routes.s3Explorer({
+            getDirectoryLink={({ profileName, s3Uri }) => {
+                const link = routes.s3Explorer({
                     profile: profileName,
                     s3UriWithoutScheme: stringifyS3Uri({
                         bucket: s3Uri.bucket,
@@ -52,8 +53,17 @@ function Uploads_2() {
                         keySegments: s3Uri.keySegments.slice(0, -1),
                         isDelimiterTerminated: true
                     }).slice("s3://".length)
-                }).link
-            }
+                }).link;
+
+                const onClick_original = link.onClick;
+
+                link.onClick = (...args) => {
+                    setPreSelectedS3Uri({ s3Uri });
+                    return onClick_original.call(link, ...args);
+                };
+
+                return link;
+            }}
         />
     );
 }
