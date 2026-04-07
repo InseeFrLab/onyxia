@@ -171,6 +171,12 @@ export const translations: Translations<"zh-CN"> = {
         "failed body": ({ bucket }) => `创建 ${bucket} 失败。`,
         ok: "确定"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "文件已存在",
+        "dialog body": "是否要覆盖现有文件？",
+        cancel: "取消",
+        overwrite: "覆盖"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "书签名称",
         "bookmarkName textField label": "名称",
