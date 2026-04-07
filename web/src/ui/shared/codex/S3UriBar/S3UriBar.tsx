@@ -1766,6 +1766,7 @@ const useStyles = tss
             },
 
             bookmarkButtonReadonly: {
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
                 opacity: 0.65
             },
             hintsPanel: {
