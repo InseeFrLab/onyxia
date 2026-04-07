@@ -311,7 +311,7 @@ function PageComponent() {
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("ArrowBack")}
                                     label="Back"
-                                    disabled={mainView.uriBar.isBackButtonDisabled}
+                                    disabled={mainView.isBackButtonDisabled}
                                     onClick={s3ExplorerUiController.navigateBack}
                                 />
                                 <S3UriBar
@@ -373,7 +373,7 @@ function PageComponent() {
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("UploadFileOutlined")}
                                     label="Upload"
-                                    disabled={mainView.uriBar.isUploadButtonDisabled}
+                                    disabled={true}
                                     onClick={async () => {
                                         alert("todo");
                                     }}
@@ -381,11 +381,17 @@ function PageComponent() {
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("CreateNewFolderOutlined")}
                                     label="Create new Prefix"
-                                    disabled={mainView.uriBar.isUploadButtonDisabled}
+                                    disabled={mainView.directoryCreationButton.isDisabled}
                                     onClick={async () => {
+                                        assert(
+                                            !mainView.directoryCreationButton.isDisabled
+                                        );
+
                                         const dPrefixSegment = new Deferred<string>();
 
                                         dialogProps.evtDirectoryCreationDialogOpen.post({
+                                            exclude:
+                                                mainView.directoryCreationButton.exclude,
                                             resolveDoProceed: params => {
                                                 if (!params.doProceed) {
                                                     return;

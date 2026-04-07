@@ -204,6 +204,7 @@ export const translations: Translations<"no"> = {
             "Kataloger opprettes relativt til prefikset som vises akkurat nå.",
         "directoryName textField label": "Katalognavn",
         "directoryName textField empty error": "Katalognavnet kan ikke være tomt",
+        "directoryName textField duplicate error": "Katalognavnet finnes allerede",
         cancel: "Avbryt",
         create: "Opprett"
     },

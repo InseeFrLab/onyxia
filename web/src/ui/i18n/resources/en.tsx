@@ -203,6 +203,7 @@ export const translations: Translations<"en"> = {
             "Directories are created relative to the prefix currently being listed.",
         "directoryName textField label": "Directory name",
         "directoryName textField empty error": "Directory name can't be empty",
+        "directoryName textField duplicate error": "Directory name already exists",
         cancel: "Cancel",
         create: "Create"
     },

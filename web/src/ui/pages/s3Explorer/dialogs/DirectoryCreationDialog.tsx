@@ -22,9 +22,53 @@ export type DirectoryCreationDialogResult =
 
 export type DirectoryCreationDialogProps = {
     evtOpen: Evt<{
+        exclude: string[];
         resolveDoProceed: (result: DirectoryCreationDialogResult) => void;
     }>;
 };
+
+function getDefaultPrefixSegment(params: { exclude: string[] }): string {
+    const { exclude } = params;
+
+    const prefixBase = "new_directory";
+    const excludedNames = new Set(exclude);
+
+    for (let i = 1; ; i++) {
+        const prefixSegment = `${prefixBase}_${i}`;
+
+        if (!excludedNames.has(prefixSegment)) {
+            return prefixSegment;
+        }
+    }
+}
+
+function getIsValidValue(params: {
+    value: string;
+    exclude: string[];
+    t: ReturnType<typeof useTranslation>["t"];
+}): ReturnType<NonNullable<TextFieldProps["getIsValidValue"]>> {
+    const { value, exclude, t } = params;
+
+    const normalizedValue = value.trim();
+
+    if (normalizedValue === "") {
+        return {
+            isValidValue: false,
+            message: t("directoryName textField empty error")
+        };
+    }
+
+    if (exclude.includes(normalizedValue)) {
+        return {
+            isValidValue: false,
+            message: t("directoryName textField duplicate error")
+        };
+    }
+
+    return {
+        isValidValue: true
+    };
+}
 
 export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps) => {
     const { evtOpen } = props;
@@ -46,10 +90,14 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
     useEvt(
         ctx => {
             evtOpen.attach(ctx, eventData => {
+                const prefixSegment = getDefaultPrefixSegment({
+                    exclude: eventData.exclude
+                });
+
                 setState({
                     ...eventData,
-                    prefixSegment: "",
-                    isPrefixSegmentValid: false
+                    prefixSegment,
+                    isPrefixSegmentValid: true
                 });
             });
         },
@@ -91,22 +139,16 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
                         <TextField
                             className={classes.textField}
                             inputProps_autoFocus={true}
+                            selectAllTextOnFocus={true}
                             label={t("directoryName textField label")}
                             defaultValue={state.prefixSegment}
-                            getIsValidValue={value => {
-                                const normalizedValue = value.trim();
-
-                                if (normalizedValue === "") {
-                                    return {
-                                        isValidValue: false,
-                                        message: t("directoryName textField empty error")
-                                    };
-                                }
-
-                                return {
-                                    isValidValue: true
-                                };
-                            }}
+                            getIsValidValue={value =>
+                                getIsValidValue({
+                                    value,
+                                    exclude: state.exclude,
+                                    t
+                                })
+                            }
                             onValueBeingTypedChange={({ value, isValidValue }) =>
                                 setState(state => {
                                     assert(state !== undefined);
@@ -166,6 +208,7 @@ const { i18n } = declareComponentKeys<
     | "dialog subtitle"
     | "directoryName textField label"
     | "directoryName textField empty error"
+    | "directoryName textField duplicate error"
     | "cancel"
     | "create"
 >()({ DirectoryCreationDialog });

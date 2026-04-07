@@ -208,6 +208,7 @@ export const translations: Translations<"it"> = {
         "directoryName textField label": "Nome della directory",
         "directoryName textField empty error":
             "Il nome della directory non può essere vuoto",
+        "directoryName textField duplicate error": "Il nome della directory esiste già",
         cancel: "Annulla",
         create: "Crea"
     },

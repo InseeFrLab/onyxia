@@ -204,6 +204,7 @@ export const translations: Translations<"fi"> = {
             "Hakemistot luodaan suhteessa parhaillaan listattuun etuliitteeseen.",
         "directoryName textField label": "Hakemiston nimi",
         "directoryName textField empty error": "Hakemiston nimi ei voi olla tyhjä",
+        "directoryName textField duplicate error": "Hakemiston nimi on jo olemassa",
         cancel: "Peruuta",
         create: "Luo"
     },
