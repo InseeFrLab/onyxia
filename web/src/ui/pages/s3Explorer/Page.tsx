@@ -83,6 +83,7 @@ function PageComponent() {
             evtConfirmBucketCreationAttemptDialogOpen: new Evt(),
             evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
             evtCreateOrRenameBookmarkDialogOpen: new Evt(),
+            evtDirectoryCreationDialogOpen: new Evt(),
             evtCreateOrUpdateProfileDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
@@ -373,9 +374,7 @@ function PageComponent() {
                                     icon={getIconUrlByName("UploadFileOutlined")}
                                     label="Upload"
                                     disabled={mainView.uriBar.isUploadButtonDisabled}
-                                    onClick={() => {
-                                        //TODO: Use the file API to ask user to select the file(s)
-
+                                    onClick={async () => {
                                         alert("todo");
                                     }}
                                 />
@@ -383,11 +382,25 @@ function PageComponent() {
                                     icon={getIconUrlByName("CreateNewFolderOutlined")}
                                     label="Create new Prefix"
                                     disabled={mainView.uriBar.isUploadButtonDisabled}
-                                    onClick={() =>
+                                    onClick={async () => {
+                                        const dPrefixSegment = new Deferred<string>();
+
+                                        dialogProps.evtDirectoryCreationDialogOpen.post({
+                                            resolveDoProceed: params => {
+                                                if (!params.doProceed) {
+                                                    return;
+                                                }
+
+                                                dPrefixSegment.resolve(
+                                                    params.prefixSegment
+                                                );
+                                            }
+                                        });
+
                                         s3ExplorerUiController.createDirectory({
-                                            prefixSegment: "todo dialog for dir name"
-                                        })
-                                    }
+                                            prefixSegment: await dPrefixSegment.pr
+                                        });
+                                    }}
                                 />
                             </div>
 

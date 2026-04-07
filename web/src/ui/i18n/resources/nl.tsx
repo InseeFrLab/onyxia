@@ -201,6 +201,15 @@ export const translations: Translations<"nl"> = {
         cancel: "Annuleren",
         ok: "Ok"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "Map aanmaken",
+        "dialog subtitle":
+            "Mappen worden aangemaakt relatief aan het voorvoegsel dat momenteel wordt weergegeven.",
+        "directoryName textField label": "Mapnaam",
+        "directoryName textField empty error": "De mapnaam mag niet leeg zijn",
+        cancel: "Annuleren",
+        create: "Aanmaken"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

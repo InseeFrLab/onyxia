@@ -201,6 +201,16 @@ export const translations: Translations<"it"> = {
         cancel: "Annulla",
         ok: "Ok"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "Crea directory",
+        "dialog subtitle":
+            "Le directory vengono create rispetto al prefisso attualmente visualizzato.",
+        "directoryName textField label": "Nome della directory",
+        "directoryName textField empty error":
+            "Il nome della directory non può essere vuoto",
+        cancel: "Annulla",
+        create: "Crea"
+    },
     MySecrets: {
         "page title - my secrets": "I miei segreti",
         "what this page is used for - my secrets":

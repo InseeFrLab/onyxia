@@ -197,6 +197,15 @@ export const translations: Translations<"en"> = {
         cancel: "Cancel",
         ok: "Ok"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "Create directory",
+        "dialog subtitle":
+            "Directories are created relative to the prefix currently being listed.",
+        "directoryName textField label": "Directory name",
+        "directoryName textField empty error": "Directory name can't be empty",
+        cancel: "Cancel",
+        create: "Create"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

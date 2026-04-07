@@ -198,6 +198,15 @@ export const translations: Translations<"no"> = {
         cancel: "Avbryt",
         ok: "Ok"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "Opprett katalog",
+        "dialog subtitle":
+            "Kataloger opprettes relativt til prefikset som vises akkurat nå.",
+        "directoryName textField label": "Katalognavn",
+        "directoryName textField empty error": "Katalognavnet kan ikke være tomt",
+        cancel: "Avbryt",
+        create: "Opprett"
+    },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":

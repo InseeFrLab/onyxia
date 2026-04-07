@@ -198,6 +198,15 @@ export const translations: Translations<"fi"> = {
         cancel: "Peruuta",
         ok: "Ok"
     },
+    DirectoryCreationDialog: {
+        "dialog title": "Luo hakemisto",
+        "dialog subtitle":
+            "Hakemistot luodaan suhteessa parhaillaan listattuun etuliitteeseen.",
+        "directoryName textField label": "Hakemiston nimi",
+        "directoryName textField empty error": "Hakemiston nimi ei voi olla tyhjä",
+        cancel: "Peruuta",
+        create: "Luo"
+    },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":

@@ -15,6 +15,10 @@ import {
     type CreateOrRenameBookmarkDialogProps
 } from "./CreateOrRenameBookmarkDialog";
 import {
+    DirectoryCreationDialog,
+    type DirectoryCreationDialogProps
+} from "./DirectoryCreationDialog";
+import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
@@ -24,6 +28,7 @@ export type S3ExplorerDialogsProps = {
     evtCreateOrUpdateProfileDialogOpen: CreateOrUpdateProfileDialogProps["evtOpen"];
     evtConfirmBucketCreationAttemptDialogOpen: ConfirmBucketCreationAttemptDialogProps["evtOpen"];
     evtCreateOrRenameBookmarkDialogOpen: CreateOrRenameBookmarkDialogProps["evtOpen"];
+    evtDirectoryCreationDialogOpen: DirectoryCreationDialogProps["evtOpen"];
     evtMaybeAcknowledgeConfigVolatilityDialogOpen: MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"];
 };
 
@@ -33,6 +38,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
         evtCreateOrUpdateProfileDialogOpen,
         evtConfirmBucketCreationAttemptDialogOpen,
         evtCreateOrRenameBookmarkDialogOpen,
+        evtDirectoryCreationDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = props;
 
@@ -46,6 +52,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
                 evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
             />
             <CreateOrRenameBookmarkDialog evtOpen={evtCreateOrRenameBookmarkDialogOpen} />
+            <DirectoryCreationDialog evtOpen={evtDirectoryCreationDialogOpen} />
             <MaybeAcknowledgeConfigVolatilityDialog
                 evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
             />
