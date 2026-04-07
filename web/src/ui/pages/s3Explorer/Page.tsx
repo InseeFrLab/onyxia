@@ -427,6 +427,12 @@ function PageComponent() {
 
                             {mainView.listedPrefix !== undefined && (
                                 <S3ExplorerMainView
+                                    className={css({
+                                        flex: mainView.fullyQualifiedUri
+                                            .isFullyQualifiedUri
+                                            ? undefined
+                                            : 1
+                                    })}
                                     currentS3Uri={mainView.uriBar.s3Uri}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
