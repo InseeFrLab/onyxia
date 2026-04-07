@@ -191,6 +191,12 @@ export const translations: Translations<"fi"> = {
         "failed body": ({ bucket }) => `Kohteen ${bucket} luonti epäonnistui.`,
         ok: "Ok"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Tiedosto on jo olemassa",
+        "dialog body": "Haluatko korvata olemassa olevan tiedoston?",
+        cancel: "Peruuta",
+        overwrite: "Korvaa"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Kirjanmerkin nimi",
         "bookmarkName textField label": "Nimi",

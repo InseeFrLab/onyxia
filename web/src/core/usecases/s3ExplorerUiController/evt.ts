@@ -8,10 +8,11 @@ import { AccessError } from "clean-architecture";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import { assert } from "tsafe";
 import { actions } from "./state";
-import { thunks } from "./thunks";
+import { thunks, evtAskOverwriteConfirmation } from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
 import * as dataExplorer from "core/usecases/dataExplorer";
 import { stringifyS3Uri } from "core/tools/S3Uri";
+import type { S3Uri } from "core/tools/S3Uri";
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -25,7 +26,20 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
               bucket: string;
               createBucket: () => Promise<{ isSuccess: boolean }>;
           }
+        | {
+              action: "ask overwrite confirmation";
+              s3Uri: S3Uri.NonTerminatedByDelimiter;
+              resolveResponse: (params: { doOverwrite: boolean }) => void;
+          }
     >();
+
+    evtAskOverwriteConfirmation.attach(({ s3Uri, resolveResponse }) =>
+        evt.post({
+            action: "ask overwrite confirmation",
+            s3Uri,
+            resolveResponse
+        })
+    );
 
     evtAction
         .pipe(action => action.usecaseName === name)

@@ -190,6 +190,12 @@ export const translations: Translations<"en"> = {
         "failed body": ({ bucket }) => `Failed to create ${bucket}.`,
         ok: "Ok"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "File already exists",
+        "dialog body": "Do you want to overwrite the existing file?",
+        cancel: "Cancel",
+        overwrite: "Overwrite"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bookmark Name",
         "bookmarkName textField label": "Name",

@@ -81,6 +81,7 @@ function PageComponent() {
     const dialogProps = useConst(
         (): S3ExplorerDialogsProps => ({
             evtConfirmBucketCreationAttemptDialogOpen: new Evt(),
+            evtConfirmOverwriteDialogOpen: new Evt(),
             evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
             evtCreateOrRenameBookmarkDialogOpen: new Evt(),
             evtDirectoryCreationDialogOpen: new Evt(),
@@ -99,14 +100,24 @@ function PageComponent() {
     } = getCoreSync();
 
     useEvt(ctx => {
-        evtS3ExplorerUiController.pipe(ctx).attach(
-            data => data.action === "ask confirmation for bucket creation attempt",
-            ({ bucket, createBucket }) =>
-                dialogProps.evtConfirmBucketCreationAttemptDialogOpen.post({
-                    bucket,
-                    createBucket
-                })
-        );
+        evtS3ExplorerUiController
+            .pipe(ctx)
+            .attach(
+                data => data.action === "ask confirmation for bucket creation attempt",
+                ({ bucket, createBucket }) =>
+                    dialogProps.evtConfirmBucketCreationAttemptDialogOpen.post({
+                        bucket,
+                        createBucket
+                    })
+            )
+            .attach(
+                data => data.action === "ask overwrite confirmation",
+                ({ s3Uri, resolveResponse }) =>
+                    dialogProps.evtConfirmOverwriteDialogOpen.post({
+                        s3Uri,
+                        resolveResponse
+                    })
+            );
     }, []);
 
     const mainView = useCoreState("s3ExplorerUiController", "mainView");

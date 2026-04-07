@@ -193,6 +193,12 @@ export const translations: Translations<"it"> = {
         "failed body": ({ bucket }) => `Creazione di ${bucket} non riuscita.`,
         ok: "Ok"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Il file esiste già",
+        "dialog body": "Vuoi sovrascrivere il file esistente?",
+        cancel: "Annulla",
+        overwrite: "Sovrascrivi"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Nome del segnalibro",
         "bookmarkName textField label": "Nome",
@@ -224,9 +230,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

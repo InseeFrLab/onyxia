@@ -11,6 +11,10 @@ import {
     type ConfirmBucketCreationAttemptDialogProps
 } from "./ConfirmBucketCreationAttemptDialog";
 import {
+    ConfirmOverwriteDialog,
+    type ConfirmOverwriteDialogProps
+} from "./ConfirmOverwriteDialog";
+import {
     CreateOrRenameBookmarkDialog,
     type CreateOrRenameBookmarkDialogProps
 } from "./CreateOrRenameBookmarkDialog";
@@ -27,6 +31,7 @@ export type S3ExplorerDialogsProps = {
     evtConfirmCustomS3ConfigDeletionDialogOpen: ConfirmCustomS3ConfigDeletionDialogProps["evtOpen"];
     evtCreateOrUpdateProfileDialogOpen: CreateOrUpdateProfileDialogProps["evtOpen"];
     evtConfirmBucketCreationAttemptDialogOpen: ConfirmBucketCreationAttemptDialogProps["evtOpen"];
+    evtConfirmOverwriteDialogOpen: ConfirmOverwriteDialogProps["evtOpen"];
     evtCreateOrRenameBookmarkDialogOpen: CreateOrRenameBookmarkDialogProps["evtOpen"];
     evtDirectoryCreationDialogOpen: DirectoryCreationDialogProps["evtOpen"];
     evtMaybeAcknowledgeConfigVolatilityDialogOpen: MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"];
@@ -37,6 +42,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
         evtConfirmCustomS3ConfigDeletionDialogOpen,
         evtCreateOrUpdateProfileDialogOpen,
         evtConfirmBucketCreationAttemptDialogOpen,
+        evtConfirmOverwriteDialogOpen,
         evtCreateOrRenameBookmarkDialogOpen,
         evtDirectoryCreationDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
@@ -51,6 +57,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
             <ConfirmBucketCreationAttemptDialog
                 evtOpen={evtConfirmBucketCreationAttemptDialogOpen}
             />
+            <ConfirmOverwriteDialog evtOpen={evtConfirmOverwriteDialogOpen} />
             <CreateOrRenameBookmarkDialog evtOpen={evtCreateOrRenameBookmarkDialogOpen} />
             <DirectoryCreationDialog evtOpen={evtDirectoryCreationDialogOpen} />
             <MaybeAcknowledgeConfigVolatilityDialog

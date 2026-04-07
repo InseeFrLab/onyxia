@@ -13,6 +13,7 @@ import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import type { State } from "./state";
 import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators";
+import { Deferred } from "evt/tools/Deferred";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -28,6 +29,11 @@ const erroredUploadBlobs: {
     s3Uri: S3Uri.NonTerminatedByDelimiter;
     blob: Blob;
 }[] = [];
+
+export const evtAskOverwriteConfirmation = Evt.create<{
+    s3Uri: S3Uri.NonTerminatedByDelimiter;
+    resolveResponse: (params: { doOverwrite: boolean }) => void;
+}>();
 
 export const thunks = {
     load:
@@ -703,6 +709,45 @@ export const privateThunks = {
             const { profileName, s3Uri, blob } = params;
 
             const [dispatch, getState, { evtAction }] = args;
+
+            {
+                const doesExist = await (async () => {
+                    const s3Client = await dispatch(
+                        s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+                    );
+
+                    const resultOfListObject = await s3Client.listObjects({ s3Uri });
+
+                    if (!resultOfListObject.isSuccess) {
+                        return false;
+                    }
+
+                    return (
+                        resultOfListObject.objects.find(object =>
+                            same(object.s3Uri, s3Uri)
+                        ) !== undefined
+                    );
+                })();
+
+                if (doesExist) {
+                    const dDoOverwrite = new Deferred<boolean>();
+
+                    evtAskOverwriteConfirmation.post({
+                        s3Uri,
+                        resolveResponse: ({ doOverwrite }) => {
+                            dDoOverwrite.resolve(doOverwrite);
+                        }
+                    });
+
+                    const doOverwrite = await dDoOverwrite.pr;
+
+                    if (!doOverwrite) {
+                        return;
+                    }
+
+                    await dispatch(thunks.delete({ s3Uris: [s3Uri] }));
+                }
+            }
 
             {
                 const i = erroredUploadBlobs.findIndex(

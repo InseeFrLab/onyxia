@@ -194,6 +194,12 @@ export const translations: Translations<"nl"> = {
         "failed body": ({ bucket }) => `Aanmaken van ${bucket} is mislukt.`,
         ok: "Ok"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Bestand bestaat al",
+        "dialog body": "Wil je het bestaande bestand overschrijven?",
+        cancel: "Annuleren",
+        overwrite: "Overschrijven"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bladwijzernaam",
         "bookmarkName textField label": "Naam",

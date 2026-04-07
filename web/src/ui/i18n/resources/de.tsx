@@ -198,6 +198,12 @@ export const translations: Translations<"de"> = {
         "failed body": ({ bucket }) => `Bucket ${bucket} konnte nicht erstellt werden.`,
         ok: "Ok"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Datei existiert bereits",
+        "dialog body": "Möchten Sie die vorhandene Datei überschreiben?",
+        cancel: "Abbrechen",
+        overwrite: "Überschreiben"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Name des Lesezeichens",
         "bookmarkName textField label": "Name",

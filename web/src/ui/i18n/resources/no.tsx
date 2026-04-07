@@ -191,6 +191,12 @@ export const translations: Translations<"no"> = {
         "failed body": ({ bucket }) => `Kunne ikke opprette ${bucket}.`,
         ok: "Ok"
     },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Filen finnes allerede",
+        "dialog body": "Vil du overskrive den eksisterende filen?",
+        cancel: "Avbryt",
+        overwrite: "Overskriv"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bokmerkenavn",
         "bookmarkName textField label": "Navn",
