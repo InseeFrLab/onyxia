@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { useEffect, useState } from "react";
+import { Evt } from "evt";
 import { parseS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3ExplorerMainView, type S3ExplorerMainViewProps } from "./S3ExplorerMainView";
 
@@ -153,7 +154,8 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onPutObjects: action("putObjects"),
     onCreateDirectory: action("createDirectory"),
     onDelete: action("delete"),
-    getDirectDownloadUrl: async () => "https://example.com/download/object"
+    getDirectDownloadUrl: async () => "https://example.com/download/object",
+    evtAction: Evt.create<"CHOSE FILES TO UPLOAD">()
 };
 
 function toListedItems(
@@ -208,11 +210,13 @@ function StatefulExplorer(
         | "onDelete"
         | "onPutObjects"
         | "getDirectDownloadUrl"
+        | "evtAction"
     >
 ) {
     const [currentPrefix, setCurrentPrefix] =
         useState<S3Uri.TerminatedByDelimiter>(defaultPrefix);
     const [nodes, setNodes] = useState<MockNode[]>(baseNodes);
+    const evtAction = useState(() => Evt.create<"CHOSE FILES TO UPLOAD">())[0];
 
     useEffect(() => {
         setCurrentPrefix(defaultPrefix);
@@ -313,6 +317,7 @@ function StatefulExplorer(
                         s3Uri.keySegments.join("/")
                     )}`;
                 }}
+                evtAction={evtAction}
             />
         </div>
     );
@@ -347,7 +352,8 @@ export const EmptyPrefix: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
-        getDirectDownloadUrl: async () => "https://example.com/download/object"
+        getDirectDownloadUrl: async () => "https://example.com/download/object",
+        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">()
     },
     render: args => (
         <div style={{ maxWidth: 1200, padding: 24 }}>
@@ -368,7 +374,8 @@ export const AccessDenied: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
-        getDirectDownloadUrl: async () => "https://example.com/download/object"
+        getDirectDownloadUrl: async () => "https://example.com/download/object",
+        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">()
     },
     render: args => (
         <div style={{ maxWidth: 1200, padding: 24 }}>

@@ -25,6 +25,8 @@ import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { S3SelectionActionBar } from "ui/shared/codex/S3SelectionActionBar";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
+import type { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks/useEvt";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -59,6 +61,8 @@ export type S3ExplorerMainViewProps = {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         validityDurationSecond?: number;
     }) => Promise<string>;
+
+    evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
 };
 
 export namespace S3ExplorerMainViewProps {
@@ -997,7 +1001,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects,
         onCreateDirectory,
         onDelete,
-        getDirectDownloadUrl
+        getDirectDownloadUrl,
+        evtAction
     } = props;
 
     const [sortState, setSortState] = useState<SortState>({
@@ -1021,6 +1026,34 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const { classes, cx } = useStyles({ isDragActive });
     const dropTargetLabel = getPrefixLabel(currentS3Uri);
+
+    const openFilePicker = () => {
+        const input = fileInputRef.current;
+
+        if (input === null) {
+            return;
+        }
+
+        input.value = "";
+
+        if (typeof input.showPicker === "function") {
+            input.showPicker();
+            return;
+        }
+
+        input.click();
+    };
+
+    useEvt(
+        ctx =>
+            evtAction.pipe(ctx).attach(
+                action => action === "CHOSE FILES TO UPLOAD",
+                () => {
+                    openFilePicker();
+                }
+            ),
+        [evtAction]
+    );
 
     useEffect(() => {
         if (listedPrefix.isErrored) {
@@ -1301,10 +1334,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         setDeleteDialogState({
             items: itemsToDelete
         });
-    };
-
-    const openFilePicker = () => {
-        fileInputRef.current?.click();
     };
 
     const clearSelection = () => {

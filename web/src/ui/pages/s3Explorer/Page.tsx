@@ -89,6 +89,10 @@ function PageComponent() {
         })
     );
 
+    const evtS3ExplorerMainViewAction = useConst(() =>
+        Evt.create<"CHOSE FILES TO UPLOAD">()
+    );
+
     const {
         functions: { s3ExplorerUiController },
         evts: { evtS3ExplorerUiController }
@@ -373,10 +377,12 @@ function PageComponent() {
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("UploadFileOutlined")}
                                     label="Upload"
-                                    disabled={true}
-                                    onClick={async () => {
-                                        alert("todo");
-                                    }}
+                                    disabled={mainView.isUploadButtonDisabled}
+                                    onClick={() =>
+                                        evtS3ExplorerMainViewAction.post(
+                                            "CHOSE FILES TO UPLOAD"
+                                        )
+                                    }
                                 />
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("CreateNewFolderOutlined")}
@@ -438,6 +444,7 @@ function PageComponent() {
                                     getDirectDownloadUrl={
                                         s3ExplorerUiController.getPreSignedUrl
                                     }
+                                    evtAction={evtS3ExplorerMainViewAction}
                                 />
                             )}
                             {mainView.fullyQualifiedUri.isFullyQualifiedUri &&

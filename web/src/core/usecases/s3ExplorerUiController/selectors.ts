@@ -67,6 +67,8 @@ export type MainView = {
               exclude: string[];
           };
 
+    isUploadButtonDisabled: boolean;
+
     isListing: boolean;
 
     fullyQualifiedUri:
@@ -469,6 +471,12 @@ const directoryCreationButton = createSelector(
     }
 );
 
+const isUploadButtonDisabled = createSelector(
+    directoryCreationButton,
+    (directoryCreationButton): MainView["isUploadButtonDisabled"] =>
+        directoryCreationButton.isDisabled
+);
+
 const uriBar = createSelector(
     s3Uri,
     bookmarks,
@@ -613,6 +621,7 @@ const mainView = createSelector(
     uriBar,
     isBackButtonDisabled,
     directoryCreationButton,
+    isUploadButtonDisabled,
     fullyQualifiedUri,
     isListing,
     listedPrefix,
@@ -624,6 +633,7 @@ const mainView = createSelector(
         uriBar,
         isBackButtonDisabled,
         directoryCreationButton,
+        isUploadButtonDisabled,
         fullyQualifiedUri,
         isListing,
         listedPrefix,
@@ -635,6 +645,7 @@ const mainView = createSelector(
         uriBar,
         isBackButtonDisabled,
         directoryCreationButton,
+        isUploadButtonDisabled,
         fullyQualifiedUri,
         isListing,
         listedPrefix,
