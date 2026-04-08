@@ -133,9 +133,12 @@ function PageComponent() {
             const route = getRoute();
             assert(routeGroup.has(route));
 
+            assert(mainView.profileSelect !== undefined);
+
             return routes.s3Explorer({
                 ...route.params,
-                s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice("s3://".length)
+                s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice("s3://".length),
+                profile: mainView.profileSelect.selectedProfile.name
             }).link;
         },
         onDelete: s3ExplorerUiController.deleteBookmark,
