@@ -147,13 +147,6 @@ export const thunks = {
             );
 
             assert(doesProfileExist);
-
-            dispatch(
-                thunks.listPrefix({
-                    s3Uri: undefined,
-                    debounce: false
-                })
-            );
         },
     deleteBookmark: (() => {
         let isRunning = false;

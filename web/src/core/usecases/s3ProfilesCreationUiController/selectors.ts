@@ -8,42 +8,14 @@ import type { ProjectConfigs } from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 
-const readyState = (rootState: RootState) => {
-    const state = rootState[name];
+const state = (rootState: RootState) => rootState[name];
 
-    if (state.stateDescription !== "ready") {
-        return null;
-    }
-
-    return state;
-};
-
-const isReady = createSelector(readyState, state => state !== null);
-
-const formValues = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.formValues;
-});
+const formValues = createSelector(state, state => state.formValues);
 
 const existingProfileNames = createSelector(
-    isReady,
-    createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-        return state.creationTimeOfProfileToEdit;
-    }),
+    createSelector(state, state => state.creationTimeOfProfileToEdit),
     s3ProfilesManagement.selectors.s3Profiles,
-    (isReady, creationTimeOfProfileToEdit, s3Profiles) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(creationTimeOfProfileToEdit !== null);
-
+    (creationTimeOfProfileToEdit, s3Profiles) => {
         return s3Profiles
             .filter(s3Profile => {
                 if (creationTimeOfProfileToEdit === undefined) {
@@ -65,17 +37,9 @@ const existingProfileNames = createSelector(
 );
 
 const formValuesErrors = createSelector(
-    isReady,
     formValues,
     existingProfileNames,
-    (isReady, formValues, existingProfileNames) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(formValues !== null);
-        assert(existingProfileNames !== null);
-
+    (formValues, existingProfileNames) => {
         const out: Record<
             keyof typeof formValues,
             | "must be an url"
@@ -134,33 +98,14 @@ const formValuesErrors = createSelector(
     }
 );
 
-const isFormSubmittable = createSelector(
-    isReady,
-    formValuesErrors,
-    (isReady, formValuesErrors) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(formValuesErrors !== null);
-
-        return objectKeys(formValuesErrors).every(
-            key => formValuesErrors[key] === undefined
-        );
-    }
-);
+const isFormSubmittable = createSelector(formValuesErrors, formValuesErrors => {
+    return objectKeys(formValuesErrors).every(key => formValuesErrors[key] === undefined);
+});
 
 const formattedFormValuesUrl = createSelector(
-    isReady,
     formValues,
     formValuesErrors,
-    (isReady, formValues, formValuesErrors) => {
-        if (!isReady) {
-            return null;
-        }
-        assert(formValues !== null);
-        assert(formValuesErrors !== null);
-
+    (formValues, formValuesErrors) => {
         if (formValuesErrors.url !== undefined) {
             return undefined;
         }
@@ -172,33 +117,18 @@ const formattedFormValuesUrl = createSelector(
 );
 
 const submittableFormValuesAsS3Profile_vault = createSelector(
-    isReady,
     formValues,
     formattedFormValuesUrl,
     isFormSubmittable,
-    createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-        return state.creationTimeOfProfileToEdit;
-    }),
+    createSelector(state, state => state.creationTimeOfProfileToEdit),
     projectManagement.protectedSelectors.projectConfig,
     (
-        isReady,
         formValues,
         formattedFormValuesUrl,
         isFormSubmittable,
         creationTimeOfProfileToEdit,
         projectConfig
     ) => {
-        if (!isReady) {
-            return null;
-        }
-        assert(formValues !== null);
-        assert(formattedFormValuesUrl !== null);
-        assert(isFormSubmittable !== null);
-        assert(creationTimeOfProfileToEdit !== null);
-
         if (!isFormSubmittable) {
             return undefined;
         }
@@ -255,15 +185,8 @@ const submittableFormValuesAsS3Profile_vault = createSelector(
 );
 
 const urlStylesExamples = createSelector(
-    isReady,
     formattedFormValuesUrl,
-    (isReady, formattedFormValuesUrl) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(formattedFormValuesUrl !== null);
-
+    formattedFormValuesUrl => {
         if (formattedFormValuesUrl === undefined) {
             return undefined;
         }
@@ -286,46 +209,24 @@ const urlStylesExamples = createSelector(
 );
 
 const main = createSelector(
-    isReady,
     formValues,
     formValuesErrors,
     isFormSubmittable,
     urlStylesExamples,
-    createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-        return state.creationTimeOfProfileToEdit !== undefined;
-    }),
+    createSelector(state, state => state.creationTimeOfProfileToEdit !== undefined),
     (
-        isReady,
         formValues,
         formValuesErrors,
         isFormSubmittable,
         urlStylesExamples,
         isEditionOfAnExistingConfig
-    ) => {
-        if (!isReady) {
-            return {
-                isReady: false as const
-            };
-        }
-
-        assert(formValues !== null);
-        assert(formValuesErrors !== null);
-        assert(isFormSubmittable !== null);
-        assert(urlStylesExamples !== null);
-        assert(isEditionOfAnExistingConfig !== null);
-
-        return {
-            isReady: true,
-            formValues,
-            formValuesErrors,
-            isFormSubmittable,
-            urlStylesExamples,
-            isEditionOfAnExistingConfig
-        };
-    }
+    ) => ({
+        formValues,
+        formValuesErrors,
+        isFormSubmittable,
+        urlStylesExamples,
+        isEditionOfAnExistingConfig
+    })
 );
 
 export const privateSelectors = {
