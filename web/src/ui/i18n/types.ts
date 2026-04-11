@@ -21,20 +21,6 @@ export type ComponentKey =
     | import("ui/pages/s3Explorer/dialogs/CreateOrRenameBookmarkDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/DirectoryCreationDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/CreateOrUpdateProfileDialog").I18n
-    /*
-    | import("ui/pages/s3Explorer/Explorer").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/Explorer").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerButtonBar").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerItems").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerItems/ExplorerItem").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ListExplorer/ListExplorerItems").I18n
-    | import("ui/pages/s3Explorer/headless/Explorer/ExplorerDownloadSnackbar").I18n
-    | import("ui/pages/s3Explorer/headless/ShareFile/ShareDialog").I18n
-    | import("ui/pages/s3Explorer/headless/ShareFile/SelectTime").I18n
-    */
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n
@@ -48,7 +34,6 @@ export type ComponentKey =
     | import("ui/pages/account/AccountProfileTab/UserProfileForm").I18n
     | import("ui/pages/account/AccountProfileTab/ConfirmNavigationDialog").I18n
     | import("ui/pages/account/AccountGitTab").I18n
-    | import("ui/pages/account/AccountStorageTab").I18n
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n
     | import("ui/pages/account/AccountVaultTab").I18n

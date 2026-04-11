@@ -118,6 +118,22 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             }
         );
 
+    evtAction
+        .pipe(action => action.usecaseName === "s3ProfilesManagement")
+        .pipe(() => [
+            s3ProfilesManagement.selectors.ambientS3Profile(getState())?.profileName
+        ])
+        .pipe(profileName => profileName !== undefined)
+        .pipe(onlyIfChanged())
+        .attach(() => {
+            dispatch(
+                thunks.listPrefix({
+                    s3Uri: undefined,
+                    debounce: false
+                })
+            );
+        });
+
     evtAction.$attach(
         action => {
             if (action.usecaseName !== name) {

@@ -10,7 +10,6 @@ export const translations: Translations<"en"> = {
     Account: {
         profile: "Profile",
         git: "Git",
-        storage: "Connect to storage",
         k8sCodeSnippets: "Kubernetes",
         "user-interface": "Interface preferences",
         text1: "My account",
@@ -73,17 +72,6 @@ export const translations: Translations<"en"> = {
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
         )
-    },
-    AccountStorageTab: {
-        "credentials section title": "Connect your data to your services",
-        "credentials section helper":
-            "Amazon-compatible MinIO object storage (AWS S3). This information is already filled in automatically.",
-        "accessible as env":
-            "Accessible withing your services as the environnement variable:",
-        "init script section title": "To access your storage outside of datalab services",
-        "init script section helper":
-            "Download or copy the init script in the programming language of your choice.",
-        "expires in": ({ howMuchTime }) => `Expires ${howMuchTime}`
     },
     AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",

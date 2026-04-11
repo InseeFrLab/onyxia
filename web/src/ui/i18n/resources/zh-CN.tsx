@@ -11,7 +11,6 @@ export const translations: Translations<"zh-CN"> = {
     Account: {
         profile: "个人资料",
         git: undefined,
-        storage: "链接到储存器",
         "user-interface": "变换显示模式",
         k8sCodeSnippets: "Kubernetes",
         text1: "我的账号",
@@ -68,15 +67,6 @@ export const translations: Translations<"zh-CN"> = {
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
         )
-    },
-    AccountStorageTab: {
-        "credentials section title": "将您的数据连接到您的服务",
-        "credentials section helper":
-            "与 Amazon (AWS S3) 兼容的对象存储 MinIO. 此信息已自动填写.",
-        "accessible as env": "可在您的服务中作为环境变量被访问",
-        "init script section title": "访问datalab服务之外的存储器",
-        "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
-        "expires in": ({ howMuchTime }) => `有效期至 ${howMuchTime}`
     },
     AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",

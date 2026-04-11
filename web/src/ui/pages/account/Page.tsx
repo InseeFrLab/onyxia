@@ -24,7 +24,6 @@ export default Page;
 const AccountGitTab = lazy(() => import("./AccountGitTab"));
 const AccountKubernetesTab = lazy(() => import("./AccountKubernetesTab"));
 const AccountProfileTab = lazy(() => import("./AccountProfileTab"));
-const AccountStorageTab = lazy(() => import("./AccountStorageTab"));
 const AccountUserInterfaceTab = lazy(() => import("./AccountUserInterfaceTab"));
 const AccountVaultTab = lazy(() => import("./AccountVaultTab"));
 
@@ -35,15 +34,12 @@ function Account() {
     const { t } = useTranslation({ Account });
 
     const {
-        functions: { s3CodeSnippets, k8sCodeSnippets, vaultCredentials }
+        functions: { k8sCodeSnippets, vaultCredentials }
     } = getCoreSync();
 
     const tabs = useMemo(
         () =>
             accountTabIds
-                .filter(accountTabId =>
-                    accountTabId !== "storage" ? true : s3CodeSnippets.isAvailable()
-                )
                 .filter(accountTabId =>
                     accountTabId !== "k8sCodeSnippets"
                         ? true
@@ -86,8 +82,6 @@ function Account() {
                                 return <AccountProfileTab />;
                             case "git":
                                 return <AccountGitTab />;
-                            case "storage":
-                                return <AccountStorageTab />;
                             case "user-interface":
                                 return <AccountUserInterfaceTab />;
                             case "k8sCodeSnippets":

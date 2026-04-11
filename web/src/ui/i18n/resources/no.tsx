@@ -11,7 +11,6 @@ export const translations: Translations<"no"> = {
     Account: {
         profile: "Profil",
         git: undefined,
-        storage: "Koble til lagring",
         k8sCodeSnippets: "Kubernetes",
         "user-interface": "Grensesnittspreferanser",
         text1: "Min konto",
@@ -73,17 +72,6 @@ export const translations: Translations<"no"> = {
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
         )
-    },
-    AccountStorageTab: {
-        "credentials section title": "Koble dataene dine til tjenestene dine",
-        "credentials section helper":
-            "Amazon-kompatibel MinIO-objektlagring (AWS S3). Denne informasjonen fylles allerede automatisk ut.",
-        "accessible as env": "Tilgjengelig i tjenestene dine som en miljøvariabel:",
-        "init script section title":
-            "For å få tilgang til lagringen din utenfor datalabtjenestene",
-        "init script section helper":
-            "Last ned eller kopier initialiseringskriptet i programingsspråket du foretrekker.",
-        "expires in": ({ howMuchTime }) => `Utløper om ${howMuchTime}`
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
