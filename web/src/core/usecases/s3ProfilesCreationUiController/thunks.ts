@@ -6,32 +6,26 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 export const thunks = {
-    initialize:
-        (params: {
-            // NOTE: Undefined for creation
-            profileName_toUpdate: string | undefined;
-        }) =>
-        async (...args) => {
-            const { profileName_toUpdate } = params;
+    load:
+        (params: { isEdit: boolean }) =>
+        (...args) => {
+            const { isEdit } = params;
 
             const [dispatch, getState] = args;
 
-            const s3Profiles = s3ProfilesManagement.selectors.s3Profiles(getState());
-
-            update_existing_config: {
-                if (profileName_toUpdate === undefined) {
-                    break update_existing_config;
+            update_existing_profile: {
+                if (!isEdit) {
+                    break update_existing_profile;
                 }
 
-                const s3Profile = s3Profiles.find(
-                    s3Profile => s3Profile.profileName === profileName_toUpdate
-                );
+                const s3Profile =
+                    s3ProfilesManagement.selectors.ambientS3Profile(getState());
 
                 assert(s3Profile !== undefined);
                 assert(s3Profile.origin === "created by user (or group project member)");
 
                 dispatch(
-                    actions.initialized({
+                    actions.loaded({
                         creationTimeOfProfileToEdit: s3Profile.creationTime,
                         initialFormValues: {
                             profileName: s3Profile.profileName,
@@ -77,7 +71,7 @@ export const thunks = {
 
             if (s3Profiles_defaultValuesOfCreationForm === undefined) {
                 dispatch(
-                    actions.initialized({
+                    actions.loaded({
                         creationTimeOfProfileToEdit: undefined,
                         initialFormValues: {
                             profileName: "",
@@ -95,7 +89,7 @@ export const thunks = {
             }
 
             dispatch(
-                actions.initialized({
+                actions.loaded({
                     creationTimeOfProfileToEdit: undefined,
                     initialFormValues: {
                         profileName: "",
@@ -112,13 +106,6 @@ export const thunks = {
                 })
             );
         },
-    reset:
-        () =>
-        (...args) => {
-            const [dispatch] = args;
-
-            dispatch(actions.stateResetToNotInitialized());
-        },
     submit:
         () =>
         async (...args) => {
@@ -127,7 +114,6 @@ export const thunks = {
             const s3Profile_vault =
                 privateSelectors.submittableFormValuesAsS3Profile_vault(getState());
 
-            assert(s3Profile_vault !== null);
             assert(s3Profile_vault !== undefined);
 
             await dispatch(
@@ -139,10 +125,14 @@ export const thunks = {
                 })
             );
 
-            dispatch(actions.stateResetToNotInitialized());
+            dispatch(
+                s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                    profileName: s3Profile_vault.profileName
+                })
+            );
         },
     changeValue:
-        <K extends keyof State.Ready.FormValues>(params: ChangeValueParams<K>) =>
+        <K extends keyof State.FormValues>(params: ChangeValueParams<K>) =>
         async (...args) => {
             const { key, value } = params;
 

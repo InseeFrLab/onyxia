@@ -11,7 +11,6 @@ export const translations: Translations<"nl"> = {
     Account: {
         profile: "Profiel",
         git: undefined,
-        storage: "Verbinding met opslag",
         k8sCodeSnippets: "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
         text1: "Mijn account",
@@ -73,16 +72,6 @@ export const translations: Translations<"nl"> = {
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
         )
-    },
-    AccountStorageTab: {
-        "credentials section title": "Uw gegevens verbinden met uw diensten",
-        "credentials section helper":
-            "Opslag object MinIO compatible Amazon (AWS S3). Deze informatie is al automatisch ingevuld.",
-        "accessible as env": "Toegankelijk binnen uw diensten als omgevingsvariabele",
-        "init script section title":
-            "Om toegang te krijgen tot opslag buiten de diensten van het datalab",
-        "init script section helper": `Download of kopieer het initialisatiescript in de programmeertaal van uw keuze.`,
-        "expires in": ({ howMuchTime }) => `Vervalt binnen ${howMuchTime}`
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",

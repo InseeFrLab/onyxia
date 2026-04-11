@@ -12,7 +12,7 @@ import * as userAuthentication from "./userAuthentication";
 import * as userProfileForm from "./userProfileForm";
 import * as userConfigs from "./userConfigs";
 import * as secretsEditor from "./secretsEditor";
-import * as s3CodeSnippets from "./s3CodeSnippets";
+import * as s3ProfilesDetailsUiController from "./s3ProfilesDetailsUiController";
 import * as k8sCodeSnippets from "./k8sCodeSnippets";
 import * as vaultCredentials from "./vaultCredentials";
 import * as sqlOlapShell from "./sqlOlapShell";
@@ -40,7 +40,7 @@ export const usecases = {
     userProfileForm,
     userConfigs,
     secretsEditor,
-    s3CodeSnippets,
+    s3ProfilesDetailsUiController,
     k8sCodeSnippets,
     vaultCredentials,
     sqlOlapShell,

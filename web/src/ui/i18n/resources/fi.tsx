@@ -11,7 +11,6 @@ export const translations: Translations<"fi"> = {
     Account: {
         profile: "Profiili",
         git: undefined,
-        storage: "Yhdistä tallennustilaan",
         k8sCodeSnippets: "Kubernetes",
         "user-interface": "Käyttöliittymän asetukset",
         text1: "Oma tili",
@@ -74,17 +73,6 @@ export const translations: Translations<"fi"> = {
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
         )
-    },
-    AccountStorageTab: {
-        "credentials section title": "Yhdistä datat palveluihisi",
-        "credentials section helper":
-            "Amazon-yhteensopiva MinIO-objektivarasto (AWS S3). Tämä tieto täytetään automaattisesti.",
-        "accessible as env": "Käytettävissä palveluissasi ympäristömuuttujana:",
-        "init script section title":
-            "Pääsy tallennustilaan datalab-palveluiden ulkopuolelta",
-        "init script section helper":
-            "Lataa tai kopioi alustan tukemat aloituskomenskriptit valitsemallasi ohjelmointikielellä.",
-        "expires in": ({ howMuchTime }) => `Vanhenee ${howMuchTime} kuluttua`
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
