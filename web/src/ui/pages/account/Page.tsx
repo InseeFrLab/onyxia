@@ -21,6 +21,7 @@ const Page = withLoader({
 });
 export default Page;
 
+const AccountAiGatewayTab = lazy(() => import("./AccountAiTab"));
 const AccountGitTab = lazy(() => import("./AccountGitTab"));
 const AccountKubernetesTab = lazy(() => import("./AccountKubernetesTab"));
 const AccountProfileTab = lazy(() => import("./AccountProfileTab"));
@@ -34,7 +35,7 @@ function Account() {
     const { t } = useTranslation({ Account });
 
     const {
-        functions: { k8sCodeSnippets, vaultCredentials }
+        functions: { k8sCodeSnippets, vaultCredentials, ai }
     } = getCoreSync();
 
     const tabs = useMemo(
@@ -48,6 +49,7 @@ function Account() {
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
+                .filter(accountTabId => (accountTabId !== "ai" ? true : ai.isAvailable()))
                 .map(id => ({ id, title: t(id) })),
         [t]
     );
@@ -88,6 +90,8 @@ function Account() {
                                 return <AccountKubernetesTab />;
                             case "vault":
                                 return <AccountVaultTab />;
+                            case "ai":
+                                return <AccountAiGatewayTab />;
                         }
                         assert<Equals<typeof route.params.tabId, never>>(false);
                     })()}
