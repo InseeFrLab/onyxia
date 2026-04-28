@@ -348,6 +348,17 @@ export function createOnyxiaApi(params: {
                                                   apiRegion.vault.oidcConfiguration
                                               )
                                       },
+                            ai:
+                                apiRegion.data?.ai === undefined
+                                    ? undefined
+                                    : {
+                                          url: apiRegion.data.ai.URL,
+                                          oauthProvider: apiRegion.data.ai.oauthProvider,
+                                          oidcParams:
+                                              apiTypesOidcConfigurationToOidcParams_Partial(
+                                                  apiRegion.data.ai.oidcConfiguration
+                                              )
+                                      },
                             proxyInjection:
                                 apiRegion.proxyInjection === undefined
                                     ? undefined

@@ -8,6 +8,7 @@ import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import type { SqlOlap } from "core/ports/SqlOlap";
 import { usecases } from "./usecases";
 import type { SecretsManager } from "core/ports/SecretsManager";
+import type { Ai } from "core/ports/Ai";
 import type { Oidc } from "core/ports/Oidc";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
@@ -38,6 +39,7 @@ export type Context = {
     onyxiaApi: OnyxiaApi;
     secretsManager: SecretsManager;
     sqlOlap: SqlOlap;
+    ai: Ai | undefined;
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -83,7 +85,6 @@ export async function bootstrapCore(
                     );
             } catch (error) {
                 if (error instanceof AccessError) {
-                    // NOTE: Not initialized yet, it's not a bug.
                     return undefined;
                 }
                 throw error;
@@ -105,7 +106,6 @@ export async function bootstrapCore(
                     );
             } catch (error) {
                 if (error instanceof AccessError) {
-                    // NOTE: Not initialized yet, it's not a bug.
                     return undefined;
                 }
                 throw error;
@@ -137,7 +137,6 @@ export async function bootstrapCore(
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
-        // NOTE: Never reached
     }
 
     const context: Context = {
@@ -177,7 +176,8 @@ export async function bootstrapCore(
                     s3_region: s3Config.region
                 };
             }
-        })
+        }),
+        ai: undefined
     };
 
     const { core, dispatch, getState } = createCore({
@@ -273,6 +273,49 @@ export async function bootstrapCore(
 
     if (oidc.isUserLoggedIn) {
         await dispatch(usecases.s3ConfigManagement.protectedThunks.initialize());
+    }
+
+    init_ai: {
+        if (!oidc.isUserLoggedIn) {
+            break init_ai;
+        }
+
+        const deploymentRegion =
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                getState()
+            );
+
+        if (deploymentRegion.ai === undefined) {
+            break init_ai;
+        }
+
+        const [{ createAi }, { createOidc, mergeOidcParams }, { oidcParams }] =
+            await Promise.all([
+                import("core/adapters/ai"),
+                import("core/adapters/oidc"),
+                onyxiaApi.getAvailableRegionsAndOidcParams()
+            ]);
+
+        assert(oidcParams !== undefined);
+
+        const oidc_ai = await createOidc({
+            ...mergeOidcParams({
+                oidcParams,
+                oidcParams_partial: deploymentRegion.ai.oidcParams
+            }),
+            transformBeforeRedirectForKeycloakTheme,
+            getCurrentLang,
+            autoLogin: true,
+            enableDebugLogs: enableOidcDebugLogs
+        });
+
+        context.ai = createAi({
+            webUiUrl: deploymentRegion.ai.url,
+            oauthProvider: deploymentRegion.ai.oauthProvider,
+            getOidcAccessToken: async () => (await oidc_ai.getTokens()).accessToken
+        });
+
+        await dispatch(usecases.ai.protectedThunks.initialize());
     }
 
     pluginSystemInitCore({ core, context });

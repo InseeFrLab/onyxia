@@ -1,3 +1,4 @@
+import * as ai from "./ai";
 import * as autoLogoutCountdown from "./autoLogoutCountdown";
 import * as catalog from "./catalog";
 import * as clusterEventsMonitor from "./clusterEventsMonitor";
@@ -26,6 +27,7 @@ import * as viewQuotas from "./viewQuotas";
 import * as dataCollection from "./dataCollection";
 
 export const usecases = {
+    ai,
     autoLogoutCountdown,
     catalog,
     clusterEventsMonitor,

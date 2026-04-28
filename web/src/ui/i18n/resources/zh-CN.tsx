@@ -18,7 +18,8 @@ export const translations: Translations<"zh-CN"> = {
         text2: "访问我的账号信息",
         text3: "设置您的用户名, 电子邮件, 密码和访问令牌",
         "personal tokens tooltip": "服务的访问令牌",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "账户标识符",
@@ -96,6 +97,31 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "AI 网关凭据",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                您的 OIDC 会话使您可以无缝访问 AI 网关。{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    打开 AI 网关
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API 基础 URL",
+        token: "令牌",
+        "model section title": "默认模型",
+        "model section helper": "当您启动支持 AI 辅助的服务时，将预先配置此模型。",
+        "model label": "模型",
+        "no account": ({ webUiUrl }) => (
+            <>
+                您还没有 AI 网关账户。请先登录{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                以创建您的账户。
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "保险库凭证",

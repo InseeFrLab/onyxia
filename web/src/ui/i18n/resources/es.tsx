@@ -19,7 +19,8 @@ export const translations: Translations<"en"> = {
         text3: "Configura tus nombres de usuario, correos electrónicos, contraseñas y tokens de acceso personal directamente conectados a tus servicios.",
         "personal tokens tooltip":
             "Contraseñas que se generan para ti y que tienen un período de validez determinado",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificador de cuenta",
@@ -108,6 +109,33 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Estas credenciales son válidas por los próximos ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "Credenciales de la pasarela de IA",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Su sesión OIDC le da acceso sin interrupciones a la pasarela de IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Abrir pasarela de IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL base de la API",
+        token: "Token",
+        "model section title": "Modelo predeterminado",
+        "model section helper":
+            "Este modelo se preconfigurará al lanzar un servicio que admita asistencia de IA.",
+        "model label": "Modelo",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Aún no tiene una cuenta en la pasarela de IA. Por favor, inicie sesión
+                primero en{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                para crear su cuenta.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Credenciales de Vault",
