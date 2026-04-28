@@ -17,7 +17,8 @@ export const translations: Translations<"it"> = {
         text2: "Accedi alle diverse informazioni del tuo account.",
         text3: "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
         "personal tokens tooltip": 'O in inglese solo "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificatore dell'account",
@@ -94,6 +95,32 @@ export const translations: Translations<"it"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "Credenziali del gateway IA",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                La tua sessione OIDC ti dà accesso senza interruzioni al gateway IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Apri gateway IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL base dell'API",
+        token: "Token",
+        "model section title": "Modello predefinito",
+        "model section helper":
+            "Questo modello sarà preconfigurato quando avvierai un servizio che supporta l'assistenza IA.",
+        "model label": "Modello",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                per creare il tuo account.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",
@@ -509,9 +536,10 @@ export const translations: Translations<"it"> = {
                 <MuiLink href={docHref} target="_blank">
                     la nostra documentazione
                 </MuiLink>
-                {". \u00a0"}
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                {"."}
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

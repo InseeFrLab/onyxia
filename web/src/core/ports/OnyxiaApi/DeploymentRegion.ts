@@ -44,6 +44,13 @@ export type DeploymentRegion = {
               oidcParams: OidcParams_Partial;
           }
         | undefined;
+    ai:
+        | {
+              url: string;
+              oauthProvider: string;
+              oidcParams: OidcParams_Partial;
+          }
+        | undefined;
     proxyInjection:
         | {
               enabled: boolean | undefined;

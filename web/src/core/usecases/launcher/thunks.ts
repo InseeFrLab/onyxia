@@ -1,6 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as userAuthentication from "../userAuthentication";
+import * as aiUsecase from "core/usecases/ai";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
@@ -768,6 +769,20 @@ export const protectedThunks = {
                     useCertManager: region.certManager?.useCertManager,
                     certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
+                ai: (() => {
+                    const aiState = aiUsecase.selectors.main(getState());
+
+                    if (!aiState.isEnabled || aiState.token === undefined) {
+                        return undefined;
+                    }
+
+                    return {
+                        enabled: true as const,
+                        token: aiState.token,
+                        apiBase: aiState.apiBase,
+                        model: aiState.selectedModel ?? ""
+                    };
+                })(),
                 proxyInjection: region.proxyInjection,
                 packageRepositoryInjection: region.packageRepositoryInjection,
                 certificateAuthorityInjection: region.certificateAuthorityInjection
