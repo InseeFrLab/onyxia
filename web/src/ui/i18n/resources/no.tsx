@@ -18,7 +18,8 @@ export const translations: Translations<"no"> = {
         text3: "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
         "personal tokens tooltip":
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -95,6 +96,32 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "AI-gateway-legitimasjon",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Din OIDC-økt gir deg sømløs tilgang til AI-gatewayen.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Åpne AI-gateway
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-basis-URL",
+        token: "Token",
+        "model section title": "Standardmodell",
+        "model section helper":
+            "Denne modellen vil bli forhåndskonfigurert når du starter en tjeneste som støtter AI-assistanse.",
+        "model label": "Modell",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                for å opprette kontoen din.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

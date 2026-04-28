@@ -80,6 +80,13 @@ export type ApiTypes = {
                     enabled: boolean;
                 };
             };
+            data?: {
+                ai?: {
+                    URL: string;
+                    oauthProvider: string;
+                    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
+                };
+            };
             vault?: {
                 URL: string;
                 kvEngine: string;

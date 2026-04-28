@@ -18,7 +18,8 @@ export const translations: Translations<"fi"> = {
         text3: "Määritä käyttäjänimesi, sähköpostiosoitteesi, salasanat ja henkilökohtaiset pääsytunnukset, jotka ovat suoraan yhteydessä palveluihisi.",
         "personal tokens tooltip":
             "Sinulle generoidut salasanat, joilla on määritelty voimassaoloaika",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "Tekoäly"
     },
     AccountProfileTab: {
         "account id": "Tilin tunniste",
@@ -95,6 +96,33 @@ export const translations: Translations<"fi"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "Tekoälyyhdyskäytävän tunnistetiedot",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                OIDC-istuntosi antaa sinulle saumattoman pääsyn tekoälyyhdyskäytävään.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Avaa tekoälyyhdyskäytävä
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-perus-URL",
+        token: "Token",
+        "model section title": "Oletusmalli",
+        "model section helper":
+            "Tämä malli esikonfiguroidaan, kun käynnistät palvelun, joka tukee tekoälyavustusta.",
+        "model label": "Malli",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Sinulla ei vielä ole tiliä tekoälyyhdyskäytävässä. Kirjaudu ensin sisään
+                osoitteeseen{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                luodaksesi tilisi.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault-todennustiedot",

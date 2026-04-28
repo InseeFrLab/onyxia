@@ -17,7 +17,8 @@ export const translations: Translations<"fr"> = {
         text2: "Accédez à vos différentes informations de compte.",
         text3: "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
         "personal tokens tooltip": 'Ou en anglais "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identifiant de compte",
@@ -96,6 +97,33 @@ export const translations: Translations<"fr"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "Identifiants de la passerelle IA",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Votre session OIDC vous donne accès à la passerelle IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Ouvrir la passerelle IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL de base de l'API",
+        token: "Jeton",
+        "model section title": "Modèle par défaut",
+        "model section helper":
+            "Ce modèle sera pré-configuré lors du lancement d'un service compatible avec l'assistance IA.",
+        "model label": "Modèle",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Vous n&apos;avez pas encore de compte sur la passerelle IA. Veuillez
+                d&apos;abord vous connecter sur{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                pour créer votre compte.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Identifiants Vault",
