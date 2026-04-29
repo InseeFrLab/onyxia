@@ -85,7 +85,7 @@ function PageComponent() {
             evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
             evtCreateOrRenameBookmarkDialogOpen: new Evt(),
             evtDirectoryCreationDialogOpen: new Evt(),
-            evtCreateOrUpdateProfileDialogOpen: new Evt(),
+            evtS3ProfileDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
     );
@@ -262,9 +262,7 @@ function PageComponent() {
                         return (
                             <button
                                 onClick={() =>
-                                    dialogProps.evtCreateOrUpdateProfileDialogOpen.post({
-                                        profileName_toUpdate: undefined
-                                    })
+                                    dialogProps.evtS3ProfileDialogOpen.post("create")
                                 }
                             >
                                 Create Profile
@@ -301,22 +299,11 @@ function PageComponent() {
                                     onSelectedProfileChange={
                                         s3ExplorerUiController.updateSelectedS3Profile
                                     }
-                                    onEditProfile={() => {
-                                        assert(mainView.profileSelect !== undefined);
-                                        dialogProps.evtCreateOrUpdateProfileDialogOpen.post(
-                                            {
-                                                profileName_toUpdate:
-                                                    mainView.profileSelect.selectedProfile
-                                                        .name
-                                            }
-                                        );
-                                    }}
+                                    onEditProfile={() =>
+                                        dialogProps.evtS3ProfileDialogOpen.post("detail")
+                                    }
                                     onCreateNewProfile={() => {
-                                        dialogProps.evtCreateOrUpdateProfileDialogOpen.post(
-                                            {
-                                                profileName_toUpdate: undefined
-                                            }
-                                        );
+                                        dialogProps.evtS3ProfileDialogOpen.post("create");
                                     }}
                                 />
                                 <S3ContextActionButton

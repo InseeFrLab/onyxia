@@ -35,6 +35,6 @@ export type Props = {
     codeSippet: CodeSnippet;
 };
 
-export function S3ProfileDetails(props: Props) {
+export function S3ProfileDetails(_props: Props) {
     return null;
 }
