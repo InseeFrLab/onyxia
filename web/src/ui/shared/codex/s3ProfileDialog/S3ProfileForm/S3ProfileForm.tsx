@@ -58,6 +58,6 @@ export type Props = {
     onCancel: () => void;
 };
 
-export function S3ProfileForm(props: Props) {
+export function S3ProfileForm(_props: Props) {
     return null;
 }

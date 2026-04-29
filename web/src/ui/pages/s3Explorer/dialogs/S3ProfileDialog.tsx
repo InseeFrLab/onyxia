@@ -1,6 +1,6 @@
-import { S3ProfileDetails as S3ProfileDetails_headless } from "ui/shared/codex/s3ProfileModal/S3ProfileDetails";
-import { S3ProfileForm as S3ProfileForm_headless } from "ui/shared/codex/s3ProfileModal/S3ProfileForm";
-import { type NonPostableEvt } from "evt";
+import { S3ProfileDetails as S3ProfileDetails_headless } from "ui/shared/codex/s3ProfileDialog/S3ProfileDetails";
+import { S3ProfileForm as S3ProfileForm_headless } from "ui/shared/codex/s3ProfileDialog/S3ProfileForm";
+import { type Evt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
 import { useState, type ReactNode } from "react";
 import { withLoader } from "ui/tools/withLoader";
@@ -10,16 +10,18 @@ import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
 
-type Props = {
-    evtOpen: NonPostableEvt<"detail" | "create">;
+export type S3ProfileDialogOpenView = "detail" | "create";
+
+export type S3ProfileDialogProps = {
+    evtOpen: Evt<S3ProfileDialogOpenView>;
 };
 
-export function S3ProfileModal(props: Props) {
+type ActiveView = S3ProfileDialogOpenView | "edit";
+
+export function S3ProfileDialog(props: S3ProfileDialogProps) {
     const { evtOpen } = props;
 
-    const [activeView, setActiveView] = useState<
-        "detail" | "create" | "edit" | undefined
-    >(undefined);
+    const [activeView, setActiveView] = useState<ActiveView | undefined>(undefined);
 
     useEvt(
         ctx => {
@@ -33,7 +35,7 @@ export function S3ProfileModal(props: Props) {
     }
 
     return (
-        <SideModal
+        <SideDialog
             title={(() => {
                 switch (activeView) {
                     case "detail":
@@ -65,18 +67,18 @@ export function S3ProfileModal(props: Props) {
                         );
                 }
             })()}
-        </SideModal>
+        </SideDialog>
     );
 }
 
-function SideModal(props: {
+function SideDialog(props: {
     title: ReactNode;
     onClose: () => void;
     children: ReactNode;
 }) {
     const { children, title, onClose } = props;
 
-    const { classes } = useStyles_SideModal();
+    const { classes } = useStyles_SideDialog();
 
     return (
         <div className={classes.root}>
@@ -90,10 +92,10 @@ function SideModal(props: {
     );
 }
 
-const useStyles_SideModal = tss.withName({ SideModal }).create(({ theme }) => ({
+const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => ({
     root: {
         position: "fixed",
-        with: 600,
+        width: 600,
         top: theme.spacing(5),
         bottom: theme.spacing(5),
         right: 0,
