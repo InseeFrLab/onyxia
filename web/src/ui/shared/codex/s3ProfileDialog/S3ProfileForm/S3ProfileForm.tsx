@@ -7,6 +7,8 @@ type ErrorId =
 export type Props = {
     className?: string;
 
+    isEditionOfAnExistingConfig: boolean;
+
     profileName: {
         value: string;
         onChange: (newValue: string) => void;
