@@ -9,6 +9,7 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
+import { alpha } from "@mui/material/styles";
 
 export type S3ProfileDialogProps = {
     evtOpen: Evt<"detail" | "create">;
@@ -80,12 +81,26 @@ function SideDialog(props: {
 
     return (
         <div className={classes.root}>
-            <div className={classes.headingWrapper}>
-                <Text typo="display heading">{title}</Text>
-                <IconButton icon={getIconUrlByName("Close")} onClick={onClose} />
-            </div>
+            <div
+                className={classes.panel}
+                role="dialog"
+                aria-modal="true"
+                aria-label={typeof title === "string" ? title : undefined}
+            >
+                <div className={classes.headingWrapper}>
+                    <Text typo="object heading" className={classes.title}>
+                        {title}
+                    </Text>
+                    <IconButton
+                        className={classes.closeButton}
+                        size="small"
+                        icon={getIconUrlByName("Close")}
+                        onClick={onClose}
+                    />
+                </div>
 
-            <div className={classes.childrenWrapper}>{children}</div>
+                <div className={classes.childrenWrapper}>{children}</div>
+            </div>
         </div>
     );
 }
@@ -93,21 +108,49 @@ function SideDialog(props: {
 const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => ({
     root: {
         position: "fixed",
-        width: 600,
-        top: theme.spacing(5),
-        bottom: theme.spacing(5),
-        right: 0,
+        inset: 0,
+        zIndex: theme.muiTheme.zIndex.modal,
         display: "flex",
-        flexDirection: "column"
+        justifyContent: "flex-end",
+        alignItems: "stretch",
+        padding: `${theme.spacing(5)}px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
+        boxSizing: "border-box",
+        backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.72),
+        backdropFilter: "blur(1px)"
+    },
+    panel: {
+        width: 430,
+        maxWidth: "100%",
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        borderRadius: 8,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        boxShadow: theme.shadows[4]
     },
     headingWrapper: {
         display: "flex",
+        alignItems: "center",
         justifyContent: "space-between",
+        gap: theme.spacing(2),
+        padding: `${theme.spacing(3)}px ${theme.spacing(3)}px ${theme.spacing(2)}px`,
         borderBottom: `1px solid ${theme.colors.useCases.typography.textPrimary}`
+    },
+    title: {
+        minWidth: 0,
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    closeButton: {
+        flex: "none"
     },
     childrenWrapper: {
         flex: 1,
-        overflow: "auto"
+        minHeight: 0,
+        overflow: "auto",
+        padding: `${theme.spacing(2.5)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
+        boxSizing: "border-box"
     }
 }));
 
