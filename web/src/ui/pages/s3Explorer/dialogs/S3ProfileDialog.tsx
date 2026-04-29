@@ -198,7 +198,8 @@ const S3ProfileDetails = withLoader<{
                 }
                 availableTechnologies={mainView.availableTechnologies}
                 technology={mainView.technology}
-                codeSippet={mainView.codeSnippet}
+                onTechnologyChange={s3ProfilesDetailsUiController.changeTechnology}
+                codeSnippet={mainView.codeSnippet}
             />
         );
     }
