@@ -89,5 +89,7 @@ export const thunks = {
             );
 
             assert(doesProfileExist);
+
+            await dispatch(thunks.load());
         }
 } satisfies Thunks;
