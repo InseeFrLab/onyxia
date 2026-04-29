@@ -63,9 +63,9 @@ const mainView = createSelector(
             isReadonly: (() => {
                 switch (s3Profile.origin) {
                     case "created by user (or group project member)":
-                        return true;
-                    case "defined in region":
                         return false;
+                    case "defined in region":
+                        return true;
                 }
             })(),
             availableTechnologies: technologies,
