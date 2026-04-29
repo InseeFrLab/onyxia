@@ -10,18 +10,16 @@ import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
 
-export type S3ProfileDialogOpenView = "detail" | "create";
-
 export type S3ProfileDialogProps = {
-    evtOpen: Evt<S3ProfileDialogOpenView>;
+    evtOpen: Evt<"detail" | "create">;
 };
-
-type ActiveView = S3ProfileDialogOpenView | "edit";
 
 export function S3ProfileDialog(props: S3ProfileDialogProps) {
     const { evtOpen } = props;
 
-    const [activeView, setActiveView] = useState<ActiveView | undefined>(undefined);
+    const [activeView, setActiveView] = useState<
+        "detail" | "create" | "edit" | undefined
+    >(undefined);
 
     useEvt(
         ctx => {
