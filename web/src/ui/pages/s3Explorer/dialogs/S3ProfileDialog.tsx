@@ -178,6 +178,7 @@ const S3ProfileForm = withLoader<{
 
         return (
             <S3ProfileForm_headless
+                isEditionOfAnExistingConfig={mainView.isEditionOfAnExistingConfig}
                 profileName={{
                     value: mainView.formValues.profileName,
                     onChange: newValue =>
