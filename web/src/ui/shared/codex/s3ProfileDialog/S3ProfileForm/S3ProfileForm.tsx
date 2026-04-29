@@ -7,6 +7,7 @@ type ErrorId =
 export type Props = {
     className?: string;
 
+    // If true, the submit button should be labeled "Save Change" else "Create Profile"
     isEditionOfAnExistingConfig: boolean;
 
     profileName: {
