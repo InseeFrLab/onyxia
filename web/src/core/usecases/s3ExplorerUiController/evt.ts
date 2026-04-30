@@ -8,7 +8,12 @@ import { AccessError } from "clean-architecture";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import { assert } from "tsafe";
 import { actions } from "./state";
-import { thunks, privateThunks, evtAskOverwriteConfirmation } from "./thunks";
+import {
+    thunks,
+    privateThunks,
+    evtAskOverwriteConfirmation,
+    evtDisplayError
+} from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
 import * as dataExplorer from "core/usecases/dataExplorer";
 import { stringifyS3Uri } from "core/tools/S3Uri";
@@ -31,7 +36,18 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
               s3Uri: S3Uri.NonTerminatedByDelimiter;
               resolveResponse: (params: { doOverwrite: boolean }) => void;
           }
+        | {
+              action: "display error";
+              errorMessage: string;
+          }
     >();
+
+    evtDisplayError.attach(({ errorMessage }) => {
+        evt.post({
+            action: "display error",
+            errorMessage
+        });
+    });
 
     evtAskOverwriteConfirmation.attach(({ s3Uri, resolveResponse }) =>
         evt.post({

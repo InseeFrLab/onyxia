@@ -63,6 +63,11 @@ export type S3Client = {
     getBucketPolicies: (params: {
         bucket: string;
     }) => Promise<S3Client.BucketPolicies | undefined>;
+
+    setS3UriPublicPrivatePolicy: (params: {
+        s3Uri: S3Uri;
+        policy: "public" | "private";
+    }) => Promise<{ isSuccess: true } | { isSuccess: false; errorMessage: string }>;
 };
 
 export namespace S3Client {

@@ -35,6 +35,10 @@ export const evtAskOverwriteConfirmation = Evt.create<{
     resolveResponse: (params: { doOverwrite: boolean }) => void;
 }>();
 
+export const evtDisplayError = Evt.create<{
+    errorMessage: string;
+}>();
+
 export const thunks = {
     load:
         (params: { routeParams: RouteParams }) =>
@@ -680,6 +684,51 @@ export const thunks = {
                 privateThunks.generateSignedDownloadUrl({
                     s3Uri,
                     validityDurationSecond: validityDurationSecond_ifNotPublic
+                })
+            );
+        },
+    toggleS3UriPublicPrivatePolicy:
+        (params: { s3Uri: S3Uri }) =>
+        async (...args) => {
+            const { s3Uri } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const bucketPolicies =
+                privateSelectors.bucketPolicyByBucket(getState())[s3Uri.bucket]
+                    ?.bucketPolicies;
+
+            assert(bucketPolicies !== undefined);
+
+            const isPublic = getIsPublic({
+                bucketPolicies,
+                s3Uri
+            });
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const result = await s3Client.setS3UriPublicPrivatePolicy({
+                s3Uri,
+                policy: isPublic ? "private" : "public"
+            });
+
+            if (!result.isSuccess) {
+                evtDisplayError.post({
+                    errorMessage: result.errorMessage
+                });
+                return;
+            }
+
+            await dispatch(
+                privateThunks.updateBucketPolicy({
+                    bucket: s3Uri.bucket,
+                    profileName
                 })
             );
         }
