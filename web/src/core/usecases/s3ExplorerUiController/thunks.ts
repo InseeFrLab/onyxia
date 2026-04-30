@@ -13,7 +13,10 @@ import type { State } from "./state";
 import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators";
 import { Deferred } from "evt/tools/Deferred";
-import { getIsPublic } from "./decoupledLogic/bucketPolicy";
+import {
+    getIsPublic,
+    getSetS3UriPublicPrivatePolicyCommandLog
+} from "./decoupledLogic/bucketPolicy";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -709,21 +712,52 @@ export const thunks = {
                 s3Uri
             });
 
+            const policy = isPublic ? "private" : "public";
+
+            const commandLog = getSetS3UriPublicPrivatePolicyCommandLog({
+                s3Uri,
+                bucketPolicies,
+                policy
+            });
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: commandLog.cmd
+                })
+            );
+
             const s3Client = await dispatch(
                 s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
             );
 
             const result = await s3Client.setS3UriPublicPrivatePolicy({
                 s3Uri,
-                policy: isPublic ? "private" : "public"
+                policy
             });
 
             if (!result.isSuccess) {
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        resp: result.errorMessage
+                    })
+                );
+
                 evtDisplayError.post({
                     errorMessage: result.errorMessage
                 });
                 return;
             }
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: commandLog.successResp
+                })
+            );
 
             await dispatch(
                 privateThunks.updateBucketPolicy({
