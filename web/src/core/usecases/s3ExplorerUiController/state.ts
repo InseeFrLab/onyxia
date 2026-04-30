@@ -2,6 +2,7 @@ import { assert, id } from "tsafe";
 import { createUsecaseActions } from "clean-architecture";
 import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
+import type { S3Client } from "core/ports/S3Client";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -10,6 +11,10 @@ export type State = {
     uploads: State.Upload[];
     deletions: State.Deletion[];
     listedPrefixByProfile: Record<string, State.ListedPrefix | undefined>;
+    bucketPolicyByBucket: Record<
+        string,
+        { bucketPolicies: S3Client.BucketPolicies | undefined; profileName: string }
+    >;
 };
 
 export namespace State {
@@ -80,9 +85,26 @@ export const { reducer, actions } = createUsecaseActions({
         commandLogsEntries: [],
         uploads: [],
         deletions: [],
-        listedPrefixByProfile: {}
+        listedPrefixByProfile: {},
+        bucketPolicyByBucket: {}
     }),
     reducers: {
+        bucketPoliciesUpdated: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    bucket: string;
+                    profileName: string;
+                    bucketPolicies: S3Client.BucketPolicies | undefined;
+                };
+            }
+        ) => {
+            const { bucket, profileName, bucketPolicies } = payload;
+
+            state.bucketPolicyByBucket[bucket] = { profileName, bucketPolicies };
+        },
         putObjectStarted: (
             state,
             {

@@ -8,6 +8,7 @@ import { id } from "tsafe/id";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
 import { name, type State } from "./state";
+import { getIsPublic } from "./decoupledLogic/bucketPolicy";
 
 export type RouteParams = {
     profile?: string;
@@ -103,6 +104,7 @@ export namespace MainView {
             uploadProgressPercent: number | undefined;
             isDeleting: boolean;
             displayName: string;
+            isPublic: boolean;
         };
 
         export type PrefixSegment = Common & {
@@ -269,10 +271,12 @@ const items = createSelector(
     listedPrefix_state,
     uploads_profile,
     deletions_profile,
+    createSelector(state, state => state.bucketPolicyByBucket),
     (
         listedPrefix_state,
         uploads_profile,
-        deletions_profile
+        deletions_profile,
+        bucketPolicyByBucket
     ): MainView.Item[] | undefined => {
         if (listedPrefix_state === undefined) {
             return undefined;
@@ -287,8 +291,19 @@ const items = createSelector(
             uploads: uploads_profile
         });
 
+        const bucketPolicies =
+            bucketPolicyByBucket[listedPrefix_state.current.s3Uri.bucket]?.bucketPolicies;
+
         const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(
             item => {
+                const isPublic =
+                    bucketPolicies === undefined
+                        ? false
+                        : getIsPublic({
+                              bucketPolicies,
+                              s3Uri: item.s3Uri
+                          });
+
                 switch (item.type) {
                     case "object":
                         return id<MainView.Item.Object>({
@@ -304,7 +319,8 @@ const items = createSelector(
                             uploadProgressPercent: undefined,
                             isDeleting: false,
                             lastModified: item.lastModified,
-                            size: item.size
+                            size: item.size,
+                            isPublic
                         });
                     case "prefix":
                         return id<MainView.Item.PrefixSegment>({
@@ -318,7 +334,8 @@ const items = createSelector(
                             })(),
                             s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
-                            isDeleting: false
+                            isDeleting: false,
+                            isPublic
                         });
                 }
             }
@@ -698,5 +715,6 @@ export const privateSelectors = {
     doesListedPrefixHaveFinishedUpload,
     listedPrefix_state,
     isFullyQualifiedDataFileUri,
-    uploads: createSelector(state, state => state.uploads)
+    uploads: createSelector(state, state => state.uploads),
+    bucketPolicyByBucket: createSelector(state, state => state.bucketPolicyByBucket)
 };

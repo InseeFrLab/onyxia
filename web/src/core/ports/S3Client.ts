@@ -57,6 +57,10 @@ export type S3Client = {
               errorMessage: string;
           }
     >;
+
+    getBucketPolicies: (params: {
+        bucket: string;
+    }) => Promise<S3Client.BucketPolicies | undefined>;
 };
 
 export namespace S3Client {
@@ -86,4 +90,6 @@ export namespace S3Client {
             errorCase: "access denied" | "no such bucket";
         };
     }
+
+    export type BucketPolicies = Record<string, unknown>;
 }
