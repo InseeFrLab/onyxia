@@ -85,6 +85,7 @@ function PageComponent() {
             evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
             evtCreateOrRenameBookmarkDialogOpen: new Evt(),
             evtDirectoryCreationDialogOpen: new Evt(),
+            evtDisplayErrorDialogOpen: new Evt(),
             evtS3ProfileDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
@@ -116,6 +117,13 @@ function PageComponent() {
                     dialogProps.evtConfirmOverwriteDialogOpen.post({
                         s3Uri,
                         resolveResponse
+                    })
+            )
+            .attach(
+                data => data.action === "display error",
+                ({ errorMessage }) =>
+                    dialogProps.evtDisplayErrorDialogOpen.post({
+                        errorMessage
                     })
             );
     }, []);

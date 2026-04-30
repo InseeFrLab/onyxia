@@ -94,6 +94,8 @@ export type MainView = {
         | undefined;
 
     commandLogsEntries: State.CommandLogsEntry[];
+
+    areBucketPoliciesFeaturesEnabled: boolean;
 };
 
 export namespace MainView {
@@ -634,6 +636,20 @@ const commandLogsEntries = createSelector(
     (state): MainView["commandLogsEntries"] => state.commandLogsEntries
 );
 
+const areBucketPoliciesFeaturesEnabled = createSelector(
+    createSelector(state, state => state.bucketPolicyByBucket),
+    s3Uri,
+    (bucketPolicyByBucket, s3Uri): MainView["areBucketPoliciesFeaturesEnabled"] => {
+        if (s3Uri === undefined) {
+            return false;
+        }
+
+        const bucketPolicies = bucketPolicyByBucket[s3Uri.bucket]?.bucketPolicies;
+
+        return bucketPolicies !== undefined;
+    }
+);
+
 const mainView = createSelector(
     profileSelect,
     bookmarks,
@@ -646,6 +662,7 @@ const mainView = createSelector(
     isListing,
     listedPrefix,
     commandLogsEntries,
+    areBucketPoliciesFeaturesEnabled,
     (
         profileSelect,
         bookmarks,
@@ -657,7 +674,8 @@ const mainView = createSelector(
         fullyQualifiedUri,
         isListing,
         listedPrefix,
-        commandLogsEntries
+        commandLogsEntries,
+        areBucketPoliciesFeaturesEnabled
     ): MainView => ({
         profileSelect,
         bookmarks,
@@ -669,7 +687,8 @@ const mainView = createSelector(
         fullyQualifiedUri,
         isListing,
         listedPrefix,
-        commandLogsEntries
+        commandLogsEntries,
+        areBucketPoliciesFeaturesEnabled
     })
 );
 
