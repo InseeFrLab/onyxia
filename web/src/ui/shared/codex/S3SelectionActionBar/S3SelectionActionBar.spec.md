@@ -20,8 +20,11 @@ type S3SelectionActionBarProps = {
     /** Function to clear the selection and hide the selection action bar */
     onClear: () => void;
 
-    /** Always visible */
+    /** Only visible when selectedS3Uris contains one element
+     *  and this element is of type S3Uri.NonTerminatedByDelimiter */
     onDownload: () => void;
+
+    /** Always visible */
     onDelete: () => void;
 
     /** Only visible when only one item is selected */
@@ -30,9 +33,6 @@ type S3SelectionActionBarProps = {
     /** Only visible when selectedS3Uris contains one element
      *  and this element is of type S3Uri.NonTerminatedByDelimiter */
     onShare: () => void;
-
-    /** Only visible when one element is selected */
-    onRename: () => void;
 };
 ```
 
@@ -89,7 +89,6 @@ Each action is rendered as:
 
 These actions must always be rendered:
 
-- Download → `onDownload`
 - Delete → `onDelete`
 
 ### Single selection actions
@@ -101,17 +100,17 @@ selectedS3Uris.length === 1;
 ```
 
 - Copy S3 path → `onCopyS3Uri`
-- Rename → `onRename`
 
-### Conditional single selection action
+### Object-only single selection actions
 
-The Share action is rendered only when:
+The Download and Share actions are rendered only when:
 
 ```ts
 selectedS3Uris.length === 1
 && selectedS3Uris[0] is S3Uri.NonTerminatedByDelimiter
 ```
 
+- Download → `onDownload`
 - Share → `onShare`
 
 ### Multi-selection
@@ -119,14 +118,13 @@ selectedS3Uris.length === 1
 When multiple items are selected:
 
 - Visible actions:
-- Download
 - Delete
 
 Hidden actions:
 
+- Download
 - Share
 - Copy S3 path
-- Rename
 
 # Layout Rules
 

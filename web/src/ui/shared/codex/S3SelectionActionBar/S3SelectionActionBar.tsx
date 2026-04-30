@@ -9,16 +9,16 @@ export type S3SelectionActionBarProps = {
     selectedS3Uris: S3Uri[];
     /** Function to clear the selection and hide the selection action bar */
     onClear: () => void;
-    /** Always visible */
+    /** Only visible when selectedS3Uris contains one element
+     *  and this element is of type S3Uri.NonTerminatedByDelimiter */
     onDownload: () => void;
+    /** Always visible */
     onDelete: () => void;
     /** Only visible when only one item is selected */
     onCopyS3Uri: () => void;
     /** Only visible when selectedS3Uris contains one element
      *  and this element is of type S3Uri.NonTerminatedByDelimiter */
     onShare: () => void;
-    /** Only visible when one element is selected */
-    onRename: () => void;
 };
 
 type Action = {
@@ -37,14 +37,13 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         onDownload,
         onDelete,
         onCopyS3Uri,
-        onShare,
-        onRename
+        onShare
     } = props;
 
     const { classes, cx } = useStyles();
 
     const isSingleSelection = selectedS3Uris.length === 1;
-    const canShare =
+    const isSingleObjectSelection =
         isSingleSelection && selectedS3Uris[0].isDelimiterTerminated === false;
 
     const actions: Action[] = [
@@ -53,7 +52,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
             label: "Download",
             iconName: "FileDownload",
             onClick: onDownload,
-            isVisible: true
+            isVisible: isSingleObjectSelection
         },
         {
             key: "delete",
@@ -74,14 +73,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
             label: "Share",
             iconName: "Share",
             onClick: onShare,
-            isVisible: canShare
-        },
-        {
-            key: "rename",
-            label: "Rename",
-            iconName: "Edit",
-            onClick: onRename,
-            isVisible: isSingleSelection
+            isVisible: isSingleObjectSelection
         }
     ];
 

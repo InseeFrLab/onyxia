@@ -35,8 +35,7 @@ const baseArgs: S3SelectionActionBarProps = {
     onDownload: action("download"),
     onDelete: action("delete"),
     onCopyS3Uri: action("copyS3Uri"),
-    onShare: action("share"),
-    onRename: action("rename")
+    onShare: action("share")
 };
 
 export const SingleObject: Story = {
