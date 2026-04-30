@@ -4,7 +4,6 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { RouteParams } from "./selectors";
 import { assert, type Equals } from "tsafe/assert";
 import { actions } from "./state";
-import * as s3ProfileManagement from "core/usecases/s3ProfilesManagement";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { id } from "tsafe/id";
 import { type S3Uri, parseS3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
@@ -93,7 +92,7 @@ export const thunks = {
                 }
 
                 const profileName_current =
-                    s3ProfileManagement.selectors.ambientS3Profile(
+                    s3ProfilesManagement.selectors.ambientS3Profile(
                         getState()
                     )?.profileName;
 
@@ -164,7 +163,7 @@ export const thunks = {
                 const [dispatch, getState] = args;
 
                 const s3Profile =
-                    s3ProfileManagement.selectors.ambientS3Profile(getState());
+                    s3ProfilesManagement.selectors.ambientS3Profile(getState());
 
                 assert(s3Profile !== undefined);
 
@@ -188,7 +187,7 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const s3Profile = s3ProfileManagement.selectors.ambientS3Profile(getState());
+            const s3Profile = s3ProfilesManagement.selectors.ambientS3Profile(getState());
 
             assert(s3Profile !== undefined);
 
@@ -226,7 +225,7 @@ export const thunks = {
 
                 const s3Uri = privateSelectors.s3Uri(getState());
                 const s3Profile =
-                    s3ProfileManagement.selectors.ambientS3Profile(getState());
+                    s3ProfilesManagement.selectors.ambientS3Profile(getState());
 
                 assert(s3Profile !== undefined);
                 assert(s3Uri !== undefined);
@@ -582,7 +581,7 @@ export const thunks = {
             assert(profileName !== undefined);
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
             );
 
             const crawl = async (params: {
@@ -657,7 +656,7 @@ export const thunks = {
             assert(profileName !== undefined);
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
             );
 
             const cmdId = Date.now();
@@ -706,7 +705,7 @@ export const privateThunks = {
             {
                 const doesExist = await (async () => {
                     const s3Client = await dispatch(
-                        s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+                        s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
                     );
 
                     const resultOfListObject = await s3Client.listObjects({ s3Uri });
@@ -795,7 +794,7 @@ export const privateThunks = {
             });
 
             const s3Client = await dispatch(
-                s3ProfileManagement.protectedThunks.getS3Client({ profileName })
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
             );
 
             const resultOfPutObject = await s3Client.putObject({
@@ -858,5 +857,38 @@ export const privateThunks = {
                     );
                     break;
             }
+        },
+    updateBucketPolicy:
+        (params: { bucket: string; profileName: string }) =>
+        async (...args) => {
+            const [dispatch] = args;
+
+            const { bucket, profileName } = params;
+
+            dispatch(
+                actions.bucketPoliciesUpdated({
+                    bucket,
+                    profileName,
+                    bucketPolicies: undefined
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const bucketPolicies = await s3Client.getBucketPolicies({ bucket });
+
+            if (bucketPolicies === undefined) {
+                return;
+            }
+
+            dispatch(
+                actions.bucketPoliciesUpdated({
+                    bucket,
+                    profileName,
+                    bucketPolicies
+                })
+            );
         }
 } satisfies Thunks;
