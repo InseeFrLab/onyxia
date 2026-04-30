@@ -42,6 +42,7 @@ export function computeUploadStatusAtPrefix(params: {
                 s3Uri: upload.s3Uri,
                 uploadProgressPercent: upload.completionPercent,
                 isDeleting: false,
+                isPublic: false,
                 size: upload.size,
                 lastModified: upload.uploadStartTime
             });
@@ -69,6 +70,7 @@ export function computeUploadStatusAtPrefix(params: {
                 displayName,
                 s3Uri: s3Uri_newItem,
                 isDeleting: false,
+                isPublic: false,
                 uploadProgressPercent: NaN
             });
         }

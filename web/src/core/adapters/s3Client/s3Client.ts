@@ -3,7 +3,7 @@ import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistence
 } from "core/tools/getNewlyRequestedOrCachedToken";
-import { assert, is, type Equals } from "tsafe/assert";
+import { assert, is, typeGuard, type Equals } from "tsafe";
 import type { Oidc } from "core/ports/Oidc";
 import { getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
 import { exclude, id } from "tsafe";
@@ -219,6 +219,60 @@ export function createS3Client(
     })();
 
     const s3Client: S3Client = {
+        getBucketPolicies: async ({ bucket }) => {
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            const { GetBucketPolicyCommand, S3ServiceException } = await import(
+                "@aws-sdk/client-s3"
+            );
+
+            let policy: string | undefined;
+
+            try {
+                ({ Policy: policy } = await awsS3Client.send(
+                    new GetBucketPolicyCommand({
+                        Bucket: bucket
+                    })
+                ));
+            } catch (error) {
+                if (error instanceof S3ServiceException) {
+                    const httpStatusCode = error.$metadata?.httpStatusCode;
+
+                    if (
+                        httpStatusCode === 403 ||
+                        httpStatusCode === 404 ||
+                        httpStatusCode === 405 ||
+                        httpStatusCode === 501 ||
+                        error.name === "NoSuchBucketPolicy" ||
+                        error.name === "NotImplemented" ||
+                        error.name === "NotSupported"
+                    ) {
+                        return undefined;
+                    }
+                }
+
+                throw error;
+            }
+
+            if (policy === undefined) {
+                return undefined;
+            }
+
+            const bucketPolicies: unknown = JSON.parse(policy);
+
+            assert(
+                typeGuard<S3Client.BucketPolicies>(
+                    bucketPolicies,
+                    typeof bucketPolicies === "object" &&
+                        bucketPolicies !== null &&
+                        !Array.isArray(bucketPolicies)
+                )
+            );
+
+            return bucketPolicies;
+        },
         getToken: async ({ doForceRenew }) => {
             const { getNewlyRequestedOrCachedToken, clearCachedToken } = await prApi;
 

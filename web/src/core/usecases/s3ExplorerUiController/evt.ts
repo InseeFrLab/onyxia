@@ -8,7 +8,7 @@ import { AccessError } from "clean-architecture";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import { assert } from "tsafe";
 import { actions } from "./state";
-import { thunks, evtAskOverwriteConfirmation } from "./thunks";
+import { thunks, privateThunks, evtAskOverwriteConfirmation } from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
 import * as dataExplorer from "core/usecases/dataExplorer";
 import { stringifyS3Uri } from "core/tools/S3Uri";
@@ -132,6 +132,40 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                     debounce: false
                 })
             );
+        });
+
+    evtAction
+        .pipe(
+            action =>
+                action.usecaseName === name &&
+                action.actionName === "listingCompletedSuccessfully"
+        )
+        .attach(() => {
+            const bucket = (() => {
+                const s3Uri = privateSelectors.s3Uri(getState());
+
+                assert(s3Uri !== undefined);
+
+                return s3Uri.bucket;
+            })();
+
+            const profileName = (() => {
+                const profile =
+                    s3ProfilesManagement.selectors.ambientS3Profile(getState());
+                assert(profile !== undefined);
+
+                return profile.profileName;
+            })();
+
+            {
+                const wrap = privateSelectors.bucketPolicyByBucket(getState())[bucket];
+
+                if (wrap !== undefined && wrap.profileName === profileName) {
+                    return;
+                }
+            }
+
+            dispatch(privateThunks.updateBucketPolicy({ bucket, profileName }));
         });
 
     evtAction.$attach(
