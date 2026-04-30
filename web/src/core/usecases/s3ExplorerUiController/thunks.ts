@@ -13,6 +13,7 @@ import type { State } from "./state";
 import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators";
 import { Deferred } from "evt/tools/Deferred";
+import { getIsPublic } from "./decoupledLogic/bucketPolicy";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -641,52 +642,46 @@ export const thunks = {
                 })
             );
         },
-    getPreSignedUrl:
+    getDirectDownloadUrl:
         (params: {
             s3Uri: S3Uri.NonTerminatedByDelimiter;
-            validityDurationSecond?: number;
+            validityDurationSecond_ifNotPublic: number;
         }) =>
-        async (...args): Promise<string> => {
-            const { s3Uri, validityDurationSecond = 3_600 } = params;
+        async (...args) => {
+            const { s3Uri, validityDurationSecond_ifNotPublic } = params;
 
             const [dispatch, getState] = args;
 
-            const profileName = privateSelectors.profileName(getState());
+            const bucketPolicies =
+                privateSelectors.bucketPolicyByBucket(getState())[s3Uri.bucket]
+                    ?.bucketPolicies;
 
-            assert(profileName !== undefined);
+            const isPublic =
+                bucketPolicies === undefined
+                    ? false
+                    : getIsPublic({
+                          s3Uri,
+                          bucketPolicies
+                      });
 
-            const s3Client = await dispatch(
-                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
-            );
+            if (isPublic) {
+                const profileName = privateSelectors.profileName(getState());
 
-            const cmdId = Date.now();
-            dispatch(
-                actions.commandLogIssued({
-                    cmdId,
-                    cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
+                assert(profileName !== undefined);
+
+                const s3Client = await dispatch(
+                    s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+                );
+
+                return s3Client.getUnsignedDownloadUrl({ s3Uri });
+            }
+
+            return dispatch(
+                privateThunks.generateSignedDownloadUrl({
+                    s3Uri,
+                    validityDurationSecond: validityDurationSecond_ifNotPublic
                 })
             );
-
-            const downloadUrl = await s3Client.generateSignedDownloadUrl({
-                s3Uri,
-                validityDurationSecond
-            });
-
-            dispatch(
-                actions.commandLogResponseReceived({
-                    cmdId,
-                    resp: [
-                        `URL: ${downloadUrl.split("?")[0]}`,
-                        `Expire: ${formatDuration({
-                            durationSeconds: validityDurationSecond,
-                            t: undefined
-                        })}`,
-                        `Share: ${downloadUrl}`
-                    ].join("\n")
-                })
-            );
-
-            return downloadUrl;
         }
 } satisfies Thunks;
 
@@ -890,5 +885,52 @@ export const privateThunks = {
                     bucketPolicies
                 })
             );
+        },
+    generateSignedDownloadUrl:
+        (params: {
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            validityDurationSecond: number;
+        }) =>
+        async (...args): Promise<string> => {
+            const { s3Uri, validityDurationSecond } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const cmdId = Date.now();
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
+                })
+            );
+
+            const downloadUrl = await s3Client.generateSignedDownloadUrl({
+                s3Uri,
+                validityDurationSecond
+            });
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: [
+                        `URL: ${downloadUrl.split("?")[0]}`,
+                        `Expire: ${formatDuration({
+                            durationSeconds: validityDurationSecond,
+                            t: undefined
+                        })}`,
+                        `Share: ${downloadUrl}`
+                    ].join("\n")
+                })
+            );
+
+            return downloadUrl;
         }
 } satisfies Thunks;
