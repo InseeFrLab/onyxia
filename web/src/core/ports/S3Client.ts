@@ -36,6 +36,8 @@ export type S3Client = {
         validityDurationSecond: number;
     }) => Promise<string>;
 
+    getUnsignedDownloadUrl: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => string;
+
     getObjectContent: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         range: `bytes=0-${number}` | undefined;

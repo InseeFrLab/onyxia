@@ -446,7 +446,7 @@ function PageComponent() {
                                     }
                                     onDelete={s3ExplorerUiController.delete}
                                     getDirectDownloadUrl={
-                                        s3ExplorerUiController.getPreSignedUrl
+                                        s3ExplorerUiController.getDirectDownloadUrl
                                     }
                                     evtAction={evtS3ExplorerMainViewAction}
                                     isUploadDisabled={mainView.isUploadButtonDisabled}

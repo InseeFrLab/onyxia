@@ -219,6 +219,30 @@ export function createS3Client(
     })();
 
     const s3Client: S3Client = {
+        getUnsignedDownloadUrl: ({ s3Uri }) => {
+            const url = new URL(params.url);
+            const pathname = url.pathname.endsWith("/")
+                ? url.pathname.slice(0, -1)
+                : url.pathname;
+            const encodedKey = getS3UriKey(s3Uri)
+                .split("/")
+                .map(encodeURIComponent)
+                .join("/");
+
+            if (params.pathStyleAccess) {
+                url.pathname = `${pathname}/${encodeURIComponent(
+                    s3Uri.bucket
+                )}/${encodedKey}`;
+            } else {
+                url.hostname = `${s3Uri.bucket}.${url.hostname}`;
+                url.pathname = `${pathname}/${encodedKey}`;
+            }
+
+            url.search = "";
+            url.hash = "";
+
+            return url.href;
+        },
         getBucketPolicies: async ({ bucket }) => {
             const { getAwsS3Client } = await prApi;
 

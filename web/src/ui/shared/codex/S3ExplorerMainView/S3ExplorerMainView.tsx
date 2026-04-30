@@ -62,7 +62,7 @@ export type S3ExplorerMainViewProps = {
 
     getDirectDownloadUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
-        validityDurationSecond?: number;
+        validityDurationSecond_ifNotPublic: number;
     }) => Promise<string>;
 
     evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
@@ -126,6 +126,11 @@ type ObjectToUpload = Parameters<
 type DataTransferItemWithWebkitGetAsEntry = DataTransferItem & {
     webkitGetAsEntry?: () => FileSystemEntryLike | null;
 };
+
+const directDownloadUrlValidityDurationSecond = {
+    download: 30,
+    shareableLink: 24 * 60 * 60
+} as const;
 
 type FileSystemEntryLike = {
     readonly isFile: boolean;
@@ -1350,7 +1355,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
         try {
             const url = await getDirectDownloadUrl({
-                s3Uri: item.s3Uri
+                s3Uri: item.s3Uri,
+                validityDurationSecond_ifNotPublic:
+                    directDownloadUrlValidityDurationSecond.shareableLink
             });
 
             if (shareRequestIdRef.current !== requestId) {
@@ -1405,7 +1412,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             downloadableObjects.map(async item => {
                 try {
                     const url = await getDirectDownloadUrl({
-                        s3Uri: item.s3Uri
+                        s3Uri: item.s3Uri,
+                        validityDurationSecond_ifNotPublic:
+                            directDownloadUrlValidityDurationSecond.download
                     });
 
                     window.open(url, "_blank", "noopener,noreferrer");
