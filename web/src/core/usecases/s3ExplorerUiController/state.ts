@@ -13,7 +13,8 @@ export type State = {
     listedPrefixByProfile: Record<string, State.ListedPrefix | undefined>;
     bucketPolicyByBucket: Record<
         string,
-        { bucketPolicies: S3Client.BucketPolicies | undefined; profileName: string }
+        | { bucketPolicies: S3Client.BucketPolicies | undefined; profileName: string }
+        | undefined
     >;
 };
 
