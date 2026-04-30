@@ -1,13 +1,17 @@
-import { type S3Uri } from "core/tools/S3Uri";
+import { getS3UriKey, type S3Uri } from "core/tools/S3Uri";
 import type { S3Client } from "core/ports/S3Client";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 type BucketPolicyStatement = {
     Effect?: unknown;
+    Sid?: unknown;
     Principal?: unknown;
     Action?: unknown;
     Resource?: unknown;
     Condition?: unknown;
 };
+
+type ManagedBucketPolicyStatement = Record<string, unknown>;
 
 export function getIsPublic(params: {
     s3Uri: S3Uri;
@@ -34,6 +38,44 @@ export function getIsPublic(params: {
     );
 }
 
+export function getSetS3UriPublicPrivatePolicyCommandLog(params: {
+    s3Uri: S3Uri;
+    bucketPolicies: S3Client.BucketPolicies;
+    policy: "public" | "private";
+}): { cmd: string; successResp: string } {
+    const { s3Uri, bucketPolicies, policy } = params;
+
+    const resourceArn = getPublicReadResourceArn(s3Uri);
+
+    const statements = removeManagedPublicReadStatement({
+        statements: getRawStatements(bucketPolicies),
+        resourceArn
+    });
+
+    if (policy === "public") {
+        statements.push(createPublicReadStatement({ resourceArn }));
+    }
+
+    if (statements.length === 0) {
+        return {
+            cmd: `aws s3api delete-bucket-policy --bucket ${s3Uri.bucket}`,
+            successResp: "Bucket policy deleted"
+        };
+    }
+
+    const nextBucketPolicies = {
+        ...bucketPolicies,
+        Statement: statements
+    };
+
+    return {
+        cmd: `aws s3api put-bucket-policy --bucket ${
+            s3Uri.bucket
+        } --policy '${JSON.stringify(nextBucketPolicies)}'`,
+        successResp: "Bucket policy updated"
+    };
+}
+
 function getStatements(bucketPolicies: S3Client.BucketPolicies): BucketPolicyStatement[] {
     const { Statement } = bucketPolicies;
 
@@ -46,6 +88,65 @@ function getStatements(bucketPolicies: S3Client.BucketPolicies): BucketPolicySta
     }
 
     return [];
+}
+
+function getRawStatements(bucketPolicies: S3Client.BucketPolicies): unknown[] {
+    const { Statement } = bucketPolicies;
+
+    if (Array.isArray(Statement)) {
+        return Statement;
+    }
+
+    if (Statement === undefined) {
+        return [];
+    }
+
+    return [Statement];
+}
+
+function getPublicReadStatementSid(resourceArn: string): string {
+    return `OnyxiaPublicRead${fnv1aHashToHex(resourceArn)}`;
+}
+
+function getPublicReadResourceArn(s3Uri: S3Uri): string {
+    const key = getS3UriKey(s3Uri);
+
+    if (key === "") {
+        return `arn:aws:s3:::${s3Uri.bucket}/*`;
+    }
+
+    return `arn:aws:s3:::${s3Uri.bucket}/${key}${s3Uri.isDelimiterTerminated ? "*" : ""}`;
+}
+
+function createPublicReadStatement(params: {
+    resourceArn: string;
+}): ManagedBucketPolicyStatement {
+    const { resourceArn } = params;
+
+    return {
+        Sid: getPublicReadStatementSid(resourceArn),
+        Effect: "Allow",
+        Principal: "*",
+        Action: "s3:GetObject",
+        Resource: resourceArn
+    };
+}
+
+function removeManagedPublicReadStatement(params: {
+    statements: unknown[];
+    resourceArn: string;
+}): unknown[] {
+    const { statements, resourceArn } = params;
+
+    const sid = getPublicReadStatementSid(resourceArn);
+
+    return statements.filter(statement => {
+        if (!isRecord(statement)) {
+            return true;
+        }
+
+        return statement.Sid !== sid || statement.Resource !== resourceArn;
+    });
 }
 
 function getDoesStatementApplyToPublicGetObject(params: {
