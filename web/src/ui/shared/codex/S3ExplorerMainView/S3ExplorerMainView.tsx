@@ -1543,9 +1543,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
                                 requestShareLink(selectedObjectForShare);
                             }}
-                            onRename={() => {
-                                return;
-                            }}
                         />
                     )}
                 </div>

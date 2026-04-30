@@ -144,7 +144,6 @@ The component renders `S3SelectionActionBar` above the list.
 - `onCopyS3Uri`
 - `onDelete`
 - `onShare`
-- `onRename`
 - `onClear`
 
 The visual and interaction behavior of this bar is defined in the dedicated `S3SelectionActionBar` spec and must not be redefined here.
