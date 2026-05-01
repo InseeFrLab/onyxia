@@ -14,6 +14,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import CircularProgress from "@mui/material/CircularProgress";
 import Checkbox from "@mui/material/Checkbox";
 import { alpha } from "@mui/material/styles";
+import PublicIcon from "@mui/icons-material/Public";
 import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
@@ -78,6 +79,7 @@ export namespace S3ExplorerMainViewProps {
             uploadProgressPercent: number | undefined;
             isDeleting: boolean;
             displayName: string;
+            isPublic: boolean;
         };
 
         export type PrefixSegment = Common & {
@@ -806,6 +808,9 @@ function ItemRow(props: ItemRowProps) {
         !isUploadInProgress &&
         (progressPercent === undefined || progressPercent === 100);
     const isCopyAvailable = !item.isDeleting;
+    const itemKindLabel = item.type === "prefix segment" ? "folder" : "object";
+    const itemKindLabelCapitalized = item.type === "prefix segment" ? "Folder" : "Object";
+    const itemPolicyLabel = item.isPublic ? "public" : "private";
 
     const { classes, cx } = useStyles({
         isDragActive: false
@@ -845,16 +850,34 @@ function ItemRow(props: ItemRowProps) {
             <td className={classes.nameCell}>
                 <div className={classes.nameCellContent}>
                     <div className={classes.itemIdentity}>
-                        <div className={classes.itemIconWrapper}>
-                            <Icon
-                                icon={getIconUrlByName(
-                                    item.type === "prefix segment"
-                                        ? "Folder"
-                                        : "Description"
+                        <Tooltip
+                            title={`${itemKindLabelCapitalized} is ${itemPolicyLabel}`}
+                        >
+                            <div
+                                className={classes.itemIconWrapper}
+                                role="img"
+                                aria-label={`${itemKindLabel} is ${itemPolicyLabel}`}
+                            >
+                                <Icon
+                                    icon={getIconUrlByName(
+                                        item.type === "prefix segment"
+                                            ? "Folder"
+                                            : "Description"
+                                    )}
+                                    size="small"
+                                />
+                                {item.isPublic && (
+                                    <span
+                                        className={classes.itemPublicBadge}
+                                        aria-hidden={true}
+                                    >
+                                        <PublicIcon
+                                            className={classes.itemPublicBadgeIcon}
+                                        />
+                                    </span>
                                 )}
-                                size="small"
-                            />
-                        </div>
+                            </div>
+                        </Tooltip>
                         <div className={classes.itemNameBlock}>
                             <div className={classes.itemPrimaryRow}>
                                 <button
@@ -2106,6 +2129,7 @@ const useStyles = tss
             flex: 1
         },
         itemIconWrapper: {
+            position: "relative",
             width: 32,
             height: 32,
             borderRadius: 8,
@@ -2115,6 +2139,26 @@ const useStyles = tss
             backgroundColor: theme.colors.useCases.surfaces.surface2,
             color: theme.colors.useCases.typography.textPrimary,
             flexShrink: 0
+        },
+        itemPublicBadge: {
+            position: "absolute",
+            right: -4,
+            bottom: -4,
+            width: 16,
+            height: 16,
+            borderRadius: 999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: theme.colors.useCases.typography.textFocus,
+            color: theme.colors.useCases.surfaces.background,
+            border: `2px solid ${theme.colors.useCases.surfaces.background}`,
+            boxSizing: "border-box"
+        },
+        itemPublicBadgeIcon: {
+            width: 11,
+            height: 11,
+            fontSize: 11
         },
         itemNameBlock: {
             minWidth: 0,

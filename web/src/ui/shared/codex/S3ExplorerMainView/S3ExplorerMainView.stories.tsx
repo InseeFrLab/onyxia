@@ -20,12 +20,14 @@ type MockNode =
           s3Uri: S3Uri.TerminatedByDelimiter;
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
+          isPublic: boolean;
       }
     | {
           type: "object";
           s3Uri: S3Uri.NonTerminatedByDelimiter;
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
+          isPublic: boolean;
           size: number;
           lastModified: number;
       };
@@ -72,19 +74,22 @@ const baseNodes: MockNode[] = [
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: true
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/raw/"),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: false
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/tmp/"),
         uploadProgressPercent: 42,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: false
     },
     {
         type: "object",
@@ -92,7 +97,8 @@ const baseNodes: MockNode[] = [
         size: 19_481,
         lastModified: new Date("2026-03-17T08:45:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: true
     },
     {
         type: "object",
@@ -100,7 +106,8 @@ const baseNodes: MockNode[] = [
         size: 6_294_321,
         lastModified: new Date("2026-03-18T15:10:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: false
     },
     {
         type: "object",
@@ -108,7 +115,8 @@ const baseNodes: MockNode[] = [
         size: 140_000_000,
         lastModified: new Date("2026-03-19T07:55:00Z").getTime(),
         uploadProgressPercent: 67,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: false
     }
 ];
 
@@ -117,13 +125,15 @@ const nestedNodes: MockNode[] = [
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/"),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: false
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2025/"),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: true
     },
     {
         type: "object",
@@ -131,7 +141,8 @@ const nestedNodes: MockNode[] = [
         size: 11_704,
         lastModified: new Date("2026-03-19T10:00:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: true
     },
     {
         type: "object",
@@ -139,7 +150,8 @@ const nestedNodes: MockNode[] = [
         size: 8_122,
         lastModified: new Date("2026-03-18T09:15:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false
+        isDeleting: false,
+        isPublic: false
     }
 ];
 
@@ -256,7 +268,8 @@ function StatefulExplorer(
                                 isDelimiterTerminated: true
                             },
                             uploadProgressPercent: undefined,
-                            isDeleting: false
+                            isDeleting: false,
+                            isPublic: false
                         }
                     ]);
                 }}
@@ -302,7 +315,8 @@ function StatefulExplorer(
                                         : 15_000 + index,
                                 lastModified: now + index,
                                 uploadProgressPercent: undefined,
-                                isDeleting: false
+                                isDeleting: false,
+                                isPublic: false
                             };
                         })
                     ]);
