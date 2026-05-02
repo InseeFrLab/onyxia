@@ -12,6 +12,9 @@ The component focuses on:
 - selecting one or many items
 - exposing row-level and bulk actions
 
+It does not own share/download side effects such as generating HTTP URLs, opening
+share dialogs, or opening browser tabs. Those actions are forwarded to the parent.
+
 `S3ExplorerMainView` does not display the current S3 URI context itself.  
 This context is handled by surrounding components such as:
 
@@ -22,6 +25,9 @@ This context is handled by surrounding components such as:
 # Props
 
 ```ts
+import type { NonPostableEvt } from "evt";
+import type { S3Uri } from "core/tools/S3Uri";
+
 export type S3ExplorerMainViewProps = {
     className?: string;
 
@@ -50,10 +56,13 @@ export type S3ExplorerMainViewProps = {
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
 
-    getDirectDownloadUrl: (params: {
-        s3Uri: S3Uri.NonTerminatedByDelimiter;
-        validityDurationSecond_ifNotPublic: number;
-    }) => Promise<string>;
+    onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+
+    onShare: (params: { s3Uri: S3Uri }) => void;
+
+    evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
+
+    isUploadDisabled: boolean;
 };
 ```
 
@@ -148,6 +157,9 @@ The component renders `S3SelectionActionBar` above the list.
 
 The visual and interaction behavior of this bar is defined in the dedicated `S3SelectionActionBar` spec and must not be redefined here.
 
+Share and download actions are intent callbacks only. `S3ExplorerMainView` must not
+generate direct download URLs or render a share-link dialog.
+
 # Row interactions
 
 ### Navigation
@@ -180,6 +192,32 @@ Typical row actions include:
 - Actions must not shift the row layout when appearing
 - Actions remain secondary compared to the bulk action bar
 - Actions are hidden when not relevant for the row type
+
+### Share
+
+Share is available as a row action for both prefix and object rows when the item is
+not deleting and does not have an unfinished upload progress state.
+
+Clicking Share triggers:
+
+```ts
+onShare({ s3Uri: item.s3Uri });
+```
+
+The resulting UI or side effect is owned by the caller.
+
+### Download
+
+Download is available for object rows when the item is not deleting and does not
+have an unfinished upload progress state.
+
+Clicking Download triggers:
+
+```ts
+onDownload({ s3Uri: item.s3Uri });
+```
+
+The component must not create or open the HTTP object URL itself.
 
 # Sorting
 

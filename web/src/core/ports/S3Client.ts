@@ -31,12 +31,14 @@ export type S3Client = {
 
     deleteObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => Promise<void>;
 
-    generateSignedDownloadUrl: (params: {
+    getSignedObjectHttpUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         validityDurationSecond: number;
     }) => Promise<string>;
 
-    getUnsignedDownloadUrl: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => string;
+    getUnsignedObjectHttpUrl: (params: {
+        s3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => string;
 
     getObjectContent: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
