@@ -15,9 +15,18 @@ type ManagedBucketPolicyStatement = Record<string, unknown>;
 
 export function getIsPublic(params: {
     s3Uri: S3Uri;
-    bucketPolicies: S3Client.BucketPolicies;
-}): boolean {
-    const { s3Uri, bucketPolicies } = params;
+    bucketPolicyByBucket: Record<
+        string,
+        { bucketPolicies: S3Client.BucketPolicies | undefined } | undefined
+    >;
+}): boolean | undefined {
+    const { s3Uri, bucketPolicyByBucket } = params;
+
+    const bucketPolicies = bucketPolicyByBucket[s3Uri.bucket]?.bucketPolicies;
+
+    if (bucketPolicies === undefined) {
+        return undefined;
+    }
 
     const statements = getStatements(bucketPolicies);
 

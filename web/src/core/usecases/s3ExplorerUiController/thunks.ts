@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { privateSelectors } from "./selectors";
+import { privateSelectors, protectedSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { RouteParams } from "./selectors";
 import { assert, type Equals } from "tsafe/assert";
@@ -40,6 +40,10 @@ export const evtAskOverwriteConfirmation = Evt.create<{
 
 export const evtDisplayError = Evt.create<{
     errorMessage: string;
+}>();
+
+export const evtDownloadObject = Evt.create<{
+    httpObjectUrl: string;
 }>();
 
 export const thunks = {
@@ -649,122 +653,21 @@ export const thunks = {
                 })
             );
         },
-    getDirectDownloadUrl:
-        (params: {
-            s3Uri: S3Uri.NonTerminatedByDelimiter;
-            validityDurationSecond_ifNotPublic: number;
-        }) =>
+    downloadObject:
+        (props: { s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
         async (...args) => {
-            const { s3Uri, validityDurationSecond_ifNotPublic } = params;
+            const [dispatch] = args;
 
-            const [dispatch, getState] = args;
+            const { s3Uri } = props;
 
-            const bucketPolicies =
-                privateSelectors.bucketPolicyByBucket(getState())[s3Uri.bucket]
-                    ?.bucketPolicies;
-
-            const isPublic =
-                bucketPolicies === undefined
-                    ? false
-                    : getIsPublic({
-                          s3Uri,
-                          bucketPolicies
-                      });
-
-            if (isPublic) {
-                const profileName = privateSelectors.profileName(getState());
-
-                assert(profileName !== undefined);
-
-                const s3Client = await dispatch(
-                    s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
-                );
-
-                return s3Client.getUnsignedDownloadUrl({ s3Uri });
-            }
-
-            return dispatch(
-                privateThunks.generateSignedDownloadUrl({
+            const httpObjectUrl = await dispatch(
+                protectedThunks.getObjectHttpUrl({
                     s3Uri,
-                    validityDurationSecond: validityDurationSecond_ifNotPublic
-                })
-            );
-        },
-    toggleS3UriPublicPrivatePolicy:
-        (params: { s3Uri: S3Uri }) =>
-        async (...args) => {
-            const { s3Uri } = params;
-
-            const [dispatch, getState] = args;
-
-            const profileName = privateSelectors.profileName(getState());
-
-            assert(profileName !== undefined);
-
-            const bucketPolicies =
-                privateSelectors.bucketPolicyByBucket(getState())[s3Uri.bucket]
-                    ?.bucketPolicies;
-
-            assert(bucketPolicies !== undefined);
-
-            const isPublic = getIsPublic({
-                bucketPolicies,
-                s3Uri
-            });
-
-            const policy = isPublic ? "private" : "public";
-
-            const commandLog = getSetS3UriPublicPrivatePolicyCommandLog({
-                s3Uri,
-                bucketPolicies,
-                policy
-            });
-
-            const cmdId = Date.now();
-
-            dispatch(
-                actions.commandLogIssued({
-                    cmdId,
-                    cmd: commandLog.cmd
+                    validityDurationSecond_ifNotPublic: 20
                 })
             );
 
-            const s3Client = await dispatch(
-                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
-            );
-
-            const result = await s3Client.setS3UriPublicPrivatePolicy({
-                s3Uri,
-                policy
-            });
-
-            if (!result.isSuccess) {
-                dispatch(
-                    actions.commandLogResponseReceived({
-                        cmdId,
-                        resp: result.errorMessage
-                    })
-                );
-
-                evtDisplayError.post({
-                    errorMessage: result.errorMessage
-                });
-                return;
-            }
-
-            dispatch(
-                actions.commandLogResponseReceived({
-                    cmdId,
-                    resp: commandLog.successResp
-                })
-            );
-
-            await dispatch(
-                privateThunks.updateBucketPolicy({
-                    bucket: s3Uri.bucket,
-                    profileName
-                })
-            );
+            evtDownloadObject.post({ httpObjectUrl });
         }
 } satisfies Thunks;
 
@@ -969,7 +872,7 @@ export const privateThunks = {
                 })
             );
         },
-    generateSignedDownloadUrl:
+    getSignedObjectHttpUrl:
         (params: {
             s3Uri: S3Uri.NonTerminatedByDelimiter;
             validityDurationSecond: number;
@@ -995,7 +898,7 @@ export const privateThunks = {
                 })
             );
 
-            const downloadUrl = await s3Client.generateSignedDownloadUrl({
+            const downloadUrl = await s3Client.getSignedObjectHttpUrl({
                 s3Uri,
                 validityDurationSecond
             });
@@ -1015,5 +918,124 @@ export const privateThunks = {
             );
 
             return downloadUrl;
+        }
+} satisfies Thunks;
+
+export const protectedThunks = {
+    toggleS3UriPublicPrivatePolicy:
+        (params: { s3Uri: S3Uri }) =>
+        async (...args) => {
+            const { s3Uri } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const bucketPolicyByBucket =
+                protectedSelectors.bucketPolicyByBucket(getState());
+
+            const isPublic = getIsPublic({
+                bucketPolicyByBucket,
+                s3Uri
+            });
+
+            const policy = isPublic ? "private" : "public";
+
+            const commandLog = getSetS3UriPublicPrivatePolicyCommandLog({
+                s3Uri,
+                bucketPolicies: (() => {
+                    const bucketPolicies =
+                        bucketPolicyByBucket[s3Uri.bucket]?.bucketPolicies;
+
+                    assert(bucketPolicies !== undefined);
+
+                    return bucketPolicies;
+                })(),
+                policy
+            });
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: commandLog.cmd
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const result = await s3Client.setS3UriPublicPrivatePolicy({
+                s3Uri,
+                policy
+            });
+
+            if (!result.isSuccess) {
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        resp: result.errorMessage
+                    })
+                );
+
+                evtDisplayError.post({
+                    errorMessage: result.errorMessage
+                });
+                return;
+            }
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: commandLog.successResp
+                })
+            );
+
+            await dispatch(
+                privateThunks.updateBucketPolicy({
+                    bucket: s3Uri.bucket,
+                    profileName
+                })
+            );
+        },
+    getObjectHttpUrl:
+        (params: {
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            validityDurationSecond_ifNotPublic: number;
+        }) =>
+        async (...args) => {
+            const { s3Uri, validityDurationSecond_ifNotPublic } = params;
+
+            const [dispatch, getState] = args;
+
+            const isPublic =
+                getIsPublic({
+                    s3Uri,
+                    bucketPolicyByBucket:
+                        protectedSelectors.bucketPolicyByBucket(getState())
+                }) ?? false;
+
+            if (isPublic) {
+                const profileName = privateSelectors.profileName(getState());
+
+                assert(profileName !== undefined);
+
+                const s3Client = await dispatch(
+                    s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+                );
+
+                return s3Client.getUnsignedObjectHttpUrl({ s3Uri });
+            }
+
+            return dispatch(
+                privateThunks.getSignedObjectHttpUrl({
+                    s3Uri,
+                    validityDurationSecond: validityDurationSecond_ifNotPublic
+                })
+            );
         }
 } satisfies Thunks;

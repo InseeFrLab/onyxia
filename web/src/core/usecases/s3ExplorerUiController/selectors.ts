@@ -293,18 +293,13 @@ const items = createSelector(
             uploads: uploads_profile
         });
 
-        const bucketPolicies =
-            bucketPolicyByBucket[listedPrefix_state.current.s3Uri.bucket]?.bucketPolicies;
-
         const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(
             item => {
                 const isPublic =
-                    bucketPolicies === undefined
-                        ? false
-                        : getIsPublic({
-                              bucketPolicies,
-                              s3Uri: item.s3Uri
-                          });
+                    getIsPublic({
+                        bucketPolicyByBucket,
+                        s3Uri: item.s3Uri
+                    }) ?? false;
 
                 switch (item.type) {
                     case "object":
@@ -734,6 +729,9 @@ export const privateSelectors = {
     doesListedPrefixHaveFinishedUpload,
     listedPrefix_state,
     isFullyQualifiedDataFileUri,
-    uploads: createSelector(state, state => state.uploads),
+    uploads: createSelector(state, state => state.uploads)
+};
+
+export const protectedSelectors = {
     bucketPolicyByBucket: createSelector(state, state => state.bucketPolicyByBucket)
 };
