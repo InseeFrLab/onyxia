@@ -11,7 +11,6 @@ import {
 } from "react";
 import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
-import CircularProgress from "@mui/material/CircularProgress";
 import Checkbox from "@mui/material/Checkbox";
 import { alpha } from "@mui/material/styles";
 import PublicIcon from "@mui/icons-material/Public";
@@ -61,10 +60,9 @@ export type S3ExplorerMainViewProps = {
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
 
-    getDirectDownloadUrl: (params: {
-        s3Uri: S3Uri.NonTerminatedByDelimiter;
-        validityDurationSecond_ifNotPublic: number;
-    }) => Promise<string>;
+    onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+
+    onShare: (params: { s3Uri: S3Uri }) => void;
 
     evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
 
@@ -105,22 +103,6 @@ type DeleteDialogState = {
     items: S3ExplorerMainViewProps.Item[];
 };
 
-type ShareLinkDialogState =
-    | {
-          status: "loading";
-          item: S3ExplorerMainViewProps.Item.Object;
-      }
-    | {
-          status: "ready";
-          item: S3ExplorerMainViewProps.Item.Object;
-          url: string;
-      }
-    | {
-          status: "error";
-          item: S3ExplorerMainViewProps.Item.Object;
-          errorMessage: string;
-      };
-
 type ObjectToUpload = Parameters<
     S3ExplorerMainViewProps["onPutObjects"]
 >[0]["files"][number];
@@ -128,11 +110,6 @@ type ObjectToUpload = Parameters<
 type DataTransferItemWithWebkitGetAsEntry = DataTransferItem & {
     webkitGetAsEntry?: () => FileSystemEntryLike | null;
 };
-
-const directDownloadUrlValidityDurationSecond = {
-    download: 30,
-    shareableLink: 24 * 60 * 60
-} as const;
 
 type FileSystemEntryLike = {
     readonly isFile: boolean;
@@ -377,19 +354,6 @@ function getFormattedLastModified(params: { time: number }): string {
     }).format(date);
 }
 
-function getUserFacingErrorMessage(params: {
-    error: unknown;
-    fallbackMessage: string;
-}): string {
-    const { error, fallbackMessage } = params;
-
-    if (error instanceof Error && error.message !== "") {
-        return error.message;
-    }
-
-    return fallbackMessage;
-}
-
 function getProgressPercent(item: S3ExplorerMainViewProps.Item): number | undefined {
     if (item.uploadProgressPercent === undefined) {
         return undefined;
@@ -619,116 +583,6 @@ function DeleteSelectionDialog(props: {
                         Cancel
                     </Button>
                     <Button onClick={onConfirm}>Delete</Button>
-                </>
-            }
-        />
-    );
-}
-
-function ShareLinkDialog(props: {
-    state: ShareLinkDialogState | undefined;
-    onClose: () => void;
-    onRetry: () => void;
-}) {
-    const { state, onClose, onRetry } = props;
-
-    return (
-        <Dialog
-            isOpen={state !== undefined}
-            onClose={onClose}
-            title="Shareable link"
-            subtitle={state === undefined ? "" : state.item.displayName}
-            body={
-                state !== undefined && (
-                    <div
-                        style={{
-                            minWidth: 320,
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 16,
-                            paddingTop: 8
-                        }}
-                    >
-                        {state.status === "loading" && (
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 12
-                                }}
-                            >
-                                <CircularProgress size={18} />
-                                <span>Generating a direct download URL...</span>
-                            </div>
-                        )}
-
-                        {state.status === "error" && (
-                            <div
-                                style={{
-                                    lineHeight: 1.6
-                                }}
-                            >
-                                {state.errorMessage}
-                            </div>
-                        )}
-
-                        {state.status === "ready" && (
-                            <>
-                                <div
-                                    style={{
-                                        lineHeight: 1.6
-                                    }}
-                                >
-                                    Anyone with this URL can download the file until it
-                                    expires.
-                                </div>
-                                <div
-                                    style={{
-                                        borderRadius: 12,
-                                        padding: 16,
-                                        backgroundColor: "rgba(0, 0, 0, 0.04)",
-                                        wordBreak: "break-all",
-                                        fontFamily:
-                                            'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-                                        fontSize: 13,
-                                        lineHeight: 1.5
-                                    }}
-                                >
-                                    {state.url}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )
-            }
-            buttons={
-                <>
-                    <Button variant="secondary" onClick={onClose}>
-                        Close
-                    </Button>
-                    {state?.status === "error" && (
-                        <Button onClick={onRetry}>Retry</Button>
-                    )}
-                    {state?.status === "ready" && (
-                        <>
-                            <Button
-                                variant="secondary"
-                                startIcon={getIconUrlByName("OpenInNew")}
-                                onClick={() =>
-                                    window.open(
-                                        state.url,
-                                        "_blank",
-                                        "noopener,noreferrer"
-                                    )
-                                }
-                            >
-                                Open
-                            </Button>
-                            <Button onClick={() => copyToClipboard(state.url)}>
-                                Copy link
-                            </Button>
-                        </>
-                    )}
                 </>
             }
         />
@@ -966,12 +820,12 @@ function ItemRow(props: ItemRowProps) {
                         {showRowActions && (
                             <>
                                 {onShare !== undefined && (
-                                    <Tooltip title="Get shareable link">
+                                    <Tooltip title="Share">
                                         <span className={classes.inlineActionWrapper}>
                                             <IconButton
                                                 className={classes.rowActionButton}
                                                 icon={getIconUrlByName("Share")}
-                                                aria-label="Get shareable link"
+                                                aria-label="Share"
                                                 disabled={!isShareAvailable}
                                                 onClick={event => {
                                                     event.stopPropagation();
@@ -1072,7 +926,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects,
         onCreateDirectory,
         onDelete,
-        getDirectDownloadUrl,
+        onDownload,
+        onShare,
         evtAction,
         isUploadDisabled
     } = props;
@@ -1086,9 +941,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const [deleteDialogState, setDeleteDialogState] = useState<
         DeleteDialogState | undefined
     >(undefined);
-    const [shareLinkDialogState, setShareLinkDialogState] = useState<
-        ShareLinkDialogState | undefined
-    >(undefined);
     const [isDragActive, setIsDragActive] = useState(false);
 
     const lastSelectedItemKeyRef = useRef<string | undefined>(undefined);
@@ -1097,7 +949,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     );
     const dragDepthRef = useRef(0);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const shareRequestIdRef = useRef(0);
 
     const { classes, cx } = useStyles({ isDragActive });
 
@@ -1204,9 +1055,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const selectableItems = items.filter(item => !item.isDeleting);
     const selectedItemKeySet = new Set(selectedItemKeys);
     const selectedItems = items.filter(item => selectedItemKeySet.has(getItemKey(item)));
-    const selectedObjects = selectedItems.filter(
-        (item): item is S3ExplorerMainViewProps.Item.Object => item.type === "object"
-    );
     const selectedS3Uris = selectedItems.map(item => item.s3Uri);
     const showRowActions = selectedItems.length <= 1;
 
@@ -1216,18 +1064,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const isSelectionIndeterminate =
         !isAllSelected && selectedItems.length > 0 && selectableItems.length > 0;
 
-    const selectedObjectForShare =
-        selectedItems.length === 1 && selectedObjects.length === 1
-            ? selectedObjects[0]
-            : undefined;
-    const isSelectedObjectShareable =
-        selectedObjectForShare !== undefined &&
-        !selectedObjectForShare.isDeleting &&
-        (() => {
-            const progressPercent = getProgressPercent(selectedObjectForShare);
-
-            return progressPercent === undefined || progressPercent === 100;
-        })();
+    const selectedItemForSingleItemAction =
+        selectedItems.length === 1 ? selectedItems[0] : undefined;
 
     const setSelectionToSingleItem = (itemKey: string) => {
         setSelectedItemKeys([itemKey]);
@@ -1362,55 +1200,23 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         event.target.value = "";
     };
 
-    const closeShareDialog = () => {
-        shareRequestIdRef.current += 1;
-        setShareLinkDialogState(undefined);
-    };
-
-    const requestShareLink = async (item: S3ExplorerMainViewProps.Item.Object) => {
-        const requestId = shareRequestIdRef.current + 1;
-
-        shareRequestIdRef.current = requestId;
-        setShareLinkDialogState({
-            status: "loading",
-            item
-        });
-
-        try {
-            const url = await getDirectDownloadUrl({
-                s3Uri: item.s3Uri,
-                validityDurationSecond_ifNotPublic:
-                    directDownloadUrlValidityDurationSecond.shareableLink
-            });
-
-            if (shareRequestIdRef.current !== requestId) {
-                return;
-            }
-
-            setShareLinkDialogState({
-                status: "ready",
-                item,
-                url
-            });
-        } catch (error) {
-            if (shareRequestIdRef.current !== requestId) {
-                return;
-            }
-
-            setShareLinkDialogState({
-                status: "error",
-                item,
-                errorMessage: getUserFacingErrorMessage({
-                    error,
-                    fallbackMessage: "Unable to generate a shareable link for this file."
-                })
-            });
+    const requestShareForItem = (item: S3ExplorerMainViewProps.Item) => {
+        if (item.isDeleting) {
+            return;
         }
+
+        const progressPercent = getProgressPercent(item);
+
+        if (progressPercent !== undefined && progressPercent < 100) {
+            return;
+        }
+
+        onShare({
+            s3Uri: item.s3Uri
+        });
     };
 
-    const requestDownloadForItems = async (
-        itemsToDownload: S3ExplorerMainViewProps.Item[]
-    ) => {
+    const requestDownloadForItems = (itemsToDownload: S3ExplorerMainViewProps.Item[]) => {
         const downloadableObjects = itemsToDownload.filter(
             (item): item is S3ExplorerMainViewProps.Item.Object => {
                 if (item.type !== "object") {
@@ -1431,21 +1237,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             return;
         }
 
-        await Promise.all(
-            downloadableObjects.map(async item => {
-                try {
-                    const url = await getDirectDownloadUrl({
-                        s3Uri: item.s3Uri,
-                        validityDurationSecond_ifNotPublic:
-                            directDownloadUrlValidityDurationSecond.download
-                    });
-
-                    window.open(url, "_blank", "noopener,noreferrer");
-                } catch {
-                    return;
-                }
-            })
-        );
+        downloadableObjects.forEach(item => onDownload({ s3Uri: item.s3Uri }));
     };
 
     const requestDeletionForItems = (itemsToDelete: S3ExplorerMainViewProps.Item[]) => {
@@ -1535,18 +1327,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 }}
             />
 
-            <ShareLinkDialog
-                state={shareLinkDialogState}
-                onClose={closeShareDialog}
-                onRetry={() => {
-                    if (shareLinkDialogState === undefined) {
-                        return;
-                    }
-
-                    requestShareLink(shareLinkDialogState.item);
-                }}
-            />
-
             <div className={cx(classes.root, className)} aria-busy={isListing}>
                 <div className={classes.selectionBarSlot}>
                     {selectedItems.length > 0 && (
@@ -1557,14 +1337,11 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             onDelete={() => requestDeletionForItems(selectedItems)}
                             onCopyS3Uri={copySelectedS3Uri}
                             onShare={() => {
-                                if (
-                                    selectedObjectForShare === undefined ||
-                                    !isSelectedObjectShareable
-                                ) {
+                                if (selectedItemForSingleItemAction === undefined) {
                                     return;
                                 }
 
-                                requestShareLink(selectedObjectForShare);
+                                requestShareForItem(selectedItemForSingleItemAction);
                             }}
                         />
                     )}
@@ -1822,10 +1599,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     onDelete={() =>
                                                         requestDeletionForItems([item])
                                                     }
-                                                    onShare={
-                                                        item.type === "object"
-                                                            ? () => requestShareLink(item)
-                                                            : undefined
+                                                    onShare={() =>
+                                                        requestShareForItem(item)
                                                     }
                                                     onDownload={
                                                         item.type === "object"

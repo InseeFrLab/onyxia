@@ -219,7 +219,7 @@ export function createS3Client(
     })();
 
     const s3Client: S3Client = {
-        getUnsignedDownloadUrl: ({ s3Uri }) => {
+        getUnsignedObjectHttpUrl: ({ s3Uri }) => {
             const url = new URL(params.url);
             const pathname = url.pathname.endsWith("/")
                 ? url.pathname.slice(0, -1)
@@ -511,7 +511,7 @@ export function createS3Client(
                 })
             );
         },
-        generateSignedDownloadUrl: async ({ s3Uri, validityDurationSecond }) => {
+        getSignedObjectHttpUrl: async ({ s3Uri, validityDurationSecond }) => {
             const { getAwsS3Client } = await prApi;
 
             const { awsS3Client } = await getAwsS3Client();

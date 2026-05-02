@@ -1,7 +1,7 @@
 import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
-import { privateSelectors, type RouteParams } from "./selectors";
+import { privateSelectors, protectedSelectors, type RouteParams } from "./selectors";
 import { Reflect, id } from "tsafe";
 import { name } from "./state";
 import { AccessError } from "clean-architecture";
@@ -12,7 +12,8 @@ import {
     thunks,
     privateThunks,
     evtAskOverwriteConfirmation,
-    evtDisplayError
+    evtDisplayError,
+    evtDownloadObject
 } from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
 import * as dataExplorer from "core/usecases/dataExplorer";
@@ -40,7 +41,18 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
               action: "display error";
               errorMessage: string;
           }
+        | {
+              action: "download object";
+              httpObjectUrl: string;
+          }
     >();
+
+    evtDownloadObject.attach(({ httpObjectUrl }) =>
+        evt.post({
+            action: "download object",
+            httpObjectUrl
+        })
+    );
 
     evtDisplayError.attach(({ errorMessage }) => {
         evt.post({
@@ -174,7 +186,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             })();
 
             {
-                const wrap = privateSelectors.bucketPolicyByBucket(getState())[bucket];
+                const wrap = protectedSelectors.bucketPolicyByBucket(getState())[bucket];
 
                 if (wrap !== undefined && wrap.profileName === profileName) {
                     return;

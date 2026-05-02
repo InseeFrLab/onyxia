@@ -31,6 +31,19 @@ const bucketPolicies = {
     ]
 } satisfies S3Client.BucketPolicies;
 
+function createBucketPolicyByBucket(params: {
+    bucket: string;
+    bucketPolicies: S3Client.BucketPolicies | undefined;
+}): Parameters<typeof getIsPublic>[0]["bucketPolicyByBucket"] {
+    const { bucket, bucketPolicies } = params;
+
+    return {
+        [bucket]: {
+            bucketPolicies
+        }
+    };
+}
+
 describe(symToStr({ getIsPublic }), () => {
     afterEach(() => {
         vi.useRealTimers();
@@ -39,7 +52,10 @@ describe(symToStr({ getIsPublic }), () => {
     it("returns true when a public GetObject statement matches an object", () => {
         expect(
             getIsPublic({
-                bucketPolicies,
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/images/logo.png",
                     delimiter: "/"
@@ -51,7 +67,10 @@ describe(symToStr({ getIsPublic }), () => {
     it("returns true when a public wildcard statement covers a prefix", () => {
         expect(
             getIsPublic({
-                bucketPolicies,
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/images/",
                     delimiter: "/"
@@ -63,7 +82,10 @@ describe(symToStr({ getIsPublic }), () => {
     it("returns false when a public deny statement also matches", () => {
         expect(
             getIsPublic({
-                bucketPolicies,
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/images/private/secret.txt",
                     delimiter: "/"
@@ -75,7 +97,10 @@ describe(symToStr({ getIsPublic }), () => {
     it("does not match policies from another bucket", () => {
         expect(
             getIsPublic({
-                bucketPolicies,
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "not-my-bucket",
+                    bucketPolicies
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://not-my-bucket/images/logo.png",
                     delimiter: "/"
@@ -87,14 +112,17 @@ describe(symToStr({ getIsPublic }), () => {
     it("accepts a single Statement object and AWS principal shorthand", () => {
         expect(
             getIsPublic({
-                bucketPolicies: {
-                    Statement: {
-                        Effect: "Allow",
-                        Principal: { AWS: "*" },
-                        Action: ["s3:PutObject", "s3:Get*"],
-                        Resource: "arn:aws:s3:::my-bucket/public/logo.png"
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies: {
+                        Statement: {
+                            Effect: "Allow",
+                            Principal: { AWS: "*" },
+                            Action: ["s3:PutObject", "s3:Get*"],
+                            Resource: "arn:aws:s3:::my-bucket/public/logo.png"
+                        }
                     }
-                },
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/public/logo.png",
                     delimiter: "/"
@@ -106,18 +134,21 @@ describe(symToStr({ getIsPublic }), () => {
     it("does not grant public status for authenticated principals", () => {
         expect(
             getIsPublic({
-                bucketPolicies: {
-                    Statement: [
-                        {
-                            Effect: "Allow",
-                            Principal: {
-                                AWS: "arn:aws:iam::123456789012:user/alice"
-                            },
-                            Action: "s3:GetObject",
-                            Resource: "arn:aws:s3:::my-bucket/uploads/*"
-                        }
-                    ]
-                },
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies: {
+                        Statement: [
+                            {
+                                Effect: "Allow",
+                                Principal: {
+                                    AWS: "arn:aws:iam::123456789012:user/alice"
+                                },
+                                Action: "s3:GetObject",
+                                Resource: "arn:aws:s3:::my-bucket/uploads/*"
+                            }
+                        ]
+                    }
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/uploads/report.csv",
                     delimiter: "/"
@@ -132,21 +163,24 @@ describe(symToStr({ getIsPublic }), () => {
 
         expect(
             getIsPublic({
-                bucketPolicies: {
-                    Statement: [
-                        {
-                            Effect: "Allow",
-                            Principal: "*",
-                            Action: "s3:GetObject",
-                            Resource: "arn:aws:s3:::my-bucket/temporary-public/*",
-                            Condition: {
-                                DateLessThan: {
-                                    "aws:CurrentTime": "2026-12-31T23:59:59Z"
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies: {
+                        Statement: [
+                            {
+                                Effect: "Allow",
+                                Principal: "*",
+                                Action: "s3:GetObject",
+                                Resource: "arn:aws:s3:::my-bucket/temporary-public/*",
+                                Condition: {
+                                    DateLessThan: {
+                                        "aws:CurrentTime": "2026-12-31T23:59:59Z"
+                                    }
                                 }
                             }
-                        }
-                    ]
-                },
+                        ]
+                    }
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/temporary-public/file.txt",
                     delimiter: "/"
@@ -156,21 +190,24 @@ describe(symToStr({ getIsPublic }), () => {
 
         expect(
             getIsPublic({
-                bucketPolicies: {
-                    Statement: [
-                        {
-                            Effect: "Allow",
-                            Principal: "*",
-                            Action: "s3:GetObject",
-                            Resource: "arn:aws:s3:::my-bucket/temporary-public/*",
-                            Condition: {
-                                DateLessThan: {
-                                    "aws:CurrentTime": "2026-01-01T00:00:00Z"
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies: {
+                        Statement: [
+                            {
+                                Effect: "Allow",
+                                Principal: "*",
+                                Action: "s3:GetObject",
+                                Resource: "arn:aws:s3:::my-bucket/temporary-public/*",
+                                Condition: {
+                                    DateLessThan: {
+                                        "aws:CurrentTime": "2026-01-01T00:00:00Z"
+                                    }
                                 }
                             }
-                        }
-                    ]
-                },
+                        ]
+                    }
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/temporary-public/file.txt",
                     delimiter: "/"
@@ -182,26 +219,54 @@ describe(symToStr({ getIsPublic }), () => {
     it("does not treat unsupported allow conditions as public", () => {
         expect(
             getIsPublic({
-                bucketPolicies: {
-                    Statement: [
-                        {
-                            Effect: "Allow",
-                            Principal: "*",
-                            Action: "s3:GetObject",
-                            Resource: "arn:aws:s3:::my-bucket/ip-restricted/*",
-                            Condition: {
-                                IpAddress: {
-                                    "aws:SourceIp": "203.0.113.0/24"
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies: {
+                        Statement: [
+                            {
+                                Effect: "Allow",
+                                Principal: "*",
+                                Action: "s3:GetObject",
+                                Resource: "arn:aws:s3:::my-bucket/ip-restricted/*",
+                                Condition: {
+                                    IpAddress: {
+                                        "aws:SourceIp": "203.0.113.0/24"
+                                    }
                                 }
                             }
-                        }
-                    ]
-                },
+                        ]
+                    }
+                }),
                 s3Uri: parseS3Uri({
                     value: "s3://my-bucket/ip-restricted/file.txt",
                     delimiter: "/"
                 })
             })
         ).toBe(false);
+    });
+
+    it("returns undefined when bucket policies are not loaded for the bucket", () => {
+        expect(
+            getIsPublic({
+                bucketPolicyByBucket: {},
+                s3Uri: parseS3Uri({
+                    value: "s3://my-bucket/images/logo.png",
+                    delimiter: "/"
+                })
+            })
+        ).toBeUndefined();
+
+        expect(
+            getIsPublic({
+                bucketPolicyByBucket: createBucketPolicyByBucket({
+                    bucket: "my-bucket",
+                    bucketPolicies: undefined
+                }),
+                s3Uri: parseS3Uri({
+                    value: "s3://my-bucket/images/logo.png",
+                    delimiter: "/"
+                })
+            })
+        ).toBeUndefined();
     });
 });

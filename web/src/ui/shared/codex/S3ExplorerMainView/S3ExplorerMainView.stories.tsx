@@ -165,7 +165,8 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onPutObjects: action("putObjects"),
     onCreateDirectory: action("createDirectory"),
     onDelete: action("delete"),
-    getDirectDownloadUrl: async () => "https://example.com/download/object",
+    onDownload: action("download"),
+    onShare: action("share"),
     evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
     isUploadDisabled: false
 };
@@ -221,7 +222,8 @@ function StatefulExplorer(
         | "onCreateDirectory"
         | "onDelete"
         | "onPutObjects"
-        | "getDirectDownloadUrl"
+        | "onDownload"
+        | "onShare"
         | "evtAction"
     >
 ) {
@@ -321,14 +323,11 @@ function StatefulExplorer(
                         })
                     ]);
                 }}
-                getDirectDownloadUrl={async ({ s3Uri }) => {
-                    action("getDirectDownloadUrl")(s3Uri);
-
-                    await new Promise(resolve => setTimeout(resolve, 500));
-
-                    return `https://example.com/download/${encodeURIComponent(
-                        s3Uri.keySegments.join("/")
-                    )}`;
+                onDownload={({ s3Uri }) => {
+                    action("download")(s3Uri);
+                }}
+                onShare={({ s3Uri }) => {
+                    action("share")(s3Uri);
                 }}
                 evtAction={evtAction}
             />
@@ -372,7 +371,8 @@ export const EmptyPrefix: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
-        getDirectDownloadUrl: async () => "https://example.com/download/object",
+        onDownload: action("download"),
+        onShare: action("share"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
     },
@@ -394,7 +394,8 @@ export const AccessDenied: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
-        getDirectDownloadUrl: async () => "https://example.com/download/object",
+        onDownload: action("download"),
+        onShare: action("share"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
     },
