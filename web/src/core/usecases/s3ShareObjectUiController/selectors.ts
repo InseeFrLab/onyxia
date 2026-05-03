@@ -54,14 +54,14 @@ const mainView = createSelector(
             httpUrl
         };
 
-        return isPublic
+        return isPublic === true
             ? id<MainView.Public>({
                   ...common,
                   isPublic: true
               })
             : id<MainView.Private>({
                   ...common,
-                  isPublic: false,
+                  isPublic,
                   validityDuration
               });
     }
