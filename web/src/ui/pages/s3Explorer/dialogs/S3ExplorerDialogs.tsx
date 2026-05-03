@@ -21,6 +21,10 @@ import {
 } from "./DirectoryCreationDialog";
 import { DisplayErrorDialog, type DisplayErrorDialogProps } from "./DisplayErrorDialog";
 import {
+    S3ShareObjectDialog,
+    type S3ShareObjectDialogProps
+} from "./S3ShareObjectDialog";
+import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
@@ -33,6 +37,7 @@ export type S3ExplorerDialogsProps = {
     evtCreateOrRenameBookmarkDialogOpen: CreateOrRenameBookmarkDialogProps["evtOpen"];
     evtDirectoryCreationDialogOpen: DirectoryCreationDialogProps["evtOpen"];
     evtDisplayErrorDialogOpen: DisplayErrorDialogProps["evtOpen"];
+    evtS3ShareObjectDialogOpen: S3ShareObjectDialogProps["evtOpen"];
     evtMaybeAcknowledgeConfigVolatilityDialogOpen: MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"];
 };
 
@@ -45,6 +50,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
         evtCreateOrRenameBookmarkDialogOpen,
         evtDirectoryCreationDialogOpen,
         evtDisplayErrorDialogOpen,
+        evtS3ShareObjectDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = props;
 
@@ -61,6 +67,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
             <CreateOrRenameBookmarkDialog evtOpen={evtCreateOrRenameBookmarkDialogOpen} />
             <DirectoryCreationDialog evtOpen={evtDirectoryCreationDialogOpen} />
             <DisplayErrorDialog evtOpen={evtDisplayErrorDialogOpen} />
+            <S3ShareObjectDialog evtOpen={evtS3ShareObjectDialogOpen} />
             <MaybeAcknowledgeConfigVolatilityDialog
                 evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
             />
