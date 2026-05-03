@@ -87,6 +87,7 @@ function PageComponent() {
             evtDirectoryCreationDialogOpen: new Evt(),
             evtDisplayErrorDialogOpen: new Evt(),
             evtS3ProfileDialogOpen: new Evt(),
+            evtS3ShareObjectDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
     );
@@ -128,7 +129,9 @@ function PageComponent() {
             )
             .attach(
                 data => data.action === "download object",
-                ({ httpObjectUrl }) => {}
+                ({ httpObjectUrl }) => {
+                    window.open(httpObjectUrl, "_blank", "noopener,noreferrer");
+                }
             );
     }, []);
 
@@ -457,9 +460,17 @@ function PageComponent() {
                                         s3ExplorerUiController.createDirectory
                                     }
                                     onDelete={s3ExplorerUiController.delete}
-                                    getDirectDownloadUrl={
-                                        s3ExplorerUiController.getDirectDownloadUrl
-                                    }
+                                    onDownload={s3ExplorerUiController.downloadObject}
+                                    onShare={({ s3Uri }) => {
+                                        if (s3Uri.isDelimiterTerminated) {
+                                            alert("todo 3944");
+                                            return;
+                                        }
+
+                                        dialogProps.evtS3ShareObjectDialogOpen.post({
+                                            s3Uri
+                                        });
+                                    }}
                                     evtAction={evtS3ExplorerMainViewAction}
                                     isUploadDisabled={mainView.isUploadButtonDisabled}
                                 />
