@@ -92,9 +92,6 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                     <Icon icon={getIconUrlByName("Description")} size="small" />
                 </div>
                 <div className={classes.headerText}>
-                    <Text typo="object heading" className={classes.title}>
-                        Share object
-                    </Text>
                     <Text
                         typo="body 2"
                         className={classes.objectBasename}
@@ -321,9 +318,6 @@ const useStyles = tss
             flexDirection: "column",
             minWidth: 0,
             gap: theme.spacing(0.5)
-        },
-        title: {
-            color: theme.colors.useCases.typography.textPrimary
         },
         objectBasename: {
             minWidth: 0,
