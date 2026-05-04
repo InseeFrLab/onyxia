@@ -8,7 +8,10 @@ import { id } from "tsafe/id";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
 import { name, type State } from "./state";
-import { getIsPublic } from "./decoupledLogic/bucketPolicy";
+import {
+    getHasPrefixBeMadePublic,
+    getIsWithinPrefixThatHasBeenMadePublic
+} from "core/tools/bucketPolicies";
 
 export type RouteParams = {
     profile?: string;
@@ -94,8 +97,6 @@ export type MainView = {
         | undefined;
 
     commandLogsEntries: State.CommandLogsEntry[];
-
-    areBucketPoliciesFeaturesEnabled: boolean;
 };
 
 export namespace MainView {
@@ -106,7 +107,6 @@ export namespace MainView {
             uploadProgressPercent: number | undefined;
             isDeleting: boolean;
             displayName: string;
-            isPublic: boolean;
         };
 
         export type PrefixSegment = Common & {
@@ -273,12 +273,12 @@ const items = createSelector(
     listedPrefix_state,
     uploads_profile,
     deletions_profile,
-    createSelector(state, state => state.bucketPolicyByBucket),
+    createSelector(state, state => state.bucketPoliciesByBucket),
     (
         listedPrefix_state,
         uploads_profile,
         deletions_profile,
-        bucketPolicyByBucket
+        bucketPoliciesByBucket
     ): MainView.Item[] | undefined => {
         if (listedPrefix_state === undefined) {
             return undefined;
@@ -295,12 +295,6 @@ const items = createSelector(
 
         const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(
             item => {
-                const isPublic =
-                    getIsPublic({
-                        bucketPolicyByBucket,
-                        s3Uri: item.s3Uri
-                    }) ?? false;
-
                 switch (item.type) {
                     case "object":
                         return id<MainView.Item.Object>({
@@ -316,8 +310,7 @@ const items = createSelector(
                             uploadProgressPercent: undefined,
                             isDeleting: false,
                             lastModified: item.lastModified,
-                            size: item.size,
-                            isPublic
+                            size: item.size
                         });
                     case "prefix":
                         return id<MainView.Item.PrefixSegment>({
@@ -332,7 +325,21 @@ const items = createSelector(
                             s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            isPublic
+                            policy: getHasPrefixBeMadePublic({
+                                s3Uri: item.s3Uri,
+                                bucketPoliciesByBucket
+                            })
+                                ? {
+                                      isPublic: true
+                                  }
+                                : {
+                                      isPublic: false,
+                                      canBeMadePublic:
+                                          !getIsWithinPrefixThatHasBeenMadePublic({
+                                              s3Uri: item.s3Uri,
+                                              bucketPoliciesByBucket
+                                          })
+                                  }
                         });
                 }
             }
@@ -631,20 +638,6 @@ const commandLogsEntries = createSelector(
     (state): MainView["commandLogsEntries"] => state.commandLogsEntries
 );
 
-const areBucketPoliciesFeaturesEnabled = createSelector(
-    createSelector(state, state => state.bucketPolicyByBucket),
-    s3Uri,
-    (bucketPolicyByBucket, s3Uri): MainView["areBucketPoliciesFeaturesEnabled"] => {
-        if (s3Uri === undefined) {
-            return false;
-        }
-
-        const bucketPolicies = bucketPolicyByBucket[s3Uri.bucket]?.bucketPolicies;
-
-        return bucketPolicies !== undefined;
-    }
-);
-
 const mainView = createSelector(
     profileSelect,
     bookmarks,
@@ -657,7 +650,6 @@ const mainView = createSelector(
     isListing,
     listedPrefix,
     commandLogsEntries,
-    areBucketPoliciesFeaturesEnabled,
     (
         profileSelect,
         bookmarks,
@@ -669,8 +661,7 @@ const mainView = createSelector(
         fullyQualifiedUri,
         isListing,
         listedPrefix,
-        commandLogsEntries,
-        areBucketPoliciesFeaturesEnabled
+        commandLogsEntries
     ): MainView => ({
         profileSelect,
         bookmarks,
@@ -682,8 +673,7 @@ const mainView = createSelector(
         fullyQualifiedUri,
         isListing,
         listedPrefix,
-        commandLogsEntries,
-        areBucketPoliciesFeaturesEnabled
+        commandLogsEntries
     })
 );
 
@@ -733,5 +723,5 @@ export const privateSelectors = {
 };
 
 export const protectedSelectors = {
-    bucketPolicyByBucket: createSelector(state, state => state.bucketPolicyByBucket)
+    bucketPoliciesByBucket: createSelector(state, state => state.bucketPoliciesByBucket)
 };

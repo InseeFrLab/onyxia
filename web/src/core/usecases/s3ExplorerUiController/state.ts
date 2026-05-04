@@ -2,7 +2,7 @@ import { assert, id } from "tsafe";
 import { createUsecaseActions } from "clean-architecture";
 import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
-import type { S3Client } from "core/ports/S3Client";
+import type { BucketPolicies } from "core/tools/bucketPolicies";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -11,10 +11,9 @@ export type State = {
     uploads: State.Upload[];
     deletions: State.Deletion[];
     listedPrefixByProfile: Record<string, State.ListedPrefix | undefined>;
-    bucketPolicyByBucket: Record<
+    bucketPoliciesByBucket: Record<
         string,
-        | { bucketPolicies: S3Client.BucketPolicies | undefined; profileName: string }
-        | undefined
+        { bucketPolicies: BucketPolicies | undefined; profileName: string } | undefined
     >;
 };
 
@@ -87,7 +86,7 @@ export const { reducer, actions } = createUsecaseActions({
         uploads: [],
         deletions: [],
         listedPrefixByProfile: {},
-        bucketPolicyByBucket: {}
+        bucketPoliciesByBucket: {}
     }),
     reducers: {
         bucketPoliciesUpdated: (
@@ -98,13 +97,13 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     bucket: string;
                     profileName: string;
-                    bucketPolicies: S3Client.BucketPolicies | undefined;
+                    bucketPolicies: BucketPolicies | undefined;
                 };
             }
         ) => {
             const { bucket, profileName, bucketPolicies } = payload;
 
-            state.bucketPolicyByBucket[bucket] = { profileName, bucketPolicies };
+            state.bucketPoliciesByBucket[bucket] = { profileName, bucketPolicies };
         },
         putObjectStarted: (
             state,

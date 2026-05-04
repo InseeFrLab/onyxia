@@ -4,25 +4,24 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { alpha } from "@mui/material/styles";
-import { Button } from "onyxia-ui/Button";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { assert, type Equals } from "tsafe";
 
 export type S3ShareObjectDialogProps =
     | S3ShareObjectDialogProps.Public
     | S3ShareObjectDialogProps.Private;
 
 export namespace S3ShareObjectDialogProps {
-    export type ValidityDuration = "one hour" | "one day" | "one week" | "one year";
+    export type ValidityDuration = "one hour" | "one day" | "one week";
 
     type Common = {
         className?: string;
         objectBasename: string;
         httpUrl: string | undefined;
-        onTogglePublicPrivate: () => void;
     };
 
     export type Public = Common & {
@@ -30,23 +29,25 @@ export namespace S3ShareObjectDialogProps {
     };
 
     export type Private = Common & {
-        isPublic: false | undefined;
+        isPublic: false;
         validityDuration: ValidityDuration;
         changeValidityDuration: (params: { validityDuration: ValidityDuration }) => void;
     };
 }
 
-const validityDurationOptions = [
-    "one hour",
-    "one day",
-    "one week",
-    "one year"
-] as const satisfies readonly S3ShareObjectDialogProps.ValidityDuration[];
+const validityDurationOptions = ["one hour", "one day", "one week"] as const;
+
+assert<
+    Equals<
+        (typeof validityDurationOptions)[number],
+        S3ShareObjectDialogProps.ValidityDuration
+    >
+>;
 
 type CopyStatus = "idle" | "copied" | "failed";
 
 export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
-    const { className, objectBasename, httpUrl, isPublic, onTogglePublicPrivate } = props;
+    const { className, objectBasename, httpUrl, isPublic } = props;
 
     const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
     const validitySelectLabelId = useId();
@@ -108,25 +109,9 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                         {getPolicyTitle({ isPublic })}
                     </Text>
                     <Text typo="body 2" className={classes.policyDescription}>
-                        {getPolicyDescription({
-                            isPublic,
-                            validityDuration: isSignedLink
-                                ? props.validityDuration
-                                : undefined
-                        })}
+                        {getPolicyDescription(props)}
                     </Text>
                 </div>
-
-                {isPublic !== undefined && (
-                    <Button
-                        className={classes.policyButton}
-                        variant="secondary"
-                        startIcon={getIconUrlByName(isPublic ? "Lock" : "Public")}
-                        onClick={onTogglePublicPrivate}
-                    >
-                        {isPublic ? "Make private" : "Make public"}
-                    </Button>
-                )}
             </div>
 
             {isSignedLink && (
@@ -211,35 +196,24 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
     );
 }
 
-function getPolicyTitle(params: { isPublic: boolean | undefined }): string {
+function getPolicyTitle(params: { isPublic: boolean }): string {
     const { isPublic } = params;
 
     if (isPublic === true) {
         return "Public object";
     }
 
-    if (isPublic === false) {
-        return "Private object";
-    }
-
-    return "Checking object policy";
+    return "Private object";
 }
 
-function getPolicyDescription(params: {
-    isPublic: boolean | undefined;
-    validityDuration: S3ShareObjectDialogProps.ValidityDuration | undefined;
-}): string {
-    const { isPublic, validityDuration } = params;
+function getPolicyDescription(props: S3ShareObjectDialogProps): string {
+    const { isPublic } = props;
 
     if (isPublic === true) {
-        return "Anyone with the URL can access this object. The URL is unsigned, has no query parameters, and never expires.";
+        return "Anyone with the URL can access this object. This link never expires because the object is inside a prefix that has been marked public.";
     }
 
-    if (isPublic === false) {
-        return `The generated URL is signed. Anyone with the URL can access this object until the link expires after ${formatValidityDuration(validityDuration)}.`;
-    }
-
-    return `The sharing policy is still loading. Until it is known, Onyxia generates a signed URL that expires after ${formatValidityDuration(validityDuration)}.`;
+    return `The HTTP URL is a signed URL that expires after ${formatValidityDuration(props.validityDuration)}. To share a URL that does not expire, make one of this object's parent prefixes (folders) public.`;
 }
 
 function isValidityDuration(
@@ -261,8 +235,6 @@ function formatValidityDuration(
             return "1 day";
         case "one week":
             return "1 week";
-        case "one year":
-            return "1 year";
         case undefined:
             return "the selected duration";
     }
@@ -352,12 +324,6 @@ const useStyles = tss
         policyDescription: {
             color: theme.colors.useCases.typography.textSecondary,
             lineHeight: 1.55
-        },
-        policyButton: {
-            flex: "0 0 auto",
-            "@media (max-width: 600px)": {
-                alignSelf: "flex-start"
-            }
         },
         validitySelect: {
             width: "min(100%, 280px)"

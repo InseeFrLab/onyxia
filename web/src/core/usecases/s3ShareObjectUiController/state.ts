@@ -11,7 +11,7 @@ export type State = {
 };
 
 export namespace State {
-    export type ValidityDuration = "one hour" | "one day" | "one week" | "one year";
+    export type ValidityDuration = "one hour" | "one day" | "one week";
 }
 
 export const name = "s3ShareObjectUiController";
@@ -52,7 +52,10 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.validityDuration = validityDuration;
         },
-        httpUrlUpdated: (state, { payload }: { payload: { httpUrl: string } }) => {
+        httpUrlUpdated: (
+            state,
+            { payload }: { payload: { httpUrl: string | undefined } }
+        ) => {
             const { httpUrl } = payload;
 
             state.httpUrl = httpUrl;

@@ -243,60 +243,6 @@ export function createS3Client(
 
             return url.href;
         },
-        getBucketPolicies: async ({ bucket }) => {
-            const { getAwsS3Client } = await prApi;
-
-            const { awsS3Client } = await getAwsS3Client();
-
-            const { GetBucketPolicyCommand, S3ServiceException } = await import(
-                "@aws-sdk/client-s3"
-            );
-
-            let policy: string | undefined;
-
-            try {
-                ({ Policy: policy } = await awsS3Client.send(
-                    new GetBucketPolicyCommand({
-                        Bucket: bucket
-                    })
-                ));
-            } catch (error) {
-                if (error instanceof S3ServiceException) {
-                    const httpStatusCode = error.$metadata?.httpStatusCode;
-
-                    if (
-                        httpStatusCode === 403 ||
-                        httpStatusCode === 404 ||
-                        httpStatusCode === 405 ||
-                        httpStatusCode === 501 ||
-                        error.name === "NoSuchBucketPolicy" ||
-                        error.name === "NotImplemented" ||
-                        error.name === "NotSupported"
-                    ) {
-                        return undefined;
-                    }
-                }
-
-                throw error;
-            }
-
-            if (policy === undefined) {
-                return undefined;
-            }
-
-            const bucketPolicies: unknown = JSON.parse(policy);
-
-            assert(
-                typeGuard<S3Client.BucketPolicies>(
-                    bucketPolicies,
-                    typeof bucketPolicies === "object" &&
-                        bucketPolicies !== null &&
-                        !Array.isArray(bucketPolicies)
-                )
-            );
-
-            return bucketPolicies;
-        },
         getToken: async ({ doForceRenew }) => {
             const { getNewlyRequestedOrCachedToken, clearCachedToken } = await prApi;
 
@@ -615,174 +561,63 @@ export function createS3Client(
 
             return { isSuccess: true };
         },
-        setS3UriPublicPrivatePolicy: (() => {
-            type BucketPolicyStatement = Record<string, unknown>;
+        getBucketPolicies: async ({ bucket }) => {
+            const { getAwsS3Client } = await prApi;
 
-            function isRecord(value: unknown): value is Record<string, unknown> {
-                return (
-                    typeof value === "object" && value !== null && !Array.isArray(value)
-                );
-            }
+            const { awsS3Client } = await getAwsS3Client();
 
-            function getPublicReadStatementSid(resourceArn: string): string {
-                return `OnyxiaPublicRead${fnv1aHashToHex(resourceArn)}`;
-            }
+            const { GetBucketPolicyCommand, S3ServiceException } = await import(
+                "@aws-sdk/client-s3"
+            );
 
-            function getPublicReadResourceArn(s3Uri: S3Uri): string {
-                const key = getS3UriKey(s3Uri);
+            let policy: string | undefined;
 
-                if (key === "") {
-                    return `arn:aws:s3:::${s3Uri.bucket}/*`;
-                }
+            try {
+                ({ Policy: policy } = await awsS3Client.send(
+                    new GetBucketPolicyCommand({
+                        Bucket: bucket
+                    })
+                ));
+            } catch (error) {
+                if (error instanceof S3ServiceException) {
+                    const httpStatusCode = error.$metadata?.httpStatusCode;
 
-                return `arn:aws:s3:::${s3Uri.bucket}/${key}${s3Uri.isDelimiterTerminated ? "*" : ""}`;
-            }
-
-            function createPublicReadStatement(params: {
-                resourceArn: string;
-            }): BucketPolicyStatement {
-                const { resourceArn } = params;
-
-                return {
-                    Sid: getPublicReadStatementSid(resourceArn),
-                    Effect: "Allow",
-                    Principal: "*",
-                    Action: "s3:GetObject",
-                    Resource: resourceArn
-                };
-            }
-
-            function getStatements(bucketPolicies: S3Client.BucketPolicies): unknown[] {
-                const { Statement } = bucketPolicies;
-
-                if (Array.isArray(Statement)) {
-                    return Statement;
-                }
-
-                if (Statement === undefined) {
-                    return [];
-                }
-
-                return [Statement];
-            }
-
-            function removeManagedPublicReadStatement(params: {
-                statements: unknown[];
-                resourceArn: string;
-            }): unknown[] {
-                const { statements, resourceArn } = params;
-
-                const sid = getPublicReadStatementSid(resourceArn);
-
-                return statements.filter(statement => {
-                    if (!isRecord(statement)) {
-                        return true;
-                    }
-
-                    return statement.Sid !== sid || statement.Resource !== resourceArn;
-                });
-            }
-
-            return async ({ s3Uri, policy }) => {
-                const { getAwsS3Client } = await prApi;
-
-                const { awsS3Client } = await getAwsS3Client();
-
-                const {
-                    GetBucketPolicyCommand,
-                    PutBucketPolicyCommand,
-                    DeleteBucketPolicyCommand,
-                    S3ServiceException
-                } = await import("@aws-sdk/client-s3");
-
-                const Bucket = s3Uri.bucket;
-                const resourceArn = getPublicReadResourceArn(s3Uri);
-
-                let bucketPolicies: S3Client.BucketPolicies | undefined = undefined;
-
-                try {
-                    const { Policy } = await awsS3Client.send(
-                        new GetBucketPolicyCommand({
-                            Bucket
-                        })
-                    );
-
-                    if (Policy !== undefined) {
-                        const parsedPolicy: unknown = JSON.parse(Policy);
-
-                        assert(
-                            typeGuard<S3Client.BucketPolicies>(
-                                parsedPolicy,
-                                isRecord(parsedPolicy)
-                            )
-                        );
-
-                        bucketPolicies = parsedPolicy;
-                    }
-                } catch (error) {
                     if (
-                        error instanceof S3ServiceException &&
-                        (error.$metadata?.httpStatusCode === 404 ||
-                            error.name === "NoSuchBucketPolicy")
+                        httpStatusCode === 403 ||
+                        httpStatusCode === 404 ||
+                        httpStatusCode === 405 ||
+                        httpStatusCode === 501 ||
+                        error.name === "NoSuchBucketPolicy" ||
+                        error.name === "NotImplemented" ||
+                        error.name === "NotSupported"
                     ) {
-                        bucketPolicies = undefined;
-                    } else {
-                        assert(is<Error>(error));
-
-                        return {
-                            isSuccess: false,
-                            errorMessage: error.message
-                        };
+                        return undefined;
                     }
                 }
 
-                const basePolicy =
-                    bucketPolicies ??
-                    id<S3Client.BucketPolicies>({
-                        Version: "2012-10-17"
-                    });
+                throw error;
+            }
 
-                const statements = removeManagedPublicReadStatement({
-                    statements: getStatements(basePolicy),
-                    resourceArn
-                });
+            if (policy === undefined) {
+                return undefined;
+            }
 
-                if (policy === "public") {
-                    statements.push(createPublicReadStatement({ resourceArn }));
-                }
+            const bucketPolicies: unknown = JSON.parse(policy);
 
-                try {
-                    if (statements.length === 0) {
-                        if (bucketPolicies !== undefined) {
-                            await awsS3Client.send(
-                                new DeleteBucketPolicyCommand({
-                                    Bucket
-                                })
-                            );
-                        }
-                    } else {
-                        await awsS3Client.send(
-                            new PutBucketPolicyCommand({
-                                Bucket,
-                                Policy: JSON.stringify({
-                                    ...basePolicy,
-                                    Statement: statements
-                                })
-                            })
-                        );
-                    }
-                } catch (error) {
-                    assert(is<Error>(error));
+            assert(
+                typeGuard<S3Client.BucketPolicies>(
+                    bucketPolicies,
+                    typeof bucketPolicies === "object" &&
+                        bucketPolicies !== null &&
+                        !Array.isArray(bucketPolicies)
+                )
+            );
 
-                    return {
-                        isSuccess: false,
-                        errorMessage: error.message
-                    };
-                }
-
-                return { isSuccess: true };
-            };
-        })()
+            return bucketPolicies;
+        },
+        putBucketPolicies: async ({ bucket, bucketPolicies }) => {
+            //TODO
+        }
     };
 
     return s3Client;
