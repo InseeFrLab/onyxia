@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import type { S3Uri } from "core/tools/S3Uri";
 import {
     S3SelectionActionBar,
     type S3SelectionActionBarProps
@@ -15,22 +14,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const objectUri: S3Uri.NonTerminatedByDelimiter = {
-    bucket: "demo-bucket",
-    delimiter: "/",
-    keySegments: ["reports", "2024", "summary.csv"],
-    isDelimiterTerminated: false
-};
-
-const prefixUri: S3Uri.TerminatedByDelimiter = {
-    bucket: "demo-bucket",
-    delimiter: "/",
-    keySegments: ["reports", "2024"],
-    isDelimiterTerminated: true
-};
-
 const baseArgs: S3SelectionActionBarProps = {
-    selectedS3Uris: [objectUri],
+    selectionCount: 1,
     onClear: action("clear"),
     onDownload: action("download"),
     onDelete: action("delete"),
@@ -47,13 +32,17 @@ export const SingleObject: Story = {
 export const SinglePrefix: Story = {
     args: {
         ...baseArgs,
-        selectedS3Uris: [prefixUri]
+        onDownload: undefined,
+        onShare: undefined
     }
 };
 
 export const MultipleSelection: Story = {
     args: {
         ...baseArgs,
-        selectedS3Uris: [prefixUri, objectUri]
+        selectionCount: 2,
+        onDownload: undefined,
+        onCopyS3Uri: undefined,
+        onShare: undefined
     }
 };

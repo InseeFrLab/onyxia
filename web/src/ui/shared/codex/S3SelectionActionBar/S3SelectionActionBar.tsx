@@ -1,24 +1,16 @@
-import type { S3Uri } from "core/tools/S3Uri";
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { tss } from "tss";
 
 export type S3SelectionActionBarProps = {
     className?: string;
-    /** When mounted there is at least one item in the list */
-    selectedS3Uris: S3Uri[];
+    selectionCount: number;
     /** Function to clear the selection and hide the selection action bar */
     onClear: () => void;
-    /** Only visible when selectedS3Uris contains one element
-     *  and this element is of type S3Uri.NonTerminatedByDelimiter */
-    onDownload: () => void;
-    /** Always visible */
-    onDelete: () => void;
-    /** Only visible when only one item is selected */
-    onCopyS3Uri: () => void;
-    /** Only visible when selectedS3Uris contains one element
-     *  and this element is of type S3Uri.NonTerminatedByDelimiter */
-    onShare: () => void;
+    onDownload: (() => void) | undefined;
+    onDelete: (() => void) | undefined;
+    onCopyS3Uri: (() => void) | undefined;
+    onShare: (() => void) | undefined;
 };
 
 type Action = {
@@ -26,13 +18,12 @@ type Action = {
     label: string;
     iconName: string;
     onClick: () => void;
-    isVisible: boolean;
 };
 
 export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const {
         className,
-        selectedS3Uris,
+        selectionCount,
         onClear,
         onDownload,
         onDelete,
@@ -42,45 +33,37 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 
     const { classes, cx } = useStyles();
 
-    const isSingleSelection = selectedS3Uris.length === 1;
-    const isSingleObjectSelection =
-        isSingleSelection && selectedS3Uris[0].isDelimiterTerminated === false;
-
-    const actions: Action[] = [
+    const actions = [
         {
             key: "download",
             label: "Download",
             iconName: "FileDownload",
-            onClick: onDownload,
-            isVisible: isSingleObjectSelection
+            onClick: onDownload
         },
         {
             key: "delete",
             label: "Delete",
             iconName: "Delete",
-            onClick: onDelete,
-            isVisible: true
+            onClick: onDelete
         },
         {
             key: "copy",
             label: "Copy S3 path",
             iconName: "ContentCopy",
-            onClick: onCopyS3Uri,
-            isVisible: isSingleSelection
+            onClick: onCopyS3Uri
         },
         {
             key: "share",
             label: "Share",
             iconName: "Share",
-            onClick: onShare,
-            isVisible: isSingleObjectSelection
+            onClick: onShare
         }
-    ];
+    ].filter((action): action is Action => action.onClick !== undefined);
 
     const selectedLabel =
-        selectedS3Uris.length === 1 ? "1 selected" : `${selectedS3Uris.length} selected`;
+        selectionCount === 1 ? "1 selected" : `${selectionCount} selected`;
 
-    if (selectedS3Uris.length === 0) {
+    if (selectionCount === 0) {
         return null;
     }
 
@@ -98,23 +81,21 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                 <span className={classes.summaryLabel}>{selectedLabel}</span>
             </div>
             <div className={classes.actions}>
-                {actions
-                    .filter(action => action.isVisible)
-                    .map(action => (
-                        <button
-                            key={action.key}
-                            type="button"
-                            className={classes.actionButton}
-                            onClick={action.onClick}
-                        >
-                            <Icon
-                                className={classes.actionIcon}
-                                icon={getIconUrl(action.iconName)}
-                                size="small"
-                            />
-                            <span className={classes.actionLabel}>{action.label}</span>
-                        </button>
-                    ))}
+                {actions.map(action => (
+                    <button
+                        key={action.key}
+                        type="button"
+                        className={classes.actionButton}
+                        onClick={action.onClick}
+                    >
+                        <Icon
+                            className={classes.actionIcon}
+                            icon={getIconUrl(action.iconName)}
+                            size="small"
+                        />
+                        <span className={classes.actionLabel}>{action.label}</span>
+                    </button>
+                ))}
             </div>
         </div>
     );
