@@ -1,11 +1,12 @@
 import type { S3Client } from "core/ports/S3Client";
+import type { BucketPolicies } from "core/tools/bucketPolicies";
 import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistence
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert, is, typeGuard, type Equals } from "tsafe";
 import type { Oidc } from "core/ports/Oidc";
-import { getS3UriKey, parseS3Uri, type S3Uri } from "core/tools/S3Uri";
+import { getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
 import { exclude, id } from "tsafe";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi";
@@ -605,7 +606,7 @@ export function createS3Client(
             const bucketPolicies: unknown = JSON.parse(policy);
 
             assert(
-                typeGuard<S3Client.BucketPolicies>(
+                typeGuard<BucketPolicies>(
                     bucketPolicies,
                     typeof bucketPolicies === "object" &&
                         bucketPolicies !== null &&
@@ -616,7 +617,29 @@ export function createS3Client(
             return bucketPolicies;
         },
         putBucketPolicies: async ({ bucket, bucketPolicies }) => {
-            //TODO
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            const { PutBucketPolicyCommand } = await import("@aws-sdk/client-s3");
+
+            try {
+                await awsS3Client.send(
+                    new PutBucketPolicyCommand({
+                        Bucket: bucket,
+                        Policy: JSON.stringify(bucketPolicies)
+                    })
+                );
+            } catch (error) {
+                assert(is<Error>(error));
+
+                return {
+                    isSuccess: false,
+                    errorMessage: error.message
+                };
+            }
+
+            return { isSuccess: true };
         }
     };
 
