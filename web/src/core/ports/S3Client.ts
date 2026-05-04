@@ -1,5 +1,6 @@
 import type { S3Uri } from "core/tools/S3Uri";
 import type { NonPostableEvt } from "evt";
+import type { BucketPolicies } from "core/tools/bucketPolicies";
 
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<
@@ -64,11 +65,11 @@ export type S3Client = {
 
     getBucketPolicies: (params: {
         bucket: string;
-    }) => Promise<S3Client.BucketPolicies | undefined>;
+    }) => Promise<BucketPolicies | undefined>;
 
-    setS3UriPublicPrivatePolicy: (params: {
-        s3Uri: S3Uri;
-        policy: "public" | "private";
+    putBucketPolicies: (params: {
+        bucket: string;
+        bucketPolicies: BucketPolicies;
     }) => Promise<{ isSuccess: true } | { isSuccess: false; errorMessage: string }>;
 };
 
@@ -99,6 +100,4 @@ export namespace S3Client {
             errorCase: "access denied" | "no such bucket";
         };
     }
-
-    export type BucketPolicies = Record<string, unknown>;
 }

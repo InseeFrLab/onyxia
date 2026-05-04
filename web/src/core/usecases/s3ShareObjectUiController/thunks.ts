@@ -19,19 +19,6 @@ export const thunks = {
                 })
             );
         },
-    togglePublicPrivate:
-        () =>
-        async (...args) => {
-            const [dispatch, getState] = args;
-
-            const s3Uri = privateSelectors.s3Uri(getState());
-
-            await dispatch(
-                s3ExplorerUiController.protectedThunks.toggleS3UriPublicPrivatePolicy({
-                    s3Uri
-                })
-            );
-        },
     changeValidityDuration:
         (params: { validityDuration: State.ValidityDuration }) =>
         (...args) => {
@@ -49,6 +36,12 @@ export const privateThunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
+            dispatch(
+                actions.httpUrlUpdated({
+                    httpUrl: undefined
+                })
+            );
+
             const s3Uri = privateSelectors.s3Uri(getState());
 
             const validityDuration = privateSelectors.validityDuration(getState());
@@ -64,8 +57,6 @@ export const privateThunks = {
                                 return 60 * 60 * 24;
                             case "one week":
                                 return 60 * 60 * 24 * 7;
-                            case "one year":
-                                return 60 * 60 * 24 * 7 * 365;
                         }
                     })()
                 })

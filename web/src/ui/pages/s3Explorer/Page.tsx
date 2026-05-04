@@ -126,12 +126,6 @@ function PageComponent() {
                     dialogProps.evtDisplayErrorDialogOpen.post({
                         errorMessage
                     })
-            )
-            .attach(
-                data => data.action === "download object",
-                ({ httpObjectUrl }) => {
-                    window.open(httpObjectUrl, "_blank", "noopener,noreferrer");
-                }
             );
     }, []);
 

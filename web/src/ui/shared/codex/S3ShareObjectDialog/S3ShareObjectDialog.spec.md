@@ -9,9 +9,8 @@ Its purpose is to:
 - identify the shared object
 - display the generated HTTP URL in a compact form
 - let the user copy that URL
-- explain whether the URL is public or signed
+- explain whether the URL is public through a public prefix or signed
 - let the user change signed URL validity
-- let the user switch object policy between public and private when policy state is known
 
 # Props
 
@@ -21,13 +20,12 @@ export type S3ShareObjectDialogProps =
     | S3ShareObjectDialogProps.Private;
 
 export namespace S3ShareObjectDialogProps {
-    export type ValidityDuration = "one hour" | "one day" | "one week" | "one year";
+    export type ValidityDuration = "one hour" | "one day" | "one week";
 
     type Common = {
         className?: string;
         objectBasename: string;
         httpUrl: string | undefined;
-        onTogglePublicPrivate: () => void;
     };
 
     export type Public = Common & {
@@ -35,7 +33,7 @@ export namespace S3ShareObjectDialogProps {
     };
 
     export type Private = Common & {
-        isPublic: false | undefined;
+        isPublic: false;
         validityDuration: ValidityDuration;
         changeValidityDuration: (params: { validityDuration: ValidityDuration }) => void;
     };
@@ -93,30 +91,21 @@ If copy fails, the component should display a failure status.
 
 When `isPublic === true`:
 
-- Explain that the URL is unsigned.
-- Explain that it has no query parameters.
-- Explain that it never expires.
+- Explain that anyone with the URL can access the object.
+- Explain that the URL never expires because the object is inside a prefix that has been marked public.
 - Do not render the validity duration selector.
-- Render a policy button that calls `onTogglePublicPrivate` and communicates making the object private.
+- Do not render a public/private policy toggle.
 
 ## Private
 
 When `isPublic === false`:
 
-- Explain that the URL is signed.
-- Explain that anyone with the URL can access the object until expiration.
+- Explain that `httpUrl` is a signed URL.
 - Include the selected `validityDuration` in the explanation.
+- Explain that users who need a URL that does not expire should make one of the object's parent prefixes (folders) public.
 - Render a select bound to `validityDuration`.
 - Calling the select must invoke `changeValidityDuration({ validityDuration })`.
-- Render a policy button that calls `onTogglePublicPrivate` and communicates making the object public.
-
-## Unknown Policy
-
-When `isPublic === undefined`:
-
-- Explain that the policy state is still loading.
-- Render the signed URL validity selector.
-- Hide the public/private policy toggle button.
+- Do not render a public/private policy toggle.
 
 # Accessibility
 
