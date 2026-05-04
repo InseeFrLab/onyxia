@@ -148,12 +148,19 @@ The component renders `S3SelectionActionBar` above the list.
 
 `S3ExplorerMainView` is responsible for deriving and passing:
 
-- `selectedS3Uris`
+- `selectionCount`
 - `onDownload`
 - `onCopyS3Uri`
 - `onDelete`
 - `onShare`
 - `onClear`
+
+It must pass `undefined` for selection action callbacks that do not make sense
+for the current selection:
+
+- download and share are available only for one selected object
+- copy S3 path is available only for one selected item
+- delete is available when at least one item is selected
 
 The visual and interaction behavior of this bar is defined in the dedicated `S3SelectionActionBar` spec and must not be redefined here.
 

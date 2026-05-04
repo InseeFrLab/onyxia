@@ -1055,7 +1055,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const selectableItems = items.filter(item => !item.isDeleting);
     const selectedItemKeySet = new Set(selectedItemKeys);
     const selectedItems = items.filter(item => selectedItemKeySet.has(getItemKey(item)));
-    const selectedS3Uris = selectedItems.map(item => item.s3Uri);
     const showRowActions = selectedItems.length <= 1;
 
     const isAllSelected =
@@ -1066,6 +1065,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const selectedItemForSingleItemAction =
         selectedItems.length === 1 ? selectedItems[0] : undefined;
+    const selectedObjectForSingleItemAction =
+        selectedItemForSingleItemAction?.type === "object"
+            ? selectedItemForSingleItemAction
+            : undefined;
 
     const setSelectionToSingleItem = (itemKey: string) => {
         setSelectedItemKeys([itemKey]);
@@ -1331,18 +1334,30 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 <div className={classes.selectionBarSlot}>
                     {selectedItems.length > 0 && (
                         <S3SelectionActionBar
-                            selectedS3Uris={selectedS3Uris}
+                            selectionCount={selectedItems.length}
                             onClear={clearSelection}
-                            onDownload={() => requestDownloadForItems(selectedItems)}
+                            onDownload={
+                                selectedObjectForSingleItemAction === undefined
+                                    ? undefined
+                                    : () =>
+                                          requestDownloadForItems([
+                                              selectedObjectForSingleItemAction
+                                          ])
+                            }
                             onDelete={() => requestDeletionForItems(selectedItems)}
-                            onCopyS3Uri={copySelectedS3Uri}
-                            onShare={() => {
-                                if (selectedItemForSingleItemAction === undefined) {
-                                    return;
-                                }
-
-                                requestShareForItem(selectedItemForSingleItemAction);
-                            }}
+                            onCopyS3Uri={
+                                selectedItemForSingleItemAction === undefined
+                                    ? undefined
+                                    : copySelectedS3Uri
+                            }
+                            onShare={
+                                selectedObjectForSingleItemAction === undefined
+                                    ? undefined
+                                    : () =>
+                                          requestShareForItem(
+                                              selectedObjectForSingleItemAction
+                                          )
+                            }
                         />
                     )}
                 </div>

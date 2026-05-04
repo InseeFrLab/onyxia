@@ -2,43 +2,34 @@
 
 `S3SelectionActionBar` is the contextual action bar displayed when one or more items are selected in the S3 storage list.
 
-Its primary purpose is to expose the available actions for the current selection of S3 items (prefixes or objects).
+Its primary purpose is to expose the actions that the parent component declares available for the current selection.
 
-The component reflects the selection state but does not manage it.
+The component reflects the selection count but does not manage selection state or infer which actions make sense for the selected S3 items.
 
 # Props
 
 ```ts
-import type { S3Uri } from "core/tools/S3Uri";
-
 type S3SelectionActionBarProps = {
     className?: string;
 
-    /** When mounted there is at least one item in the list */
-    selectedS3Uris: S3Uri[];
+    selectionCount: number;
 
     /** Function to clear the selection and hide the selection action bar */
     onClear: () => void;
 
-    /** Only visible when selectedS3Uris contains one element
-     *  and this element is of type S3Uri.NonTerminatedByDelimiter */
-    onDownload: () => void;
+    onDownload: (() => void) | undefined;
 
-    /** Always visible */
-    onDelete: () => void;
+    onDelete: (() => void) | undefined;
 
-    /** Only visible when only one item is selected */
-    onCopyS3Uri: () => void;
+    onCopyS3Uri: (() => void) | undefined;
 
-    /** Only visible when selectedS3Uris contains one element
-     *  and this element is of type S3Uri.NonTerminatedByDelimiter */
-    onShare: () => void;
+    onShare: (() => void) | undefined;
 };
 ```
 
 # General Structure
 
-This component acts as a wrapper for selection-based actions related to the S3 storage list.
+This component acts as a presentational wrapper for selection-based actions related to the S3 storage list.
 
 It is displayed only when at least one item is selected.
 
@@ -55,8 +46,10 @@ The layout is horizontal and must remain on a single line.
 The component is rendered only when:
 
 ```ts
-selectedS3Uris.length > 0;
+selectionCount > 0;
 ```
+
+The parent is expected to mount it only when there is a selection. If `selectionCount` is `0`, the component renders nothing.
 
 ### Selection summary
 
@@ -85,46 +78,20 @@ Each action is rendered as:
 [ icon ] label
 ```
 
-### Always visible actions
+The component does not inspect selected S3 URIs or decide action availability from selection shape.
 
-These actions must always be rendered:
+Each action button is rendered only when its callback prop is defined.
 
-- Delete → `onDelete`
+### Optional actions
 
-### Single selection actions
+- Download → rendered when `onDownload !== undefined`
+- Delete → rendered when `onDelete !== undefined`
+- Copy S3 path → rendered when `onCopyS3Uri !== undefined`
+- Share → rendered when `onShare !== undefined`
 
-These actions are rendered only when:
+Clicking a rendered action calls its matching callback.
 
-```ts
-selectedS3Uris.length === 1;
-```
-
-- Copy S3 path → `onCopyS3Uri`
-
-### Object-only single selection actions
-
-The Download and Share actions are rendered only when:
-
-```ts
-selectedS3Uris.length === 1
-&& selectedS3Uris[0] is S3Uri.NonTerminatedByDelimiter
-```
-
-- Download → `onDownload`
-- Share → `onShare`
-
-### Multi-selection
-
-When multiple items are selected:
-
-- Visible actions:
-- Delete
-
-Hidden actions:
-
-- Download
-- Share
-- Copy S3 path
+The parent component is responsible for passing `undefined` for actions that do not make sense for the current context, such as single-object-only or single-selection-only actions.
 
 # Layout Rules
 
