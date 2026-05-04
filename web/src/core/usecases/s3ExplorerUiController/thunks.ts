@@ -916,10 +916,7 @@ export const privateThunks = {
             );
 
             return downloadUrl;
-        }
-} satisfies Thunks;
-
-export const protectedThunks = {
+        },
     toggleS3UriPublicPrivatePolicy:
         (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
         async (...args) => {
@@ -994,7 +991,10 @@ export const protectedThunks = {
                     profileName
                 })
             );
-        },
+        }
+} satisfies Thunks;
+
+export const protectedThunks = {
     getObjectHttpUrl:
         (params: {
             s3Uri: S3Uri.NonTerminatedByDelimiter;
