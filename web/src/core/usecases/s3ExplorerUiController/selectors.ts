@@ -112,6 +112,7 @@ export namespace MainView {
         export type PrefixSegment = Common & {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
+            policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
         };
 
         export type Object = Common & {
