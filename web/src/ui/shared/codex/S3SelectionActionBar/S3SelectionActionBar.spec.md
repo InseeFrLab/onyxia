@@ -24,6 +24,10 @@ type S3SelectionActionBarProps = {
     onCopyS3Uri: (() => void) | undefined;
 
     onShare: (() => void) | undefined;
+
+    onMakePublic: (() => void) | undefined;
+
+    onMakePrivate: (() => void) | undefined;
 };
 ```
 
@@ -88,10 +92,17 @@ Each action button is rendered only when its callback prop is defined.
 - Delete → rendered when `onDelete !== undefined`
 - Copy S3 path → rendered when `onCopyS3Uri !== undefined`
 - Share → rendered when `onShare !== undefined`
+- Make public → rendered when `onMakePublic !== undefined`
+- Make private → rendered when `onMakePrivate !== undefined`
 
 Clicking a rendered action calls its matching callback.
 
 The parent component is responsible for passing `undefined` for actions that do not make sense for the current context, such as single-object-only or single-selection-only actions.
+
+### Optional action icons
+
+- Make public uses the `Public` icon.
+- Make private uses the `PublicOff` icon.
 
 # Layout Rules
 
