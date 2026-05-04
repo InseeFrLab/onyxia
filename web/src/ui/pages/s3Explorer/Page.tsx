@@ -455,12 +455,14 @@ function PageComponent() {
                                     }
                                     onDelete={s3ExplorerUiController.delete}
                                     onDownload={s3ExplorerUiController.downloadObject}
-                                    onShare={({ s3Uri }) => {
-                                        if (s3Uri.isDelimiterTerminated) {
-                                            alert("todo 3944");
-                                            return;
-                                        }
+                                    onChangePrefixPolicy={({ action, s3Uri }) => {
+                                        alert(`todo dialog ${action}`);
 
+                                        s3ExplorerUiController.toggleS3UriPublicPrivatePolicy(
+                                            { s3Uri }
+                                        );
+                                    }}
+                                    onShareObject={({ s3Uri }) => {
                                         dialogProps.evtS3ShareObjectDialogOpen.post({
                                             s3Uri
                                         });

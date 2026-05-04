@@ -666,6 +666,81 @@ export const thunks = {
             );
 
             window.open(httpObjectUrl, "_blank", "noopener,noreferrer");
+        },
+    toggleS3UriPublicPrivatePolicy:
+        (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
+        async (...args) => {
+            const { s3Uri } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const bucketPoliciesByBucket =
+                protectedSelectors.bucketPoliciesByBucket(getState());
+
+            const hasPrefixBeMadePublic = getHasPrefixBeMadePublic({
+                s3Uri,
+                bucketPoliciesByBucket
+            });
+
+            const params_putBucketPolicies = hasPrefixBeMadePublic
+                ? undoMakePrefixPublic({
+                      s3Uri,
+                      bucketPoliciesByBucket
+                  })
+                : makePrefixPublic({
+                      s3Uri,
+                      bucketPoliciesByBucket
+                  });
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const result = await s3Client.putBucketPolicies({
+                bucket: params_putBucketPolicies.bucket,
+                bucketPolicies: params_putBucketPolicies.updatedBucketPolicies
+            });
+
+            if (!result.isSuccess) {
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        resp: result.errorMessage
+                    })
+                );
+
+                evtDisplayError.post({
+                    errorMessage: result.errorMessage
+                });
+                return;
+            }
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: params_putBucketPolicies.awsS3CliEmulatedCommand.resp
+                })
+            );
+
+            await dispatch(
+                privateThunks.updateBucketPolicy({
+                    bucket: params_putBucketPolicies.bucket,
+                    profileName
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -916,81 +991,6 @@ export const privateThunks = {
             );
 
             return downloadUrl;
-        },
-    toggleS3UriPublicPrivatePolicy:
-        (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
-        async (...args) => {
-            const { s3Uri } = params;
-
-            const [dispatch, getState] = args;
-
-            const profileName = privateSelectors.profileName(getState());
-
-            assert(profileName !== undefined);
-
-            const bucketPoliciesByBucket =
-                protectedSelectors.bucketPoliciesByBucket(getState());
-
-            const hasPrefixBeMadePublic = getHasPrefixBeMadePublic({
-                s3Uri,
-                bucketPoliciesByBucket
-            });
-
-            const params_putBucketPolicies = hasPrefixBeMadePublic
-                ? undoMakePrefixPublic({
-                      s3Uri,
-                      bucketPoliciesByBucket
-                  })
-                : makePrefixPublic({
-                      s3Uri,
-                      bucketPoliciesByBucket
-                  });
-
-            const cmdId = Date.now();
-
-            dispatch(
-                actions.commandLogIssued({
-                    cmdId,
-                    cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
-                })
-            );
-
-            const s3Client = await dispatch(
-                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
-            );
-
-            const result = await s3Client.putBucketPolicies({
-                bucket: params_putBucketPolicies.bucket,
-                bucketPolicies: params_putBucketPolicies.updatedBucketPolicies
-            });
-
-            if (!result.isSuccess) {
-                dispatch(
-                    actions.commandLogResponseReceived({
-                        cmdId,
-                        resp: result.errorMessage
-                    })
-                );
-
-                evtDisplayError.post({
-                    errorMessage: result.errorMessage
-                });
-                return;
-            }
-
-            dispatch(
-                actions.commandLogResponseReceived({
-                    cmdId,
-                    resp: params_putBucketPolicies.awsS3CliEmulatedCommand.resp
-                })
-            );
-
-            await dispatch(
-                privateThunks.updateBucketPolicy({
-                    bucket: params_putBucketPolicies.bucket,
-                    profileName
-                })
-            );
         }
 } satisfies Thunks;
 
