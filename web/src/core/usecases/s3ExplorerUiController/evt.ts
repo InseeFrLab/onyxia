@@ -12,8 +12,7 @@ import {
     thunks,
     privateThunks,
     evtAskOverwriteConfirmation,
-    evtDisplayError,
-    evtDownloadObject
+    evtDisplayError
 } from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
 import * as dataExplorer from "core/usecases/dataExplorer";
@@ -41,18 +40,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
               action: "display error";
               errorMessage: string;
           }
-        | {
-              action: "download object";
-              httpObjectUrl: string;
-          }
     >();
-
-    evtDownloadObject.attach(({ httpObjectUrl }) =>
-        evt.post({
-            action: "download object",
-            httpObjectUrl
-        })
-    );
 
     evtDisplayError.attach(({ errorMessage }) => {
         evt.post({
@@ -186,7 +174,8 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             })();
 
             {
-                const wrap = protectedSelectors.bucketPolicyByBucket(getState())[bucket];
+                const wrap =
+                    protectedSelectors.bucketPoliciesByBucket(getState())[bucket];
 
                 if (wrap !== undefined && wrap.profileName === profileName) {
                     return;

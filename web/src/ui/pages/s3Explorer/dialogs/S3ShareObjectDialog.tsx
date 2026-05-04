@@ -62,7 +62,6 @@ const Body = withLoader<{
             <S3ShareObjectDialog_headless
                 objectBasename={mainView.objectBasename}
                 httpUrl={mainView.httpUrl}
-                onTogglePublicPrivate={s3ShareObjectUiController.togglePublicPrivate}
                 {...(mainView.isPublic === true
                     ? {
                           isPublic: true

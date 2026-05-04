@@ -3,7 +3,7 @@ import { name, type State } from "./state";
 import { createSelector } from "clean-architecture";
 import { assert, id } from "tsafe";
 import * as s3ExplorerUiController from "core/usecases/s3ExplorerUiController";
-import { getIsPublic } from "core/usecases/s3ExplorerUiController/decoupledLogic/bucketPolicy";
+import { getIsWithinPrefixThatHasBeenMadePublic } from "core/tools/bucketPolicies";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -20,7 +20,7 @@ export namespace MainView {
     };
 
     export type Private = Common & {
-        isPublic: false | undefined;
+        isPublic: false;
         validityDuration: State.ValidityDuration;
     };
 }
@@ -29,11 +29,11 @@ const s3Uri = createSelector(state, state => state.s3Uri);
 
 const isPublic = createSelector(
     s3Uri,
-    s3ExplorerUiController.protectedSelectors.bucketPolicyByBucket,
-    (s3Uri, bucketPolicyByBucket) =>
-        getIsPublic({
+    s3ExplorerUiController.protectedSelectors.bucketPoliciesByBucket,
+    (s3Uri, bucketPoliciesByBucket) =>
+        getIsWithinPrefixThatHasBeenMadePublic({
             s3Uri,
-            bucketPolicyByBucket
+            bucketPoliciesByBucket
         })
 );
 
@@ -54,7 +54,7 @@ const mainView = createSelector(
             httpUrl
         };
 
-        return isPublic === true
+        return isPublic
             ? id<MainView.Public>({
                   ...common,
                   isPublic: true

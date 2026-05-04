@@ -24,8 +24,7 @@ const basePrivateArgs: S3ShareObjectDialogProps.Private = {
     isPublic: false,
     httpUrl: getSignedUrl({ validityDuration: "one day" }),
     validityDuration: "one day",
-    changeValidityDuration: action("changeValidityDuration"),
-    onTogglePublicPrivate: action("togglePublicPrivate")
+    changeValidityDuration: action("changeValidityDuration")
 };
 
 function renderInModalBody(args: S3ShareObjectDialogProps) {
@@ -85,8 +84,7 @@ export const PublicObject: Story = {
     args: {
         objectBasename,
         isPublic: true,
-        httpUrl: publicUrl,
-        onTogglePublicPrivate: action("togglePublicPrivate")
+        httpUrl: publicUrl
     },
     render: renderInModalBody
 };
@@ -99,10 +97,10 @@ export const GeneratingSignedUrl: Story = {
     render: renderInModalBody
 };
 
-export const PolicyLoading: Story = {
+export const GeneratingPublicUrl: Story = {
     args: {
-        ...basePrivateArgs,
-        isPublic: undefined,
+        objectBasename,
+        isPublic: true,
         httpUrl: undefined
     },
     render: renderInModalBody
@@ -116,7 +114,6 @@ export const InteractiveValidity: Story = {
         <StatefulPrivateShareDialog
             objectBasename={args.objectBasename}
             isPublic={false}
-            onTogglePublicPrivate={args.onTogglePublicPrivate}
             initialValidityDuration={
                 "validityDuration" in args ? args.validityDuration : "one day"
             }
@@ -155,7 +152,5 @@ function getValidityDurationSeconds(validityDuration: ValidityDuration): number 
             return 60 * 60 * 24;
         case "one week":
             return 60 * 60 * 24 * 7;
-        case "one year":
-            return 60 * 60 * 24 * 365;
     }
 }

@@ -14,9 +14,11 @@ import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators";
 import { Deferred } from "evt/tools/Deferred";
 import {
-    getIsPublic,
-    getSetS3UriPublicPrivatePolicyCommandLog
-} from "./decoupledLogic/bucketPolicy";
+    getHasPrefixBeMadePublic,
+    makePrefixPublic,
+    undoMakePrefixPublic,
+    getIsWithinPrefixThatHasBeenMadePublic
+} from "core/tools/bucketPolicies";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -40,10 +42,6 @@ export const evtAskOverwriteConfirmation = Evt.create<{
 
 export const evtDisplayError = Evt.create<{
     errorMessage: string;
-}>();
-
-export const evtDownloadObject = Evt.create<{
-    httpObjectUrl: string;
 }>();
 
 export const thunks = {
@@ -667,7 +665,7 @@ export const thunks = {
                 })
             );
 
-            evtDownloadObject.post({ httpObjectUrl });
+            window.open(httpObjectUrl, "_blank", "noopener,noreferrer");
         }
 } satisfies Thunks;
 
@@ -923,7 +921,7 @@ export const privateThunks = {
 
 export const protectedThunks = {
     toggleS3UriPublicPrivatePolicy:
-        (params: { s3Uri: S3Uri }) =>
+        (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
         async (...args) => {
             const { s3Uri } = params;
 
@@ -933,35 +931,30 @@ export const protectedThunks = {
 
             assert(profileName !== undefined);
 
-            const bucketPolicyByBucket =
-                protectedSelectors.bucketPolicyByBucket(getState());
+            const bucketPoliciesByBucket =
+                protectedSelectors.bucketPoliciesByBucket(getState());
 
-            const isPublic = getIsPublic({
-                bucketPolicyByBucket,
-                s3Uri
-            });
-
-            const policy = isPublic ? "private" : "public";
-
-            const commandLog = getSetS3UriPublicPrivatePolicyCommandLog({
+            const hasPrefixBeMadePublic = getHasPrefixBeMadePublic({
                 s3Uri,
-                bucketPolicies: (() => {
-                    const bucketPolicies =
-                        bucketPolicyByBucket[s3Uri.bucket]?.bucketPolicies;
-
-                    assert(bucketPolicies !== undefined);
-
-                    return bucketPolicies;
-                })(),
-                policy
+                bucketPoliciesByBucket
             });
+
+            const params_putBucketPolicies = hasPrefixBeMadePublic
+                ? undoMakePrefixPublic({
+                      s3Uri,
+                      bucketPoliciesByBucket
+                  })
+                : makePrefixPublic({
+                      s3Uri,
+                      bucketPoliciesByBucket
+                  });
 
             const cmdId = Date.now();
 
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: commandLog.cmd
+                    cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
                 })
             );
 
@@ -969,9 +962,9 @@ export const protectedThunks = {
                 s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
             );
 
-            const result = await s3Client.setS3UriPublicPrivatePolicy({
-                s3Uri,
-                policy
+            const result = await s3Client.putBucketPolicies({
+                bucket: params_putBucketPolicies.bucket,
+                bucketPolicies: params_putBucketPolicies.updatedBucketPolicies
             });
 
             if (!result.isSuccess) {
@@ -991,13 +984,13 @@ export const protectedThunks = {
             dispatch(
                 actions.commandLogResponseReceived({
                     cmdId,
-                    resp: commandLog.successResp
+                    resp: params_putBucketPolicies.awsS3CliEmulatedCommand.resp
                 })
             );
 
             await dispatch(
                 privateThunks.updateBucketPolicy({
-                    bucket: s3Uri.bucket,
+                    bucket: params_putBucketPolicies.bucket,
                     profileName
                 })
             );
@@ -1012,14 +1005,14 @@ export const protectedThunks = {
 
             const [dispatch, getState] = args;
 
-            const isPublic =
-                getIsPublic({
+            const isWithinPrefixThatHasBeenMadePublic =
+                getIsWithinPrefixThatHasBeenMadePublic({
                     s3Uri,
-                    bucketPolicyByBucket:
-                        protectedSelectors.bucketPolicyByBucket(getState())
-                }) ?? false;
+                    bucketPoliciesByBucket:
+                        protectedSelectors.bucketPoliciesByBucket(getState())
+                });
 
-            if (isPublic) {
+            if (isWithinPrefixThatHasBeenMadePublic) {
                 const profileName = privateSelectors.profileName(getState());
 
                 assert(profileName !== undefined);
