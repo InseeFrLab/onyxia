@@ -20,7 +20,9 @@ const baseArgs: S3SelectionActionBarProps = {
     onDownload: action("download"),
     onDelete: action("delete"),
     onCopyS3Uri: action("copyS3Uri"),
-    onShare: action("share")
+    onShare: action("share"),
+    onMakePublic: action("makePublic"),
+    onMakePrivate: undefined
 };
 
 export const SingleObject: Story = {
@@ -33,7 +35,9 @@ export const SinglePrefix: Story = {
     args: {
         ...baseArgs,
         onDownload: undefined,
-        onShare: undefined
+        onShare: undefined,
+        onMakePublic: undefined,
+        onMakePrivate: action("makePrivate")
     }
 };
 
@@ -43,6 +47,8 @@ export const MultipleSelection: Story = {
         selectionCount: 2,
         onDownload: undefined,
         onCopyS3Uri: undefined,
-        onShare: undefined
+        onShare: undefined,
+        onMakePublic: undefined,
+        onMakePrivate: undefined
     }
 };

@@ -11,6 +11,8 @@ export type S3SelectionActionBarProps = {
     onDelete: (() => void) | undefined;
     onCopyS3Uri: (() => void) | undefined;
     onShare: (() => void) | undefined;
+    onMakePublic: (() => void) | undefined;
+    onMakePrivate: (() => void) | undefined;
 };
 
 type Action = {
@@ -28,7 +30,9 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         onDownload,
         onDelete,
         onCopyS3Uri,
-        onShare
+        onShare,
+        onMakePublic,
+        onMakePrivate
     } = props;
 
     const { classes, cx } = useStyles();
@@ -57,6 +61,18 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
             label: "Share",
             iconName: "Share",
             onClick: onShare
+        },
+        {
+            key: "make-public",
+            label: "Make public",
+            iconName: "Public",
+            onClick: onMakePublic
+        },
+        {
+            key: "make-private",
+            label: "Make private",
+            iconName: "PublicOff",
+            onClick: onMakePrivate
         }
     ].filter((action): action is Action => action.onClick !== undefined);
 
