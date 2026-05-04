@@ -20,14 +20,13 @@ type MockNode =
           s3Uri: S3Uri.TerminatedByDelimiter;
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
-          isPublic: boolean;
+          policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
       }
     | {
           type: "object";
           s3Uri: S3Uri.NonTerminatedByDelimiter;
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
-          isPublic: boolean;
           size: number;
           lastModified: number;
       };
@@ -75,21 +74,21 @@ const baseNodes: MockNode[] = [
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        isPublic: true
+        policy: { isPublic: true }
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/raw/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        isPublic: false
+        policy: { isPublic: false, canBeMadePublic: true }
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/tmp/"),
         uploadProgressPercent: 42,
         isDeleting: false,
-        isPublic: false
+        policy: { isPublic: false, canBeMadePublic: false }
     },
     {
         type: "object",
@@ -97,8 +96,7 @@ const baseNodes: MockNode[] = [
         size: 19_481,
         lastModified: new Date("2026-03-17T08:45:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false,
-        isPublic: true
+        isDeleting: false
     },
     {
         type: "object",
@@ -106,8 +104,7 @@ const baseNodes: MockNode[] = [
         size: 6_294_321,
         lastModified: new Date("2026-03-18T15:10:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false,
-        isPublic: false
+        isDeleting: false
     },
     {
         type: "object",
@@ -115,8 +112,7 @@ const baseNodes: MockNode[] = [
         size: 140_000_000,
         lastModified: new Date("2026-03-19T07:55:00Z").getTime(),
         uploadProgressPercent: 67,
-        isDeleting: false,
-        isPublic: false
+        isDeleting: false
     }
 ];
 
@@ -126,14 +122,14 @@ const nestedNodes: MockNode[] = [
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        isPublic: false
+        policy: { isPublic: false, canBeMadePublic: true }
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2025/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        isPublic: true
+        policy: { isPublic: true }
     },
     {
         type: "object",
@@ -141,8 +137,7 @@ const nestedNodes: MockNode[] = [
         size: 11_704,
         lastModified: new Date("2026-03-19T10:00:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false,
-        isPublic: true
+        isDeleting: false
     },
     {
         type: "object",
@@ -150,8 +145,7 @@ const nestedNodes: MockNode[] = [
         size: 8_122,
         lastModified: new Date("2026-03-18T09:15:00Z").getTime(),
         uploadProgressPercent: undefined,
-        isDeleting: false,
-        isPublic: false
+        isDeleting: false
     }
 ];
 
@@ -166,7 +160,8 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onCreateDirectory: action("createDirectory"),
     onDelete: action("delete"),
     onDownload: action("download"),
-    onShare: action("share"),
+    onShareObject: action("shareObject"),
+    onChangePrefixPolicy: action("changePrefixPolicy"),
     evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
     isUploadDisabled: false
 };
@@ -223,7 +218,8 @@ function StatefulExplorer(
         | "onDelete"
         | "onPutObjects"
         | "onDownload"
-        | "onShare"
+        | "onShareObject"
+        | "onChangePrefixPolicy"
         | "evtAction"
     >
 ) {
@@ -271,7 +267,7 @@ function StatefulExplorer(
                             },
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            isPublic: false
+                            policy: { isPublic: false, canBeMadePublic: true }
                         }
                     ]);
                 }}
@@ -317,8 +313,7 @@ function StatefulExplorer(
                                         : 15_000 + index,
                                 lastModified: now + index,
                                 uploadProgressPercent: undefined,
-                                isDeleting: false,
-                                isPublic: false
+                                isDeleting: false
                             };
                         })
                     ]);
@@ -326,8 +321,33 @@ function StatefulExplorer(
                 onDownload={({ s3Uri }) => {
                     action("download")(s3Uri);
                 }}
-                onShare={({ s3Uri }) => {
-                    action("share")(s3Uri);
+                onShareObject={({ s3Uri }) => {
+                    action("shareObject")(s3Uri);
+                }}
+                onChangePrefixPolicy={({ action: policyAction, s3Uri }) => {
+                    action("changePrefixPolicy")({ action: policyAction, s3Uri });
+
+                    setNodes(previousNodes =>
+                        previousNodes.map(node => {
+                            if (
+                                node.type !== "prefix segment" ||
+                                JSON.stringify(node.s3Uri) !== JSON.stringify(s3Uri)
+                            ) {
+                                return node;
+                            }
+
+                            return {
+                                ...node,
+                                policy:
+                                    policyAction === "make public"
+                                        ? { isPublic: true }
+                                        : {
+                                              isPublic: false,
+                                              canBeMadePublic: true
+                                          }
+                            };
+                        })
+                    );
                 }}
                 evtAction={evtAction}
             />
@@ -372,7 +392,8 @@ export const EmptyPrefix: Story = {
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
         onDownload: action("download"),
-        onShare: action("share"),
+        onShareObject: action("shareObject"),
+        onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
     },
@@ -395,7 +416,8 @@ export const AccessDenied: Story = {
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
         onDownload: action("download"),
-        onShare: action("share"),
+        onShareObject: action("shareObject"),
+        onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
     },
