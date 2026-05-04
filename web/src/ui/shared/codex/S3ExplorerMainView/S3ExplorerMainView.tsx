@@ -62,7 +62,12 @@ export type S3ExplorerMainViewProps = {
 
     onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
-    onShare: (params: { s3Uri: S3Uri }) => void;
+    onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+
+    onChangePrefixPolicy: (params: {
+        action: "make public" | "undo make public";
+        s3Uri: S3Uri.TerminatedByDelimiter;
+    }) => void;
 
     evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
 
@@ -102,6 +107,10 @@ type SortState = {
 type DeleteDialogState = {
     items: S3ExplorerMainViewProps.Item[];
 };
+
+type PrefixPolicyAction = Parameters<
+    S3ExplorerMainViewProps["onChangePrefixPolicy"]
+>[0]["action"];
 
 type ObjectToUpload = Parameters<
     S3ExplorerMainViewProps["onPutObjects"]
@@ -366,6 +375,44 @@ function getProgressPercent(item: S3ExplorerMainViewProps.Item): number | undefi
     return Math.max(0, Math.min(100, item.uploadProgressPercent));
 }
 
+function getIsItemActionAvailable(item: S3ExplorerMainViewProps.Item): boolean {
+    if (item.isDeleting) {
+        return false;
+    }
+
+    const progressPercent = getProgressPercent(item);
+
+    return progressPercent === undefined || progressPercent === 100;
+}
+
+function getPrefixPolicyAction(
+    item: S3ExplorerMainViewProps.Item
+): PrefixPolicyAction | undefined {
+    if (item.type !== "prefix segment") {
+        return undefined;
+    }
+
+    if (item.policy.isPublic) {
+        return "undo make public";
+    }
+
+    if (item.policy.canBeMadePublic) {
+        return "make public";
+    }
+
+    return undefined;
+}
+
+function getPrefixPolicyActionLabel(action: PrefixPolicyAction): string {
+    return action === "make public" ? "make public" : "make private";
+}
+
+function getPrefixPolicyActionIconName(
+    action: PrefixPolicyAction
+): "Public" | "PublicOff" {
+    return action === "make public" ? "Public" : "PublicOff";
+}
+
 function getSortedItems(params: {
     items: S3ExplorerMainViewProps.Item[];
     sortState: SortState;
@@ -625,7 +672,8 @@ type ItemRowProps = {
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
-    onShare: (() => void) | undefined;
+    onShareObject: (() => void) | undefined;
+    onChangePrefixPolicy: (() => void) | undefined;
     onDownload: (() => void) | undefined;
     onCopyS3Uri: () => void;
     onCheckboxChange: () => void;
@@ -640,7 +688,8 @@ function ItemRow(props: ItemRowProps) {
         onRowClick,
         onNavigate,
         onDelete,
-        onShare,
+        onShareObject,
+        onChangePrefixPolicy,
         onDownload,
         onCopyS3Uri,
         onCheckboxChange
@@ -651,20 +700,18 @@ function ItemRow(props: ItemRowProps) {
         progressPercent !== undefined && progressPercent < 100 && !item.isDeleting;
     const canNavigate =
         !item.isDeleting && !(item.type === "object" && isUploadInProgress);
-    const isDownloadAvailable =
-        onDownload !== undefined &&
-        !item.isDeleting &&
-        !isUploadInProgress &&
-        (progressPercent === undefined || progressPercent === 100);
-    const isShareAvailable =
-        onShare !== undefined &&
-        !item.isDeleting &&
-        !isUploadInProgress &&
-        (progressPercent === undefined || progressPercent === 100);
+    const isItemActionAvailable = getIsItemActionAvailable(item);
+    const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
+    const isShareAvailable = onShareObject !== undefined && isItemActionAvailable;
+    const prefixPolicyAction = getPrefixPolicyAction(item);
+    const isPrefixPolicyActionAvailable =
+        onChangePrefixPolicy !== undefined && isItemActionAvailable;
     const isCopyAvailable = !item.isDeleting;
-    const itemKindLabel = item.type === "prefix segment" ? "folder" : "object";
     const itemKindLabelCapitalized = item.type === "prefix segment" ? "Folder" : "Object";
-    const itemPolicyLabel = item.isPublic ? "public" : "private";
+    const itemIconLabel =
+        item.type === "prefix segment"
+            ? `${itemKindLabelCapitalized} is ${item.policy.isPublic ? "public" : "private"}`
+            : itemKindLabelCapitalized;
 
     const { classes, cx } = useStyles({
         isDragActive: false
@@ -704,13 +751,11 @@ function ItemRow(props: ItemRowProps) {
             <td className={classes.nameCell}>
                 <div className={classes.nameCellContent}>
                     <div className={classes.itemIdentity}>
-                        <Tooltip
-                            title={`${itemKindLabelCapitalized} is ${itemPolicyLabel}`}
-                        >
+                        <Tooltip title={itemIconLabel}>
                             <div
                                 className={classes.itemIconWrapper}
                                 role="img"
-                                aria-label={`${itemKindLabel} is ${itemPolicyLabel}`}
+                                aria-label={itemIconLabel}
                             >
                                 <Icon
                                     icon={getIconUrlByName(
@@ -720,16 +765,17 @@ function ItemRow(props: ItemRowProps) {
                                     )}
                                     size="small"
                                 />
-                                {item.isPublic && (
-                                    <span
-                                        className={classes.itemPublicBadge}
-                                        aria-hidden={true}
-                                    >
-                                        <PublicIcon
-                                            className={classes.itemPublicBadgeIcon}
-                                        />
-                                    </span>
-                                )}
+                                {item.type === "prefix segment" &&
+                                    item.policy.isPublic && (
+                                        <span
+                                            className={classes.itemPublicBadge}
+                                            aria-hidden={true}
+                                        >
+                                            <PublicIcon
+                                                className={classes.itemPublicBadgeIcon}
+                                            />
+                                        </span>
+                                    )}
                             </div>
                         </Tooltip>
                         <div className={classes.itemNameBlock}>
@@ -819,7 +865,7 @@ function ItemRow(props: ItemRowProps) {
                     <div className={classes.rowActions}>
                         {showRowActions && (
                             <>
-                                {onShare !== undefined && (
+                                {onShareObject !== undefined && (
                                     <Tooltip title="Share">
                                         <span className={classes.inlineActionWrapper}>
                                             <IconButton
@@ -832,17 +878,55 @@ function ItemRow(props: ItemRowProps) {
 
                                                     if (
                                                         !isShareAvailable ||
-                                                        onShare === undefined
+                                                        onShareObject === undefined
                                                     ) {
                                                         return;
                                                     }
 
-                                                    onShare();
+                                                    onShareObject();
                                                 }}
                                             />
                                         </span>
                                     </Tooltip>
                                 )}
+                                {prefixPolicyAction !== undefined &&
+                                    onChangePrefixPolicy !== undefined && (
+                                        <Tooltip
+                                            title={getPrefixPolicyActionLabel(
+                                                prefixPolicyAction
+                                            )}
+                                        >
+                                            <span className={classes.inlineActionWrapper}>
+                                                <IconButton
+                                                    className={classes.rowActionButton}
+                                                    icon={getIconUrlByName(
+                                                        getPrefixPolicyActionIconName(
+                                                            prefixPolicyAction
+                                                        )
+                                                    )}
+                                                    aria-label={getPrefixPolicyActionLabel(
+                                                        prefixPolicyAction
+                                                    )}
+                                                    disabled={
+                                                        !isPrefixPolicyActionAvailable
+                                                    }
+                                                    onClick={event => {
+                                                        event.stopPropagation();
+
+                                                        if (
+                                                            !isPrefixPolicyActionAvailable ||
+                                                            onChangePrefixPolicy ===
+                                                                undefined
+                                                        ) {
+                                                            return;
+                                                        }
+
+                                                        onChangePrefixPolicy();
+                                                    }}
+                                                />
+                                            </span>
+                                        </Tooltip>
+                                    )}
                                 {onDownload !== undefined && (
                                     <Tooltip title="Download">
                                         <span className={classes.inlineActionWrapper}>
@@ -927,7 +1011,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onCreateDirectory,
         onDelete,
         onDownload,
-        onShare,
+        onShareObject,
+        onChangePrefixPolicy,
         evtAction,
         isUploadDisabled
     } = props;
@@ -1069,6 +1154,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         selectedItemForSingleItemAction?.type === "object"
             ? selectedItemForSingleItemAction
             : undefined;
+    const selectedPrefixForSingleItemAction =
+        selectedItemForSingleItemAction?.type === "prefix segment"
+            ? selectedItemForSingleItemAction
+            : undefined;
+    const selectedPrefixPolicyAction =
+        selectedPrefixForSingleItemAction !== undefined &&
+        getIsItemActionAvailable(selectedPrefixForSingleItemAction)
+            ? getPrefixPolicyAction(selectedPrefixForSingleItemAction)
+            : undefined;
 
     const setSelectionToSingleItem = (itemKey: string) => {
         setSelectedItemKeys([itemKey]);
@@ -1203,18 +1297,31 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         event.target.value = "";
     };
 
-    const requestShareForItem = (item: S3ExplorerMainViewProps.Item) => {
-        if (item.isDeleting) {
+    const requestShareForObject = (item: S3ExplorerMainViewProps.Item.Object) => {
+        if (!getIsItemActionAvailable(item)) {
             return;
         }
 
-        const progressPercent = getProgressPercent(item);
+        onShareObject({
+            s3Uri: item.s3Uri
+        });
+    };
 
-        if (progressPercent !== undefined && progressPercent < 100) {
+    const requestPrefixPolicyChangeForItem = (
+        item: S3ExplorerMainViewProps.Item.PrefixSegment
+    ) => {
+        if (!getIsItemActionAvailable(item)) {
             return;
         }
 
-        onShare({
+        const action = getPrefixPolicyAction(item);
+
+        if (action === undefined) {
+            return;
+        }
+
+        onChangePrefixPolicy({
+            action,
             s3Uri: item.s3Uri
         });
     };
@@ -1337,7 +1444,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             selectionCount={selectedItems.length}
                             onClear={clearSelection}
                             onDownload={
-                                selectedObjectForSingleItemAction === undefined
+                                selectedObjectForSingleItemAction === undefined ||
+                                !getIsItemActionAvailable(
+                                    selectedObjectForSingleItemAction
+                                )
                                     ? undefined
                                     : () =>
                                           requestDownloadForItems([
@@ -1351,11 +1461,32 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                     : copySelectedS3Uri
                             }
                             onShare={
-                                selectedObjectForSingleItemAction === undefined
+                                selectedObjectForSingleItemAction === undefined ||
+                                !getIsItemActionAvailable(
+                                    selectedObjectForSingleItemAction
+                                )
                                     ? undefined
                                     : () =>
-                                          requestShareForItem(
+                                          requestShareForObject(
                                               selectedObjectForSingleItemAction
+                                          )
+                            }
+                            onMakePublic={
+                                selectedPrefixForSingleItemAction === undefined ||
+                                selectedPrefixPolicyAction !== "make public"
+                                    ? undefined
+                                    : () =>
+                                          requestPrefixPolicyChangeForItem(
+                                              selectedPrefixForSingleItemAction
+                                          )
+                            }
+                            onMakePrivate={
+                                selectedPrefixForSingleItemAction === undefined ||
+                                selectedPrefixPolicyAction !== "undo make public"
+                                    ? undefined
+                                    : () =>
+                                          requestPrefixPolicyChangeForItem(
+                                              selectedPrefixForSingleItemAction
                                           )
                             }
                         />
@@ -1614,8 +1745,23 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     onDelete={() =>
                                                         requestDeletionForItems([item])
                                                     }
-                                                    onShare={() =>
-                                                        requestShareForItem(item)
+                                                    onShareObject={
+                                                        item.type === "object"
+                                                            ? () =>
+                                                                  requestShareForObject(
+                                                                      item
+                                                                  )
+                                                            : undefined
+                                                    }
+                                                    onChangePrefixPolicy={
+                                                        item.type === "prefix segment" &&
+                                                        getPrefixPolicyAction(item) !==
+                                                            undefined
+                                                            ? () =>
+                                                                  requestPrefixPolicyChangeForItem(
+                                                                      item
+                                                                  )
+                                                            : undefined
                                                     }
                                                     onDownload={
                                                         item.type === "object"

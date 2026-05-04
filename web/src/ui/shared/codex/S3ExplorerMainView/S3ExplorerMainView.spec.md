@@ -12,8 +12,9 @@ The component focuses on:
 - selecting one or many items
 - exposing row-level and bulk actions
 
-It does not own share/download side effects such as generating HTTP URLs, opening
-share dialogs, or opening browser tabs. Those actions are forwarded to the parent.
+It does not own share, download, or prefix policy side effects such as generating
+HTTP URLs, opening share dialogs, opening browser tabs, or applying S3 policies.
+Those actions are forwarded to the parent.
 
 `S3ExplorerMainView` does not display the current S3 URI context itself.  
 This context is handled by surrounding components such as:
@@ -58,12 +59,42 @@ export type S3ExplorerMainViewProps = {
 
     onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
-    onShare: (params: { s3Uri: S3Uri }) => void;
+    onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+
+    onChangePrefixPolicy: (params: {
+        action: "make public" | "undo make public";
+        s3Uri: S3Uri.TerminatedByDelimiter;
+    }) => void;
 
     evtAction: NonPostableEvt<"CHOSE FILES TO UPLOAD">;
 
     isUploadDisabled: boolean;
 };
+
+export namespace S3ExplorerMainViewProps {
+    export type Item = Item.PrefixSegment | Item.Object;
+
+    export namespace Item {
+        type Common = {
+            uploadProgressPercent: number | undefined;
+            isDeleting: boolean;
+            displayName: string;
+        };
+
+        export type PrefixSegment = Common & {
+            type: "prefix segment";
+            s3Uri: S3Uri.TerminatedByDelimiter;
+            policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
+        };
+
+        export type Object = Common & {
+            type: "object";
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            size: number;
+            lastModified: number;
+        };
+    }
+}
 ```
 
 # General Structure
@@ -153,19 +184,25 @@ The component renders `S3SelectionActionBar` above the list.
 - `onCopyS3Uri`
 - `onDelete`
 - `onShare`
+- `onMakePublic`
+- `onMakePrivate`
 - `onClear`
 
 It must pass `undefined` for selection action callbacks that do not make sense
 for the current selection:
 
 - download and share are available only for one selected object
+- make public is available only for one selected private prefix whose
+  `policy.canBeMadePublic === true`
+- make private is available only for one selected public prefix
 - copy S3 path is available only for one selected item
 - delete is available when at least one item is selected
 
 The visual and interaction behavior of this bar is defined in the dedicated `S3SelectionActionBar` spec and must not be redefined here.
 
-Share and download actions are intent callbacks only. `S3ExplorerMainView` must not
-generate direct download URLs or render a share-link dialog.
+Share, download, and prefix policy actions are intent callbacks only.
+`S3ExplorerMainView` must not generate direct download URLs, render a
+share-link dialog, or apply S3 policies itself.
 
 # Row interactions
 
@@ -187,6 +224,8 @@ Each row can expose contextual actions on hover.
 Typical row actions include:
 
 - Share
+- Make public
+- Make private
 - Download
 - Copy S3 path
 - Delete
@@ -200,15 +239,51 @@ Typical row actions include:
 - Actions remain secondary compared to the bulk action bar
 - Actions are hidden when not relevant for the row type
 
+### Prefix policy
+
+Prefix public state is read only from the prefix item `policy`.
+
+Rules:
+
+- Public prefix: `policy.isPublic === true`
+- Private prefix: `policy.isPublic === false`
+- Object items do not expose public state in this component
+- Public prefixes display the `Public` earth badge over the folder icon
+- Private prefixes do not display an earth badge
+- Public prefixes expose a `make private` contextual action with the
+  `PublicOff` icon
+- Private prefixes expose a `make public` contextual action with the `Public`
+  icon only when `policy.canBeMadePublic === true`
+- Private prefixes with `policy.canBeMadePublic === false` do not expose a
+  policy contextual action
+
+Clicking `make public` triggers:
+
+```ts
+onChangePrefixPolicy({
+    action: "make public",
+    s3Uri: item.s3Uri
+});
+```
+
+Clicking `make private` triggers:
+
+```ts
+onChangePrefixPolicy({
+    action: "undo make public",
+    s3Uri: item.s3Uri
+});
+```
+
 ### Share
 
-Share is available as a row action for both prefix and object rows when the item is
-not deleting and does not have an unfinished upload progress state.
+Share is available as a row action only for object rows when the item is not
+deleting and does not have an unfinished upload progress state.
 
 Clicking Share triggers:
 
 ```ts
-onShare({ s3Uri: item.s3Uri });
+onShareObject({ s3Uri: item.s3Uri });
 ```
 
 The resulting UI or side effect is owned by the caller.
