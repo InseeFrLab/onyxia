@@ -29,7 +29,14 @@ const main = createSelector(
             return { isEnabled: false as const, initializationStatus };
         }
 
-        const { webUiUrl, apiBase, token, availableModels, selectedModel } = state;
+        const {
+            webUiUrl,
+            apiBase,
+            token,
+            availableModels,
+            selectedModel,
+            customProviders
+        } = state;
 
         return {
             isEnabled: true as const,
@@ -37,7 +44,8 @@ const main = createSelector(
             apiBase,
             token,
             availableModels,
-            selectedModel
+            selectedModel,
+            customProviders
         };
     }
 );

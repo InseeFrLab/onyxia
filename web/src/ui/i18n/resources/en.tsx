@@ -108,10 +108,19 @@ export const translations: Translations<"en"> = {
         ),
         "api base url": "API base URL",
         token: "Token",
-        "model section title": "Default model",
-        "model section helper":
-            "This model will be pre-configured when you launch a service that supports AI assistance.",
         "model label": "Model",
+        "custom providers section title": "Custom AI providers",
+        "custom providers section helper":
+            "Add your own AI providers (OpenAI, Anthropic, or any OpenAI-compatible endpoint). Credentials are stored in your browser.",
+        "custom provider label field": "Label",
+        "custom provider api base field": "API base URL",
+        "custom provider api key field": "API key",
+        "provider test": "Test connection",
+        "provider test success": "Connection successful",
+        "provider test error": "Unable to connect — check URL and API key.",
+        "provider save": "Add",
+        "provider cancel": "Cancel",
+        "models fetch error": "Unable to fetch models — check your URL and API key.",
         "no account": ({ webUiUrl }) => (
             <>
                 You don&apos;t have an AI gateway account yet. Please log in to{" "}

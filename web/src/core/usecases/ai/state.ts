@@ -3,6 +3,16 @@ import { id } from "tsafe/id";
 
 export const name = "ai";
 
+export type CustomAiProvider = {
+    id: string;
+    label: string;
+    apiBase: string;
+    apiKey: string;
+    availableModels: string[];
+    selectedModel: string | undefined;
+    modelsFetchStatus: "fetching" | "success" | "error";
+};
+
 type State = State.Disabled | State.Enabled;
 
 export declare namespace State {
@@ -18,6 +28,7 @@ export declare namespace State {
         token: string | undefined;
         availableModels: string[];
         selectedModel: string | undefined;
+        customProviders: CustomAiProvider[];
     };
 }
 
@@ -50,10 +61,18 @@ export const { reducer, actions } = createUsecaseActions({
                     token: string;
                     availableModels: string[];
                     selectedModel: string | undefined;
+                    customProviders: CustomAiProvider[];
                 };
             }
         ) => {
-            const { webUiUrl, apiBase, token, availableModels, selectedModel } = payload;
+            const {
+                webUiUrl,
+                apiBase,
+                token,
+                availableModels,
+                selectedModel,
+                customProviders
+            } = payload;
 
             return id<State.Enabled>({
                 isEnabled: true,
@@ -61,7 +80,8 @@ export const { reducer, actions } = createUsecaseActions({
                 apiBase,
                 token,
                 availableModels,
-                selectedModel: selectedModel ?? availableModels[0]
+                selectedModel: selectedModel ?? availableModels[0],
+                customProviders
             });
         },
         tokenRefreshed: (state, { payload }: { payload: { token: string } }) => {
@@ -75,6 +95,46 @@ export const { reducer, actions } = createUsecaseActions({
         selectedModelSet: (state, { payload }: { payload: { model: string } }) => {
             if (!state.isEnabled) return;
             state.selectedModel = payload.model;
+        },
+        customProviderAdded: (state, { payload }: { payload: CustomAiProvider }) => {
+            if (!state.isEnabled) return;
+            state.customProviders.push(payload);
+        },
+        customProviderDeleted: (state, { payload }: { payload: { id: string } }) => {
+            if (!state.isEnabled) return;
+            const i = state.customProviders.findIndex(p => p.id === payload.id);
+            if (i !== -1) state.customProviders.splice(i, 1);
+        },
+        customProviderModelsLoaded: (
+            state,
+            { payload }: { payload: { id: string; models: string[] } }
+        ) => {
+            if (!state.isEnabled) return;
+            const provider = state.customProviders.find(p => p.id === payload.id);
+            if (provider === undefined) return;
+            provider.availableModels = payload.models;
+            provider.modelsFetchStatus = "success";
+            if (provider.selectedModel === undefined && payload.models.length > 0) {
+                provider.selectedModel = payload.models[0];
+            }
+        },
+        customProviderModelsFetchFailed: (
+            state,
+            { payload }: { payload: { id: string } }
+        ) => {
+            if (!state.isEnabled) return;
+            const provider = state.customProviders.find(p => p.id === payload.id);
+            if (provider === undefined) return;
+            provider.modelsFetchStatus = "error";
+        },
+        customProviderSelectedModelSet: (
+            state,
+            { payload }: { payload: { id: string; model: string } }
+        ) => {
+            if (!state.isEnabled) return;
+            const provider = state.customProviders.find(p => p.id === payload.id);
+            if (provider === undefined) return;
+            provider.selectedModel = payload.model;
         }
     }
 });
