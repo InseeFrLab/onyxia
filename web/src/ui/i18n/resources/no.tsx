@@ -202,6 +202,21 @@ export const translations: Translations<"no"> = {
         cancel: "Avbryt",
         create: "Opprett"
     },
+    MakePrefixPublicDialog: {
+        "dialog title": "Gjør prefikset offentlig",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
+            <>
+                Du er i ferd med å gjøre <span className={s3UriClassName}>{s3Uri}</span>{" "}
+                offentlig. Alle kan liste opp og laste ned alle nåværende og fremtidige
+                objekter i dette prefikset.
+                <br />
+                <br />
+                Nedlastingslenker du deler for objekter i dette prefikset, utløper aldri.
+            </>
+        ),
+        cancel: "Avbryt",
+        "make public": "Gjør offentlig"
+    },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":

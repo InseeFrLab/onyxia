@@ -6,6 +6,8 @@ import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { tss } from "tss";
 
 export type MakePrefixPublicDialogProps = {
     evtOpen: Evt<{
@@ -16,6 +18,9 @@ export type MakePrefixPublicDialogProps = {
 
 export const MakePrefixPublicDialog = memo((props: MakePrefixPublicDialogProps) => {
     const { evtOpen } = props;
+
+    const { t } = useTranslation({ MakePrefixPublicDialog });
+    const { classes } = useStyles();
 
     const [state, setState] = useState<
         UnpackEvt<MakePrefixPublicDialogProps["evtOpen"]> | undefined
@@ -48,42 +53,25 @@ export const MakePrefixPublicDialog = memo((props: MakePrefixPublicDialogProps) 
 
     return (
         <Dialog
-            title="Make prefix public"
+            title={t("dialog title")}
             body={
-                state === undefined ? (
-                    ""
-                ) : (
-                    <>
-                        You&apos;re about to make{" "}
-                        <span
-                            style={{
-                                overflowWrap: "anywhere",
-                                wordBreak: "break-word",
-                                fontFamily:
-                                    'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
-                            }}
-                        >
-                            {stringifyS3Uri(state.s3Uri)}
-                        </span>{" "}
-                        public. This means that anyone will be able to list all present
-                        and future objects it contains and download them freely.
-                        <br />
-                        <br />
-                        When you share download links of objects that belongs to this
-                        prefix, thoses links will never expire.
-                    </>
-                )
+                state === undefined
+                    ? ""
+                    : t("dialog body", {
+                          s3Uri: stringifyS3Uri(state.s3Uri),
+                          s3UriClassName: classes.s3Uri
+                      })
             }
             buttons={
                 <>
                     <Button autoFocus variant="secondary" onClick={() => close(false)}>
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button
                         startIcon={getIconUrlByName("Public")}
                         onClick={() => close(true)}
                     >
-                        Make public
+                        {t("make public")}
                     </Button>
                 </>
             }
@@ -95,4 +83,26 @@ export const MakePrefixPublicDialog = memo((props: MakePrefixPublicDialogProps) 
 
 MakePrefixPublicDialog.displayName = symToStr({
     MakePrefixPublicDialog
+});
+
+const { i18n } = declareComponentKeys<
+    | "dialog title"
+    | {
+          K: "dialog body";
+          P: { s3Uri: string; s3UriClassName: string };
+          R: JSX.Element;
+      }
+    | "cancel"
+    | "make public"
+>()({ MakePrefixPublicDialog });
+
+export type I18n = typeof i18n;
+
+const useStyles = tss.withName({ MakePrefixPublicDialog }).create({
+    s3Uri: {
+        overflowWrap: "anywhere",
+        wordBreak: "break-word",
+        fontFamily:
+            'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
+    }
 });

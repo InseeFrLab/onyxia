@@ -206,6 +206,21 @@ export const translations: Translations<"nl"> = {
         cancel: "Annuleren",
         create: "Aanmaken"
     },
+    MakePrefixPublicDialog: {
+        "dialog title": "Prefix openbaar maken",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
+            <>
+                Je staat op het punt <span className={s3UriClassName}>{s3Uri}</span>{" "}
+                openbaar te maken. Iedereen kan alle huidige en toekomstige objecten in
+                deze prefix weergeven en downloaden.
+                <br />
+                <br />
+                Downloadlinks die je deelt voor objecten in deze prefix verlopen nooit.
+            </>
+        ),
+        cancel: "Annuleren",
+        "make public": "Openbaar maken"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

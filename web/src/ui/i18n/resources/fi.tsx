@@ -202,6 +202,21 @@ export const translations: Translations<"fi"> = {
         cancel: "Peruuta",
         create: "Luo"
     },
+    MakePrefixPublicDialog: {
+        "dialog title": "Tee etuliitteestä julkinen",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
+            <>
+                Olet tekemässä etuliitteestä{" "}
+                <span className={s3UriClassName}>{s3Uri}</span> julkisen. Kuka tahansa voi
+                listata ja ladata kaikki tämän etuliitteen nykyiset ja tulevat objektit.
+                <br />
+                <br />
+                Tämän etuliitteen objekteille jakamasi latauslinkit eivät koskaan vanhene.
+            </>
+        ),
+        cancel: "Peruuta",
+        "make public": "Tee julkiseksi"
+    },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
