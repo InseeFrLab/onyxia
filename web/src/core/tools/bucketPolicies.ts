@@ -1,6 +1,5 @@
 import { getS3UriKey } from "core/tools/S3Uri";
 import type { S3Uri } from "core/tools/S3Uri";
-import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert } from "tsafe/assert";
 
 export type BucketPolicies = Record<string, unknown>;
@@ -12,8 +11,8 @@ type BucketPoliciesByBucket = Record<
 
 const SID_PREFIX = "Onyxia";
 const MANAGED_SID_PREFIX = `${SID_PREFIX}MakePrefixPublic`;
-const GET_OBJECT_SID_PREFIX = `${MANAGED_SID_PREFIX}GetObject`;
-const LIST_BUCKET_SID_PREFIX = `${MANAGED_SID_PREFIX}ListBucket`;
+const GET_OBJECT_SID = `${MANAGED_SID_PREFIX}GetObject`;
+const LIST_BUCKET_SID = `${MANAGED_SID_PREFIX}ListBucket`;
 
 const ACTION_GET_OBJECT = "s3:GetObject";
 const ACTION_LIST_BUCKET = "s3:ListBucket";
@@ -25,12 +24,17 @@ type PolicyStatement = Record<string, unknown>;
 type ManagedStatement =
     | {
           kind: "getObject";
-          prefixKey: string;
+          prefixKeys: string[];
       }
     | {
           kind: "listBucket";
-          prefixKey: string;
+          prefixKeys: string[];
       };
+
+type ManagedPrefixKeysByKind = {
+    getObject: string[];
+    listBucket: string[];
+};
 
 export function getHasPrefixBeMadePublic(params: {
     s3Uri: S3Uri.TerminatedByDelimiter;
@@ -90,6 +94,11 @@ export function makePrefixPublic(params: {
 
     const statements = getPolicyStatements(bucketPolicies);
 
+    const managedPrefixKeysByKind = getManagedPrefixKeysByKind({
+        bucket: s3Uri.bucket,
+        bucketPolicies
+    });
+
     const updatedBucketPolicies = {
         ...bucketPolicies,
         Version:
@@ -99,14 +108,21 @@ export function makePrefixPublic(params: {
         Statement: [
             ...statements.filter(
                 statement =>
-                    !getShouldRemoveManagedStatementForPrefix({
+                    !getShouldRemoveManagedStatementWhenRebuilding({
                         bucket: s3Uri.bucket,
-                        prefixKey,
                         statement
                     })
             ),
-            createGetObjectStatement({ bucket: s3Uri.bucket, prefixKey }),
-            createListBucketStatement({ bucket: s3Uri.bucket, prefixKey })
+            ...createManagedStatements({
+                bucket: s3Uri.bucket,
+                prefixKeysByKind: {
+                    getObject: appendUnique(managedPrefixKeysByKind.getObject, prefixKey),
+                    listBucket: appendUnique(
+                        managedPrefixKeysByKind.listBucket,
+                        prefixKey
+                    )
+                }
+            })
         ]
     };
 
@@ -138,22 +154,40 @@ export function undoMakePrefixPublic(params: {
 
     const statements = getPolicyStatements(bucketPolicies);
 
-    const updatedStatements = statements.filter(
-        statement =>
-            !getShouldRemoveManagedStatementForPrefix({
-                bucket: s3Uri.bucket,
-                prefixKey,
-                statement
-            })
-    );
+    const managedPrefixKeysByKind = getManagedPrefixKeysByKind({
+        bucket: s3Uri.bucket,
+        bucketPolicies
+    });
 
-    const updatedBucketPolicies =
-        updatedStatements.length === statements.length
-            ? bucketPolicies
-            : {
-                  ...bucketPolicies,
-                  Statement: updatedStatements
-              };
+    const hasManagedPrefixKey =
+        managedPrefixKeysByKind.getObject.includes(prefixKey) ||
+        managedPrefixKeysByKind.listBucket.includes(prefixKey);
+
+    const updatedBucketPolicies = !hasManagedPrefixKey
+        ? bucketPolicies
+        : {
+              ...bucketPolicies,
+              Statement: [
+                  ...statements.filter(
+                      statement =>
+                          !getShouldRemoveManagedStatementWhenRebuilding({
+                              bucket: s3Uri.bucket,
+                              statement
+                          })
+                  ),
+                  ...createManagedStatements({
+                      bucket: s3Uri.bucket,
+                      prefixKeysByKind: {
+                          getObject: managedPrefixKeysByKind.getObject.filter(
+                              value => value !== prefixKey
+                          ),
+                          listBucket: managedPrefixKeysByKind.listBucket.filter(
+                              value => value !== prefixKey
+                          )
+                      }
+                  })
+              ]
+          };
 
     return {
         bucket: s3Uri.bucket,
@@ -180,10 +214,24 @@ function getManagedPublicPrefixKeys(params: {
 }): string[] {
     const { bucket, bucketPolicies } = params;
 
-    const managedStatementByPrefixKey = new Map<
-        string,
-        { hasGetObject: boolean; hasListBucket: boolean }
-    >();
+    const { getObject, listBucket } = getManagedPrefixKeysByKind({
+        bucket,
+        bucketPolicies
+    });
+
+    return getObject.filter(prefixKey => listBucket.includes(prefixKey));
+}
+
+function getManagedPrefixKeysByKind(params: {
+    bucket: string;
+    bucketPolicies: BucketPolicies;
+}): ManagedPrefixKeysByKind {
+    const { bucket, bucketPolicies } = params;
+
+    const managedPrefixKeysByKind: ManagedPrefixKeysByKind = {
+        getObject: [],
+        listBucket: []
+    };
 
     for (const statement of getPolicyStatements(bucketPolicies)) {
         const managedStatement = parseManagedStatement({ bucket, statement });
@@ -192,35 +240,15 @@ function getManagedPublicPrefixKeys(params: {
             continue;
         }
 
-        let managedStatements = managedStatementByPrefixKey.get(
-            managedStatement.prefixKey
-        );
-
-        if (managedStatements === undefined) {
-            managedStatements = {
-                hasGetObject: false,
-                hasListBucket: false
-            };
-
-            managedStatementByPrefixKey.set(
-                managedStatement.prefixKey,
-                managedStatements
+        for (const prefixKey of managedStatement.prefixKeys) {
+            managedPrefixKeysByKind[managedStatement.kind] = appendUnique(
+                managedPrefixKeysByKind[managedStatement.kind],
+                prefixKey
             );
-        }
-
-        switch (managedStatement.kind) {
-            case "getObject":
-                managedStatements.hasGetObject = true;
-                break;
-            case "listBucket":
-                managedStatements.hasListBucket = true;
-                break;
         }
     }
 
-    return Array.from(managedStatementByPrefixKey.entries())
-        .filter(([, { hasGetObject, hasListBucket }]) => hasGetObject && hasListBucket)
-        .map(([prefixKey]) => prefixKey);
+    return managedPrefixKeysByKind;
 }
 
 function getPolicyStatements(bucketPolicies: BucketPolicies): unknown[] {
@@ -253,25 +281,25 @@ function parseManagedStatement(params: {
         return undefined;
     }
 
-    if (sid.startsWith(GET_OBJECT_SID_PREFIX)) {
-        const prefixKey = parseManagedGetObjectStatement({ bucket, statement });
+    if (sid.startsWith(GET_OBJECT_SID)) {
+        const prefixKeys = parseManagedGetObjectStatement({ bucket, statement });
 
-        return prefixKey === undefined
+        return prefixKeys.length === 0
             ? undefined
             : {
                   kind: "getObject",
-                  prefixKey
+                  prefixKeys
               };
     }
 
-    if (sid.startsWith(LIST_BUCKET_SID_PREFIX)) {
-        const prefixKey = parseManagedListBucketStatement({ bucket, statement });
+    if (sid.startsWith(LIST_BUCKET_SID)) {
+        const prefixKeys = parseManagedListBucketStatement({ bucket, statement });
 
-        return prefixKey === undefined
+        return prefixKeys.length === 0
             ? undefined
             : {
                   kind: "listBucket",
-                  prefixKey
+                  prefixKeys
               };
     }
 
@@ -281,7 +309,7 @@ function parseManagedStatement(params: {
 function parseManagedGetObjectStatement(params: {
     bucket: string;
     statement: PolicyStatement;
-}): string | undefined {
+}): string[] {
     const { bucket, statement } = params;
 
     if (
@@ -289,26 +317,25 @@ function parseManagedGetObjectStatement(params: {
         !hasAnonymousPrincipal(statement.Principal) ||
         !hasAction({ action: statement.Action, expectedAction: ACTION_GET_OBJECT })
     ) {
-        return undefined;
+        return [];
     }
 
     const objectResourceArnPrefix = `arn:aws:s3:::${bucket}/`;
 
-    const objectResourceArn = getStringValues(statement.Resource).find(
-        resource => resource.startsWith(objectResourceArnPrefix) && resource.endsWith("*")
+    return getUniqueValues(
+        getStringValues(statement.Resource)
+            .filter(
+                resource =>
+                    resource.startsWith(objectResourceArnPrefix) && resource.endsWith("*")
+            )
+            .map(resource => resource.slice(objectResourceArnPrefix.length, -1))
     );
-
-    if (objectResourceArn === undefined) {
-        return undefined;
-    }
-
-    return objectResourceArn.slice(objectResourceArnPrefix.length, -1);
 }
 
 function parseManagedListBucketStatement(params: {
     bucket: string;
     statement: PolicyStatement;
-}): string | undefined {
+}): string[] {
     const { bucket, statement } = params;
 
     if (
@@ -317,106 +344,104 @@ function parseManagedListBucketStatement(params: {
         !hasAction({ action: statement.Action, expectedAction: ACTION_LIST_BUCKET }) ||
         !getStringValues(statement.Resource).includes(`arn:aws:s3:::${bucket}`)
     ) {
-        return undefined;
+        return [];
     }
 
     const condition = statement.Condition;
 
     if (!isRecord(condition)) {
-        return undefined;
+        return [];
     }
 
     const stringLikeCondition = condition.StringLike;
 
     if (!isRecord(stringLikeCondition)) {
-        return undefined;
+        return [];
     }
 
-    const prefixPattern = getStringValues(stringLikeCondition["s3:prefix"]).find(value =>
-        value.endsWith("*")
+    return getUniqueValues(
+        getStringValues(stringLikeCondition["s3:prefix"])
+            .filter(value => value.endsWith("*"))
+            .map(value => value.slice(0, -1))
     );
+}
 
-    if (prefixPattern === undefined) {
-        return undefined;
-    }
+function createManagedStatements(params: {
+    bucket: string;
+    prefixKeysByKind: ManagedPrefixKeysByKind;
+}): PolicyStatement[] {
+    const { bucket, prefixKeysByKind } = params;
 
-    return prefixPattern.slice(0, -1);
+    return [
+        ...(prefixKeysByKind.getObject.length === 0
+            ? []
+            : [
+                  createGetObjectStatement({
+                      bucket,
+                      prefixKeys: prefixKeysByKind.getObject
+                  })
+              ]),
+        ...(prefixKeysByKind.listBucket.length === 0
+            ? []
+            : [
+                  createListBucketStatement({
+                      bucket,
+                      prefixKeys: prefixKeysByKind.listBucket
+                  })
+              ])
+    ];
 }
 
 function createGetObjectStatement(params: {
     bucket: string;
-    prefixKey: string;
+    prefixKeys: string[];
 }): PolicyStatement {
-    const { bucket, prefixKey } = params;
+    const { bucket, prefixKeys } = params;
 
     return {
-        Sid: getManagedStatementSids({ bucket, prefixKey }).getObject,
+        Sid: GET_OBJECT_SID,
         Effect: "Allow",
         Principal: "*",
         Action: ACTION_GET_OBJECT,
-        Resource: `arn:aws:s3:::${bucket}/${prefixKey}*`
+        Resource: prefixKeys.map(prefixKey => `arn:aws:s3:::${bucket}/${prefixKey}*`)
     };
 }
 
 function createListBucketStatement(params: {
     bucket: string;
-    prefixKey: string;
+    prefixKeys: string[];
 }): PolicyStatement {
-    const { bucket, prefixKey } = params;
+    const { bucket, prefixKeys } = params;
 
     return {
-        Sid: getManagedStatementSids({ bucket, prefixKey }).listBucket,
+        Sid: LIST_BUCKET_SID,
         Effect: "Allow",
         Principal: "*",
         Action: ACTION_LIST_BUCKET,
         Resource: `arn:aws:s3:::${bucket}`,
         Condition: {
             StringLike: {
-                "s3:prefix": `${prefixKey}*`
+                "s3:prefix": prefixKeys.map(prefixKey => `${prefixKey}*`)
             }
         }
     };
 }
 
-function getShouldRemoveManagedStatementForPrefix(params: {
+function getShouldRemoveManagedStatementWhenRebuilding(params: {
     bucket: string;
-    prefixKey: string;
     statement: unknown;
 }): boolean {
-    const { bucket, prefixKey, statement } = params;
+    const { bucket, statement } = params;
 
     if (isRecord(statement)) {
         const sid = statement.Sid;
 
-        if (typeof sid === "string") {
-            const { getObject, listBucket } = getManagedStatementSids({
-                bucket,
-                prefixKey
-            });
-
-            if (sid === getObject || sid === listBucket) {
-                return true;
-            }
+        if (sid === GET_OBJECT_SID || sid === LIST_BUCKET_SID) {
+            return true;
         }
     }
 
-    const managedStatement = parseManagedStatement({ bucket, statement });
-
-    return managedStatement?.prefixKey === prefixKey;
-}
-
-function getManagedStatementSids(params: { bucket: string; prefixKey: string }): {
-    getObject: string;
-    listBucket: string;
-} {
-    const { bucket, prefixKey } = params;
-
-    const ruleId = fnv1aHashToHex(`${bucket}/${prefixKey}`);
-
-    return {
-        getObject: `${GET_OBJECT_SID_PREFIX}${ruleId}`,
-        listBucket: `${LIST_BUCKET_SID_PREFIX}${ruleId}`
-    };
+    return parseManagedStatement({ bucket, statement }) !== undefined;
 }
 
 function hasAction(params: { action: unknown; expectedAction: string }): boolean {
@@ -447,6 +472,14 @@ function getStringValues(value: unknown): string[] {
     }
 
     return [];
+}
+
+function appendUnique(values: string[], value: string): string[] {
+    return values.includes(value) ? values : [...values, value];
+}
+
+function getUniqueValues(values: string[]): string[] {
+    return values.reduce(appendUnique, []);
 }
 
 function createAwsS3CliEmulatedCommand(params: {
