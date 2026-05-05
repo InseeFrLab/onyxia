@@ -18,7 +18,8 @@ export const translations: Translations<"nl"> = {
         text2: "Toegang tot uw accountgegevens.",
         text3: "Uw gebruikersnamen, e-mails, wachtwoorden en persoonlijke toegangstokens die direct verbonden zijn aan uw diensten configureren.",
         "personal tokens tooltip": 'Of "token" in het Engels.',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "Account-ID",
@@ -106,6 +107,43 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "AI-gateway-inloggegevens",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Uw OIDC-sessie geeft u naadloze toegang tot de AI-gateway.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    AI-gateway openen
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-basis-URL",
+        token: "Token",
+        "model label": "Model",
+        "custom providers section title": "Aangepaste AI-providers",
+        "custom providers section helper":
+            "Voeg uw eigen AI-providers toe met een basis-URL en API-sleutel.",
+        "custom provider label field": "Label",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-sleutel",
+        "provider test": "Verbinding testen",
+        "provider test success": "Verbinding geslaagd",
+        "provider test error":
+            "Kan geen verbinding maken — controleer URL en API-sleutel.",
+        "provider save": "Toevoegen",
+        "provider cancel": "Annuleren",
+        "models fetch error":
+            "Kan modellen niet ophalen — controleer uw URL en API-sleutel.",
+        "no account": ({ webUiUrl }) => (
+            <>
+                U heeft nog geen account bij de AI-gateway. Meld u eerst aan bij{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                om uw account aan te maken.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",

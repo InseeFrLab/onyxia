@@ -18,7 +18,8 @@ export const translations: Translations<"en"> = {
         text3: "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
         "personal tokens tooltip":
             "Password that are generated for you and that have a given validity period",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "Account identifier",
@@ -106,6 +107,41 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `These credentials are valid for the next ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "AI Gateway credentials",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Your OIDC session gives you seamless access to the AI gateway.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Open AI gateway
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API base URL",
+        token: "Token",
+        "model label": "Model",
+        "custom providers section title": "Custom AI providers",
+        "custom providers section helper":
+            "Add your own AI providers (OpenAI, Anthropic, or any OpenAI-compatible endpoint). Credentials are stored in your browser.",
+        "custom provider label field": "Label",
+        "custom provider api base field": "API base URL",
+        "custom provider api key field": "API key",
+        "provider test": "Test connection",
+        "provider test success": "Connection successful",
+        "provider test error": "Unable to connect — check URL and API key.",
+        "provider save": "Add",
+        "provider cancel": "Cancel",
+        "models fetch error": "Unable to fetch models — check your URL and API key.",
+        "no account": ({ webUiUrl }) => (
+            <>
+                You don&apos;t have an AI gateway account yet. Please log in to{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                first to create your account.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

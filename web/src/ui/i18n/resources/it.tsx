@@ -18,7 +18,8 @@ export const translations: Translations<"it"> = {
         text2: "Accedi alle diverse informazioni del tuo account.",
         text3: "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
         "personal tokens tooltip": 'O in inglese solo "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificatore dell'account",
@@ -106,6 +107,43 @@ export const translations: Translations<"it"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "Credenziali del gateway IA",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                La tua sessione OIDC ti dà accesso senza interruzioni al gateway IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Apri gateway IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL base dell'API",
+        token: "Token",
+        "model label": "Modello",
+        "custom providers section title": "Provider IA personalizzati",
+        "custom providers section helper":
+            "Aggiungi i tuoi provider IA con un URL base e una chiave API.",
+        "custom provider label field": "Etichetta",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "provider test": "Testa connessione",
+        "provider test success": "Connessione riuscita",
+        "provider test error":
+            "Impossibile connettersi — controlla l'URL e la chiave API.",
+        "provider save": "Aggiungi",
+        "provider cancel": "Annulla",
+        "models fetch error":
+            "Impossibile recuperare i modelli — controlla l'URL e la chiave API.",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                per creare il tuo account.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",

@@ -19,7 +19,8 @@ export const translations: Translations<"no"> = {
         text3: "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
         "personal tokens tooltip":
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -107,6 +108,41 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "AI-gateway-legitimasjon",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Din OIDC-økt gir deg sømløs tilgang til AI-gatewayen.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Åpne AI-gateway
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-basis-URL",
+        token: "Token",
+        "model label": "Modell",
+        "custom providers section title": "Tilpassede AI-leverandører",
+        "custom providers section helper":
+            "Legg til dine egne AI-leverandører med en basis-URL og API-nøkkel.",
+        "custom provider label field": "Etikett",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-nøkkel",
+        "provider test": "Test tilkobling",
+        "provider test success": "Tilkobling vellykket",
+        "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
+        "provider save": "Legg til",
+        "provider cancel": "Avbryt",
+        "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen.",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                for å opprette kontoen din.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",
