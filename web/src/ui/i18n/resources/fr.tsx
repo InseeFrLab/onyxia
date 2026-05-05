@@ -123,10 +123,21 @@ export const translations: Translations<"fr"> = {
         ),
         "api base url": "URL de base de l'API",
         token: "Jeton",
-        "model section title": "Modèle par défaut",
-        "model section helper":
-            "Ce modèle sera pré-configuré lors du lancement d'un service compatible avec l'assistance IA.",
-        "model label": "Modèle",
+        "model label": "Modèles",
+        "custom providers section title": "Providers IA personnalisés",
+        "custom providers section helper":
+            "Ajoutez vos propres providers IA (OpenAI, Anthropic, ou tout endpoint compatible OpenAI). Les identifiants sont stockés dans votre navigateur.",
+        "custom provider label field": "Nom",
+        "custom provider api base field": "URL de base de l'API",
+        "custom provider api key field": "Clé API",
+        "provider test": "Tester la connexion",
+        "provider test success": "Connexion réussie",
+        "provider test error":
+            "Impossible de se connecter — vérifiez l'URL et la clé API.",
+        "provider save": "Ajouter",
+        "provider cancel": "Annuler",
+        "models fetch error":
+            "Impossible de récupérer les modèles — vérifiez l'URL et la clé API.",
         "no account": ({ webUiUrl }) => (
             <>
                 Vous n&apos;avez pas encore de compte sur la passerelle IA. Veuillez

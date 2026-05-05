@@ -120,10 +120,21 @@ export const translations: Translations<"nl"> = {
         ),
         "api base url": "API-basis-URL",
         token: "Token",
-        "model section title": "Standaardmodel",
-        "model section helper":
-            "Dit model wordt vooraf geconfigureerd wanneer u een service start die AI-ondersteuning ondersteunt.",
         "model label": "Model",
+        "custom providers section title": "Aangepaste AI-providers",
+        "custom providers section helper":
+            "Voeg uw eigen AI-providers toe met een basis-URL en API-sleutel.",
+        "custom provider label field": "Label",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-sleutel",
+        "provider test": "Verbinding testen",
+        "provider test success": "Verbinding geslaagd",
+        "provider test error":
+            "Kan geen verbinding maken — controleer URL en API-sleutel.",
+        "provider save": "Toevoegen",
+        "provider cancel": "Annuleren",
+        "models fetch error":
+            "Kan modellen niet ophalen — controleer uw URL en API-sleutel.",
         "no account": ({ webUiUrl }) => (
             <>
                 U heeft nog geen account bij de AI-gateway. Meld u eerst aan bij{" "}

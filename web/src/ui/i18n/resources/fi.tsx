@@ -121,10 +121,19 @@ export const translations: Translations<"fi"> = {
         ),
         "api base url": "API-perus-URL",
         token: "Token",
-        "model section title": "Oletusmalli",
-        "model section helper":
-            "Tämä malli esikonfiguroidaan, kun käynnistät palvelun, joka tukee tekoälyavustusta.",
         "model label": "Malli",
+        "custom providers section title": "Mukautetut tekoälyntarjoajat",
+        "custom providers section helper":
+            "Lisää omat tekoälyntarjoajasi perus-URL:lla ja API-avaimella.",
+        "custom provider label field": "Tunniste",
+        "custom provider api base field": "API-perus-URL",
+        "custom provider api key field": "API-avain",
+        "provider test": "Testaa yhteys",
+        "provider test success": "Yhteys onnistui",
+        "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
+        "provider save": "Lisää",
+        "provider cancel": "Peruuta",
+        "models fetch error": "Mallien haku epäonnistui — tarkista URL ja API-avain.",
         "no account": ({ webUiUrl }) => (
             <>
                 Sinulla ei vielä ole tiliä tekoälyyhdyskäytävässä. Kirjaudu ensin sisään

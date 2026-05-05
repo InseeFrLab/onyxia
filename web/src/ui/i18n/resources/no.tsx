@@ -121,10 +121,19 @@ export const translations: Translations<"no"> = {
         ),
         "api base url": "API-basis-URL",
         token: "Token",
-        "model section title": "Standardmodell",
-        "model section helper":
-            "Denne modellen vil bli forhåndskonfigurert når du starter en tjeneste som støtter AI-assistanse.",
         "model label": "Modell",
+        "custom providers section title": "Tilpassede AI-leverandører",
+        "custom providers section helper":
+            "Legg til dine egne AI-leverandører med en basis-URL og API-nøkkel.",
+        "custom provider label field": "Etikett",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-nøkkel",
+        "provider test": "Test tilkobling",
+        "provider test success": "Tilkobling vellykket",
+        "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
+        "provider save": "Legg til",
+        "provider cancel": "Avbryt",
+        "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen.",
         "no account": ({ webUiUrl }) => (
             <>
                 Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}

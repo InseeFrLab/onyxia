@@ -120,10 +120,21 @@ export const translations: Translations<"it"> = {
         ),
         "api base url": "URL base dell'API",
         token: "Token",
-        "model section title": "Modello predefinito",
-        "model section helper":
-            "Questo modello sarà preconfigurato quando avvierai un servizio che supporta l'assistenza IA.",
         "model label": "Modello",
+        "custom providers section title": "Provider IA personalizzati",
+        "custom providers section helper":
+            "Aggiungi i tuoi provider IA con un URL base e una chiave API.",
+        "custom provider label field": "Etichetta",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "provider test": "Testa connessione",
+        "provider test success": "Connessione riuscita",
+        "provider test error":
+            "Impossibile connettersi — controlla l'URL e la chiave API.",
+        "provider save": "Aggiungi",
+        "provider cancel": "Annulla",
+        "models fetch error":
+            "Impossibile recuperare i modelli — controlla l'URL e la chiave API.",
         "no account": ({ webUiUrl }) => (
             <>
                 Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
@@ -411,8 +422,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

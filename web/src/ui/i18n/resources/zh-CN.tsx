@@ -110,9 +110,19 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "api base url": "API 基础 URL",
         token: "令牌",
-        "model section title": "默认模型",
-        "model section helper": "当您启动支持 AI 辅助的服务时，将预先配置此模型。",
         "model label": "模型",
+        "custom providers section title": "自定义 AI 提供商",
+        "custom providers section helper":
+            "使用基础 URL 和 API 密钥添加您自己的 AI 提供商。",
+        "custom provider label field": "标签",
+        "custom provider api base field": "API 基础 URL",
+        "custom provider api key field": "API 密钥",
+        "provider test": "测试连接",
+        "provider test success": "连接成功",
+        "provider test error": "无法连接 — 请检查 URL 和 API 密钥。",
+        "provider save": "添加",
+        "provider cancel": "取消",
+        "models fetch error": "无法获取模型 — 请检查您的 URL 和 API 密钥。",
         "no account": ({ webUiUrl }) => (
             <>
                 您还没有 AI 网关账户。请先登录{" "}
