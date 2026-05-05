@@ -5,9 +5,11 @@ import { symToStr } from "tsafe/symToStr";
 import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName } from "lazy-icons";
+import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 
 export type MakePrefixPublicDialogProps = {
     evtOpen: Evt<{
+        s3Uri: S3Uri.TerminatedByDelimiter;
         resolveDoProceed: (doProceed: boolean) => void;
     }>;
 };
@@ -48,15 +50,29 @@ export const MakePrefixPublicDialog = memo((props: MakePrefixPublicDialogProps) 
         <Dialog
             title="Make prefix public"
             body={
-                <>
-                    You&apos;re about to make this prefix public. This means that anyone
-                    will be able to list all present and future objects it contains and
-                    download them freely.
-                    <br />
-                    <br />
-                    When you share download links, they won&apos;t be signed and will
-                    never expire.
-                </>
+                state === undefined ? (
+                    ""
+                ) : (
+                    <>
+                        You&apos;re about to make{" "}
+                        <span
+                            style={{
+                                overflowWrap: "anywhere",
+                                wordBreak: "break-word",
+                                fontFamily:
+                                    'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
+                            }}
+                        >
+                            {stringifyS3Uri(state.s3Uri)}
+                        </span>{" "}
+                        public. This means that anyone will be able to list all present
+                        and future objects it contains and download them freely.
+                        <br />
+                        <br />
+                        When you share download links of objects that belongs to this
+                        prefix, thoses links will never expire.
+                    </>
+                )
             }
             buttons={
                 <>

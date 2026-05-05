@@ -458,20 +458,20 @@ function PageComponent() {
                                     onDownload={s3ExplorerUiController.downloadObject}
                                     onChangePrefixPolicy={async ({ action, s3Uri }) => {
                                         if (action === "make public") {
-                                            const dContinue = new Deferred<void>();
+                                            const dDoProceed = new Deferred<boolean>();
 
                                             dialogProps.evtMakePrefixPublicDialogOpen.post(
                                                 {
+                                                    s3Uri,
                                                     resolveDoProceed: doProceed => {
-                                                        if (!doProceed) {
-                                                            return;
-                                                        }
-                                                        dContinue.resolve();
+                                                        dDoProceed.resolve(doProceed);
                                                     }
                                                 }
                                             );
 
-                                            await dContinue.pr;
+                                            if (!(await dDoProceed.pr)) {
+                                                return;
+                                            }
                                         }
 
                                         s3ExplorerUiController.toggleS3UriPublicPrivatePolicy(
