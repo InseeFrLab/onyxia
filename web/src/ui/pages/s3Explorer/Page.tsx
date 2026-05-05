@@ -85,6 +85,7 @@ function PageComponent() {
             evtConfirmCustomS3ConfigDeletionDialogOpen: new Evt(),
             evtCreateOrRenameBookmarkDialogOpen: new Evt(),
             evtDirectoryCreationDialogOpen: new Evt(),
+            evtMakePrefixPublicDialogOpen: new Evt(),
             evtDisplayErrorDialogOpen: new Evt(),
             evtS3ProfileDialogOpen: new Evt(),
             evtS3ShareObjectDialogOpen: new Evt(),
@@ -455,8 +456,23 @@ function PageComponent() {
                                     }
                                     onDelete={s3ExplorerUiController.delete}
                                     onDownload={s3ExplorerUiController.downloadObject}
-                                    onChangePrefixPolicy={({ action, s3Uri }) => {
-                                        alert(`todo dialog ${action}`);
+                                    onChangePrefixPolicy={async ({ action, s3Uri }) => {
+                                        if (action === "make public") {
+                                            const dContinue = new Deferred<void>();
+
+                                            dialogProps.evtMakePrefixPublicDialogOpen.post(
+                                                {
+                                                    resolveDoProceed: doProceed => {
+                                                        if (!doProceed) {
+                                                            return;
+                                                        }
+                                                        dContinue.resolve();
+                                                    }
+                                                }
+                                            );
+
+                                            await dContinue.pr;
+                                        }
 
                                         s3ExplorerUiController.toggleS3UriPublicPrivatePolicy(
                                             { s3Uri }
