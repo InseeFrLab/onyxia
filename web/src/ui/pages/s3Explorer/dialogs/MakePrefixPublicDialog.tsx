@@ -4,6 +4,7 @@ import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { getIconUrlByName } from "lazy-icons";
 
 export type MakePrefixPublicDialogProps = {
     evtOpen: Evt<{
@@ -62,7 +63,12 @@ export const MakePrefixPublicDialog = memo((props: MakePrefixPublicDialogProps) 
                     <Button autoFocus variant="secondary" onClick={() => close(false)}>
                         Cancel
                     </Button>
-                    <Button onClick={() => close(true)}>Make public</Button>
+                    <Button
+                        startIcon={getIconUrlByName("Public")}
+                        onClick={() => close(true)}
+                    >
+                        Make public
+                    </Button>
                 </>
             }
             isOpen={state !== undefined}
