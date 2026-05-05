@@ -15,6 +15,7 @@ import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as fileExplorer from "./fileExplorerEntry";
 import * as dataCollection from "./dataCollection";
+import * as icebergCatalog from "./icebergCatalog";
 
 export const pages = {
     account,
@@ -31,7 +32,8 @@ export const pages = {
     sqlOlapShell,
     dataExplorer,
     fileExplorer,
-    dataCollection
+    dataCollection,
+    icebergCatalog
 };
 
 export const { routeDefs } = mergeRouteDefs({ pages });

@@ -115,6 +115,13 @@ export const LeftBar = memo((props: Props) => {
                     availability: isDevModeEnabled ? "available" : "not visible"
                 },
                 {
+                    itemId: "icebergCatalog",
+                    icon: getIconUrlByName("Storage"),
+                    label: "Catalog Iceberg",
+                    link: routes.icebergCatalog().link,
+                    availability: isDevModeEnabled ? "available" : "not visible"
+                },
+                {
                     itemId: "sqlOlapShell",
                     icon: getIconUrlByName("Terminal"),
                     label: t("sqlOlapShell"),
@@ -154,6 +161,8 @@ export const LeftBar = memo((props: Props) => {
                     case "catalog":
                     case "launcher":
                         return "catalog";
+                    case "icebergCatalog":
+                        return "icebergCatalog";
                     case "myServices":
                     case "myService":
                         return "myServices";
