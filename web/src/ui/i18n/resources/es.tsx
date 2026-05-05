@@ -109,10 +109,20 @@ export const translations: Translations<"es"> = {
         ),
         "api base url": "URL base de la API",
         token: "Token",
-        "model section title": "Modelo predeterminado",
-        "model section helper":
-            "Este modelo se preconfigurará al lanzar un servicio que admita asistencia de IA.",
         "model label": "Modelo",
+        "custom providers section title": "Proveedores de IA personalizados",
+        "custom providers section helper":
+            "Añade tus propios proveedores de IA con una URL base y clave API.",
+        "custom provider label field": "Etiqueta",
+        "custom provider api base field": "URL base de la API",
+        "custom provider api key field": "Clave API",
+        "provider test": "Probar conexión",
+        "provider test success": "Conexión exitosa",
+        "provider test error": "No se puede conectar — compruebe la URL y la clave API.",
+        "provider save": "Añadir",
+        "provider cancel": "Cancelar",
+        "models fetch error":
+            "No se pueden obtener los modelos — compruebe la URL y la clave API.",
         "no account": ({ webUiUrl }) => (
             <>
                 Aún no tiene una cuenta en la pasarela de IA. Por favor, inicie sesión
