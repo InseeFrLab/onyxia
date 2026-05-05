@@ -209,6 +209,23 @@ export const translations: Translations<"fr"> = {
         cancel: "Annuler",
         create: "Créer"
     },
+    MakePrefixPublicDialog: {
+        "dialog title": "Rendre le préfixe public",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
+            <>
+                Vous êtes sur le point de rendre{" "}
+                <span className={s3UriClassName}>{s3Uri}</span> public. Tout le monde
+                pourra lister et télécharger tous les objets actuels et futurs de ce
+                préfixe.
+                <br />
+                <br />
+                Les liens de téléchargement que vous partagez pour les objets de ce
+                préfixe n&apos;expireront jamais.
+            </>
+        ),
+        cancel: "Annuler",
+        "make public": "Rendre public"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
