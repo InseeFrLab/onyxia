@@ -583,9 +583,21 @@ export function createS3Client(
                 if (error instanceof S3ServiceException) {
                     const httpStatusCode = error.$metadata?.httpStatusCode;
 
+                    if (httpStatusCode === 404) {
+                        console.log(
+                            [
+                                `Onyxia: The 404 here is fine`,
+                                `the bucket just doesn't have bucket policies yet.`
+                            ].join(" ")
+                        );
+                        return {
+                            Version: "2012-10-17",
+                            Statement: []
+                        };
+                    }
+
                     if (
                         httpStatusCode === 403 ||
-                        httpStatusCode === 404 ||
                         httpStatusCode === 405 ||
                         httpStatusCode === 501 ||
                         error.name === "NoSuchBucketPolicy" ||
