@@ -110,10 +110,21 @@ export const translations: Translations<"de"> = {
         ),
         "api base url": "API-Basis-URL",
         token: "Token",
-        "model section title": "Standardmodell",
-        "model section helper":
-            "Dieses Modell wird vorkonfiguriert, wenn Sie einen Dienst starten, der KI-Unterstützung unterstützt.",
         "model label": "Modell",
+        "custom providers section title": "Benutzerdefinierte KI-Anbieter",
+        "custom providers section helper":
+            "Fügen Sie Ihre eigenen KI-Anbieter hinzu (OpenAI, Anthropic oder jeden OpenAI-kompatiblen Endpunkt). Die Anmeldedaten werden in Ihrem Browser gespeichert.",
+        "custom provider label field": "Name",
+        "custom provider api base field": "API-Basis-URL",
+        "custom provider api key field": "API-Schlüssel",
+        "provider test": "Verbindung testen",
+        "provider test success": "Verbindung erfolgreich",
+        "provider test error":
+            "Verbindung fehlgeschlagen — URL und API-Schlüssel prüfen.",
+        "provider save": "Hinzufügen",
+        "provider cancel": "Abbrechen",
+        "models fetch error":
+            "Modelle konnten nicht abgerufen werden — überprüfen Sie URL und API-Schlüssel.",
         "no account": ({ webUiUrl }) => (
             <>
                 Sie haben noch kein Konto beim KI-Gateway. Bitte melden Sie sich zuerst an
