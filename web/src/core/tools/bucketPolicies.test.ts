@@ -96,21 +96,21 @@ describe("bucketPolicies", () => {
         expect(statements).toHaveLength(3);
         expect(statements[0]).toBe(unrelatedStatement);
         expect(statements[1]).toMatchObject({
-            Sid: expect.stringMatching(/^OnyxiaMakePrefixPublicGetObject/),
+            Sid: "OnyxiaMakePrefixPublicGetObject",
             Effect: "Allow",
             Principal: "*",
             Action: "s3:GetObject",
-            Resource: "arn:aws:s3:::mybucket/data/public/*"
+            Resource: ["arn:aws:s3:::mybucket/data/public/*"]
         });
         expect(statements[2]).toMatchObject({
-            Sid: expect.stringMatching(/^OnyxiaMakePrefixPublicListBucket/),
+            Sid: "OnyxiaMakePrefixPublicListBucket",
             Effect: "Allow",
             Principal: "*",
             Action: "s3:ListBucket",
             Resource: "arn:aws:s3:::mybucket",
             Condition: {
                 StringLike: {
-                    "s3:prefix": "data/public/*"
+                    "s3:prefix": ["data/public/*"]
                 }
             }
         });
@@ -242,5 +242,123 @@ describe("bucketPolicies", () => {
 
         expect(statements).toContain(unrelatedStatement);
         expect(statements).toHaveLength(3);
+        expect(statements[1]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicGetObject",
+            Resource: ["arn:aws:s3:::mybucket/other-public/*"]
+        });
+        expect(statements[2]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicListBucket",
+            Condition: {
+                StringLike: {
+                    "s3:prefix": ["other-public/*"]
+                }
+            }
+        });
+    });
+
+    it("stacks multiple public prefixes in two fixed Sid statements", () => {
+        const unrelatedStatement = {
+            Sid: "ExternalStatement",
+            Effect: "Deny"
+        };
+
+        const initialBucketPolicies: BucketPolicies = {
+            Version: "2012-10-17",
+            Statement: [unrelatedStatement]
+        };
+
+        const firstPublicPrefix = parsePrefix("s3://mybucket/public/");
+        const secondPublicPrefix = parsePrefix("s3://mybucket/other-public/");
+
+        const firstUpdate = makePrefixPublic({
+            s3Uri: firstPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(initialBucketPolicies)
+        }).updatedBucketPolicies;
+
+        const secondUpdate = makePrefixPublic({
+            s3Uri: secondPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(firstUpdate)
+        }).updatedBucketPolicies;
+
+        const thirdUpdate = makePrefixPublic({
+            s3Uri: firstPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(secondUpdate)
+        }).updatedBucketPolicies;
+
+        const statements = thirdUpdate.Statement;
+
+        assert(Array.isArray(statements));
+
+        expect(statements).toHaveLength(3);
+        expect(statements[0]).toBe(unrelatedStatement);
+        expect(statements[1]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicGetObject",
+            Resource: [
+                "arn:aws:s3:::mybucket/public/*",
+                "arn:aws:s3:::mybucket/other-public/*"
+            ]
+        });
+        expect(statements[2]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicListBucket",
+            Resource: "arn:aws:s3:::mybucket",
+            Condition: {
+                StringLike: {
+                    "s3:prefix": ["public/*", "other-public/*"]
+                }
+            }
+        });
+    });
+
+    it("migrates legacy per-prefix managed statements when adding a prefix", () => {
+        const bucketPolicies: BucketPolicies = {
+            Version: "2012-10-17",
+            Statement: [
+                {
+                    Sid: "OnyxiaMakePrefixPublicGetObject12345678",
+                    Effect: "Allow",
+                    Principal: "*",
+                    Action: "s3:GetObject",
+                    Resource: "arn:aws:s3:::mybucket/legacy/*"
+                },
+                {
+                    Sid: "OnyxiaMakePrefixPublicListBucket12345678",
+                    Effect: "Allow",
+                    Principal: "*",
+                    Action: "s3:ListBucket",
+                    Resource: "arn:aws:s3:::mybucket",
+                    Condition: {
+                        StringLike: {
+                            "s3:prefix": "legacy/*"
+                        }
+                    }
+                }
+            ]
+        };
+
+        const { updatedBucketPolicies } = makePrefixPublic({
+            s3Uri: parsePrefix("s3://mybucket/new-public/"),
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(bucketPolicies)
+        });
+
+        const statements = updatedBucketPolicies.Statement;
+
+        assert(Array.isArray(statements));
+
+        expect(statements).toHaveLength(2);
+        expect(statements[0]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicGetObject",
+            Resource: [
+                "arn:aws:s3:::mybucket/legacy/*",
+                "arn:aws:s3:::mybucket/new-public/*"
+            ]
+        });
+        expect(statements[1]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicListBucket",
+            Condition: {
+                StringLike: {
+                    "s3:prefix": ["legacy/*", "new-public/*"]
+                }
+            }
+        });
     });
 });
