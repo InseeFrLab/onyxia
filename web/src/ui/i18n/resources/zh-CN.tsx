@@ -183,6 +183,20 @@ export const translations: Translations<"zh-CN"> = {
         cancel: "取消",
         create: "创建"
     },
+    MakePrefixPublicDialog: {
+        "dialog title": "公开前缀",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
+            <>
+                你即将公开 <span className={s3UriClassName}>{s3Uri}</span>
+                。任何人都可以列出并下载此前缀中当前和未来的所有对象。
+                <br />
+                <br />
+                你分享的此前缀中对象的下载链接将永不过期。
+            </>
+        ),
+        cancel: "取消",
+        "make public": "公开"
+    },
     MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":

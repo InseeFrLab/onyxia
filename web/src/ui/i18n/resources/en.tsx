@@ -201,6 +201,21 @@ export const translations: Translations<"en"> = {
         cancel: "Cancel",
         create: "Create"
     },
+    MakePrefixPublicDialog: {
+        "dialog title": "Make prefix public",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
+            <>
+                You&apos;re about to make <span className={s3UriClassName}>{s3Uri}</span>{" "}
+                public. Anyone will be able to list and download all current and future
+                objects in this prefix.
+                <br />
+                <br />
+                Download links you share for objects in this prefix will never expire.
+            </>
+        ),
+        cancel: "Cancel",
+        "make public": "Make public"
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
