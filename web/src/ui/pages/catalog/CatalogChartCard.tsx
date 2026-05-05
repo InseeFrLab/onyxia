@@ -95,11 +95,12 @@ const useStyles = tss
     .withNestedSelectors<"learnMoreButton">()
     .create(({ theme, classes }) => ({
         root: {
-            borderRadius: 8,
+            borderRadius: 16,
             boxShadow: theme.shadows[1],
             backgroundColor: theme.colors.useCases.surfaces.surface1,
             "&:hover": {
                 boxShadow: theme.shadows[6],
+                // outline: `2px solid ${theme.colors.useCases.typography.textPrimary}`, Marc changes color system need to update onyxia-ui
                 [`& .${classes.learnMoreButton}`]: {
                     visibility: "visible"
                 }
@@ -112,14 +113,15 @@ const useStyles = tss
             borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
             boxSizing: "border-box",
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            gap: theme.spacing(4)
         },
-        title: {
-            marginLeft: theme.spacing(3)
-        },
+        title: {},
         belowDivider: {
-            padding: theme.spacing(4),
             paddingTop: theme.spacing(3),
+            paddingRight: theme.spacing(4),
+            paddingBottom: theme.spacing(5),
+            paddingLeft: theme.spacing(4),
             flex: 1,
             display: "flex",
             flexDirection: "column",
