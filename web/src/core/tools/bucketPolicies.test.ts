@@ -49,7 +49,7 @@ describe("bucketPolicies", () => {
                 s3Uri,
                 bucketPoliciesByBucket: {}
             })
-        ).toBe(false);
+        ).toStrictEqual({ isWithinPrefixThatHasBeenMadePublic: false });
 
         expect(() =>
             makePrefixPublic({
@@ -143,28 +143,54 @@ describe("bucketPolicies", () => {
                 s3Uri: parseObject("s3://mybucket/data/public/file.csv"),
                 bucketPoliciesByBucket
             })
-        ).toBe(true);
+        ).toStrictEqual({
+            isWithinPrefixThatHasBeenMadePublic: true,
+            s3Uri_publicPrefix: parsePrefix("s3://mybucket/data/public/")
+        });
 
         expect(
             getIsWithinPrefixThatHasBeenMadePublic({
                 s3Uri: parsePrefix("s3://mybucket/data/public/nested/"),
                 bucketPoliciesByBucket
             })
-        ).toBe(true);
+        ).toStrictEqual({
+            isWithinPrefixThatHasBeenMadePublic: true,
+            s3Uri_publicPrefix: parsePrefix("s3://mybucket/data/public/")
+        });
 
         expect(
             getIsWithinPrefixThatHasBeenMadePublic({
                 s3Uri: parseObject("s3://mybucket/data/public"),
                 bucketPoliciesByBucket
             })
-        ).toBe(false);
+        ).toStrictEqual({ isWithinPrefixThatHasBeenMadePublic: false });
 
         expect(
             getIsWithinPrefixThatHasBeenMadePublic({
                 s3Uri: parseObject("s3://mybucket/data/private/file.csv"),
                 bucketPoliciesByBucket
             })
-        ).toBe(false);
+        ).toStrictEqual({ isWithinPrefixThatHasBeenMadePublic: false });
+    });
+
+    it("returns the public prefix that contains an object", () => {
+        const updatedBucketPolicies = makePrefixPublic({
+            s3Uri: parsePrefix("s3://mybucket/foo/"),
+            bucketPoliciesByBucket: getBucketPoliciesByBucket({
+                Version: "2012-10-17",
+                Statement: []
+            })
+        }).updatedBucketPolicies;
+
+        expect(
+            getIsWithinPrefixThatHasBeenMadePublic({
+                s3Uri: parseObject("s3://mybucket/foo/bar/data.parquet"),
+                bucketPoliciesByBucket: getBucketPoliciesByBucket(updatedBucketPolicies)
+            })
+        ).toStrictEqual({
+            isWithinPrefixThatHasBeenMadePublic: true,
+            s3Uri_publicPrefix: parsePrefix("s3://mybucket/foo/")
+        });
     });
 
     it("ignores public statements that were not created by this utility", () => {
@@ -195,7 +221,7 @@ describe("bucketPolicies", () => {
                 s3Uri: parseObject("s3://mybucket/public/file.csv"),
                 bucketPoliciesByBucket
             })
-        ).toBe(false);
+        ).toStrictEqual({ isWithinPrefixThatHasBeenMadePublic: false });
     });
 
     it("undo removes only managed statements for the selected prefix", () => {
