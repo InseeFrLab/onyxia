@@ -488,8 +488,14 @@ function createAwsS3CliEmulatedCommand(params: {
 }): { cmd: string; resp: string } {
     const { bucket, updatedBucketPolicies } = params;
 
+    const formattedBucketPolicies = JSON.stringify(updatedBucketPolicies, null, 2);
+
     return {
-        cmd: `aws s3api put-bucket-policy --bucket ${shellQuote(bucket)} --policy ${shellQuote(JSON.stringify(updatedBucketPolicies))}`,
+        cmd: [
+            "aws s3api put-bucket-policy \\",
+            `  --bucket ${shellQuote(bucket)} \\`,
+            `  --policy ${shellQuote(formattedBucketPolicies)}`
+        ].join("\n"),
         resp: ""
     };
 }

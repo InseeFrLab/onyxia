@@ -82,7 +82,7 @@ describe("bucketPolicies", () => {
 
         const s3Uri = parsePrefix("s3://mybucket/data/public/");
 
-        const { updatedBucketPolicies } = makePrefixPublic({
+        const { updatedBucketPolicies, awsS3CliEmulatedCommand } = makePrefixPublic({
             s3Uri,
             bucketPoliciesByBucket: getBucketPoliciesByBucket(bucketPolicies)
         });
@@ -114,6 +114,13 @@ describe("bucketPolicies", () => {
                 }
             }
         });
+        expect(awsS3CliEmulatedCommand.cmd).toBe(
+            [
+                "aws s3api put-bucket-policy \\",
+                "  --bucket 'mybucket' \\",
+                `  --policy '${JSON.stringify(updatedBucketPolicies, null, 2)}'`
+            ].join("\n")
+        );
 
         const bucketPoliciesByBucket = getBucketPoliciesByBucket(updatedBucketPolicies);
 
