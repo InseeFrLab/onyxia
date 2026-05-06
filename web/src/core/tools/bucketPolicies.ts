@@ -59,21 +59,43 @@ export function getHasPrefixBeMadePublic(params: {
 export function getIsWithinPrefixThatHasBeenMadePublic(params: {
     s3Uri: S3Uri;
     bucketPoliciesByBucket: BucketPoliciesByBucket;
-}): boolean {
+}):
+    | {
+          isWithinPrefixThatHasBeenMadePublic: true;
+          s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter;
+      }
+    | {
+          isWithinPrefixThatHasBeenMadePublic: false;
+          s3Uri_publicPrefix?: never;
+      } {
     const { s3Uri, bucketPoliciesByBucket } = params;
 
     const bucketPolicies = getBucketPolicies({ s3Uri, bucketPoliciesByBucket });
 
     if (bucketPolicies === undefined) {
-        return false;
+        return { isWithinPrefixThatHasBeenMadePublic: false };
     }
 
     const s3UriKey = getS3UriKey(s3Uri);
 
-    return getManagedPublicPrefixKeys({
+    const publicPrefixKey = getManagedPublicPrefixKeys({
         bucket: s3Uri.bucket,
         bucketPolicies
-    }).some(prefixKey => s3UriKey.startsWith(prefixKey));
+    })
+        .filter(prefixKey => s3UriKey.startsWith(prefixKey))
+        .sort((a, b) => b.length - a.length)[0];
+
+    if (publicPrefixKey === undefined) {
+        return { isWithinPrefixThatHasBeenMadePublic: false };
+    }
+
+    return {
+        isWithinPrefixThatHasBeenMadePublic: true,
+        s3Uri_publicPrefix: getS3UriFromPrefixKey({
+            s3Uri,
+            prefixKey: publicPrefixKey
+        })
+    };
 }
 
 export function makePrefixPublic(params: {
@@ -220,6 +242,27 @@ function getManagedPublicPrefixKeys(params: {
     });
 
     return getObject.filter(prefixKey => listBucket.includes(prefixKey));
+}
+
+function getS3UriFromPrefixKey(params: {
+    s3Uri: S3Uri;
+    prefixKey: string;
+}): S3Uri.TerminatedByDelimiter {
+    const { s3Uri, prefixKey } = params;
+
+    const keyWithoutTrailingDelimiter = prefixKey.endsWith(s3Uri.delimiter)
+        ? prefixKey.slice(0, -s3Uri.delimiter.length)
+        : prefixKey;
+
+    return {
+        bucket: s3Uri.bucket,
+        delimiter: s3Uri.delimiter,
+        keySegments:
+            keyWithoutTrailingDelimiter === ""
+                ? []
+                : keyWithoutTrailingDelimiter.split(s3Uri.delimiter),
+        isDelimiterTerminated: true
+    };
 }
 
 function getManagedPrefixKeysByKind(params: {

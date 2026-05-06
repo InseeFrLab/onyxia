@@ -30,11 +30,14 @@ const s3Uri = createSelector(state, state => state.s3Uri);
 const isPublic = createSelector(
     s3Uri,
     s3ExplorerUiController.protectedSelectors.bucketPoliciesByBucket,
-    (s3Uri, bucketPoliciesByBucket) =>
-        getIsWithinPrefixThatHasBeenMadePublic({
-            s3Uri,
-            bucketPoliciesByBucket
-        })
+    (s3Uri, bucketPoliciesByBucket) => {
+        const { isWithinPrefixThatHasBeenMadePublic } =
+            getIsWithinPrefixThatHasBeenMadePublic({
+                s3Uri,
+                bucketPoliciesByBucket
+            });
+        return isWithinPrefixThatHasBeenMadePublic;
+    }
 );
 
 const validityDuration = createSelector(state, state => state.validityDuration);

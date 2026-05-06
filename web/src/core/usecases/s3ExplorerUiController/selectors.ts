@@ -339,7 +339,7 @@ const items = createSelector(
                                           !getIsWithinPrefixThatHasBeenMadePublic({
                                               s3Uri: item.s3Uri,
                                               bucketPoliciesByBucket
-                                          })
+                                          }).isWithinPrefixThatHasBeenMadePublic
                                   }
                         });
                 }
