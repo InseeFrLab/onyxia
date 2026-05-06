@@ -8,6 +8,7 @@ import { getCore, useCoreState, getCoreSync } from "core";
 import { useEvt } from "evt/hooks";
 import { S3ExplorerDialogs, type S3ExplorerDialogsProps } from "./dialogs";
 import { useConst } from "powerhooks/useConst";
+import { useDomRect } from "powerhooks/useDomRect";
 import { Evt } from "evt";
 import { S3UriBar } from "ui/shared/codex/S3UriBar";
 import { DataGrid } from "ui/pages/dataExplorer/DataGrid";
@@ -150,6 +151,11 @@ function PageComponent() {
         minWidth: 0
     });
 
+    const {
+        ref: ref_root,
+        domRect: { height: rootHeight }
+    } = useDomRect();
+
     const props_bookmarkBar = {
         items: mainView.bookmarks.items,
         activeItemS3Uri: mainView.bookmarks.activeItemS3Uri,
@@ -194,8 +200,10 @@ function PageComponent() {
         <>
             <S3ExplorerDialogs {...dialogProps} />
             <div
+                ref={ref_root}
                 className={css({
                     height: "100%",
+                    position: "relative",
                     display: "flex",
                     flexDirection: "column"
                 })}
@@ -203,7 +211,7 @@ function PageComponent() {
                 <div
                     className={css({
                         display: "flex",
-                        flexWrap: "wrap",
+                        flexWrap: "nowrap",
                         alignItems: "flex-start",
                         gap: theme.spacing(3),
                         marginBottom: theme.spacing(2)
@@ -211,7 +219,7 @@ function PageComponent() {
                 >
                     <div
                         className={css({
-                            flex: 1,
+                            flex: "0 0 auto",
                             minWidth: 0
                         })}
                     >
@@ -235,32 +243,34 @@ function PageComponent() {
                         />
                     </div>
 
-                    {isCommandBarEnabled && mainView.commandLogsEntries.length !== 0 && (
+                    {isCommandBarEnabled && (
                         <div
                             className={css({
-                                position: "relative",
-                                width: "min(100%, 640px)",
-                                maxWidth: "100%",
-                                height: 40,
-                                marginLeft: "auto"
+                                flex: 1,
+                                minWidth: 0,
+                                height:
+                                    theme.typography.rootFontSizePx * 1.7 +
+                                    2 * theme.spacing(2),
+                                position: "relative"
                             })}
                         >
                             <CommandBar
                                 classes={{
                                     root: css({
                                         position: "absolute",
-                                        top: 0,
                                         right: 0,
-                                        width: "100%",
-                                        zIndex: 4,
+                                        width: "min(100%, 700px)",
+                                        top: 0,
+                                        zIndex: 1,
                                         transition: "opacity 750ms linear"
                                     }),
                                     rootWhenExpended: css({
-                                        width: "100%"
+                                        width: "min(100%, 1450px)",
+                                        transition: "width 70ms linear"
                                     })
                                 }}
                                 entries={mainView.commandLogsEntries}
-                                maxHeight={300}
+                                maxHeight={rootHeight - 30}
                                 doCollapseOnClickAway={false}
                             />
                         </div>
