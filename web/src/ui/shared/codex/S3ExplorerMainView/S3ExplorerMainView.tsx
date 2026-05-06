@@ -13,7 +13,6 @@ import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
 import { alpha } from "@mui/material/styles";
-import PublicIcon from "@mui/icons-material/Public";
 import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
@@ -765,17 +764,6 @@ function ItemRow(props: ItemRowProps) {
                                     )}
                                     size="small"
                                 />
-                                {item.type === "prefix segment" &&
-                                    item.policy.isPublic && (
-                                        <span
-                                            className={classes.itemPublicBadge}
-                                            aria-hidden={true}
-                                        >
-                                            <PublicIcon
-                                                className={classes.itemPublicBadgeIcon}
-                                            />
-                                        </span>
-                                    )}
                             </div>
                         </Tooltip>
                         <div className={classes.itemNameBlock}>
@@ -796,6 +784,17 @@ function ItemRow(props: ItemRowProps) {
                                 >
                                     {item.displayName}
                                 </button>
+
+                                {item.type === "prefix segment" &&
+                                    item.policy.isPublic && (
+                                        <span className={classes.itemPublicTag}>
+                                            <Icon
+                                                icon={getIconUrlByName("Public")}
+                                                size="extra small"
+                                            />
+                                            Public
+                                        </span>
+                                    )}
 
                                 {(item.isDeleting ||
                                     isUploadInProgress ||
@@ -2065,7 +2064,6 @@ const useStyles = tss
             flex: 1
         },
         itemIconWrapper: {
-            position: "relative",
             width: 32,
             height: 32,
             borderRadius: 8,
@@ -2075,26 +2073,6 @@ const useStyles = tss
             backgroundColor: theme.colors.useCases.surfaces.surface2,
             color: theme.colors.useCases.typography.textPrimary,
             flexShrink: 0
-        },
-        itemPublicBadge: {
-            position: "absolute",
-            right: -4,
-            bottom: -4,
-            width: 16,
-            height: 16,
-            borderRadius: 999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: theme.colors.useCases.typography.textFocus,
-            color: theme.colors.useCases.surfaces.background,
-            border: `2px solid ${theme.colors.useCases.surfaces.background}`,
-            boxSizing: "border-box"
-        },
-        itemPublicBadgeIcon: {
-            width: 11,
-            height: 11,
-            fontSize: 11
         },
         itemNameBlock: {
             minWidth: 0,
@@ -2119,11 +2097,25 @@ const useStyles = tss
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             minWidth: 0,
-            flex: 1,
+            flex: "0 1 auto",
             "&:disabled": {
                 cursor: "default",
                 opacity: 0.72
             }
+        },
+        itemPublicTag: {
+            display: "inline-flex",
+            alignItems: "center",
+            gap: theme.spacing(0.75),
+            borderRadius: 999,
+            ...theme.spacing.topBottom("padding", 1),
+            ...theme.spacing.rightLeft("padding", 2),
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
+            color: theme.colors.useCases.typography.textPrimary,
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+            ...theme.typography.variants["body 2"].style,
+            marginLeft: theme.spacing(2)
         },
         itemMetaRow: {
             display: "inline-flex",

@@ -248,8 +248,8 @@ Rules:
 - Public prefix: `policy.isPublic === true`
 - Private prefix: `policy.isPublic === false`
 - Object items do not expose public state in this component
-- Public prefixes display the `Public` earth badge over the folder icon
-- Private prefixes do not display an earth badge
+- Public prefixes display a `Public` tag next to the prefix name
+- Private prefixes do not display a public tag
 - Public prefixes expose a `make private` contextual action with the
   `PublicOff` icon
 - Private prefixes expose a `make public` contextual action with the `Public`
