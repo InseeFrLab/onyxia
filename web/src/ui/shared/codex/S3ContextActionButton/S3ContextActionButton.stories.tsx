@@ -48,7 +48,7 @@ function getParentPrefix(s3Uri: S3Uri): S3Uri.TerminatedByDelimiter {
 
 const baseArgs: S3UriBarProps = {
     s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/"),
-    onS3UriPrefixChange: action("s3UriPrefixChange"),
+    onS3UriChange: action("s3UriChange"),
     hints: [
         makeHint({
             type: "key-segment",
@@ -105,8 +105,8 @@ function ComposedHeader() {
                     <S3UriBar
                         {...baseArgs}
                         s3Uri={s3Uri}
-                        onS3UriPrefixChange={params => {
-                            baseArgs.onS3UriPrefixChange(params);
+                        onS3UriChange={params => {
+                            baseArgs.onS3UriChange(params);
                             setS3Uri(params.s3Uri);
                         }}
                     />

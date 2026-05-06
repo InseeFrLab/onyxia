@@ -29,7 +29,7 @@ import { assert } from "tsafe";
 export type S3UriBarProps = {
     className?: string;
     s3Uri: S3Uri | undefined;
-    onS3UriPrefixChange: (params: {
+    onS3UriChange: (params: {
         s3Uri: S3Uri | undefined;
         isHintSelection: boolean;
     }) => void;
@@ -314,7 +314,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const {
         className,
         s3Uri,
-        onS3UriPrefixChange,
+        onS3UriChange,
         hints,
         areHintsLoading,
         isBookmarked,
@@ -780,7 +780,7 @@ export function S3UriBar(props: S3UriBarProps) {
         isHintSelection: boolean;
     }) => {
         lastRequestedCanonicalS3UriRef.current = getCanonicalS3UriValue(params.s3Uri);
-        onS3UriPrefixChange(params);
+        onS3UriChange(params);
     };
 
     const emitDraftS3Uri = (params: {
