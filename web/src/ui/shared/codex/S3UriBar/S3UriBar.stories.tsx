@@ -63,8 +63,8 @@ function StatefulS3UriBar(args: S3UriBarProps) {
         <S3UriBar
             {...args}
             s3Uri={s3Uri}
-            onS3UriPrefixChange={params => {
-                args.onS3UriPrefixChange(params);
+            onS3UriChange={params => {
+                args.onS3UriChange(params);
                 setS3Uri(params.s3Uri);
             }}
         />
@@ -73,7 +73,7 @@ function StatefulS3UriBar(args: S3UriBarProps) {
 
 const baseArgs: S3UriBarProps = {
     s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv"),
-    onS3UriPrefixChange: action("s3UriPrefixChange"),
+    onS3UriChange: action("s3UriChange"),
     hints: [
         makeHint({
             type: "key-segment",
@@ -428,9 +428,9 @@ function ControlledS3UriBarStory() {
                 hints={hints}
                 areHintsLoading={false}
                 isBookmarked={currentS3Uri !== undefined && isBookmarked}
-                onS3UriPrefixChange={({ s3Uri, isHintSelection }) => {
+                onS3UriChange={({ s3Uri, isHintSelection }) => {
                     setS3Uri(s3Uri);
-                    action("s3UriPrefixChange")({
+                    action("s3UriChange")({
                         s3Uri: s3Uri === undefined ? "undefined" : stringifyS3Uri(s3Uri),
                         isHintSelection
                     });
@@ -497,12 +497,12 @@ function UndefinedPrefixLockedEditingStory() {
                 ]}
                 areHintsLoading={false}
                 isBookmarked={false}
-                onS3UriPrefixChange={({ s3Uri, isHintSelection }) => {
+                onS3UriChange={({ s3Uri, isHintSelection }) => {
                     const nextS3Uri =
                         s3Uri === undefined ? undefined : stringifyS3Uri(s3Uri);
                     setS3Uri(s3Uri);
                     setLastCommittedS3Uri(nextS3Uri);
-                    action("s3UriPrefixChange")({
+                    action("s3UriChange")({
                         s3Uri: nextS3Uri,
                         isHintSelection
                     });

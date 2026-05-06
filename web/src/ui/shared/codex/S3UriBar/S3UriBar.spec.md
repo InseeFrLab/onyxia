@@ -46,7 +46,7 @@ export type S3UriBarProps = {
      * And the state representing input text should be internal to the component.
      * In this locked editing mode, losing focus must not exit editing mode, but it should hide
      * the hints overlay until the component gains focus again.
-     * onS3UriPrefixChange() should be called whenever the current input changes.
+     * onS3UriChange() should be called whenever the current input changes.
      * It should receive:
      * - a parsed S3Uri when the current input is parsable
      * - undefined when the current input is not parsable
@@ -81,7 +81,7 @@ export type S3UriBarProps = {
      * - user validates input externally (if you wire that)
      * - user clicks a breadcrumb segment in navigation mode
      */
-    onS3UriPrefixChange: (params: {
+    onS3UriChange: (params: {
         s3Uri: S3Uri | undefined;
 
         /**
@@ -145,20 +145,20 @@ export type S3UriBarProps = {
 - Navigation mode:
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
-    - Segment short click => request navigation (`onS3UriPrefixChange`).
+    - Segment short click => request navigation (`onS3UriChange`).
     - Segment long press (`>= 100ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.
     - If the parent updates `s3Uri` externally while edit mode is open, the input draft must resync to that external value.
-    - Invalid drafts should trigger `onS3UriPrefixChange({ s3Uri: undefined, isHintSelection: false })`.
+    - Invalid drafts should trigger `onS3UriChange({ s3Uri: undefined, isHintSelection: false })`.
     - Hints are selectable (pointer and keyboard).
     - The hints overlay is shown only when the caret is at the end of the current input value.
     - Moving the caret away from the end hides the hints overlay and disables keyboard hint navigation until the caret returns to the end.
-    - Selecting a hint should call `onS3UriPrefixChange({ s3Uri: hint.s3Uri, isHintSelection: true })`.
+    - Selecting a hint should call `onS3UriChange({ s3Uri: hint.s3Uri, isHintSelection: true })`.
     - When a hint is active, `Tab` should accept it exactly like `Enter`.
     - Hint selection must not rebuild the URI from `hint.text` and the current draft.
     - When the hints overlay is visible, `Escape` should blur the input and therefore dismiss focus from the component.
-    - Manual typing, Enter-to-commit, blur-to-commit, and breadcrumb navigation should call `onS3UriPrefixChange(..., isHintSelection: false)`.
+    - Manual typing, Enter-to-commit, blur-to-commit, and breadcrumb navigation should call `onS3UriChange(..., isHintSelection: false)`.
     - The hints overlay remains visible while `areHintsLoading` is true, even if there is no hint yet.
     - Loading feedback should appear inside the overlay rather than elsewhere in the bar.
     - The loading feedback uses a linear progress indicator, including when there is no suggestion yet.
