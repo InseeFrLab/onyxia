@@ -1005,7 +1005,7 @@ export const protectedThunks = {
 
             const [dispatch, getState] = args;
 
-            const isWithinPrefixThatHasBeenMadePublic =
+            const { isWithinPrefixThatHasBeenMadePublic } =
                 getIsWithinPrefixThatHasBeenMadePublic({
                     s3Uri,
                     bucketPoliciesByBucket:
