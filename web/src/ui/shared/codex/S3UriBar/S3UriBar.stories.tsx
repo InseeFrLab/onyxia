@@ -35,6 +35,59 @@ function parsePrefixOrThrowWithDelimiter(params: {
     });
 }
 
+function parseTerminatedPrefixOrThrowWithDelimiter(params: {
+    s3Uri: string;
+    delimiter: string;
+}): S3Uri.TerminatedByDelimiter {
+    const parsedS3Uri = parsePrefixOrThrowWithDelimiter(params);
+
+    if (!parsedS3Uri.isDelimiterTerminated) {
+        throw new Error(`Expected delimiter-terminated S3 URI: ${params.s3Uri}`);
+    }
+
+    return parsedS3Uri;
+}
+
+function getS3UriBarS3Uri(params: {
+    s3Uri: S3Uri;
+    s3Uri_publicPrefix?: S3Uri.TerminatedByDelimiter | undefined;
+}): NonNullable<S3UriBarProps["s3Uri"]> {
+    const { s3Uri, s3Uri_publicPrefix } = params;
+
+    return {
+        s3Uri,
+        s3Uri_publicPrefix:
+            s3Uri_publicPrefix !== undefined &&
+            s3Uri.bucket === s3Uri_publicPrefix.bucket &&
+            s3Uri.delimiter === s3Uri_publicPrefix.delimiter &&
+            stringifyS3Uri(s3Uri).startsWith(stringifyS3Uri(s3Uri_publicPrefix))
+                ? s3Uri_publicPrefix
+                : undefined
+    };
+}
+
+function parseS3UriBarS3Uri(params: {
+    s3Uri: string;
+    s3Uri_publicPrefix?: string | undefined;
+    delimiter?: string;
+}): NonNullable<S3UriBarProps["s3Uri"]> {
+    const { s3Uri, s3Uri_publicPrefix, delimiter = "/" } = params;
+
+    return getS3UriBarS3Uri({
+        s3Uri: parsePrefixOrThrowWithDelimiter({
+            s3Uri,
+            delimiter
+        }),
+        s3Uri_publicPrefix:
+            s3Uri_publicPrefix === undefined
+                ? undefined
+                : parseTerminatedPrefixOrThrowWithDelimiter({
+                      s3Uri: s3Uri_publicPrefix,
+                      delimiter
+                  })
+    });
+}
+
 function makeHint(params: {
     type: S3UriBarProps["hints"][number]["type"];
     text: string;
@@ -65,14 +118,25 @@ function StatefulS3UriBar(args: S3UriBarProps) {
             s3Uri={s3Uri}
             onS3UriChange={params => {
                 args.onS3UriChange(params);
-                setS3Uri(params.s3Uri);
+                setS3Uri(currentS3Uri =>
+                    params.s3Uri === undefined
+                        ? undefined
+                        : getS3UriBarS3Uri({
+                              s3Uri: params.s3Uri,
+                              s3Uri_publicPrefix:
+                                  currentS3Uri?.s3Uri_publicPrefix ??
+                                  args.s3Uri?.s3Uri_publicPrefix
+                          })
+                );
             }}
         />
     );
 }
 
 const baseArgs: S3UriBarProps = {
-    s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/report.csv"),
+    s3Uri: parseS3UriBarS3Uri({
+        s3Uri: "s3://analytics-data/exports/2024/quarter-1/report.csv"
+    }),
     onS3UriChange: action("s3UriChange"),
     hints: [
         makeHint({
@@ -118,7 +182,9 @@ export const ActiveBreadcrumbState: Story = {
 export const EditingModeWithHints: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/")
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://analytics-data/exports/2024/"
+        })
     },
     render: args => <StatefulS3UriBar {...args} />
 };
@@ -126,15 +192,27 @@ export const EditingModeWithHints: Story = {
 export const LongPathCollapsed: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrow(
-            "s3://very-long-bucket-name/one/two/three/four/five/six/seven/eight/nine/ten/report.csv"
-        )
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://very-long-bucket-name/one/two/three/four/five/six/seven/eight/nine/ten/report.csv"
+        })
     },
     render: args => (
         <div style={{ maxWidth: 420 }}>
             <StatefulS3UriBar {...args} />
         </div>
     )
+};
+
+export const PublicPrefixIndicator: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://bucket-name/prefix-name/prefix-name/prefix-name/",
+            s3Uri_publicPrefix: "s3://bucket-name/prefix-name/"
+        }),
+        hints: []
+    },
+    render: args => <StatefulS3UriBar {...args} />
 };
 
 export const BookmarkedReadonlyIndicator: Story = {
@@ -157,7 +235,9 @@ export const BookmarkedActive: Story = {
 export const RootPrefix: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrow("s3://analytics-data/")
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://analytics-data/"
+        })
     },
     render: args => <StatefulS3UriBar {...args} />
 };
@@ -165,7 +245,7 @@ export const RootPrefix: Story = {
 export const HashDelimiter: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrowWithDelimiter({
+        s3Uri: parseS3UriBarS3Uri({
             s3Uri: "s3://mybucket/foo#bar#file.txt",
             delimiter: "#"
         }),
@@ -196,7 +276,9 @@ export const HashDelimiter: Story = {
 export const EditingModeWithShortcuts: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://analytics-data/exports/"
+        }),
         hints: [
             makeHint({
                 type: "bookmark",
@@ -226,7 +308,9 @@ export const EditingModeWithShortcuts: Story = {
 export const EditingModeWithManyHints: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://analytics-data/exports/"
+        }),
         hints: [
             makeHint({
                 type: "bookmark",
@@ -306,7 +390,9 @@ export const EditingModeWithManyHints: Story = {
 export const EditingModeWithVeryLongHints: Story = {
     args: {
         ...baseArgs,
-        s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://analytics-data/exports/"
+        }),
         hints: [
             makeHint({
                 type: "bookmark",
@@ -424,7 +510,13 @@ function ControlledS3UriBarStory() {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
-                s3Uri={s3Uri}
+                s3Uri={
+                    s3Uri === undefined
+                        ? undefined
+                        : getS3UriBarS3Uri({
+                              s3Uri
+                          })
+                }
                 hints={hints}
                 areHintsLoading={false}
                 isBookmarked={currentS3Uri !== undefined && isBookmarked}
@@ -477,7 +569,13 @@ function UndefinedPrefixLockedEditingStory() {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
-                s3Uri={s3Uri}
+                s3Uri={
+                    s3Uri === undefined
+                        ? undefined
+                        : getS3UriBarS3Uri({
+                              s3Uri
+                          })
+                }
                 hints={[
                     makeHint({
                         type: "bookmark",
