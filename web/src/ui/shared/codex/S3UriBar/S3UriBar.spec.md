@@ -34,14 +34,17 @@ export type S3UriBarProps = {
     className?: string;
 
     /**
-     * The currently selected S3 prefix.
+     * The currently selected S3 URI and, when applicable, the public prefix that contains it.
      *
      * Example object (simplified):
-     *   const s3Uri: S3Uri = { ... }
+     *   const s3Uri = {
+     *     s3Uri: parseS3Uri({ value: "s3://bucket/private/public-child/", delimiter: "/" }),
+     *     s3Uri_publicPrefix: parseS3Uri({ value: "s3://bucket/private/", delimiter: "/" })
+     *   }
      *
      * Use helpers from `core/tools/S3Uri` to parse/stringify/manipulate.
      *
-     * The s3Uri can be undefined. In this case the component should be locked in editing mode.
+     * The prop can be undefined. In this case the component should be locked in editing mode.
      * The text input should be set by default to s3://
      * And the state representing input text should be internal to the component.
      * In this locked editing mode, losing focus must not exit editing mode, but it should hide
@@ -70,8 +73,20 @@ export type S3UriBarProps = {
      * ]
      * The component is responsible for filtering out the irrelevant hint entry as the user types
      * For example when the current value of the input is "s3://my" only the "s3://mybucket/" hint should appear.
+     *
+     * When s3Uri_publicPrefix is defined:
+     * - it must be a delimiter-terminated S3 URI
+     * - it is expected to be either equal to s3Uri.s3Uri or a prefix of s3Uri.s3Uri
+     * - the breadcrumb path should mark the public part of the path in navigation mode
+     * - when s3Uri.s3Uri is under s3Uri_publicPrefix, the public marker starts on the first crumb after the public prefix boundary
+     * - when s3Uri.s3Uri is exactly s3Uri_publicPrefix, the public marker starts on the current crumb itself
      */
-    s3Uri: S3Uri | undefined;
+    s3Uri:
+        | {
+              s3Uri: S3Uri;
+              s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter | undefined;
+          }
+        | undefined;
 
     /**
      * Request a change to the current prefix.
@@ -136,13 +151,16 @@ export type S3UriBarProps = {
      * Called when the user requests bookmarking/unbookmarking.
      * Can be undefined when bookmarks are not editable in the current context.
      */
-    onToggleBookmark?: () => void;
+    onToggleBookmark?: (props: { s3Uri: S3Uri }) => void;
 };
 ```
 
 ## Interaction Summary
 
 - Navigation mode:
+    - When a public prefix is present, show a small `Public` icon next to the first public breadcrumb crumb and visually group the public tail of the path.
+    - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/`, the public marker starts on `b`, because `a/` is the policy boundary and `b/c/` is inside it.
+    - For `s3://bucket/a/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because the current crumb is the public prefix itself.
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
     - Segment short click => request navigation (`onS3UriChange`).

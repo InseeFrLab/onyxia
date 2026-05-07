@@ -44,7 +44,12 @@ export type MainView = {
     uploads: State.Upload[];
 
     uriBar: {
-        s3Uri: S3Uri | undefined;
+        s3Uri:
+            | {
+                  s3Uri: S3Uri;
+                  s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter | undefined;
+              }
+            | undefined;
         hints: {
             type: "object" | "key-segment" | "bookmark";
             text: string;
@@ -502,10 +507,37 @@ const isUploadButtonDisabled = createSelector(
 
 const uriBar = createSelector(
     s3Uri,
+    createSelector(
+        s3Uri,
+        createSelector(state, state => state.bucketPoliciesByBucket),
+        (s3Uri, bucketPoliciesByBucket) => {
+            if (s3Uri === undefined) {
+                return undefined;
+            }
+
+            const { isWithinPrefixThatHasBeenMadePublic, s3Uri_publicPrefix } =
+                getIsWithinPrefixThatHasBeenMadePublic({
+                    s3Uri,
+                    bucketPoliciesByBucket
+                });
+
+            if (!isWithinPrefixThatHasBeenMadePublic) {
+                return undefined;
+            }
+
+            return s3Uri_publicPrefix;
+        }
+    ),
     bookmarks,
     listedPrefix,
     isListing,
-    (s3Uri, bookmarks, listedPrefix, isListing): MainView["uriBar"] => {
+    (
+        s3Uri,
+        s3Uri_publicPrefix,
+        bookmarks,
+        listedPrefix,
+        isListing
+    ): MainView["uriBar"] => {
         if (s3Uri === undefined) {
             return {
                 s3Uri: undefined,
@@ -566,7 +598,7 @@ const uriBar = createSelector(
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
             return {
-                s3Uri,
+                s3Uri: { s3Uri, s3Uri_publicPrefix },
                 hints,
                 bookmarkStatus
             };
@@ -627,7 +659,7 @@ const uriBar = createSelector(
         });
 
         return {
-            s3Uri,
+            s3Uri: { s3Uri, s3Uri_publicPrefix },
             hints,
             bookmarkStatus
         };
