@@ -46,8 +46,17 @@ function getParentPrefix(s3Uri: S3Uri): S3Uri.TerminatedByDelimiter {
     };
 }
 
+function getS3UriBarS3Uri(s3Uri: S3Uri): NonNullable<S3UriBarProps["s3Uri"]> {
+    return {
+        s3Uri,
+        s3Uri_publicPrefix: undefined
+    };
+}
+
 const baseArgs: S3UriBarProps = {
-    s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/"),
+    s3Uri: getS3UriBarS3Uri(
+        parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/")
+    ),
     onS3UriChange: action("s3UriChange"),
     hints: [
         makeHint({
@@ -74,7 +83,8 @@ const baseArgs: S3UriBarProps = {
 function ComposedHeader() {
     const [s3Uri, setS3Uri] = useState(baseArgs.s3Uri);
 
-    const isAtBucketRoot = s3Uri === undefined || s3Uri.keySegments.length === 0;
+    const isAtBucketRoot =
+        s3Uri === undefined || s3Uri.s3Uri.keySegments.length === 0;
 
     return (
         <div style={{ maxWidth: 960, padding: 16 }}>
@@ -93,10 +103,10 @@ function ComposedHeader() {
                             return;
                         }
 
-                        const parentPrefix = getParentPrefix(s3Uri);
+                        const parentPrefix = getParentPrefix(s3Uri.s3Uri);
 
                         action("goToParentPrefix")(parentPrefix);
-                        setS3Uri(parentPrefix);
+                        setS3Uri(getS3UriBarS3Uri(parentPrefix));
                     }}
                     disabled={isAtBucketRoot}
                 />
@@ -107,7 +117,11 @@ function ComposedHeader() {
                         s3Uri={s3Uri}
                         onS3UriChange={params => {
                             baseArgs.onS3UriChange(params);
-                            setS3Uri(params.s3Uri);
+                            setS3Uri(
+                                params.s3Uri === undefined
+                                    ? undefined
+                                    : getS3UriBarS3Uri(params.s3Uri)
+                            );
                         }}
                     />
                 </div>
