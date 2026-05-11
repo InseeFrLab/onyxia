@@ -39,10 +39,12 @@ const useStyles = tss.withName({ S3ContextActionButton }).create(({ theme }) => 
         flexShrink: 0
     },
     button: {
-        padding: theme.spacing(3),
+        width: 56,
+        height: 56,
+        padding: 0,
         margin: 0,
         border: "none",
-        borderRadius: "12px",
+        borderRadius: "16px",
         boxSizing: "border-box",
         display: "inline-flex",
         alignItems: "center",
