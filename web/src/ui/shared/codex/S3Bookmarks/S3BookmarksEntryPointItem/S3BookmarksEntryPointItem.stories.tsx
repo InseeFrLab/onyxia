@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
+import { userEvent, within } from "@storybook/test";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3BookmarksEntryPointList, type S3BookmarksEntryPointListProps } from ".";
 import { assert } from "tsafe";
@@ -76,9 +77,40 @@ const onRename: S3BookmarksEntryPointListProps["onRename"] = ({
 };
 
 export const Default: Story = {
+    name: "Home with bookmarks + buckets",
     args: {
         items: baseItems,
         activeItemS3Uri: baseItems[0].s3Uri,
+        getItemLink,
+        onDelete,
+        onRename
+    }
+};
+
+export const OnlyBookmarks: Story = {
+    args: {
+        items: baseItems.filter(item => !item.isReadonly),
+        activeItemS3Uri: baseItems[2].s3Uri,
+        getItemLink,
+        onDelete,
+        onRename
+    }
+};
+
+export const OnlyBuckets: Story = {
+    args: {
+        items: baseItems.filter(item => item.isReadonly),
+        activeItemS3Uri: undefined,
+        getItemLink,
+        onDelete,
+        onRename
+    }
+};
+
+export const EmptyBookmarksState: Story = {
+    args: {
+        items: [],
+        activeItemS3Uri: undefined,
         getItemLink,
         onDelete,
         onRename
@@ -98,4 +130,33 @@ export const CompactWidth: Story = {
             <S3BookmarksEntryPointList {...args} />
         </div>
     )
+};
+
+export const HoverState: Story = {
+    args: {
+        items: baseItems,
+        activeItemS3Uri: undefined,
+        getItemLink,
+        onDelete,
+        onRename
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.hover(canvas.getAllByLabelText("Open bookmark")[0]);
+    }
+};
+
+export const FocusState: Story = {
+    args: {
+        items: baseItems,
+        activeItemS3Uri: undefined,
+        getItemLink,
+        onDelete,
+        onRename
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.tab();
+        await canvas.findAllByLabelText("Open bookmark");
+    }
 };
