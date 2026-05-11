@@ -45,6 +45,7 @@ export type MainView = {
             type: "object" | "key-segment" | "bookmark";
             text: string;
             s3Uri: S3Uri;
+            isReadonly?: boolean;
         }[];
         bookmarkStatus:
             | {
@@ -489,7 +490,8 @@ const uriBar = createSelector(
                 hints: bookmarks.items.map(bookmark => ({
                     type: "bookmark",
                     text: stringifyS3Uri(bookmark.s3Uri),
-                    s3Uri: bookmark.s3Uri
+                    s3Uri: bookmark.s3Uri,
+                    isReadonly: bookmark.isReadonly
                 })),
                 bookmarkStatus: {
                     isBookmarked: false
@@ -536,7 +538,8 @@ const uriBar = createSelector(
 
                     return text;
                 })(),
-                s3Uri: bookmark.s3Uri
+                s3Uri: bookmark.s3Uri,
+                isReadonly: bookmark.isReadonly
             }));
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {

@@ -126,6 +126,20 @@ function PageComponent() {
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
 
+    const bookmarkBarAreaClassName = css({
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        width: "100%",
+        minWidth: 0
+    });
+
+    const entryPointAreaClassName = css({
+        marginTop: theme.spacing(5),
+        marginBottom: theme.spacing(2),
+        width: "100%",
+        minWidth: 0
+    });
+
     const props_bookmarkBar = {
         items: mainView.bookmarks.items,
         activeItemS3Uri: mainView.bookmarks.activeItemS3Uri,
@@ -272,15 +286,12 @@ function PageComponent() {
                                 className={css({
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: theme.spacing(3),
+                                    gap: theme.spacing(2),
                                     width: "100%",
                                     minWidth: 0
                                 })}
                             >
                                 <S3ProfileSelect
-                                    className={css({
-                                        width: "fit-content"
-                                    })}
                                     availableProfileNames={
                                         mainView.profileSelect.availableProfileNames
                                     }
@@ -308,24 +319,6 @@ function PageComponent() {
                                         );
                                     }}
                                 />
-                                {mainView.uriBar.s3Uri !== undefined && (
-                                    <S3BookmarksBar
-                                        {...props_bookmarkBar}
-                                        className={css({
-                                            flex: 1,
-                                            minWidth: 0
-                                        })}
-                                    />
-                                )}
-                            </div>
-
-                            <div
-                                className={css({
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: theme.spacing(2)
-                                })}
-                            >
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("ArrowBack")}
                                     label="Back"
@@ -334,8 +327,8 @@ function PageComponent() {
                                 />
                                 <S3UriBar
                                     className={css({
-                                        marginTop: theme.spacing(2),
-                                        marginBottom: theme.spacing(2)
+                                        flex: 1,
+                                        minWidth: 0
                                     })}
                                     s3Uri={mainView.uriBar.s3Uri}
                                     hints={mainView.uriBar.hints}
@@ -430,12 +423,17 @@ function PageComponent() {
                                 />
                             </div>
 
+                            {mainView.uriBar.s3Uri !== undefined && (
+                                <S3BookmarksBar
+                                    {...props_bookmarkBar}
+                                    className={bookmarkBarAreaClassName}
+                                />
+                            )}
+
                             {mainView.uriBar.s3Uri === undefined && (
                                 <S3BookmarksEntryPointList
                                     {...props_bookmarkBar}
-                                    className={css({
-                                        marginTop: theme.spacing(4)
-                                    })}
+                                    className={entryPointAreaClassName}
                                 />
                             )}
 
