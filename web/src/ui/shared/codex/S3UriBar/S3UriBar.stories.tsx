@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { useEffect, useMemo, useState } from "react";
+import { userEvent, within } from "@storybook/test";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3UriBar, type S3UriBarProps } from "./S3UriBar";
 
@@ -101,6 +102,13 @@ const baseArgs: S3UriBarProps = {
 };
 
 export const NavigationMode: Story = {
+    args: {
+        ...baseArgs
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const ActiveBreadcrumbState: Story = {
     args: {
         ...baseArgs
     },
@@ -565,4 +573,67 @@ export const UndefinedPrefixLockedEditingWithBookmarkHints: Story = {
         onToggleBookmark: undefined
     },
     render: () => <UndefinedPrefixLockedEditingStory />
+};
+
+export const HomeInactiveSearchState: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: undefined,
+        hints: [
+            makeHint({
+                type: "bookmark",
+                text: "s3://analytics-data/",
+                s3Uri: "s3://analytics-data/"
+            }),
+            makeHint({
+                type: "bookmark",
+                text: "s3://shared-datasets/curated/",
+                s3Uri: "s3://shared-datasets/curated/"
+            })
+        ],
+        onToggleBookmark: undefined
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const HomeInactiveHovered: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: undefined,
+        hints: [
+            makeHint({
+                type: "bookmark",
+                text: "s3://analytics-data/",
+                s3Uri: "s3://analytics-data/"
+            })
+        ],
+        onToggleBookmark: undefined
+    },
+    render: args => <StatefulS3UriBar {...args} />,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        const homeInactiveTrigger = canvas.getByText(/rechercher|search/i);
+        await userEvent.hover(homeInactiveTrigger);
+    }
+};
+
+export const HomeInactiveFocused: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: undefined,
+        hints: [
+            makeHint({
+                type: "bookmark",
+                text: "s3://analytics-data/",
+                s3Uri: "s3://analytics-data/"
+            })
+        ],
+        onToggleBookmark: undefined
+    },
+    render: args => <StatefulS3UriBar {...args} />,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        const homeInactiveTrigger = canvas.getByText(/rechercher|search/i);
+        await userEvent.click(homeInactiveTrigger);
+    }
 };

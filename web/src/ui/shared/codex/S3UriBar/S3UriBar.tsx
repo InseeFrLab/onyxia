@@ -15,9 +15,13 @@ import { Tooltip } from "onyxia-ui/Tooltip";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
 import LinearProgress from "@mui/material/LinearProgress";
+import FolderIcon from "@mui/icons-material/Folder";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarIcon from "@mui/icons-material/Star";
 import { getIconUrlByName } from "lazy-icons";
 import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 import s3UriBucketSvgUrl from "ui/assets/svg/S3UriBucket.svg";
 import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 import { assert } from "tsafe";
@@ -33,6 +37,7 @@ export type S3UriBarProps = {
         type: "object" | "key-segment" | "bookmark";
         text: string;
         s3Uri: S3Uri;
+        isReadonly?: boolean;
     }[];
     areHintsLoading: boolean;
     isBookmarked: boolean;
@@ -94,12 +99,8 @@ function getHintTypeLabel(type: HintType): string {
     }
 }
 
-function getHintTypeIcon(type: HintType): string {
+function getHintTypeIcon(type: Exclude<HintType, "bookmark" | "key-segment">): string {
     switch (type) {
-        case "key-segment":
-            return getIconUrlByName("Folder");
-        case "bookmark":
-            return getIconUrlByName("Link");
         case "object":
             return getIconUrlByName("Description");
     }
@@ -370,12 +371,11 @@ export function S3UriBar(props: S3UriBarProps) {
     const { domRect: pathDisplayRect, ref: pathDisplayRef } = useDomRect();
 
     const [draftS3Uri, setDraftS3Uri] = useState(canonicalS3Uri);
-    const [isEditing, setIsEditing] = useState(isUndefinedPrefixMode);
+    const [isEditing, setIsEditing] = useState(false);
     const [isFocusedWithin, setIsFocusedWithin] = useState(false);
     const [isCursorAtEnd, setIsCursorAtEnd] = useState(true);
     const [displayCrumbs, setDisplayCrumbs] = useState<DisplayCrumb[]>(crumbs);
     const [activeHintIndex, setActiveHintIndex] = useState(-1);
-    const [isBookmarkHovered, setIsBookmarkHovered] = useState(false);
     const [hintsPanelPosition, setHintsPanelPosition] = useState({
         left: hintsPanelHorizontalEdgePaddingPx,
         top: 0
@@ -401,7 +401,11 @@ export function S3UriBar(props: S3UriBarProps) {
         (displayedHints.length > 0 || areHintsLoading);
     const areHintsInteractive = isHintsPanelVisible && displayedHints.length > 0;
 
+    const isPristineUndefinedDraft =
+        draftS3Uri.trim() === "" || draftS3Uri.trim() === defaultDraftS3Uri;
+    const isInactiveHomeState = isUndefinedPrefixMode && !isEditing;
     const { classes, cx } = useStyles({ isEditing });
+    const { t } = useTranslation({ S3UriBar });
 
     const syncInputCursorState = useCallback(
         (input: HTMLInputElement | null = inputRef.current) => {
@@ -481,18 +485,6 @@ export function S3UriBar(props: S3UriBarProps) {
                 : { left: nextLeft, top: nextTop }
         );
     }, [syncInputCursorState]);
-
-    useEffect(() => {
-        if (isUndefinedPrefixMode && !isEditing) {
-            setIsEditing(true);
-        }
-    }, [isEditing, isUndefinedPrefixMode]);
-
-    useEffect(() => {
-        if (!isBookmarked) {
-            setIsBookmarkHovered(false);
-        }
-    }, [isBookmarked]);
 
     useEffect(() => {
         const didExitUndefinedPrefixMode =
@@ -1002,6 +994,9 @@ export function S3UriBar(props: S3UriBarProps) {
 
         if (isUndefinedPrefixMode) {
             tryCommitDraftS3Uri();
+            if (isPristineUndefinedDraft) {
+                setIsEditing(false);
+            }
             return;
         }
 
@@ -1013,13 +1008,7 @@ export function S3UriBar(props: S3UriBarProps) {
         Math.min(2, displayCrumbs.length)
     );
     const displayKeyCrumbs = displayCrumbs.slice(2);
-    const shouldShowUnpinnedIcon =
-        isBookmarked && isBookmarkHovered && onToggleBookmark !== undefined;
-    const bookmarkIconName = shouldShowUnpinnedIcon
-        ? "PushPinOutlined"
-        : isBookmarked
-          ? "PushPin"
-          : "PushPinOutlined";
+    const bookmarkIcon = isBookmarked ? StarIcon : StarBorderIcon;
 
     return (
         <div
@@ -1071,6 +1060,19 @@ export function S3UriBar(props: S3UriBarProps) {
                                     : undefined
                             }
                         />
+                    </div>
+                ) : isInactiveHomeState ? (
+                    <div className={classes.inactiveHomeState} aria-label="S3 URI">
+                        <span className={classes.inactiveHomeIcon} aria-hidden="true">
+                            <Icon
+                                size="small"
+                                className={classes.rootIconGlyph}
+                                icon={s3UriHomeSvgUrl}
+                            />
+                        </span>
+                        <span className={classes.inactiveHomePlaceholder}>
+                            {t("search")}
+                        </span>
                     </div>
                 ) : (
                     <nav
@@ -1433,7 +1435,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 )}
 
                 <div className={classes.trailingActions}>
-                    {(onToggleBookmark || isBookmarked) && (
+                    {!isUndefinedPrefixMode && (onToggleBookmark || isBookmarked) && (
                         <Tooltip
                             title={
                                 onToggleBookmark
@@ -1443,17 +1445,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                     : "Bookmarked"
                             }
                         >
-                            <div
-                                data-s3-uri-ignore-edit="true"
-                                onMouseEnter={() => {
-                                    if (isBookmarked && onToggleBookmark !== undefined) {
-                                        setIsBookmarkHovered(true);
-                                    }
-                                }}
-                                onMouseLeave={() => {
-                                    setIsBookmarkHovered(false);
-                                }}
-                            >
+                            <div data-s3-uri-ignore-edit="true">
                                 <IconButton
                                     aria-label={
                                         onToggleBookmark
@@ -1462,7 +1454,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                 : "Add bookmark"
                                             : "Bookmarked"
                                     }
-                                    icon={getIconUrlByName(bookmarkIconName)}
+                                    icon={bookmarkIcon}
                                     size="default"
                                     onClick={event => {
                                         event.stopPropagation();
@@ -1540,14 +1532,42 @@ export function S3UriBar(props: S3UriBarProps) {
                                     }}
                                 >
                                     <span
-                                        className={classes.hintType}
+                                        className={cx(
+                                            classes.hintType,
+                                            hint.type === "bookmark" &&
+                                                hint.isReadonly !== true &&
+                                                classes.hintTypeBookmark,
+                                            hint.type === "bookmark" &&
+                                                hint.isReadonly === true &&
+                                                classes.hintTypeBucket,
+                                            hint.type === "key-segment" &&
+                                                classes.hintTypeBucket,
+                                            hint.type === "object" &&
+                                                classes.hintTypeObject
+                                        )}
                                         aria-label={getHintTypeLabel(hint.type)}
                                         title={getHintTypeLabel(hint.type)}
                                     >
-                                        <Icon
-                                            size="extra small"
-                                            icon={getHintTypeIcon(hint.type)}
-                                        />
+                                        {hint.type === "bookmark" &&
+                                        hint.isReadonly === true ? (
+                                            <FolderIcon
+                                                className={classes.hintTypeSvgIcon}
+                                            />
+                                        ) : hint.type === "bookmark" ? (
+                                            <StarIcon
+                                                className={classes.hintTypeSvgIcon}
+                                            />
+                                        ) : hint.type === "key-segment" ? (
+                                            <FolderIcon
+                                                className={classes.hintTypeSvgIcon}
+                                            />
+                                        ) : (
+                                            <Icon
+                                                className={classes.hintTypeAssetIcon}
+                                                size="extra small"
+                                                icon={getHintTypeIcon(hint.type)}
+                                            />
+                                        )}
                                     </span>
                                     <span className={classes.hintName} title={hint.text}>
                                         {collapseMiddle(hint.text)}
@@ -1566,8 +1586,9 @@ const useStyles = tss
     .withName({ S3UriBar })
     .withParams<{ isEditing: boolean }>()
     .create(({ theme, isEditing }) => {
-        const barHeight = "auto";
+        const barHeight = 56;
         const accentColor = theme.colors.useCases.buttons.actionActive;
+        const labelStyle = theme.typography.variants["label 1"].style;
 
         return {
             root: {
@@ -1581,19 +1602,47 @@ const useStyles = tss
                 width: "100%",
                 minWidth: 0,
                 height: barHeight,
-                paddingTop: theme.spacing(2),
-                paddingBottom: theme.spacing(2),
+                paddingTop: theme.spacing(1.5),
+                paddingBottom: theme.spacing(1.5),
                 paddingLeft: theme.spacing(2),
                 paddingRight: theme.spacing(2),
                 boxSizing: "border-box",
                 borderRadius: "16px",
                 border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
                 backgroundColor: theme.colors.useCases.surfaces.surface1,
-                transition: "box-shadow 0.2s ease, border-color 0.2s ease",
+                transition:
+                    "box-shadow 0.2s ease, border-color 0.2s ease, background-color 120ms ease",
                 boxShadow: isEditing ? `inset 0 -2px 0 ${accentColor}` : undefined,
                 "&:hover": {
                     boxShadow: !isEditing ? theme.shadows[4] : undefined
                 }
+            },
+            inactiveHomeState: {
+                display: "flex",
+                alignItems: "center",
+                gap: theme.spacing(2),
+                flex: 1,
+                minWidth: 0
+            },
+            inactiveHomeIcon: {
+                width: 32,
+                height: 32,
+                borderRadius: 12,
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
+                color: theme.colors.useCases.typography.textPrimary,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0
+            },
+            inactiveHomePlaceholder: {
+                ...labelStyle,
+                fontWeight: 500,
+                color: theme.colors.useCases.typography.textSecondary,
+                minWidth: 0,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
             },
             pathDisplay: {
                 position: "relative",
@@ -1713,16 +1762,23 @@ const useStyles = tss
             },
             inputWrapper: {
                 flex: 1,
-                minWidth: 0
+                minWidth: 0,
+                height: "100%",
+                display: "flex",
+                alignItems: "center"
             },
             input: {
                 width: "100%",
+                height: 28,
                 border: "none",
                 outline: "none",
                 background: "transparent",
                 paddingLeft: "10px",
+                paddingTop: 0,
+                paddingBottom: 0,
                 font: "inherit",
                 fontSize: "1.05rem",
+                lineHeight: "28px",
                 fontWeight: 600,
                 color: theme.colors.useCases.typography.textPrimary
             },
@@ -1734,9 +1790,9 @@ const useStyles = tss
             },
             bookmarkButton: {
                 margin: 0,
-                width: "36px",
-                height: "36px",
-                minWidth: "36px",
+                width: "40px",
+                height: "40px",
+                minWidth: "40px",
                 borderRadius: "12px",
                 backgroundColor: "transparent",
                 boxSizing: "border-box",
@@ -1775,7 +1831,7 @@ const useStyles = tss
                 display: "flex",
                 flexDirection: "column",
                 gap: theme.spacing(1),
-                padding: theme.spacing(2),
+                padding: theme.spacing(1),
                 width: "fit-content",
                 minWidth: "260px",
                 maxWidth: "calc(100% - 16px)",
@@ -1788,8 +1844,7 @@ const useStyles = tss
             },
             hintsList: {
                 display: "flex",
-                flexDirection: "column",
-                gap: theme.spacing(1)
+                flexDirection: "column"
             },
             hintsLoadingProgress: {
                 marginBottom: theme.spacing(1),
@@ -1807,14 +1862,14 @@ const useStyles = tss
             hintItem: {
                 display: "flex",
                 alignItems: "center",
-                gap: theme.spacing(3),
+                gap: theme.spacing(1),
                 width: "100%",
                 border: "none",
-                borderRadius: "10px",
+                borderRadius: "8px",
                 background: "transparent",
                 color: "inherit",
                 textAlign: "left",
-                padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
+                padding: `${theme.spacing(2)} ${theme.spacing(1)}`,
                 cursor: "pointer"
             },
             hintItemActive: {
@@ -1824,14 +1879,36 @@ const useStyles = tss
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "24px",
-                height: "24px",
-                borderRadius: "6px",
+                width: "32px",
+                height: "32px",
                 color: theme.colors.useCases.typography.textSecondary,
-                backgroundColor: theme.colors.useCases.surfaces.surface2,
                 flexShrink: 0
             },
+            hintTypeBookmark: {
+                color: accentColor
+            },
+            hintTypeBucket: {
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            hintTypeObject: {
+                color: theme.colors.useCases.typography.textSecondary
+            },
+            hintTypeSvgIcon: {
+                width: 20,
+                height: 20,
+                fontSize: 20
+            },
+            hintTypeAssetIcon: {
+                width: 16,
+                height: 16,
+                "& svg, & img": {
+                    width: 16,
+                    height: 16
+                }
+            },
             hintName: {
+                ...labelStyle,
+                fontWeight: 500,
                 minWidth: 0,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -1863,3 +1940,6 @@ const useStyles = tss
             }
         };
     });
+
+const { i18n } = declareComponentKeys<"search">()({ S3UriBar });
+export type I18n = typeof i18n;
