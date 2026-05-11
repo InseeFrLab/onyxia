@@ -971,6 +971,8 @@ ${
         "json-ld compact error": "无法压缩 JSON-LD 响应。",
         "json-ld frame error": "无法对 JSON-LD 响应进行框架处理。",
         "datasets parsing error": "无法解析目录中的数据集。"
+    },
+    S3UriBar: {
+        search: "搜索.."
     }
-    /* spell-checker: enable */
 };

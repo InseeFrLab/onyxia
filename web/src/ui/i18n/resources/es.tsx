@@ -1037,6 +1037,8 @@ export const translations: Translations<"en"> = {
         "json-ld frame error": "No se pudo crear el frame de la respuesta JSON-LD.",
         "datasets parsing error":
             "No se pudieron analizar los conjuntos de datos del catálogo."
+    },
+    S3UriBar: {
+        search: "Buscar.."
     }
-    /* spell-checker: enable */
 };

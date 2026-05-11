@@ -1028,6 +1028,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "json-ld compact error": "Klarte ikke å komprimere JSON-LD-responsen.",
         "json-ld frame error": "Klarte ikke å frame JSON-LD-responsen.",
         "datasets parsing error": "Kunne ikke tolke datasett fra katalogen."
+    },
+    S3UriBar: {
+        search: "Søk.."
     }
-    /* spell-checker: enable */
 };
