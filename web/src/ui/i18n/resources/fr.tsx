@@ -1049,6 +1049,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "json-ld frame error": "Impossible de structurer la réponse JSON-LD.",
         "datasets parsing error":
             "Impossible d'analyser les jeux de données du catalogue."
+    },
+    S3UriBar: {
+        search: "Rechercher.."
     }
-    /* spell-checker: enable */
 };

@@ -1021,5 +1021,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "json-ld compact error": "Failed to compact the JSON-LD response.",
         "json-ld frame error": "Failed to frame the JSON-LD response.",
         "datasets parsing error": "Unable to parse datasets from the catalog."
+    },
+    S3UriBar: {
+        search: "Search.."
     }
 };

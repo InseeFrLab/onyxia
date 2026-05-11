@@ -1024,6 +1024,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "json-ld compact error": "JSON-LD-vastausta ei voitu tiivistää.",
         "json-ld frame error": "JSON-LD-vastausta ei voitu kehystää.",
         "datasets parsing error": "Katalogin datasettejä ei voitu jäsentää."
+    },
+    S3UriBar: {
+        search: "Haku.."
     }
-    /* spell-checker: enable */
 };

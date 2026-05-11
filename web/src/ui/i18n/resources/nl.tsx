@@ -1035,6 +1035,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "json-ld frame error": "De JSON-LD-response kon niet worden geframed.",
         "datasets parsing error":
             "De datasets uit de catalogus konden niet worden geparseerd."
+    },
+    S3UriBar: {
+        search: "Zoeken.."
     }
-    /* spell-checker: enable */
 };

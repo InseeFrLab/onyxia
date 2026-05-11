@@ -1047,6 +1047,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "json-ld frame error": "Die JSON-LD-Antwort konnte nicht gerahmt werden.",
         "datasets parsing error":
             "Die Datensätze des Katalogs konnten nicht analysiert werden."
+    },
+    S3UriBar: {
+        search: "Suchen.."
     }
-    /* spell-checker: enable */
 };
