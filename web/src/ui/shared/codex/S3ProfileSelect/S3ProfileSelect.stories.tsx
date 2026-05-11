@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { useEffect, useMemo, useState } from "react";
+import { userEvent, within } from "@storybook/test";
 import { S3ProfileSelect, type S3ProfileSelectProps } from "./S3ProfileSelect";
 
 type Profile = S3ProfileSelectProps["selectedProfile"];
@@ -118,4 +119,26 @@ export const LongNames: Story = {
             <StatefulS3ProfileSelect {...args} profiles={longProfiles} />
         </div>
     )
+};
+
+export const CompactHovered: Story = {
+    args: {
+        ...baseArgs
+    },
+    render: args => <StatefulS3ProfileSelect {...args} profiles={baseProfiles} />,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.hover(canvas.getByRole("button", { name: /select s3 profile/i }));
+    }
+};
+
+export const SettingsHovered: Story = {
+    args: {
+        ...baseArgs
+    },
+    render: args => <StatefulS3ProfileSelect {...args} profiles={baseProfiles} />,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await userEvent.hover(canvas.getByRole("button", { name: /profile settings/i }));
+    }
 };

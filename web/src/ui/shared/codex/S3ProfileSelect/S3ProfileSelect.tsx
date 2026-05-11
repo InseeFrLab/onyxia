@@ -107,118 +107,113 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
 
     return (
         <div className={cx(classes.root, className)} ref={rootRef}>
-            <span className={classes.staticLabel}>S3 Profile :</span>
-            <div className={classes.triggerContainer}>
+            <div
+                className={cx(
+                    classes.triggerRow,
+                    isTriggerHover && classes.triggerRowHover,
+                    isOpen && classes.triggerRowOpen
+                )}
+                onMouseEnter={() => setIsTriggerHover(true)}
+                onMouseLeave={() => setIsTriggerHover(false)}
+            >
                 <div
-                    className={cx(
-                        classes.triggerRow,
-                        isTriggerHover && classes.triggerRowHover,
-                        isOpen && classes.triggerRowOpen
-                    )}
-                    onMouseEnter={() => setIsTriggerHover(true)}
-                    onMouseLeave={() => setIsTriggerHover(false)}
+                    className={classes.trigger}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Select S3 profile"
+                    aria-haspopup="listbox"
+                    aria-expanded={isOpen}
+                    onClick={toggleDropdown}
+                    onKeyDown={handleTriggerKeyDown}
                 >
-                    <div
-                        className={classes.trigger}
-                        role="button"
-                        tabIndex={0}
-                        aria-haspopup="listbox"
-                        aria-expanded={isOpen}
-                        onClick={toggleDropdown}
-                        onKeyDown={handleTriggerKeyDown}
-                    >
-                        <span className={classes.triggerMain}>
-                            <span
-                                className={classes.triggerLabel}
-                                title={selectedProfile.name}
-                            >
-                                {selectedProfile.name}
-                            </span>
-                            <Icon
-                                className={cx(
-                                    classes.chevron,
-                                    isOpen && classes.chevronOpen
-                                )}
-                                icon={getIconUrlByName("ExpandMore")}
-                                size="small"
-                            />
+                    <span className={classes.triggerMain}>
+                        <span
+                            className={classes.triggerLabel}
+                            title={selectedProfile.name}
+                        >
+                            {selectedProfile.name}
                         </span>
+                        <Icon
+                            className={cx(classes.chevron, isOpen && classes.chevronOpen)}
+                            icon={getIconUrlByName("ExpandMore")}
+                            size="extra small"
+                        />
+                    </span>
+                </div>
+                <button
+                    type="button"
+                    className={classes.editButton}
+                    onClick={onEditProfile}
+                    aria-label="Profile settings"
+                >
+                    <Icon icon={getIconUrlByName("Settings")} size="extra small" />
+                </button>
+            </div>
+
+            {isOpen && (
+                <div
+                    className={classes.dropdown}
+                    role="listbox"
+                    aria-label="S3 profiles"
+                    onKeyDown={event => {
+                        if (event.key !== "Escape") {
+                            return;
+                        }
+                        event.preventDefault();
+                        setIsOpen(false);
+                    }}
+                >
+                    <div className={classes.list} ref={listRef}>
+                        {availableProfileNames.map((profileName, index) => {
+                            const isSelected = profileName === selectedProfile.name;
+
+                            return (
+                                <button
+                                    type="button"
+                                    key={profileName}
+                                    data-index={index}
+                                    className={cx(
+                                        classes.profileRow,
+                                        isSelected && classes.profileRowSelected
+                                    )}
+                                    onClick={() => handleSelectProfile(profileName)}
+                                    role="option"
+                                    aria-selected={isSelected}
+                                >
+                                    <span
+                                        className={classes.profileName}
+                                        title={profileName}
+                                    >
+                                        {profileName}
+                                    </span>
+                                    {isSelected && (
+                                        <span className={classes.iconSlot}>
+                                            <Icon
+                                                className={classes.checkIcon}
+                                                icon={getIconUrlByName("Check")}
+                                                size="extra small"
+                                            />
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </div>
+                    <div className={classes.divider} />
                     <button
                         type="button"
-                        className={classes.editButton}
-                        onClick={onEditProfile}
-                        aria-label="Profile settings"
+                        className={classes.createRow}
+                        onClick={handleCreateNewProfile}
                     >
-                        <Icon icon={getIconUrlByName("Settings")} size="extra small" />
+                        <Icon
+                            className={classes.createIcon}
+                            icon={getIconUrlByName("Add")}
+                            size="small"
+                        />
+                        <span className={classes.createLabel}>New S3 Profile</span>
                     </button>
                 </div>
-
-                {isOpen && (
-                    <div
-                        className={classes.dropdown}
-                        role="listbox"
-                        aria-label="S3 profiles"
-                        onKeyDown={event => {
-                            if (event.key !== "Escape") {
-                                return;
-                            }
-                            event.preventDefault();
-                            setIsOpen(false);
-                        }}
-                    >
-                        <div className={classes.list} ref={listRef}>
-                            {availableProfileNames.map((profileName, index) => {
-                                const isSelected = profileName === selectedProfile.name;
-
-                                return (
-                                    <button
-                                        type="button"
-                                        key={profileName}
-                                        data-index={index}
-                                        className={cx(
-                                            classes.profileRow,
-                                            isSelected && classes.profileRowSelected
-                                        )}
-                                        onClick={() => handleSelectProfile(profileName)}
-                                        role="option"
-                                        aria-selected={isSelected}
-                                    >
-                                        <span
-                                            className={classes.profileName}
-                                            title={profileName}
-                                        >
-                                            {profileName}
-                                        </span>
-                                        {isSelected && (
-                                            <span className={classes.iconSlot}>
-                                                <Icon
-                                                    className={classes.checkIcon}
-                                                    icon={getIconUrlByName("Check")}
-                                                    size="extra small"
-                                                />
-                                            </span>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                        <div className={classes.divider} />
-                        <button
-                            type="button"
-                            className={classes.createRow}
-                            onClick={handleCreateNewProfile}
-                        >
-                            <Icon
-                                className={classes.createIcon}
-                                icon={getIconUrlByName("Add")}
-                                size="small"
-                            />
-                            <span className={classes.createLabel}>New S3 Profile</span>
-                        </button>
-                    </div>
-                )}
-            </div>
+            )}
         </div>
     );
 }
@@ -228,40 +223,29 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
 
     return {
         root: {
-            width: "100%",
+            width: "fit-content",
             position: "relative",
-            display: "flex",
-            alignItems: "center",
-            gap: theme.spacing(2)
-        },
-        staticLabel: {
-            ...labelStyle,
-            color: theme.colors.useCases.typography.textSecondary,
-            whiteSpace: "nowrap"
-        },
-        triggerContainer: {
-            flex: 1,
-            minWidth: 0,
-            position: "relative"
+            minWidth: 200,
+            maxWidth: 350,
+            flex: "0 1 auto"
         },
         triggerRow: {
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(1),
-            padding: theme.spacing(1),
-            paddingLeft: theme.spacing(3),
-            borderRadius: 12,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            padding: theme.spacing(1.5),
+            minHeight: 56,
+            borderRadius: 16,
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
             transition: "background-color 120ms ease, box-shadow 120ms ease",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
+            width: "100%"
         },
         triggerRowHover: {
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
             boxShadow: theme.shadows[4]
         },
         triggerRowOpen: {
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
-            boxShadow: theme.shadows[3]
+            boxShadow: theme.shadows[4]
         },
         trigger: {
             flex: 1,
@@ -272,7 +256,7 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             cursor: "pointer",
             border: "none",
             background: "transparent",
-            padding: 0,
+            padding: theme.spacing(1.5),
             textAlign: "left",
             color: theme.colors.useCases.typography.textPrimary,
             "&:focus": {
@@ -287,7 +271,7 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
         },
         triggerLabel: {
             ...labelStyle,
-            fontWeight: 600,
+            fontWeight: 500,
             color: theme.colors.useCases.typography.textPrimary,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -307,9 +291,9 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
             border: "none",
             backgroundColor: theme.colors.useCases.surfaces.surface2,
             color: theme.colors.useCases.typography.textPrimary,
-            width: 28,
-            height: 28,
-            borderRadius: 8,
+            width: 40,
+            height: 40,
+            borderRadius: 12,
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
