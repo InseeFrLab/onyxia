@@ -30,14 +30,14 @@ const baseItems: S3BookmarksBarProps["items"] = [
         isReadonly: false
     },
     {
-        displayName: "Shared datasets",
-        s3Uri: parsePrefixOrThrow("s3://shared-datasets/curated/"),
-        isReadonly: true
-    },
-    {
         displayName: undefined,
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/quarter-1/"),
         isReadonly: false
+    },
+    {
+        displayName: "Shared datasets",
+        s3Uri: parsePrefixOrThrow("s3://shared-datasets/curated/"),
+        isReadonly: true
     }
 ];
 
@@ -58,6 +58,11 @@ const overflowItems: S3BookmarksBarProps["items"] = [
     {
         displayName: "Machine learning",
         s3Uri: parsePrefixOrThrow("s3://research-data/experiments/models/"),
+        isReadonly: true
+    },
+    {
+        displayName: "Governed archive",
+        s3Uri: parsePrefixOrThrow("s3://governed-data/archive/"),
         isReadonly: true
     },
     {

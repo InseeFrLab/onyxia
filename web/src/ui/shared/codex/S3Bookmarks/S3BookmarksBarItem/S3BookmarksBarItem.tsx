@@ -2,6 +2,8 @@ import { useEffect, useMemo, type SyntheticEvent } from "react";
 import MuiLink from "@mui/material/Link";
 import MuiTooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { tss } from "tss";
+import { Icon } from "onyxia-ui/Icon";
+import { getIconUrlByName } from "lazy-icons";
 import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
@@ -125,6 +127,8 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     }, []);
 
     const fullS3Uri = useMemo(() => stringifyS3Uri(s3Uri), [s3Uri]);
+    const isEntryPoint = variant === "entryPoint";
+    const isCustomBookmark = callbacks !== undefined;
 
     const label = useMemo(() => {
         if (displayName !== undefined) {
@@ -137,11 +141,31 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
         return getShortS3UriLabel(s3Uri);
     }, [displayName, resolveLocalizedString, s3Uri]);
 
+    const entryPointTitle = useMemo(() => {
+        if (!isEntryPoint) {
+            return label;
+        }
+
+        if (!isCustomBookmark) {
+            return s3Uri.bucket;
+        }
+
+        return label;
+    }, [isCustomBookmark, isEntryPoint, label, s3Uri.bucket]);
+
+    const entryPointSubtitle = isEntryPoint ? fullS3Uri : undefined;
+    const linkAriaLabel = isEntryPoint
+        ? isCustomBookmark
+            ? "Open bookmark"
+            : "Open bucket"
+        : undefined;
+
     const shouldInlineExpand = variant === "bar" && showInlinePath;
     const isActiveStyle = showActiveState && isActive;
     const { classes, cx } = useStyles({
         isActive: isActiveStyle,
-        isDeletable: callbacks !== undefined
+        isReadonly: callbacks === undefined,
+        variant
     });
 
     const linkNode = (
@@ -156,18 +180,39 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
             )}
             underline="none"
             aria-current={isActive ? "page" : undefined}
+            aria-label={linkAriaLabel}
+            onKeyDown={event => {
+                if (event.key !== " ") {
+                    return;
+                }
+
+                event.preventDefault();
+                event.currentTarget.click();
+            }}
         >
-            {showPinIcon && (
-                <span
-                    className={cx(
-                        classes.pinIconWrapper,
-                        variant === "entryPoint" && classes.pinIconWrapperEntryPoint
-                    )}
-                    aria-hidden="true"
-                >
+            {isEntryPoint && (
+                <span className={classes.entryPointLeadingIconWrapper} aria-hidden="true">
+                    <Icon
+                        className={classes.entryPointLeadingIcon}
+                        icon={getIconUrlByName("Folder")}
+                        size="small"
+                    />
+                </span>
+            )}
+            {showPinIcon && !isEntryPoint && (
+                <span className={classes.pinIconWrapper} aria-hidden="true">
                     <span className={`material-symbols-outlined ${classes.pinIcon}`}>
-                        keep
+                        star
                     </span>
+                </span>
+            )}
+            {isEntryPoint && isCustomBookmark && (
+                <span className={classes.entryPointBadge} aria-hidden="true">
+                    <Icon
+                        className={classes.entryPointBadgeIcon}
+                        icon={getIconUrlByName("Star")}
+                        size="small"
+                    />
                 </span>
             )}
             <span
@@ -182,13 +227,18 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                         shouldInlineExpand && classes.labelRowInline
                     )}
                 >
-                    <span className={classes.labelText}>{label}</span>
+                    <span className={classes.labelText}>
+                        {isEntryPoint ? entryPointTitle : label}
+                    </span>
                     {callbacks !== undefined && variant === "entryPoint" && (
                         <span
                             role="button"
                             tabIndex={0}
-                            aria-label="Rename bookmark"
-                            className={classes.renameButton}
+                            aria-label="Edit bookmark"
+                            className={cx(
+                                classes.renameButton,
+                                classes.renameButtonEntryPoint
+                            )}
                             onClick={event => {
                                 stopEvent(event);
                                 callbacks.onRename();
@@ -240,7 +290,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             <span
                                 role="button"
                                 tabIndex={0}
-                                aria-label="Unpin bookmark"
+                                aria-label="Delete bookmark"
                                 className={classes.inlineActionButton}
                                 onClick={event => {
                                     stopEvent(event);
@@ -259,15 +309,15 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                 <span
                                     className={`material-symbols-outlined ${classes.inlineActionIcon}`}
                                 >
-                                    keep_off
+                                    delete
                                 </span>
                             </span>
                         </span>
                     )}
                 </span>
                 {variant === "entryPoint" && (
-                    <span className={classes.uriText} title={fullS3Uri}>
-                        {fullS3Uri}
+                    <span className={classes.uriText} title={entryPointSubtitle}>
+                        {entryPointSubtitle}
                     </span>
                 )}
                 {shouldInlineExpand && (
@@ -317,7 +367,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                         <span
                             role="button"
                             tabIndex={0}
-                            aria-label="Unpin bookmark"
+                            aria-label="Delete bookmark"
                             className={classes.renameButton}
                             onClick={event => {
                                 stopEvent(event);
@@ -336,7 +386,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             <span
                                 className={`material-symbols-outlined ${classes.tooltipActionIcon}`}
                             >
-                                keep_off
+                                delete
                             </span>
                         </span>
                     </div>
@@ -361,46 +411,85 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
 
 const useStyles = tss
     .withName({ S3BookmarkItem })
-    .withParams<{ isActive: boolean; isDeletable: boolean }>()
-    .create(({ theme, isActive, isDeletable }) => {
-        const surfaces = theme.colors.useCases.surfaces as unknown as Partial<
-            Record<"surfaceFocus1" | "surfaceFocus2", string>
-        >;
-        const focusSurface1 =
-            surfaces.surfaceFocus1 ?? theme.colors.useCases.surfaces.surface1;
-        const focusSurface2 =
-            surfaces.surfaceFocus2 ?? theme.colors.useCases.surfaces.surface2;
-        const baseBackground = isDeletable
-            ? theme.colors.useCases.surfaces.surface1
-            : theme.colors.useCases.surfaces.surface2;
-        const hoverBackground = isDeletable
-            ? theme.colors.useCases.surfaces.surface3
-            : theme.colors.useCases.surfaces.surface3;
-        const pressedBackground = isDeletable
-            ? theme.colors.useCases.surfaces.surface2
-            : theme.colors.useCases.surfaces.surface1;
-        const activeBackground = focusSurface1;
-        const activeHoverBackground = focusSurface2;
+    .withParams<{
+        isActive: boolean;
+        isReadonly: boolean;
+        variant: "bar" | "entryPoint";
+    }>()
+    .create(({ theme, isActive, isReadonly, variant }) => {
         const labelStyle = theme.typography.variants["label 1"].style;
-        const uriStyle = theme.typography.variants["body 1"].style;
         const captionStyle = theme.typography.variants["caption"].style;
         const inlineRevealHeight = 22;
+        const isBar = variant === "bar";
+        const isEntryPoint = variant === "entryPoint";
+        const entryPointHoverBorderColor = theme.isDarkModeEnabled
+            ? "#465267"
+            : "#EAEAEA";
+        const entryPointFolderColor = theme.isDarkModeEnabled ? "#465267" : "#CED3DA";
+        const accentColor = theme.colors.useCases.typography.textFocus;
+        const baseBackground = isBar
+            ? "transparent"
+            : theme.colors.useCases.surfaces.surface1;
+        const hoverBackground = isBar
+            ? theme.colors.useCases.surfaces.surface2
+            : theme.colors.useCases.surfaces.surface1;
+        const pressedBackground = isBar
+            ? theme.colors.useCases.surfaces.surface2
+            : isReadonly
+              ? theme.colors.useCases.surfaces.surface1
+              : theme.colors.useCases.surfaces.surface2;
+        const activeBackground = isBar
+            ? "transparent"
+            : theme.colors.useCases.surfaces.surface1;
+        const activeHoverBackground = isBar
+            ? theme.colors.useCases.surfaces.surface2
+            : theme.colors.useCases.surfaces.surface1;
+        const labelColor = isBar
+            ? isActive
+                ? theme.colors.useCases.typography.textPrimary
+                : isReadonly
+                  ? theme.colors.useCases.typography.textTertiary
+                  : theme.colors.useCases.typography.textSecondary
+            : theme.colors.useCases.typography.textPrimary;
+        const labelFontWeight = isBar
+            ? isActive
+                ? 600
+                : 500
+            : isActive
+              ? 600
+              : labelStyle.fontWeight;
+        const iconColor = isBar
+            ? labelColor
+            : isActive
+              ? theme.colors.useCases.typography.textPrimary
+              : theme.colors.useCases.typography.textSecondary;
 
         return {
             root: {
                 display: "flex",
+                flexDirection: "column",
                 backgroundColor: isActive ? activeBackground : baseBackground,
-                color: theme.colors.useCases.typography.textPrimary,
+                color: labelColor,
                 boxSizing: "border-box",
                 textDecoration: "none",
-                transition: "background-color 120ms ease",
+                transition:
+                    "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease, border-color 120ms ease",
                 position: "relative",
+                border: isEntryPoint ? "2px solid transparent" : "1px solid transparent",
                 "&:hover": {
                     backgroundColor: isActive ? activeHoverBackground : hoverBackground,
+                    borderColor: isEntryPoint
+                        ? entryPointHoverBorderColor
+                        : theme.colors.useCases.surfaces.surface2,
+                    boxShadow: isEntryPoint ? theme.shadows[4] : theme.shadows[2],
                     textDecoration: "none"
                 },
-                "&:focus-within": {
-                    backgroundColor: isActive ? activeHoverBackground : hoverBackground
+                "&:focus-within, &:focus-visible": {
+                    backgroundColor: isActive ? activeHoverBackground : hoverBackground,
+                    borderColor: isEntryPoint
+                        ? entryPointHoverBorderColor
+                        : theme.colors.useCases.surfaces.surface2,
+                    boxShadow: isEntryPoint ? theme.shadows[4] : theme.shadows[2]
                 },
                 "&:active": {
                     backgroundColor: pressedBackground,
@@ -444,28 +533,74 @@ const useStyles = tss
             rootBar: {
                 flexDirection: "row",
                 alignItems: "center",
-
                 borderRadius: 9999,
-                padding: "4px 10px",
+                padding: "2px 8px",
                 maxWidth: 300,
                 flexShrink: 0,
-                minWidth: 0
+                minWidth: 0,
+                minHeight: 28,
+                gap: theme.spacing(0.75)
             },
             rootEntryPoint: {
-                flexDirection: "column",
                 alignItems: "flex-start",
-                justifyContent: "flex-end",
-                gap: theme.spacing(1.5),
-                borderRadius: 24,
-                padding: 24,
-                minHeight: 162,
-                width: "100%",
-                minWidth: 0
+                justifyContent: "flex-start",
+                gap: theme.spacing(2),
+                borderRadius: 16,
+                padding: theme.spacing(5),
+                minHeight: 148,
+                width: 280,
+                maxWidth: "100%",
+                minWidth: 0,
+                "& .renameButtonEntryPoint": {
+                    opacity: 0,
+                    pointerEvents: "none"
+                },
+                "&:hover .renameButtonEntryPoint, &:focus-within .renameButtonEntryPoint":
+                    {
+                        opacity: 1,
+                        pointerEvents: "auto"
+                    }
+            },
+            entryPointLeadingIconWrapper: {
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: entryPointFolderColor,
+                marginBottom: theme.spacing(2)
+            },
+            entryPointLeadingIcon: {
+                width: 28,
+                height: 28,
+                "& svg, & img": {
+                    width: 28,
+                    height: 28
+                }
+            },
+            entryPointBadge: {
+                position: "absolute",
+                top: theme.spacing(5),
+                right: theme.spacing(5),
+                width: 32,
+                height: 32,
+                borderRadius: 10,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
+                color: accentColor
+            },
+            entryPointBadgeIcon: {
+                width: 20,
+                height: 20,
+                "& svg, & img": {
+                    width: 20,
+                    height: 20
+                }
             },
             pinIconWrapper: {
-                color: "inherit",
-                width: 24,
-                height: 24,
+                color: iconColor,
+                width: 18,
+                height: 18,
                 borderRadius: 8,
                 display: "inline-flex",
                 alignItems: "center",
@@ -473,16 +608,13 @@ const useStyles = tss
                 padding: 0,
                 flexShrink: 0
             },
-            pinIconWrapperEntryPoint: {
-                position: "absolute",
-                top: 24,
-                right: 24
-            },
             pinIcon: {
                 fontSize: 16,
                 lineHeight: "16px",
                 fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+                fontVariationSettings: `"FILL" ${isActive ? 1 : 0}, "wght" ${
+                    isActive ? 600 : 400
+                }, "GRAD" 0, "opsz" 24`
             },
             renameButton: {
                 border: "none",
@@ -501,6 +633,11 @@ const useStyles = tss
                 "&:hover": {
                     backgroundColor: theme.colors.palette.focus.mainAlpha20
                 }
+            },
+            renameButtonEntryPoint: {
+                opacity: 0,
+                pointerEvents: "none",
+                transition: "opacity 120ms ease, background-color 120ms ease"
             },
             renameIcon: {
                 fontSize: 16,
@@ -521,11 +658,12 @@ const useStyles = tss
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                gap: theme.spacing(0.5)
+                gap: isBar ? 0 : theme.spacing(0.5)
             },
             labelWrapperEntryPoint: {
                 flex: "0 0 auto",
-                marginTop: "auto"
+                marginTop: "auto",
+                gap: theme.spacing(1)
             },
             labelRow: {
                 display: "flex",
@@ -546,10 +684,11 @@ const useStyles = tss
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                fontWeight: isActive ? 600 : labelStyle.fontWeight
+                color: labelColor,
+                fontWeight: labelFontWeight
             },
             uriText: {
-                ...uriStyle,
+                ...captionStyle,
                 color: theme.colors.useCases.typography.textSecondary,
                 display: "block",
                 maxWidth: "100%",

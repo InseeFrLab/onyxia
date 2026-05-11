@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState
+} from "react";
 import { tss } from "tss";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Popper from "@mui/material/Popper";
@@ -30,7 +37,7 @@ export namespace S3BookmarksBarProps {
 }
 
 const ITEM_GAP = 6;
-const PANEL_ROW_GAP = 0;
+const PANEL_ROW_GAP = 4;
 const MORE_BUTTON_SIZE = 32;
 const PANEL_ROW_HEIGHT = 40;
 
@@ -58,6 +65,13 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
     const activeItemKey = activeItemS3Uri ? stringifyS3Uri(activeItemS3Uri) : undefined;
 
     const { resolveLocalizedString } = useResolveLocalizedString();
+    const userItems = useMemo(() => items.filter(item => !item.isReadonly), [items]);
+    const adminItems = useMemo(() => items.filter(item => item.isReadonly), [items]);
+    const orderedItems = useMemo(
+        () => [...userItems, ...adminItems],
+        [adminItems, userItems]
+    );
+    const shouldShowLeadingIcon = showLeadingIcon && userItems.length > 0;
 
     const getItemKey = useCallback(
         (item: S3BookmarksBarProps.Item) => stringifyS3Uri(item.s3Uri),
@@ -83,8 +97,8 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
     );
 
     useEffect(() => {
-        setVisibleCount(items.length);
-    }, [items.length]);
+        setVisibleCount(orderedItems.length);
+    }, [orderedItems.length]);
 
     const recalculateVisibleCount = useCallback(() => {
         const container = rowRef.current;
@@ -99,7 +113,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
             return;
         }
 
-        items.forEach(item => {
+        orderedItems.forEach(item => {
             const key = getItemKey(item);
             const element = itemRefs.current.get(key);
 
@@ -108,12 +122,15 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
             }
         });
 
-        const widths = items.map(item => itemWidths.current.get(getItemKey(item)) ?? 0);
+        const widths = orderedItems.map(
+            item => itemWidths.current.get(getItemKey(item)) ?? 0
+        );
 
-        const leadingWidth = showLeadingIcon
+        const leadingWidth = shouldShowLeadingIcon
             ? (leadingIconRef.current?.offsetWidth ?? 0)
             : 0;
-        const leadingGap = showLeadingIcon && items.length > 0 ? ITEM_GAP : 0;
+        const leadingGap =
+            shouldShowLeadingIcon && orderedItems.length > 0 ? ITEM_GAP : 0;
         const reservedWidth = leadingWidth + leadingGap;
 
         const totalWidth = widths.reduce(
@@ -122,7 +139,9 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
         );
 
         if (totalWidth <= containerWidth) {
-            setVisibleCount(prev => (prev === items.length ? prev : items.length));
+            setVisibleCount(prev =>
+                prev === orderedItems.length ? prev : orderedItems.length
+            );
             return;
         }
 
@@ -146,7 +165,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
         }
 
         setVisibleCount(prev => (prev === nextCount ? prev : nextCount));
-    }, [getItemKey, items, showLeadingIcon]);
+    }, [getItemKey, orderedItems, shouldShowLeadingIcon]);
 
     useLayoutEffect(() => {
         recalculateVisibleCount();
@@ -170,10 +189,14 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
         };
     }, [recalculateVisibleCount]);
 
-    const safeVisibleCount = Math.min(visibleCount, items.length);
-    const visibleItems = items.slice(0, safeVisibleCount);
-    const hiddenItems = items.slice(safeVisibleCount);
+    const safeVisibleCount = Math.min(visibleCount, orderedItems.length);
+    const visibleItems = orderedItems.slice(0, safeVisibleCount);
+    const hiddenItems = orderedItems.slice(safeVisibleCount);
     const hasOverflow = hiddenItems.length > 0;
+    const firstVisibleAdminIndex =
+        userItems.length > 0 && adminItems.length > 0
+            ? visibleItems.findIndex(item => item.isReadonly)
+            : -1;
 
     useEffect(() => {
         if (!hasOverflow) {
@@ -191,25 +214,27 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
             aria-label="S3 bookmarks"
             ref={rowRef}
         >
-            {showLeadingIcon && (
+            {shouldShowLeadingIcon && (
                 <span
                     className={classes.leadingIconWrapper}
                     aria-hidden="true"
                     ref={leadingIconRef}
                 >
-                    <span className={`material-symbols-outlined ${classes.leadingIcon}`}>
-                        keep
-                    </span>
+                    <Icon icon={getIconUrlByName("Star")} size="small" />
                 </span>
             )}
-            {visibleItems.map(item => {
+            {visibleItems.map((item, index) => {
                 const link = getItemLink({ s3Uri: item.s3Uri });
                 const itemKey = getItemKey(item);
 
                 return (
                     <div
                         key={link.href}
-                        className={classes.itemWrapper}
+                        className={cx(
+                            classes.itemWrapper,
+                            index === firstVisibleAdminIndex &&
+                                classes.itemWrapperWithDivider
+                        )}
                         ref={element => {
                             itemRefs.current.set(itemKey, element);
                         }}
@@ -286,12 +311,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                                             link={panelLink}
                                             callbacks={resolveCallbacks(item)}
                                             isActive={isPanelActive}
-                                            className={cx(
-                                                classes.panelItem,
-                                                !isPanelActive &&
-                                                    item.isReadonly &&
-                                                    classes.panelItemReadonly
-                                            )}
+                                            className={classes.panelItem}
                                         />
                                     );
                                 })}
@@ -313,42 +333,53 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
             gap: ITEM_GAP,
             width: "100%",
             minWidth: 260,
-            flex: "1 1 auto",
             overflow: "hidden",
             flexWrap: "nowrap",
             boxSizing: "border-box"
         },
         leadingIconWrapper: {
-            alignSelf: "stretch",
+            alignSelf: "center",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
             color: theme.colors.useCases.typography.textPrimary,
-            padding: "0 4px",
+            padding: "0 2px",
             minWidth: 16,
             flexShrink: 0
         },
-        leadingIcon: {
-            fontSize: 16,
-            lineHeight: "16px",
-            fontFamily: '"Material Symbols Outlined"',
-            fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
-        },
         itemWrapper: {
             display: "flex",
+            alignItems: "center",
             flexShrink: 0,
             minWidth: 0
         },
+        itemWrapperWithDivider: {
+            position: "relative",
+            paddingLeft: theme.spacing(3),
+            marginLeft: theme.spacing(1),
+            "&::before": {
+                content: '""',
+                position: "absolute",
+                left: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: 1,
+                height: 14,
+                borderRadius: 9999,
+                backgroundColor: theme.colors.useCases.typography.textTertiary,
+                opacity: 0.45
+            }
+        },
         moreButton: {
-            width: MORE_BUTTON_SIZE,
-            height: MORE_BUTTON_SIZE,
+            width: 28,
+            height: 28,
             borderRadius: 9999,
             border: "none",
-            background: theme.colors.useCases.surfaces.surface1,
+            background: "transparent",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            color: theme.colors.useCases.typography.textSecondary,
+            color: theme.colors.useCases.typography.textTertiary,
             cursor: "pointer",
             flexShrink: 0,
             transition: "background-color 120ms ease, color 120ms ease",
@@ -358,7 +389,7 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
             }
         },
         moreButtonActive: {
-            backgroundColor: theme.colors.useCases.surfaces.surface3,
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
             color: theme.colors.useCases.typography.textPrimary
         },
         morePanel: {
@@ -366,7 +397,7 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
             borderRadius: 12,
             border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             boxShadow: theme.shadows[4],
-            padding: 0,
+            padding: theme.spacing(2),
             minWidth: 260,
             maxWidth: 360,
             overflow: "hidden"
@@ -380,17 +411,9 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
             "&&": {
                 width: "100%",
                 maxWidth: "100%",
-                borderRadius: 0,
+                borderRadius: 10,
                 flexShrink: 0,
                 minHeight: PANEL_ROW_HEIGHT
-            }
-        },
-        panelItemReadonly: {
-            "&&": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
-            },
-            "&&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surface3
             }
         }
     };
