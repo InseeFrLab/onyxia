@@ -207,8 +207,32 @@ export const PublicPrefixIndicator: Story = {
     args: {
         ...baseArgs,
         s3Uri: parseS3UriBarS3Uri({
-            s3Uri: "s3://bucket-name/prefix-name/prefix-name/prefix-name/",
-            s3Uri_publicPrefix: "s3://bucket-name/prefix-name/"
+            s3Uri: "s3://bucket-name/foo/bar/baz/",
+            s3Uri_publicPrefix: "s3://bucket-name/foo/"
+        }),
+        hints: []
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const PublicPrefixIndicator2: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://bucket-name/foo/bar/baz/",
+            s3Uri_publicPrefix: "s3://bucket-name/foo/bar/"
+        }),
+        hints: []
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const PublicPrefixIndicator3: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://bucket-name/foo/",
+            s3Uri_publicPrefix: "s3://bucket-name/foo/"
         }),
         hints: []
     },

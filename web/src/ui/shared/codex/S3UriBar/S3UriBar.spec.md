@@ -78,8 +78,8 @@ export type S3UriBarProps = {
      * - it must be a delimiter-terminated S3 URI
      * - it is expected to be either equal to s3Uri.s3Uri or a prefix of s3Uri.s3Uri
      * - the breadcrumb path should mark the public part of the path in navigation mode
-     * - when s3Uri.s3Uri is under s3Uri_publicPrefix, the public marker starts on the first crumb after the public prefix boundary
-     * - when s3Uri.s3Uri is exactly s3Uri_publicPrefix, the public marker starts on the current crumb itself
+     * - the public marker starts on the last crumb of s3Uri_publicPrefix
+     * - when s3Uri.s3Uri is under s3Uri_publicPrefix, descendants of s3Uri_publicPrefix stay marked as public
      */
     s3Uri:
         | {
@@ -159,7 +159,8 @@ export type S3UriBarProps = {
 
 - Navigation mode:
     - When a public prefix is present, show a small `Public` icon next to the first public breadcrumb crumb and visually group the public tail of the path.
-    - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/`, the public marker starts on `b`, because `a/` is the policy boundary and `b/c/` is inside it.
+    - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because `a/` is the public prefix itself.
+    - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/b/`, the public marker starts on `b`, because `b/` is the last crumb of the public prefix.
     - For `s3://bucket/a/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because the current crumb is the public prefix itself.
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
