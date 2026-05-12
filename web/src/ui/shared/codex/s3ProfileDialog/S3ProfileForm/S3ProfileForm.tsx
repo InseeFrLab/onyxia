@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import Input from "@mui/material/Input";
 import Radio from "@mui/material/Radio";
 import Switch from "@mui/material/Switch";
@@ -72,6 +72,22 @@ export type Props = {
 };
 
 type UrlStyle = Props["urlStyle"]["value"];
+type FieldName =
+    | "profileName"
+    | "endpointUrl"
+    | "defaultRegion"
+    | "accessKeyId"
+    | "secretAccessKey"
+    | "sessionToken";
+
+const fieldNames = [
+    "profileName",
+    "endpointUrl",
+    "defaultRegion",
+    "accessKeyId",
+    "secretAccessKey",
+    "sessionToken"
+] as const satisfies readonly FieldName[];
 
 export function S3ProfileForm(props: Props) {
     const {
@@ -92,23 +108,55 @@ export function S3ProfileForm(props: Props) {
     const { t } = useTranslation({ S3ProfileForm });
     const { classes, cx } = useStyles();
 
+    const [fieldsThatLostFocus, setFieldsThatLostFocus] = useState<
+        Record<FieldName, boolean>
+    >(() => getInitialFieldsThatLostFocus());
+    const [hasSubmittedInvalidForm, setHasSubmittedInvalidForm] = useState(false);
+
+    useEffect(() => {
+        if (onSubmit === undefined) {
+            return;
+        }
+
+        setHasSubmittedInvalidForm(false);
+    }, [onSubmit]);
+
+    const getIsFieldErrorVisible = (fieldName: FieldName) =>
+        hasSubmittedInvalidForm || fieldsThatLostFocus[fieldName];
+
+    const onFieldBlur = (fieldName: FieldName) =>
+        setFieldsThatLostFocus(fieldsThatLostFocus => ({
+            ...fieldsThatLostFocus,
+            [fieldName]: true
+        }));
+
     return (
         <form
             className={cx(classes.root, className)}
             onSubmit={event => {
                 event.preventDefault();
-                onSubmit?.();
+
+                if (onSubmit === undefined) {
+                    setHasSubmittedInvalidForm(true);
+                    setFieldsThatLostFocus(getAllFieldsThatLostFocus());
+                    return;
+                }
+
+                onSubmit();
             }}
+            noValidate={true}
         >
             <div className={classes.body}>
                 <FormTextField
                     label="Profile name"
                     value={profileName.value}
                     onChange={profileName.onChange}
+                    onBlur={() => onFieldBlur("profileName")}
                     error={toErrorMessage({
                         errorId: profileName.errorMessage,
                         t
                     })}
+                    isErrorVisible={getIsFieldErrorVisible("profileName")}
                     autoComplete="off"
                 />
 
@@ -116,10 +164,12 @@ export function S3ProfileForm(props: Props) {
                     label="URL of the S3 service"
                     value={endpointUrl.value}
                     onChange={endpointUrl.onChange}
+                    onBlur={() => onFieldBlur("endpointUrl")}
                     error={toErrorMessage({
                         errorId: endpointUrl.errorMessage,
                         t
                     })}
+                    isErrorVisible={getIsFieldErrorVisible("endpointUrl")}
                     helperText="Example: https://minio.lab.example.net"
                     autoComplete="url"
                 />
@@ -130,10 +180,12 @@ export function S3ProfileForm(props: Props) {
                     onChange={newValue =>
                         defaultRegion.onChange(emptyStringAsUndefined(newValue))
                     }
+                    onBlur={() => onFieldBlur("defaultRegion")}
                     error={toErrorMessage({
                         errorId: defaultRegion.errorMessage,
                         t
                     })}
+                    isErrorVisible={getIsFieldErrorVisible("defaultRegion")}
                     helperText="Example: eu-west-1, if not sure, leave empty"
                     autoComplete="off"
                 />
@@ -185,10 +237,12 @@ export function S3ProfileForm(props: Props) {
                                 onChange={newValue =>
                                     accessKeyId.onChange(emptyStringAsUndefined(newValue))
                                 }
+                                onBlur={() => onFieldBlur("accessKeyId")}
                                 error={toErrorMessage({
                                     errorId: accessKeyId.errorMessage,
                                     t
                                 })}
+                                isErrorVisible={getIsFieldErrorVisible("accessKeyId")}
                                 helperText="Example: ASIAIOSFODNN7EXAMPLE"
                                 autoComplete="off"
                             />
@@ -200,10 +254,12 @@ export function S3ProfileForm(props: Props) {
                                         emptyStringAsUndefined(newValue)
                                     )
                                 }
+                                onBlur={() => onFieldBlur("secretAccessKey")}
                                 error={toErrorMessage({
                                     errorId: secretAccessKey.errorMessage,
                                     t
                                 })}
+                                isErrorVisible={getIsFieldErrorVisible("secretAccessKey")}
                                 helperText="Example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
                                 isSensitive={true}
                                 autoComplete="off"
@@ -216,10 +272,12 @@ export function S3ProfileForm(props: Props) {
                                         emptyStringAsUndefined(newValue)
                                     )
                                 }
+                                onBlur={() => onFieldBlur("sessionToken")}
                                 error={toErrorMessage({
                                     errorId: sessionToken.errorMessage,
                                     t
                                 })}
+                                isErrorVisible={getIsFieldErrorVisible("sessionToken")}
                                 helperText="Optional. Leave empty when your credentials do not include a session token."
                                 isSensitive={true}
                                 autoComplete="off"
@@ -230,10 +288,20 @@ export function S3ProfileForm(props: Props) {
             </div>
 
             <div className={classes.actions}>
-                <Button variant="secondary" onClick={onCancel}>
+                <Button
+                    variant="secondary"
+                    onClick={event => {
+                        event.preventDefault();
+                        onCancel();
+                    }}
+                >
                     Cancel
                 </Button>
-                <Button type="submit" variant="primary" disabled={onSubmit === undefined}>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={onSubmit === undefined && hasSubmittedInvalidForm}
+                >
                     {isEditionOfAnExistingConfig
                         ? "Save Configuration"
                         : "Create Profile"}
@@ -270,7 +338,9 @@ function FormTextField(props: {
     label: string;
     value: string;
     onChange: (newValue: string) => void;
+    onBlur: () => void;
     error: string | undefined;
+    isErrorVisible: boolean;
     helperText?: string;
     isSensitive?: boolean;
     autoComplete: string;
@@ -279,7 +349,9 @@ function FormTextField(props: {
         label,
         value,
         onChange,
+        onBlur,
         error,
+        isErrorVisible,
         helperText,
         isSensitive = false,
         autoComplete
@@ -288,6 +360,7 @@ function FormTextField(props: {
     const inputId = useId();
     const helperTextId = useId();
     const { classes } = useStyles_FormTextField();
+    const errorToDisplay = isErrorVisible ? error : undefined;
 
     return (
         <div className={classes.root}>
@@ -301,23 +374,26 @@ function FormTextField(props: {
                 className={classes.input}
                 value={value}
                 onChange={event => onChange(event.target.value)}
-                error={error !== undefined}
+                onBlur={onBlur}
+                error={errorToDisplay !== undefined}
                 type={isSensitive ? "password" : "text"}
                 fullWidth={true}
                 autoComplete={autoComplete}
                 aria-describedby={
-                    error !== undefined || helperText !== undefined
+                    errorToDisplay !== undefined || helperText !== undefined
                         ? helperTextId
                         : undefined
                 }
             />
-            {(error !== undefined || helperText !== undefined) && (
+            {(errorToDisplay !== undefined || helperText !== undefined) && (
                 <Text
                     typo="body 2"
-                    className={error === undefined ? classes.helper : classes.error}
+                    className={
+                        errorToDisplay === undefined ? classes.helper : classes.error
+                    }
                     componentProps={{ id: helperTextId }}
                 >
-                    {error ?? helperText}
+                    {errorToDisplay ?? helperText}
                 </Text>
             )}
         </div>
@@ -364,6 +440,20 @@ function UrlStyleOption(props: {
 
 function emptyStringAsUndefined(value: string): string | undefined {
     return value === "" ? undefined : value;
+}
+
+function getInitialFieldsThatLostFocus(): Record<FieldName, boolean> {
+    return Object.fromEntries(fieldNames.map(fieldName => [fieldName, false])) as Record<
+        FieldName,
+        boolean
+    >;
+}
+
+function getAllFieldsThatLostFocus(): Record<FieldName, boolean> {
+    return Object.fromEntries(fieldNames.map(fieldName => [fieldName, true])) as Record<
+        FieldName,
+        boolean
+    >;
 }
 
 function toErrorMessage(params: {
