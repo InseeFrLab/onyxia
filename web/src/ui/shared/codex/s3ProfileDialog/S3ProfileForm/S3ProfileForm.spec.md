@@ -13,8 +13,11 @@
 - Group `isAnonymous`, `accessKeyId`, `secretAccessKey`, and `sessionToken` under `Account Credentials`.
 - Hide `accessKeyId`, `secretAccessKey`, and `sessionToken` when anonymous access is enabled.
 - Forward every field update through its corresponding `onChange` callback.
-- Render known validation error IDs as localized user-facing messages.
-- Disable the submit button when `onSubmit` is undefined.
+- Render known validation error IDs as localized user-facing messages only after
+  the field has lost focus at least once.
+- Keep the submit button enabled initially when `onSubmit` is undefined.
+- When the user submits while `onSubmit` is undefined, reveal every current field
+  error and then disable the submit button until `onSubmit` becomes defined.
 - Keep the cancel and submit actions visible regardless of the root element height by scrolling only the form body.
 
 ## Non-Responsibilities
@@ -28,7 +31,7 @@
 
 All form values are controlled by the parent. Optional string values are displayed as empty strings and empty input changes are reported back as `undefined`.
 
-`onSubmit` can be undefined when the form is invalid. In that state, the submit button must be disabled and no submit callback is invoked.
+`onSubmit` can be undefined when the form is invalid. In that state, the first submit attempt reveals validation errors but does not invoke a submit callback. After that invalid submit attempt, the submit button is disabled until the parent provides `onSubmit`.
 
 `isEditionOfAnExistingConfig` controls the submit label:
 
