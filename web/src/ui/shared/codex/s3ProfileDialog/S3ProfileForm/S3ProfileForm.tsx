@@ -124,6 +124,11 @@ export function S3ProfileForm(props: Props) {
     const getIsFieldErrorVisible = (fieldName: FieldName) =>
         hasSubmittedInvalidForm || fieldsThatLostFocus[fieldName];
 
+    const urlStyleExamples = getUrlStyleExamples({
+        endpointUrl: endpointUrl.value,
+        endpointUrlError: endpointUrl.errorMessage
+    });
+
     const onFieldBlur = (fieldName: FieldName) =>
         setFieldsThatLostFocus(fieldsThatLostFocus => ({
             ...fieldsThatLostFocus,
@@ -202,14 +207,14 @@ export function S3ProfileForm(props: Props) {
                             selectedValue={urlStyle.value}
                             onChange={urlStyle.onChange}
                             title="Path style"
-                            example="seaweedfs.lab.sspcloud.fr/mybucket/prefix/my-dataset.parquet"
+                            example={urlStyleExamples.path}
                         />
                         <UrlStyleOption
                             value="virtual-hosted"
                             selectedValue={urlStyle.value}
                             onChange={urlStyle.onChange}
                             title="Virtual-hosted style"
-                            example="mybucket.seaweedfs.lab.sspcloud.fr/prefix/my-dataset.parquet"
+                            example={urlStyleExamples["virtual-hosted"]}
                         />
                     </div>
                 </Section>
@@ -440,6 +445,58 @@ function UrlStyleOption(props: {
 
 function emptyStringAsUndefined(value: string): string | undefined {
     return value === "" ? undefined : value;
+}
+
+function getUrlStyleExamples(params: {
+    endpointUrl: string;
+    endpointUrlError: ErrorId | undefined;
+}): Record<UrlStyle, string> {
+    const { endpointUrl, endpointUrlError } = params;
+
+    const endpoint = getEndpointForExample({
+        endpointUrl,
+        endpointUrlError
+    });
+
+    return {
+        path: `${endpoint}/mybucket/prefix/my-dataset.parquet`,
+        "virtual-hosted": `mybucket.${endpoint}/prefix/my-dataset.parquet`
+    };
+}
+
+function getEndpointForExample(params: {
+    endpointUrl: string;
+    endpointUrlError: ErrorId | undefined;
+}): string {
+    const { endpointUrl, endpointUrlError } = params;
+
+    fallback: {
+        if (endpointUrlError !== undefined) {
+            break fallback;
+        }
+
+        const trimmedEndpointUrl = endpointUrl.trim();
+
+        if (trimmedEndpointUrl === "") {
+            break fallback;
+        }
+
+        try {
+            const url = new URL(
+                trimmedEndpointUrl.startsWith("http")
+                    ? trimmedEndpointUrl
+                    : `https://${trimmedEndpointUrl}`
+            );
+
+            const pathname = url.pathname.replace(/^\/|\/$/g, "");
+
+            return [url.host, pathname].filter(part => part !== "").join("/");
+        } catch {
+            break fallback;
+        }
+    }
+
+    return "s3.my-domain.com";
 }
 
 function getInitialFieldsThatLostFocus(): Record<FieldName, boolean> {
