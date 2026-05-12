@@ -21,6 +21,7 @@ export type ComponentKey =
     | import("ui/pages/s3Explorer/dialogs/CreateOrRenameBookmarkDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/DirectoryCreationDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/MakePrefixPublicDialog").I18n
+    | import("ui/shared/codex/s3ProfileDialog/S3ProfileForm").I18n
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n

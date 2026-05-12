@@ -217,6 +217,12 @@ export const translations: Translations<"fi"> = {
         cancel: "Peruuta",
         "make public": "Tee julkiseksi"
     },
+    S3ProfileForm: {
+        "must be an url": "Anna kelvollinen URL.",
+        "is required": "Tämä kenttä on pakollinen.",
+        "not a valid access key id": "Anna kelvollinen käyttöavaimen tunnus.",
+        "profile name already used": "Tämä profiilin nimi on jo käytössä."
+    },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
