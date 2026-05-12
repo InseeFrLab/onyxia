@@ -221,6 +221,12 @@ export const translations: Translations<"nl"> = {
         cancel: "Annuleren",
         "make public": "Openbaar maken"
     },
+    S3ProfileForm: {
+        "must be an url": "Voer een geldige URL in.",
+        "is required": "Dit veld is verplicht.",
+        "not a valid access key id": "Voer een geldige access key ID in.",
+        "profile name already used": "Deze profielnaam is al in gebruik."
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

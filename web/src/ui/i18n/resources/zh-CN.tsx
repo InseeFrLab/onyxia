@@ -197,6 +197,12 @@ export const translations: Translations<"zh-CN"> = {
         cancel: "取消",
         "make public": "公开"
     },
+    S3ProfileForm: {
+        "must be an url": "请输入有效的 URL。",
+        "is required": "此字段为必填项。",
+        "not a valid access key id": "请输入有效的访问密钥 ID。",
+        "profile name already used": "此配置文件名称已被使用。"
+    },
     MySecrets: {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":

@@ -226,6 +226,12 @@ export const translations: Translations<"fr"> = {
         cancel: "Annuler",
         "make public": "Rendre public"
     },
+    S3ProfileForm: {
+        "must be an url": "Saisissez une URL valide.",
+        "is required": "Ce champ est obligatoire.",
+        "not a valid access key id": "Saisissez un identifiant de clé d'accès valide.",
+        "profile name already used": "Ce nom de profil est déjà utilisé."
+    },
     MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
