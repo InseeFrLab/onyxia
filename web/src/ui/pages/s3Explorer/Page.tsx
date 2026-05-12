@@ -243,7 +243,7 @@ function PageComponent() {
                         />
                     </div>
 
-                    {isCommandBarEnabled && (
+                    {isCommandBarEnabled && mainView.commandLogsEntries.length !== 0 && (
                         <div
                             className={css({
                                 flex: 1,
