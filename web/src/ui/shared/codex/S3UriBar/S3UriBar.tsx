@@ -231,15 +231,6 @@ function getTrailingSeparatorToken(s3Uri: S3Uri): string | undefined {
     return s3Uri.delimiter;
 }
 
-function getAreS3UrisEqual(params: { left: S3Uri; right: S3Uri }): boolean {
-    const { left, right } = params;
-
-    return (
-        left.delimiter === right.delimiter &&
-        stringifyS3Uri(left) === stringifyS3Uri(right)
-    );
-}
-
 function getIsS3UriSameOrUnderPublicPrefix(params: {
     s3Uri: S3Uri;
     s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter;
@@ -273,23 +264,6 @@ function getIsNavigationCrumbPublic(params: {
             s3Uri_publicPrefix
         })
     ) {
-        return false;
-    }
-
-    const isCurrentUriPublicPrefix = getAreS3UrisEqual({
-        left: currentS3Uri,
-        right: s3Uri_publicPrefix
-    });
-    const isCrumbPublicPrefix = getAreS3UrisEqual({
-        left: crumbS3Uri,
-        right: s3Uri_publicPrefix
-    });
-
-    if (isCurrentUriPublicPrefix) {
-        return isCrumbPublicPrefix;
-    }
-
-    if (isCrumbPublicPrefix) {
         return false;
     }
 
