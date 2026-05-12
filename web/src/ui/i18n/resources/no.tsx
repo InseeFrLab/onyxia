@@ -217,6 +217,12 @@ export const translations: Translations<"no"> = {
         cancel: "Avbryt",
         "make public": "Gjør offentlig"
     },
+    S3ProfileForm: {
+        "must be an url": "Skriv inn en gyldig URL.",
+        "is required": "Dette feltet er obligatorisk.",
+        "not a valid access key id": "Skriv inn en gyldig tilgangsnøkkel-ID.",
+        "profile name already used": "Dette profilnavnet er allerede i bruk."
+    },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":
