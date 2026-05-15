@@ -695,6 +695,11 @@ resource "kubernetes_manifest" "auth_gateway_ingress" {
       annotations = {
         "cert-manager.io/cluster-issuer"           = var.cert_manager_cluster_issuer_name
         "nginx.ingress.kubernetes.io/ssl-redirect" = "true"
+        # ingress-nginx is configured cluster-wide with a `global-auth-url`
+        # so that user services inherit the oauth2-proxy auth_request. The
+        # gateway Ingress itself must opt out, otherwise /oauth2/start would
+        # require authentication and the browser loops on ERR_TOO_MANY_REDIRECTS.
+        "nginx.ingress.kubernetes.io/enable-global-auth" = "false"
       }
       labels = {
         "app.kubernetes.io/name"      = local.auth_gateway_name
