@@ -229,6 +229,48 @@ variable "cert_manager_letsencrypt_email" {
   }
 }
 
+variable "enable_keycloak" {
+  type        = bool
+  description = "Deploy Keycloak as the OIDC identity provider in front of Onyxia (recommended). Realm + client + Google identity provider are configured separately via the admin UI or a realm import."
+  default     = false
+}
+
+variable "keycloak_namespace" {
+  type        = string
+  description = "Namespace for the Keycloak deployment."
+  default     = "keycloak"
+}
+
+variable "keycloak_release_name" {
+  type        = string
+  description = "Helm release name for Keycloak."
+  default     = "keycloak"
+}
+
+variable "keycloak_chart_version" {
+  type        = string
+  description = "codecentric/keycloakx Helm chart version."
+  default     = "7.1.11"
+}
+
+variable "keycloak_hostname" {
+  type        = string
+  description = "Public hostname Keycloak is served on. Required when enable_keycloak is true. Onyxia's issuer-uri is https://<keycloak_hostname>/realms/<realm>."
+  default     = ""
+
+  validation {
+    condition     = !var.enable_keycloak || var.keycloak_hostname != ""
+    error_message = "keycloak_hostname must be set when enable_keycloak is true."
+  }
+}
+
+variable "keycloak_admin_password" {
+  type        = string
+  description = "Bootstrap admin password for Keycloak (user 'admin')."
+  default     = "admin"
+  sensitive   = true
+}
+
 variable "local_port" {
   type        = number
   description = "Local port used by the local same-origin proxy output."

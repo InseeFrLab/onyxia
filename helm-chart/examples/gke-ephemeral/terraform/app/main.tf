@@ -59,6 +59,10 @@ locals {
       "no-tls-redirect-locations" = "/.well-known/acme-challenge"
       "ssl-redirect"              = "true"
       "use-forwarded-headers"     = "true"
+      # Allow the Onyxia public Ingress to ship a configuration-snippet that
+      # rewrites CSP (default blocklist forbids `;` which is needed in CSP).
+      "annotation-value-word-blocklist" = ""
+      "annotations-risk-level"          = "Critical"
     },
     var.services_ingress_nginx_oauth2_auth ? {
       "global-auth-response-headers" = "X-Auth-Request-User,X-Auth-Request-Email"
@@ -200,6 +204,10 @@ resource "helm_release" "services_ingress_nginx" {
         }
         replicaCount = 1
         config       = local.services_ingress_nginx_controller_config
+        # Required so the Onyxia public Ingress can ship a configuration-snippet
+        # that rewrites the strict CSP frame-src to allow iframing the IdP login
+        # flow (Keycloak → Google).
+        allowSnippetAnnotations = true
         service = {
           type        = "LoadBalancer"
           annotations = var.services_ingress_nginx_controller_service_annotations
@@ -296,6 +304,132 @@ resource "kubernetes_manifest" "cert_manager_cluster_issuer" {
   }
 
   depends_on = [helm_release.cert_manager, helm_release.services_ingress_nginx]
+}
+
+# ----------------------------------------------------------------------------
+# Optional Keycloak IdP (recommended pattern for Onyxia).
+# A realm + client + Google identity provider are configured separately
+# (admin UI on first run, or a realm import JSON for reproducible deployments).
+# ----------------------------------------------------------------------------
+
+resource "kubernetes_namespace" "keycloak" {
+  count = var.enable_keycloak ? 1 : 0
+
+  metadata {
+    name = var.keycloak_namespace
+
+    labels = {
+      app       = "onyxia"
+      component = "keycloak"
+      example   = "gke-ephemeral"
+    }
+  }
+}
+
+resource "helm_release" "keycloak" {
+  count = var.enable_keycloak ? 1 : 0
+
+  name       = var.keycloak_release_name
+  repository = "https://codecentric.github.io/helm-charts"
+  chart      = "keycloakx"
+  version    = var.keycloak_chart_version
+  namespace  = kubernetes_namespace.keycloak[0].metadata[0].name
+
+  values = [
+    yamlencode({
+      replicas = 1
+      # Drop the chart's /auth path so Onyxia's issuer-uri matches Keycloak's
+      # discovery document at https://<host>/realms/<realm>.
+      http = {
+        relativePath = "/"
+      }
+      # Bootstrap admin via env vars (KC_BOOTSTRAP_ADMIN_*). H2 in-memory db
+      # by default — fine for an ephemeral sandbox; for real deployments
+      # plug an external Postgres via `database.*`.
+      command  = ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--proxy-headers=xforwarded", "--hostname-strict=false", "--http-relative-path=/"]
+      extraEnv = <<-EOT
+        - name: KC_BOOTSTRAP_ADMIN_USERNAME
+          value: admin
+        - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+          value: ${var.keycloak_admin_password}
+        - name: KC_HOSTNAME
+          value: https://${var.keycloak_hostname}
+        - name: KC_HTTP_ENABLED
+          value: "true"
+        - name: KC_PROXY_HEADERS
+          value: xforwarded
+      EOT
+      database = {
+        vendor = "dev-mem"
+      }
+      service = {
+        type     = "ClusterIP"
+        httpPort = 80
+      }
+      ingress = { enabled = false }
+      # Autopilot rejects pod anti-affinity below 500m CPU. The chart defaults
+      # apply podAntiAffinity, so we bump CPU rather than override the affinity.
+      resources = {
+        requests = { cpu = "500m", memory = "512Mi" }
+        limits   = { memory = "1024Mi" }
+      }
+    })
+  ]
+
+  wait    = true
+  timeout = var.helm_timeout_seconds
+}
+
+resource "kubernetes_manifest" "keycloak_ingress" {
+  count = var.enable_keycloak ? 1 : 0
+
+  manifest = {
+    apiVersion = "networking.k8s.io/v1"
+    kind       = "Ingress"
+    metadata = {
+      name      = var.keycloak_release_name
+      namespace = kubernetes_namespace.keycloak[0].metadata[0].name
+      annotations = {
+        "cert-manager.io/cluster-issuer"                 = var.cert_manager_cluster_issuer_name
+        "nginx.ingress.kubernetes.io/ssl-redirect"       = "true"
+        "nginx.ingress.kubernetes.io/enable-global-auth" = "false"
+        # CORS so oidc-spa on Onyxia can fetch the discovery document.
+        "nginx.ingress.kubernetes.io/enable-cors"        = "true"
+        "nginx.ingress.kubernetes.io/cors-allow-origin"  = "https://${var.public_hostname}"
+        "nginx.ingress.kubernetes.io/cors-allow-methods" = "GET, POST, OPTIONS"
+        "nginx.ingress.kubernetes.io/cors-allow-headers" = "Authorization, Content-Type, Accept, DPoP, dpop"
+      }
+      labels = {
+        "app.kubernetes.io/name"      = "keycloak"
+        "app.kubernetes.io/component" = "idp"
+        "app.kubernetes.io/part-of"   = var.release_name
+      }
+    }
+    spec = {
+      ingressClassName = var.services_ingress_class_name
+      tls = [{
+        hosts      = [var.keycloak_hostname]
+        secretName = "keycloak-tls"
+      }]
+      rules = [{
+        host = var.keycloak_hostname
+        http = {
+          paths = [{
+            path     = "/"
+            pathType = "Prefix"
+            backend = {
+              service = {
+                name = "${var.keycloak_release_name}-keycloakx-http"
+                port = { number = 80 }
+              }
+            }
+          }]
+        }
+      }]
+    }
+  }
+
+  depends_on = [helm_release.keycloak]
 }
 
 resource "helm_release" "onyxia" {

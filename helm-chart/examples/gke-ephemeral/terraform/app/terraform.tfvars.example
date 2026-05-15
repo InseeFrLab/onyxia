@@ -35,6 +35,15 @@ enable_cert_manager              = false
 cert_manager_letsencrypt_email   = ""
 cert_manager_cluster_issuer_name = "letsencrypt-prod"
 
+# Optional in-cluster Keycloak as the OIDC IdP for Onyxia (recommended pattern
+# from SSP Cloud). When enabled, configure the realm afterwards with
+# ./scripts/keycloak-init.sh (Google identity provider, client `onyxia` PKCE).
+# Onyxia talks plain OIDC/PKCE to Keycloak, so the real Gmail identity reaches
+# the platform. Without it, Onyxia would see only the oauth2-proxy mock user.
+enable_keycloak         = false
+keycloak_hostname       = ""                   # e.g. auth.onyxia.example.com — must resolve to the LB
+keycloak_admin_password = "change-me"          # bootstrap Keycloak admin user password
+
 # --- Legacy: GCE Ingress + Google-managed certificates -----------------------
 #
 # These switches keep the older path available for environments that cannot use

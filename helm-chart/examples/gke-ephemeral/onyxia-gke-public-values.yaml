@@ -1,19 +1,35 @@
-# With enable_oauth2_proxy_gateway=true, the public ingress for Onyxia is
-# managed by Terraform (auth_gateway_ingress), so the chart's own Ingress is
-# disabled here. Set ingress.enabled=true (and remove the gateway) if you want
-# Onyxia exposed directly.
+# Public mode with Keycloak as IdP (Google identity provider configured in Keycloak).
 ingress:
-  enabled: false
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/enable-global-auth: "false"
+    # Override the strict CSP shipped by onyxia-web so the browser can iframe
+    # the Keycloak login flow (which itself iframes accounts.google.com during
+    # the broker callback) without being blocked.
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Content-Security-Policy: frame-src https: data:; frame-ancestors 'self'; worker-src 'self' blob:; object-src 'none'";
+  hosts:
+    - host: onyxia.example.com
+  tls:
+    - hosts:
+        - onyxia.example.com
+      secretName: onyxia-core-tls
 
 api:
   serviceAccount:
     clusterAdmin: true
   env:
     authentication.mode: openidconnect
-    oidc.issuer-uri: "https://accounts.google.com"
+    oidc.issuer-uri: "https://auth.example.com/realms/onyxia"
+    oidc.clientID: "onyxia"
+    # Must produce an RFC1123-compliant token (no dots/@). 'sub' is the
+    # Keycloak UUID and always works. 'email' would break the user-project
+    # because Onyxia API filters non-RFC1123 namespaces.
     oidc.username-claim: sub
     oidc.scope: "openid profile email"
-    oidc.extra-query-params: prompt=select_account
     security.cors.allowed_origins: "https://onyxia.example.com"
   regions:
     - id: gke

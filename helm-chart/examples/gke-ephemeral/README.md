@@ -338,6 +338,81 @@ kubectl delete namespace cert-smoketest
 
 On a healthy setup the certificate becomes `Ready=True` in 10–30 seconds.
 
+## Real Google Identity — Keycloak IdP (recommended)
+
+The default `oauth2-proxy` gateway above only **gates** access to Onyxia; the
+platform itself runs in `authentication.mode: none` and sees every user as the
+mock account `default` / `John`. For multi-user usage with real Gmail identities
+propagated inside Onyxia (per-user projects, vault dirs, namespaces), enable
+the optional in-cluster Keycloak with a Google identity provider.
+
+This mirrors the SSP Cloud / INSEE production pattern (Onyxia → Keycloak →
+Google) and works out of the box.
+
+### Enable in tfvars
+
+```hcl
+enable_keycloak         = true
+keycloak_hostname       = "auth.onyxia.example.com"  # must resolve to the same LB
+keycloak_admin_password = "<strong password>"
+```
+
+DNS: add an `A` record `auth.onyxia.example.com → <services_ingress_nginx_ip>`.
+
+### Add the Keycloak callback to Google OAuth
+
+In Google Cloud Console → APIs & Services → Credentials → your OAuth 2.0 Web
+client, add the redirect URI:
+
+```
+https://auth.onyxia.example.com/realms/onyxia/broker/google/endpoint
+```
+
+### Apply + configure the realm
+
+```bash
+tofu apply
+
+KC_ADMIN_PASSWORD="<your tfvars password>" \
+GOOGLE_CLIENT_ID="<your Google client id>" \
+ONYXIA_HOSTNAME="onyxia.example.com" \
+KEYCLOAK_HOSTNAME="auth.onyxia.example.com" \
+  ./scripts/keycloak-init.sh
+```
+
+`keycloak-init.sh` is idempotent. It creates the `onyxia` realm, a public PKCE
+client called `onyxia`, and a Google identity provider — exactly what Onyxia
+expects. Re-run after every Keycloak restart (the chart ships an H2 in-memory
+database by default; for persistence wire an external Postgres via
+`database.*` in the Helm release).
+
+### Switch Onyxia to OIDC against Keycloak
+
+In `onyxia-gke-public-values.yaml` (already wired when `enable_keycloak=true`):
+
+- `ingress.enabled: true` with `class: nginx` + `cert-manager` annotation.
+- `nginx.ingress.kubernetes.io/configuration-snippet` overrides the strict
+  default `frame-src` CSP so oidc-spa can iframe Keycloak's login.
+- `api.env.authentication.mode: openidconnect`
+- `api.env.oidc.issuer-uri: "https://auth.<your hostname>/realms/onyxia"`
+- `api.env.oidc.clientID: "onyxia"`
+- **`api.env.oidc.username-claim: sub`** — must produce an RFC1123-compliant
+  token (no dots/@). The Keycloak `sub` UUID is always safe. Using `email`
+  breaks because Onyxia API filters non-RFC1123 namespaces and the user-project
+  is dropped.
+- `web.env.OIDC_DISABLE_DPOP: "true"` — Keycloak doesn't accept the `DPoP`
+  header on the token endpoint by default.
+
+Then disable the oauth2-proxy gateway (`enable_oauth2_proxy_gateway=false`)
+and `services_ingress_nginx_oauth2_auth=false`.
+
+### Result
+
+`https://onyxia.<your hostname>` → "Connexion" → Keycloak login screen → click
+**Google** → Google consent → return to Onyxia logged in as **the real Gmail
+user**. The Account page shows the real `fabien.antoine@gmail.com` email and a
+per-user project namespace `user-<keycloak-uuid>`.
+
 ## GKE Autopilot Gotchas
 
 GKE Autopilot is a great fit for ephemeral test clusters, but enforces a few
