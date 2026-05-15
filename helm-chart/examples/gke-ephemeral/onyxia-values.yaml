@@ -1,0 +1,41 @@
+# Minimal GKE test values for a short-lived Onyxia deployment.
+#
+# This intentionally avoids any public exposure by default. Use the local proxy
+# from this example for the first test run, then add Ingress/Gateway API values
+# only if you need a public endpoint.
+
+ingress:
+  enabled: false
+
+httpRoute:
+  enabled: false
+
+route:
+  enabled: false
+
+web:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  startupProbe:
+    enabled: true
+    failureThreshold: 30
+
+api:
+  replicaCount: 1
+  env:
+    authentication.mode: none
+  serviceAccount:
+    clusterAdmin: false
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  startupProbe:
+    enabled: true
+    failureThreshold: 30
+
+onboarding:
+  enabled: false

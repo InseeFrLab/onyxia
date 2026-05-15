@@ -1,0 +1,48 @@
+project_id   = "my-gcp-project"
+region       = "us-central1"
+cluster_name = "onyxia-test"
+
+# Hostname Onyxia is published on. Used by ingress-nginx + cert-manager.
+public_hostname    = "onyxia.example.com"
+extra_values_files = []
+
+# Optional Google OAuth gateway for personal or organization-light GKE tests.
+# Recommended for any internet-exposed deployment of this example.
+#
+# Create the matching Kubernetes Secret out of band so OAuth secrets do not
+# enter Terraform state:
+#
+# kubectl -n onyxia create secret generic onyxia-oauth2-proxy \
+#   --from-file=client-secret=/path/to/client-secret \
+#   --from-file=cookie-secret=/path/to/cookie-secret
+enable_oauth2_proxy_gateway = false
+oauth2_proxy_client_id      = ""
+oauth2_proxy_allowed_emails = []
+oauth2_proxy_secret_name    = "onyxia-oauth2-proxy"
+oauth2_proxy_cookie_domain  = ""
+oauth2_proxy_whitelist_domains = []
+
+# Single ingress-nginx controller for Onyxia core and user services.
+# Recommended path: one regional Network LB for everything, instead of one GCE
+# Load Balancer per service.
+enable_services_ingress_nginx      = false
+services_ingress_class_name        = "nginx"
+services_ingress_nginx_oauth2_auth = true
+
+# Automatic TLS via cert-manager + Let's Encrypt. Required for the
+# `services_ingress_nginx` path above to serve trusted HTTPS.
+enable_cert_manager              = false
+cert_manager_letsencrypt_email   = ""
+cert_manager_cluster_issuer_name = "letsencrypt-prod"
+
+# --- Legacy: GCE Ingress + Google-managed certificates -----------------------
+#
+# These switches keep the older path available for environments that cannot use
+# Let's Encrypt / cert-manager (e.g. air-gapped, strict perimeters). When set
+# to true, Terraform reserves a global static IP and creates a GKE
+# `ManagedCertificate`. You must then provide values that publish Onyxia via
+# a GCE-class Ingress; see the README's "Public mode" section for the
+# recommended pattern instead.
+create_gke_public_ingress_support = false
+ingress_static_ip_name            = "onyxia-test-ip"
+managed_certificate_name          = "onyxia-cert"

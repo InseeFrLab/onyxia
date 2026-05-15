@@ -1,0 +1,76 @@
+# With enable_oauth2_proxy_gateway=true, the public ingress for Onyxia is
+# managed by Terraform (auth_gateway_ingress), so the chart's own Ingress is
+# disabled here. Set ingress.enabled=true (and remove the gateway) if you want
+# Onyxia exposed directly.
+ingress:
+  enabled: false
+
+api:
+  serviceAccount:
+    clusterAdmin: true
+  env:
+    authentication.mode: openidconnect
+    oidc.issuer-uri: "https://accounts.google.com"
+    oidc.username-claim: sub
+    oidc.scope: "openid profile email"
+    oidc.extra-query-params: prompt=select_account
+    security.cors.allowed_origins: "https://onyxia.example.com"
+  regions:
+    - id: gke
+      name: GKE test
+      description: Short-lived GKE Autopilot test region.
+      onyxiaAPI:
+        baseURL: ""
+      services:
+        type: KUBERNETES
+        expose:
+          domain: services.onyxia.example.com
+          ingressClassName: nginx
+          ingress: true
+          route: false
+          certManager:
+            useCertManager: true
+            certManagerClusterIssuer: letsencrypt-prod
+        singleNamespace: false
+        userNamespace: true
+        namespacePrefix: user-
+        usernamePrefix: oidc-
+        groupNamespacePrefix: project-
+        authenticationMode: serviceAccount
+        namespaceAnnotationsDynamic:
+          enabled: true
+          userAttributes:
+            - sub
+            - email
+        quotas:
+          userEnabled: true
+          user:
+            requests.memory: 4Gi
+            requests.cpu: "2"
+            limits.memory: 8Gi
+            limits.cpu: "4"
+            requests.storage: 20Gi
+            count/pods: "10"
+          groupEnabled: false
+      data: {}
+      auth:
+        type: openidconnect
+  catalogs:
+    - id: ide
+      name:
+        en: Development environments
+        fr: Environnements de développement
+      maintainer: innovation@insee.fr
+      location: https://inseefrlab.github.io/helm-charts-interactive-services
+      status: PROD
+      highlightedCharts:
+        - jupyter-python
+        - rstudio
+        - vscode-python
+      type: helm
+      skipTlsVerify: false
+      allowSharing: false
+      visible:
+        user: true
+        project: false
+      multipleServicesMode: latest

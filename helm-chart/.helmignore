@@ -21,3 +21,13 @@
 .idea/
 *.tmproj
 .vscode/
+
+# Repository examples are not part of the installable chart archive.
+examples/
+
+# Terraform/OpenTofu local state and credentials.
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars

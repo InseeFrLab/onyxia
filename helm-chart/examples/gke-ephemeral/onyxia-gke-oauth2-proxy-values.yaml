@@ -1,0 +1,49 @@
+# GKE public test values for the optional oauth2-proxy gateway.
+#
+# The gateway performs Google OAuth before traffic reaches Onyxia. Onyxia itself
+# runs without its browser-side OpenID Connect flow because Google web clients
+# require a client secret at the token endpoint.
+
+api:
+  serviceAccount:
+    clusterAdmin: true
+  env:
+    authentication.mode: none
+    security.cors.allowed_origins: "https://onyxia.example.com"
+  regions:
+    - id: gke
+      name: GKE test
+      description: Short-lived GKE Autopilot test region.
+      onyxiaAPI:
+        baseURL: ""
+      services:
+        type: KUBERNETES
+        expose:
+          domain: services.onyxia.example.com
+          ingressClassName: nginx
+          ingress: true
+          route: false
+          certManager:
+            useCertManager: true
+            certManagerClusterIssuer: letsencrypt-prod
+        singleNamespace: false
+        userNamespace: true
+        namespacePrefix: user-
+        usernamePrefix: user-
+        groupNamespacePrefix: project-
+        authenticationMode: serviceAccount
+        namespaceAnnotationsDynamic:
+          enabled: false
+        quotas:
+          userEnabled: true
+          user:
+            requests.memory: 4Gi
+            requests.cpu: "2"
+            limits.memory: 8Gi
+            limits.cpu: "4"
+            requests.storage: 20Gi
+            count/pods: "10"
+          groupEnabled: false
+      data: {}
+      auth:
+        type: none
