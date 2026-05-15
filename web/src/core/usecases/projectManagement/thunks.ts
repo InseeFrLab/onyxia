@@ -119,16 +119,11 @@ export const thunks = {
 
             await prOnboarding;
 
-            const projectWithInjectedPersonalInfos = projects.map(project => ({
-                ...project,
-                doInjectPersonalInfos:
-                    project.group === undefined ||
-                    !paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup
-            }));
-
             dispatch(
                 actions.projectChanged({
-                    projects: projectWithInjectedPersonalInfos,
+                    projects,
+                    disablePersonalInfosInjectionInGroup:
+                        paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup,
                     selectedProjectId: projectId,
                     currentProjectConfigs: projectConfigs
                 })
