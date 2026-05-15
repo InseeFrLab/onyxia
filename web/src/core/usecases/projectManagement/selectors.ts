@@ -49,8 +49,8 @@ export const selectors = {
     ),
     canInjectPersonalInfos: createSelector(
         protectedSelectors.currentProject,
-        currentProject => {
-            return currentProject.doInjectPersonalInfos;
-        }
+        createSelector(state, state => state.disablePersonalInfosInjectionInGroup),
+        (currentProject, disablePersonalInfosInjectionInGroup) =>
+            currentProject.group === undefined || !disablePersonalInfosInjectionInGroup
     )
 };
