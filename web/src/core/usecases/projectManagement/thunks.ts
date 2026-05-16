@@ -11,6 +11,7 @@ import { getProjectVaultTopDirPath_reserved } from "./decoupledLogic/projectVaul
 import { secretToValue, valueToSecret } from "./decoupledLogic/secretParsing";
 import { type ProjectConfigs, zProjectConfigs } from "./decoupledLogic/ProjectConfigs";
 import { clearProjectConfigs } from "./decoupledLogic/clearProjectConfigs";
+import { tryMigrateProjectConfigsV1ToV2 } from "./decoupledLogic/migration/migrateProjectConfigsV1ToV2";
 import { Mutex } from "async-mutex";
 import { createUsecaseContextApi } from "clean-architecture";
 
@@ -80,14 +81,7 @@ export const thunks = {
                             const path = pathJoin(projectVaultTopDirPath_reserved, key);
 
                             if (!files.includes(key)) {
-                                const value = getDefaultConfig(key);
-
-                                await secretsManager.put({
-                                    path,
-                                    secret: valueToSecret(value)
-                                });
-
-                                return [key, value] as const;
+                                return [key, undefined] as const;
                             }
 
                             const { secret } = await secretsManager.get({ path });
@@ -101,6 +95,18 @@ export const thunks = {
                     zProjectConfigs.parse(projectConfigs);
                     assert(is<ProjectConfigs>(projectConfigs));
                 } catch {
+                    {
+                        const projectConfigs_migrated =
+                            await tryMigrateProjectConfigsV1ToV2({
+                                secretsManager,
+                                projectVaultTopDirPath_reserved
+                            });
+
+                        if (projectConfigs_migrated !== undefined) {
+                            return { projectConfigs: projectConfigs_migrated };
+                        }
+                    }
+
                     console.warn(
                         "We got a malformed ProjectConfigs object, clearing it...",
                         projectConfigs
@@ -110,6 +116,13 @@ export const thunks = {
                         secretsManager,
                         projectVaultTopDirPath_reserved
                     });
+
+                    for (const key of keys) {
+                        await secretsManager.put({
+                            path: pathJoin(projectVaultTopDirPath_reserved, key),
+                            secret: valueToSecret(getDefaultConfig(key))
+                        });
+                    }
 
                     return getProjectConfig();
                 }
