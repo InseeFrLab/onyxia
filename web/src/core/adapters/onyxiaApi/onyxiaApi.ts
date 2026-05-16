@@ -240,10 +240,30 @@ export function createOnyxiaApi(params: {
                                         )
                                         .map(
                                             (
-                                                s3Config_api
+                                                s3Config_api,
+                                                _i,
+                                                arr
                                             ): DeploymentRegion.S3Profile => {
                                                 return {
-                                                    profileName: s3Config_api.profileName,
+                                                    //profileName: s3Config_api.profileName,
+                                                    profileName: (() => {
+                                                        if (
+                                                            s3Config_api.profileName !==
+                                                            undefined
+                                                        ) {
+                                                            return s3Config_api.profileName;
+                                                        }
+
+                                                        if (
+                                                            s3Config_api.sts?.role ===
+                                                            undefined
+                                                        ) {
+                                                            assert(arr.length === 1);
+                                                            return "default";
+                                                        }
+
+                                                        return undefined;
+                                                    })(),
                                                     url: s3Config_api.URL,
                                                     pathStyleAccess:
                                                         s3Config_api.pathStyleAccess ??
