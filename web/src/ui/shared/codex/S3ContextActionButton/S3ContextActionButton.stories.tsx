@@ -83,8 +83,7 @@ const baseArgs: S3UriBarProps = {
 function ComposedHeader() {
     const [s3Uri, setS3Uri] = useState(baseArgs.s3Uri);
 
-    const isAtBucketRoot =
-        s3Uri === undefined || s3Uri.s3Uri.keySegments.length === 0;
+    const isAtBucketRoot = s3Uri === undefined || s3Uri.s3Uri.keySegments.length === 0;
 
     return (
         <div style={{ maxWidth: 960, padding: 16 }}>
