@@ -137,20 +137,6 @@ function PageComponent() {
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
 
-    const bookmarkBarAreaClassName = css({
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        width: "100%",
-        minWidth: 0
-    });
-
-    const entryPointAreaClassName = css({
-        marginTop: theme.spacing(5),
-        marginBottom: theme.spacing(2),
-        width: "100%",
-        minWidth: 0
-    });
-
     const {
         ref: ref_root,
         domRect: { height: rootHeight }
@@ -433,14 +419,24 @@ function PageComponent() {
                             {mainView.uriBar.s3Uri !== undefined && (
                                 <S3BookmarksBar
                                     {...props_bookmarkBar}
-                                    className={bookmarkBarAreaClassName}
+                                    className={css({
+                                        marginTop: theme.spacing(2),
+                                        marginBottom: theme.spacing(2),
+                                        minWidth: 0
+                                    })}
                                 />
                             )}
 
                             {mainView.uriBar.s3Uri === undefined && (
                                 <S3BookmarksEntryPointList
                                     {...props_bookmarkBar}
-                                    className={entryPointAreaClassName}
+                                    className={css({
+                                        marginTop: theme.spacing(5),
+                                        marginBottom: theme.spacing(2),
+                                        minWidth: 0,
+                                        flex: 1,
+                                        overflow: "auto"
+                                    })}
                                 />
                             )}
 
