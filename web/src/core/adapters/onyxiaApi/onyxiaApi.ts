@@ -245,7 +245,6 @@ export function createOnyxiaApi(params: {
                                                 arr
                                             ): DeploymentRegion.S3Profile => {
                                                 return {
-                                                    //profileName: s3Config_api.profileName,
                                                     profileName: (() => {
                                                         if (
                                                             s3Config_api.profileName !==
