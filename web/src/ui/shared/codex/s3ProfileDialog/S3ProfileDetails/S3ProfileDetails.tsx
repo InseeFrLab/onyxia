@@ -2,23 +2,32 @@ import type {
     Technology,
     CodeSnippet
 } from "core/usecases/s3ProfilesDetailsUiController/decoupledLogic/codeSnippets";
-import { useId, type ReactNode } from "react";
+import {
+    useEffect,
+    lazy,
+    useRef,
+    useState,
+    Suspense,
+    type KeyboardEvent,
+    type ReactNode
+} from "react";
 import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { alpha } from "@mui/material/styles";
 import { Button } from "onyxia-ui/Button";
-import { CopyToClipboardIconButton } from "onyxia-ui/CopyToClipboardIconButton";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
-import {
-    CodeTextEditor,
-    type CodeTextEditorLanguage
-} from "ui/shared/textEditor/CodeTextEditor";
+import { useClickAway } from "powerhooks/useClickAway";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { saveAs } from "file-saver";
 import { assert } from "tsafe/assert";
+
+const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
 export type Props = {
     className?: string;
@@ -53,8 +62,6 @@ export type Props = {
     codeSnippet: CodeSnippet;
 };
 
-const createNewProfileSelectValue = "__onyxia_create_new_s3_profile__";
-
 export function S3ProfileDetails(props: Props) {
     const {
         className,
@@ -72,60 +79,37 @@ export function S3ProfileDetails(props: Props) {
         codeSnippet
     } = props;
 
-    const profileSelectLabelId = useId();
-    const technologySelectLabelId = useId();
-
     const { classes, cx } = useStyles();
 
     return (
         <div className={cx(classes.root, className)}>
-            <div className={classes.profileBar}>
-                <FormControl variant="standard" className={classes.profileSelectControl}>
-                    <InputLabel id={profileSelectLabelId}>Profile</InputLabel>
-                    <Select
-                        labelId={profileSelectLabelId}
-                        value={profileName}
-                        onChange={event => {
-                            const { value } = event.target;
-                            assert(typeof value === "string");
+            <div className={classes.profileSummary}>
+                <div className={classes.profileIdentity}>
+                    <ProfileDropdown
+                        availableProfileNames={availableProfileNames}
+                        profileName={profileName}
+                        onSelectedProfileChange={onSelectedProfileChange}
+                        onCreateNewProfile={onCreateNewProfile}
+                    />
+                </div>
 
-                            if (value === createNewProfileSelectValue) {
-                                onCreateNewProfile();
-                                return;
-                            }
-
-                            onSelectedProfileChange({ profileName: value });
-                        }}
+                <div className={classes.profileActions}>
+                    <span className={classes.profileStatus}>
+                        {onEdit === undefined ? "Read-only" : "Custom"}
+                    </span>
+                    <Button
+                        className={classes.editButton}
+                        variant="ternary"
+                        startIcon={getIconUrlByName("Edit")}
+                        disabled={onEdit === undefined}
+                        onClick={onEdit}
                     >
-                        {availableProfileNames.map(availableProfileName => (
-                            <MenuItem
-                                key={availableProfileName}
-                                value={availableProfileName}
-                            >
-                                {availableProfileName}
-                            </MenuItem>
-                        ))}
-                        <MenuItem value={createNewProfileSelectValue}>
-                            <span className={classes.createProfileMenuItem}>
-                                <Icon icon={getIconUrlByName("Add")} size="extra small" />
-                                New S3 Profile
-                            </span>
-                        </MenuItem>
-                    </Select>
-                </FormControl>
-
-                <Button
-                    className={classes.editButton}
-                    variant="ternary"
-                    startIcon={getIconUrlByName("Edit")}
-                    disabled={onEdit === undefined}
-                    onClick={onEdit}
-                >
-                    Edit
-                </Button>
+                        Edit
+                    </Button>
+                </div>
             </div>
 
-            <section className={classes.section}>
+            <section className={classes.sectionCard}>
                 <SectionHeading
                     title="Connection details"
                     subtitle="Use these values when configuring S3 clients outside the explorer."
@@ -146,7 +130,7 @@ export function S3ProfileDetails(props: Props) {
                 </div>
             </section>
 
-            <section className={classes.section}>
+            <section className={classes.sectionCard}>
                 <SectionHeading
                     title="Access credentials"
                     subtitle={
@@ -215,6 +199,7 @@ export function S3ProfileDetails(props: Props) {
                             </Text>
                             {accessCredentials.onRenewToken !== undefined && (
                                 <Button
+                                    className={classes.renewButton}
                                     variant="ternary"
                                     startIcon={getIconUrlByName("Refresh")}
                                     disabled={accessCredentials.areTokensBeingRenewed}
@@ -230,21 +215,20 @@ export function S3ProfileDetails(props: Props) {
                 )}
             </section>
 
-            <section className={classes.section}>
+            <section className={classes.sectionCard}>
                 <SectionHeading
-                    title="Setup snippet"
-                    subtitle="Select a target environment and copy the generated configuration snippet."
+                    title="To access your storage outside of datalab services"
+                    subtitle="Download or copy the init script in the programming language of your choice."
                 />
 
                 <div className={classes.snippetToolbar}>
                     <FormControl
-                        variant="standard"
+                        variant="outlined"
                         className={classes.technologySelectControl}
                     >
-                        <InputLabel id={technologySelectLabelId}>Technology</InputLabel>
                         <Select
-                            labelId={technologySelectLabelId}
                             value={technology}
+                            inputProps={{ "aria-label": "Technology" }}
                             onChange={event => {
                                 const { value } = event.target;
                                 assert(typeof value === "string");
@@ -267,30 +251,202 @@ export function S3ProfileDetails(props: Props) {
                         </Select>
                     </FormControl>
 
-                    <div className={classes.snippetActions}>
-                        <span
-                            className={classes.fileBasename}
-                            title={codeSnippet.fileBasename}
-                        >
-                            {codeSnippet.fileBasename}
-                        </span>
-                        <CopyToClipboardIconButton
-                            textToCopy={codeSnippet.codeSrc}
-                            copyToClipboardText="Copy code snippet to clipboard"
-                            copiedToClipboardText="Code snippet copied to clipboard"
-                        />
-                    </div>
+                    <IconButton
+                        icon={getIconUrlByName("GetApp")}
+                        onClick={() => {
+                            saveAs(
+                                new Blob([codeSnippet.codeSrc], {
+                                    type: "text/plain;charset=utf-8"
+                                }),
+                                codeSnippet.fileBasename
+                            );
+                        }}
+                        size="small"
+                    />
                 </div>
 
-                <CodeTextEditor
-                    className={classes.codeEditor}
-                    value={codeSnippet.codeSrc}
-                    onChange={undefined}
-                    language={getCodeTextEditorLanguage(technology)}
-                    maxHeight={360}
-                    fallback={<div className={classes.editorFallback} />}
-                />
+                <div className={classes.codeBlockWrapper}>
+                    <Suspense fallback={<CircularProgress />}>
+                        <CodeBlock
+                            initScript={{
+                                scriptCode: codeSnippet.codeSrc,
+                                programmingLanguage: getCodeBlockLanguage(technology)
+                            }}
+                            isDarkModeEnabled={true}
+                        />
+                    </Suspense>
+                </div>
             </section>
+        </div>
+    );
+}
+
+function ProfileDropdown(props: {
+    availableProfileNames: string[];
+    profileName: string;
+    onSelectedProfileChange: (params: { profileName: string }) => void;
+    onCreateNewProfile: () => void;
+}) {
+    const {
+        availableProfileNames,
+        profileName,
+        onSelectedProfileChange,
+        onCreateNewProfile
+    } = props;
+
+    const { classes, cx } = useStyles_ProfileDropdown();
+    const [isOpen, setIsOpen] = useState(false);
+    const rootRef = useRef<HTMLDivElement | null>(null);
+    const listRef = useRef<HTMLDivElement | null>(null);
+    const focusFirstOnOpenRef = useRef(false);
+
+    useClickAway({
+        ref: rootRef,
+        onClickAway: () => setIsOpen(false)
+    });
+
+    useEffect(() => {
+        if (!isOpen || !focusFirstOnOpenRef.current) {
+            return;
+        }
+
+        focusFirstOnOpenRef.current = false;
+        listRef.current?.querySelector<HTMLButtonElement>('[data-index="0"]')?.focus();
+    }, [availableProfileNames.length, isOpen]);
+
+    const toggleDropdown = () => setIsOpen(open => !open);
+
+    const handleTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleDropdown();
+            return;
+        }
+
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+
+            if (isOpen) {
+                listRef.current
+                    ?.querySelector<HTMLButtonElement>('[data-index="0"]')
+                    ?.focus();
+                return;
+            }
+
+            focusFirstOnOpenRef.current = true;
+            setIsOpen(true);
+            return;
+        }
+
+        if (event.key === "Escape" && isOpen) {
+            event.preventDefault();
+            setIsOpen(false);
+        }
+    };
+
+    const handleSelectProfile = (nextProfileName: string) => {
+        setIsOpen(false);
+
+        if (nextProfileName === profileName) {
+            return;
+        }
+
+        onSelectedProfileChange({ profileName: nextProfileName });
+    };
+
+    const handleCreateNewProfile = () => {
+        setIsOpen(false);
+        onCreateNewProfile();
+    };
+
+    return (
+        <div className={classes.root} ref={rootRef}>
+            <button
+                type="button"
+                className={cx(classes.trigger, isOpen && classes.triggerOpen)}
+                aria-label="Select S3 profile"
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
+                onClick={toggleDropdown}
+                onKeyDown={handleTriggerKeyDown}
+            >
+                <Text typo="object heading" className={classes.triggerLabel}>
+                    {profileName}
+                </Text>
+                <Icon
+                    className={cx(classes.chevron, isOpen && classes.chevronOpen)}
+                    icon={getIconUrlByName("ExpandMore")}
+                    size="extra small"
+                />
+            </button>
+
+            {isOpen && (
+                <div
+                    className={classes.dropdown}
+                    role="listbox"
+                    aria-label="S3 profiles"
+                    onKeyDown={event => {
+                        if (event.key !== "Escape") {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        setIsOpen(false);
+                    }}
+                >
+                    <div className={classes.list} ref={listRef}>
+                        {availableProfileNames.map((availableProfileName, index) => {
+                            const isSelected = availableProfileName === profileName;
+
+                            return (
+                                <button
+                                    type="button"
+                                    key={availableProfileName}
+                                    data-index={index}
+                                    role="option"
+                                    aria-selected={isSelected}
+                                    className={cx(
+                                        classes.profileRow,
+                                        isSelected && classes.profileRowSelected
+                                    )}
+                                    onClick={() =>
+                                        handleSelectProfile(availableProfileName)
+                                    }
+                                >
+                                    <span
+                                        className={classes.profileName}
+                                        title={availableProfileName}
+                                    >
+                                        {availableProfileName}
+                                    </span>
+                                    {isSelected && (
+                                        <span className={classes.iconSlot}>
+                                            <Icon
+                                                className={classes.checkIcon}
+                                                icon={getIconUrlByName("Check")}
+                                                size="extra small"
+                                            />
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <div className={classes.divider} />
+                    <button
+                        type="button"
+                        className={classes.createRow}
+                        onClick={handleCreateNewProfile}
+                    >
+                        <Icon
+                            className={classes.createIcon}
+                            icon={getIconUrlByName("Add")}
+                            size="small"
+                        />
+                        <span className={classes.createLabel}>New S3 Profile</span>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
@@ -321,30 +477,50 @@ function CopyableField(props: {
     const { label, copyLabel, value, helperText, isSensitive = false } = props;
 
     const { classes, cx } = useStyles_CopyableField();
+    const [isCopied, setIsCopied] = useState(false);
     const displayedValue = isSensitive ? getMiddleEllipsis(value) : value;
+
+    useEffect(() => {
+        setIsCopied(false);
+    }, [value]);
+
+    useEffect(() => {
+        if (!isCopied) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => setIsCopied(false), 1400);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [isCopied]);
+
+    const handleCopy = async () => {
+        await copyToClipboard(value);
+        setIsCopied(true);
+    };
 
     return (
         <div className={classes.root}>
-            <div className={classes.header}>
-                <Text typo="label 1" className={classes.label}>
-                    {label}
-                </Text>
-                <div className={classes.valueAndCopy}>
-                    <span
-                        className={cx(
-                            classes.value,
-                            isSensitive && classes.sensitiveValue
-                        )}
-                        title={isSensitive ? displayedValue : value}
-                    >
-                        {displayedValue}
-                    </span>
-                    <CopyToClipboardIconButton
-                        textToCopy={value}
-                        copyToClipboardText={`Copy ${copyLabel} to clipboard`}
-                        copiedToClipboardText={`${label} copied to clipboard`}
-                    />
-                </div>
+            <Text typo="label 1" className={classes.label}>
+                {label}
+            </Text>
+            <div
+                className={cx(
+                    classes.valueAndCopy,
+                    isCopied && classes.valueAndCopyCopied
+                )}
+            >
+                <span
+                    className={cx(classes.value, isSensitive && classes.sensitiveValue)}
+                    title={isSensitive ? displayedValue : value}
+                >
+                    {displayedValue}
+                </span>
+                <CompactCopyButton
+                    ariaLabel={`Copy ${copyLabel}`}
+                    isCopied={isCopied}
+                    onCopy={handleCopy}
+                />
             </div>
             {helperText !== undefined && (
                 <Text typo="body 2" className={classes.helperText}>
@@ -352,6 +528,27 @@ function CopyableField(props: {
                 </Text>
             )}
         </div>
+    );
+}
+
+function CompactCopyButton(props: {
+    ariaLabel: string;
+    isCopied: boolean;
+    onCopy: () => void;
+}) {
+    const { ariaLabel, isCopied, onCopy } = props;
+    const { classes, cx } = useStyles_CompactCopyButton();
+
+    return (
+        <Button
+            variant="secondary"
+            className={cx(classes.root, isCopied && classes.rootCopied)}
+            aria-label={ariaLabel}
+            startIcon={getIconUrlByName(isCopied ? "Check" : "ContentCopy")}
+            onClick={onCopy}
+        >
+            {isCopied ? "Copied" : "Copy"}
+        </Button>
     );
 }
 
@@ -386,7 +583,7 @@ function isTechnology(
     return (availableTechnologies as readonly string[]).includes(value);
 }
 
-function getCodeTextEditorLanguage(technology: Technology): CodeTextEditorLanguage {
+function getCodeBlockLanguage(technology: Technology): string {
     switch (technology) {
         case "AWS CLI / shared profile":
             return "shell";
@@ -396,10 +593,10 @@ function getCodeTextEditorLanguage(technology: Technology): CodeTextEditorLangua
         case "Python (pyarrow)":
             return "python";
         case "DuckDB":
-            return "SQL";
+            return "sql";
         case "R (arrow)":
         case "R (paws)":
-            return "R";
+            return "r";
         case "rclone":
             return "properties";
     }
@@ -409,32 +606,80 @@ const useStyles = tss.withName({ S3ProfileDetails }).create(({ theme }) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(4),
+        gap: 0,
         minWidth: 0
     },
-    profileBar: {
+    profileSummary: {
+        position: "sticky",
+        top: 0,
+        zIndex: 2,
         display: "flex",
-        alignItems: "flex-end",
-        gap: theme.spacing(2),
-        minWidth: 0
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: theme.spacing(3),
+        minWidth: 0,
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        marginBottom: theme.spacing(3),
+        borderRadius: 10,
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        boxShadow: `0 ${theme.spacing(1)}px ${theme.spacing(2)}px ${
+            theme.colors.useCases.surfaces.surface1
+        }`,
+        "&::before": {
+            content: '""',
+            position: "absolute",
+            zIndex: -1,
+            top: -theme.spacing(3),
+            right: -theme.spacing(4),
+            bottom: -theme.spacing(1),
+            left: -theme.spacing(4),
+            backgroundColor: theme.colors.useCases.surfaces.surface1
+        }
     },
-    profileSelectControl: {
-        flex: 1,
-        minWidth: 0
+    profileIdentity: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1),
+        minWidth: 0,
+        flex: 1
+    },
+    profileActions: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: theme.spacing(1),
+        flexShrink: 0
+    },
+    profileStatus: {
+        ...theme.typography.variants["label 1"].style,
+        display: "inline-flex",
+        alignItems: "center",
+        minHeight: 28,
+        padding: `${theme.spacing(0.5)}px ${theme.spacing(1.5)}px`,
+        borderRadius: 999,
+        color: theme.colors.useCases.typography.textSecondary,
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`
     },
     editButton: {
         flex: "none"
     },
-    createProfileMenuItem: {
-        display: "inline-flex",
-        alignItems: "center",
-        gap: theme.spacing(1)
-    },
-    section: {
+    sectionCard: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(2),
-        minWidth: 0
+        gap: theme.spacing(2.5),
+        minWidth: 0,
+        paddingBottom: theme.spacing(4),
+        borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        "& + &": {
+            marginTop: theme.spacing(4)
+        },
+        "&:last-child": {
+            paddingBottom: 0,
+            borderBottom: "none"
+        }
     },
     fields: {
         display: "flex",
@@ -453,57 +698,200 @@ const useStyles = tss.withName({ S3ProfileDetails }).create(({ theme }) => ({
         justifyContent: "space-between",
         gap: theme.spacing(2),
         flexWrap: "wrap",
-        minWidth: 0
+        minWidth: 0,
+        marginTop: theme.spacing(0.5)
     },
     credentialsExpiration: {
         color: theme.colors.useCases.typography.textSecondary,
         minWidth: 0
     },
+    renewButton: {
+        flexShrink: 0
+    },
     snippetToolbar: {
         display: "flex",
-        alignItems: "flex-end",
+        alignItems: "center",
         justifyContent: "space-between",
         gap: theme.spacing(2),
         flexWrap: "wrap",
         minWidth: 0
     },
     technologySelectControl: {
-        flex: "1 1 230px",
-        minWidth: 0
+        flex: "0 1 220px",
+        minWidth: 148,
+        "& .MuiInputBase-root": {
+            color: theme.colors.useCases.typography.textPrimary
+        }
     },
-    snippetActions: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-end",
-        gap: theme.spacing(1),
-        minWidth: 0,
-        flex: "1 1 120px"
-    },
-    fileBasename: {
-        minWidth: 0,
+    codeBlockWrapper: {
+        borderRadius: 8,
         overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-        color: theme.colors.useCases.typography.textSecondary,
-        fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-        fontSize: 13
-    },
-    codeEditor: {
-        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-        boxSizing: "border-box"
-    },
-    editorFallback: {
-        height: 220,
-        borderRadius: theme.spacing(1),
-        backgroundColor: theme.colors.useCases.surfaces.surface2
+        boxSizing: "border-box",
+        backgroundColor: theme.colors.palette.dark.light
     }
 }));
+
+const useStyles_ProfileDropdown = tss
+    .withName({ ProfileDropdown })
+    .create(({ theme }) => {
+        const labelStyle = theme.typography.variants["label 1"].style;
+
+        return {
+            root: {
+                position: "relative",
+                width: "fit-content",
+                maxWidth: "100%"
+            },
+            trigger: {
+                border: "none",
+                background: "transparent",
+                color: theme.colors.useCases.typography.textPrimary,
+                padding: 0,
+                marginRight: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: theme.spacing(1),
+                minWidth: 0,
+                maxWidth: "100%",
+                cursor: "pointer",
+                textAlign: "left",
+                borderRadius: 8,
+                "&:focus-visible": {
+                    outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
+                    outlineOffset: 3
+                }
+            },
+            triggerOpen: {},
+            triggerLabel: {
+                color: theme.colors.useCases.typography.textPrimary,
+                minWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+            },
+            chevron: {
+                color: theme.colors.useCases.typography.textPrimary,
+                transition: "transform 120ms ease",
+                flexShrink: 0
+            },
+            chevronOpen: {
+                transform: "rotate(180deg)"
+            },
+            dropdown: {
+                position: "absolute",
+                top: `calc(100% + ${theme.spacing(1.5)}px)`,
+                left: 0,
+                width: "max-content",
+                minWidth: 300,
+                maxWidth: "min(420px, calc(100vw - 48px))",
+                zIndex: theme.muiTheme.zIndex.modal,
+                display: "flex",
+                flexDirection: "column",
+                gap: theme.spacing(1.5),
+                padding: theme.spacing(1.5),
+                borderRadius: 12,
+                backgroundColor: theme.colors.useCases.surfaces.surface1,
+                boxShadow: theme.shadows[3],
+                boxSizing: "border-box"
+            },
+            divider: {
+                width: "100%",
+                height: 1,
+                backgroundColor: theme.colors.useCases.surfaces.surface2
+            },
+            list: {
+                display: "flex",
+                flexDirection: "column",
+                gap: theme.spacing(0.5)
+            },
+            profileRow: {
+                border: "none",
+                width: "100%",
+                textAlign: "left",
+                padding: theme.spacing(1),
+                paddingLeft: theme.spacing(4),
+                borderRadius: 10,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: theme.spacing(1.5),
+                cursor: "pointer",
+                minHeight: 44,
+                backgroundColor: theme.colors.useCases.surfaces.surface1,
+                color: theme.colors.useCases.typography.textPrimary,
+                transition: "background-color 120ms ease",
+                minWidth: 0,
+                overflow: "hidden",
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                }
+            },
+            profileRowSelected: {
+                backgroundColor: theme.colors.palette.focus.mainAlpha10,
+                "&:hover": {
+                    backgroundColor: theme.colors.palette.focus.mainAlpha20
+                }
+            },
+            profileName: {
+                ...labelStyle,
+                color: theme.colors.useCases.typography.textPrimary,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                minWidth: 0,
+                flex: 1
+            },
+            iconSlot: {
+                width: 28,
+                height: 28,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0
+            },
+            checkIcon: {
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            createRow: {
+                border: "none",
+                width: "100%",
+                textAlign: "left",
+                padding: theme.spacing(1),
+                paddingLeft: theme.spacing(3),
+                borderRadius: 10,
+                display: "flex",
+                alignItems: "center",
+                gap: theme.spacing(1),
+                cursor: "pointer",
+                minHeight: 44,
+                backgroundColor: theme.colors.useCases.surfaces.surface1,
+                color: theme.colors.useCases.typography.textPrimary,
+                transition: "background-color 120ms ease",
+                minWidth: 0,
+                overflow: "hidden",
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                }
+            },
+            createLabel: {
+                ...labelStyle,
+                color: theme.colors.useCases.typography.textPrimary,
+                minWidth: 0,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+            },
+            createIcon: {
+                color: theme.colors.useCases.typography.textPrimary
+            }
+        };
+    });
 
 const useStyles_SectionHeading = tss.withName({ SectionHeading }).create(({ theme }) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(0.75),
+        gap: theme.spacing(0.5),
         minWidth: 0
     },
     title: {
@@ -516,17 +904,9 @@ const useStyles_SectionHeading = tss.withName({ SectionHeading }).create(({ them
 
 const useStyles_CopyableField = tss.withName({ CopyableField }).create(({ theme }) => ({
     root: {
-        padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
-        borderRadius: 8,
-        backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.72),
-        minWidth: 0
-    },
-    header: {
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: theme.spacing(2),
-        flexWrap: "wrap",
+        flexDirection: "column",
+        gap: theme.spacing(1),
         minWidth: 0
     },
     label: {
@@ -536,26 +916,68 @@ const useStyles_CopyableField = tss.withName({ CopyableField }).create(({ theme 
     valueAndCopy: {
         display: "flex",
         alignItems: "center",
-        justifyContent: "flex-end",
         gap: theme.spacing(1),
-        flex: "1 1 180px",
-        minWidth: 0
+        minWidth: 0,
+        minHeight: 48,
+        padding: `${theme.spacing(0.75)}px ${theme.spacing(1.5)}px ${theme.spacing(
+            0.75
+        )}px ${theme.spacing(2)}px`,
+        borderRadius: 8,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        backgroundColor: theme.colors.useCases.surfaces.background,
+        boxSizing: "border-box",
+        transition: "background-color 180ms ease, border-color 180ms ease"
+    },
+    valueAndCopyCopied: {
+        borderColor: alpha(theme.colors.useCases.alertSeverity.success.main, 0.36),
+        backgroundColor: theme.colors.useCases.alertSeverity.success.background
     },
     value: {
         minWidth: 0,
+        flex: 1,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
         color: theme.colors.useCases.typography.textPrimary,
         fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
         fontSize: 13,
-        textAlign: "right"
+        textAlign: "left"
     },
     sensitiveValue: {
         letterSpacing: 0
     },
     helperText: {
-        marginTop: theme.spacing(0.75),
-        color: theme.colors.useCases.typography.textSecondary
+        color: theme.colors.useCases.typography.textTertiary,
+        paddingLeft: theme.spacing(0.5)
     }
 }));
+
+const useStyles_CompactCopyButton = tss
+    .withName({ CompactCopyButton })
+    .create(({ theme }) => ({
+        root: {
+            ...theme.typography.variants["label 2"].style,
+            flex: "none",
+            minHeight: 30,
+            gap: 0,
+            paddingTop: 4,
+            paddingBottom: 4,
+            paddingLeft: 12,
+            paddingRight: 12,
+            "& .MuiSvgIcon-root, & svg, & img": {
+                width: 16,
+                height: 16,
+                fontSize: 16
+            }
+        },
+        rootCopied: {
+            "&&": {
+                color: theme.colors.useCases.typography.textPrimary,
+                backgroundColor: theme.colors.useCases.alertSeverity.success.main,
+                borderColor: theme.colors.useCases.alertSeverity.success.main,
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.alertSeverity.success.main
+                }
+            }
+        }
+    }));
