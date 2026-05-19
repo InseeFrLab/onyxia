@@ -77,26 +77,26 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
             aria-label="S3 bookmark entry points"
         >
             {(customBookmarkItems.length > 0 || items.length === 0) && (
-                <section className={classes.section} aria-label="Custom Bookmarks">
+                <section className={classes.section} aria-label="Bookmarks">
                     <h2 className={cx(classes.sectionTitle, classes.sectionTitlePrimary)}>
-                        Custom Bookmarks
+                        Bookmarks
                     </h2>
                     {customBookmarkItems.length === 0 ? (
-                        <div className={classes.emptyState}>No custom bookmarks yet.</div>
+                        <div className={classes.emptyState}>No bookmarks yet.</div>
                     ) : (
                         renderGrid(customBookmarkItems)
                     )}
                 </section>
             )}
             {defaultBucketItems.length > 0 && (
-                <section className={classes.section} aria-label="Default Buckets">
+                <section className={classes.section} aria-label="Storage locations">
                     <h2
                         className={cx(
                             classes.sectionTitle,
                             classes.sectionTitleSecondary
                         )}
                     >
-                        Default Buckets
+                        Storage locations
                     </h2>
                     {renderGrid(defaultBucketItems)}
                 </section>
