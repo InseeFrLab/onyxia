@@ -2,21 +2,12 @@ import type {
     Technology,
     CodeSnippet
 } from "core/usecases/s3ProfilesDetailsUiController/decoupledLogic/codeSnippets";
-import {
-    useEffect,
-    lazy,
-    useRef,
-    useState,
-    Suspense,
-    type KeyboardEvent,
-    type ReactNode
-} from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { alpha } from "@mui/material/styles";
 import { Button } from "onyxia-ui/Button";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
@@ -25,9 +16,11 @@ import { tss } from "tss";
 import { useClickAway } from "powerhooks/useClickAway";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { saveAs } from "file-saver";
+import {
+    CodeTextEditor,
+    type CodeTextEditorLanguage
+} from "ui/shared/textEditor/CodeTextEditor";
 import { assert } from "tsafe/assert";
-
-const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
 export type Props = {
     className?: string;
@@ -265,17 +258,14 @@ export function S3ProfileDetails(props: Props) {
                     />
                 </div>
 
-                <div className={classes.codeBlockWrapper}>
-                    <Suspense fallback={<CircularProgress />}>
-                        <CodeBlock
-                            initScript={{
-                                scriptCode: codeSnippet.codeSrc,
-                                programmingLanguage: getCodeBlockLanguage(technology)
-                            }}
-                            isDarkModeEnabled={true}
-                        />
-                    </Suspense>
-                </div>
+                <CodeTextEditor
+                    className={classes.codeEditor}
+                    value={codeSnippet.codeSrc}
+                    onChange={undefined}
+                    language={getCodeTextEditorLanguage(technology)}
+                    maxHeight={360}
+                    fallback={<div className={classes.editorFallback} />}
+                />
             </section>
         </div>
     );
@@ -583,7 +573,7 @@ function isTechnology(
     return (availableTechnologies as readonly string[]).includes(value);
 }
 
-function getCodeBlockLanguage(technology: Technology): string {
+function getCodeTextEditorLanguage(technology: Technology): CodeTextEditorLanguage {
     switch (technology) {
         case "AWS CLI / shared profile":
             return "shell";
@@ -593,10 +583,10 @@ function getCodeBlockLanguage(technology: Technology): string {
         case "Python (pyarrow)":
             return "python";
         case "DuckDB":
-            return "sql";
+            return "SQL";
         case "R (arrow)":
         case "R (paws)":
-            return "r";
+            return "R";
         case "rclone":
             return "properties";
     }
@@ -723,11 +713,14 @@ const useStyles = tss.withName({ S3ProfileDetails }).create(({ theme }) => ({
             color: theme.colors.useCases.typography.textPrimary
         }
     },
-    codeBlockWrapper: {
+    codeEditor: {
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        boxSizing: "border-box"
+    },
+    editorFallback: {
+        height: 220,
         borderRadius: 8,
-        overflow: "hidden",
-        boxSizing: "border-box",
-        backgroundColor: theme.colors.palette.dark.light
+        backgroundColor: theme.colors.useCases.surfaces.surface2
     }
 }));
 
