@@ -152,48 +152,57 @@ export function S3ProfileForm(props: Props) {
             noValidate={true}
         >
             <div className={classes.body}>
-                <FormTextField
-                    label="Profile name"
-                    value={profileName.value}
-                    onChange={profileName.onChange}
-                    onBlur={() => onFieldBlur("profileName")}
-                    error={toErrorMessage({
-                        errorId: profileName.errorMessage,
-                        t
-                    })}
-                    isErrorVisible={getIsFieldErrorVisible("profileName")}
-                    autoComplete="off"
-                />
+                <Section>
+                    <SectionHeading
+                        title="Connection details"
+                        subtitle="Define the profile name and S3 endpoint used by the explorer."
+                    />
 
-                <FormTextField
-                    label="URL of the S3 service"
-                    value={endpointUrl.value}
-                    onChange={endpointUrl.onChange}
-                    onBlur={() => onFieldBlur("endpointUrl")}
-                    error={toErrorMessage({
-                        errorId: endpointUrl.errorMessage,
-                        t
-                    })}
-                    isErrorVisible={getIsFieldErrorVisible("endpointUrl")}
-                    helperText="Example: https://minio.lab.example.net"
-                    autoComplete="url"
-                />
+                    <div className={classes.fields}>
+                        <FormTextField
+                            label="Profile name"
+                            value={profileName.value}
+                            onChange={profileName.onChange}
+                            onBlur={() => onFieldBlur("profileName")}
+                            error={toErrorMessage({
+                                errorId: profileName.errorMessage,
+                                t
+                            })}
+                            isErrorVisible={getIsFieldErrorVisible("profileName")}
+                            autoComplete="off"
+                        />
 
-                <FormTextField
-                    label="Default region"
-                    value={defaultRegion.value ?? ""}
-                    onChange={newValue =>
-                        defaultRegion.onChange(emptyStringAsUndefined(newValue))
-                    }
-                    onBlur={() => onFieldBlur("defaultRegion")}
-                    error={toErrorMessage({
-                        errorId: defaultRegion.errorMessage,
-                        t
-                    })}
-                    isErrorVisible={getIsFieldErrorVisible("defaultRegion")}
-                    helperText="Example: eu-west-1, if not sure, leave empty"
-                    autoComplete="off"
-                />
+                        <FormTextField
+                            label="URL of the S3 service"
+                            value={endpointUrl.value}
+                            onChange={endpointUrl.onChange}
+                            onBlur={() => onFieldBlur("endpointUrl")}
+                            error={toErrorMessage({
+                                errorId: endpointUrl.errorMessage,
+                                t
+                            })}
+                            isErrorVisible={getIsFieldErrorVisible("endpointUrl")}
+                            helperText="Example: https://minio.lab.example.net"
+                            autoComplete="url"
+                        />
+
+                        <FormTextField
+                            label="Default region"
+                            value={defaultRegion.value ?? ""}
+                            onChange={newValue =>
+                                defaultRegion.onChange(emptyStringAsUndefined(newValue))
+                            }
+                            onBlur={() => onFieldBlur("defaultRegion")}
+                            error={toErrorMessage({
+                                errorId: defaultRegion.errorMessage,
+                                t
+                            })}
+                            isErrorVisible={getIsFieldErrorVisible("defaultRegion")}
+                            helperText="Example: eu-west-1, if not sure, leave empty"
+                            autoComplete="off"
+                        />
+                    </div>
+                </Section>
 
                 <Section>
                     <SectionHeading
@@ -220,9 +229,10 @@ export function S3ProfileForm(props: Props) {
                 </Section>
 
                 <Section>
-                    <Text typo="section heading" className={classes.credentialsTitle}>
-                        Account Credentials
-                    </Text>
+                    <SectionHeading
+                        title="Account credentials"
+                        subtitle="Choose whether this profile uses anonymous access or explicit credentials."
+                    />
 
                     <label className={classes.switchRow}>
                         <Switch
@@ -332,9 +342,11 @@ function SectionHeading(props: { title: string; subtitle: string }) {
             <Text typo="object heading" className={classes.title}>
                 {title}
             </Text>
-            <Text typo="body 2" className={classes.subtitle}>
-                {subtitle}
-            </Text>
+            {subtitle !== "" && (
+                <Text typo="body 2" className={classes.subtitle}>
+                    {subtitle}
+                </Text>
+            )}
         </div>
     );
 }
@@ -369,21 +381,19 @@ function FormTextField(props: {
 
     return (
         <div className={classes.root}>
-            <label htmlFor={inputId}>
-                <Text typo="label 1" className={classes.label}>
-                    {label}
-                </Text>
-            </label>
             <Input
                 id={inputId}
                 className={classes.input}
                 value={value}
+                placeholder={label}
                 onChange={event => onChange(event.target.value)}
                 onBlur={onBlur}
                 error={errorToDisplay !== undefined}
                 type={isSensitive ? "password" : "text"}
                 fullWidth={true}
+                disableUnderline={true}
                 autoComplete={autoComplete}
+                inputProps={{ "aria-label": label }}
                 aria-describedby={
                     errorToDisplay !== undefined || helperText !== undefined
                         ? helperTextId
@@ -542,7 +552,13 @@ const useStyles = tss.withName({ S3ProfileForm }).create(({ theme }) => ({
         paddingRight: theme.spacing(0.5),
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3.5),
+        gap: 0,
+        minWidth: 0
+    },
+    fields: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1.5),
         minWidth: 0
     },
     urlStyleOptions: {
@@ -550,9 +566,6 @@ const useStyles = tss.withName({ S3ProfileForm }).create(({ theme }) => ({
         flexDirection: "column",
         gap: theme.spacing(1.5),
         minWidth: 0
-    },
-    credentialsTitle: {
-        color: theme.colors.useCases.typography.textPrimary
     },
     switchRow: {
         display: "flex",
@@ -569,7 +582,7 @@ const useStyles = tss.withName({ S3ProfileForm }).create(({ theme }) => ({
     credentialsFields: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3),
+        gap: theme.spacing(1.5),
         minWidth: 0
     },
     actions: {
@@ -589,10 +602,17 @@ const useStyles_Section = tss.withName({ Section }).create(({ theme }) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(2),
+        gap: theme.spacing(2.5),
         minWidth: 0,
-        paddingTop: theme.spacing(3),
-        borderTop: `1px solid ${theme.colors.useCases.typography.textSecondary}`
+        paddingBottom: theme.spacing(4),
+        borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        "& + &": {
+            marginTop: theme.spacing(4)
+        },
+        "&:last-child": {
+            paddingBottom: 0,
+            borderBottom: "none"
+        }
     }
 }));
 
@@ -615,14 +635,35 @@ const useStyles_FormTextField = tss.withName({ FormTextField }).create(({ theme 
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(0.75),
+        gap: theme.spacing(2),
         minWidth: 0
     },
-    label: {
-        color: theme.colors.useCases.typography.textPrimary
-    },
     input: {
-        color: theme.colors.useCases.typography.textPrimary
+        color: theme.colors.useCases.typography.textPrimary,
+        minHeight: 48,
+        borderRadius: 8,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        backgroundColor: theme.colors.useCases.surfaces.background,
+        transition: "border-color 160ms ease, background-color 160ms ease",
+        "&:hover": {
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            borderColor: theme.colors.useCases.surfaces.surface3
+        },
+        "&.Mui-focused": {
+            borderColor: theme.colors.useCases.typography.textFocus
+        },
+        "&.Mui-error": {
+            borderColor: theme.colors.useCases.alertSeverity.error.main
+        },
+        "& .MuiInputBase-input": {
+            ...theme.typography.variants["label 1"].style,
+            padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
+            color: theme.colors.useCases.typography.textPrimary,
+            "&::placeholder": {
+                color: theme.colors.useCases.typography.textSecondary,
+                opacity: 1
+            }
+        }
     },
     helper: {
         color: theme.colors.useCases.typography.textSecondary
@@ -638,14 +679,22 @@ const useStyles_UrlStyleOption = tss.withName({ UrlStyleOption }).create(({ them
         alignItems: "flex-start",
         gap: theme.spacing(1),
         minWidth: 0,
-        padding: `${theme.spacing(1.75)}px ${theme.spacing(2)}px`,
+        padding: `${theme.spacing(3)}px ${theme.spacing(2)}px`,
         borderRadius: 8,
         border: `2px solid transparent`,
         backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.56),
-        cursor: "pointer"
+        cursor: "pointer",
+        transition: "border-color 160ms ease, background-color 160ms ease",
+        "&:hover": {
+            borderColor: theme.colors.useCases.surfaces.surface3,
+            backgroundColor: theme.colors.useCases.surfaces.background
+        }
     },
     rootSelected: {
-        borderColor: theme.colors.useCases.buttons.actionActive
+        borderColor: theme.colors.useCases.buttons.actionActive,
+        "&:hover": {
+            borderColor: theme.colors.useCases.buttons.actionActive
+        }
     },
     radio: {
         flex: "none"

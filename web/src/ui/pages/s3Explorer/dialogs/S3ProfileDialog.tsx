@@ -10,6 +10,7 @@ import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
 import { alpha } from "@mui/material/styles";
+import { keyframes } from "tss-react";
 
 export type S3ProfileDialogProps = {
     evtOpen: Evt<"detail" | "create">;
@@ -88,7 +89,7 @@ function SideDialog(props: {
                 aria-label={typeof title === "string" ? title : undefined}
             >
                 <div className={classes.headingWrapper}>
-                    <Text typo="object heading" className={classes.title}>
+                    <Text typo="section heading" className={classes.title}>
                         {title}
                     </Text>
                     <IconButton
@@ -110,33 +111,44 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
         position: "fixed",
         inset: 0,
         zIndex: theme.muiTheme.zIndex.modal,
+        marginRight: theme.spacing(3),
         display: "flex",
         justifyContent: "flex-end",
         alignItems: "stretch",
-        padding: `${theme.spacing(5)}px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
+        padding: `64px ${theme.spacing(2)}px 32px`,
         boxSizing: "border-box",
         backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.72),
         backdropFilter: "blur(1px)"
     },
     panel: {
-        width: 430,
+        width: 650,
         maxWidth: "100%",
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
-        borderRadius: 8,
+        borderRadius: 16,
         border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
         backgroundColor: theme.colors.useCases.surfaces.surface1,
-        boxShadow: theme.shadows[4]
+        boxShadow: theme.shadows[4],
+        animation: `${keyframes`
+            from {
+                opacity: 0;
+                transform: translateX(28px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        `} 340ms cubic-bezier(0.2, 0, 0, 1)`
     },
     headingWrapper: {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         gap: theme.spacing(2),
-        padding: `${theme.spacing(3)}px ${theme.spacing(3)}px ${theme.spacing(2)}px`,
-        borderBottom: `1px solid ${theme.colors.useCases.typography.textPrimary}`
+        padding: `${theme.spacing(4)}px ${theme.spacing(4)}px ${theme.spacing(2)}px`,
+        borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface3}`
     },
     title: {
         minWidth: 0,
@@ -149,7 +161,7 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
         flex: 1,
         minHeight: 0,
         overflow: "auto",
-        padding: `${theme.spacing(2.5)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
+        padding: `${theme.spacing(3)}px ${theme.spacing(4)}px ${theme.spacing(4)}px`,
         boxSizing: "border-box"
     }
 }));
