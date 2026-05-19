@@ -571,13 +571,33 @@ const uriBar = createSelector(
         })();
 
         const hints: MainView["uriBar"]["hints"] = bookmarks.items
-            .filter(
-                bookmark =>
-                    getIsInside({ s3UriPrefix: s3Uri, s3Uri: bookmark.s3Uri }).isInside
-            )
+            .filter(bookmark => {
+                if (same(bookmark.s3Uri, s3Uri)) {
+                    return false;
+                }
+
+                return stringifyS3Uri(bookmark.s3Uri).startsWith(
+                    (() => {
+                        let out = stringifyS3Uri(s3Uri);
+
+                        if (out.endsWith(s3Uri.delimiter)) {
+                            out = out.slice(0, -s3Uri.delimiter.length);
+                        }
+
+                        return out;
+                    })()
+                );
+            })
             .map(bookmark => ({
                 type: "bookmark" as const,
                 text: (() => {
+                    if (
+                        !getIsInside({ s3UriPrefix: s3Uri, s3Uri: bookmark.s3Uri })
+                            .isInside
+                    ) {
+                        return stringifyS3Uri(bookmark.s3Uri);
+                    }
+
                     const n = s3Uri.isDelimiterTerminated
                         ? s3Uri.keySegments.length
                         : s3Uri.keySegments.length - 1;
