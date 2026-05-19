@@ -666,7 +666,7 @@ const useStyles_FormTextField = tss.withName({ FormTextField }).create(({ theme 
         }
     },
     helper: {
-        color: theme.colors.useCases.typography.textSecondary
+        color: theme.colors.useCases.typography.textTertiary
     },
     error: {
         color: theme.colors.useCases.alertSeverity.error.main
@@ -683,18 +683,10 @@ const useStyles_UrlStyleOption = tss.withName({ UrlStyleOption }).create(({ them
         borderRadius: 8,
         border: `2px solid transparent`,
         backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.56),
-        cursor: "pointer",
-        transition: "border-color 160ms ease, background-color 160ms ease",
-        "&:hover": {
-            borderColor: theme.colors.useCases.surfaces.surface3,
-            backgroundColor: theme.colors.useCases.surfaces.background
-        }
+        cursor: "pointer"
     },
     rootSelected: {
-        borderColor: theme.colors.useCases.buttons.actionActive,
-        "&:hover": {
-            borderColor: theme.colors.useCases.buttons.actionActive
-        }
+        borderColor: theme.colors.useCases.buttons.actionActive
     },
     radio: {
         flex: "none"
