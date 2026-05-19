@@ -11,6 +11,7 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
 import { alpha } from "@mui/material/styles";
 import { keyframes } from "tss-react";
+import { useClickAway } from "powerhooks/useClickAway";
 
 export type S3ProfileDialogProps = {
     evtOpen: Evt<"detail" | "create">;
@@ -80,9 +81,17 @@ function SideDialog(props: {
 
     const { classes } = useStyles_SideDialog();
 
+    const { ref } = useClickAway({
+        onClickAway: () => {
+            console.log("click away");
+            onClose();
+        }
+    });
+
     return (
         <div className={classes.root}>
             <div
+                ref={ref}
                 className={classes.panel}
                 role="dialog"
                 aria-modal="true"
