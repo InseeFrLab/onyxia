@@ -33,6 +33,7 @@ export const Default: Story = {
         maxHeight: 400,
         downloadButton: downloadAction,
         helpDialog,
-        isExpended: true
+        isExpended: true,
+        doCollapseOnClickAway: true
     }
 };

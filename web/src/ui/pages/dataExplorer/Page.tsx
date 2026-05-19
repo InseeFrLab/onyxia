@@ -20,7 +20,7 @@ import { DataGrid } from "./DataGrid";
 
 const Page = withLoader({
     loader,
-    Component: DataExplorer
+    Component: PageComponent
 });
 export default Page;
 
@@ -39,7 +39,7 @@ async function loader() {
     }
 }
 
-function DataExplorer() {
+function useSyncRoute() {
     const {
         functions: { dataExplorer },
         evts: { evtDataExplorer }
@@ -65,10 +65,18 @@ function DataExplorer() {
             }),
         []
     );
+}
+
+function PageComponent() {
+    useSyncRoute();
+
+    const {
+        functions: { dataExplorer }
+    } = getCoreSync();
 
     const { urlBarText, isQuerying, dataGridView } = useCoreState("dataExplorer", "view");
 
-    const { t } = useTranslation({ DataExplorer });
+    const { t } = useTranslation("DataExplorer");
 
     const { classes } = useStyles();
 
@@ -142,7 +150,7 @@ function DataExplorer() {
     );
 }
 
-const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
+const useStyles = tss.withName("DataExplorer").create(({ theme }) => ({
     root: {
         height: "100%",
         display: "flex",
@@ -192,5 +200,5 @@ const { i18n } = declareComponentKeys<
     | "resize table"
     | { K: "unsupported file type"; P: { supportedFileTypes: readonly string[] } }
     | Exclude<QueryResponse.Failed["errorCause"], "unsupported file type">
->()({ DataExplorer });
+>()("DataExplorer");
 export type I18n = typeof i18n;

@@ -3,15 +3,13 @@ import type { State as RootState } from "core/bootstrap";
 import { name } from "./state";
 import * as projectManagement from "core/usecases/projectManagement";
 
-function state(rootState: RootState) {
-    return rootState[name];
-}
+const state = (rootState: RootState) => rootState[name];
 
 const restorableConfigs = createSelector(
     projectManagement.protectedSelectors.projectConfig,
     createSelector(state, state => state.indexedChartsIcons),
-    ({ restorableConfigs }, indexedChartsIcons) =>
-        restorableConfigs.map(restorableConfig => ({
+    ({ restorableServiceConfigs }, indexedChartsIcons) =>
+        restorableServiceConfigs.map(restorableConfig => ({
             ...restorableConfig,
             chartIconUrl:
                 indexedChartsIcons[restorableConfig.catalogId]?.[

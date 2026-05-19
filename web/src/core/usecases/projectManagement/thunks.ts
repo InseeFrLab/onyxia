@@ -7,14 +7,11 @@ import { protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
 import { id } from "tsafe/id";
-import { updateDefaultS3ConfigsAfterPotentialDeletion } from "core/usecases/s3ConfigManagement/decoupledLogic/updateDefaultS3ConfigsAfterPotentialDeletion";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { getProjectVaultTopDirPath_reserved } from "./decoupledLogic/projectVaultTopDirPath_reserved";
 import { secretToValue, valueToSecret } from "./decoupledLogic/secretParsing";
-import { projectConfigsMigration } from "./decoupledLogic/projectConfigsMigration";
-import { symToStr } from "tsafe/symToStr";
 import { type ProjectConfigs, zProjectConfigs } from "./decoupledLogic/ProjectConfigs";
 import { clearProjectConfigs } from "./decoupledLogic/clearProjectConfigs";
+import { tryMigrateProjectConfigsV1ToV2 } from "./decoupledLogic/migration/migrateProjectConfigsV1ToV2";
 import { Mutex } from "async-mutex";
 import { createUsecaseContextApi } from "clean-architecture";
 
@@ -22,11 +19,8 @@ export const thunks = {
     changeProject:
         (params: { projectId: string }) =>
         async (...args) => {
-            const [
-                dispatch,
-                getState,
-                { onyxiaApi, secretsManager, paramsOfBootstrapCore }
-            ] = args;
+            const [dispatch, , { onyxiaApi, secretsManager, paramsOfBootstrapCore }] =
+                args;
 
             const { projectId } = params;
 
@@ -69,11 +63,6 @@ export const thunks = {
                 projectVaultTopDirPath
             });
 
-            await projectConfigsMigration({
-                secretsManager,
-                projectVaultTopDirPath_reserved
-            });
-
             const { projectConfigs } = await (async function getProjectConfig(): Promise<{
                 projectConfigs: ProjectConfigs;
             }> {
@@ -92,14 +81,7 @@ export const thunks = {
                             const path = pathJoin(projectVaultTopDirPath_reserved, key);
 
                             if (!files.includes(key)) {
-                                const value = getDefaultConfig(key);
-
-                                await secretsManager.put({
-                                    path,
-                                    secret: valueToSecret(value)
-                                });
-
-                                return [key, value] as const;
+                                return [key, undefined] as const;
                             }
 
                             const { secret } = await secretsManager.get({ path });
@@ -113,6 +95,18 @@ export const thunks = {
                     zProjectConfigs.parse(projectConfigs);
                     assert(is<ProjectConfigs>(projectConfigs));
                 } catch {
+                    {
+                        const projectConfigs_migrated =
+                            await tryMigrateProjectConfigsV1ToV2({
+                                secretsManager,
+                                projectVaultTopDirPath_reserved
+                            });
+
+                        if (projectConfigs_migrated !== undefined) {
+                            return { projectConfigs: projectConfigs_migrated };
+                        }
+                    }
+
                     console.warn(
                         "We got a malformed ProjectConfigs object, clearing it...",
                         projectConfigs
@@ -123,6 +117,13 @@ export const thunks = {
                         projectVaultTopDirPath_reserved
                     });
 
+                    for (const key of keys) {
+                        await secretsManager.put({
+                            path: pathJoin(projectVaultTopDirPath_reserved, key),
+                            secret: valueToSecret(getDefaultConfig(key))
+                        });
+                    }
+
                     return getProjectConfig();
                 }
 
@@ -131,56 +132,11 @@ export const thunks = {
 
             await prOnboarding;
 
-            maybe_update_pinned_default_s3_configs: {
-                const actions = updateDefaultS3ConfigsAfterPotentialDeletion({
-                    projectConfigsS3: projectConfigs.s3,
-                    s3RegionConfigs:
-                        deploymentRegionManagement.selectors.currentDeploymentRegion(
-                            getState()
-                        ).s3Configs
-                });
-
-                let needUpdate = false;
-
-                for (const propertyName of [
-                    "s3ConfigId_defaultXOnyxia",
-                    "s3ConfigId_explorer"
-                ] as const) {
-                    const action = actions[propertyName];
-
-                    if (!action.isUpdateNeeded) {
-                        continue;
-                    }
-
-                    needUpdate = true;
-
-                    projectConfigs.s3[propertyName] = action.s3ConfigId;
-                }
-
-                if (!needUpdate) {
-                    break maybe_update_pinned_default_s3_configs;
-                }
-
-                {
-                    const { s3 } = projectConfigs;
-
-                    await secretsManager.put({
-                        path: pathJoin(projectVaultTopDirPath_reserved, symToStr({ s3 })),
-                        secret: valueToSecret(s3)
-                    });
-                }
-            }
-
-            const projectWithInjectedPersonalInfos = projects.map(project => ({
-                ...project,
-                doInjectPersonalInfos:
-                    project.group === undefined ||
-                    !paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup
-            }));
-
             dispatch(
                 actions.projectChanged({
-                    projects: projectWithInjectedPersonalInfos,
+                    projects,
+                    disablePersonalInfosInjectionInGroup:
+                        paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup,
                     selectedProjectId: projectId,
                     currentProjectConfigs: projectConfigs
                 })
@@ -209,8 +165,8 @@ export const thunks = {
 const keys = [
     "__modelVersion",
     "servicePassword",
-    "restorableConfigs",
-    "s3",
+    "restorableServiceConfigs",
+    "s3Profiles",
     "clusterNotificationCheckoutTime"
 ] as const;
 
@@ -220,7 +176,7 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
     const key = key_ as keyof ProjectConfigs;
     switch (key) {
         case "__modelVersion": {
-            const out: ProjectConfigs[typeof key] = 1;
+            const out: ProjectConfigs[typeof key] = 2;
             // @ts-expect-error
             return out;
         }
@@ -229,18 +185,13 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
             // @ts-expect-error
             return out;
         }
-        case "restorableConfigs": {
+        case "restorableServiceConfigs": {
             const out: ProjectConfigs[typeof key] = [];
             // @ts-expect-error
             return out;
         }
-        case "s3": {
-            const out: ProjectConfigs[typeof key] = {
-                s3Configs: [],
-                // NOTE: We will set to the correct default at initialization
-                s3ConfigId_defaultXOnyxia: "a-config-id-that-does-not-exist",
-                s3ConfigId_explorer: "a-config-id-that-does-not-exist"
-            };
+        case "s3Profiles": {
+            const out: ProjectConfigs[typeof key] = [];
             // @ts-expect-error
             return out;
         }

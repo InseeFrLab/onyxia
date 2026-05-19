@@ -3,6 +3,15 @@ import { assert, type Equals } from "tsafe/assert";
 import { Suspense, lazy } from "react";
 const ShellCodeTextEditor = lazy(() => import("./ShellCodeTextEditor"));
 const JsonCodeTextEditor = lazy(() => import("./JsonCodeTextEditor"));
+const LegacyModeCodeTextEditor = lazy(() => import("./LegacyModeCodeTextEditor"));
+
+export type CodeTextEditorLanguage =
+    | "shell"
+    | "JSON"
+    | "python"
+    | "R"
+    | "SQL"
+    | "properties";
 
 export type Props = {
     className?: string;
@@ -12,7 +21,7 @@ export type Props = {
     onChange: ((newValue: string) => void) | undefined;
     fallback?: JSX.Element;
     children?: ReactNode;
-    language: "shell" | "JSON";
+    language: CodeTextEditorLanguage;
 };
 
 {
@@ -33,6 +42,11 @@ export function CodeTextEditor(props: Props) {
                         return <ShellCodeTextEditor {...rest} />;
                     case "JSON":
                         return <JsonCodeTextEditor {...rest} />;
+                    case "python":
+                    case "R":
+                    case "SQL":
+                    case "properties":
+                        return <LegacyModeCodeTextEditor {...rest} language={language} />;
                 }
             })()}
         </Suspense>

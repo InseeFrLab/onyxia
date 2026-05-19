@@ -11,7 +11,6 @@ export const translations: Translations<"no"> = {
     Account: {
         profile: "Profil",
         git: undefined,
-        storage: "Koble til lagring",
         k8sCodeSnippets: "Kubernetes",
         "user-interface": "Grensesnittspreferanser",
         text1: "Min konto",
@@ -74,17 +73,6 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    AccountStorageTab: {
-        "credentials section title": "Koble dataene dine til tjenestene dine",
-        "credentials section helper":
-            "Amazon-kompatibel MinIO-objektlagring (AWS S3). Denne informasjonen fylles allerede automatisk ut.",
-        "accessible as env": "Tilgjengelig i tjenestene dine som en miljøvariabel:",
-        "init script section title":
-            "For å få tilgang til lagringen din utenfor datalabtjenestene",
-        "init script section helper":
-            "Last ned eller kopier initialiseringskriptet i programingsspråket du foretrekker.",
-        "expires in": ({ howMuchTime }) => `Utløper om ${howMuchTime}`
-    },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
         "credentials section helper":
@@ -130,134 +118,6 @@ export const translations: Translations<"no"> = {
             </>
         ),
         "expires in": ({ howMuchTime }) => `Token går ut om ${howMuchTime}`
-    },
-    ProjectSettings: {
-        "page header title": "Prosjektinnstillinger",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Innstillinger for ditt personlige prosjekt"
-                : `Innstillinger for "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Denne siden lar deg konfigurere innstillingene som gjelder for
-                {groupProjectName === undefined
-                    ? " ditt personlige prosjekt"
-                    : ` ${groupProjectName}-prosjektet`}
-                .
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Vær oppmerksom på at {groupProjectName} er et gruppeprosjekt delt
-                        med andre brukere; endringene du gjør her vil gjelde for alle
-                        medlemmer av prosjektet.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        Du kan bytte mellom dine prosjekter ved å bruke rullegardinmenyen
-                        i overskriften.
-                        <br />
-                    </>
-                )}
-                Merk at bare administratoren for din Onyxia-instans kan opprette nye
-                prosjekter.
-            </>
-        ),
-        "security-info": "Sikkerhetsinformasjon",
-        "s3-configs": "S3-konfigurasjoner"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Legg til en tilpasset S3-konfigurasjon"
-    },
-    S3ConfigCard: {
-        "data source": "Datakilde",
-        credentials: "Legitimasjon",
-        "sts credentials":
-            "Token som dynamisk etterspørres på dine vegne av Onyxia (STS)",
-        account: "Konto",
-        "use in services": "Bruk i tjenester",
-        "use in services helper": `Hvis aktivert, vil denne konfigurasjonen brukes som standard i dine tjenester som implementerer en S3-integrasjon.`,
-        "use for onyxia explorers": "Bruk for Onyxia utforskere",
-        "use for onyxia explorers helper": `Hvis aktivert, vil denne konfigurasjonen brukes
-            av filutforskeren og datautforskeren.`,
-        edit: "Rediger",
-        delete: "Slett"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Ny tilpasset S3-konfigurasjon",
-        "dialog subtitle":
-            "Angi en tilpasset tjenestekonto eller koble til en annen S3-kompatibel tjeneste",
-        cancel: "Avbryt",
-        "save config": "Lagre konfigurasjon",
-        "update config": "Oppdater konfigurasjon",
-        "is required": "Dette feltet er påkrevd",
-        "must be an url": "Ikke en gyldig URL",
-        "not a valid access key id": "Dette ser ikke ut som en gyldig tilgangsnøkkel-ID",
-        "url textField label": "URL",
-        "url textField helper text": "URL til S3-tjenesten",
-        "region textField label": "AWS S3-region",
-        "region textField helper text":
-            "Eksempel: eu-west-1, hvis du er usikker, la det stå tomt",
-        "workingDirectoryPath textField label": "Arbeidsmappesti",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Dette lar deg spesifisere bøtten og S3-objektprefikset du eier på
-                S3-tjenesten. <br />
-                Eksempel: <code>min-bøtte/mitt-prefiks/</code> eller{" "}
-                <code>kun min-bøtte/</code> hvis du eier hele bøtten.
-            </>
-        ),
-        "account credentials": "Kontoinformasjon",
-        "friendlyName textField label": "Konfigurasjonsnavn",
-        "friendlyName textField helper text":
-            "Dette er bare for å hjelpe deg med å identifisere denne konfigurasjonen. Eksempel: Min AWS-bøtte",
-
-        "isAnonymous switch label": "Anonym tilgang",
-        "isAnonymous switch helper text":
-            "Sett til PÅ hvis ingen hemmelig tilgangsnøkkel er nødvendig",
-
-        "accessKeyId textField label": "Tilgangsnøkkel-ID",
-        "accessKeyId textField helper text": "Eksempel: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Hemmelig tilgangsnøkkel",
-        "sessionToken textField label": "Sesjonstoken",
-        "sessionToken textField helper text": "Valgfritt, la være tom hvis usikker",
-        "url style": "URL-stil",
-        "url style helper text": `Spesifiser hvordan din S3-server formaterer URL-en for nedlasting av filer.`,
-        "path style label": ({ example }) => (
-            <>
-                Sti-stil
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mitt-datasett.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtuelt-vertsbasert stil
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mitt-datasett.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Test forbindelse",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Test av forbindelse feilet med feil: <br />
-                {errorMessage}
-            </>
-        )
     },
     AccountUserInterfaceTab: {
         title: "Grensesnittspreferanser",
@@ -308,65 +168,60 @@ export const translations: Translations<"no"> = {
         "reset helper dialogs helper text":
             "Tilbakestill meldingsvinduer som er bedt om å ikke vises igjen"
     },
-    FileExplorerEntry: {
-        "page title - file explorer": "Filutforsker",
-        "what this page is used for - file explorer": "Her kan du bla gjennom S3-bøtter.",
-        "help content": ({ accountTabLink, docHref }) => (
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `Bucket ${bucket} finnes ikke`,
+        "bucket does not exist body": "Vil du prøve å opprette den nå?",
+        no: "Nei",
+        yes: "Ja",
+        "success title": "Vellykket",
+        "failed title": "Feilet",
+        "success body": ({ bucket }) => `Bucket ${bucket} ble opprettet.`,
+        "failed body": ({ bucket }) => `Kunne ikke opprette ${bucket}.`,
+        ok: "Ok"
+    },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Filen finnes allerede",
+        "dialog body": "Vil du overskrive den eksisterende filen?",
+        cancel: "Avbryt",
+        overwrite: "Overskriv"
+    },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Bokmerkenavn",
+        "bookmarkName textField label": "Navn",
+        "bookmarkName textField empty error": "Bokmerkenavnet kan ikke være tomt",
+        cancel: "Avbryt",
+        ok: "Ok"
+    },
+    DirectoryCreationDialog: {
+        "dialog title": "Opprett katalog",
+        "dialog subtitle":
+            "Kataloger opprettes relativt til prefikset som vises akkurat nå.",
+        "directoryName textField label": "Katalognavn",
+        "directoryName textField empty error": "Katalognavnet kan ikke være tomt",
+        "directoryName textField duplicate error": "Katalognavnet finnes allerede",
+        cancel: "Avbryt",
+        create: "Opprett"
+    },
+    MakePrefixPublicDialog: {
+        "dialog title": "Gjør prefikset offentlig",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
-                Les{" "}
-                <MuiLink href={docHref} target="_blank">
-                    dokumentasjonen vår
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Konfigurer minio-klientene</MuiLink>.
+                Du er i ferd med å gjøre <span className={s3UriClassName}>{s3Uri}</span>{" "}
+                offentlig. Alle kan liste opp og laste ned alle nåværende og fremtidige
+                objekter i dette prefikset.
+                <br />
+                <br />
+                Nedlastingslenker du deler for objekter i dette prefikset, utløper aldri.
             </>
         ),
-        "title personal": "Mine data",
-        "description personal": "Dine egne filer og datasett.",
-        "title project": ({ projectName }) => `Prosjekt ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Felles lagringsområde for prosjektet ${projectName}`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Mine data";
-                case "project":
-                    return "Gruppedata";
-            }
-        }
-    },
-    S3EntryCard: {
-        "space path": "Områdesti"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "Ingen S3-server konfigurert",
-        "dialog body":
-            "Det er ingen S3-server konfigurert for denne instansen. Men du kan legge til en manuelt for å aktivere S3-filutforskeren.",
         cancel: "Avbryt",
-        "go to settings": "Gå til innstillinger"
+        "make public": "Gjør offentlig"
     },
-    ShareDialog: {
-        title: "Del dataene dine",
-        close: "Lukk",
-        "create and copy link": "Opprett og kopier lenke",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Filen din er offentlig, alle med lenken kan laste den ned."
-                : "Filen din er for øyeblikket privat.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "For å begrense tilgangen, endre delingsstatusen til filen din."
-                : "For å dele og gi tilgang til filen din, endre delingsstatusen eller opprett en midlertidig tilgangslenke.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Lenken din er tilgjengelig så lenge filen er offentlig."
-                : `Denne lenken gir tilgang til dataene dine i ${expiration}.`,
-        "label input link": "Tilgangslenke"
-    },
-    SelectTime: {
-        "validity duration label": "Gyldighetsperiode"
+    S3ProfileForm: {
+        "must be an url": "Skriv inn en gyldig URL.",
+        "is required": "Dette feltet er obligatorisk.",
+        "not a valid access key id": "Skriv inn en gyldig tilgangsnøkkel-ID.",
+        "profile name already used": "Dette profilnavnet er allerede i bruk."
     },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
@@ -390,9 +245,6 @@ export const translations: Translations<"no"> = {
     SecretsExplorerItem: {
         description: "beskrivelse"
     },
-    ExplorerItem: {
-        description: "beskrivelse"
-    },
     SecretsExplorerButtonBar: {
         secret: "hemmelighet",
         rename: "gi nytt navn",
@@ -403,25 +255,6 @@ export const translations: Translations<"no"> = {
         refresh: "oppdater",
         "create what": ({ what }) => `Opprett ${what}`,
         new: "Ny"
-    },
-    ExplorerButtonBar: {
-        file: "fil",
-        delete: "slett",
-        "upload file": "Last opp fil",
-        "copy path": "Kopier S3-objektnavnet",
-        "create new empty directory": "Opprett katalog",
-        refresh: "oppdater",
-        "download directory": "Last ned",
-        new: "Ny",
-        share: "Del",
-        "alt list view": "Vis liste",
-        "alt block view": "Vis blokk"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Forberedelse av nedlasting ..."
-    },
-    ExplorerItems: {
-        "empty directory": "Denne katalogen er tom"
     },
     SecretsExplorerItems: {
         "empty directory": "Denne katalogen er tom"
@@ -444,34 +277,6 @@ export const translations: Translations<"no"> = {
             "Det finnes allerede en mappe med dette navnet",
         "can't be empty": "Kan ikke være tom",
         "new directory": "Ny katalog"
-    },
-    Explorer: {
-        file: "fil",
-        secret: "hemmelighet",
-        create: "opprett",
-        cancel: "avbryt",
-        delete: "slett",
-        "do not display again": "Ikke vis igjen",
-
-        "untitled what": ({ what }) => `uten tittel_${what}`,
-        directory: "mappe",
-        multiple: "elementer",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `Slett ${isPlural ? "disse" : "denne"} ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        Du er i ferd med å slette ${isPlural ? "disse" : "denne"} ${deleteWhat}.
-        Denne handlingen kan føre til tap av data knyttet til ${isPlural ? "disse" : "dette"} ${deleteWhat}.
-        `,
-        "already a directory with this name":
-            "Det finnes allerede en mappe med dette navnet",
-        "can't be empty": "Kan ikke være tom",
-        "new directory": "Ny katalog"
-    },
-    ListExplorerItems: {
-        "header name": "Navn",
-        "header modified date": "Endret",
-        "header size": "Størrelse",
-        "header policy": "Retningslinje"
     },
     MySecretsEditor: {
         "do not display again": "Ikke vis igjen",
@@ -501,19 +306,6 @@ export const translations: Translations<"no"> = {
         "key input desc": "Miljøvariabelnavn",
         "value input desc": "Miljøvariabelverdi"
     },
-    ExplorerUploadModalDropArea: {
-        "browse files": "Bla gjennom filer",
-        "drag and drop or": "Dra og slipp eller"
-    },
-    ExplorerUploadProgress: {
-        over: "over",
-        importing: "Importerer"
-    },
-    ExplorerUploadModal: {
-        "import files": "Importer filer",
-        cancel: "Avbryt",
-        minimize: "Minimer"
-    },
     Header: {
         login: "Logg inn",
         logout: "Logg ut",
@@ -524,17 +316,14 @@ export const translations: Translations<"no"> = {
         reduce: "Reduser",
         home: "Hjem",
         account: "Min konto",
-        projectSettings: "Prosjektinnstillinger",
         catalog: "Tjenestekatalog",
         myServices: "Mine tjenester",
         mySecrets: "Mine hemmeligheter",
-        myFiles: "Mine filer",
         "divider: services features": "Tjenestefunksjoner",
         "divider: external services features": "Eksterne tjenestefunksjoner",
         "divider: onyxia instance specific features":
             "Onyxia-instansspesifikke funksjoner",
         dataExplorer: "Datautforsker",
-        fileExplorer: "Filutforsker",
         dataCollection: "Samlingseksplorer",
         sqlOlapShell: "SQL OLAP-Skall"
     },
@@ -1195,6 +984,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "json-ld compact error": "Klarte ikke å komprimere JSON-LD-responsen.",
         "json-ld frame error": "Klarte ikke å frame JSON-LD-responsen.",
         "datasets parsing error": "Kunne ikke tolke datasett fra katalogen."
+    },
+    S3UriBar: {
+        search: "Søk.."
     }
-    /* spell-checker: enable */
 };

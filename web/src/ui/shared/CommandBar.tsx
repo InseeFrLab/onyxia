@@ -36,6 +36,7 @@ export type CommandBarProps = {
     /** For controlled mode */
     isExpended?: boolean;
     onIsExpendedChange?: (isExpended: boolean) => void;
+    doCollapseOnClickAway: boolean;
 };
 
 export namespace CommandBarProps {
@@ -54,7 +55,8 @@ export const CommandBar = memo((props: CommandBarProps) => {
         downloadButton,
         helpDialog,
         isExpended: isExpended_props,
-        onIsExpendedChange: onIsExpendedChange_props
+        onIsExpendedChange: onIsExpendedChange_props,
+        doCollapseOnClickAway
     } = props;
 
     const {
@@ -118,6 +120,10 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
         const { ref: rootRef } = useClickAway({
             onClickAway: () => {
+                if (!doCollapseOnClickAway) {
+                    return;
+                }
+
                 if (!isExpended) {
                     return;
                 }

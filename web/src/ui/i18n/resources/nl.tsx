@@ -11,7 +11,6 @@ export const translations: Translations<"nl"> = {
     Account: {
         profile: "Profiel",
         git: undefined,
-        storage: "Verbinding met opslag",
         k8sCodeSnippets: "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
         text1: "Mijn account",
@@ -74,16 +73,6 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    AccountStorageTab: {
-        "credentials section title": "Uw gegevens verbinden met uw diensten",
-        "credentials section helper":
-            "Opslag object MinIO compatible Amazon (AWS S3). Deze informatie is al automatisch ingevuld.",
-        "accessible as env": "Toegankelijk binnen uw diensten als omgevingsvariabele",
-        "init script section title":
-            "Om toegang te krijgen tot opslag buiten de diensten van het datalab",
-        "init script section helper": `Download of kopieer het initialisatiescript in de programmeertaal van uw keuze.`,
-        "expires in": ({ howMuchTime }) => `Vervalt binnen ${howMuchTime}`
-    },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",
         "credentials section helper":
@@ -129,135 +118,6 @@ export const translations: Translations<"nl"> = {
             </>
         ),
         "expires in": ({ howMuchTime }) => `Het token vervalt in ${howMuchTime}`
-    },
-    ProjectSettings: {
-        "page header title": "Projectinstellingen",
-        "page header help title": ({ groupProjectName }) =>
-            groupProjectName === undefined
-                ? "Instellingen van uw persoonlijke project"
-                : `Instellingen voor "${groupProjectName}"`,
-        "page header help content": ({
-            groupProjectName,
-            doesUserBelongToSomeGroupProject
-        }) => (
-            <>
-                Deze pagina stelt u in staat de instellingen te configureren die van
-                toepassing zijn op
-                {groupProjectName === undefined
-                    ? " uw persoonlijke project"
-                    : ` het ${groupProjectName} project`}
-                .
-                <br />
-                {groupProjectName !== undefined && (
-                    <>
-                        Wees u ervan bewust dat {groupProjectName} een groepsproject is
-                        gedeeld met andere gebruikers; de wijzigingen die u hier
-                        aanbrengt, zijn van toepassing op alle leden van het project.
-                        <br />
-                    </>
-                )}
-                {doesUserBelongToSomeGroupProject && (
-                    <>
-                        U kunt tussen uw projecten wisselen via het dropdownmenu in de
-                        kop.
-                        <br />
-                    </>
-                )}
-                Let op: alleen de beheerder van uw Onyxia instantie kan nieuwe projecten
-                aanmaken.
-            </>
-        ),
-        "security-info": "Veiligheidsinformatie",
-        "s3-configs": "S3-configuraties"
-    },
-    ProjectSettingsS3ConfigTab: {
-        "add custom config": "Voeg een aangepaste S3-configuratie toe"
-    },
-    S3ConfigCard: {
-        "data source": "Gegevensbron",
-        credentials: "Inloggegevens",
-        "sts credentials": "Dynamisch aangevraagde tokens namens u door Onyxia (STS)",
-        account: "Account",
-        "use in services": "Gebruiken in diensten",
-        "use in services helper": `Indien ingeschakeld, zal deze configuratie standaard worden gebruikt in uw diensten die een S3-integratie implementeren.`,
-        "use for onyxia explorers": "Gebruiken voor Onyxia-verkenners",
-        "use for onyxia explorers helper": `Indien ingeschakeld zal deze configuratie worden gebruikt
-            door de bestandsverkenner en de gegevensverkenner.`,
-        edit: "Bewerken",
-        delete: "Verwijderen"
-    },
-    AddCustomS3ConfigDialog: {
-        "dialog title": "Nieuwe aangepaste S3-configuratie",
-        "dialog subtitle":
-            "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele service",
-        cancel: "Annuleren",
-        "save config": "Configuratie opslaan",
-        "update config": "Configuratie bijwerken",
-        "is required": "Dit veld is verplicht",
-        "must be an url": "Geen geldige URL",
-        "not a valid access key id": "Dit lijkt geen geldige toegangssleutel-ID te zijn",
-        "url textField label": "URL",
-        "url textField helper text": "URL van de S3-service",
-        "region textField label": "AWS S3 Regio",
-        "region textField helper text":
-            "Voorbeeld: eu-west-1, laat leeg indien niet zeker",
-        "workingDirectoryPath textField label": "Pad van werkdirectory",
-        "workingDirectoryPath textField helper text": (
-            <>
-                Hiermee kunt u de bucket en het S3-objectprefix specificeren dat u bezit
-                op de S3-service. <br />
-                Voorbeeld: <code>mijn-bucket/mijn-prefix/</code> of{" "}
-                <code>alleen mijn-bucket/</code> als u de hele bucket bezit.
-            </>
-        ),
-        "account credentials": "Accountgegevens",
-        "friendlyName textField label": "Configuratienaam",
-        "friendlyName textField helper text":
-            "Dit helpt je alleen om deze configuratie te identificeren. Voorbeeld: Mijn AWS-bucket",
-
-        "isAnonymous switch label": "Anonieme toegang",
-        "isAnonymous switch helper text":
-            "Zet op AAN als er geen geheime toegangssleutel nodig is",
-
-        "accessKeyId textField label": "Toegangssleutel-ID",
-        "accessKeyId textField helper text": "Voorbeeld: 1A2B3C4D5E6F7G8H9I0J",
-        "secretAccessKey textField label": "Geheime toegangssleutel",
-        "sessionToken textField label": "Sessietoken",
-        "sessionToken textField helper text":
-            "Optioneel, laat leeg als u het niet zeker weet",
-        "url style": "URL-stijl",
-        "url style helper text": `Specificeer hoe uw S3-server de URL formatteert voor het downloaden van bestanden.`,
-        "path style label": ({ example }) => (
-            <>
-                Padstijl
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mijn-dataset.parquet</code>
-                    </>
-                )}
-            </>
-        ),
-        "virtual-hosted style label": ({ example }) => (
-            <>
-                Virtueel-gehoste stijl
-                {example !== undefined && (
-                    <>
-                        :&nbsp;
-                        <code>{example}mijn-dataset.parquet</code>
-                    </>
-                )}
-            </>
-        )
-    },
-    TestS3ConnectionButton: {
-        "test connection": "Verbinding testen",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Verbindingstest mislukt met fout: <br />
-                {errorMessage}
-            </>
-        )
     },
     AccountUserInterfaceTab: {
         title: "De interfacemodus configureren",
@@ -312,65 +172,60 @@ export const translations: Translations<"nl"> = {
         "reset helper dialogs helper text":
             "De berichtvensters waarvan u heeft gevraagd ze niet meer weer te geven, opnieuw initialiseren"
     },
-    FileExplorerEntry: {
-        "page title - file explorer": "Bestandsverkenner",
-        "what this page is used for - file explorer": "Sla hier uw gegevensbestanden op.",
-        "help content": ({ accountTabLink, docHref }) => (
+    ConfirmBucketCreationAttemptDialog: {
+        "bucket does not exist title": ({ bucket }) => `De bucket ${bucket} bestaat niet`,
+        "bucket does not exist body": "Wil je proberen hem nu aan te maken?",
+        no: "Nee",
+        yes: "Ja",
+        "success title": "Gelukt",
+        "failed title": "Mislukt",
+        "success body": ({ bucket }) => `Bucket ${bucket} is succesvol aangemaakt.`,
+        "failed body": ({ bucket }) => `Aanmaken van ${bucket} is mislukt.`,
+        ok: "Ok"
+    },
+    ConfirmOverwriteDialog: {
+        "dialog title": "Bestand bestaat al",
+        "dialog body": "Wil je het bestaande bestand overschrijven?",
+        cancel: "Annuleren",
+        overwrite: "Overschrijven"
+    },
+    CreateOrRenameBookmarkDialog: {
+        "dialog title": "Bladwijzernaam",
+        "bookmarkName textField label": "Naam",
+        "bookmarkName textField empty error": "De bladwijzernaam mag niet leeg zijn",
+        cancel: "Annuleren",
+        ok: "Ok"
+    },
+    DirectoryCreationDialog: {
+        "dialog title": "Map aanmaken",
+        "dialog subtitle":
+            "Mappen worden aangemaakt relatief aan het voorvoegsel dat momenteel wordt weergegeven.",
+        "directoryName textField label": "Mapnaam",
+        "directoryName textField empty error": "De mapnaam mag niet leeg zijn",
+        "directoryName textField duplicate error": "De mapnaam bestaat al",
+        cancel: "Annuleren",
+        create: "Aanmaken"
+    },
+    MakePrefixPublicDialog: {
+        "dialog title": "Prefix openbaar maken",
+        "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
-                Lezen{" "}
-                <MuiLink href={docHref} target="_blank">
-                    onze documentatie
-                </MuiLink>
-                . &nbsp;
-                <MuiLink {...accountTabLink}>Minio-clients instellen</MuiLink>.
+                Je staat op het punt <span className={s3UriClassName}>{s3Uri}</span>{" "}
+                openbaar te maken. Iedereen kan alle huidige en toekomstige objecten in
+                deze prefix weergeven en downloaden.
+                <br />
+                <br />
+                Downloadlinks die je deelt voor objecten in deze prefix verlopen nooit.
             </>
         ),
-        "title personal": "Mijn gegevens",
-        "description personal": "Je eigen bestanden en datasets.",
-        "title project": ({ projectName }) => `Project ${projectName}`,
-        "description project": ({ projectName }) =>
-            `Gedeelde opslagruimte voor project ${projectName}`,
-        tags: ({ type }) => {
-            switch (type) {
-                case "personal":
-                    return "Mijn gegevens";
-                case "project":
-                    return "Groepsgegevens";
-            }
-        }
-    },
-    S3EntryCard: {
-        "space path": "Ruimtepad"
-    },
-    FileExplorerDisabledDialog: {
-        "dialog title": "Geen S3-server geconfigureerd",
-        "dialog body":
-            "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",
         cancel: "Annuleren",
-        "go to settings": "Ga naar instellingen"
+        "make public": "Openbaar maken"
     },
-    ShareDialog: {
-        title: "Deel je gegevens",
-        close: "Sluiten",
-        "create and copy link": "Link maken en kopiëren",
-        "paragraph current policy": ({ isPublic }) =>
-            isPublic
-                ? "Je bestand is openbaar, iedereen met de link kan het downloaden."
-                : "Je bestand is momenteel privé.",
-
-        "paragraph change policy": ({ isPublic }) =>
-            isPublic
-                ? "Om toegang te beperken, verander de deelstatus van je bestand."
-                : "Om toegang te geven tot je bestand, verander de deelstatus of maak een tijdelijke toegangslink.",
-
-        "hint link access": ({ isPublic, expiration }) =>
-            isPublic
-                ? "Je link is beschikbaar zolang het bestand openbaar is."
-                : `Deze link geeft toegang tot je gegevens gedurende ${expiration}.`,
-        "label input link": "Toegangslink"
-    },
-    SelectTime: {
-        "validity duration label": "Geldigheidsduur"
+    S3ProfileForm: {
+        "must be an url": "Voer een geldige URL in.",
+        "is required": "Dit veld is verplicht.",
+        "not a valid access key id": "Voer een geldige access key ID in.",
+        "profile name already used": "Deze profielnaam is al in gebruik."
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",
@@ -390,27 +245,8 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    ExplorerItem: {
-        description: "beschrijving"
-    },
     SecretsExplorerItem: {
         description: "beschrijving"
-    },
-    ExplorerButtonBar: {
-        file: "bestand",
-        delete: "verwijderen",
-        "upload file": "Een bestand uploaden",
-        "copy path": "De naam van het S3-object kopiëren",
-        "create new empty directory": "Nieuwe map",
-        refresh: "vernieuwen",
-        "download directory": "Downloaden",
-        new: "Nieuw",
-        share: "Delen",
-        "alt list view": "Toon lijst",
-        "alt block view": "Toon blok"
-    },
-    ExplorerDownloadSnackbar: {
-        "download preparation": "Voorbereiding van de download ..."
     },
     SecretsExplorerButtonBar: {
         secret: "geheim",
@@ -422,33 +258,6 @@ export const translations: Translations<"nl"> = {
         refresh: "vernieuwen",
         "create what": ({ what }) => `Nieuw ${what}`,
         new: "Nieuw"
-    },
-    Explorer: {
-        file: "bestand",
-        secret: "geheim",
-        create: "creëren",
-        cancel: "annuleren",
-        delete: "verwijderen",
-        "do not display again": "Niet meer weergeven",
-
-        "untitled what": ({ what }) => `${what}_naamloos`,
-        directory: "map",
-        multiple: "items",
-        "deletion dialog title": ({ deleteWhat, isPlural }) =>
-            `${isPlural ? "Deze" : "Dit"} ${deleteWhat} verwijderen?`,
-        "deletion dialog body": ({ deleteWhat, isPlural }) => `
-        U staat op het punt om ${isPlural ? "deze" : "dit"} ${deleteWhat} te verwijderen.
-        Deze actie kan leiden tot het verlies van gegevens die gekoppeld zijn aan ${isPlural ? "deze" : "dit"} ${deleteWhat}.
-        `,
-        "already a directory with this name": "Er bestaat al een map met deze naam",
-        "can't be empty": "Kan niet leeg zijn",
-        "new directory": "Nieuwe map"
-    },
-    ListExplorerItems: {
-        "header name": "Naam",
-        "header modified date": "Gewijzigd",
-        "header size": "Grootte",
-        "header policy": "Beleid"
     },
     SecretsExplorer: {
         file: "bestand",
@@ -468,10 +277,6 @@ export const translations: Translations<"nl"> = {
         create: "Creëren",
         "new directory": "Nieuwe map"
     },
-    ExplorerItems: {
-        "empty directory": "Deze bestandenlijst is leeg"
-    },
-
     SecretsExplorerItems: {
         "empty directory": "Deze bestandenlijst is leeg"
     },
@@ -503,19 +308,6 @@ export const translations: Translations<"nl"> = {
         "key input desc": "Naam van de omgevingsvariabele",
         "value input desc": "Waarde van de omgevingsvariabele"
     },
-    ExplorerUploadModalDropArea: {
-        "browse files": "uw bestanden raadplegen",
-        "drag and drop or": "Slepen en neerzetten of"
-    },
-    ExplorerUploadProgress: {
-        over: "op",
-        importing: "importeren"
-    },
-    ExplorerUploadModal: {
-        "import files": "Bestanden importeren",
-        cancel: "Annuleren",
-        minimize: "Minimaliseren"
-    },
     Header: {
         login: "Inloggen",
         logout: "Uitloggen",
@@ -526,18 +318,15 @@ export const translations: Translations<"nl"> = {
         reduce: "Verkleinen",
         home: "Onthaal",
         account: "Mijn account",
-        projectSettings: "Projectinstellingen",
         catalog: "Catalogus van de diensten",
         myServices: "Mijn diensten",
         mySecrets: "Mijn geheimen",
-        myFiles: "Mijn bestanden",
         "divider: services features": "Functionaliteiten met betrekking tot de diensten",
         "divider: external services features":
             "Functionaliteiten met betrekking tot de externe diensten",
         "divider: onyxia instance specific features":
             "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
         dataExplorer: "Data Verkenner",
-        fileExplorer: "Bestanden Verkenner",
         dataCollection: "Collecties Verkenner",
         sqlOlapShell: "SQL OLAP Shell"
     },
@@ -1204,6 +993,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "json-ld frame error": "De JSON-LD-response kon niet worden geframed.",
         "datasets parsing error":
             "De datasets uit de catalogus konden niet worden geparseerd."
+    },
+    S3UriBar: {
+        search: "Zoeken.."
     }
-    /* spell-checker: enable */
 };

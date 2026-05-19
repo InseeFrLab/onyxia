@@ -106,7 +106,7 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState, rootContext] = args;
 
-            if (getState().s3CodeSnippets.isRefreshing) {
+            if (getState()[name].isRefreshing) {
                 return;
             }
 

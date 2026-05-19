@@ -83,6 +83,7 @@ export type ApiTypes = {
             };
             data?: {
                 S3?: ArrayOrNot<{
+                    profileName?: string;
                     URL: string;
                     pathStyleAccess?: true;
 
@@ -90,16 +91,25 @@ export type ApiTypes = {
                     sts?: {
                         URL?: string;
                         durationSeconds?: number;
-                        role:
-                            | {
-                                  roleARN: string;
-                                  roleSessionName: string;
-                              }
-                            | undefined;
+                        role?: ArrayOrNot<
+                            {
+                                roleARN: string;
+                                roleSessionName: string;
+                                profileName: string;
+                            } & (
+                                | { claimName?: undefined }
+                                | {
+                                      claimName: string;
+                                      includedClaimPattern?: string;
+                                      excludedClaimPattern?: string;
+                                  }
+                            )
+                        >;
                         oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                     };
 
                     /** Ok to be undefined only if sts is undefined */
+                    // NOTE: Remove in next major
                     workingDirectory?:
                         | {
                               bucketMode: "shared";
@@ -115,14 +125,15 @@ export type ApiTypes = {
                     bookmarkedDirectories?: ({
                         fullPath: string;
                         title: LocalizedString;
-                        description: LocalizedString | undefined;
-                        tags: LocalizedString[] | undefined;
+                        description?: LocalizedString;
+                        tags?: LocalizedString[];
+                        forProfileName?: string | string[];
                     } & (
-                        | { claimName: undefined }
+                        | { claimName?: undefined }
                         | {
                               claimName: string;
-                              includedClaimPattern: string;
-                              excludedClaimPattern: string;
+                              includedClaimPattern?: string;
+                              excludedClaimPattern?: string;
                           }
                     ))[];
                 }>;

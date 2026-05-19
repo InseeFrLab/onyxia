@@ -33,7 +33,10 @@ function Home() {
     });
 
     const { isUserLoggedIn, user } = useCoreState("userAuthentication", "main");
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
+    const isS3ExplorerEnabled = useCoreState(
+        "s3ProfilesManagement",
+        "isS3ExplorerEnabled"
+    );
 
     const { t } = useTranslation({ Home });
 
@@ -145,7 +148,7 @@ function Home() {
                         url: "https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                     }
                 },
-                ...(!isFileExplorerEnabled
+                ...(!isS3ExplorerEnabled
                     ? []
                     : [
                           {
@@ -154,7 +157,7 @@ function Home() {
                               description: t("cardText3"),
                               button: {
                                   label: t("cardButton3"),
-                                  url: routes.fileExplorerEntry().link.href
+                                  url: routes.s3Explorer_root().link.href
                               }
                           }
                       ])
@@ -162,7 +165,7 @@ function Home() {
         }
 
         return env.HOMEPAGE_CARDS;
-    }, [t, isFileExplorerEnabled]);
+    }, [t, isS3ExplorerEnabled]);
 
     return (
         <div className={classes.root}>

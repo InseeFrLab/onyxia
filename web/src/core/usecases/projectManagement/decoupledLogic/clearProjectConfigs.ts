@@ -27,12 +27,16 @@ export async function clearProjectConfigs(params: {
             [
                 "__modelVersion",
                 "servicePassword",
+                "restorableServiceConfigs",
+                "s3Profiles",
+                "clusterNotificationCheckoutTime",
+
+                // Legacy keys
                 "restorableConfigs",
-                "s3",
-                "clusterNotificationCheckoutTime"
+                "s3"
             ] as const
         ).map(async key => {
-            assert<Equals<typeof key, keyof ProjectConfigs>>();
+            assert<Equals<typeof key, keyof ProjectConfigs | "restorableConfigs" | "s3">>;
 
             if (!files.includes(key)) {
                 return;

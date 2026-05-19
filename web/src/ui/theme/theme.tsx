@@ -1,5 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
+import {
+    createOnyxiaUi,
+    defaultGetTypographyDesc,
+    defaultSpacingConfig,
+    defaultGetIconSizeInPx
+} from "onyxia-ui";
 import { getPalette } from "./palette";
 import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
@@ -32,7 +37,14 @@ const {
               assetUrl: env.SPLASHSCREEN_LOGO,
               assetScaleFactor: env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
               minimumDisplayDuration: 0
-          }
+          },
+    getIconSizeInPx: params =>
+        defaultGetIconSizeInPx({ ...params, windowInnerWidth: targetWindowInnerWidth }),
+    spacingConfig: params =>
+        defaultSpacingConfig({
+            ...params,
+            windowInnerWidth: targetWindowInnerWidth
+        })
 });
 
 export { evtTheme };

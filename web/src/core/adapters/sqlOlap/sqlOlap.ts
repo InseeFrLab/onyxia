@@ -18,6 +18,7 @@ import type { S3Client } from "core/ports/S3Client";
 import { Deferred } from "evt/tools/Deferred";
 import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
 import { getHttpUrlWithoutRedirect } from "core/tools/getHttpUrlWithoutRedirect";
+import { parseS3Uri } from "core/tools/S3Uri";
 
 export const createDuckDbSqlOlap = (params: {
     getS3Client: () => Promise<
@@ -96,9 +97,15 @@ export const createDuckDbSqlOlap = (params: {
                             dOut.resolve({ errorCause: errorCause_getS3Client });
                             return new Promise<never>(() => {});
                         }
+                        const s3Uri = parseS3Uri({
+                            value: sourceUrl,
+                            delimiter: "/"
+                        });
 
-                        const result = await s3Client.getFileContent({
-                            path: sourceUrl.replace(/^s3:\/\//, ""),
+                        assert(!s3Uri.isDelimiterTerminated);
+
+                        const result = await s3Client.getObjectContent({
+                            s3Uri,
                             range: "bytes=0-15"
                         });
 

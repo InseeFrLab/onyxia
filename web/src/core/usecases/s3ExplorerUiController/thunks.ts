@@ -1,0 +1,1034 @@
+import type { Thunks } from "core/bootstrap";
+import { privateSelectors, protectedSelectors } from "./selectors";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
+import type { RouteParams } from "./selectors";
+import { assert, type Equals } from "tsafe/assert";
+import { actions } from "./state";
+import { formatDuration } from "core/tools/timeFormat/formatDuration";
+import { id } from "tsafe/id";
+import { type S3Uri, parseS3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
+import { same } from "evt/tools/inDepth/same";
+import { createWaitForDebounce } from "core/tools/waitForDebounce";
+import type { State } from "./state";
+import { Evt } from "evt";
+import { onlyIfChanged } from "evt/operators";
+import { Deferred } from "evt/tools/Deferred";
+import {
+    getHasPrefixBeMadePublic,
+    makePrefixPublic,
+    undoMakePrefixPublic,
+    getIsWithinPrefixThatHasBeenMadePublic
+} from "core/tools/bucketPolicies";
+
+const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
+    createWaitForDebounce({
+        delay: 10
+    });
+
+const { waitForDebounce: waitForDebounce_listPrefix } = createWaitForDebounce({
+    delay: 300
+});
+
+const erroredUploadBlobs: {
+    profileName: string;
+    s3Uri: S3Uri.NonTerminatedByDelimiter;
+    blob: Blob;
+}[] = [];
+
+export const evtAskOverwriteConfirmation = Evt.create<{
+    s3Uri: S3Uri.NonTerminatedByDelimiter;
+    resolveResponse: (params: { doOverwrite: boolean }) => void;
+}>();
+
+export const evtDisplayError = Evt.create<{
+    errorMessage: string;
+}>();
+
+export const thunks = {
+    load:
+        (params: { routeParams: RouteParams }) =>
+        (...args): { routeParams_toSet: RouteParams } => {
+            const [dispatch, getState] = args;
+
+            const { routeParams } = params;
+
+            if (routeParams.profile !== undefined) {
+                const { doesProfileExist } = dispatch(
+                    s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                        profileName: routeParams.profile
+                    })
+                );
+
+                if (!doesProfileExist) {
+                    return dispatch(
+                        thunks.load({ routeParams: { s3UriWithoutScheme: "" } })
+                    );
+                }
+
+                dispatch(
+                    thunks.listPrefix({
+                        s3Uri:
+                            routeParams.s3UriWithoutScheme === ""
+                                ? undefined
+                                : parseS3Uri({
+                                      value: `s3://${routeParams.s3UriWithoutScheme}`,
+                                      delimiter: "/"
+                                  }),
+                        debounce: false
+                    })
+                );
+            }
+
+            return {
+                routeParams_toSet: privateSelectors.routeParams(getState())
+            };
+        },
+    notifyRouteParamsExternallyUpdated:
+        (params: { routeParams: RouteParams }) =>
+        async (...args) => {
+            const { routeParams } = params;
+            const [dispatch, getState] = args;
+
+            // NOTE: We need a debounce here to avoid cycles since the ambient s3 profile
+            // and the s3 prefix location are not on the same slice and cannot be dispatched
+            // in a single action.
+            await waitForDebounce_notifyRouteParamsExternallyUpdated();
+
+            update_profile: {
+                const profileName = routeParams.profile;
+
+                if (profileName === undefined) {
+                    break update_profile;
+                }
+
+                const profileName_current =
+                    s3ProfilesManagement.selectors.ambientS3Profile(
+                        getState()
+                    )?.profileName;
+
+                if (profileName_current === profileName) {
+                    break update_profile;
+                }
+
+                const { doesProfileExist } = dispatch(
+                    s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                        profileName
+                    })
+                );
+
+                assert(doesProfileExist);
+            }
+
+            update_location: {
+                const s3Uri_current = privateSelectors.s3Uri(getState());
+
+                const s3Uri =
+                    routeParams.s3UriWithoutScheme === ""
+                        ? undefined
+                        : parseS3Uri({
+                              value: `s3://${routeParams.s3UriWithoutScheme}`,
+                              delimiter: "/"
+                          });
+
+                if (same(s3Uri_current, s3Uri)) {
+                    break update_location;
+                }
+
+                dispatch(
+                    thunks.listPrefix({
+                        s3Uri,
+                        debounce: false
+                    })
+                );
+            }
+        },
+    updateSelectedS3Profile:
+        (params: { profileName: string }) =>
+        async (...args) => {
+            const [dispatch] = args;
+
+            const { profileName } = params;
+
+            const { doesProfileExist } = dispatch(
+                s3ProfilesManagement.protectedThunks.changeAmbientProfile({
+                    profileName
+                })
+            );
+
+            assert(doesProfileExist);
+        },
+    deleteBookmark: (() => {
+        let isRunning = false;
+
+        return (params: { s3Uri: S3Uri }) =>
+            async (...args) => {
+                if (isRunning) {
+                    return;
+                }
+
+                isRunning = true;
+
+                const { s3Uri } = params;
+
+                const [dispatch, getState] = args;
+
+                const s3Profile =
+                    s3ProfilesManagement.selectors.ambientS3Profile(getState());
+
+                assert(s3Profile !== undefined);
+
+                await dispatch(
+                    s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
+                        profileName: s3Profile.profileName,
+                        s3Uri,
+                        action: {
+                            type: "delete"
+                        }
+                    })
+                );
+
+                isRunning = false;
+            };
+    })(),
+    updateBookmarkDisplayName:
+        (params: { s3Uri: S3Uri; displayName: string }) =>
+        async (...args) => {
+            const { s3Uri, displayName } = params;
+
+            const [dispatch, getState] = args;
+
+            const s3Profile = s3ProfilesManagement.selectors.ambientS3Profile(getState());
+
+            assert(s3Profile !== undefined);
+
+            await dispatch(
+                s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
+                    profileName: s3Profile.profileName,
+                    s3Uri,
+                    action: {
+                        type: "create or update",
+                        displayName
+                    }
+                })
+            );
+        },
+    toggleIsS3UriBookmarked: (() => {
+        let isRunning = false;
+
+        return (params: {
+                getDisplayName: (params: {
+                    s3Uri: S3Uri;
+                }) => Promise<
+                    { doProceed: true; displayName: string } | { doProceed: false }
+                >;
+            }) =>
+            async (...args) => {
+                if (isRunning) {
+                    return;
+                }
+
+                isRunning = true;
+
+                const { getDisplayName } = params;
+
+                const [dispatch, getState] = args;
+
+                const s3Uri = privateSelectors.s3Uri(getState());
+                const s3Profile =
+                    s3ProfilesManagement.selectors.ambientS3Profile(getState());
+
+                assert(s3Profile !== undefined);
+                assert(s3Uri !== undefined);
+
+                const isBookmarked = s3Profile.bookmarks.find(bookmark =>
+                    same(bookmark.s3Uri, s3Uri)
+                );
+
+                let action:
+                    | { type: "create or update"; displayName: string | undefined }
+                    | { type: "delete" };
+
+                if (isBookmarked) {
+                    action = { type: "delete" };
+                } else {
+                    const resultOfGetDisplayName = await getDisplayName({ s3Uri });
+
+                    if (!resultOfGetDisplayName.doProceed) {
+                        isRunning = false;
+                        return;
+                    }
+
+                    action = {
+                        type: "create or update",
+                        displayName: resultOfGetDisplayName.displayName
+                    };
+                }
+
+                await dispatch(
+                    s3ProfilesManagement.protectedThunks.createDeleteOrUpdateBookmark({
+                        profileName: s3Profile.profileName,
+                        s3Uri,
+                        action
+                    })
+                );
+
+                isRunning = false;
+            };
+    })(),
+    listPrefix:
+        (params: { s3Uri: S3Uri | undefined; debounce: boolean }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const { s3Uri, debounce } = params;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            if (s3Uri === undefined) {
+                dispatch(actions.listingCleared({ profileName }));
+                return;
+            }
+
+            {
+                const s3Uri_currentlyListing =
+                    privateSelectors.s3Uri_currentlyListing(getState());
+
+                if (
+                    s3Uri_currentlyListing !== undefined &&
+                    same(s3Uri_currentlyListing, s3Uri)
+                ) {
+                    return;
+                }
+            }
+
+            infer_from_current_state: {
+                if (s3Uri.isDelimiterTerminated) {
+                    break infer_from_current_state;
+                }
+
+                const listedPrefix = privateSelectors.listedPrefix_state(getState());
+
+                if (listedPrefix === undefined) {
+                    break infer_from_current_state;
+                }
+
+                if (listedPrefix.current === undefined) {
+                    break infer_from_current_state;
+                }
+
+                {
+                    const { isInside, isTopLevel } = getIsInside({
+                        s3UriPrefix: listedPrefix.current.s3Uri,
+                        s3Uri
+                    });
+
+                    if (!isInside || !isTopLevel) {
+                        break infer_from_current_state;
+                    }
+                }
+
+                dispatch(
+                    actions.listingCompletedSuccessfully_inferFromCurrentState({
+                        profileName,
+                        s3Uri
+                    })
+                );
+
+                return;
+            }
+
+            dispatch(actions.listingStarted({ profileName, s3Uri }));
+
+            const maybeCancel = async (): Promise<void | never> => {
+                const s3Uri_currentlyListing =
+                    privateSelectors.s3Uri_currentlyListing(getState());
+
+                if (
+                    s3Uri_currentlyListing === undefined ||
+                    !same(s3Uri_currentlyListing, s3Uri)
+                ) {
+                    dispatch(actions.commandLogCancelled({ cmdId }));
+                    await new Promise<never>(() => {});
+                }
+            };
+
+            {
+                const prDebounce = waitForDebounce_listPrefix();
+
+                if (debounce) {
+                    await prDebounce;
+                }
+            }
+
+            await maybeCancel();
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            await maybeCancel();
+
+            const listObjectResult = await s3Client.listObjects({ s3Uri });
+
+            await maybeCancel();
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: (() => {
+                        if (listObjectResult.isSuccess) {
+                            return [
+                                ...listObjectResult.prefixes.map(
+                                    s3Uri =>
+                                        `PRE ${s3Uri.keySegments.at(-1)}${s3Uri.delimiter}`
+                                ),
+                                ...listObjectResult.objects.map(
+                                    ({ s3Uri }) => `OBJ ${s3Uri.keySegments.at(-1)}`
+                                )
+                            ].join("\n");
+                        }
+
+                        switch (listObjectResult.errorCase) {
+                            case "access denied":
+                                return "Access Denied";
+                            case "no such bucket":
+                                return "No Such Bucket";
+                            default:
+                                assert<Equals<typeof listObjectResult.errorCase, never>>(
+                                    false
+                                );
+                        }
+                    })()
+                })
+            );
+
+            if (!listObjectResult.isSuccess) {
+                dispatch(
+                    actions.listingFailed({
+                        profileName,
+                        s3Uri,
+                        errorCase: listObjectResult.errorCase
+                    })
+                );
+                return;
+            }
+
+            dispatch(
+                actions.listingCompletedSuccessfully({
+                    profileName,
+                    items: [
+                        ...listObjectResult.prefixes.map(s3Uri =>
+                            id<State.ListedPrefix.Item.Prefix>({
+                                type: "prefix",
+                                s3Uri
+                            })
+                        ),
+                        ...listObjectResult.objects.map(({ s3Uri, lastModified, size }) =>
+                            id<State.ListedPrefix.Item.Object>({
+                                type: "object",
+                                s3Uri,
+                                lastModified,
+                                size
+                            })
+                        )
+                    ]
+                })
+            );
+        },
+    retryPutObject:
+        (params: { profileName: string; s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
+        async (...args) => {
+            const { profileName, s3Uri } = params;
+
+            const [dispatch] = args;
+
+            const blobWrap = erroredUploadBlobs.find(
+                o => o.profileName === profileName && same(o.s3Uri, s3Uri)
+            );
+
+            assert(blobWrap !== undefined);
+
+            await dispatch(
+                privateThunks.putObject({
+                    profileName,
+                    s3Uri,
+                    blob: blobWrap.blob
+                })
+            );
+        },
+    flushUploads:
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(actions.uploadFlushed());
+        },
+
+    cancelUpload:
+        (params: { profileName: string; s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
+        (...args) => {
+            const { profileName, s3Uri } = params;
+            const [dispatch] = args;
+
+            dispatch(actions.uploadCanceled({ profileName, s3Uri }));
+        },
+    navigateBack:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const s3Uri = privateSelectors.s3Uri(getState());
+
+            assert(s3Uri !== undefined);
+            assert(s3Uri.keySegments.length !== 0);
+
+            await dispatch(
+                thunks.listPrefix({
+                    s3Uri: {
+                        ...s3Uri,
+                        keySegments: s3Uri.keySegments.slice(0, -1),
+                        isDelimiterTerminated: true
+                    },
+                    debounce: false
+                })
+            );
+        },
+    putObjects:
+        (params: {
+            files: {
+                relativePathSegments: string[];
+                fileBasename: string;
+                blob: Blob;
+            }[];
+        }) =>
+        async (...args) => {
+            const { files } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const s3Uri = privateSelectors.s3Uri(getState());
+
+            assert(s3Uri !== undefined);
+
+            await Promise.all(
+                files
+                    .map(file => ({
+                        file,
+                        s3Uri_object: id<S3Uri.NonTerminatedByDelimiter>({
+                            delimiter: s3Uri.delimiter,
+                            bucket: s3Uri.bucket,
+                            keySegments: [
+                                ...s3Uri.keySegments,
+                                ...file.relativePathSegments,
+                                file.fileBasename
+                            ],
+                            isDelimiterTerminated: false
+                        })
+                    }))
+                    .sort((a, b) =>
+                        stringifyS3Uri(a.s3Uri_object).localeCompare(
+                            stringifyS3Uri(b.s3Uri_object)
+                        )
+                    )
+                    .map(({ file, s3Uri_object }) =>
+                        dispatch(
+                            privateThunks.putObject({
+                                profileName,
+                                s3Uri: s3Uri_object,
+                                blob: file.blob
+                            })
+                        )
+                    )
+            );
+        },
+
+    createDirectory:
+        (params: { prefixSegment: string }) =>
+        async (...args) => {
+            const { prefixSegment } = params;
+
+            const [dispatch] = args;
+
+            await dispatch(
+                thunks.putObjects({
+                    files: [
+                        {
+                            relativePathSegments: [prefixSegment],
+                            fileBasename: ".keep",
+                            blob: new Blob(["This file tells that a directory exists"], {
+                                type: "text/plain"
+                            })
+                        }
+                    ]
+                })
+            );
+        },
+
+    delete:
+        (params: { s3Uris: S3Uri[] }) =>
+        async (...args): Promise<void> => {
+            const { s3Uris } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const crawl = async (params: {
+                s3UriPrefix: S3Uri.TerminatedByDelimiter;
+            }): Promise<S3Uri.NonTerminatedByDelimiter[]> => {
+                const { s3UriPrefix } = params;
+
+                const result = await s3Client.listObjects({ s3Uri: s3UriPrefix });
+
+                assert(result.isSuccess);
+
+                return [
+                    ...result.objects.map(({ s3Uri }) => s3Uri),
+                    ...(
+                        await Promise.all(
+                            result.prefixes.map(s3Uri => crawl({ s3UriPrefix: s3Uri }))
+                        )
+                    ).flat()
+                ];
+            };
+
+            const deleteObject = async (params: {
+                s3Uri: S3Uri.NonTerminatedByDelimiter;
+            }) => {
+                const { s3Uri } = params;
+
+                const cmdId = Math.random();
+
+                dispatch(
+                    actions.commandLogIssued({
+                        cmdId,
+                        cmd: `aws s3 rm ${stringifyS3Uri(s3Uri)}`
+                    })
+                );
+
+                await s3Client.deleteObject({ s3Uri });
+
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        resp: `Removed ${stringifyS3Uri(s3Uri)}`
+                    })
+                );
+            };
+
+            await Promise.all(
+                s3Uris.map(async s3Uri => {
+                    dispatch(actions.deletionStarted({ profileName, s3Uri }));
+
+                    const s3Uris = s3Uri.isDelimiterTerminated
+                        ? await crawl({ s3UriPrefix: s3Uri })
+                        : [s3Uri];
+
+                    await Promise.all(s3Uris.map(s3Uri => deleteObject({ s3Uri })));
+
+                    dispatch(actions.deletionCompleted({ profileName, s3Uri }));
+                })
+            );
+        },
+    downloadObject:
+        (props: { s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
+        async (...args) => {
+            const [dispatch] = args;
+
+            const { s3Uri } = props;
+
+            const httpObjectUrl = await dispatch(
+                protectedThunks.getObjectHttpUrl({
+                    s3Uri,
+                    validityDurationSecond_ifNotPublic: 20
+                })
+            );
+
+            window.open(httpObjectUrl, "_blank", "noopener,noreferrer");
+        },
+    toggleS3UriPublicPrivatePolicy:
+        (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
+        async (...args) => {
+            const { s3Uri } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const bucketPoliciesByBucket =
+                protectedSelectors.bucketPoliciesByBucket(getState());
+
+            const hasPrefixBeMadePublic = getHasPrefixBeMadePublic({
+                s3Uri,
+                bucketPoliciesByBucket
+            });
+
+            const params_putBucketPolicies = hasPrefixBeMadePublic
+                ? undoMakePrefixPublic({
+                      s3Uri,
+                      bucketPoliciesByBucket
+                  })
+                : makePrefixPublic({
+                      s3Uri,
+                      bucketPoliciesByBucket
+                  });
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const result = await s3Client.putBucketPolicies({
+                bucket: params_putBucketPolicies.bucket,
+                bucketPolicies: params_putBucketPolicies.updatedBucketPolicies
+            });
+
+            if (!result.isSuccess) {
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        resp: result.errorMessage
+                    })
+                );
+
+                evtDisplayError.post({
+                    errorMessage: result.errorMessage
+                });
+                return;
+            }
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: params_putBucketPolicies.awsS3CliEmulatedCommand.resp
+                })
+            );
+
+            await dispatch(
+                privateThunks.updateBucketPolicy({
+                    bucket: params_putBucketPolicies.bucket,
+                    profileName
+                })
+            );
+        }
+} satisfies Thunks;
+
+export const privateThunks = {
+    putObject:
+        (params: {
+            profileName: string;
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            blob: Blob;
+        }) =>
+        async (...args) => {
+            const { profileName, s3Uri, blob } = params;
+
+            const [dispatch, getState, { evtAction }] = args;
+
+            {
+                const doesExist = await (async () => {
+                    const s3Client = await dispatch(
+                        s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+                    );
+
+                    const resultOfListObject = await s3Client.listObjects({ s3Uri });
+
+                    if (!resultOfListObject.isSuccess) {
+                        return false;
+                    }
+
+                    return (
+                        resultOfListObject.objects.find(object =>
+                            same(object.s3Uri, s3Uri)
+                        ) !== undefined
+                    );
+                })();
+
+                if (doesExist) {
+                    const dDoOverwrite = new Deferred<boolean>();
+
+                    evtAskOverwriteConfirmation.post({
+                        s3Uri,
+                        resolveResponse: ({ doOverwrite }) => {
+                            dDoOverwrite.resolve(doOverwrite);
+                        }
+                    });
+
+                    const doOverwrite = await dDoOverwrite.pr;
+
+                    if (!doOverwrite) {
+                        return;
+                    }
+
+                    await dispatch(thunks.delete({ s3Uris: [s3Uri] }));
+                }
+            }
+
+            {
+                const i = erroredUploadBlobs.findIndex(
+                    o => o.profileName === profileName && same(o.s3Uri, s3Uri)
+                );
+
+                if (i !== -1) {
+                    erroredUploadBlobs.splice(i, 1);
+                }
+            }
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc cp ./${s3Uri.keySegments.at(-1)} ${stringifyS3Uri(s3Uri)}`
+                })
+            );
+
+            dispatch(
+                actions.putObjectStarted({
+                    profileName,
+                    s3Uri: s3Uri,
+                    size: blob.size
+                })
+            );
+
+            const evtCancel = Evt.create();
+
+            const ctx = Evt.newCtx();
+
+            evtAction
+                .pipe(ctx, () => [privateSelectors.uploads(getState())])
+                .pipe(onlyIfChanged())
+                .attach(uploads => {
+                    const upload = uploads.find(
+                        upload =>
+                            upload.profileName === profileName &&
+                            same(upload.s3Uri, s3Uri)
+                    );
+
+                    if (upload === undefined) {
+                        evtCancel.post();
+                    }
+                });
+
+            evtCancel.attachOnce(() => {
+                actions.commandLogCancelled({
+                    cmdId
+                });
+            });
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const resultOfPutObject = await s3Client.putObject({
+                s3Uri: s3Uri,
+                blob,
+                onUploadProgress: ({ uploadPercent }) => {
+                    dispatch(
+                        actions.putObjectProgressReported({
+                            profileName,
+                            s3Uri: s3Uri,
+                            completionPercent: uploadPercent
+                        })
+                    );
+
+                    dispatch(
+                        actions.commandLogResponseReceived({
+                            cmdId,
+                            resp: `... ${uploadPercent}% of ${blob.size} Bytes uploaded`
+                        })
+                    );
+                },
+                evtCancel
+            });
+
+            ctx.done();
+
+            switch (resultOfPutObject.status) {
+                case "success":
+                    break;
+                case "canceled":
+                    dispatch(
+                        actions.putObjectStopped({
+                            profileName,
+                            s3Uri: s3Uri,
+                            stoppedStatus: { case: "canceled" }
+                        })
+                    );
+                    break;
+                case "failed":
+                    console.error(
+                        `Error uploading ${stringifyS3Uri(s3Uri)}: `,
+                        resultOfPutObject.error
+                    );
+
+                    erroredUploadBlobs.push({
+                        profileName,
+                        s3Uri: s3Uri,
+                        blob
+                    });
+
+                    dispatch(
+                        actions.putObjectStopped({
+                            profileName,
+                            s3Uri: s3Uri,
+                            stoppedStatus: {
+                                case: "errored",
+                                errorMessage: resultOfPutObject.error.message
+                            }
+                        })
+                    );
+                    break;
+            }
+        },
+    updateBucketPolicy:
+        (params: { bucket: string; profileName: string }) =>
+        async (...args) => {
+            const [dispatch] = args;
+
+            const { bucket, profileName } = params;
+
+            dispatch(
+                actions.bucketPoliciesUpdated({
+                    bucket,
+                    profileName,
+                    bucketPolicies: undefined
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const bucketPolicies = await s3Client.getBucketPolicies({ bucket });
+
+            if (bucketPolicies === undefined) {
+                return;
+            }
+
+            dispatch(
+                actions.bucketPoliciesUpdated({
+                    bucket,
+                    profileName,
+                    bucketPolicies
+                })
+            );
+        },
+    getSignedObjectHttpUrl:
+        (params: {
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            validityDurationSecond: number;
+        }) =>
+        async (...args): Promise<string> => {
+            const { s3Uri, validityDurationSecond } = params;
+
+            const [dispatch, getState] = args;
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const cmdId = Date.now();
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
+                })
+            );
+
+            const downloadUrl = await s3Client.getSignedObjectHttpUrl({
+                s3Uri,
+                validityDurationSecond
+            });
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: [
+                        `URL: ${downloadUrl.split("?")[0]}`,
+                        `Expire: ${formatDuration({
+                            durationSeconds: validityDurationSecond,
+                            t: undefined
+                        })}`,
+                        `Share: ${downloadUrl}`
+                    ].join("\n")
+                })
+            );
+
+            return downloadUrl;
+        }
+} satisfies Thunks;
+
+export const protectedThunks = {
+    getObjectHttpUrl:
+        (params: {
+            s3Uri: S3Uri.NonTerminatedByDelimiter;
+            validityDurationSecond_ifNotPublic: number;
+        }) =>
+        async (...args) => {
+            const { s3Uri, validityDurationSecond_ifNotPublic } = params;
+
+            const [dispatch, getState] = args;
+
+            const { isWithinPrefixThatHasBeenMadePublic } =
+                getIsWithinPrefixThatHasBeenMadePublic({
+                    s3Uri,
+                    bucketPoliciesByBucket:
+                        protectedSelectors.bucketPoliciesByBucket(getState())
+                });
+
+            if (isWithinPrefixThatHasBeenMadePublic) {
+                const profileName = privateSelectors.profileName(getState());
+
+                assert(profileName !== undefined);
+
+                const s3Client = await dispatch(
+                    s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+                );
+
+                return s3Client.getUnsignedObjectHttpUrl({ s3Uri });
+            }
+
+            return dispatch(
+                privateThunks.getSignedObjectHttpUrl({
+                    s3Uri,
+                    validityDurationSecond: validityDurationSecond_ifNotPublic
+                })
+            );
+        }
+} satisfies Thunks;
