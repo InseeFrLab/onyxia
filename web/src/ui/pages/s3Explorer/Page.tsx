@@ -295,6 +295,12 @@ function PageComponent() {
                                     minWidth: 0
                                 })}
                             >
+                                <S3ContextActionButton
+                                    icon={getIconUrlByName("ArrowBack")}
+                                    label="Back"
+                                    disabled={mainView.isBackButtonDisabled}
+                                    onClick={s3ExplorerUiController.navigateBack}
+                                />
                                 <S3ProfileSelect
                                     availableProfileNames={
                                         mainView.profileSelect.availableProfileNames
@@ -311,12 +317,6 @@ function PageComponent() {
                                     onCreateNewProfile={() => {
                                         dialogProps.evtS3ProfileDialogOpen.post("create");
                                     }}
-                                />
-                                <S3ContextActionButton
-                                    icon={getIconUrlByName("ArrowBack")}
-                                    label="Back"
-                                    disabled={mainView.isBackButtonDisabled}
-                                    onClick={s3ExplorerUiController.navigateBack}
                                 />
                                 <S3UriBar
                                     className={css({
