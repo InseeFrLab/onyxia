@@ -57,7 +57,7 @@ export default function TextEditor(props: Props) {
         return createTheme({
             theme: isDarkModeEnabled ? "dark" : "light",
             settings: {
-                background: surfaces.surface1,
+                background: surfaces.background,
                 foreground: typography.textPrimary,
                 caret: typography.textFocus,
                 selection: alpha(typography.textFocus, isDarkModeEnabled ? 0.34 : 0.22),
