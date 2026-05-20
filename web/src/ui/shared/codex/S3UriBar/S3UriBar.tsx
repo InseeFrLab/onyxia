@@ -158,6 +158,13 @@ function getDisplayedHints(params: {
         return displayedHints;
     }
 
+    if (
+        s3Uri.keySegments.length === 0 &&
+        hints.filter(hint => hint.type !== "bookmark").length === 0
+    ) {
+        return displayedHints;
+    }
+
     return [
         {
             type: "key-segment",
