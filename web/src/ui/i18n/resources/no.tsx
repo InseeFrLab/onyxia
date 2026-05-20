@@ -313,6 +313,7 @@ export const translations: Translations<"no"> = {
         "init script subtitle":
             "Last ned eller kopier init-skriptet i programmeringsspråket du ønsker.",
         "technology aria label": "Teknologi",
+        download: "Last ned",
         "select s3 profile aria label": "Velg S3-profil",
         "s3 profiles aria label": "S3-profiler",
         "new s3 profile": "Ny S3-profil",

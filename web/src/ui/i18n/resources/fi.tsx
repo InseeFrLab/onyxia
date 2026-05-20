@@ -311,6 +311,7 @@ export const translations: Translations<"fi"> = {
         "init script subtitle":
             "Lataa tai kopioi alustusskripti valitsemallasi ohjelmointikielellä.",
         "technology aria label": "Teknologia",
+        download: "Lataa",
         "select s3 profile aria label": "Valitse S3-profiili",
         "s3 profiles aria label": "S3-profiilit",
         "new s3 profile": "Uusi S3-profiili",

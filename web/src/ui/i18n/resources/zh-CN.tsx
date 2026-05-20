@@ -286,6 +286,7 @@ export const translations: Translations<"zh-CN"> = {
         "init script title": "在 Datalab 服务外访问你的存储",
         "init script subtitle": "下载或复制所选编程语言的初始化脚本。",
         "technology aria label": "技术",
+        download: "下载",
         "select s3 profile aria label": "选择 S3 配置文件",
         "s3 profiles aria label": "S3 配置文件",
         "new s3 profile": "新建 S3 配置文件",

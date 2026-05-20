@@ -311,6 +311,7 @@ export const translations: Translations<"en"> = {
         "init script subtitle":
             "Download or copy the init script in the programming language of your choice.",
         "technology aria label": "Technology",
+        download: "Download",
         "select s3 profile aria label": "Select S3 profile",
         "s3 profiles aria label": "S3 profiles",
         "new s3 profile": "New S3 Profile",

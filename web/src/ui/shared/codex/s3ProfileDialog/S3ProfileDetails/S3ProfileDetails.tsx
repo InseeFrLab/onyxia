@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
 import { alpha } from "@mui/material/styles";
 import { Button } from "onyxia-ui/Button";
 import { IconButton } from "onyxia-ui/IconButton";
@@ -75,6 +76,26 @@ export function S3ProfileDetails(props: Props) {
 
     const { classes, cx } = useStyles();
     const { t } = useTranslation({ S3ProfileDetails });
+    const [isCodeSnippetCopied, setIsCodeSnippetCopied] = useState(false);
+
+    useEffect(() => {
+        setIsCodeSnippetCopied(false);
+    }, [codeSnippet.codeSrc]);
+
+    useEffect(() => {
+        if (!isCodeSnippetCopied) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => setIsCodeSnippetCopied(false), 1400);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [isCodeSnippetCopied]);
+
+    const copyCodeSnippet = async () => {
+        await copyToClipboard(codeSnippet.codeSrc);
+        setIsCodeSnippetCopied(true);
+    };
 
     return (
         <div className={cx(classes.root, className)}>
@@ -248,18 +269,34 @@ export function S3ProfileDetails(props: Props) {
                         </Select>
                     </FormControl>
 
-                    <IconButton
-                        icon={getIconUrlByName("GetApp")}
-                        onClick={() => {
-                            saveAs(
-                                new Blob([codeSnippet.codeSrc], {
-                                    type: "text/plain;charset=utf-8"
-                                }),
-                                codeSnippet.fileBasename
-                            );
-                        }}
-                        size="small"
-                    />
+                    <div className={classes.snippetActions}>
+                        <Tooltip title={isCodeSnippetCopied ? t("copied") : t("copy")}>
+                            <IconButton
+                                icon={getIconUrlByName(
+                                    isCodeSnippetCopied ? "Check" : "ContentCopy"
+                                )}
+                                aria-label={isCodeSnippetCopied ? t("copied") : t("copy")}
+                                onClick={copyCodeSnippet}
+                                size="small"
+                            />
+                        </Tooltip>
+
+                        <Tooltip title={t("download")}>
+                            <IconButton
+                                icon={getIconUrlByName("GetApp")}
+                                aria-label={t("download")}
+                                onClick={() => {
+                                    saveAs(
+                                        new Blob([codeSnippet.codeSrc], {
+                                            type: "text/plain;charset=utf-8"
+                                        }),
+                                        codeSnippet.fileBasename
+                                    );
+                                }}
+                                size="small"
+                            />
+                        </Tooltip>
+                    </div>
                 </div>
 
                 <CodeTextEditor
@@ -713,6 +750,13 @@ const useStyles = tss.withName({ S3ProfileDetails }).create(({ theme }) => ({
         flexWrap: "wrap",
         minWidth: 0
     },
+    snippetActions: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: theme.spacing(1),
+        flexShrink: 0
+    },
     technologySelectControl: {
         flex: "0 1 220px",
         minWidth: 148,
@@ -982,7 +1026,8 @@ const useStyles_CompactCopyButton = tss
         }
     }));
 
-const { i18n } = declareComponentKeys<    | "read only"
+const { i18n } = declareComponentKeys<
+    | "read only"
     | "custom"
     | "edit"
     | "connection details title"
@@ -1003,12 +1048,14 @@ const { i18n } = declareComponentKeys<    | "read only"
     | "init script title"
     | "init script subtitle"
     | "technology aria label"
+    | "download"
     | "select s3 profile aria label"
     | "s3 profiles aria label"
     | "new s3 profile"
     | { K: "copy aria label"; P: { what: string }; R: string }
     | "copied"
-    | "copy">()({
+    | "copy"
+>()({
     S3ProfileDetails
 });
 export type I18n = typeof i18n;
