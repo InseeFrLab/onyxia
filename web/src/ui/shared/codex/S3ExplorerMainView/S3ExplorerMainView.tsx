@@ -13,20 +13,23 @@ import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
 import { alpha } from "@mui/material/styles";
-import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Icon } from "onyxia-ui/Icon";
 import { IconButton } from "onyxia-ui/IconButton";
-import { TextField, type TextFieldProps } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { useConst } from "powerhooks/useConst";
 import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { S3SelectionActionBar } from "ui/shared/codex/S3SelectionActionBar";
+import {
+    S3DialogItemSummary,
+    S3DialogTextInput,
+    useS3DialogClasses
+} from "ui/shared/codex/S3DialogPrimitives";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
 import { evtS3Uri_preSelected } from "./preSelectedS3Uri";
@@ -103,7 +106,7 @@ type SortState = {
     direction: "asc" | "desc";
 };
 
-type DeleteDialogState = {
+export type DeleteDialogState = {
     items: S3ExplorerMainViewProps.Item[];
 };
 
@@ -402,8 +405,11 @@ function getPrefixPolicyAction(
     return undefined;
 }
 
-function getPrefixPolicyActionLabel(action: PrefixPolicyAction): string {
-    return action === "make public" ? "make public" : "make private";
+function getPrefixPolicyActionLabel(
+    action: PrefixPolicyAction,
+    t: ReturnType<typeof useTranslation>["t"]
+): string {
+    return action === "make public" ? t("make public") : t("make private");
 }
 
 function getPrefixPolicyActionIconName(
@@ -482,11 +488,10 @@ function CreateDirectoryDialog(props: {
     onSubmit: (params: { prefixSegment: string }) => void;
 }) {
     const { open, onClose, onSubmit } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     const [draft, setDraft] = useState("");
     const [isDraftValid, setIsDraftValid] = useState(false);
-
-    const evtTextFieldAction = useConst(() => Evt.create<TextFieldProps["evtAction"]>());
 
     useEffect(() => {
         if (!open) {
@@ -513,44 +518,27 @@ function CreateDirectoryDialog(props: {
         <Dialog
             isOpen={open}
             onClose={onClose}
-            title="Create folder"
-            subtitle="Folders are created relative to the prefix currently being listed."
+            title={t("create prefix dialog title")}
+            subtitle={t("create prefix dialog subtitle")}
             body={
                 open && (
-                    <TextField
-                        inputProps_autoFocus={true}
-                        label="Folder name"
-                        defaultValue=""
-                        evtAction={evtTextFieldAction}
-                        getIsValidValue={value => {
-                            const normalizedValue = value.trim();
-
-                            if (normalizedValue === "") {
-                                return {
-                                    isValidValue: false,
-                                    message: "Folder name cannot be empty."
-                                };
-                            }
-
-                            return {
-                                isValidValue: true
-                            };
-                        }}
-                        onValueBeingTypedChange={({ value, isValidValue }) => {
+                    <S3DialogTextInput
+                        autoFocus={true}
+                        label={t("prefix name field label")}
+                        value={draft}
+                        error={
+                            !isDraftValid && draft !== ""
+                                ? t("prefix name empty error")
+                                : undefined
+                        }
+                        onChange={value => {
                             setDraft(value);
-                            setIsDraftValid(isValidValue);
+                            setIsDraftValid(value.trim() !== "");
                         }}
-                        onEnterKeyDown={({ preventDefaultAndStopPropagation }) => {
-                            preventDefaultAndStopPropagation();
-
-                            if (!isDraftValid) {
-                                return;
+                        onEnterKeyDown={() => {
+                            if (isDraftValid) {
+                                submit();
                             }
-
-                            evtTextFieldAction.post("TRIGGER SUBMIT");
-                        }}
-                        onSubmit={() => {
-                            submit();
                         }}
                     />
                 )
@@ -558,17 +546,13 @@ function CreateDirectoryDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button
                         disabled={!isDraftValid}
-                        onClick={
-                            isDraftValid
-                                ? () => evtTextFieldAction.post("TRIGGER SUBMIT")
-                                : undefined
-                        }
+                        onClick={isDraftValid ? submit : undefined}
                     >
-                        Create folder
+                        {t("create prefix")}
                     </Button>
                 </>
             }
@@ -576,48 +560,56 @@ function CreateDirectoryDialog(props: {
     );
 }
 
-function DeleteSelectionDialog(props: {
+export function DeleteSelectionDialog(props: {
     state: DeleteDialogState | undefined;
     onClose: () => void;
     onConfirm: () => void;
 }) {
     const { state, onClose, onConfirm } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
+    const dialogClasses = useS3DialogClasses();
+    const { classes } = useStyles_DeleteSelectionDialog();
 
     return (
         <Dialog
             isOpen={state !== undefined}
             onClose={onClose}
-            title="Delete selection"
-            subtitle={
-                state === undefined
-                    ? ""
-                    : `This will permanently delete ${state.items.length} selected item${state.items.length > 1 ? "s" : ""}.`
-            }
+            className={dialogClasses.paper}
+            maxWidth={false}
+            muiDialogClasses={{ root: dialogClasses.overlayRoot }}
+            title={t("delete selection dialog title")}
+            subtitle={t("delete selection dialog subtitle")}
+            classes={{
+                title: dialogClasses.title,
+                subtitle: dialogClasses.subtitle,
+                body: dialogClasses.body,
+                buttons: dialogClasses.buttons
+            }}
             body={
                 state !== undefined && (
-                    <div>
-                        <div
-                            style={{
-                                marginBottom: 16,
-                                lineHeight: 1.5
-                            }}
-                        >
-                            Deleted folders remove everything inside them.
+                    <div className={classes.body}>
+                        <div className={classes.description}>
+                            {t("delete selection dialog body", {
+                                count: state.items.length
+                            })}
                         </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 8,
-                                maxHeight: 220,
-                                overflow: "auto"
-                            }}
-                        >
+                        <div className={classes.itemList}>
                             {state.items.map(item => (
-                                <div key={getItemKey(item)}>
-                                    {item.displayName}
-                                    {item.type === "prefix segment" ? "/" : ""}
-                                </div>
+                                <S3DialogItemSummary
+                                    key={getItemKey(item)}
+                                    name={`${item.displayName}${
+                                        item.type === "prefix segment" ? "/" : ""
+                                    }`}
+                                    icon={
+                                        item.type === "prefix segment"
+                                            ? "folder"
+                                            : "object"
+                                    }
+                                    isPublic={
+                                        item.type === "prefix segment" &&
+                                        item.policy.isPublic
+                                    }
+                                />
                             ))}
                         </div>
                     </div>
@@ -628,7 +620,9 @@ function DeleteSelectionDialog(props: {
                     <Button variant="secondary" onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button onClick={onConfirm}>Delete</Button>
+                    <Button startIcon={getIconUrlByName("Delete")} onClick={onConfirm}>
+                        {t("delete")}
+                    </Button>
                 </>
             }
         />
@@ -662,6 +656,29 @@ function ErrorState(props: {
         </div>
     );
 }
+
+const useStyles_DeleteSelectionDialog = tss
+    .withName({ DeleteSelectionDialog })
+    .create(({ theme }) => ({
+        body: {
+            minWidth: 520,
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(3),
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        description: {
+            lineHeight: 1.5
+        },
+        itemList: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(2),
+            maxHeight: 240,
+            overflow: "auto",
+            minWidth: 0
+        }
+    }));
 
 type ItemRowProps = {
     item: S3ExplorerMainViewProps.Item;
@@ -706,10 +723,14 @@ function ItemRow(props: ItemRowProps) {
     const isPrefixPolicyActionAvailable =
         onChangePrefixPolicy !== undefined && isItemActionAvailable;
     const isCopyAvailable = !item.isDeleting;
-    const itemKindLabelCapitalized = item.type === "prefix segment" ? "Folder" : "Object";
+    const { t } = useTranslation({ S3ExplorerMainView });
+    const itemKindLabelCapitalized =
+        item.type === "prefix segment" ? t("folder") : t("object");
     const itemIconLabel =
         item.type === "prefix segment"
-            ? `${itemKindLabelCapitalized} is ${item.policy.isPublic ? "public" : "private"}`
+            ? item.policy.isPublic
+                ? t("folder is public")
+                : t("folder is private")
             : itemKindLabelCapitalized;
 
     const { classes, cx } = useStyles({
@@ -853,7 +874,7 @@ function ItemRow(props: ItemRowProps) {
                                             !isUploadInProgress &&
                                             progressPercent === 100 && (
                                                 <span className={classes.statusPill}>
-                                                    Uploaded
+                                                    {t("uploaded")}
                                                 </span>
                                             )}
                                     </div>
@@ -865,12 +886,12 @@ function ItemRow(props: ItemRowProps) {
                         {showRowActions && (
                             <>
                                 {onShareObject !== undefined && (
-                                    <Tooltip title="Share">
+                                    <Tooltip title={t("share")}>
                                         <span className={classes.inlineActionWrapper}>
                                             <IconButton
                                                 className={classes.rowActionButton}
                                                 icon={getIconUrlByName("Share")}
-                                                aria-label="Share"
+                                                aria-label={t("share")}
                                                 disabled={!isShareAvailable}
                                                 onClick={event => {
                                                     event.stopPropagation();
@@ -892,7 +913,8 @@ function ItemRow(props: ItemRowProps) {
                                     onChangePrefixPolicy !== undefined && (
                                         <Tooltip
                                             title={getPrefixPolicyActionLabel(
-                                                prefixPolicyAction
+                                                prefixPolicyAction,
+                                                t
                                             )}
                                         >
                                             <span className={classes.inlineActionWrapper}>
@@ -904,7 +926,8 @@ function ItemRow(props: ItemRowProps) {
                                                         )
                                                     )}
                                                     aria-label={getPrefixPolicyActionLabel(
-                                                        prefixPolicyAction
+                                                        prefixPolicyAction,
+                                                        t
                                                     )}
                                                     disabled={
                                                         !isPrefixPolicyActionAvailable
@@ -927,12 +950,12 @@ function ItemRow(props: ItemRowProps) {
                                         </Tooltip>
                                     )}
                                 {onDownload !== undefined && (
-                                    <Tooltip title="Download">
+                                    <Tooltip title={t("download")}>
                                         <span className={classes.inlineActionWrapper}>
                                             <IconButton
                                                 className={classes.rowActionButton}
                                                 icon={getIconUrlByName("FileDownload")}
-                                                aria-label="Download"
+                                                aria-label={t("download")}
                                                 disabled={!isDownloadAvailable}
                                                 onClick={event => {
                                                     event.stopPropagation();
@@ -950,12 +973,12 @@ function ItemRow(props: ItemRowProps) {
                                         </span>
                                     </Tooltip>
                                 )}
-                                <Tooltip title="Copy S3 path">
+                                <Tooltip title={t("copy s3 path")}>
                                     <span className={classes.inlineActionWrapper}>
                                         <IconButton
                                             className={classes.rowActionButton}
                                             icon={getIconUrlByName("ContentCopy")}
-                                            aria-label="Copy S3 path"
+                                            aria-label={t("copy s3 path")}
                                             disabled={!isCopyAvailable}
                                             onClick={event => {
                                                 event.stopPropagation();
@@ -969,12 +992,12 @@ function ItemRow(props: ItemRowProps) {
                                         />
                                     </span>
                                 </Tooltip>
-                                <Tooltip title="Delete">
+                                <Tooltip title={t("delete")}>
                                     <span className={classes.inlineActionWrapper}>
                                         <IconButton
                                             className={classes.rowActionButton}
                                             icon={getIconUrlByName("Delete")}
-                                            aria-label="Delete"
+                                            aria-label={t("delete")}
                                             disabled={item.isDeleting}
                                             onClick={event => {
                                                 event.stopPropagation();
@@ -2225,3 +2248,27 @@ const useStyles = tss
             lineHeight: 1.6
         }
     }));
+
+const { i18n } = declareComponentKeys<
+    | "create prefix dialog title"
+    | "create prefix dialog subtitle"
+    | "prefix name field label"
+    | "prefix name empty error"
+    | "cancel"
+    | "create prefix"
+    | "delete selection dialog title"
+    | "delete selection dialog subtitle"
+    | { K: "delete selection dialog body"; P: { count: number }; R: string }
+    | "delete"
+    | "uploaded"
+    | "share"
+    | "download"
+    | "copy s3 path"
+    | "make public"
+    | "make private"
+    | "folder"
+    | "object"
+    | "folder is public"
+    | "folder is private"
+>()({ S3ExplorerMainView });
+export type I18n = typeof i18n;

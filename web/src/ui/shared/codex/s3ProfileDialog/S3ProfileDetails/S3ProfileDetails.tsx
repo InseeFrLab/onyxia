@@ -21,6 +21,7 @@ import {
     type CodeTextEditorLanguage
 } from "ui/shared/textEditor/CodeTextEditor";
 import { assert } from "tsafe/assert";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     className?: string;
@@ -73,6 +74,7 @@ export function S3ProfileDetails(props: Props) {
     } = props;
 
     const { classes, cx } = useStyles();
+    const { t } = useTranslation({ S3ProfileDetails });
 
     return (
         <div className={cx(classes.root, className)}>
@@ -88,7 +90,7 @@ export function S3ProfileDetails(props: Props) {
 
                 <div className={classes.profileActions}>
                     <span className={classes.profileStatus}>
-                        {onEdit === undefined ? "Read-only" : "Custom"}
+                        {onEdit === undefined ? t("read only") : t("custom")}
                     </span>
                     <Button
                         className={classes.editButton}
@@ -97,26 +99,26 @@ export function S3ProfileDetails(props: Props) {
                         disabled={onEdit === undefined}
                         onClick={onEdit}
                     >
-                        Edit
+                        {t("edit")}
                     </Button>
                 </div>
             </div>
 
             <section className={classes.sectionCard}>
                 <SectionHeading
-                    title="Connection details"
-                    subtitle="Use these values when configuring S3 clients outside the explorer."
+                    title={t("connection details title")}
+                    subtitle={t("connection details subtitle")}
                 />
                 <div className={classes.fields}>
                     <CopyableField
-                        label="Endpoint URL"
-                        copyLabel="endpoint URL"
+                        label={t("endpoint url label")}
+                        copyLabel={t("endpoint url label")}
                         value={endpointUrl}
                     />
                     {defaultRegion !== undefined && defaultRegion !== "" && (
                         <CopyableField
-                            label="Default region"
-                            copyLabel="default region"
+                            label={t("default region label")}
+                            copyLabel={t("default region label")}
                             value={defaultRegion}
                         />
                     )}
@@ -125,11 +127,11 @@ export function S3ProfileDetails(props: Props) {
 
             <section className={classes.sectionCard}>
                 <SectionHeading
-                    title="Access credentials"
+                    title={t("access credentials title")}
                     subtitle={
                         accessCredentials === undefined
-                            ? "This profile does not expose credentials. Use anonymous S3 access where the target bucket allows it."
-                            : "Copy the value required by the client you are configuring."
+                            ? t("access credentials anonymous subtitle")
+                            : t("access credentials subtitle")
                     }
                 />
 
@@ -137,13 +139,13 @@ export function S3ProfileDetails(props: Props) {
                     <>
                         <div className={classes.fields}>
                             <CopyableField
-                                label="Access key ID"
-                                copyLabel="access key ID"
+                                label={t("access key id label")}
+                                copyLabel={t("access key id label")}
                                 value={accessCredentials.accessKeyId}
                                 isSensitive={true}
                                 helperText={
                                     <>
-                                        Environment variable{" "}
+                                        {t("environment variable")}{" "}
                                         <code className={classes.envVarName}>
                                             AWS_ACCESS_KEY_ID
                                         </code>
@@ -151,13 +153,13 @@ export function S3ProfileDetails(props: Props) {
                                 }
                             />
                             <CopyableField
-                                label="Secret access key"
-                                copyLabel="secret access key"
+                                label={t("secret access key label")}
+                                copyLabel={t("secret access key label")}
                                 value={accessCredentials.secretAccessKey}
                                 isSensitive={true}
                                 helperText={
                                     <>
-                                        Environment variable{" "}
+                                        {t("environment variable")}{" "}
                                         <code className={classes.envVarName}>
                                             AWS_SECRET_ACCESS_KEY
                                         </code>
@@ -166,13 +168,13 @@ export function S3ProfileDetails(props: Props) {
                             />
                             {accessCredentials.sessionToken !== undefined && (
                                 <CopyableField
-                                    label="Session token"
-                                    copyLabel="session token"
+                                    label={t("session token label")}
+                                    copyLabel={t("session token label")}
                                     value={accessCredentials.sessionToken}
                                     isSensitive={true}
                                     helperText={
                                         <>
-                                            Environment variable{" "}
+                                            {t("environment variable")}{" "}
                                             <code className={classes.envVarName}>
                                                 AWS_SESSION_TOKEN
                                             </code>
@@ -185,10 +187,12 @@ export function S3ProfileDetails(props: Props) {
                         <div className={classes.credentialsFooter}>
                             <Text typo="body 2" className={classes.credentialsExpiration}>
                                 {accessCredentials.expirationTime === undefined
-                                    ? "No expiration time is advertised for these credentials."
-                                    : `Expires ${formatExpirationTime(
-                                          accessCredentials.expirationTime
-                                      )}.`}
+                                    ? t("no expiration")
+                                    : t("expires", {
+                                          expirationTime: formatExpirationTime(
+                                              accessCredentials.expirationTime
+                                          )
+                                      })}
                             </Text>
                             {accessCredentials.onRenewToken !== undefined && (
                                 <Button
@@ -199,8 +203,8 @@ export function S3ProfileDetails(props: Props) {
                                     onClick={accessCredentials.onRenewToken}
                                 >
                                     {accessCredentials.areTokensBeingRenewed
-                                        ? "Renewing..."
-                                        : "Renew tokens"}
+                                        ? t("renewing")
+                                        : t("renew tokens")}
                                 </Button>
                             )}
                         </div>
@@ -210,8 +214,8 @@ export function S3ProfileDetails(props: Props) {
 
             <section className={classes.sectionCard}>
                 <SectionHeading
-                    title="To access your storage outside of datalab services"
-                    subtitle="Download or copy the init script in the programming language of your choice."
+                    title={t("init script title")}
+                    subtitle={t("init script subtitle")}
                 />
 
                 <div className={classes.snippetToolbar}>
@@ -221,7 +225,7 @@ export function S3ProfileDetails(props: Props) {
                     >
                         <Select
                             value={technology}
-                            inputProps={{ "aria-label": "Technology" }}
+                            inputProps={{ "aria-label": t("technology aria label") }}
                             onChange={event => {
                                 const { value } = event.target;
                                 assert(typeof value === "string");
@@ -285,6 +289,7 @@ function ProfileDropdown(props: {
     } = props;
 
     const { classes, cx } = useStyles_ProfileDropdown();
+    const { t } = useTranslation({ S3ProfileDetails });
     const [isOpen, setIsOpen] = useState(false);
     const rootRef = useRef<HTMLDivElement | null>(null);
     const listRef = useRef<HTMLDivElement | null>(null);
@@ -354,7 +359,7 @@ function ProfileDropdown(props: {
             <button
                 type="button"
                 className={cx(classes.trigger, isOpen && classes.triggerOpen)}
-                aria-label="Select S3 profile"
+                aria-label={t("select s3 profile aria label")}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
                 onClick={toggleDropdown}
@@ -374,7 +379,7 @@ function ProfileDropdown(props: {
                 <div
                     className={classes.dropdown}
                     role="listbox"
-                    aria-label="S3 profiles"
+                    aria-label={t("s3 profiles aria label")}
                     onKeyDown={event => {
                         if (event.key !== "Escape") {
                             return;
@@ -433,7 +438,7 @@ function ProfileDropdown(props: {
                             icon={getIconUrlByName("Add")}
                             size="small"
                         />
-                        <span className={classes.createLabel}>New S3 Profile</span>
+                        <span className={classes.createLabel}>{t("new s3 profile")}</span>
                     </button>
                 </div>
             )}
@@ -467,6 +472,7 @@ function CopyableField(props: {
     const { label, copyLabel, value, helperText, isSensitive = false } = props;
 
     const { classes, cx } = useStyles_CopyableField();
+    const { t } = useTranslation({ S3ProfileDetails });
     const [isCopied, setIsCopied] = useState(false);
     const displayedValue = isSensitive ? getMiddleEllipsis(value) : value;
 
@@ -507,7 +513,7 @@ function CopyableField(props: {
                     {displayedValue}
                 </span>
                 <CompactCopyButton
-                    ariaLabel={`Copy ${copyLabel}`}
+                    ariaLabel={t("copy aria label", { what: copyLabel })}
                     isCopied={isCopied}
                     onCopy={handleCopy}
                 />
@@ -528,6 +534,7 @@ function CompactCopyButton(props: {
 }) {
     const { ariaLabel, isCopied, onCopy } = props;
     const { classes, cx } = useStyles_CompactCopyButton();
+    const { t } = useTranslation({ S3ProfileDetails });
 
     return (
         <Button
@@ -537,7 +544,7 @@ function CompactCopyButton(props: {
             startIcon={getIconUrlByName(isCopied ? "Check" : "ContentCopy")}
             onClick={onCopy}
         >
-            {isCopied ? "Copied" : "Copy"}
+            {isCopied ? t("copied") : t("copy")}
         </Button>
     );
 }
@@ -974,3 +981,34 @@ const useStyles_CompactCopyButton = tss
             }
         }
     }));
+
+const { i18n } = declareComponentKeys<    | "read only"
+    | "custom"
+    | "edit"
+    | "connection details title"
+    | "connection details subtitle"
+    | "endpoint url label"
+    | "default region label"
+    | "access credentials title"
+    | "access credentials anonymous subtitle"
+    | "access credentials subtitle"
+    | "access key id label"
+    | "secret access key label"
+    | "session token label"
+    | "environment variable"
+    | "no expiration"
+    | { K: "expires"; P: { expirationTime: string }; R: string }
+    | "renewing"
+    | "renew tokens"
+    | "init script title"
+    | "init script subtitle"
+    | "technology aria label"
+    | "select s3 profile aria label"
+    | "s3 profiles aria label"
+    | "new s3 profile"
+    | { K: "copy aria label"; P: { what: string }; R: string }
+    | "copied"
+    | "copy">()({
+    S3ProfileDetails
+});
+export type I18n = typeof i18n;

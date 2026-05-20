@@ -1,15 +1,18 @@
 import { memo, useState } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
-import { TextField, type TextFieldProps } from "onyxia-ui/TextField";
+import type { TextFieldProps } from "onyxia-ui/TextField";
+import { getIconUrlByName } from "lazy-icons";
 import { symToStr } from "tsafe/symToStr";
 import { assert } from "tsafe/assert";
 import type { Evt, UnpackEvt } from "evt";
-import { Evt as EvtConstructor } from "evt";
 import { useEvt } from "evt/hooks";
-import { useConst } from "powerhooks/useConst";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import {
+    S3DialogTextInput,
+    useS3DialogClasses
+} from "ui/shared/codex/S3DialogPrimitives";
 
 export type DirectoryCreationDialogResult =
     | {
@@ -30,8 +33,12 @@ export type DirectoryCreationDialogProps = {
 function getDefaultPrefixSegment(params: { exclude: string[] }): string {
     const { exclude } = params;
 
-    const prefixBase = "new_directory";
+    const prefixBase = "untitled_folder";
     const excludedNames = new Set(exclude);
+
+    if (!excludedNames.has(prefixBase)) {
+        return prefixBase;
+    }
 
     for (let i = 1; ; i++) {
         const prefixSegment = `${prefixBase}_${i}`;
@@ -83,10 +90,6 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
         | undefined
     >(undefined);
 
-    const evtTextFieldAction = useConst(() =>
-        EvtConstructor.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
-    );
-
     useEvt(
         ctx => {
             evtOpen.attach(ctx, eventData => {
@@ -105,6 +108,7 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
     );
 
     const { classes } = useStyles();
+    const dialogClasses = useS3DialogClasses();
 
     const close = (result: DirectoryCreationDialogResult) => {
         setState(state => {
@@ -128,50 +132,55 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
 
     return (
         <Dialog
-            title={t("dialog title")}
-            subtitle={t("dialog subtitle")}
+            className={dialogClasses.paper}
+            maxWidth={false}
+            muiDialogClasses={{ root: dialogClasses.overlayRoot }}
+            title={t("create prefix dialog title")}
+            subtitle={t("create prefix dialog subtitle")}
             classes={{
-                body: classes.dialogBody
+                title: dialogClasses.title,
+                subtitle: dialogClasses.subtitle,
+                body: dialogClasses.body,
+                buttons: dialogClasses.buttons
             }}
             body={
                 state !== undefined && (
                     <div className={classes.body}>
-                        <TextField
-                            className={classes.textField}
-                            inputProps_autoFocus={true}
-                            selectAllTextOnFocus={true}
-                            label={t("directoryName textField label")}
-                            defaultValue={state.prefixSegment}
-                            getIsValidValue={value =>
-                                getIsValidValue({
+                        <S3DialogTextInput
+                            label={t("prefixName textField label")}
+                            value={state.prefixSegment}
+                            autoFocus={true}
+                            isStrong={true}
+                            error={(() => {
+                                const result = getIsValidValue({
+                                    value: state.prefixSegment,
+                                    exclude: state.exclude,
+                                    t
+                                });
+
+                                return result.isValidValue ? undefined : result.message;
+                            })()}
+                            onChange={value => {
+                                const result = getIsValidValue({
                                     value,
                                     exclude: state.exclude,
                                     t
-                                })
-                            }
-                            onValueBeingTypedChange={({ value, isValidValue }) =>
+                                });
+
                                 setState(state => {
                                     assert(state !== undefined);
 
                                     return {
                                         ...state,
                                         prefixSegment: value,
-                                        isPrefixSegmentValid: isValidValue
+                                        isPrefixSegmentValid: result.isValidValue
                                     };
-                                })
-                            }
-                            evtAction={evtTextFieldAction}
-                            onEnterKeyDown={({ preventDefaultAndStopPropagation }) => {
-                                preventDefaultAndStopPropagation();
-
-                                if (!state?.isPrefixSegmentValid) {
-                                    return;
-                                }
-
-                                evtTextFieldAction.post("TRIGGER SUBMIT");
+                                });
                             }}
-                            onSubmit={() => {
-                                submit();
+                            onEnterKeyDown={() => {
+                                if (state.isPrefixSegmentValid) {
+                                    submit();
+                                }
                             }}
                         />
                     </div>
@@ -188,8 +197,9 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
                     <Button
                         onClick={state?.isPrefixSegmentValid ? submit : undefined}
                         disabled={!state?.isPrefixSegmentValid}
+                        startIcon={getIconUrlByName("CreateNewFolderOutlined")}
                     >
-                        {t("create")}
+                        {t("create prefix")}
                     </Button>
                 </>
             }
@@ -206,24 +216,21 @@ DirectoryCreationDialog.displayName = symToStr({
 const { i18n } = declareComponentKeys<
     | "dialog title"
     | "dialog subtitle"
+    | "create prefix dialog title"
+    | "create prefix dialog subtitle"
     | "directoryName textField label"
+    | "prefixName textField label"
     | "directoryName textField empty error"
     | "directoryName textField duplicate error"
     | "cancel"
     | "create"
+    | "create prefix"
 >()({ DirectoryCreationDialog });
 export type I18n = typeof i18n;
 
-const useStyles = tss.withName({ DirectoryCreationDialog }).create(({ theme }) => ({
-    dialogBody: {
-        width: "100%"
-    },
+const useStyles = tss.withName({ DirectoryCreationDialog }).create(() => ({
     body: {
-        minWidth: 320,
-        width: "100%",
-        paddingTop: theme.spacing(2)
-    },
-    textField: {
+        minWidth: 520,
         width: "100%"
     }
 }));

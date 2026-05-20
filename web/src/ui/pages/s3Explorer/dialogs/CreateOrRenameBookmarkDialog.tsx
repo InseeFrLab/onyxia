@@ -1,16 +1,19 @@
 import { memo, useState } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
-import { TextField, type TextFieldProps } from "onyxia-ui/TextField";
+import { getIconUrlByName } from "lazy-icons";
 import { symToStr } from "tsafe/symToStr";
 import { assert } from "tsafe/assert";
 import type { Evt, UnpackEvt } from "evt";
-import { Evt as EvtConstructor } from "evt";
 import { useEvt } from "evt/hooks";
-import { useConst } from "powerhooks/useConst";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import {
+    S3DialogCopyField,
+    S3DialogTextInput,
+    useS3DialogClasses
+} from "ui/shared/codex/S3DialogPrimitives";
 
 export type CreateOrRenameBookmarkDialogResult =
     | {
@@ -57,10 +60,6 @@ export const CreateOrRenameBookmarkDialog = memo(
             | undefined
         >(undefined);
 
-        const evtTextFieldAction = useConst(() =>
-            EvtConstructor.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
-        );
-
         useEvt(
             ctx => {
                 evtOpen.attach(ctx, eventData => {
@@ -81,6 +80,7 @@ export const CreateOrRenameBookmarkDialog = memo(
         );
 
         const { classes } = useStyles();
+        const dialogClasses = useS3DialogClasses();
 
         const close = (result: CreateOrRenameBookmarkDialogResult) => {
             setState(state => {
@@ -104,62 +104,55 @@ export const CreateOrRenameBookmarkDialog = memo(
 
         return (
             <Dialog
-                title={t("dialog title")}
-                subtitle={state === undefined ? "" : stringifyS3Uri(state.s3Uri)}
+                className={dialogClasses.paper}
+                maxWidth={false}
+                muiDialogClasses={{ root: dialogClasses.overlayRoot }}
+                title={
+                    state?.currentDisplayName === undefined
+                        ? t("add dialog title")
+                        : t("rename dialog title")
+                }
+                subtitle={t("dialog subtitle")}
                 classes={{
-                    body: classes.dialogBody
+                    title: dialogClasses.title,
+                    subtitle: dialogClasses.subtitle,
+                    body: dialogClasses.body,
+                    buttons: dialogClasses.buttons
                 }}
                 body={
                     state !== undefined && (
                         <div className={classes.body}>
-                            <TextField
-                                className={classes.textField}
-                                inputProps_autoFocus={true}
-                                selectAllTextOnFocus={true}
+                            <S3DialogTextInput
                                 label={t("bookmarkName textField label")}
-                                defaultValue={state.displayName}
-                                getIsValidValue={value => {
-                                    const normalizedValue = value.trim();
-
-                                    if (normalizedValue === "") {
-                                        return {
-                                            isValidValue: false,
-                                            message: t(
-                                                "bookmarkName textField empty error"
-                                            )
-                                        };
-                                    }
-
-                                    return {
-                                        isValidValue: true
-                                    };
-                                }}
-                                onValueBeingTypedChange={({ value, isValidValue }) =>
+                                value={state.displayName}
+                                autoFocus={true}
+                                isStrong={true}
+                                error={
+                                    state.isDisplayNameValid
+                                        ? undefined
+                                        : t("bookmarkName textField empty error")
+                                }
+                                onChange={value =>
                                     setState(state => {
                                         assert(state !== undefined);
 
                                         return {
                                             ...state,
                                             displayName: value,
-                                            isDisplayNameValid: isValidValue
+                                            isDisplayNameValid: value.trim() !== ""
                                         };
                                     })
                                 }
-                                evtAction={evtTextFieldAction}
-                                onEnterKeyDown={({
-                                    preventDefaultAndStopPropagation
-                                }) => {
-                                    preventDefaultAndStopPropagation();
-
-                                    if (!state?.isDisplayNameValid) {
-                                        return;
+                                onEnterKeyDown={() => {
+                                    if (state.isDisplayNameValid) {
+                                        submit();
                                     }
+                                }}
+                            />
 
-                                    evtTextFieldAction.post("TRIGGER SUBMIT");
-                                }}
-                                onSubmit={() => {
-                                    submit();
-                                }}
+                            <S3DialogCopyField
+                                value={stringifyS3Uri(state.s3Uri)}
+                                ariaLabel={t("copy s3 path aria label")}
                             />
                         </div>
                     )
@@ -175,8 +168,11 @@ export const CreateOrRenameBookmarkDialog = memo(
                         <Button
                             onClick={state?.isDisplayNameValid ? submit : undefined}
                             disabled={!state?.isDisplayNameValid}
+                            startIcon={getIconUrlByName("StarBorder")}
                         >
-                            {t("ok")}
+                            {state?.currentDisplayName === undefined
+                                ? t("add to bookmarks")
+                                : t("rename bookmark")}
                         </Button>
                     </>
                 }
@@ -193,28 +189,25 @@ CreateOrRenameBookmarkDialog.displayName = symToStr({
 
 const { i18n } = declareComponentKeys<
     | "dialog title"
+    | "add dialog title"
+    | "rename dialog title"
+    | "dialog subtitle"
     | "bookmarkName textField label"
     | "bookmarkName textField empty error"
+    | "copy s3 path aria label"
     | "cancel"
     | "ok"
+    | "add to bookmarks"
+    | "rename bookmark"
 >()({ CreateOrRenameBookmarkDialog });
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ CreateOrRenameBookmarkDialog }).create(({ theme }) => ({
-    dialogBody: {
-        width: "100%"
-    },
     body: {
-        minWidth: 320,
+        minWidth: 520,
         width: "100%",
-        paddingTop: theme.spacing(2)
-        /*
-        "& .MuiTextField-root": {
-            width: "100%"
-        }
-            */
-    },
-    textField: {
-        width: "100%"
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1.5)
     }
 }));

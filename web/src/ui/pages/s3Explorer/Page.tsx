@@ -463,21 +463,18 @@ function PageComponent() {
                                     onDelete={s3ExplorerUiController.delete}
                                     onDownload={s3ExplorerUiController.downloadObject}
                                     onChangePrefixPolicy={async ({ action, s3Uri }) => {
-                                        if (action === "make public") {
-                                            const dDoProceed = new Deferred<boolean>();
+                                        const dDoProceed = new Deferred<boolean>();
 
-                                            dialogProps.evtMakePrefixPublicDialogOpen.post(
-                                                {
-                                                    s3Uri,
-                                                    resolveDoProceed: doProceed => {
-                                                        dDoProceed.resolve(doProceed);
-                                                    }
-                                                }
-                                            );
-
-                                            if (!(await dDoProceed.pr)) {
-                                                return;
+                                        dialogProps.evtMakePrefixPublicDialogOpen.post({
+                                            s3Uri,
+                                            action,
+                                            resolveDoProceed: doProceed => {
+                                                dDoProceed.resolve(doProceed);
                                             }
+                                        });
+
+                                        if (!(await dDoProceed.pr)) {
+                                            return;
                                         }
 
                                         s3ExplorerUiController.toggleS3UriPublicPrivatePolicy(

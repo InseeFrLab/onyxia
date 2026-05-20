@@ -1,15 +1,18 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { alpha } from "@mui/material/styles";
-import { Icon } from "onyxia-ui/Icon";
+import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { assert, type Equals } from "tsafe";
+import {
+    S3DialogCopyField,
+    S3DialogItemSummary
+} from "ui/shared/codex/S3DialogPrimitives";
 
 export type S3ShareObjectDialogProps =
     | S3ShareObjectDialogProps.Public
@@ -22,6 +25,8 @@ export namespace S3ShareObjectDialogProps {
         className?: string;
         objectBasename: string;
         httpUrl: string | undefined;
+        onCancel?: () => void;
+        onDone?: () => void;
     };
 
     export type Public = Common & {
@@ -44,176 +49,146 @@ assert<
     >
 >;
 
-type CopyStatus = "idle" | "copied" | "failed";
-
 export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
-    const { className, objectBasename, httpUrl, isPublic } = props;
+    const { className, objectBasename, httpUrl, isPublic, onCancel, onDone } = props;
 
-    const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
-    const validitySelectLabelId = useId();
-
-    const { classes, cx } = useStyles({
-        isUrlAvailable: httpUrl !== undefined,
-        copyStatus
-    });
+    const { t } = useTranslation({ S3ShareObjectDialog });
+    const { classes, cx } = useStyles();
+    const [primaryActionStatus, setPrimaryActionStatus] = useState<"idle" | "copied">(
+        "idle"
+    );
 
     useEffect(() => {
-        if (copyStatus === "idle") {
+        setPrimaryActionStatus("idle");
+    }, [httpUrl]);
+
+    useEffect(() => {
+        if (primaryActionStatus === "idle") {
             return;
         }
 
-        const timer = setTimeout(() => setCopyStatus("idle"), 1800);
+        const timer = window.setTimeout(() => setPrimaryActionStatus("idle"), 1400);
 
-        return () => clearTimeout(timer);
-    }, [copyStatus]);
+        return () => window.clearTimeout(timer);
+    }, [primaryActionStatus]);
 
-    useEffect(() => {
-        setCopyStatus("idle");
-    }, [httpUrl]);
-
-    const isSignedLink = isPublic !== true;
-
-    const copyHttpUrl = async () => {
+    const copyAndComplete = async () => {
         if (httpUrl === undefined) {
             return;
         }
 
-        try {
-            await copyToClipboard(httpUrl);
-            setCopyStatus("copied");
-        } catch {
-            setCopyStatus("failed");
-        }
+        await copyToClipboard(httpUrl);
+        setPrimaryActionStatus("copied");
+        onDone?.();
     };
 
     return (
         <section className={cx(classes.root, className)}>
-            <div className={classes.header}>
-                <div className={classes.objectIcon} aria-hidden="true">
-                    <Icon icon={getIconUrlByName("Description")} size="small" />
-                </div>
-                <div className={classes.headerText}>
-                    <Text
-                        typo="body 2"
-                        className={classes.objectBasename}
-                        componentProps={{ title: objectBasename }}
-                    >
-                        {objectBasename}
-                    </Text>
-                </div>
-            </div>
+            <S3DialogItemSummary
+                name={objectBasename}
+                isPublic={isPublic}
+                icon="folder"
+            />
 
-            <div className={classes.policyPanel}>
-                <div className={classes.policyText}>
-                    <Text typo="label 1" className={classes.policyTitle}>
-                        {getPolicyTitle({ isPublic })}
-                    </Text>
-                    <Text typo="body 2" className={classes.policyDescription}>
-                        {getPolicyDescription(props)}
-                    </Text>
-                </div>
-            </div>
+            <Text typo="body 1" className={classes.description}>
+                {getPolicyDescription(props, t)}
+            </Text>
 
-            {isSignedLink && (
-                <FormControl variant="standard" className={classes.validitySelect}>
-                    <InputLabel id={validitySelectLabelId}>
-                        Signed link validity
-                    </InputLabel>
-                    <Select
-                        labelId={validitySelectLabelId}
-                        value={props.validityDuration}
-                        onChange={event => {
-                            const { value } = event.target;
+            {isPublic ? (
+                <S3DialogCopyField
+                    value={httpUrl}
+                    displayedValue={
+                        httpUrl === undefined ? undefined : getCollapsedUrl(httpUrl)
+                    }
+                    pendingText={t("generating public URL")}
+                    ariaLabel={t("copy public URL aria label")}
+                />
+            ) : (
+                <div className={classes.signedLinkSection}>
+                    <Text typo="label 1" className={classes.signedLinkLabel}>
+                        {t("signed link with time limit")}
+                    </Text>
+                    <div className={classes.signedLinkRow}>
+                        <FormControl
+                            variant="standard"
+                            className={classes.validitySelect}
+                        >
+                            <Select
+                                value={props.validityDuration}
+                                inputProps={{
+                                    "aria-label": t("signed link validity aria label")
+                                }}
+                                onChange={event => {
+                                    const { value } = event.target;
 
-                            if (!isValidityDuration(value)) {
-                                return;
+                                    if (!isValidityDuration(value)) {
+                                        return;
+                                    }
+
+                                    props.changeValidityDuration({
+                                        validityDuration: value
+                                    });
+                                }}
+                            >
+                                {validityDurationOptions.map(validityDuration => (
+                                    <MenuItem
+                                        key={validityDuration}
+                                        value={validityDuration}
+                                    >
+                                        {formatValidityDuration(validityDuration)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <S3DialogCopyField
+                            value={httpUrl}
+                            displayedValue={
+                                httpUrl === undefined
+                                    ? undefined
+                                    : getCollapsedUrl(httpUrl)
                             }
-
-                            props.changeValidityDuration({
-                                validityDuration: value
-                            });
-                        }}
-                    >
-                        {validityDurationOptions.map(validityDuration => (
-                            <MenuItem key={validityDuration} value={validityDuration}>
-                                {formatValidityDuration(validityDuration)}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                            pendingText={t("generating signed URL")}
+                            ariaLabel={t("copy signed URL aria label")}
+                        />
+                    </div>
+                </div>
             )}
 
-            <div className={classes.urlSection}>
-                <Text typo="label 1" className={classes.urlLabel}>
-                    HTTP URL
-                </Text>
-                <div className={classes.urlRow}>
-                    {httpUrl === undefined ? (
-                        <span className={classes.pendingUrl}>
-                            {isSignedLink
-                                ? "Generating signed URL..."
-                                : "Generating public URL..."}
-                        </span>
-                    ) : (
-                        <a
-                            className={classes.httpUrl}
-                            href={httpUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            title={httpUrl}
-                        >
-                            {getCollapsedUrl(httpUrl)}
-                        </a>
-                    )}
-
-                    <button
-                        type="button"
-                        className={classes.copyButton}
-                        onClick={copyHttpUrl}
+            {(onCancel !== undefined || onDone !== undefined) && (
+                <div className={classes.actions}>
+                    <Button variant="secondary" onClick={onCancel}>
+                        {t("cancel")}
+                    </Button>
+                    <Button
+                        startIcon={getIconUrlByName(
+                            primaryActionStatus === "copied" ? "Check" : "ContentCopy"
+                        )}
                         disabled={httpUrl === undefined}
-                        aria-label="Copy HTTP URL to clipboard"
+                        onClick={copyAndComplete}
                     >
-                        <Icon
-                            className={classes.copyIcon}
-                            icon={getIconUrlByName(
-                                copyStatus === "copied" ? "Check" : "ContentCopy"
-                            )}
-                            size="extra small"
-                        />
-                        <span>{copyStatus === "copied" ? "Copied" : "Copy"}</span>
-                    </button>
+                        {primaryActionStatus === "copied"
+                            ? t("copied")
+                            : isPublic
+                              ? t("copy link")
+                              : t("create link")}
+                    </Button>
                 </div>
-
-                <span className={classes.copyFeedback} role="status" aria-live="polite">
-                    {copyStatus === "copied"
-                        ? "Copied to clipboard"
-                        : copyStatus === "failed"
-                          ? "Unable to copy"
-                          : ""}
-                </span>
-            </div>
+            )}
         </section>
     );
 }
 
-function getPolicyTitle(params: { isPublic: boolean }): string {
-    const { isPublic } = params;
-
-    if (isPublic === true) {
-        return "Public object";
-    }
-
-    return "Private object";
-}
-
-function getPolicyDescription(props: S3ShareObjectDialogProps): string {
+function getPolicyDescription(
+    props: S3ShareObjectDialogProps,
+    t: ReturnType<typeof useTranslation>["t"]
+): string {
     const { isPublic } = props;
 
     if (isPublic === true) {
-        return "Anyone with the URL can access this object. This link never expires because the object is inside a prefix that has been marked public.";
+        return t("public description");
     }
 
-    return `The HTTP URL is a signed URL that expires after ${formatValidityDuration(props.validityDuration)}. To share a URL that does not expire, make one of this object's parent prefixes (folders) public.`;
+    return t("signed description");
 }
 
 function isValidityDuration(
@@ -253,181 +228,76 @@ function getCollapsedUrl(url: string): string {
     return `${url.slice(0, headLength)}...${url.slice(-tailLength)}`;
 }
 
-const useStyles = tss
-    .withName({ S3ShareObjectDialog })
-    .withParams<{ isUrlAvailable: boolean; copyStatus: CopyStatus }>()
-    .create(({ theme, isUrlAvailable, copyStatus }) => ({
-        root: {
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(3),
-            width: "100%",
-            minWidth: 0,
-            boxSizing: "border-box",
-            padding: theme.spacing(3),
-            borderRadius: 8,
-            backgroundColor: theme.colors.useCases.surfaces.surface1
-        },
-        header: {
-            display: "flex",
-            alignItems: "center",
-            gap: theme.spacing(2),
-            minWidth: 0
-        },
-        objectIcon: {
-            width: 38,
-            height: 38,
-            borderRadius: 8,
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: "0 0 auto",
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            color: theme.colors.useCases.typography.textFocus
-        },
-        headerText: {
-            display: "flex",
-            flexDirection: "column",
-            minWidth: 0,
-            gap: theme.spacing(0.5)
-        },
-        objectBasename: {
-            minWidth: 0,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            color: theme.colors.useCases.typography.textSecondary
-        },
-        policyPanel: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: theme.spacing(2),
-            minWidth: 0,
-            padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
-            borderRadius: 8,
-            backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.72),
-            "@media (max-width: 600px)": {
-                alignItems: "stretch",
-                flexDirection: "column"
-            }
-        },
-        policyText: {
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(0.75),
-            minWidth: 0
-        },
-        policyTitle: {
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        policyDescription: {
-            color: theme.colors.useCases.typography.textSecondary,
-            lineHeight: 1.55
-        },
-        validitySelect: {
-            width: "min(100%, 280px)"
-        },
-        urlSection: {
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(1),
-            minWidth: 0,
-            position: "relative"
-        },
-        urlLabel: {
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        urlRow: {
-            display: "flex",
-            alignItems: "stretch",
-            gap: theme.spacing(1),
-            minWidth: 0,
-            "@media (max-width: 600px)": {
-                flexDirection: "column"
-            }
-        },
-        httpUrl: {
-            flex: "1 1 auto",
-            minWidth: 0,
-            display: "block",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
-            borderRadius: 8,
-            boxSizing: "border-box",
-            color: theme.colors.useCases.typography.textFocus,
-            backgroundColor: theme.colors.useCases.surfaces.background,
-            fontFamily:
-                "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-            fontSize: 13,
-            textDecoration: "none",
-            "&:hover": {
-                textDecoration: "underline"
-            },
-            "&:focus-visible": {
-                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
-                outlineOffset: 2
-            }
-        },
-        pendingUrl: {
-            flex: "1 1 auto",
-            minWidth: 0,
-            display: "block",
-            padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
-            borderRadius: 8,
-            boxSizing: "border-box",
-            color: theme.colors.useCases.typography.textSecondary,
-            backgroundColor: theme.colors.useCases.surfaces.background,
-            fontSize: 13
-        },
-        copyButton: {
-            border: "none",
-            margin: 0,
-            padding: `${theme.spacing(1.25)}px ${theme.spacing(2.25)}px`,
-            borderRadius: 8,
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: theme.spacing(1),
-            flex: "0 0 auto",
-            minWidth: 96,
-            cursor: isUrlAvailable ? "pointer" : "default",
-            color:
-                copyStatus === "copied"
-                    ? theme.colors.useCases.alertSeverity.success.main
-                    : theme.colors.useCases.typography.textPrimary,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            transition:
-                "background-color 120ms ease, color 120ms ease, opacity 120ms ease",
-            font: "inherit",
-            fontWeight: 500,
-            "&:hover": {
-                backgroundColor: isUrlAvailable
-                    ? theme.colors.useCases.surfaces.surface3
-                    : theme.colors.useCases.surfaces.surface2
-            },
-            "&:focus-visible": {
-                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
-                outlineOffset: 2
-            },
-            "&:disabled": {
-                opacity: 0.55
-            }
-        },
-        copyIcon: {
-            color: "currentColor"
-        },
-        copyFeedback: {
-            position: "absolute",
-            width: 1,
-            height: 1,
-            padding: 0,
-            margin: -1,
-            overflow: "hidden",
-            clip: "rect(0 0 0 0)",
-            whiteSpace: "nowrap",
-            border: 0
+const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(3),
+        width: "100%",
+        minWidth: 0,
+        boxSizing: "border-box"
+    },
+    description: {
+        color: theme.colors.useCases.typography.textPrimary,
+        lineHeight: 1.5
+    },
+    signedLinkSection: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(2),
+        minWidth: 0
+    },
+    signedLinkLabel: {
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    signedLinkRow: {
+        display: "grid",
+        gridTemplateColumns: "190px minmax(0, 1fr)",
+        gap: theme.spacing(2.5),
+        alignItems: "stretch",
+        minWidth: 0,
+        "@media (max-width: 600px)": {
+            gridTemplateColumns: "1fr"
         }
-    }));
+    },
+    validitySelect: {
+        minWidth: 0,
+        "& .MuiInputBase-root": {
+            minHeight: 48,
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        "& .MuiSelect-select": {
+            display: "flex",
+            alignItems: "center",
+            minHeight: "unset",
+            paddingTop: theme.spacing(1.5),
+            paddingBottom: theme.spacing(1.5)
+        }
+    },
+    actions: {
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: theme.spacing(1.5),
+        marginTop: theme.spacing(1),
+        "& .MuiButton-root": {
+            marginLeft: 0
+        }
+    }
+}));
+
+const { i18n } = declareComponentKeys<
+    | "generating public URL"
+    | "copy public URL aria label"
+    | "signed link with time limit"
+    | "signed link validity aria label"
+    | "generating signed URL"
+    | "copy signed URL aria label"
+    | "cancel"
+    | "copied"
+    | "copy link"
+    | "create link"
+    | "public description"
+    | "signed description"
+>()({ S3ShareObjectDialog });
+export type I18n = typeof i18n;

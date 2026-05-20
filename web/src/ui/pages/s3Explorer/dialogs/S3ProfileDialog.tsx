@@ -11,6 +11,9 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { getIconUrlByName } from "lazy-icons";
 import { alpha } from "@mui/material/styles";
 import { keyframes } from "tss-react";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
+
+type I18nKey = "detail title" | "create title" | "edit title" | "close aria label";
 
 export type S3ProfileDialogProps = {
     evtOpen: Evt<"detail" | "create">;
@@ -22,6 +25,8 @@ export function S3ProfileDialog(props: S3ProfileDialogProps) {
     const [activeView, setActiveView] = useState<
         "detail" | "create" | "edit" | undefined
     >(undefined);
+
+    const { t } = useTranslation({ S3ProfileDialog });
 
     useEvt(
         ctx => {
@@ -39,11 +44,11 @@ export function S3ProfileDialog(props: S3ProfileDialogProps) {
             title={(() => {
                 switch (activeView) {
                     case "detail":
-                        return "S3 Profile Detail";
+                        return t("detail title");
                     case "create":
-                        return "New Custom S3 Profile";
+                        return t("create title");
                     case "edit":
-                        return "Edit Custom S3 Profile";
+                        return t("edit title");
                 }
             })()}
             onClose={() => setActiveView(undefined)}
@@ -79,6 +84,7 @@ function SideDialog(props: {
     const { children, title, onClose } = props;
 
     const { classes } = useStyles_SideDialog();
+    const { t } = useTranslation({ S3ProfileDialog });
 
     return (
         <div className={classes.root}>
@@ -96,6 +102,7 @@ function SideDialog(props: {
                         className={classes.closeButton}
                         size="small"
                         icon={getIconUrlByName("Close")}
+                        aria-label={t("close aria label")}
                         onClick={onClose}
                     />
                 </div>
@@ -165,6 +172,11 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
         boxSizing: "border-box"
     }
 }));
+
+const { i18n } = declareComponentKeys<I18nKey>()({
+    S3ProfileDialog
+});
+export type I18n = typeof i18n;
 
 const S3ProfileDetails = withLoader<{
     onCreateNewProfile: () => void;

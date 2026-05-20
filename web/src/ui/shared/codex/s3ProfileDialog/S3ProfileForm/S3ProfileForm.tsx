@@ -14,6 +14,33 @@ export type ErrorId =
     | "not a valid access key id"
     | "profile name already used";
 
+type I18nKey =
+    | ErrorId
+    | "connection details title"
+    | "connection details subtitle"
+    | "profile name label"
+    | "s3 service url label"
+    | "s3 service url helper"
+    | "default region label"
+    | "default region helper"
+    | "url style title"
+    | "url style subtitle"
+    | "path style"
+    | "virtual hosted style"
+    | "example"
+    | "account credentials title"
+    | "account credentials subtitle"
+    | "anonymous access"
+    | "access key id label"
+    | "access key id helper"
+    | "secret access key label"
+    | "secret access key helper"
+    | "session token label"
+    | "session token helper"
+    | "cancel"
+    | "save configuration"
+    | "create profile";
+
 export type Props = {
     className?: string;
 
@@ -154,13 +181,13 @@ export function S3ProfileForm(props: Props) {
             <div className={classes.body}>
                 <Section>
                     <SectionHeading
-                        title="Connection details"
-                        subtitle="Define the profile name and S3 endpoint used by the explorer."
+                        title={t("connection details title")}
+                        subtitle={t("connection details subtitle")}
                     />
 
                     <div className={classes.fields}>
                         <FormTextField
-                            label="Profile name"
+                            label={t("profile name label")}
                             value={profileName.value}
                             onChange={profileName.onChange}
                             onBlur={() => onFieldBlur("profileName")}
@@ -173,7 +200,7 @@ export function S3ProfileForm(props: Props) {
                         />
 
                         <FormTextField
-                            label="URL of the S3 service"
+                            label={t("s3 service url label")}
                             value={endpointUrl.value}
                             onChange={endpointUrl.onChange}
                             onBlur={() => onFieldBlur("endpointUrl")}
@@ -182,12 +209,12 @@ export function S3ProfileForm(props: Props) {
                                 t
                             })}
                             isErrorVisible={getIsFieldErrorVisible("endpointUrl")}
-                            helperText="Example: https://minio.lab.example.net"
+                            helperText={t("s3 service url helper")}
                             autoComplete="url"
                         />
 
                         <FormTextField
-                            label="Default region"
+                            label={t("default region label")}
                             value={defaultRegion.value ?? ""}
                             onChange={newValue =>
                                 defaultRegion.onChange(emptyStringAsUndefined(newValue))
@@ -198,7 +225,7 @@ export function S3ProfileForm(props: Props) {
                                 t
                             })}
                             isErrorVisible={getIsFieldErrorVisible("defaultRegion")}
-                            helperText="Example: eu-west-1, if not sure, leave empty"
+                            helperText={t("default region helper")}
                             autoComplete="off"
                         />
                     </div>
@@ -206,8 +233,8 @@ export function S3ProfileForm(props: Props) {
 
                 <Section>
                     <SectionHeading
-                        title="URL style"
-                        subtitle="Specify how your S3 server formats the URL for downloading files."
+                        title={t("url style title")}
+                        subtitle={t("url style subtitle")}
                     />
 
                     <div className={classes.urlStyleOptions}>
@@ -215,14 +242,16 @@ export function S3ProfileForm(props: Props) {
                             value="path"
                             selectedValue={urlStyle.value}
                             onChange={urlStyle.onChange}
-                            title="Path style"
+                            title={t("path style")}
+                            exampleLabel={t("example")}
                             example={urlStyleExamples.path}
                         />
                         <UrlStyleOption
                             value="virtual-hosted"
                             selectedValue={urlStyle.value}
                             onChange={urlStyle.onChange}
-                            title="Virtual-hosted style"
+                            title={t("virtual hosted style")}
+                            exampleLabel={t("example")}
                             example={urlStyleExamples["virtual-hosted"]}
                         />
                     </div>
@@ -230,8 +259,8 @@ export function S3ProfileForm(props: Props) {
 
                 <Section>
                     <SectionHeading
-                        title="Account credentials"
-                        subtitle="Choose whether this profile uses anonymous access or explicit credentials."
+                        title={t("account credentials title")}
+                        subtitle={t("account credentials subtitle")}
                     />
 
                     <label className={classes.switchRow}>
@@ -240,14 +269,14 @@ export function S3ProfileForm(props: Props) {
                             onChange={event => isAnonymous.onChange(event.target.checked)}
                         />
                         <Text typo="body 1" className={classes.switchLabel}>
-                            Anonymous access
+                            {t("anonymous access")}
                         </Text>
                     </label>
 
                     {!isAnonymous.value && (
                         <div className={classes.credentialsFields}>
                             <FormTextField
-                                label="Access Key ID"
+                                label={t("access key id label")}
                                 value={accessKeyId.value ?? ""}
                                 onChange={newValue =>
                                     accessKeyId.onChange(emptyStringAsUndefined(newValue))
@@ -258,11 +287,11 @@ export function S3ProfileForm(props: Props) {
                                     t
                                 })}
                                 isErrorVisible={getIsFieldErrorVisible("accessKeyId")}
-                                helperText="Example: ASIAIOSFODNN7EXAMPLE"
+                                helperText={t("access key id helper")}
                                 autoComplete="off"
                             />
                             <FormTextField
-                                label="Secret Access Key"
+                                label={t("secret access key label")}
                                 value={secretAccessKey.value ?? ""}
                                 onChange={newValue =>
                                     secretAccessKey.onChange(
@@ -275,12 +304,12 @@ export function S3ProfileForm(props: Props) {
                                     t
                                 })}
                                 isErrorVisible={getIsFieldErrorVisible("secretAccessKey")}
-                                helperText="Example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                                helperText={t("secret access key helper")}
                                 isSensitive={true}
                                 autoComplete="off"
                             />
                             <FormTextField
-                                label="Session Token"
+                                label={t("session token label")}
                                 value={sessionToken.value ?? ""}
                                 onChange={newValue =>
                                     sessionToken.onChange(
@@ -293,7 +322,7 @@ export function S3ProfileForm(props: Props) {
                                     t
                                 })}
                                 isErrorVisible={getIsFieldErrorVisible("sessionToken")}
-                                helperText="Optional. Leave empty when your credentials do not include a session token."
+                                helperText={t("session token helper")}
                                 isSensitive={true}
                                 autoComplete="off"
                             />
@@ -310,7 +339,7 @@ export function S3ProfileForm(props: Props) {
                         onCancel();
                     }}
                 >
-                    Cancel
+                    {t("cancel")}
                 </Button>
                 <Button
                     type="submit"
@@ -318,8 +347,8 @@ export function S3ProfileForm(props: Props) {
                     disabled={onSubmit === undefined && hasSubmittedInvalidForm}
                 >
                     {isEditionOfAnExistingConfig
-                        ? "Save Configuration"
-                        : "Create Profile"}
+                        ? t("save configuration")
+                        : t("create profile")}
                 </Button>
             </div>
         </form>
@@ -420,9 +449,10 @@ function UrlStyleOption(props: {
     selectedValue: UrlStyle;
     onChange: (newValue: UrlStyle) => void;
     title: string;
+    exampleLabel: string;
     example: string;
 }) {
-    const { value, selectedValue, onChange, title, example } = props;
+    const { value, selectedValue, onChange, title, exampleLabel, example } = props;
 
     const id = useId();
     const isSelected = value === selectedValue;
@@ -446,7 +476,7 @@ function UrlStyleOption(props: {
                     {title}
                 </Text>
                 <Text typo="body 2" className={classes.example}>
-                    Example: {example}
+                    {exampleLabel}: {example}
                 </Text>
             </span>
         </label>
@@ -711,7 +741,7 @@ const useStyles_UrlStyleOption = tss.withName({ UrlStyleOption }).create(({ them
     }
 }));
 
-const { i18n } = declareComponentKeys<ErrorId>()({
+const { i18n } = declareComponentKeys<I18nKey>()({
     S3ProfileForm
 });
 export type I18n = typeof i18n;
