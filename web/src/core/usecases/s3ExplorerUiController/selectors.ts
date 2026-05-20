@@ -538,15 +538,36 @@ const uriBar = createSelector(
         listedPrefix,
         isListing
     ): MainView["uriBar"] => {
+        const sortHints = (
+            hints: MainView["uriBar"]["hints"]
+        ): MainView["uriBar"]["hints"] =>
+            [...hints].sort((a, b) => {
+                const getRank = (hint: typeof a) => {
+                    switch (hint.type) {
+                        case "bookmark":
+                            return hint.isReadonly ? 1 : 0;
+                        case "key-segment":
+                            return 2;
+                        case "object":
+                            return 3;
+                        default:
+                            assert<Equals<typeof hint.type, never>>(false);
+                    }
+                };
+                return getRank(a) - getRank(b);
+            });
+
         if (s3Uri === undefined) {
             return {
                 s3Uri: undefined,
-                hints: bookmarks.items.map(bookmark => ({
-                    type: "bookmark",
-                    text: stringifyS3Uri(bookmark.s3Uri),
-                    s3Uri: bookmark.s3Uri,
-                    isReadonly: bookmark.isReadonly
-                })),
+                hints: sortHints(
+                    bookmarks.items.map(bookmark => ({
+                        type: "bookmark",
+                        text: stringifyS3Uri(bookmark.s3Uri),
+                        s3Uri: bookmark.s3Uri,
+                        isReadonly: bookmark.isReadonly
+                    }))
+                ),
                 bookmarkStatus: {
                     isBookmarked: false
                 }
@@ -619,7 +640,7 @@ const uriBar = createSelector(
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {
             return {
                 s3Uri: { s3Uri, s3Uri_publicPrefix },
-                hints,
+                hints: sortHints(hints),
                 bookmarkStatus
             };
         }
@@ -662,25 +683,9 @@ const uriBar = createSelector(
             }
         });
 
-        hints.sort((a, b) => {
-            const getRank = (hint: typeof a) => {
-                switch (hint.type) {
-                    case "bookmark":
-                        return 1;
-                    case "key-segment":
-                        return 2;
-                    case "object":
-                        return 3;
-                    default:
-                        assert<Equals<typeof hint.type, never>>(false);
-                }
-            };
-            return getRank(a) - getRank(b);
-        });
-
         return {
             s3Uri: { s3Uri, s3Uri_publicPrefix },
-            hints,
+            hints: sortHints(hints),
             bookmarkStatus
         };
     }
