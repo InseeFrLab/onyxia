@@ -611,12 +611,21 @@ export function S3UriBar(props: S3UriBarProps) {
             return;
         }
 
+        const exitEditModeHintIndex = displayedHints.findIndex(
+            hint => hint.action === "exit-edit-mode"
+        );
+
+        if (exitEditModeHintIndex >= 0) {
+            setActiveHintIndex(exitEditModeHintIndex);
+            return;
+        }
+
         setActiveHintIndex(index =>
             index >= displayedHints.length
                 ? displayedHints.length - 1
                 : Math.max(index, 0)
         );
-    }, [displayedHints.length, isEditing]);
+    }, [displayedHints, isEditing]);
 
     useEffect(() => {
         if (!isEditing) {
