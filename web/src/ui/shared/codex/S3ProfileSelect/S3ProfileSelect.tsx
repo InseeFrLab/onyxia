@@ -225,7 +225,6 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
         root: {
             width: "fit-content",
             position: "relative",
-            minWidth: 200,
             maxWidth: 350,
             flex: "0 1 auto"
         },
