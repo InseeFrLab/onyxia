@@ -9,7 +9,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
     {
-        ignores: ["dist", "!.storybook"]
+        ignores: ["dist", "!.storybook", "public", "node_modules"]
     },
     {
         extends: [js.configs.recommended, ...tseslint.configs.recommended],
