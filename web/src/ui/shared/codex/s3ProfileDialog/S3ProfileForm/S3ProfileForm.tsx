@@ -640,14 +640,14 @@ const useStyles_FormTextField = tss.withName({ FormTextField }).create(({ theme 
     },
     input: {
         color: theme.colors.useCases.typography.textPrimary,
-        minHeight: 48,
-        borderRadius: 8,
-        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        minHeight: 52,
+        borderRadius: 12,
+        border: "2px solid transparent",
         backgroundColor: theme.colors.useCases.surfaces.background,
         transition: "border-color 160ms ease, background-color 160ms ease",
         "&:hover": {
             backgroundColor: theme.colors.useCases.surfaces.surface2,
-            borderColor: theme.colors.useCases.surfaces.surface3
+            borderColor: "transparent"
         },
         "&.Mui-focused": {
             borderColor: theme.colors.useCases.typography.textFocus
@@ -656,7 +656,7 @@ const useStyles_FormTextField = tss.withName({ FormTextField }).create(({ theme 
             borderColor: theme.colors.useCases.alertSeverity.error.main
         },
         "& .MuiInputBase-input": {
-            ...theme.typography.variants["label 1"].style,
+            ...theme.typography.variants["body 1"].style,
             padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
             color: theme.colors.useCases.typography.textPrimary,
             "&::placeholder": {
@@ -682,12 +682,16 @@ const useStyles_UrlStyleOption = tss.withName({ UrlStyleOption }).create(({ them
         padding: `${theme.spacing(3)}px ${theme.spacing(2)}px`,
         borderRadius: 8,
         border: `2px solid transparent`,
+        ":hover": {
+            backgroundColor: theme.colors.useCases.surfaces.surface2
+        },
         backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.56),
         cursor: "pointer"
     },
     rootSelected: {
         borderColor: theme.colors.useCases.buttons.actionActive
     },
+
     radio: {
         flex: "none"
     },
