@@ -23,6 +23,7 @@ import {
 } from "ui/shared/textEditor/CodeTextEditor";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { getScrollableParent } from "powerhooks/getScrollableParent";
 
 export type Props = {
     className?: string;
@@ -96,6 +97,8 @@ export function S3ProfileDetails(props: Props) {
         await copyToClipboard(codeSnippet.codeSrc);
         setIsCodeSnippetCopied(true);
     };
+
+    const [element_select, setElement_select] = useState<HTMLElement | null>(null);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -245,6 +248,7 @@ export function S3ProfileDetails(props: Props) {
                         className={classes.technologySelectControl}
                     >
                         <Select
+                            ref={setElement_select}
                             value={technology}
                             inputProps={{ "aria-label": t("technology aria label") }}
                             onChange={event => {
@@ -256,6 +260,18 @@ export function S3ProfileDetails(props: Props) {
                                 }
 
                                 onTechnologyChange({ technology: value });
+
+                                assert(element_select !== null);
+
+                                const element_scrollable = getScrollableParent({
+                                    element: element_select,
+                                    doReturnElementIfScrollable: false
+                                });
+
+                                setTimeout(() => {
+                                    element_scrollable.scrollTop =
+                                        element_scrollable.scrollHeight;
+                                }, 70);
                             }}
                         >
                             {availableTechnologies.map(availableTechnology => (
