@@ -190,25 +190,47 @@ export const translations: Translations<"en"> = {
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Nombre del marcador",
+        "add dialog title": "Añadir esta ubicación a los marcadores",
+        "rename dialog title": "Renombrar marcador",
+        "dialog subtitle":
+            "Guarda esta ubicación S3 para acceder a ella más rápido más tarde.",
         "bookmarkName textField label": "Nombre",
         "bookmarkName textField empty error":
             "El nombre del marcador no puede estar vacío",
+        "copy s3 path aria label": "Copiar ruta S3",
         cancel: "Cancelar",
-        ok: "Ok"
+        ok: "Ok",
+        "add to bookmarks": "Añadir a marcadores",
+        "rename bookmark": "Renombrar marcador"
     },
     DirectoryCreationDialog: {
         "dialog title": "Crear directorio",
         "dialog subtitle":
             "Los directorios se crean en relación con el prefijo que se está mostrando.",
+        "create prefix dialog title": "Crear prefijo",
+        "create prefix dialog subtitle":
+            "Crea un nuevo prefijo dentro de la ubicación S3 actual.",
         "directoryName textField label": "Nombre del directorio",
+        "prefixName textField label": "Nombre del prefijo",
         "directoryName textField empty error":
             "El nombre del directorio no puede estar vacío",
         "directoryName textField duplicate error": "El nombre del directorio ya existe",
         cancel: "Cancelar",
-        create: "Crear"
+        create: "Crear",
+        "create prefix": "Crear prefijo"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Hacer público el prefijo",
+        "make public dialog title": "¿Hacer público este prefijo?",
+        "make private dialog title": "¿Hacer privado este prefijo?",
+        "make public dialog body main":
+            "Todos los archivos de este prefijo serán accesibles para cualquier persona con un enlace, incluido el contenido actual y futuro.",
+        "make public dialog body alternative":
+            "Para compartir archivos específicos o limitar el acceso en el tiempo, crea un enlace de uso compartido en su lugar.",
+        "make private dialog body main":
+            "Todos los archivos de este prefijo son accesibles para cualquier persona con un enlace, incluido el contenido actual y futuro. Al hacer privado este prefijo se elimina el acceso público.",
+        "make private dialog body alternative":
+            "Para compartir archivos específicos o limitar el acceso en el tiempo, crea un enlace de uso compartido en su lugar.",
         "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
                 Estás a punto de hacer público{" "}
@@ -221,13 +243,123 @@ export const translations: Translations<"en"> = {
             </>
         ),
         cancel: "Cancelar",
-        "make public": "Hacer público"
+        "make public": "Hacer público",
+        "make private": "Hacer privado"
+    },
+    S3ExplorerMainView: {
+        "create prefix dialog title": "Crear prefijo",
+        "create prefix dialog subtitle":
+            "Crea un nuevo prefijo dentro de la ubicación S3 actual.",
+        "prefix name field label": "Nombre del prefijo",
+        "prefix name empty error": "El nombre del prefijo no puede estar vacío.",
+        cancel: "Cancelar",
+        "create prefix": "Crear prefijo",
+        "delete selection dialog title": "Eliminar selección",
+        "delete selection dialog subtitle":
+            "Esta acción elimina permanentemente los elementos seleccionados.",
+        "delete selection dialog body": ({ count }) =>
+            `Estás a punto de eliminar ${count} elemento${count > 1 ? "s" : ""} seleccionado${count > 1 ? "s" : ""}. Eliminar un prefijo también elimina todo su contenido.`,
+        delete: "Eliminar",
+        uploaded: "Subido",
+        share: "Compartir",
+        download: "Descargar",
+        "copy s3 path": "Copiar ruta S3",
+        "make public": "Hacer público",
+        "make private": "Hacer privado",
+        folder: "Carpeta",
+        object: "Objeto",
+        "folder is public": "La carpeta es pública",
+        "folder is private": "La carpeta es privada"
+    },
+    S3ShareObjectDialog: {
+        "generating public URL": "Generando URL pública...",
+        "copy public URL aria label": "Copiar URL pública",
+        "signed link with time limit": "Enlace firmado con límite de tiempo",
+        "signed link validity aria label": "Duración de validez del enlace firmado",
+        "generating signed URL": "Generando URL firmada...",
+        "copy signed URL aria label": "Copiar URL firmada",
+        cancel: "Cancelar",
+        copied: "Copiado",
+        "copy link": "Copiar enlace",
+        "create link": "Crear enlace",
+        "public description":
+            "Cualquier persona con la URL puede acceder a este objeto. El enlace nunca expira porque el objeto está dentro de un prefijo público.",
+        "signed description":
+            "Crea una URL firmada con un periodo de validez limitado. Para compartir una URL que no expire, haz público uno de los prefijos superiores de este objeto."
+    },
+    S3ProfileDialog: {
+        "detail title": "Detalle del perfil S3",
+        "create title": "Nuevo perfil S3 personalizado",
+        "edit title": "Editar perfil S3 personalizado",
+        "close aria label": "Cerrar diálogo de perfil S3"
+    },
+    S3ProfileDetails: {
+        "read only": "Solo lectura",
+        custom: "Personalizado",
+        edit: "Editar",
+        "connection details title": "Detalles de conexión",
+        "connection details subtitle":
+            "Usa estos valores al configurar clientes S3 fuera del explorador.",
+        "endpoint url label": "URL del endpoint",
+        "default region label": "Región predeterminada",
+        "access credentials title": "Credenciales de acceso",
+        "access credentials anonymous subtitle":
+            "Este perfil no expone credenciales. Usa acceso S3 anónimo cuando el bucket de destino lo permita.",
+        "access credentials subtitle":
+            "Copia el valor requerido por el cliente que estás configurando.",
+        "access key id label": "ID de clave de acceso",
+        "secret access key label": "Clave de acceso secreta",
+        "session token label": "Token de sesión",
+        "environment variable": "Variable de entorno",
+        "no expiration": "No se anuncia tiempo de expiración para estas credenciales.",
+        expires: ({ expirationTime }) => `Expira el ${expirationTime}.`,
+        renewing: "Renovando...",
+        "renew tokens": "Renovar tokens",
+        "init script title":
+            "Para acceder a tu almacenamiento fuera de los servicios Datalab",
+        "init script subtitle":
+            "Descarga o copia el script de inicialización en el lenguaje de programación que prefieras.",
+        "technology aria label": "Tecnología",
+        "select s3 profile aria label": "Seleccionar perfil S3",
+        "s3 profiles aria label": "Perfiles S3",
+        "new s3 profile": "Nuevo perfil S3",
+        "copy aria label": ({ what }) => `Copiar ${what}`,
+        copied: "Copiado",
+        copy: "Copiar"
     },
     S3ProfileForm: {
         "must be an url": "Introduce una URL válida.",
         "is required": "Este campo es obligatorio.",
         "not a valid access key id": "Introduce un ID de clave de acceso válido.",
-        "profile name already used": "Este nombre de perfil ya está en uso."
+        "profile name already used": "Este nombre de perfil ya está en uso.",
+        "connection details title": "Detalles de conexión",
+        "connection details subtitle":
+            "Define el nombre del perfil y el endpoint S3 usados por el explorador.",
+        "profile name label": "Nombre del perfil",
+        "s3 service url label": "URL del servicio S3",
+        "s3 service url helper": "Ejemplo: https://minio.lab.example.net",
+        "default region label": "Región predeterminada",
+        "default region helper": "Ejemplo: eu-west-1, si no estás seguro, déjalo vacío",
+        "url style title": "Estilo de URL",
+        "url style subtitle":
+            "Especifica cómo tu servidor S3 formatea la URL para descargar archivos.",
+        "path style": "Estilo de ruta",
+        "virtual hosted style": "Estilo virtual-hosted",
+        example: "Ejemplo",
+        "account credentials title": "Credenciales de cuenta",
+        "account credentials subtitle":
+            "Elige si este perfil usa acceso anónimo o credenciales explícitas.",
+        "anonymous access": "Acceso anónimo",
+        "access key id label": "ID de clave de acceso",
+        "access key id helper": "Ejemplo: ASIAIOSFODNN7EXAMPLE",
+        "secret access key label": "Clave de acceso secreta",
+        "secret access key helper": "Ejemplo: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "session token label": "Token de sesión",
+        "session token helper":
+            "Opcional. Déjalo vacío si tus credenciales no incluyen un token de sesión.",
+        cancel: "Cancelar",
+        "save configuration": "Guardar configuración",
+        "create profile": "Crear perfil"
     },
     MySecrets: {
         "page title - my secrets": "Mis Secretos",

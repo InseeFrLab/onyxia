@@ -169,22 +169,42 @@ export const translations: Translations<"zh-CN"> = {
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "书签名称",
+        "add dialog title": "将此位置添加到书签",
+        "rename dialog title": "重命名书签",
+        "dialog subtitle": "保存此 S3 位置，以便之后更快访问。",
         "bookmarkName textField label": "名称",
         "bookmarkName textField empty error": "书签名称不能为空",
+        "copy s3 path aria label": "复制 S3 路径",
         cancel: "取消",
-        ok: "确定"
+        ok: "确定",
+        "add to bookmarks": "添加到书签",
+        "rename bookmark": "重命名书签"
     },
     DirectoryCreationDialog: {
         "dialog title": "创建目录",
         "dialog subtitle": "目录将相对于当前正在查看的前缀创建。",
+        "create prefix dialog title": "创建前缀",
+        "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",
         "directoryName textField label": "目录名称",
+        "prefixName textField label": "前缀名称",
         "directoryName textField empty error": "目录名称不能为空",
         "directoryName textField duplicate error": "目录名称已存在",
         cancel: "取消",
-        create: "创建"
+        create: "创建",
+        "create prefix": "创建前缀"
     },
     MakePrefixPublicDialog: {
         "dialog title": "公开前缀",
+        "make public dialog title": "公开此前缀？",
+        "make private dialog title": "将此前缀设为私有？",
+        "make public dialog body main":
+            "此前缀中的所有文件都将可通过链接访问，包括当前和未来的内容。",
+        "make public dialog body alternative":
+            "如果只想共享特定文件或限制访问时间，请改为创建共享链接。",
+        "make private dialog body main":
+            "此前缀中的所有文件都可通过链接访问，包括当前和未来的内容。将此前缀设为私有会移除公开访问。",
+        "make private dialog body alternative":
+            "如果只想共享特定文件或限制访问时间，请改为创建共享链接。",
         "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
                 你即将公开 <span className={s3UriClassName}>{s3Uri}</span>
@@ -195,13 +215,113 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         cancel: "取消",
-        "make public": "公开"
+        "make public": "公开",
+        "make private": "设为私有"
+    },
+    S3ExplorerMainView: {
+        "create prefix dialog title": "创建前缀",
+        "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",
+        "prefix name field label": "前缀名称",
+        "prefix name empty error": "前缀名称不能为空。",
+        cancel: "取消",
+        "create prefix": "创建前缀",
+        "delete selection dialog title": "删除所选项",
+        "delete selection dialog subtitle": "此操作会永久删除所选项目。",
+        "delete selection dialog body": ({ count }) =>
+            `你即将删除 ${count} 个所选项目。删除前缀也会删除其中的所有内容。`,
+        delete: "删除",
+        uploaded: "已上传",
+        share: "共享",
+        download: "下载",
+        "copy s3 path": "复制 S3 路径",
+        "make public": "公开",
+        "make private": "设为私有",
+        folder: "文件夹",
+        object: "对象",
+        "folder is public": "文件夹是公开的",
+        "folder is private": "文件夹是私有的"
+    },
+    S3ShareObjectDialog: {
+        "generating public URL": "正在生成公开 URL...",
+        "copy public URL aria label": "复制公开 URL",
+        "signed link with time limit": "带时间限制的签名链接",
+        "signed link validity aria label": "签名链接有效期",
+        "generating signed URL": "正在生成签名 URL...",
+        "copy signed URL aria label": "复制签名 URL",
+        cancel: "取消",
+        copied: "已复制",
+        "copy link": "复制链接",
+        "create link": "创建链接",
+        "public description":
+            "任何拥有该 URL 的人都可以访问此对象。由于该对象位于公开前缀中，因此链接永不过期。",
+        "signed description":
+            "创建一个有效期有限的签名 URL。若要共享永不过期的 URL，请公开此对象的某个上级前缀。"
+    },
+    S3ProfileDialog: {
+        "detail title": "S3 配置文件详情",
+        "create title": "新建自定义 S3 配置文件",
+        "edit title": "编辑自定义 S3 配置文件",
+        "close aria label": "关闭 S3 配置文件对话框"
+    },
+    S3ProfileDetails: {
+        "read only": "只读",
+        custom: "自定义",
+        edit: "编辑",
+        "connection details title": "连接详情",
+        "connection details subtitle": "在资源管理器外配置 S3 客户端时使用这些值。",
+        "endpoint url label": "端点 URL",
+        "default region label": "默认区域",
+        "access credentials title": "访问凭据",
+        "access credentials anonymous subtitle":
+            "此配置文件不公开凭据。当目标存储桶允许时，请使用匿名 S3 访问。",
+        "access credentials subtitle": "复制正在配置的客户端所需的值。",
+        "access key id label": "访问密钥 ID",
+        "secret access key label": "秘密访问密钥",
+        "session token label": "会话令牌",
+        "environment variable": "环境变量",
+        "no expiration": "这些凭据未提供过期时间。",
+        expires: ({ expirationTime }) => `过期时间：${expirationTime}。`,
+        renewing: "正在续期...",
+        "renew tokens": "续期令牌",
+        "init script title": "在 Datalab 服务外访问你的存储",
+        "init script subtitle": "下载或复制所选编程语言的初始化脚本。",
+        "technology aria label": "技术",
+        "select s3 profile aria label": "选择 S3 配置文件",
+        "s3 profiles aria label": "S3 配置文件",
+        "new s3 profile": "新建 S3 配置文件",
+        "copy aria label": ({ what }) => `复制${what}`,
+        copied: "已复制",
+        copy: "复制"
     },
     S3ProfileForm: {
         "must be an url": "请输入有效的 URL。",
         "is required": "此字段为必填项。",
         "not a valid access key id": "请输入有效的访问密钥 ID。",
-        "profile name already used": "此配置文件名称已被使用。"
+        "profile name already used": "此配置文件名称已被使用。",
+        "connection details title": "连接详情",
+        "connection details subtitle": "定义资源管理器使用的配置文件名称和 S3 端点。",
+        "profile name label": "配置文件名称",
+        "s3 service url label": "S3 服务 URL",
+        "s3 service url helper": "示例：https://minio.lab.example.net",
+        "default region label": "默认区域",
+        "default region helper": "示例：eu-west-1，如不确定请留空",
+        "url style title": "URL 样式",
+        "url style subtitle": "指定 S3 服务器如何生成文件下载 URL。",
+        "path style": "路径样式",
+        "virtual hosted style": "虚拟主机样式",
+        example: "示例",
+        "account credentials title": "账户凭据",
+        "account credentials subtitle": "选择此配置文件使用匿名访问还是显式凭据。",
+        "anonymous access": "匿名访问",
+        "access key id label": "访问密钥 ID",
+        "access key id helper": "示例：ASIAIOSFODNN7EXAMPLE",
+        "secret access key label": "秘密访问密钥",
+        "secret access key helper": "示例：wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "session token label": "会话令牌",
+        "session token helper": "可选。如果你的凭据不包含会话令牌，请留空。",
+        cancel: "取消",
+        "save configuration": "保存配置",
+        "create profile": "创建配置文件"
     },
     MySecrets: {
         "page title - my secrets": "我的密钥",

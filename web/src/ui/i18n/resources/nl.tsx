@@ -191,23 +191,44 @@ export const translations: Translations<"nl"> = {
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bladwijzernaam",
+        "add dialog title": "Deze locatie aan bladwijzers toevoegen",
+        "rename dialog title": "Bladwijzer hernoemen",
+        "dialog subtitle": "Sla deze S3-locatie op zodat je er later sneller bij kunt.",
         "bookmarkName textField label": "Naam",
         "bookmarkName textField empty error": "De bladwijzernaam mag niet leeg zijn",
+        "copy s3 path aria label": "S3-pad kopiëren",
         cancel: "Annuleren",
-        ok: "Ok"
+        ok: "Ok",
+        "add to bookmarks": "Aan bladwijzers toevoegen",
+        "rename bookmark": "Bladwijzer hernoemen"
     },
     DirectoryCreationDialog: {
         "dialog title": "Map aanmaken",
         "dialog subtitle":
             "Mappen worden aangemaakt relatief aan het voorvoegsel dat momenteel wordt weergegeven.",
+        "create prefix dialog title": "Prefix aanmaken",
+        "create prefix dialog subtitle":
+            "Maak een nieuwe prefix aan binnen de huidige S3-locatie.",
         "directoryName textField label": "Mapnaam",
+        "prefixName textField label": "Prefixnaam",
         "directoryName textField empty error": "De mapnaam mag niet leeg zijn",
         "directoryName textField duplicate error": "De mapnaam bestaat al",
         cancel: "Annuleren",
-        create: "Aanmaken"
+        create: "Aanmaken",
+        "create prefix": "Prefix aanmaken"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Prefix openbaar maken",
+        "make public dialog title": "Deze prefix openbaar maken?",
+        "make private dialog title": "Deze prefix privé maken?",
+        "make public dialog body main":
+            "Alle bestanden in deze prefix zijn toegankelijk voor iedereen met een link, inclusief huidige en toekomstige inhoud.",
+        "make public dialog body alternative":
+            "Maak in plaats daarvan een deellink als je specifieke bestanden wilt delen of toegang in de tijd wilt beperken.",
+        "make private dialog body main":
+            "Alle bestanden in deze prefix zijn toegankelijk voor iedereen met een link, inclusief huidige en toekomstige inhoud. Door deze prefix privé te maken wordt openbare toegang verwijderd.",
+        "make private dialog body alternative":
+            "Maak in plaats daarvan een deellink als je specifieke bestanden wilt delen of toegang in de tijd wilt beperken.",
         "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
                 Je staat op het punt <span className={s3UriClassName}>{s3Uri}</span>{" "}
@@ -219,13 +240,122 @@ export const translations: Translations<"nl"> = {
             </>
         ),
         cancel: "Annuleren",
-        "make public": "Openbaar maken"
+        "make public": "Openbaar maken",
+        "make private": "Privé maken"
+    },
+    S3ExplorerMainView: {
+        "create prefix dialog title": "Prefix aanmaken",
+        "create prefix dialog subtitle":
+            "Maak een nieuwe prefix aan binnen de huidige S3-locatie.",
+        "prefix name field label": "Prefixnaam",
+        "prefix name empty error": "De prefixnaam mag niet leeg zijn.",
+        cancel: "Annuleren",
+        "create prefix": "Prefix aanmaken",
+        "delete selection dialog title": "Selectie verwijderen",
+        "delete selection dialog subtitle":
+            "Deze actie verwijdert de geselecteerde items permanent.",
+        "delete selection dialog body": ({ count }) =>
+            `Je staat op het punt ${count} geselecteerd${count > 1 ? "e items" : " item"} te verwijderen. Het verwijderen van een prefix verwijdert ook alles erin.`,
+        delete: "Verwijderen",
+        uploaded: "Geüpload",
+        share: "Delen",
+        download: "Downloaden",
+        "copy s3 path": "S3-pad kopiëren",
+        "make public": "Openbaar maken",
+        "make private": "Privé maken",
+        folder: "Map",
+        object: "Object",
+        "folder is public": "Map is openbaar",
+        "folder is private": "Map is privé"
+    },
+    S3ShareObjectDialog: {
+        "generating public URL": "Openbare URL genereren...",
+        "copy public URL aria label": "Openbare URL kopiëren",
+        "signed link with time limit": "Ondertekende link met tijdslimiet",
+        "signed link validity aria label": "Geldigheidsduur van de ondertekende link",
+        "generating signed URL": "Ondertekende URL genereren...",
+        "copy signed URL aria label": "Ondertekende URL kopiëren",
+        cancel: "Annuleren",
+        copied: "Gekopieerd",
+        "copy link": "Link kopiëren",
+        "create link": "Link maken",
+        "public description":
+            "Iedereen met de URL heeft toegang tot dit object. De link verloopt nooit omdat het object in een openbare prefix staat.",
+        "signed description":
+            "Maak een ondertekende URL met een beperkte geldigheidsduur. Maak een bovenliggende prefix van dit object openbaar om een URL te delen die niet verloopt."
+    },
+    S3ProfileDialog: {
+        "detail title": "S3-profielgegevens",
+        "create title": "Nieuw aangepast S3-profiel",
+        "edit title": "Aangepast S3-profiel bewerken",
+        "close aria label": "S3-profielvenster sluiten"
+    },
+    S3ProfileDetails: {
+        "read only": "Alleen-lezen",
+        custom: "Aangepast",
+        edit: "Bewerken",
+        "connection details title": "Verbindingsgegevens",
+        "connection details subtitle":
+            "Gebruik deze waarden bij het configureren van S3-clients buiten de explorer.",
+        "endpoint url label": "Endpoint-URL",
+        "default region label": "Standaardregio",
+        "access credentials title": "Toegangsgegevens",
+        "access credentials anonymous subtitle":
+            "Dit profiel stelt geen inloggegevens beschikbaar. Gebruik anonieme S3-toegang wanneer de doelbucket dit toestaat.",
+        "access credentials subtitle":
+            "Kopieer de waarde die vereist is door de client die je configureert.",
+        "access key id label": "Access key ID",
+        "secret access key label": "Secret access key",
+        "session token label": "Sessietoken",
+        "environment variable": "Omgevingsvariabele",
+        "no expiration": "Er is geen vervaltijd opgegeven voor deze inloggegevens.",
+        expires: ({ expirationTime }) => `Verloopt op ${expirationTime}.`,
+        renewing: "Vernieuwen...",
+        "renew tokens": "Tokens vernieuwen",
+        "init script title": "Toegang tot je opslag buiten Datalab-services",
+        "init script subtitle":
+            "Download of kopieer het initialisatiescript in de programmeertaal van je keuze.",
+        "technology aria label": "Technologie",
+        "select s3 profile aria label": "S3-profiel selecteren",
+        "s3 profiles aria label": "S3-profielen",
+        "new s3 profile": "Nieuw S3-profiel",
+        "copy aria label": ({ what }) => `${what} kopiëren`,
+        copied: "Gekopieerd",
+        copy: "Kopiëren"
     },
     S3ProfileForm: {
         "must be an url": "Voer een geldige URL in.",
         "is required": "Dit veld is verplicht.",
         "not a valid access key id": "Voer een geldige access key ID in.",
-        "profile name already used": "Deze profielnaam is al in gebruik."
+        "profile name already used": "Deze profielnaam is al in gebruik.",
+        "connection details title": "Verbindingsgegevens",
+        "connection details subtitle":
+            "Definieer de profielnaam en het S3-endpoint dat door de explorer wordt gebruikt.",
+        "profile name label": "Profielnaam",
+        "s3 service url label": "URL van de S3-service",
+        "s3 service url helper": "Voorbeeld: https://minio.lab.example.net",
+        "default region label": "Standaardregio",
+        "default region helper": "Voorbeeld: eu-west-1, laat leeg bij twijfel",
+        "url style title": "URL-stijl",
+        "url style subtitle":
+            "Geef aan hoe je S3-server de URL voor het downloaden van bestanden opmaakt.",
+        "path style": "Padstijl",
+        "virtual hosted style": "Virtual-hosted stijl",
+        example: "Voorbeeld",
+        "account credentials title": "Accountgegevens",
+        "account credentials subtitle":
+            "Kies of dit profiel anonieme toegang of expliciete inloggegevens gebruikt.",
+        "anonymous access": "Anonieme toegang",
+        "access key id label": "Access key ID",
+        "access key id helper": "Voorbeeld: ASIAIOSFODNN7EXAMPLE",
+        "secret access key label": "Secret access key",
+        "secret access key helper": "Voorbeeld: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "session token label": "Sessietoken",
+        "session token helper":
+            "Optioneel. Laat leeg wanneer je inloggegevens geen sessietoken bevatten.",
+        cancel: "Annuleren",
+        "save configuration": "Configuratie opslaan",
+        "create profile": "Profiel aanmaken"
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",

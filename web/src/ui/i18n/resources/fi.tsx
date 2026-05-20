@@ -187,23 +187,44 @@ export const translations: Translations<"fi"> = {
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Kirjanmerkin nimi",
+        "add dialog title": "Lisää tämä sijainti kirjanmerkkeihin",
+        "rename dialog title": "Nimeä kirjanmerkki uudelleen",
+        "dialog subtitle":
+            "Tallenna tämä S3-sijainti, jotta löydät sen myöhemmin nopeammin.",
         "bookmarkName textField label": "Nimi",
         "bookmarkName textField empty error": "Kirjanmerkin nimi ei voi olla tyhjä",
+        "copy s3 path aria label": "Kopioi S3-polku",
         cancel: "Peruuta",
-        ok: "Ok"
+        ok: "Ok",
+        "add to bookmarks": "Lisää kirjanmerkkeihin",
+        "rename bookmark": "Nimeä kirjanmerkki uudelleen"
     },
     DirectoryCreationDialog: {
         "dialog title": "Luo hakemisto",
         "dialog subtitle":
             "Hakemistot luodaan suhteessa parhaillaan listattuun etuliitteeseen.",
+        "create prefix dialog title": "Luo etuliite",
+        "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",
         "directoryName textField label": "Hakemiston nimi",
+        "prefixName textField label": "Etuliitteen nimi",
         "directoryName textField empty error": "Hakemiston nimi ei voi olla tyhjä",
         "directoryName textField duplicate error": "Hakemiston nimi on jo olemassa",
         cancel: "Peruuta",
-        create: "Luo"
+        create: "Luo",
+        "create prefix": "Luo etuliite"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Tee etuliitteestä julkinen",
+        "make public dialog title": "Tehdäänkö tästä etuliitteestä julkinen?",
+        "make private dialog title": "Tehdäänkö tästä etuliitteestä yksityinen?",
+        "make public dialog body main":
+            "Kaikki tämän etuliitteen tiedostot ovat kaikkien linkin saaneiden käytettävissä, mukaan lukien nykyinen ja tuleva sisältö.",
+        "make public dialog body alternative":
+            "Jos haluat jakaa vain tietyt tiedostot tai rajata pääsyn ajallisesti, luo sen sijaan jakolinkki.",
+        "make private dialog body main":
+            "Kaikki tämän etuliitteen tiedostot ovat kaikkien linkin saaneiden käytettävissä, mukaan lukien nykyinen ja tuleva sisältö. Etuliitteen tekeminen yksityiseksi poistaa julkisen pääsyn.",
+        "make private dialog body alternative":
+            "Jos haluat jakaa vain tietyt tiedostot tai rajata pääsyn ajallisesti, luo sen sijaan jakolinkki.",
         "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
                 Olet tekemässä etuliitteestä{" "}
@@ -215,13 +236,121 @@ export const translations: Translations<"fi"> = {
             </>
         ),
         cancel: "Peruuta",
-        "make public": "Tee julkiseksi"
+        "make public": "Tee julkiseksi",
+        "make private": "Tee yksityiseksi"
+    },
+    S3ExplorerMainView: {
+        "create prefix dialog title": "Luo etuliite",
+        "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",
+        "prefix name field label": "Etuliitteen nimi",
+        "prefix name empty error": "Etuliitteen nimi ei voi olla tyhjä.",
+        cancel: "Peruuta",
+        "create prefix": "Luo etuliite",
+        "delete selection dialog title": "Poista valinta",
+        "delete selection dialog subtitle":
+            "Tämä toiminto poistaa valitut kohteet pysyvästi.",
+        "delete selection dialog body": ({ count }) =>
+            `Olet poistamassa ${count} valittua kohdetta. Etuliitteen poistaminen poistaa myös kaiken sen sisältä.`,
+        delete: "Poista",
+        uploaded: "Ladattu",
+        share: "Jaa",
+        download: "Lataa",
+        "copy s3 path": "Kopioi S3-polku",
+        "make public": "Tee julkiseksi",
+        "make private": "Tee yksityiseksi",
+        folder: "Kansio",
+        object: "Objekti",
+        "folder is public": "Kansio on julkinen",
+        "folder is private": "Kansio on yksityinen"
+    },
+    S3ShareObjectDialog: {
+        "generating public URL": "Luodaan julkista URL-osoitetta...",
+        "copy public URL aria label": "Kopioi julkinen URL",
+        "signed link with time limit": "Allekirjoitettu linkki aikarajalla",
+        "signed link validity aria label": "Allekirjoitetun linkin voimassaoloaika",
+        "generating signed URL": "Luodaan allekirjoitettua URL-osoitetta...",
+        "copy signed URL aria label": "Kopioi allekirjoitettu URL",
+        cancel: "Peruuta",
+        copied: "Kopioitu",
+        "copy link": "Kopioi linkki",
+        "create link": "Luo linkki",
+        "public description":
+            "Kuka tahansa URL-osoitteen saanut voi käyttää tätä objektia. Linkki ei vanhene, koska objekti on julkisessa etuliitteessä.",
+        "signed description":
+            "Luo allekirjoitettu URL, jolla on rajattu voimassaoloaika. Jos haluat jakaa vanhentumattoman URL-osoitteen, tee jokin tämän objektin yläetuliitteistä julkiseksi."
+    },
+    S3ProfileDialog: {
+        "detail title": "S3-profiilin tiedot",
+        "create title": "Uusi mukautettu S3-profiili",
+        "edit title": "Muokkaa mukautettua S3-profiilia",
+        "close aria label": "Sulje S3-profiili-ikkuna"
+    },
+    S3ProfileDetails: {
+        "read only": "Vain luku",
+        custom: "Mukautettu",
+        edit: "Muokkaa",
+        "connection details title": "Yhteystiedot",
+        "connection details subtitle":
+            "Käytä näitä arvoja, kun määrität S3-asiakkaita selaimen ulkopuolella.",
+        "endpoint url label": "Päätepisteen URL",
+        "default region label": "Oletusalue",
+        "access credentials title": "Käyttöoikeustiedot",
+        "access credentials anonymous subtitle":
+            "Tämä profiili ei paljasta käyttöoikeustietoja. Käytä anonyymiä S3-käyttöä, kun kohdebucket sallii sen.",
+        "access credentials subtitle":
+            "Kopioi arvo, jota määrittämäsi asiakas tarvitsee.",
+        "access key id label": "Käyttöavaimen tunnus",
+        "secret access key label": "Salainen käyttöavain",
+        "session token label": "Istuntotunnus",
+        "environment variable": "Ympäristömuuttuja",
+        "no expiration": "Näille tunnuksille ei ole ilmoitettu vanhenemisaikaa.",
+        expires: ({ expirationTime }) => `Vanhenee ${expirationTime}.`,
+        renewing: "Uudistetaan...",
+        "renew tokens": "Uudista tunnukset",
+        "init script title": "Käytä tallennustilaasi Datalab-palveluiden ulkopuolella",
+        "init script subtitle":
+            "Lataa tai kopioi alustusskripti valitsemallasi ohjelmointikielellä.",
+        "technology aria label": "Teknologia",
+        "select s3 profile aria label": "Valitse S3-profiili",
+        "s3 profiles aria label": "S3-profiilit",
+        "new s3 profile": "Uusi S3-profiili",
+        "copy aria label": ({ what }) => `Kopioi ${what}`,
+        copied: "Kopioitu",
+        copy: "Kopioi"
     },
     S3ProfileForm: {
         "must be an url": "Anna kelvollinen URL.",
         "is required": "Tämä kenttä on pakollinen.",
         "not a valid access key id": "Anna kelvollinen käyttöavaimen tunnus.",
-        "profile name already used": "Tämä profiilin nimi on jo käytössä."
+        "profile name already used": "Tämä profiilin nimi on jo käytössä.",
+        "connection details title": "Yhteystiedot",
+        "connection details subtitle":
+            "Määritä profiilin nimi ja S3-päätepiste, joita selain käyttää.",
+        "profile name label": "Profiilin nimi",
+        "s3 service url label": "S3-palvelun URL",
+        "s3 service url helper": "Esimerkki: https://minio.lab.example.net",
+        "default region label": "Oletusalue",
+        "default region helper": "Esimerkki: eu-west-1, jätä tyhjäksi jos et ole varma",
+        "url style title": "URL-tyyli",
+        "url style subtitle":
+            "Määritä, miten S3-palvelin muodostaa tiedostojen lataus-URL-osoitteet.",
+        "path style": "Polkutyyli",
+        "virtual hosted style": "Virtual-hosted-tyyli",
+        example: "Esimerkki",
+        "account credentials title": "Tilin käyttöoikeustiedot",
+        "account credentials subtitle":
+            "Valitse, käyttääkö profiili anonyymiä käyttöä vai erillisiä tunnuksia.",
+        "anonymous access": "Anonyymi käyttö",
+        "access key id label": "Käyttöavaimen tunnus",
+        "access key id helper": "Esimerkki: ASIAIOSFODNN7EXAMPLE",
+        "secret access key label": "Salainen käyttöavain",
+        "secret access key helper": "Esimerkki: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "session token label": "Istuntotunnus",
+        "session token helper":
+            "Valinnainen. Jätä tyhjäksi, jos tunnuksesi eivät sisällä istuntotunnusta.",
+        cancel: "Peruuta",
+        "save configuration": "Tallenna määritys",
+        "create profile": "Luo profiili"
     },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",

@@ -187,23 +187,45 @@ export const translations: Translations<"no"> = {
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bokmerkenavn",
+        "add dialog title": "Legg denne plasseringen til i bokmerker",
+        "rename dialog title": "Gi bokmerke nytt navn",
+        "dialog subtitle":
+            "Lagre denne S3-plasseringen slik at du finner den raskere senere.",
         "bookmarkName textField label": "Navn",
         "bookmarkName textField empty error": "Bokmerkenavnet kan ikke være tomt",
+        "copy s3 path aria label": "Kopier S3-sti",
         cancel: "Avbryt",
-        ok: "Ok"
+        ok: "Ok",
+        "add to bookmarks": "Legg til i bokmerker",
+        "rename bookmark": "Gi bokmerke nytt navn"
     },
     DirectoryCreationDialog: {
         "dialog title": "Opprett katalog",
         "dialog subtitle":
             "Kataloger opprettes relativt til prefikset som vises akkurat nå.",
+        "create prefix dialog title": "Opprett prefiks",
+        "create prefix dialog subtitle":
+            "Opprett et nytt prefiks i gjeldende S3-plassering.",
         "directoryName textField label": "Katalognavn",
+        "prefixName textField label": "Prefiksnavn",
         "directoryName textField empty error": "Katalognavnet kan ikke være tomt",
         "directoryName textField duplicate error": "Katalognavnet finnes allerede",
         cancel: "Avbryt",
-        create: "Opprett"
+        create: "Opprett",
+        "create prefix": "Opprett prefiks"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Gjør prefikset offentlig",
+        "make public dialog title": "Gjør dette prefikset offentlig?",
+        "make private dialog title": "Gjør dette prefikset privat?",
+        "make public dialog body main":
+            "Alle filer i dette prefikset blir tilgjengelige for alle med en lenke, inkludert nåværende og fremtidig innhold.",
+        "make public dialog body alternative":
+            "Hvis du vil dele bestemte filer eller begrense tilgang over tid, kan du opprette en delingslenke i stedet.",
+        "make private dialog body main":
+            "Alle filer i dette prefikset er tilgjengelige for alle med en lenke, inkludert nåværende og fremtidig innhold. Når prefikset gjøres privat, fjernes offentlig tilgang.",
+        "make private dialog body alternative":
+            "Hvis du vil dele bestemte filer eller begrense tilgang over tid, kan du opprette en delingslenke i stedet.",
         "dialog body": ({ s3Uri, s3UriClassName }) => (
             <>
                 Du er i ferd med å gjøre <span className={s3UriClassName}>{s3Uri}</span>{" "}
@@ -215,13 +237,122 @@ export const translations: Translations<"no"> = {
             </>
         ),
         cancel: "Avbryt",
-        "make public": "Gjør offentlig"
+        "make public": "Gjør offentlig",
+        "make private": "Gjør privat"
+    },
+    S3ExplorerMainView: {
+        "create prefix dialog title": "Opprett prefiks",
+        "create prefix dialog subtitle":
+            "Opprett et nytt prefiks i gjeldende S3-plassering.",
+        "prefix name field label": "Prefiksnavn",
+        "prefix name empty error": "Prefiksnavnet kan ikke være tomt.",
+        cancel: "Avbryt",
+        "create prefix": "Opprett prefiks",
+        "delete selection dialog title": "Slett utvalg",
+        "delete selection dialog subtitle":
+            "Denne handlingen sletter de valgte elementene permanent.",
+        "delete selection dialog body": ({ count }) =>
+            `Du er i ferd med å slette ${count} valgt${count > 1 ? "e elementer" : " element"}. Hvis du sletter et prefiks, slettes også alt innholdet i det.`,
+        delete: "Slett",
+        uploaded: "Lastet opp",
+        share: "Del",
+        download: "Last ned",
+        "copy s3 path": "Kopier S3-sti",
+        "make public": "Gjør offentlig",
+        "make private": "Gjør privat",
+        folder: "Mappe",
+        object: "Objekt",
+        "folder is public": "Mappen er offentlig",
+        "folder is private": "Mappen er privat"
+    },
+    S3ShareObjectDialog: {
+        "generating public URL": "Genererer offentlig URL...",
+        "copy public URL aria label": "Kopier offentlig URL",
+        "signed link with time limit": "Signert lenke med tidsbegrensning",
+        "signed link validity aria label": "Gyldighetsperiode for signert lenke",
+        "generating signed URL": "Genererer signert URL...",
+        "copy signed URL aria label": "Kopier signert URL",
+        cancel: "Avbryt",
+        copied: "Kopiert",
+        "copy link": "Kopier lenke",
+        "create link": "Opprett lenke",
+        "public description":
+            "Alle med URL-en kan få tilgang til dette objektet. Lenken utløper aldri fordi objektet ligger i et offentlig prefiks.",
+        "signed description":
+            "Opprett en signert URL med begrenset gyldighetsperiode. For å dele en URL som ikke utløper, gjør et av de overordnede prefiksene til dette objektet offentlig."
+    },
+    S3ProfileDialog: {
+        "detail title": "S3-profildetaljer",
+        "create title": "Ny egendefinert S3-profil",
+        "edit title": "Rediger egendefinert S3-profil",
+        "close aria label": "Lukk S3-profildialog"
+    },
+    S3ProfileDetails: {
+        "read only": "Skrivebeskyttet",
+        custom: "Egendefinert",
+        edit: "Rediger",
+        "connection details title": "Tilkoblingsdetaljer",
+        "connection details subtitle":
+            "Bruk disse verdiene når du konfigurerer S3-klienter utenfor utforskeren.",
+        "endpoint url label": "Endepunkt-URL",
+        "default region label": "Standardregion",
+        "access credentials title": "Tilgangslegitimasjon",
+        "access credentials anonymous subtitle":
+            "Denne profilen viser ikke legitimasjon. Bruk anonym S3-tilgang der målbøtten tillater det.",
+        "access credentials subtitle":
+            "Kopier verdien som kreves av klienten du konfigurerer.",
+        "access key id label": "Tilgangsnøkkel-ID",
+        "secret access key label": "Hemmelig tilgangsnøkkel",
+        "session token label": "Økt-token",
+        "environment variable": "Miljøvariabel",
+        "no expiration": "Ingen utløpstid er annonsert for denne legitimasjonen.",
+        expires: ({ expirationTime }) => `Utløper ${expirationTime}.`,
+        renewing: "Fornyer...",
+        "renew tokens": "Forny tokens",
+        "init script title": "For å få tilgang til lagringen utenfor Datalab-tjenester",
+        "init script subtitle":
+            "Last ned eller kopier init-skriptet i programmeringsspråket du ønsker.",
+        "technology aria label": "Teknologi",
+        "select s3 profile aria label": "Velg S3-profil",
+        "s3 profiles aria label": "S3-profiler",
+        "new s3 profile": "Ny S3-profil",
+        "copy aria label": ({ what }) => `Kopier ${what}`,
+        copied: "Kopiert",
+        copy: "Kopier"
     },
     S3ProfileForm: {
         "must be an url": "Skriv inn en gyldig URL.",
         "is required": "Dette feltet er obligatorisk.",
         "not a valid access key id": "Skriv inn en gyldig tilgangsnøkkel-ID.",
-        "profile name already used": "Dette profilnavnet er allerede i bruk."
+        "profile name already used": "Dette profilnavnet er allerede i bruk.",
+        "connection details title": "Tilkoblingsdetaljer",
+        "connection details subtitle":
+            "Definer profilnavnet og S3-endepunktet som brukes av utforskeren.",
+        "profile name label": "Profilnavn",
+        "s3 service url label": "URL til S3-tjenesten",
+        "s3 service url helper": "Eksempel: https://minio.lab.example.net",
+        "default region label": "Standardregion",
+        "default region helper": "Eksempel: eu-west-1, la stå tomt hvis du er usikker",
+        "url style title": "URL-stil",
+        "url style subtitle":
+            "Angi hvordan S3-serveren formaterer URL-en for nedlasting av filer.",
+        "path style": "Stistil",
+        "virtual hosted style": "Virtual-hosted stil",
+        example: "Eksempel",
+        "account credentials title": "Kontolegitimasjon",
+        "account credentials subtitle":
+            "Velg om profilen bruker anonym tilgang eller eksplisitt legitimasjon.",
+        "anonymous access": "Anonym tilgang",
+        "access key id label": "Tilgangsnøkkel-ID",
+        "access key id helper": "Eksempel: ASIAIOSFODNN7EXAMPLE",
+        "secret access key label": "Hemmelig tilgangsnøkkel",
+        "secret access key helper": "Eksempel: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "session token label": "Økt-token",
+        "session token helper":
+            "Valgfritt. La stå tomt når legitimasjonen ikke inneholder et økt-token.",
+        cancel: "Avbryt",
+        "save configuration": "Lagre konfigurasjon",
+        "create profile": "Opprett profil"
     },
     MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
