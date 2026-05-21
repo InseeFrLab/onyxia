@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe/assert";
@@ -18,7 +18,7 @@ import {
     S3BookmarksBar,
     type S3BookmarksBarProps
 } from "ui/shared/codex/S3Bookmarks/S3BookmarksBar";
-import { stringifyS3Uri } from "core/tools/S3Uri";
+import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { Deferred } from "evt/tools/Deferred";
 import { S3ProfileSelect } from "ui/shared/codex/S3ProfileSelect";
 import { S3ExplorerMainView } from "ui/shared/codex/S3ExplorerMainView";
@@ -28,6 +28,8 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { customIcons } from "lazy-icons";
 import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
 import { getIconUrlByName } from "lazy-icons";
+import { useResolveLocalizedString } from "ui/i18n";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 const Page = withLoader({
     loader,
@@ -132,6 +134,8 @@ function PageComponent() {
     }, []);
 
     const mainView = useCoreState("s3ExplorerUiController", "mainView");
+    const { resolveLocalizedString } = useResolveLocalizedString();
+    const [copiedS3Uri, setCopiedS3Uri] = useState<S3Uri | undefined>(undefined);
 
     const { css, theme } = useStyles();
 
@@ -141,6 +145,75 @@ function PageComponent() {
         ref: ref_root,
         domRect: { height: rootHeight }
     } = useDomRect();
+
+    const openBookmarkDialog = async (params: { s3Uri: S3Uri }) => {
+        const { s3Uri } = params;
+        const existingBookmark = mainView.bookmarks.items.find(
+            item => stringifyS3Uri(item.s3Uri) === stringifyS3Uri(s3Uri)
+        );
+
+        if (existingBookmark?.isReadonly) {
+            return;
+        }
+
+        const dResult = new Deferred<
+            { doProceed: true; displayName: string } | { doProceed: false }
+        >();
+
+        dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
+            s3Uri,
+            currentDisplayName:
+                existingBookmark?.displayName === undefined
+                    ? undefined
+                    : resolveLocalizedString(existingBookmark.displayName),
+            resolveDoProceed: dResult.resolve
+        });
+
+        const result = await dResult.pr;
+
+        if (!result.doProceed) {
+            return;
+        }
+
+        s3ExplorerUiController.updateBookmarkDisplayName({
+            s3Uri,
+            displayName: result.displayName
+        });
+    };
+
+    const copyS3Uri = async (params: { s3Uri: S3Uri }) => {
+        const { s3Uri } = params;
+
+        await copyToClipboard(stringifyS3Uri(s3Uri));
+        setCopiedS3Uri(s3Uri);
+    };
+
+    const toggleBookmarkFromDataView = (params: { s3Uri: S3Uri }) => {
+        const { s3Uri } = params;
+        const existingBookmark = mainView.bookmarks.items.find(
+            item => stringifyS3Uri(item.s3Uri) === stringifyS3Uri(s3Uri)
+        );
+
+        if (existingBookmark !== undefined) {
+            if (!existingBookmark.isReadonly) {
+                s3ExplorerUiController.deleteBookmark({ s3Uri });
+            }
+
+            return;
+        }
+
+        openBookmarkDialog({ s3Uri });
+    };
+
+    useEffect(() => {
+        if (copiedS3Uri === undefined) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => setCopiedS3Uri(undefined), 1800);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [copiedS3Uri]);
 
     const props_bookmarkBar = {
         items: mainView.bookmarks.items,
@@ -158,28 +231,7 @@ function PageComponent() {
             }).link;
         },
         onDelete: s3ExplorerUiController.deleteBookmark,
-        onRename: async ({ s3Uri, currentDisplayName }) => {
-            const dResult = new Deferred<
-                { doProceed: true; displayName: string } | { doProceed: false }
-            >();
-
-            dialogProps.evtCreateOrRenameBookmarkDialogOpen.post({
-                s3Uri,
-                currentDisplayName,
-                resolveDoProceed: dResult.resolve
-            });
-
-            const result = await dResult.pr;
-
-            if (!result.doProceed) {
-                return;
-            }
-
-            s3ExplorerUiController.updateBookmarkDisplayName({
-                s3Uri,
-                displayName: result.displayName
-            });
-        }
+        onRename: ({ s3Uri }) => openBookmarkDialog({ s3Uri })
     } satisfies S3BookmarksBarProps;
 
     return (
@@ -326,6 +378,8 @@ function PageComponent() {
                                     s3Uri={mainView.uriBar.s3Uri}
                                     hints={mainView.uriBar.hints}
                                     areHintsLoading={mainView.isListing}
+                                    copiedS3Uri={copiedS3Uri}
+                                    onCopyS3Uri={copyS3Uri}
                                     onS3UriChange={({ s3Uri, isHintSelection }) =>
                                         s3ExplorerUiController.listPrefix({
                                             s3Uri,
@@ -486,6 +540,11 @@ function PageComponent() {
                                             s3Uri
                                         });
                                     }}
+                                    onBookmark={toggleBookmarkFromDataView}
+                                    onCopyS3Uri={copyS3Uri}
+                                    bookmarkedS3Uris={mainView.bookmarks.items.map(
+                                        item => item.s3Uri
+                                    )}
                                     evtAction={evtS3ExplorerMainViewAction}
                                     isUploadDisabled={mainView.isUploadButtonDisabled}
                                 />

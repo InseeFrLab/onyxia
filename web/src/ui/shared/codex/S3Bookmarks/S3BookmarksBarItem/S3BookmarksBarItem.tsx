@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type SyntheticEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type SyntheticEvent } from "react";
 import MuiLink from "@mui/material/Link";
 import MuiTooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { tss } from "tss";
@@ -117,6 +117,8 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     } = props;
 
     const { resolveLocalizedString } = useResolveLocalizedString();
+    const rootRef = useRef<HTMLAnchorElement | null>(null);
+    const [isEntryPointMenuOpen, setIsEntryPointMenuOpen] = useState(false);
     const stopEvent = (event: SyntheticEvent) => {
         event.preventDefault();
         event.stopPropagation();
@@ -125,6 +127,30 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     useEffect(() => {
         ensureMaterialSymbols();
     }, []);
+
+    useEffect(() => {
+        if (!isEntryPointMenuOpen) {
+            return;
+        }
+
+        const onPointerDown = (event: globalThis.PointerEvent) => {
+            const target = event.target;
+
+            if (!(target instanceof Node)) {
+                return;
+            }
+
+            if (rootRef.current?.contains(target)) {
+                return;
+            }
+
+            setIsEntryPointMenuOpen(false);
+        };
+
+        document.addEventListener("pointerdown", onPointerDown, true);
+
+        return () => document.removeEventListener("pointerdown", onPointerDown, true);
+    }, [isEntryPointMenuOpen]);
 
     const fullS3Uri = useMemo(() => stringifyS3Uri(s3Uri), [s3Uri]);
     const isEntryPoint = variant === "entryPoint";
@@ -171,6 +197,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     const linkNode = (
         <MuiLink
             {...link}
+            ref={rootRef}
             className={cx(
                 classes.root,
                 variant === "bar" ? classes.rootBar : classes.rootEntryPoint,
@@ -191,12 +218,26 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
             }}
         >
             {isEntryPoint && (
-                <span className={classes.entryPointLeadingIconWrapper} aria-hidden="true">
-                    <Icon
-                        className={classes.entryPointLeadingIcon}
-                        icon={getIconUrlByName("Folder")}
-                        size="small"
-                    />
+                <span
+                    className={cx(
+                        classes.entryPointLeadingIconWrapper,
+                        isCustomBookmark && classes.entryPointLeadingIconWrapperCustom
+                    )}
+                    aria-hidden="true"
+                >
+                    {isCustomBookmark ? (
+                        <Icon
+                            className={classes.entryPointLeadingIcon}
+                            icon={getIconUrlByName("Star")}
+                            size="small"
+                        />
+                    ) : (
+                        <Icon
+                            className={classes.entryPointLeadingIcon}
+                            icon={getIconUrlByName("Domain")}
+                            size="small"
+                        />
+                    )}
                 </span>
             )}
             {showPinIcon && !isEntryPoint && (
@@ -206,13 +247,100 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                     </span>
                 </span>
             )}
-            {isEntryPoint && isCustomBookmark && (
-                <span className={classes.entryPointBadge} aria-hidden="true">
-                    <Icon
-                        className={classes.entryPointBadgeIcon}
-                        icon={getIconUrlByName("Star")}
-                        size="small"
-                    />
+            {isEntryPoint && isCustomBookmark && callbacks !== undefined && (
+                <span className={classes.entryPointActions}>
+                    <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Bookmark actions"
+                        aria-haspopup="menu"
+                        aria-expanded={isEntryPointMenuOpen}
+                        className={classes.entryPointMoreButton}
+                        onClick={event => {
+                            stopEvent(event);
+                            setIsEntryPointMenuOpen(isOpen => !isOpen);
+                        }}
+                        onMouseDown={stopEvent}
+                        onPointerDown={stopEvent}
+                        onKeyDown={event => {
+                            if (event.key === "Escape") {
+                                stopEvent(event);
+                                setIsEntryPointMenuOpen(false);
+                                return;
+                            }
+
+                            if (event.key !== "Enter" && event.key !== " ") {
+                                return;
+                            }
+
+                            stopEvent(event);
+                            setIsEntryPointMenuOpen(isOpen => !isOpen);
+                        }}
+                    >
+                        <span
+                            className={`material-symbols-outlined ${classes.entryPointMoreIcon}`}
+                        >
+                            more_vert
+                        </span>
+                    </span>
+                    {isEntryPointMenuOpen && (
+                        <span className={classes.entryPointMenu} role="menu">
+                            <span
+                                role="menuitem"
+                                tabIndex={0}
+                                className={classes.entryPointMenuItem}
+                                onClick={event => {
+                                    stopEvent(event);
+                                    setIsEntryPointMenuOpen(false);
+                                    callbacks.onRename();
+                                }}
+                                onMouseDown={stopEvent}
+                                onPointerDown={stopEvent}
+                                onKeyDown={event => {
+                                    if (event.key !== "Enter" && event.key !== " ") {
+                                        return;
+                                    }
+                                    stopEvent(event);
+                                    setIsEntryPointMenuOpen(false);
+                                    callbacks.onRename();
+                                }}
+                            >
+                                <span
+                                    className={`material-symbols-outlined ${classes.entryPointMenuIcon}`}
+                                >
+                                    edit
+                                </span>
+                                <span>Rename</span>
+                            </span>
+                            <span
+                                role="menuitem"
+                                tabIndex={0}
+                                className={classes.entryPointMenuItem}
+                                onClick={event => {
+                                    stopEvent(event);
+                                    setIsEntryPointMenuOpen(false);
+                                    callbacks.onDelete();
+                                }}
+                                onMouseDown={stopEvent}
+                                onPointerDown={stopEvent}
+                                onKeyDown={event => {
+                                    if (event.key !== "Enter" && event.key !== " ") {
+                                        return;
+                                    }
+                                    stopEvent(event);
+                                    setIsEntryPointMenuOpen(false);
+                                    callbacks.onDelete();
+                                }}
+                            >
+                                <span
+                                    className={`material-symbols-outlined ${classes.entryPointMenuIcon}`}
+                                >
+                                    delete
+                                </span>
+                                <span>Delete</span>
+                            </span>
+                        </span>
+                    )}
                 </span>
             )}
             <span
@@ -230,36 +358,6 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                     <span className={classes.labelText}>
                         {isEntryPoint ? entryPointTitle : label}
                     </span>
-                    {callbacks !== undefined && variant === "entryPoint" && (
-                        <span
-                            role="button"
-                            tabIndex={0}
-                            aria-label="Edit bookmark"
-                            className={cx(
-                                classes.renameButton,
-                                classes.renameButtonEntryPoint
-                            )}
-                            onClick={event => {
-                                stopEvent(event);
-                                callbacks.onRename();
-                            }}
-                            onMouseDown={stopEvent}
-                            onPointerDown={stopEvent}
-                            onKeyDown={event => {
-                                if (event.key !== "Enter" && event.key !== " ") {
-                                    return;
-                                }
-                                stopEvent(event);
-                                callbacks.onRename();
-                            }}
-                        >
-                            <span
-                                className={`material-symbols-outlined ${classes.renameIcon}`}
-                            >
-                                edit
-                            </span>
-                        </span>
-                    )}
                     {callbacks !== undefined && shouldInlineExpand && (
                         <span className={classes.inlineActions}>
                             <span
@@ -422,28 +520,26 @@ const useStyles = tss
         const inlineRevealHeight = 22;
         const isBar = variant === "bar";
         const isEntryPoint = variant === "entryPoint";
-        const entryPointHoverBorderColor = theme.isDarkModeEnabled
-            ? "#465267"
-            : "#EAEAEA";
-        const entryPointFolderColor = theme.isDarkModeEnabled ? "#465267" : "#CED3DA";
+        const entryPointHoverBorderColor = theme.colors.useCases.surfaces.surface3;
+        const entryPointFolderColor = theme.colors.useCases.typography.textTertiary;
         const accentColor = theme.colors.useCases.typography.textFocus;
         const baseBackground = isBar
             ? "transparent"
-            : theme.colors.useCases.surfaces.surface1;
+            : theme.colors.useCases.surfaces.surface2;
         const hoverBackground = isBar
             ? theme.colors.useCases.surfaces.surface2
-            : theme.colors.useCases.surfaces.surface1;
+            : theme.colors.useCases.surfaces.surface2;
         const pressedBackground = isBar
             ? theme.colors.useCases.surfaces.surface2
             : isReadonly
-              ? theme.colors.useCases.surfaces.surface1
+              ? theme.colors.useCases.surfaces.surface2
               : theme.colors.useCases.surfaces.surface2;
         const activeBackground = isBar
             ? "transparent"
-            : theme.colors.useCases.surfaces.surface1;
+            : theme.colors.useCases.surfaces.surface2;
         const activeHoverBackground = isBar
             ? theme.colors.useCases.surfaces.surface2
-            : theme.colors.useCases.surfaces.surface1;
+            : theme.colors.useCases.surfaces.surface2;
         const labelColor = isBar
             ? isActive
                 ? theme.colors.useCases.typography.textPrimary
@@ -551,15 +647,14 @@ const useStyles = tss
                 width: 280,
                 maxWidth: "100%",
                 minWidth: 0,
-                "& .renameButtonEntryPoint": {
+                "& .entryPointMoreButton": {
                     opacity: 0,
                     pointerEvents: "none"
                 },
-                "&:hover .renameButtonEntryPoint, &:focus-within .renameButtonEntryPoint":
-                    {
-                        opacity: 1,
-                        pointerEvents: "auto"
-                    }
+                "&:hover .entryPointMoreButton, &:focus-within .entryPointMoreButton": {
+                    opacity: 1,
+                    pointerEvents: "auto"
+                }
             },
             entryPointLeadingIconWrapper: {
                 display: "inline-flex",
@@ -567,6 +662,18 @@ const useStyles = tss
                 justifyContent: "center",
                 color: entryPointFolderColor,
                 marginBottom: theme.spacing(2)
+            },
+            entryPointLeadingIconWrapperCustom: {
+                width: 32,
+                height: 32,
+                borderRadius: 12,
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
+                color: accentColor,
+                "& svg, & img": {
+                    width: 20,
+                    height: 20,
+                    fontSize: 20
+                }
             },
             entryPointLeadingIcon: {
                 width: 28,
@@ -576,26 +683,68 @@ const useStyles = tss
                     height: 28
                 }
             },
-            entryPointBadge: {
+            entryPointActions: {
                 position: "absolute",
                 top: theme.spacing(5),
                 right: theme.spacing(5),
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center"
+            },
+            entryPointMoreButton: {
                 width: 32,
                 height: 32,
-                borderRadius: 10,
+                borderRadius: 999,
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
-                color: accentColor
-            },
-            entryPointBadgeIcon: {
-                width: 20,
-                height: 20,
-                "& svg, & img": {
-                    width: 20,
-                    height: 20
+                color: theme.colors.useCases.typography.textPrimary,
+                cursor: "pointer",
+                transition: "opacity 120ms ease, background-color 120ms ease",
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
                 }
+            },
+            entryPointMoreIcon: {
+                fontSize: 24,
+                lineHeight: "24px",
+                fontFamily: '"Material Symbols Outlined"',
+                fontVariationSettings: '"FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24'
+            },
+            entryPointMenu: {
+                position: "absolute",
+                top: theme.spacing(3),
+                right: 0,
+                zIndex: 2,
+                minWidth: 156,
+                display: "flex",
+                flexDirection: "column",
+                gap: theme.spacing(1),
+                padding: theme.spacing(2),
+                borderRadius: 14,
+                backgroundColor: theme.colors.useCases.surfaces.surface1,
+                color: theme.colors.useCases.typography.textPrimary,
+                boxShadow: theme.shadows[4]
+            },
+            entryPointMenuItem: {
+                ...labelStyle,
+                minHeight: 32,
+                display: "flex",
+                alignItems: "center",
+                gap: theme.spacing(1.5),
+                padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`,
+                borderRadius: 10,
+                cursor: "pointer",
+                "&:hover, &:focus-visible": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2,
+                    outline: "none"
+                }
+            },
+            entryPointMenuIcon: {
+                fontSize: 18,
+                lineHeight: "18px",
+                fontFamily: '"Material Symbols Outlined"',
+                fontVariationSettings: '"FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24'
             },
             pinIconWrapper: {
                 color: iconColor,
@@ -633,11 +782,6 @@ const useStyles = tss
                 "&:hover": {
                     backgroundColor: theme.colors.palette.focus.mainAlpha20
                 }
-            },
-            renameButtonEntryPoint: {
-                opacity: 0,
-                pointerEvents: "none",
-                transition: "opacity 120ms ease, background-color 120ms ease"
             },
             renameIcon: {
                 fontSize: 16,

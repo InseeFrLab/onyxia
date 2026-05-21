@@ -161,6 +161,9 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onDelete: action("delete"),
     onDownload: action("download"),
     onShareObject: action("shareObject"),
+    onBookmark: action("bookmark"),
+    onCopyS3Uri: action("copyS3Uri"),
+    bookmarkedS3Uris: [],
     onChangePrefixPolicy: action("changePrefixPolicy"),
     evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
     isUploadDisabled: false
@@ -219,6 +222,9 @@ function StatefulExplorer(
         | "onPutObjects"
         | "onDownload"
         | "onShareObject"
+        | "onBookmark"
+        | "onCopyS3Uri"
+        | "bookmarkedS3Uris"
         | "onChangePrefixPolicy"
         | "evtAction"
     >
@@ -324,6 +330,13 @@ function StatefulExplorer(
                 onShareObject={({ s3Uri }) => {
                     action("shareObject")(s3Uri);
                 }}
+                onBookmark={({ s3Uri }) => {
+                    action("bookmark")(s3Uri);
+                }}
+                onCopyS3Uri={({ s3Uri }) => {
+                    action("copyS3Uri")(s3Uri);
+                }}
+                bookmarkedS3Uris={[]}
                 onChangePrefixPolicy={({ action: policyAction, s3Uri }) => {
                     action("changePrefixPolicy")({ action: policyAction, s3Uri });
 
@@ -393,6 +406,9 @@ export const EmptyPrefix: Story = {
         onDelete: action("delete"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
+        onBookmark: action("bookmark"),
+        onCopyS3Uri: action("copyS3Uri"),
+        bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
@@ -417,6 +433,9 @@ export const AccessDenied: Story = {
         onDelete: action("delete"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
+        onBookmark: action("bookmark"),
+        onCopyS3Uri: action("copyS3Uri"),
+        bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
