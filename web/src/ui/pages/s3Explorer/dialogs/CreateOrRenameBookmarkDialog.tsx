@@ -10,7 +10,6 @@ import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import {
-    S3DialogCopyField,
     S3DialogTextInput,
     useS3DialogClasses
 } from "ui/shared/codex/S3DialogPrimitives";
@@ -148,11 +147,6 @@ export const CreateOrRenameBookmarkDialog = memo(
                                         submit();
                                     }
                                 }}
-                            />
-
-                            <S3DialogCopyField
-                                value={stringifyS3Uri(state.s3Uri)}
-                                ariaLabel={t("copy s3 path aria label")}
                             />
                         </div>
                     )

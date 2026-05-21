@@ -217,7 +217,7 @@ const useStyles_S3DialogTextInput = tss
         root: {
             display: "flex",
             flexDirection: "column",
-            gap: theme.spacing(1),
+            gap: theme.spacing(2),
             minWidth: 0
         },
         label: {
@@ -226,11 +226,13 @@ const useStyles_S3DialogTextInput = tss
         input: {
             minHeight: 52,
             borderRadius: 12,
+            border: "2px solid transparent",
             backgroundColor: theme.colors.useCases.surfaces.background,
             color: theme.colors.useCases.typography.textPrimary,
             transition: "border-color 160ms ease, background-color 160ms ease",
             "&:hover": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
+                borderColor: "transparent"
             },
             "&.Mui-focused": {
                 borderColor: theme.colors.useCases.typography.textFocus
@@ -238,7 +240,11 @@ const useStyles_S3DialogTextInput = tss
             "& .MuiInputBase-input": {
                 ...theme.typography.variants["body 1"].style,
                 padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
-                color: theme.colors.useCases.typography.textPrimary
+                color: theme.colors.useCases.typography.textPrimary,
+                "&::placeholder": {
+                    color: theme.colors.useCases.typography.textSecondary,
+                    opacity: 1
+                }
             }
         },
         inputStrong: {
