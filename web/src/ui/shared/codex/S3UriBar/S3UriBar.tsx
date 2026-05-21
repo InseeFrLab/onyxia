@@ -47,6 +47,8 @@ export type S3UriBarProps = {
     areHintsLoading: boolean;
     isBookmarked: boolean;
     onToggleBookmark?: (props: { s3Uri: S3Uri }) => void;
+    copiedS3Uri?: S3Uri;
+    onCopyS3Uri?: (props: { s3Uri: S3Uri }) => void;
 };
 
 type NavigationCrumb = {
@@ -386,7 +388,9 @@ export function S3UriBar(props: S3UriBarProps) {
         hints,
         areHintsLoading,
         isBookmarked,
-        onToggleBookmark
+        onToggleBookmark,
+        copiedS3Uri,
+        onCopyS3Uri
     } = props;
 
     const currentS3Uri = s3Uri?.s3Uri;
@@ -411,6 +415,10 @@ export function S3UriBar(props: S3UriBarProps) {
         };
     }, [currentS3Uri]);
     const isUndefinedPrefixMode = currentS3Uri === undefined;
+    const isCopied =
+        currentS3Uri !== undefined &&
+        copiedS3Uri !== undefined &&
+        stringifyS3Uri(currentS3Uri) === stringifyS3Uri(copiedS3Uri);
     const canonicalS3Uri = useMemo(
         () => getCanonicalS3UriValue(currentS3Uri),
         [currentS3Uri]
@@ -931,6 +939,10 @@ export function S3UriBar(props: S3UriBarProps) {
             start: keyStartIndex,
             end: canonicalS3Uri.length
         };
+        enterFullEditing();
+    };
+
+    const enterFullEditing = () => {
         lastEnterEditRequestTimeRef.current = performance.now();
         shouldFocusInputOnNextEditRef.current = true;
         setIsEditing(true);
@@ -1300,6 +1312,19 @@ export function S3UriBar(props: S3UriBarProps) {
                             }
                         />
                     </div>
+                ) : isCopied && currentS3Uri !== undefined ? (
+                    <div
+                        className={classes.copiedPathDisplay}
+                        data-s3-uri-ignore-edit="true"
+                        aria-label={t("copied path", {
+                            s3Uri: stringifyS3Uri(currentS3Uri)
+                        })}
+                    >
+                        <Icon icon={getIconUrlByName("ContentCopy")} size="extra small" />
+                        <span className={classes.copiedPathText}>
+                            {stringifyS3Uri(currentS3Uri)}
+                        </span>
+                    </div>
                 ) : isInactiveHomeState ? (
                     <div className={classes.inactiveHomeState} aria-label="S3 URI">
                         <span className={classes.inactiveHomeIcon} aria-hidden="true">
@@ -1621,14 +1646,37 @@ export function S3UriBar(props: S3UriBarProps) {
                 )}
 
                 <div className={classes.trailingActions}>
+                    {!isUndefinedPrefixMode && isCopied && (
+                        <span className={classes.copiedPill}>
+                            <Icon icon={getIconUrlByName("Check")} size="extra small" />
+                            {t("copied")}
+                        </span>
+                    )}
+                    {!isUndefinedPrefixMode && onCopyS3Uri !== undefined && (
+                        <Tooltip title={t("copy s3 path")}>
+                            <div data-s3-uri-ignore-edit="true">
+                                <IconButton
+                                    aria-label={t("copy s3 path")}
+                                    icon={getIconUrlByName("ContentCopy")}
+                                    size="default"
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        assert(currentS3Uri !== undefined);
+                                        onCopyS3Uri({ s3Uri: currentS3Uri });
+                                    }}
+                                    className={classes.actionButton}
+                                />
+                            </div>
+                        </Tooltip>
+                    )}
                     {!isUndefinedPrefixMode && (onToggleBookmark || isBookmarked) && (
                         <Tooltip
                             title={
                                 onToggleBookmark
                                     ? isBookmarked
-                                        ? "Remove bookmark"
-                                        : "Bookmark"
-                                    : "Bookmarked"
+                                        ? t("delete from bookmarks")
+                                        : t("add to bookmarks")
+                                    : t("bookmarked")
                             }
                         >
                             <div data-s3-uri-ignore-edit="true">
@@ -1636,9 +1684,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                     aria-label={
                                         onToggleBookmark
                                             ? isBookmarked
-                                                ? "Remove bookmark"
-                                                : "Add bookmark"
-                                            : "Bookmarked"
+                                                ? t("delete from bookmarks")
+                                                : t("add to bookmarks")
+                                            : t("bookmarked")
                                     }
                                     icon={bookmarkIcon}
                                     size="default"
@@ -1654,6 +1702,22 @@ export function S3UriBar(props: S3UriBarProps) {
                                         !onToggleBookmark &&
                                             classes.bookmarkButtonReadonly
                                     )}
+                                />
+                            </div>
+                        </Tooltip>
+                    )}
+                    {!isUndefinedPrefixMode && (
+                        <Tooltip title={t("edit s3 uri")}>
+                            <div data-s3-uri-ignore-edit="true">
+                                <IconButton
+                                    aria-label={t("edit s3 uri")}
+                                    icon={getIconUrlByName("Edit")}
+                                    size="default"
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        enterFullEditing();
+                                    }}
+                                    className={classes.actionButton}
                                 />
                             </div>
                         </Tooltip>
@@ -1841,6 +1905,30 @@ const useStyles = tss
                 textOverflow: "ellipsis",
                 color: theme.colors.useCases.typography.textPrimary
             },
+            copiedPathDisplay: {
+                display: "inline-flex",
+                alignItems: "center",
+                gap: theme.spacing(2),
+
+                minWidth: 0,
+                flex: "0 0 auto", // ou juste supprimer flex:1
+                width: "fit-content",
+                maxWidth: "fit-content",
+                marginRight: "auto",
+
+                padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
+                borderRadius: "12px",
+                backgroundColor: theme.colors.useCases.alertSeverity.success.background,
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            copiedPathText: {
+                ...labelStyle,
+                fontWeight: 700,
+                minWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+            },
             crumbs: {
                 display: "inline-flex",
                 alignItems: "center",
@@ -2023,6 +2111,39 @@ const useStyles = tss
                 gap: theme.spacing(1),
                 flexShrink: 0
             },
+            copiedPill: {
+                ...theme.typography.variants["label 1"].style,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: theme.spacing(1),
+                minHeight: 32,
+                padding: `${theme.spacing(1.5)}px ${theme.spacing(2)}px`,
+                borderRadius: 8,
+                backgroundColor: theme.colors.useCases.alertSeverity.success.background,
+                color: theme.colors.useCases.typography.textPrimary,
+                whiteSpace: "nowrap"
+            },
+            actionButton: {
+                margin: 0,
+                width: "40px",
+                height: "40px",
+                minWidth: "40px",
+                borderRadius: "12px",
+                backgroundColor: "transparent",
+                boxSizing: "border-box",
+                padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                },
+                "& .MuiSvgIcon-root, & svg, & img": {
+                    width: "20px",
+                    height: "20px",
+                    fontSize: "20px"
+                }
+            },
             bookmarkButton: {
                 margin: 0,
                 width: "40px",
@@ -2176,5 +2297,14 @@ const useStyles = tss
         };
     });
 
-const { i18n } = declareComponentKeys<"search">()({ S3UriBar });
+const { i18n } = declareComponentKeys<
+    | "search"
+    | "copy s3 path"
+    | "copied"
+    | { K: "copied path"; P: { s3Uri: string }; R: string }
+    | "add to bookmarks"
+    | "delete from bookmarks"
+    | "bookmarked"
+    | "edit s3 uri"
+>()({ S3UriBar });
 export type I18n = typeof i18n;

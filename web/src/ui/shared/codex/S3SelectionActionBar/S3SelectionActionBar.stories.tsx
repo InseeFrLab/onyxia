@@ -20,6 +20,7 @@ const baseArgs: S3SelectionActionBarProps = {
     onDownload: action("download"),
     onDelete: action("delete"),
     onCopyS3Uri: action("copyS3Uri"),
+    onBookmark: action("bookmark"),
     onShare: action("share"),
     onMakePublic: action("makePublic"),
     onMakePrivate: undefined
@@ -47,6 +48,7 @@ export const MultipleSelection: Story = {
         selectionCount: 2,
         onDownload: undefined,
         onCopyS3Uri: undefined,
+        onBookmark: undefined,
         onShare: undefined,
         onMakePublic: undefined,
         onMakePrivate: undefined

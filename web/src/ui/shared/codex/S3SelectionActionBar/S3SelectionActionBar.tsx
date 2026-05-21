@@ -10,6 +10,9 @@ export type S3SelectionActionBarProps = {
     onDownload: (() => void) | undefined;
     onDelete: (() => void) | undefined;
     onCopyS3Uri: (() => void) | undefined;
+    isCopyS3UriCopied?: boolean;
+    onBookmark: (() => void) | undefined;
+    bookmarkLabel?: string;
     onShare: (() => void) | undefined;
     onMakePublic: (() => void) | undefined;
     onMakePrivate: (() => void) | undefined;
@@ -30,6 +33,9 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         onDownload,
         onDelete,
         onCopyS3Uri,
+        isCopyS3UriCopied = false,
+        onBookmark,
+        bookmarkLabel = "Add to bookmarks",
         onShare,
         onMakePublic,
         onMakePrivate
@@ -52,9 +58,15 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         },
         {
             key: "copy",
-            label: "Copy S3 path",
-            iconName: "ContentCopy",
+            label: isCopyS3UriCopied ? "Copied" : "Copy S3 path",
+            iconName: isCopyS3UriCopied ? "Check" : "ContentCopy",
             onClick: onCopyS3Uri
+        },
+        {
+            key: "bookmark",
+            label: bookmarkLabel,
+            iconName: "StarBorder",
+            onClick: onBookmark
         },
         {
             key: "share",
@@ -101,7 +113,12 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                     <button
                         key={action.key}
                         type="button"
-                        className={classes.actionButton}
+                        className={cx(
+                            classes.actionButton,
+                            action.key === "copy" &&
+                                isCopyS3UriCopied &&
+                                classes.actionButtonCopied
+                        )}
                         onClick={action.onClick}
                     >
                         <Icon
@@ -198,6 +215,15 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             },
             "&:active": {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
+            }
+        },
+        actionButtonCopied: {
+            backgroundColor: theme.colors.useCases.alertSeverity.success.background,
+            "&:hover": {
+                backgroundColor: theme.colors.useCases.alertSeverity.success.background
+            },
+            "&:active": {
+                backgroundColor: theme.colors.useCases.alertSeverity.success.background
             }
         },
         actionIcon: {
