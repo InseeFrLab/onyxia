@@ -12,6 +12,8 @@ import {
 import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { alpha } from "@mui/material/styles";
 import { assert } from "tsafe/assert";
 import { tss } from "tss";
@@ -28,7 +30,6 @@ import {
     S3DialogTextInput,
     useS3DialogClasses
 } from "ui/shared/codex/S3DialogPrimitives";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
@@ -65,6 +66,12 @@ export type S3ExplorerMainViewProps = {
     onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+
+    onBookmark: (params: { s3Uri: S3Uri }) => void;
+
+    onCopyS3Uri: (params: { s3Uri: S3Uri }) => void;
+
+    bookmarkedS3Uris: S3Uri[];
 
     onChangePrefixPolicy: (params: {
         action: "make public" | "undo make public";
@@ -683,6 +690,7 @@ const useStyles_DeleteSelectionDialog = tss
 type ItemRowProps = {
     item: S3ExplorerMainViewProps.Item;
     isSelected: boolean;
+    isBookmarked: boolean;
     isStriped: boolean;
     showRowActions: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
@@ -691,6 +699,7 @@ type ItemRowProps = {
     onShareObject: (() => void) | undefined;
     onChangePrefixPolicy: (() => void) | undefined;
     onDownload: (() => void) | undefined;
+    onBookmark: (() => void) | undefined;
     onCopyS3Uri: () => void;
     onCheckboxChange: () => void;
 };
@@ -699,6 +708,7 @@ function ItemRow(props: ItemRowProps) {
     const {
         item,
         isSelected,
+        isBookmarked,
         isStriped,
         showRowActions,
         onRowClick,
@@ -707,6 +717,7 @@ function ItemRow(props: ItemRowProps) {
         onShareObject,
         onChangePrefixPolicy,
         onDownload,
+        onBookmark,
         onCopyS3Uri,
         onCheckboxChange
     } = props;
@@ -973,6 +984,47 @@ function ItemRow(props: ItemRowProps) {
                                         </span>
                                     </Tooltip>
                                 )}
+                                {onBookmark !== undefined && (
+                                    <Tooltip
+                                        title={
+                                            isBookmarked
+                                                ? t("delete from bookmarks")
+                                                : t("add to bookmarks")
+                                        }
+                                    >
+                                        <span className={classes.inlineActionWrapper}>
+                                            <button
+                                                type="button"
+                                                className={cx(
+                                                    classes.rowActionButton,
+                                                    isBookmarked &&
+                                                        classes.rowActionButtonActive
+                                                )}
+                                                aria-label={
+                                                    isBookmarked
+                                                        ? t("delete from bookmarks")
+                                                        : t("add to bookmarks")
+                                                }
+                                                disabled={!isItemActionAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (!isItemActionAvailable) {
+                                                        return;
+                                                    }
+
+                                                    onBookmark();
+                                                }}
+                                            >
+                                                {isBookmarked ? (
+                                                    <StarIcon fontSize="small" />
+                                                ) : (
+                                                    <StarBorderIcon fontSize="small" />
+                                                )}
+                                            </button>
+                                        </span>
+                                    </Tooltip>
+                                )}
                                 <Tooltip title={t("copy s3 path")}>
                                     <span className={classes.inlineActionWrapper}>
                                         <IconButton
@@ -1034,6 +1086,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onDelete,
         onDownload,
         onShareObject,
+        onBookmark,
+        onCopyS3Uri,
+        bookmarkedS3Uris,
         onChangePrefixPolicy,
         evtAction,
         isUploadDisabled
@@ -1058,6 +1113,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const { classes, cx } = useStyles({ isDragActive });
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     const openFilePicker = () => {
         const input = fileInputRef.current;
@@ -1161,6 +1217,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const selectableItems = items.filter(item => !item.isDeleting);
     const selectedItemKeySet = new Set(selectedItemKeys);
+    const bookmarkedItemKeySet = new Set(bookmarkedS3Uris.map(stringifyS3Uri));
     const selectedItems = items.filter(item => selectedItemKeySet.has(getItemKey(item)));
     const showRowActions = selectedItems.length <= 1;
 
@@ -1382,6 +1439,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         });
     };
 
+    const requestBookmarkForItem = (item: S3ExplorerMainViewProps.Item) => {
+        if (!getIsItemActionAvailable(item)) {
+            return;
+        }
+
+        onBookmark({
+            s3Uri: item.s3Uri
+        });
+    };
+
     const clearSelection = () => {
         setSelectedItemKeys([]);
         lastSelectedItemKeyRef.current = undefined;
@@ -1392,7 +1459,17 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             return;
         }
 
-        copyToClipboard(stringifyS3Uri(selectedItems[0].s3Uri));
+        const selectedItem = selectedItems[0];
+
+        onCopyS3Uri({
+            s3Uri: selectedItem.s3Uri
+        });
+    };
+
+    const copyItemS3Uri = (item: S3ExplorerMainViewProps.Item) => {
+        onCopyS3Uri({
+            s3Uri: item.s3Uri
+        });
     };
 
     const handleNavigate = (s3Uri: S3Uri) => {
@@ -1481,6 +1558,23 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 selectedItemForSingleItemAction === undefined
                                     ? undefined
                                     : copySelectedS3Uri
+                            }
+                            onBookmark={
+                                selectedItemForSingleItemAction === undefined ||
+                                !getIsItemActionAvailable(selectedItemForSingleItemAction)
+                                    ? undefined
+                                    : () =>
+                                          requestBookmarkForItem(
+                                              selectedItemForSingleItemAction
+                                          )
+                            }
+                            bookmarkLabel={
+                                selectedItemForSingleItemAction !== undefined &&
+                                bookmarkedItemKeySet.has(
+                                    stringifyS3Uri(selectedItemForSingleItemAction.s3Uri)
+                                )
+                                    ? t("delete from bookmarks")
+                                    : t("add to bookmarks")
                             }
                             onShare={
                                 selectedObjectForSingleItemAction === undefined ||
@@ -1750,6 +1844,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isSelected={selectedItemKeySet.has(
                                                         itemKey
                                                     )}
+                                                    isBookmarked={bookmarkedItemKeySet.has(
+                                                        itemKey
+                                                    )}
                                                     isStriped={index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     onRowClick={event =>
@@ -1793,10 +1890,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                                   )
                                                             : undefined
                                                     }
+                                                    onBookmark={
+                                                        getIsItemActionAvailable(item)
+                                                            ? () =>
+                                                                  requestBookmarkForItem(
+                                                                      item
+                                                                  )
+                                                            : undefined
+                                                    }
                                                     onCopyS3Uri={() =>
-                                                        copyToClipboard(
-                                                            stringifyS3Uri(item.s3Uri)
-                                                        )
+                                                        copyItemS3Uri(item)
                                                     }
                                                 />
                                             );
@@ -2205,14 +2308,38 @@ const useStyles = tss
             paddingRight: theme.spacing(4)
         },
         rowActionButton: {
+            border: "none",
+            backgroundColor: "transparent",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
             color: "inherit",
             borderRadius: 9999,
             padding: theme.spacing(0.5),
+            width: 32,
+            height: 32,
             "&:hover": {
                 backgroundColor: theme.colors.useCases.surfaces.surface3
             },
             "&:active": {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
+            },
+            "&:disabled": {
+                cursor: "default",
+                opacity: 0.42
+            }
+        },
+        rowActionButtonActive: {
+            color: theme.colors.useCases.typography.textFocus,
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
+            "&:hover": {
+                color: theme.colors.useCases.typography.textFocus,
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2
+            },
+            "& .MuiSvgIcon-root, & svg, & img, & path": {
+                color: theme.colors.useCases.typography.textFocus,
+                fill: theme.colors.useCases.typography.textFocus
             }
         },
         inlineActionWrapper: {
@@ -2264,6 +2391,8 @@ const { i18n } = declareComponentKeys<
     | "share"
     | "download"
     | "copy s3 path"
+    | "add to bookmarks"
+    | "delete from bookmarks"
     | "make public"
     | "make private"
     | "folder"

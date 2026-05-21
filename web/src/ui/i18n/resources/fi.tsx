@@ -256,6 +256,8 @@ export const translations: Translations<"fi"> = {
         share: "Jaa",
         download: "Lataa",
         "copy s3 path": "Kopioi S3-polku",
+        "add to bookmarks": "Lisää kirjanmerkkeihin",
+        "delete from bookmarks": "Poista kirjanmerkeistä",
         "make public": "Tee julkiseksi",
         "make private": "Tee yksityiseksi",
         folder: "Kansio",
@@ -1111,6 +1113,13 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "datasets parsing error": "Katalogin datasettejä ei voitu jäsentää."
     },
     S3UriBar: {
-        search: "Haku.."
+        search: "Haku..",
+        "copy s3 path": "Kopioi S3-polku",
+        copied: "Kopioitu",
+        "copied path": ({ s3Uri }) => `Kopioitu polku: ${s3Uri}`,
+        "add to bookmarks": "Lisää kirjanmerkkeihin",
+        "delete from bookmarks": "Poista kirjanmerkeistä",
+        bookmarked: "Kirjanmerkitty",
+        "edit s3 uri": "Muokkaa S3-URIa"
     }
 };

@@ -256,6 +256,8 @@ export const translations: Translations<"en"> = {
         share: "Share",
         download: "Download",
         "copy s3 path": "Copy S3 path",
+        "add to bookmarks": "Add to bookmarks",
+        "delete from bookmarks": "Delete from bookmarks",
         "make public": "Make public",
         "make private": "Make private",
         folder: "Folder",
@@ -1113,6 +1115,13 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "datasets parsing error": "Unable to parse datasets from the catalog."
     },
     S3UriBar: {
-        search: "Search.."
+        search: "Search..",
+        "copy s3 path": "Copy S3 path",
+        copied: "Copied",
+        "copied path": ({ s3Uri }) => `Copied path: ${s3Uri}`,
+        "add to bookmarks": "Add to bookmarks",
+        "delete from bookmarks": "Delete from bookmarks",
+        bookmarked: "Bookmarked",
+        "edit s3 uri": "Edit S3 URI"
     }
 };

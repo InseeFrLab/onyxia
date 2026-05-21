@@ -269,6 +269,8 @@ export const translations: Translations<"de"> = {
         share: "Teilen",
         download: "Herunterladen",
         "copy s3 path": "S3-Pfad kopieren",
+        "add to bookmarks": "Zu Lesezeichen hinzufügen",
+        "delete from bookmarks": "Aus Lesezeichen entfernen",
         "make public": "Öffentlich machen",
         "make private": "Privat machen",
         folder: "Ordner",
@@ -1138,6 +1140,13 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             "Die Datensätze des Katalogs konnten nicht analysiert werden."
     },
     S3UriBar: {
-        search: "Suchen.."
+        search: "Suchen..",
+        "copy s3 path": "S3-Pfad kopieren",
+        copied: "Kopiert",
+        "copied path": ({ s3Uri }) => `Kopierter Pfad: ${s3Uri}`,
+        "add to bookmarks": "Zu Lesezeichen hinzufügen",
+        "delete from bookmarks": "Aus Lesezeichen entfernen",
+        bookmarked: "Als Lesezeichen gespeichert",
+        "edit s3 uri": "S3-URI bearbeiten"
     }
 };

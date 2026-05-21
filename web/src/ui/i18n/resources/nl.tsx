@@ -261,6 +261,8 @@ export const translations: Translations<"nl"> = {
         share: "Delen",
         download: "Downloaden",
         "copy s3 path": "S3-pad kopiëren",
+        "add to bookmarks": "Aan bladwijzers toevoegen",
+        "delete from bookmarks": "Uit bladwijzers verwijderen",
         "make public": "Openbaar maken",
         "make private": "Privé maken",
         folder: "Map",
@@ -1126,6 +1128,13 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "De datasets uit de catalogus konden niet worden geparseerd."
     },
     S3UriBar: {
-        search: "Zoeken.."
+        search: "Zoeken..",
+        "copy s3 path": "S3-pad kopiëren",
+        copied: "Gekopieerd",
+        "copied path": ({ s3Uri }) => `Gekopieerd pad: ${s3Uri}`,
+        "add to bookmarks": "Aan bladwijzers toevoegen",
+        "delete from bookmarks": "Uit bladwijzers verwijderen",
+        bookmarked: "Bladwijzer",
+        "edit s3 uri": "S3-URI bewerken"
     }
 };

@@ -234,6 +234,8 @@ export const translations: Translations<"zh-CN"> = {
         share: "共享",
         download: "下载",
         "copy s3 path": "复制 S3 路径",
+        "add to bookmarks": "添加到书签",
+        "delete from bookmarks": "从书签中删除",
         "make public": "公开",
         "make private": "设为私有",
         folder: "文件夹",
@@ -1055,6 +1057,13 @@ ${
         "datasets parsing error": "无法解析目录中的数据集。"
     },
     S3UriBar: {
-        search: "搜索.."
+        search: "搜索..",
+        "copy s3 path": "复制 S3 路径",
+        copied: "已复制",
+        "copied path": ({ s3Uri }) => `已复制路径：${s3Uri}`,
+        "add to bookmarks": "添加到书签",
+        "delete from bookmarks": "从书签中删除",
+        bookmarked: "已添加书签",
+        "edit s3 uri": "编辑 S3 URI"
     }
 };

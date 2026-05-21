@@ -264,6 +264,8 @@ export const translations: Translations<"en"> = {
         share: "Compartir",
         download: "Descargar",
         "copy s3 path": "Copiar ruta S3",
+        "add to bookmarks": "Añadir a marcadores",
+        "delete from bookmarks": "Eliminar de marcadores",
         "make public": "Hacer público",
         "make private": "Hacer privado",
         folder: "Carpeta",
@@ -1128,6 +1130,13 @@ export const translations: Translations<"en"> = {
             "No se pudieron analizar los conjuntos de datos del catálogo."
     },
     S3UriBar: {
-        search: "Buscar.."
+        search: "Buscar..",
+        "copy s3 path": "Copiar ruta S3",
+        copied: "Copiado",
+        "copied path": ({ s3Uri }) => `Ruta copiada: ${s3Uri}`,
+        "add to bookmarks": "Añadir a marcadores",
+        "delete from bookmarks": "Eliminar de marcadores",
+        bookmarked: "Marcado",
+        "edit s3 uri": "Editar URI S3"
     }
 };

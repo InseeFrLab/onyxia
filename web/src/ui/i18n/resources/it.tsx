@@ -262,6 +262,8 @@ export const translations: Translations<"it"> = {
         share: "Condividi",
         download: "Scarica",
         "copy s3 path": "Copia percorso S3",
+        "add to bookmarks": "Aggiungi ai segnalibri",
+        "delete from bookmarks": "Elimina dai segnalibri",
         "make public": "Rendi pubblico",
         "make private": "Rendi privato",
         folder: "Cartella",
@@ -1124,6 +1126,13 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "datasets parsing error": "Impossibile analizzare i dataset del catalogo."
     },
     S3UriBar: {
-        search: "Cercare.."
+        search: "Cercare..",
+        "copy s3 path": "Copia percorso S3",
+        copied: "Copiato",
+        "copied path": ({ s3Uri }) => `Percorso copiato: ${s3Uri}`,
+        "add to bookmarks": "Aggiungi ai segnalibri",
+        "delete from bookmarks": "Elimina dai segnalibri",
+        bookmarked: "Nei segnalibri",
+        "edit s3 uri": "Modifica URI S3"
     }
 };

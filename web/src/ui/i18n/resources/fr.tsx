@@ -267,6 +267,8 @@ export const translations: Translations<"fr"> = {
         share: "Partager",
         download: "Télécharger",
         "copy s3 path": "Copier le chemin S3",
+        "add to bookmarks": "Ajouter aux favoris",
+        "delete from bookmarks": "Supprimer des favoris",
         "make public": "Rendre public",
         "make private": "Rendre privé",
         folder: "Dossier",
@@ -1138,6 +1140,13 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Impossible d'analyser les jeux de données du catalogue."
     },
     S3UriBar: {
-        search: "Rechercher.."
+        search: "Rechercher..",
+        "copy s3 path": "Copier le chemin S3",
+        copied: "Copié",
+        "copied path": ({ s3Uri }) => `Chemin copié : ${s3Uri}`,
+        "add to bookmarks": "Ajouter aux favoris",
+        "delete from bookmarks": "Supprimer des favoris",
+        bookmarked: "Dans les favoris",
+        "edit s3 uri": "Modifier l'URI S3"
     }
 };

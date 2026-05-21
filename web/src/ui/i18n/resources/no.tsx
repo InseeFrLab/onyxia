@@ -258,6 +258,8 @@ export const translations: Translations<"no"> = {
         share: "Del",
         download: "Last ned",
         "copy s3 path": "Kopier S3-sti",
+        "add to bookmarks": "Legg til i bokmerker",
+        "delete from bookmarks": "Slett fra bokmerker",
         "make public": "Gjør offentlig",
         "make private": "Gjør privat",
         folder: "Mappe",
@@ -1118,6 +1120,13 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "datasets parsing error": "Kunne ikke tolke datasett fra katalogen."
     },
     S3UriBar: {
-        search: "Søk.."
+        search: "Søk..",
+        "copy s3 path": "Kopier S3-sti",
+        copied: "Kopiert",
+        "copied path": ({ s3Uri }) => `Kopiert sti: ${s3Uri}`,
+        "add to bookmarks": "Legg til i bokmerker",
+        "delete from bookmarks": "Slett fra bokmerker",
+        bookmarked: "Bokmerket",
+        "edit s3 uri": "Rediger S3-URI"
     }
 };
