@@ -71,7 +71,7 @@ function Uploads_2() {
 const useStyles = tss.withName({ Uploads }).create(({ theme }) => ({
     root: {
         position: "fixed",
-        bottom: 0,
+        bottom: theme.spacing(6),
         right: theme.spacing(4),
         width: 500
     }
