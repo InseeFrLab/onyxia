@@ -277,10 +277,7 @@ export const translations: Translations<"nl"> = {
         "signed link validity aria label": "Geldigheidsduur van de ondertekende link",
         "generating signed URL": "Ondertekende URL genereren...",
         "copy signed URL aria label": "Ondertekende URL kopiëren",
-        cancel: "Annuleren",
-        copied: "Gekopieerd",
-        "copy link": "Link kopiëren",
-        "create link": "Link maken",
+        done: "Klaar",
         "public description":
             "Iedereen met de URL heeft toegang tot dit object. De link verloopt nooit omdat het object in een openbare prefix staat.",
         "signed description":

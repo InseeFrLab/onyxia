@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
-import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { assert, type Equals } from "tsafe";
 import {
@@ -25,8 +22,7 @@ export namespace S3ShareObjectDialogProps {
         className?: string;
         objectBasename: string;
         httpUrl: string | undefined;
-        onCancel?: () => void;
-        onDone?: () => void;
+        onDone: () => void;
     };
 
     export type Public = Common & {
@@ -50,37 +46,10 @@ assert<
 >;
 
 export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
-    const { className, objectBasename, httpUrl, isPublic, onCancel, onDone } = props;
+    const { className, objectBasename, httpUrl, isPublic, onDone } = props;
 
     const { t } = useTranslation({ S3ShareObjectDialog });
     const { classes, cx } = useStyles();
-    const [primaryActionStatus, setPrimaryActionStatus] = useState<"idle" | "copied">(
-        "idle"
-    );
-
-    useEffect(() => {
-        setPrimaryActionStatus("idle");
-    }, [httpUrl]);
-
-    useEffect(() => {
-        if (primaryActionStatus === "idle") {
-            return;
-        }
-
-        const timer = window.setTimeout(() => setPrimaryActionStatus("idle"), 1400);
-
-        return () => window.clearTimeout(timer);
-    }, [primaryActionStatus]);
-
-    const copyAndComplete = async () => {
-        if (httpUrl === undefined) {
-            return;
-        }
-
-        await copyToClipboard(httpUrl);
-        setPrimaryActionStatus("copied");
-        onDone?.();
-    };
 
     return (
         <section className={cx(classes.root, className)}>
@@ -154,26 +123,9 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                 </div>
             )}
 
-            {(onCancel !== undefined || onDone !== undefined) && (
-                <div className={classes.actions}>
-                    <Button variant="secondary" onClick={onCancel}>
-                        {t("cancel")}
-                    </Button>
-                    <Button
-                        startIcon={getIconUrlByName(
-                            primaryActionStatus === "copied" ? "Check" : "ContentCopy"
-                        )}
-                        disabled={httpUrl === undefined}
-                        onClick={copyAndComplete}
-                    >
-                        {primaryActionStatus === "copied"
-                            ? t("copied")
-                            : isPublic
-                              ? t("copy link")
-                              : t("create link")}
-                    </Button>
-                </div>
-            )}
+            <div className={classes.actions}>
+                <Button onClick={onDone}>{t("done")}</Button>
+            </div>
         </section>
     );
 }
@@ -293,10 +245,7 @@ const { i18n } = declareComponentKeys<
     | "signed link validity aria label"
     | "generating signed URL"
     | "copy signed URL aria label"
-    | "cancel"
-    | "copied"
-    | "copy link"
-    | "create link"
+    | "done"
     | "public description"
     | "signed description"
 >()({ S3ShareObjectDialog });

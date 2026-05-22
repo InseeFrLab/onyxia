@@ -26,6 +26,7 @@ export namespace S3ShareObjectDialogProps {
         className?: string;
         objectBasename: string;
         httpUrl: string | undefined;
+        onDone: () => void;
     };
 
     export type Public = Common & {
@@ -48,8 +49,9 @@ The component renders a regular box composed of:
 2. Policy explanation block
 3. Signed URL validity selector when the link is not public
 4. HTTP URL display and copy action
+5. Done action
 
-The parent owns modal chrome, title, close button, and lifecycle.
+The parent owns modal chrome, title, close button, and lifecycle. The component exposes a single mandatory `onDone` callback through its Done button.
 
 # Rendering Rules
 
@@ -84,6 +86,12 @@ After a successful copy, the component must show clear feedback:
 - status text announces copied to clipboard
 
 If copy fails, the component should display a failure status.
+
+## Done
+
+The component renders one Done button.
+
+Clicking it must invoke `onDone`.
 
 # Policy States
 

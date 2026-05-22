@@ -250,10 +250,7 @@ export const translations: Translations<"zh-CN"> = {
         "signed link validity aria label": "签名链接有效期",
         "generating signed URL": "正在生成签名 URL...",
         "copy signed URL aria label": "复制签名 URL",
-        cancel: "取消",
-        copied: "已复制",
-        "copy link": "复制链接",
-        "create link": "创建链接",
+        done: "完成",
         "public description":
             "任何拥有该 URL 的人都可以访问此对象。由于该对象位于公开前缀中，因此链接永不过期。",
         "signed description":

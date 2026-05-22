@@ -73,7 +73,6 @@ const Body = withLoader<{
             <S3ShareObjectDialog_headless
                 objectBasename={mainView.objectBasename}
                 httpUrl={mainView.httpUrl}
-                onCancel={onClose}
                 onDone={onClose}
                 {...(mainView.isPublic === true
                     ? {

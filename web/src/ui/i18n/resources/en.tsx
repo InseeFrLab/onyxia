@@ -272,10 +272,7 @@ export const translations: Translations<"en"> = {
         "signed link validity aria label": "Signed link validity duration",
         "generating signed URL": "Generating signed URL...",
         "copy signed URL aria label": "Copy signed URL",
-        cancel: "Cancel",
-        copied: "Copied",
-        "copy link": "Copy link",
-        "create link": "Create link",
+        done: "Done",
         "public description":
             "Anyone with the URL can access this object. The link never expires because the object is inside a public prefix.",
         "signed description":

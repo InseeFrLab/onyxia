@@ -224,11 +224,7 @@ function ShareObjectModal(
             }}
             body={
                 props.isPublic ? (
-                    <S3ShareObjectDialog
-                        {...props}
-                        onCancel={action("cancel")}
-                        onDone={action("copyAndShare")}
-                    />
+                    <S3ShareObjectDialog {...props} onDone={action("done")} />
                 ) : (
                     <S3ShareObjectDialog
                         {...props}
@@ -237,8 +233,7 @@ function ShareObjectModal(
                             action("changeValidityDuration")(validityDuration);
                             setValidityDuration(validityDuration);
                         }}
-                        onCancel={action("cancel")}
-                        onDone={action("createAndCopy")}
+                        onDone={action("done")}
                     />
                 )
             }

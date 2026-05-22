@@ -23,6 +23,7 @@ const basePrivateArgs: S3ShareObjectDialogProps.Private = {
     objectBasename,
     isPublic: false,
     httpUrl: getSignedUrl({ validityDuration: "one day" }),
+    onDone: action("done"),
     validityDuration: "one day",
     changeValidityDuration: action("changeValidityDuration")
 };
@@ -84,7 +85,8 @@ export const PublicObject: Story = {
     args: {
         objectBasename,
         isPublic: true,
-        httpUrl: publicUrl
+        httpUrl: publicUrl,
+        onDone: action("done")
     },
     render: renderInModalBody
 };
@@ -101,7 +103,8 @@ export const GeneratingPublicUrl: Story = {
     args: {
         objectBasename,
         isPublic: true,
-        httpUrl: undefined
+        httpUrl: undefined,
+        onDone: action("done")
     },
     render: renderInModalBody
 };
@@ -114,6 +117,7 @@ export const InteractiveValidity: Story = {
         <StatefulPrivateShareDialog
             objectBasename={args.objectBasename}
             isPublic={false}
+            onDone={args.onDone}
             initialValidityDuration={
                 "validityDuration" in args ? args.validityDuration : "one day"
             }

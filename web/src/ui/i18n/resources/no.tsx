@@ -274,10 +274,7 @@ export const translations: Translations<"no"> = {
         "signed link validity aria label": "Gyldighetsperiode for signert lenke",
         "generating signed URL": "Genererer signert URL...",
         "copy signed URL aria label": "Kopier signert URL",
-        cancel: "Avbryt",
-        copied: "Kopiert",
-        "copy link": "Kopier lenke",
-        "create link": "Opprett lenke",
+        done: "Ferdig",
         "public description":
             "Alle med URL-en kan få tilgang til dette objektet. Lenken utløper aldri fordi objektet ligger i et offentlig prefiks.",
         "signed description":
