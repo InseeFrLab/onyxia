@@ -13,8 +13,6 @@ import { alpha } from "@mui/material/styles";
 import { keyframes } from "tss-react";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
-type I18nKey = "detail title" | "create title" | "edit title" | "close aria label";
-
 export type S3ProfileDialogProps = {
     evtOpen: Evt<"detail" | "create">;
 };
@@ -173,7 +171,9 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
     }
 }));
 
-const { i18n } = declareComponentKeys<I18nKey>()({
+const { i18n } = declareComponentKeys<
+    "detail title" | "create title" | "edit title" | "close aria label"
+>()({
     S3ProfileDialog
 });
 export type I18n = typeof i18n;
