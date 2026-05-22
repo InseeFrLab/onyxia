@@ -187,29 +187,35 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                 <span className={classes.summaryLabel}>{selectedLabel}</span>
             </div>
             <div className={classes.actions}>
-                {actions.map(action => (
-                    <Tooltip key={action.key} title={action.tooltipTitle ?? action.label}>
-                        <span className={classes.tooltipAnchor}>
-                            <button
-                                type="button"
-                                className={classes.actionButton}
-                                onClick={action.onClick}
+                {actions.map(action => {
+                    const button = (
+                        <button
+                            type="button"
+                            className={classes.actionButton}
+                            onClick={action.onClick}
+                        >
+                            <span
+                                className={cx(
+                                    classes.actionIconFrame,
+                                    action.isActive && classes.actionIconFrameActive
+                                )}
                             >
-                                <span
-                                    className={cx(
-                                        classes.actionIconFrame,
-                                        action.isActive && classes.actionIconFrameActive
-                                    )}
-                                >
-                                    {action.icon}
-                                </span>
-                                <span className={classes.actionLabel}>
-                                    {action.label}
-                                </span>
-                            </button>
-                        </span>
-                    </Tooltip>
-                ))}
+                                {action.icon}
+                            </span>
+                            <span className={classes.actionLabel}>{action.label}</span>
+                        </button>
+                    );
+
+                    if (action.tooltipTitle === undefined) {
+                        return <span key={action.key}>{button}</span>;
+                    }
+
+                    return (
+                        <Tooltip key={action.key} title={action.tooltipTitle}>
+                            <span className={classes.tooltipAnchor}>{button}</span>
+                        </Tooltip>
+                    );
+                })}
             </div>
         </div>
     );
