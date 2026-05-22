@@ -2133,7 +2133,7 @@ const useStyles = tss
                 visibility: "visible",
                 pointerEvents: "auto"
             },
-            [`&:focus-within .${classes.rowActions}`]: {
+            [`&:has(:focus-visible) .${classes.rowActions}`]: {
                 opacity: 1,
                 visibility: "visible",
                 pointerEvents: "auto"
