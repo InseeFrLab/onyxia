@@ -453,6 +453,7 @@ export const translations: Translations<"en"> = {
         "divider: onyxia instance specific features": "Onyxia instance specific features",
         dataExplorer: "Data Explorer",
         dataCollection: "Data Collection",
+        s3Explorer: "File Explorer",
         sqlOlapShell: "SQL Olap Shell"
     },
     AutoLogoutCountdown: {

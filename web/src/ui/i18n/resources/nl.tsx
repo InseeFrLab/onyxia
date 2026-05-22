@@ -457,6 +457,7 @@ export const translations: Translations<"nl"> = {
             "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
         dataExplorer: "Data Verkenner",
         dataCollection: "Collecties Verkenner",
+        s3Explorer: "Bestandsverkenner",
         sqlOlapShell: "SQL OLAP Shell"
     },
     AutoLogoutCountdown: {

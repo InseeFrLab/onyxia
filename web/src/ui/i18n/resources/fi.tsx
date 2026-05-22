@@ -450,6 +450,7 @@ export const translations: Translations<"fi"> = {
             "Onyxia-instanssin erityisominaisuudet",
         dataExplorer: "Data Explorer",
         dataCollection: "Kokoelmien selains",
+        s3Explorer: "Tiedostoselain",
         sqlOlapShell: "SQL OLAP-kuori"
     },
     AutoLogoutCountdown: {

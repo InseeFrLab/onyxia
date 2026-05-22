@@ -91,6 +91,13 @@ export const LeftBar = memo((props: Props) => {
                         : "not visible"
                 },
                 {
+                    itemId: "s3Explorer",
+                    icon: customIcons.filesSvgUrl,
+                    label: t("s3Explorer"),
+                    link: routes.s3Explorer_root().link,
+                    availability: isS3ExplorerEnabled ? "available" : "not visible"
+                },
+                {
                     itemId: "dataExplorer",
                     icon: getIconUrlByName("DocumentScanner"),
                     label: t("dataExplorer"),
@@ -110,13 +117,6 @@ export const LeftBar = memo((props: Props) => {
                     label: t("sqlOlapShell"),
                     link: routes.sqlOlapShell().link,
                     availability: isDevModeEnabled ? "available" : "not visible"
-                },
-                {
-                    itemId: "s3Explorer",
-                    icon: customIcons.filesSvgUrl,
-                    label: "S3 Explorer",
-                    link: routes.s3Explorer_root().link,
-                    availability: isS3ExplorerEnabled ? "available" : "not visible"
                 },
                 {
                     groupId: "custom-leftbar-links",
@@ -189,6 +189,7 @@ const { i18n } = declareComponentKeys<
     | "mySecrets"
     | "dataExplorer"
     | "dataCollection"
+    | "s3Explorer"
     | "sqlOlapShell"
     | "divider: services features"
     | "divider: external services features"

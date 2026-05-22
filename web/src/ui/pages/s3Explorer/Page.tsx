@@ -267,7 +267,7 @@ function PageComponent() {
                                 title: css({ paddingBottom: 3 })
                             }}
                             mainIcon={customIcons.filesSvgUrl}
-                            title="S3 Explorer"
+                            title="File Explorer"
                             helpTitle={undefined}
                             helpContent={<></>}
                             titleCollapseParams={{

@@ -455,6 +455,7 @@ export const translations: Translations<"no"> = {
             "Onyxia-instansspesifikke funksjoner",
         dataExplorer: "Datautforsker",
         dataCollection: "Samlingseksplorer",
+        s3Explorer: "Filutforsker",
         sqlOlapShell: "SQL OLAP-Skall"
     },
     AutoLogoutCountdown: {
