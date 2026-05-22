@@ -783,12 +783,6 @@ const useStyles = tss
                     backgroundColor: theme.colors.palette.focus.mainAlpha20
                 }
             },
-            renameIcon: {
-                fontSize: 16,
-                lineHeight: "16px",
-                fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
-            },
             tooltipActionIcon: {
                 fontSize: 12,
                 lineHeight: "12px",
