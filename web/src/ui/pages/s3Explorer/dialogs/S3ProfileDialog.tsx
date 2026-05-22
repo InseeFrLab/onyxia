@@ -2,7 +2,7 @@ import { S3ProfileDetails as S3ProfileDetails_headless } from "ui/shared/codex/s
 import { S3ProfileForm as S3ProfileForm_headless } from "ui/shared/codex/s3ProfileDialog/S3ProfileForm";
 import { type Evt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
-import { useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import { withLoader } from "ui/tools/withLoader";
 import { getCore, useCoreState, getCoreSync } from "core";
 import { tss } from "tss";
@@ -83,6 +83,22 @@ function SideDialog(props: {
 
     const { classes } = useStyles_SideDialog();
     const { t } = useTranslation({ S3ProfileDialog });
+
+    useEffect(() => {
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== "Escape") {
+                return;
+            }
+
+            onClose();
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+        };
+    }, [onClose]);
 
     const onRootClick = (event: MouseEvent<HTMLDivElement>) => {
         if (event.target !== event.currentTarget) {
