@@ -5,7 +5,12 @@ import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
-import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
+import {
+    declareComponentKeys,
+    useResolveLocalizedString,
+    useTranslation,
+    type LocalizedString
+} from "ui/i18n";
 import type { Link } from "type-route";
 
 export type S3BookmarkItemProps = {
@@ -117,6 +122,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     } = props;
 
     const { resolveLocalizedString } = useResolveLocalizedString();
+    const { t } = useTranslation({ S3BookmarkItem });
     const rootRef = useRef<HTMLAnchorElement | null>(null);
     const [isEntryPointMenuOpen, setIsEntryPointMenuOpen] = useState(false);
     const stopEvent = (event: SyntheticEvent) => {
@@ -182,8 +188,8 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
     const entryPointSubtitle = isEntryPoint ? fullS3Uri : undefined;
     const linkAriaLabel = isEntryPoint
         ? isCustomBookmark
-            ? "Open bookmark"
-            : "Open bucket"
+            ? t("open bookmark")
+            : t("open bucket")
         : undefined;
 
     const shouldInlineExpand = variant === "bar" && showInlinePath;
@@ -252,7 +258,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                     <span
                         role="button"
                         tabIndex={0}
-                        aria-label="Bookmark actions"
+                        aria-label={t("bookmark actions")}
                         aria-haspopup="menu"
                         aria-expanded={isEntryPointMenuOpen}
                         className={classes.entryPointMoreButton}
@@ -310,7 +316,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                 >
                                     edit
                                 </span>
-                                <span>Rename</span>
+                                <span>{t("rename")}</span>
                             </span>
                             <span
                                 role="menuitem"
@@ -337,7 +343,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                 >
                                     delete
                                 </span>
-                                <span>Delete</span>
+                                <span>{t("delete")}</span>
                             </span>
                         </span>
                     )}
@@ -363,7 +369,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             <span
                                 role="button"
                                 tabIndex={0}
-                                aria-label="Rename bookmark"
+                                aria-label={t("rename bookmark")}
                                 className={classes.inlineActionButton}
                                 onClick={event => {
                                     stopEvent(event);
@@ -388,7 +394,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             <span
                                 role="button"
                                 tabIndex={0}
-                                aria-label="Delete bookmark"
+                                aria-label={t("delete bookmark")}
                                 className={classes.inlineActionButton}
                                 onClick={event => {
                                     stopEvent(event);
@@ -440,7 +446,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                         <span
                             role="button"
                             tabIndex={0}
-                            aria-label="Rename bookmark"
+                            aria-label={t("rename bookmark")}
                             className={classes.renameButton}
                             onClick={event => {
                                 stopEvent(event);
@@ -465,7 +471,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                         <span
                             role="button"
                             tabIndex={0}
-                            aria-label="Delete bookmark"
+                            aria-label={t("delete bookmark")}
                             className={classes.renameButton}
                             onClick={event => {
                                 stopEvent(event);
@@ -931,3 +937,14 @@ const useStyles = tss
     });
 
 export const S3BookmarksBarItem = S3BookmarkItem;
+
+const { i18n } = declareComponentKeys<
+    | "open bookmark"
+    | "open bucket"
+    | "bookmark actions"
+    | "rename"
+    | "delete"
+    | "rename bookmark"
+    | "delete bookmark"
+>()({ S3BookmarkItem });
+export type S3BookmarkItemI18n = typeof i18n;

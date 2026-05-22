@@ -108,16 +108,19 @@ function collapseMiddle(text: string): string {
     )}`;
 }
 
-function getHintTypeLabel(type: HintType): string {
+function getHintTypeLabel(
+    type: HintType,
+    t: ReturnType<typeof useTranslation>["t"]
+): string {
     switch (type) {
         case "key-segment":
-            return "Prefix";
+            return t("prefix");
         case "bookmark-admin":
-            return "Admin bookmark";
+            return t("admin bookmark");
         case "bookmark-user":
-            return "Bookmark";
+            return t("bookmark");
         case "object":
-            return "Object";
+            return t("object");
     }
 }
 
@@ -1184,7 +1187,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const bookmarkIcon = isBookmarked ? StarIcon : StarBorderIcon;
     const renderPublicMarker = (isPublicStart: boolean) =>
         isPublicStart ? (
-            <span className={classes.publicMarker} title="Public" aria-hidden="true">
+            <span className={classes.publicMarker} title={t("public")} aria-hidden="true">
                 <Icon size="extra small" icon={getIconUrlByName("Public")} />
             </span>
         ) : null;
@@ -1246,9 +1249,10 @@ export function S3UriBar(props: S3UriBarProps) {
                                     isHintSelection: false
                                 });
                             }}
-                            aria-label={`${isPublicStart ? "Public. " : ""}Go to ${stringifyS3Uri(
-                                crumb.s3Uri
-                            )}`}
+                            aria-label={t("go to s3 uri", {
+                                s3Uri: stringifyS3Uri(crumb.s3Uri),
+                                isPublic: isPublicStart
+                            })}
                         >
                             {renderPublicMarker(isPublicStart)}
                             <span className={classes.segmentLabel}>{crumb.label}</span>
@@ -1290,7 +1294,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 {isEditing ? (
                     <div className={classes.inputWrapper}>
                         <label htmlFor={inputId} className={classes.srOnly}>
-                            S3 URI
+                            {t("s3 uri")}
                         </label>
                         <input
                             id={inputId}
@@ -1342,7 +1346,7 @@ export function S3UriBar(props: S3UriBarProps) {
                         </span>
                     </div>
                 ) : isInactiveHomeState ? (
-                    <div className={classes.inactiveHomeState} aria-label="S3 URI">
+                    <div className={classes.inactiveHomeState} aria-label={t("s3 uri")}>
                         <span className={classes.inactiveHomeIcon} aria-hidden="true">
                             <Icon
                                 size="small"
@@ -1357,7 +1361,7 @@ export function S3UriBar(props: S3UriBarProps) {
                 ) : (
                     <nav
                         className={classes.pathDisplay}
-                        aria-label="S3 URI"
+                        aria-label={t("s3 uri")}
                         ref={pathDisplayRef}
                     >
                         <div className={classes.crumbs}>
@@ -1425,10 +1429,13 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     }}
                                                     aria-label={
                                                         crumb.kind === "root"
-                                                            ? "Edit from S3 root"
-                                                            : `${isPublicStart ? "Public. " : ""}Go to ${stringifyS3Uri(
-                                                                  crumb.s3Uri
-                                                              )}`
+                                                            ? t("edit from s3 root")
+                                                            : t("go to s3 uri", {
+                                                                  s3Uri: stringifyS3Uri(
+                                                                      crumb.s3Uri
+                                                                  ),
+                                                                  isPublic: isPublicStart
+                                                              })
                                                     }
                                                 >
                                                     {crumb.kind === "bucket" && (
@@ -1499,7 +1506,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                             classes.keyEditButton
                                         )}
                                         data-s3-uri-ignore-edit="true"
-                                        aria-label="Edit object key"
+                                        aria-label={t("edit object key")}
                                         onClick={event => {
                                             event.stopPropagation();
                                             enterKeyEditing();
@@ -1559,7 +1566,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                             classes.segmentGroupTag,
                                                             classes.segmentGroupTagKey
                                                         )}
-                                                        aria-label="Object key"
+                                                        aria-label={t("object key")}
                                                     >
                                                         <Icon
                                                             size="extra small"
@@ -1762,7 +1769,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                     aria-live="polite"
                                 >
                                     <span className={classes.hintsLoadingText}>
-                                        Listing...
+                                        {t("listing")}
                                     </span>
                                 </div>
                             )}
@@ -1809,8 +1816,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                             hint.type === "object" &&
                                                 classes.hintTypeObject
                                         )}
-                                        aria-label={getHintTypeLabel(hint.type)}
-                                        title={getHintTypeLabel(hint.type)}
+                                        aria-label={getHintTypeLabel(hint.type, t)}
+                                        title={getHintTypeLabel(hint.type, t)}
                                     >
                                         {hint.type === "bookmark-user" ? (
                                             <StarIcon
@@ -2315,5 +2322,16 @@ const { i18n } = declareComponentKeys<
     | "delete from bookmarks"
     | "bookmarked"
     | "edit s3 uri"
+    | "prefix"
+    | "admin bookmark"
+    | "bookmark"
+    | "object"
+    | "public"
+    | { K: "go to s3 uri"; P: { s3Uri: string; isPublic: boolean }; R: string }
+    | "s3 uri"
+    | "edit from s3 root"
+    | "edit object key"
+    | "object key"
+    | "listing"
 >()({ S3UriBar });
 export type I18n = typeof i18n;

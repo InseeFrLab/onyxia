@@ -4,6 +4,7 @@ import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type DisplayErrorDialogProps = {
     evtOpen: Evt<{
@@ -13,6 +14,7 @@ export type DisplayErrorDialogProps = {
 
 export const DisplayErrorDialog = memo((props: DisplayErrorDialogProps) => {
     const { evtOpen } = props;
+    const { t } = useTranslation({ DisplayErrorDialog });
 
     const [state, setState] = useState<
         UnpackEvt<DisplayErrorDialogProps["evtOpen"]> | undefined
@@ -27,11 +29,11 @@ export const DisplayErrorDialog = memo((props: DisplayErrorDialogProps) => {
 
     return (
         <Dialog
-            title="Error"
+            title={t("error")}
             body={state?.errorMessage ?? ""}
             buttons={
                 <Button autoFocus onClick={() => setState(undefined)}>
-                    Ok
+                    {t("ok")}
                 </Button>
             }
             isOpen={state !== undefined}
@@ -43,3 +45,6 @@ export const DisplayErrorDialog = memo((props: DisplayErrorDialogProps) => {
 DisplayErrorDialog.displayName = symToStr({
     DisplayErrorDialog
 });
+
+const { i18n } = declareComponentKeys<"error" | "ok">()({ DisplayErrorDialog });
+export type I18n = typeof i18n;

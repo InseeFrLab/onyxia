@@ -57,7 +57,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
                                     }
                                 }}
                             >
-                                Events
+                                {t("events")}
                             </Badge>
                         );
                     }
@@ -82,7 +82,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
     return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
 });
 
-const { i18n } = declareComponentKeys<"refresh" | "launch" | "trash" | "trash my own">()({
-    MyServicesButtonBar
-});
+const { i18n } = declareComponentKeys<
+    "refresh" | "launch" | "trash" | "trash my own" | "events"
+>()({ MyServicesButtonBar });
 export type I18n = typeof i18n;

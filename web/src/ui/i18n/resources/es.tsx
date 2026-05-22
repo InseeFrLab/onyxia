@@ -6,7 +6,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
-export const translations: Translations<"en"> = {
+export const translations: Translations<"es"> = {
     /* spell-checker: disable */
     Account: {
         profile: "Perfil",
@@ -188,6 +188,108 @@ export const translations: Translations<"en"> = {
         cancel: "Cancelar",
         overwrite: "Sobrescribir"
     },
+    ConfirmCustomS3ConfigDeletionDialog: {
+        "dialog title": undefined,
+        cancel: undefined,
+        yes: undefined
+    },
+    DisplayErrorDialog: {
+        error: undefined,
+        ok: undefined
+    },
+    S3Explorer: {
+        "page header title": undefined,
+        "create profile": undefined,
+        back: undefined,
+        upload: undefined,
+        "create new prefix": undefined
+    },
+    S3ShareObjectDialogContainer: {
+        "dialog title": undefined
+    },
+    S3BookmarksBar: {
+        "s3 bookmarks aria label": undefined,
+        "show more bookmarks": undefined
+    },
+    S3BookmarkItem: {
+        "open bookmark": undefined,
+        "open bucket": undefined,
+        "bookmark actions": undefined,
+        rename: undefined,
+        delete: undefined,
+        "rename bookmark": undefined,
+        "delete bookmark": undefined
+    },
+    S3BookmarksEntryPointList: {
+        "s3 bookmark entry points aria label": undefined,
+        bookmarks: undefined,
+        "no bookmarks yet": undefined,
+        "storage locations": undefined
+    },
+    S3DialogCopyField: {
+        "generating url": undefined,
+        copy: undefined,
+        copied: undefined
+    },
+    S3DialogItemSummary: {
+        public: undefined
+    },
+    S3ProfileSelect: {
+        "select s3 profile aria label": undefined,
+        "profile settings aria label": undefined,
+        "s3 profiles aria label": undefined,
+        "new s3 profile": undefined
+    },
+    S3SelectionActionBar: {
+        download: undefined,
+        delete: undefined,
+        copied: undefined,
+        "copy s3 path": undefined,
+        share: undefined,
+        "make public": undefined,
+        "make private": undefined,
+        "one selected": undefined,
+        "many selected": undefined,
+        "clear selection": undefined
+    },
+    ConfirmAbortUploadDialog: {
+        "dialog title": undefined,
+        "dialog body": undefined,
+        "continue upload": undefined,
+        "cancel upload": undefined
+    },
+    S3Uploads: {
+        "uploading count": undefined,
+        "upload count": undefined,
+        "expand uploads": undefined,
+        "collapse uploads": undefined,
+        "close uploads": undefined,
+        "uploading status": undefined,
+        completed: undefined,
+        cancelled: undefined,
+        error: undefined,
+        "uploaded size of total size": undefined,
+        of: undefined,
+        "open uploaded directory": undefined,
+        "cancel upload": undefined,
+        "retry upload": undefined
+    },
+    CustomNoRowsOverlay: {
+        "no rows": undefined
+    },
+    DataTextEditor: {
+        "not a valid format": undefined,
+        format: undefined,
+        "all defaults": undefined,
+        schema: undefined
+    },
+    JsonSchemaDialog: {
+        "json schema": undefined,
+        ok: undefined
+    },
+    SelectFormField: {
+        "empty string": undefined
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Nombre del marcador",
         "add dialog title": "Añadir esta ubicación a los marcadores",
@@ -271,7 +373,26 @@ export const translations: Translations<"en"> = {
         folder: "Carpeta",
         object: "Objeto",
         "folder is public": "La carpeta es pública",
-        "folder is private": "La carpeta es privada"
+        "folder is private": "La carpeta es privada",
+        today: undefined,
+        yesterday: undefined,
+        "access denied": undefined,
+        "bucket not found": undefined,
+        "access denied description": undefined,
+        "bucket not found description": undefined,
+        "select item": undefined,
+        "select all items": undefined,
+        public: undefined,
+        deleting: undefined,
+        uploading: undefined,
+        "drag and drop to import files": undefined,
+        "this prefix is empty": undefined,
+        "empty prefix description": undefined,
+        "upload files": undefined,
+        "new folder": undefined,
+        name: undefined,
+        "last modified": undefined,
+        size: undefined
     },
     S3ShareObjectDialog: {
         "generating public URL": "Generando URL pública...",
@@ -283,7 +404,11 @@ export const translations: Translations<"en"> = {
         "public description":
             "Cualquier persona con la URL puede acceder a este objeto. El enlace nunca expira porque el objeto está dentro de un prefijo público.",
         "signed description":
-            "Crea una URL firmada con un periodo de validez limitado. Para compartir una URL que no expire, haz público uno de los prefijos superiores de este objeto."
+            "Crea una URL firmada con un periodo de validez limitado. Para compartir una URL que no expire, haz público uno de los prefijos superiores de este objeto.",
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "selected duration": undefined
     },
     S3ProfileDialog: {
         "detail title": "Detalle del perfil S3",
@@ -445,8 +570,10 @@ export const translations: Translations<"en"> = {
     Header: {
         login: "Iniciar sesión",
         logout: "Cerrar sesión",
-        project: "Proyecto",
         region: "Región"
+    },
+    ProjectSelect: {
+        project: "Proyecto"
     },
     LeftBar: {
         reduce: "Reducir",
@@ -663,6 +790,7 @@ export const translations: Translations<"en"> = {
         "reset to default": "Restablecer a los valores predeterminados"
     },
     ConfigurationTopLevelGroup: {
+        global: undefined,
         miscellaneous: "Varios",
         "Configuration that applies to all charts":
             "Configuración que se aplica a todos los gráficos",
@@ -675,7 +803,8 @@ export const translations: Translations<"en"> = {
     },
     TextFormField: {
         "not matching pattern": ({ pattern }) => `No coincide con el patrón ${pattern}`,
-        "toggle password visibility": "Alternar la visibilidad de la contraseña"
+        "toggle password visibility": "Alternar la visibilidad de la contraseña",
+        loading: undefined
     },
     FormFieldGroupComponent: {
         add: "Añadir"
@@ -712,7 +841,8 @@ export const translations: Translations<"en"> = {
         "not necessarily first logs":
             "Estos no son necesariamente los primeros registros, los registros más antiguos podrían haber sido eliminados",
         "new logs are displayed in realtime":
-            "Los nuevos registros se muestran en tiempo real"
+            "Los nuevos registros se muestran en tiempo real",
+        follow: undefined
     },
     MyServiceButtonBar: {
         back: "Volver",
@@ -797,7 +927,8 @@ export const translations: Translations<"en"> = {
                 Eventos del espacio de nombres de Kubernetes, es un flujo de eventos en
                 tiempo real de <code>kubectl get events</code>
             </>
-        )
+        ),
+        close: undefined
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "¿Estás seguro?",
@@ -814,7 +945,8 @@ export const translations: Translations<"en"> = {
         refresh: "Actualizar",
         launch: "Nuevo servicio",
         trash: "Eliminar todo",
-        "trash my own": "Eliminar todos mis servicios"
+        "trash my own": "Eliminar todos mis servicios",
+        events: undefined
     },
     MyServicesCard: {
         service: "Servicio",
@@ -952,7 +1084,8 @@ export const translations: Translations<"en"> = {
     },
     UrlInput: {
         load: "Cargar",
-        reset: "Vaciar"
+        reset: "Vaciar",
+        "data source": undefined
     },
     CommandBar: {
         ok: "Aceptar"
@@ -1134,6 +1267,17 @@ export const translations: Translations<"en"> = {
         "add to bookmarks": "Añadir a marcadores",
         "delete from bookmarks": "Eliminar de marcadores",
         bookmarked: "Marcado",
-        "edit s3 uri": "Editar URI S3"
+        "edit s3 uri": "Editar URI S3",
+        prefix: undefined,
+        "admin bookmark": undefined,
+        bookmark: undefined,
+        object: undefined,
+        public: undefined,
+        "go to s3 uri": undefined,
+        "s3 uri": undefined,
+        "edit from s3 root": undefined,
+        "edit object key": undefined,
+        "object key": undefined,
+        listing: undefined
     }
 };

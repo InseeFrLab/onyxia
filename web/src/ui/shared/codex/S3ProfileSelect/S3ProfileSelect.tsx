@@ -3,6 +3,7 @@ import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 import { useClickAway } from "powerhooks/useClickAway";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type S3ProfileSelectProps = {
     className?: string;
@@ -34,6 +35,7 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
     } = props;
 
     const { classes, cx } = useStyles();
+    const { t } = useTranslation({ S3ProfileSelect });
     const [isOpen, setIsOpen] = useState(false);
     const [isTriggerHover, setIsTriggerHover] = useState(false);
     const rootRef = useRef<HTMLDivElement | null>(null);
@@ -120,7 +122,7 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                     className={classes.trigger}
                     role="button"
                     tabIndex={0}
-                    aria-label="Select S3 profile"
+                    aria-label={t("select s3 profile aria label")}
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
                     onClick={toggleDropdown}
@@ -144,7 +146,7 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                     type="button"
                     className={classes.editButton}
                     onClick={onEditProfile}
-                    aria-label="Profile settings"
+                    aria-label={t("profile settings aria label")}
                 >
                     <Icon icon={getIconUrlByName("Settings")} size="extra small" />
                 </button>
@@ -154,7 +156,7 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                 <div
                     className={classes.dropdown}
                     role="listbox"
-                    aria-label="S3 profiles"
+                    aria-label={t("s3 profiles aria label")}
                     onKeyDown={event => {
                         if (event.key !== "Escape") {
                             return;
@@ -210,7 +212,7 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                             icon={getIconUrlByName("Add")}
                             size="small"
                         />
-                        <span className={classes.createLabel}>New S3 Profile</span>
+                        <span className={classes.createLabel}>{t("new s3 profile")}</span>
                     </button>
                 </div>
             )}
@@ -411,3 +413,11 @@ const useStyles = tss.withName({ S3ProfileSelect }).create(({ theme }) => {
         }
     };
 });
+
+const { i18n } = declareComponentKeys<
+    | "select s3 profile aria label"
+    | "profile settings aria label"
+    | "s3 profiles aria label"
+    | "new s3 profile"
+>()({ S3ProfileSelect });
+export type I18n = typeof i18n;

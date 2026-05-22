@@ -6,6 +6,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 import type { Evt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     evtOpen: Evt<{
@@ -15,6 +16,7 @@ export type Props = {
 
 export const ConfirmCustomS3ConfigDeletionDialog = memo((props: Props) => {
     const { evtOpen } = props;
+    const { t } = useTranslation({ ConfirmCustomS3ConfigDeletionDialog });
 
     const [state, setState] = useState<UnpackEvt<Props["evtOpen"]> | undefined>(
         undefined
@@ -37,14 +39,14 @@ export const ConfirmCustomS3ConfigDeletionDialog = memo((props: Props) => {
 
     return (
         <Dialog
-            title="Confirm deletion of custom S3 config ?"
+            title={t("dialog title")}
             buttons={
                 <>
                     <Button onClick={onCloseFactory(false)} autoFocus variant="secondary">
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button autoFocus onClick={onCloseFactory(true)}>
-                        Yes
+                        {t("yes")}
                     </Button>
                 </>
             }
@@ -57,3 +59,8 @@ export const ConfirmCustomS3ConfigDeletionDialog = memo((props: Props) => {
 ConfirmCustomS3ConfigDeletionDialog.displayName = symToStr({
     ConfirmCustomS3ConfigDeletionDialog
 });
+
+const { i18n } = declareComponentKeys<"dialog title" | "cancel" | "yes">()({
+    ConfirmCustomS3ConfigDeletionDialog
+});
+export type I18n = typeof i18n;

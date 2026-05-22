@@ -7,6 +7,7 @@ import type { S3Uri } from "core/tools/S3Uri";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { Link } from "type-route";
 import { ConfirmAbortUploadDialog } from "./ConfirmAbortUploadDialog";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type S3UploadsProps = {
     className?: string;
@@ -68,6 +69,7 @@ export function S3Uploads(props: S3UploadsProps) {
         getDirectoryLink
     } = props;
     const { classes, cx } = useStyles();
+    const { t } = useTranslation({ S3Uploads });
     const [internalCollapsed, setInternalCollapsed] = useState(false);
     const [isConfirmAbortUploadDialogOpen, setIsConfirmAbortUploadDialogOpen] =
         useState(false);
@@ -108,8 +110,8 @@ export function S3Uploads(props: S3UploadsProps) {
 
     const headerTitle =
         uploadingCount > 0
-            ? `Uploading ${uploadingCount} item${uploadingCount === 1 ? "" : "s"}...`
-            : `${uploadCount} upload${uploadCount === 1 ? "" : "s"}`;
+            ? t("uploading count", { count: uploadingCount })
+            : t("upload count", { count: uploadCount });
 
     return (
         <div className={cx(classes.root, className)}>
@@ -121,7 +123,9 @@ export function S3Uploads(props: S3UploadsProps) {
                         className={classes.headerIconButton}
                         onClick={handleToggleCollapsed}
                         aria-label={
-                            internalCollapsed ? "Expand uploads" : "Collapse uploads"
+                            internalCollapsed
+                                ? t("expand uploads")
+                                : t("collapse uploads")
                         }
                     >
                         <Icon
@@ -135,7 +139,7 @@ export function S3Uploads(props: S3UploadsProps) {
                         type="button"
                         className={classes.headerIconButton}
                         onClick={handleClose}
-                        aria-label="Close uploads"
+                        aria-label={t("close uploads")}
                     >
                         <Icon icon={getIconUrlByName("Clear")} size="small" />
                     </button>
@@ -161,21 +165,24 @@ export function S3Uploads(props: S3UploadsProps) {
                         const uploadedSizeLabel = getFormattedSize(uploadedSize);
                         const statusLabel = (() => {
                             if (isUploading) {
-                                return "Uploading...";
+                                return t("uploading status");
                             }
 
                             if (isCompleted) {
-                                return "Completed";
+                                return t("completed");
                             }
 
                             if (isCancelled) {
-                                return "Cancelled";
+                                return t("cancelled");
                             }
 
-                            return "Error";
+                            return t("error");
                         })();
                         const sizeLabel = isUploading
-                            ? `${uploadedSizeLabel} of ${totalSizeLabel}`
+                            ? t("uploaded size of total size", {
+                                  uploadedSize: uploadedSizeLabel,
+                                  totalSize: totalSizeLabel
+                              })
                             : totalSizeLabel;
                         const messageSuffix =
                             upload.stoppedStatus?.case === "errored" &&
@@ -234,7 +241,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                                             classes.metaSizeConnector
                                                         }
                                                     >
-                                                        of
+                                                        {t("of")}
                                                     </span>
                                                     <span>{totalSizeLabel}</span>
                                                 </span>
@@ -305,7 +312,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                             profileName: upload.profileName,
                                             s3Uri: upload.s3Uri
                                         })}
-                                        aria-label="Open uploaded directory"
+                                        aria-label={t("open uploaded directory")}
                                     >
                                         <Icon
                                             icon={getIconUrlByName("Folder")}
@@ -322,7 +329,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                                 s3Uri: upload.s3Uri
                                             })
                                         }
-                                        aria-label="Cancel upload"
+                                        aria-label={t("cancel upload")}
                                     >
                                         <Icon
                                             icon={getIconUrlByName("Cancel")}
@@ -339,7 +346,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                                 s3Uri: upload.s3Uri
                                             })
                                         }
-                                        aria-label="Retry upload"
+                                        aria-label={t("retry upload")}
                                     >
                                         <Icon
                                             icon={getIconUrlByName("Replay")}
@@ -590,3 +597,25 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
         }
     }
 }));
+
+const { i18n } = declareComponentKeys<
+    | { K: "uploading count"; P: { count: number }; R: string }
+    | { K: "upload count"; P: { count: number }; R: string }
+    | "expand uploads"
+    | "collapse uploads"
+    | "close uploads"
+    | "uploading status"
+    | "completed"
+    | "cancelled"
+    | "error"
+    | {
+          K: "uploaded size of total size";
+          P: { uploadedSize: string; totalSize: string };
+          R: string;
+      }
+    | "of"
+    | "open uploaded directory"
+    | "cancel upload"
+    | "retry upload"
+>()({ S3Uploads });
+export type I18n = typeof i18n;

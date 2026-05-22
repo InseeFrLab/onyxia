@@ -1,6 +1,7 @@
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { tss } from "tss";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type S3SelectionActionBarProps = {
     className?: string;
@@ -42,23 +43,24 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     } = props;
 
     const { classes, cx } = useStyles();
+    const { t } = useTranslation({ S3SelectionActionBar });
 
     const actions = [
         {
             key: "download",
-            label: "Download",
+            label: t("download"),
             iconName: "FileDownload",
             onClick: onDownload
         },
         {
             key: "delete",
-            label: "Delete",
+            label: t("delete"),
             iconName: "Delete",
             onClick: onDelete
         },
         {
             key: "copy",
-            label: isCopyS3UriCopied ? "Copied" : "Copy S3 path",
+            label: isCopyS3UriCopied ? t("copied") : t("copy s3 path"),
             iconName: isCopyS3UriCopied ? "Check" : "ContentCopy",
             onClick: onCopyS3Uri
         },
@@ -70,26 +72,28 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         },
         {
             key: "share",
-            label: "Share",
+            label: t("share"),
             iconName: "Share",
             onClick: onShare
         },
         {
             key: "make-public",
-            label: "Make public",
+            label: t("make public"),
             iconName: "Public",
             onClick: onMakePublic
         },
         {
             key: "make-private",
-            label: "Make private",
+            label: t("make private"),
             iconName: "PublicOff",
             onClick: onMakePrivate
         }
     ].filter((action): action is Action => action.onClick !== undefined);
 
     const selectedLabel =
-        selectionCount === 1 ? "1 selected" : `${selectionCount} selected`;
+        selectionCount === 1
+            ? t("one selected")
+            : t("many selected", { count: selectionCount });
 
     if (selectionCount === 0) {
         return null;
@@ -102,7 +106,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                     type="button"
                     className={classes.clearButton}
                     onClick={onClear}
-                    aria-label="Clear selection"
+                    aria-label={t("clear selection")}
                 >
                     <Icon icon={getIconUrlByName("Close")} size="extra small" />
                 </button>
@@ -236,3 +240,17 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
         }
     };
 });
+
+const { i18n } = declareComponentKeys<
+    | "download"
+    | "delete"
+    | "copied"
+    | "copy s3 path"
+    | "share"
+    | "make public"
+    | "make private"
+    | "one selected"
+    | { K: "many selected"; P: { count: number }; R: string }
+    | "clear selection"
+>()({ S3SelectionActionBar });
+export type I18n = typeof i18n;

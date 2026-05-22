@@ -28,12 +28,12 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { customIcons } from "lazy-icons";
 import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
 import { getIconUrlByName } from "lazy-icons";
-import { useResolveLocalizedString } from "ui/i18n";
+import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 const Page = withLoader({
     loader,
-    Component: PageComponent
+    Component: S3Explorer
 });
 export default Page;
 
@@ -78,7 +78,7 @@ function useRouteSync() {
     }, []);
 }
 
-function PageComponent() {
+function S3Explorer() {
     useRouteSync();
 
     const dialogProps = useConst(
@@ -135,6 +135,7 @@ function PageComponent() {
 
     const mainView = useCoreState("s3ExplorerUiController", "mainView");
     const { resolveLocalizedString } = useResolveLocalizedString();
+    const { t } = useTranslation({ S3Explorer });
     const [copiedS3Uri, setCopiedS3Uri] = useState<S3Uri | undefined>(undefined);
 
     const { css, theme } = useStyles();
@@ -267,7 +268,7 @@ function PageComponent() {
                                 title: css({ paddingBottom: 3 })
                             }}
                             mainIcon={customIcons.filesSvgUrl}
-                            title="File Explorer"
+                            title={t("page header title")}
                             helpTitle={undefined}
                             helpContent={<></>}
                             titleCollapseParams={{
@@ -323,7 +324,7 @@ function PageComponent() {
                                     dialogProps.evtS3ProfileDialogOpen.post("create")
                                 }
                             >
-                                Create Profile
+                                {t("create profile")}
                             </button>
                         );
                     }
@@ -349,7 +350,7 @@ function PageComponent() {
                             >
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("ArrowBack")}
-                                    label="Back"
+                                    label={t("back")}
                                     disabled={mainView.isBackButtonDisabled}
                                     onClick={s3ExplorerUiController.navigateBack}
                                 />
@@ -430,7 +431,7 @@ function PageComponent() {
                                 />
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("UploadFileOutlined")}
-                                    label="Upload"
+                                    label={t("upload")}
                                     disabled={mainView.isUploadButtonDisabled}
                                     onClick={() =>
                                         evtS3ExplorerMainViewAction.post(
@@ -440,7 +441,7 @@ function PageComponent() {
                                 />
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("CreateNewFolderOutlined")}
-                                    label="Create new Prefix"
+                                    label={t("create new prefix")}
                                     disabled={mainView.directoryCreationButton.isDisabled}
                                     onClick={async () => {
                                         assert(
@@ -602,3 +603,8 @@ function DataExplorer(props: { className?: string }) {
         </div>
     );
 }
+
+const { i18n } = declareComponentKeys<
+    "page header title" | "create profile" | "back" | "upload" | "create new prefix"
+>()({ S3Explorer });
+export type I18n = typeof i18n;

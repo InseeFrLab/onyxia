@@ -21,12 +21,25 @@ export type ComponentKey =
     | import("ui/pages/s3Explorer/dialogs/CreateOrRenameBookmarkDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/DirectoryCreationDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/MakePrefixPublicDialog").I18n
+    | import("ui/pages/s3Explorer/dialogs/ConfirmCustomS3ConfigDeletionDialog").I18n
+    | import("ui/pages/s3Explorer/dialogs/DisplayErrorDialog").I18n
     | import("ui/shared/codex/S3ExplorerMainView/S3ExplorerMainView").I18n
     | import("ui/shared/codex/S3ShareObjectDialog").I18n
+    | import("ui/pages/s3Explorer/dialogs/S3ShareObjectDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/S3ProfileDialog").I18n
+    | import("ui/pages/s3Explorer/Page").I18n
+    | import("ui/shared/codex/S3Bookmarks/S3BookmarksBar").I18n
+    | import("ui/shared/codex/S3Bookmarks/S3BookmarksBarItem/S3BookmarksBarItem").S3BookmarkItemI18n
+    | import("ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem").I18n
+    | import("ui/shared/codex/S3DialogPrimitives").I18n
+    | import("ui/shared/codex/S3ProfileSelect").I18n
+    | import("ui/shared/codex/S3SelectionActionBar").I18n
+    | import("ui/shared/codex/S3Uploads/ConfirmAbortUploadDialog").I18n
+    | import("ui/shared/codex/S3Uploads/S3Upload").I18n
     | import("ui/shared/codex/s3ProfileDialog/S3ProfileDetails").I18n
     | import("ui/shared/codex/s3ProfileDialog/S3ProfileForm").I18n
     | import("ui/App/Header/Header").I18n
+    | import("ui/App/Header/ProjectSelect").I18n
     | import("ui/App/LeftBar").I18n
     | import("ui/App/AutoLogoutCountdown").I18n
     | import("ui/pages/page404/Page").I18n
@@ -55,6 +68,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/RootFormComponent/ConfigurationTopLevelGroup").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/YamlCodeBlockFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/TextFormField").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/SelectFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/NumberFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/FormFieldGroupComponent").I18n
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/AutoInjectSwitch").I18n
@@ -84,8 +98,11 @@ export type ComponentKey =
     | import("ui/shared/formattedDate/type").I18n
     | import("ui/shared/CopyToClipboardIconButton").I18n
     | import("ui/shared/Datagrid/CustomDataGrid").I18n
+    | import("ui/shared/Datagrid/CustomNoRowsOverlay").I18n
     | import("ui/shared/Datagrid/CustomDataGridToolbarDensitySelector").I18n
-    | import("ui/shared/Datagrid/CustomDataGridToolbarColumnsButton").I18n;
+    | import("ui/shared/Datagrid/CustomDataGridToolbarColumnsButton").I18n
+    | import("ui/shared/textEditor/DataTextEditor/DataTextEditor").I18n
+    | import("ui/shared/textEditor/DataTextEditor/JsonSchemaDialog").I18n;
 
 export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,

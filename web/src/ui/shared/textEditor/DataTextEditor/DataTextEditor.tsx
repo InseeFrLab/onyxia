@@ -47,6 +47,7 @@ import { Button } from "onyxia-ui/Button";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 const ajv = new Ajv({
     strict: false
@@ -128,6 +129,7 @@ export default function DataTextEditor(props: Props) {
         isJson5Enabled = true,
         ...rest
     } = props;
+    const { t } = useTranslation({ DataTextEditor });
 
     const hasJsonSchema = jsonSchema_props !== undefined;
 
@@ -282,7 +284,7 @@ export default function DataTextEditor(props: Props) {
         try {
             newValue = parseValue({ valueStr: newValueStr, format });
         } catch {
-            setErrorMsg(`Not a valid ${format}`);
+            setErrorMsg(t("not a valid format", { format }));
             return;
         }
 
@@ -334,7 +336,7 @@ export default function DataTextEditor(props: Props) {
                                 <FormControl variant="standard">
                                     <Select
                                         value={format}
-                                        label="Format"
+                                        label={t("format")}
                                         onChange={event =>
                                             onFormatChange(event.target.value as any)
                                         }
@@ -357,7 +359,7 @@ export default function DataTextEditor(props: Props) {
                                             }
                                         />
                                     }
-                                    label="All defaults"
+                                    label={t("all defaults")}
                                 />
                             )}
                         </div>
@@ -381,7 +383,7 @@ export default function DataTextEditor(props: Props) {
                                     onClick={() => setIsJsonSchemaDialogOpen(true)}
                                     variant="ternary"
                                 >
-                                    Schema
+                                    {t("schema")}
                                 </Button>
                             </div>
 
@@ -451,3 +453,11 @@ const useStyles = tss
             marginRight: 0
         }
     }));
+
+const { i18n } = declareComponentKeys<
+    | { K: "not a valid format"; P: { format: Format }; R: string }
+    | "format"
+    | "all defaults"
+    | "schema"
+>()({ DataTextEditor });
+export type I18n = typeof i18n;

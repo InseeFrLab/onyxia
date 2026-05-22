@@ -225,7 +225,7 @@ export const TextFormField = memo((props: Props) => {
                         loading={autocomplete.isLoadingOptions}
                         loadingText={
                             <>
-                                <CircularProgress /> Loading...
+                                <CircularProgress /> {t("loading")}
                             </>
                         }
                         onChange={(_event: unknown, newValue: string | null) => {
@@ -288,6 +288,7 @@ const { i18n } = declareComponentKeys<
           P: { pattern: string };
           R: string;
       }
+    | "loading"
 >()({ TextFormField });
 
 export type I18n = typeof i18n;

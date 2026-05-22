@@ -13,7 +13,7 @@ import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import type { LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
 import { S3BookmarkItem } from "../S3BookmarksBarItem";
-import { useResolveLocalizedString } from "ui/i18n";
+import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
 
@@ -54,6 +54,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
     } = props;
 
     const { classes, cx } = useStyles();
+    const { t } = useTranslation({ S3BookmarksBar });
 
     const rowRef = useRef<HTMLDivElement | null>(null);
     const leadingIconRef = useRef<HTMLSpanElement | null>(null);
@@ -211,7 +212,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
     return (
         <div
             className={cx(classes.root, className)}
-            aria-label="S3 bookmarks"
+            aria-label={t("s3 bookmarks aria label")}
             ref={rowRef}
         >
             {shouldShowLeadingIcon && (
@@ -262,7 +263,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
                         isPanelOpen && classes.moreButtonActive
                     )}
                     onClick={() => setIsPanelOpen(previous => !previous)}
-                    aria-label="Show more bookmarks"
+                    aria-label={t("show more bookmarks")}
                     aria-expanded={isPanelOpen}
                 >
                     <Icon icon={getIconUrlByName("MoreHoriz")} size="small" />
@@ -418,3 +419,8 @@ const useStyles = tss.withName({ S3BookmarksBar }).create(({ theme }) => {
         }
     };
 });
+
+const { i18n } = declareComponentKeys<
+    "s3 bookmarks aria label" | "show more bookmarks"
+>()({ S3BookmarksBar });
+export type I18n = typeof i18n;

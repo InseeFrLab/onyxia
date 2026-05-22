@@ -8,6 +8,7 @@ import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useS3DialogClasses() {
@@ -78,16 +79,10 @@ export function S3DialogCopyField(props: {
     displayedValue?: string;
     onCopied?: () => void;
 }) {
-    const {
-        value,
-        pendingText = "Generating URL...",
-        copyLabel = "Copy",
-        ariaLabel,
-        displayedValue,
-        onCopied
-    } = props;
+    const { value, pendingText, copyLabel, ariaLabel, displayedValue, onCopied } = props;
 
     const { classes, cx } = useStyles_S3DialogCopyField();
+    const { t } = useTranslation({ S3DialogCopyField });
     const [isCopied, setIsCopied] = useState(false);
 
     useEffect(() => {
@@ -117,7 +112,9 @@ export function S3DialogCopyField(props: {
     return (
         <div className={cx(classes.root, isCopied && classes.rootCopied)}>
             <span className={classes.value} title={value}>
-                {value === undefined ? pendingText : (displayedValue ?? value)}
+                {value === undefined
+                    ? (pendingText ?? t("generating url"))
+                    : (displayedValue ?? value)}
             </span>
             <Button
                 variant="secondary"
@@ -127,7 +124,7 @@ export function S3DialogCopyField(props: {
                 aria-label={ariaLabel}
                 onClick={copy}
             >
-                {isCopied ? "Copied" : copyLabel}
+                {isCopied ? t("copied") : (copyLabel ?? t("copy"))}
             </Button>
         </div>
     );
@@ -141,6 +138,7 @@ export function S3DialogItemSummary(props: {
     const { name, isPublic = false, icon = "folder" } = props;
 
     const { classes } = useStyles_S3DialogItemSummary();
+    const { t } = useTranslation({ S3DialogItemSummary });
 
     return (
         <div className={classes.root}>
@@ -156,7 +154,7 @@ export function S3DialogItemSummary(props: {
             {isPublic && (
                 <span className={classes.publicPill}>
                     <Icon icon={getIconUrlByName("Public")} size="extra small" />
-                    Public
+                    {t("public")}
                 </span>
             )}
         </div>
@@ -210,6 +208,16 @@ const useStyles_S3Dialog = tss.withName({ useS3DialogClasses }).create(({ theme 
         display: "none"
     }
 }));
+
+const { i18n: i18nS3DialogCopyField } = declareComponentKeys<
+    "generating url" | "copy" | "copied"
+>()({ S3DialogCopyField });
+
+const { i18n: i18nS3DialogItemSummary } = declareComponentKeys<"public">()({
+    S3DialogItemSummary
+});
+
+export type I18n = typeof i18nS3DialogCopyField | typeof i18nS3DialogItemSummary;
 
 const useStyles_S3DialogTextInput = tss
     .withName({ S3DialogTextInput })

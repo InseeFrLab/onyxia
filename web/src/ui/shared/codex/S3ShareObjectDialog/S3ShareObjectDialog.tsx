@@ -102,7 +102,7 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                                         key={validityDuration}
                                         value={validityDuration}
                                     >
-                                        {formatValidityDuration(validityDuration)}
+                                        {formatValidityDuration(validityDuration, t)}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -147,17 +147,18 @@ function isValidityDuration(
 }
 
 function formatValidityDuration(
-    validityDuration: S3ShareObjectDialogProps.ValidityDuration | undefined
+    validityDuration: S3ShareObjectDialogProps.ValidityDuration | undefined,
+    t: ReturnType<typeof useTranslation>["t"]
 ): string {
     switch (validityDuration) {
         case "one hour":
-            return "1 hour";
+            return t("validity duration one hour");
         case "one day":
-            return "1 day";
+            return t("validity duration one day");
         case "one week":
-            return "1 week";
+            return t("validity duration one week");
         case undefined:
-            return "the selected duration";
+            return t("selected duration");
     }
 }
 
@@ -231,5 +232,9 @@ const { i18n } = declareComponentKeys<
     | "copy signed URL aria label"
     | "public description"
     | "signed description"
+    | "validity duration one hour"
+    | "validity duration one day"
+    | "validity duration one week"
+    | "selected duration"
 >()({ S3ShareObjectDialog });
 export type I18n = typeof i18n;

@@ -184,6 +184,15 @@ export const translations: Translations<"en"> = {
         cancel: "Cancel",
         overwrite: "Overwrite"
     },
+    ConfirmCustomS3ConfigDeletionDialog: {
+        "dialog title": "Confirm deletion of custom S3 config?",
+        cancel: "Cancel",
+        yes: "Yes"
+    },
+    DisplayErrorDialog: {
+        error: "Error",
+        ok: "Ok"
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bookmark Name",
         "add dialog title": "Add this location to bookmarks",
@@ -263,7 +272,29 @@ export const translations: Translations<"en"> = {
         folder: "Folder",
         object: "Object",
         "folder is public": "Folder is public",
-        "folder is private": "Folder is private"
+        "folder is private": "Folder is private",
+        today: "Today",
+        yesterday: "Yesterday",
+        "access denied": "Access denied",
+        "bucket not found": "Bucket not found",
+        "access denied description":
+            "You do not have permission to list this S3 location.",
+        "bucket not found description":
+            "The requested bucket does not exist or is not reachable with the current profile.",
+        "select item": ({ itemName }) => `Select ${itemName}`,
+        "select all items": "Select all items",
+        public: "Public",
+        deleting: "Deleting...",
+        uploading: "Uploading",
+        "drag and drop to import files": "Drag and drop to import files",
+        "this prefix is empty": "This prefix is empty",
+        "empty prefix description":
+            "Upload files or create a folder to start populating this location.",
+        "upload files": "Upload files",
+        "new folder": "New folder",
+        name: "Name",
+        "last modified": "Last modified",
+        size: "Size"
     },
     S3ShareObjectDialog: {
         "generating public URL": "Generating public URL...",
@@ -275,7 +306,91 @@ export const translations: Translations<"en"> = {
         "public description":
             "Anyone with the URL can access this object. The link never expires because the object is inside a public prefix.",
         "signed description":
-            "Create a signed URL with a limited validity period. To share a URL that does not expire, make one of this object's parent prefixes public."
+            "Create a signed URL with a limited validity period. To share a URL that does not expire, make one of this object's parent prefixes public.",
+        "validity duration one hour": "1 hour",
+        "validity duration one day": "1 day",
+        "validity duration one week": "1 week",
+        "selected duration": "the selected duration"
+    },
+    S3Explorer: {
+        "page header title": "File Explorer",
+        "create profile": "Create Profile",
+        back: "Back",
+        upload: "Upload",
+        "create new prefix": "Create new Prefix"
+    },
+    S3ShareObjectDialogContainer: {
+        "dialog title": "Share object"
+    },
+    S3BookmarksBar: {
+        "s3 bookmarks aria label": "S3 bookmarks",
+        "show more bookmarks": "Show more bookmarks"
+    },
+    S3BookmarkItem: {
+        "open bookmark": "Open bookmark",
+        "open bucket": "Open bucket",
+        "bookmark actions": "Bookmark actions",
+        rename: "Rename",
+        delete: "Delete",
+        "rename bookmark": "Rename bookmark",
+        "delete bookmark": "Delete bookmark"
+    },
+    S3BookmarksEntryPointList: {
+        "s3 bookmark entry points aria label": "S3 bookmark entry points",
+        bookmarks: "Bookmarks",
+        "no bookmarks yet": "No bookmarks yet.",
+        "storage locations": "Storage locations"
+    },
+    S3DialogCopyField: {
+        "generating url": "Generating URL...",
+        copy: "Copy",
+        copied: "Copied"
+    },
+    S3DialogItemSummary: {
+        public: "Public"
+    },
+    S3ProfileSelect: {
+        "select s3 profile aria label": "Select S3 profile",
+        "profile settings aria label": "Profile settings",
+        "s3 profiles aria label": "S3 profiles",
+        "new s3 profile": "New S3 Profile"
+    },
+    S3SelectionActionBar: {
+        download: "Download",
+        delete: "Delete",
+        copied: "Copied",
+        "copy s3 path": "Copy S3 path",
+        share: "Share",
+        "make public": "Make public",
+        "make private": "Make private",
+        "one selected": "1 selected",
+        "many selected": ({ count }) => `${count} selected`,
+        "clear selection": "Clear selection"
+    },
+    ConfirmAbortUploadDialog: {
+        "dialog title": "Cancel Upload?",
+        "dialog body":
+            "Your upload is not complete. Would you like to cancel the upload?",
+        "continue upload": "Continue Upload",
+        "cancel upload": "Cancel Upload"
+    },
+    S3Uploads: {
+        "uploading count": ({ count }) =>
+            `Uploading ${count} item${count === 1 ? "" : "s"}...`,
+        "upload count": ({ count }) => `${count} upload${count === 1 ? "" : "s"}`,
+        "expand uploads": "Expand uploads",
+        "collapse uploads": "Collapse uploads",
+        "close uploads": "Close uploads",
+        "uploading status": "Uploading...",
+        completed: "Completed",
+        cancelled: "Cancelled",
+        error: "Error",
+        "uploaded size of total size": ({ uploadedSize, totalSize }) =>
+            `${uploadedSize} of ${totalSize}`,
+        of: "of",
+        "open uploaded directory": "Open uploaded directory",
+        "cancel upload": "Cancel upload",
+        "retry upload": "Retry upload"
     },
     S3ProfileDialog: {
         "detail title": "S3 Profile Detail",
@@ -438,8 +553,10 @@ export const translations: Translations<"en"> = {
     Header: {
         login: "Login",
         logout: "Logout",
-        project: "Project",
         region: "Region"
+    },
+    ProjectSelect: {
+        project: "Project"
     },
     LeftBar: {
         reduce: "Reduce",
@@ -660,6 +777,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     ConfigurationTopLevelGroup: {
         miscellaneous: "Miscellaneous",
+        global: "global",
         "Configuration that applies to all charts":
             "Configuration that applies to all charts",
         "Top level configuration values": "Top level configuration values"
@@ -671,7 +789,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     TextFormField: {
         "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
-        "toggle password visibility": "Toggle password visibility"
+        "toggle password visibility": "Toggle password visibility",
+        loading: "Loading..."
+    },
+    SelectFormField: {
+        "empty string": "(Empty string)"
     },
     FormFieldGroupComponent: {
         add: "Add"
@@ -700,7 +822,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
     PodLogsTab: {
         "not necessarily first logs":
             "This is not necessarily the first logs, older logs might have been flushed",
-        "new logs are displayed in realtime": "New logs are displayed in realtime"
+        "new logs are displayed in realtime": "New logs are displayed in realtime",
+        follow: "Follow"
     },
     MyServiceButtonBar: {
         back: "Back",
@@ -786,7 +909,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 Kubernetes namespace's events, it's a real-time feed of{" "}
                 <code>kubectl get events</code>
             </>
-        )
+        ),
+        close: "Close"
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Are you sure?",
@@ -802,7 +926,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         refresh: "Refresh",
         launch: "New service",
         trash: "Delete all",
-        "trash my own": "Delete all my services"
+        "trash my own": "Delete all my services",
+        events: "Events"
     },
     MyServicesCard: {
         service: "Service",
@@ -939,7 +1064,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     UrlInput: {
         load: "Load",
-        reset: "Reset"
+        reset: "Reset",
+        "data source": "Data source"
     },
     CommandBar: {
         ok: "Ok"
@@ -1074,6 +1200,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
         },
         "label rows per page": "Items per page"
     },
+    CustomNoRowsOverlay: {
+        "no rows": "No rows"
+    },
     CustomDataGridToolbarDensitySelector: {
         toolbarDensity: "Density",
         toolbarDensityStandard: "Standard",
@@ -1111,6 +1240,16 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "json-ld frame error": "Failed to frame the JSON-LD response.",
         "datasets parsing error": "Unable to parse datasets from the catalog."
     },
+    DataTextEditor: {
+        "not a valid format": ({ format }) => `Not a valid ${format}`,
+        format: "Format",
+        "all defaults": "All defaults",
+        schema: "Schema"
+    },
+    JsonSchemaDialog: {
+        "json schema": "JSON Schema",
+        ok: "Ok"
+    },
     S3UriBar: {
         search: "Search..",
         "copy s3 path": "Copy S3 path",
@@ -1119,6 +1258,18 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "add to bookmarks": "Add to bookmarks",
         "delete from bookmarks": "Delete from bookmarks",
         bookmarked: "Bookmarked",
-        "edit s3 uri": "Edit S3 URI"
+        "edit s3 uri": "Edit S3 URI",
+        prefix: "Prefix",
+        "admin bookmark": "Admin bookmark",
+        bookmark: "Bookmark",
+        object: "Object",
+        public: "Public",
+        "go to s3 uri": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Public. " : ""}Go to ${s3Uri}`,
+        "s3 uri": "S3 URI",
+        "edit from s3 root": "Edit from S3 root",
+        "edit object key": "Edit object key",
+        "object key": "Object key",
+        listing: "Listing..."
     }
 };

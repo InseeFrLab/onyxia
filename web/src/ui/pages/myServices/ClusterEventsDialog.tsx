@@ -119,7 +119,7 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
             }
             buttons={
                 <>
-                    <Button onClick={onClose}>Close</Button>
+                    <Button onClick={onClose}>{t("close")}</Button>
                 </>
             }
         />
@@ -128,6 +128,7 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
 
 const { i18n } = declareComponentKeys<
     | "title"
+    | "close"
     | {
           K: "subtitle";
           R: JSX.Element;

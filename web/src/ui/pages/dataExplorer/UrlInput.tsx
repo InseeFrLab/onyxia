@@ -50,7 +50,7 @@ export function UrlInput(props: Props) {
                 <SearchBar
                     search={urlBeingTyped}
                     onSearchChange={setUrlBeingTyped}
-                    placeholder="Data source"
+                    placeholder={t("data source")}
                     restorableSearch={url}
                     onKeyPress={
                         !hasActionButton
@@ -96,5 +96,7 @@ const useStyles = tss
         }
     }));
 
-const { i18n } = declareComponentKeys<"load" | "reset">()({ UrlInput });
+const { i18n } = declareComponentKeys<"load" | "reset" | "data source">()({
+    UrlInput
+});
 export type I18n = typeof i18n;

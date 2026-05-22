@@ -348,8 +348,11 @@ function getDayStamp(date: Date): number {
     return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-function getFormattedLastModified(params: { time: number }): string {
-    const { time } = params;
+function getFormattedLastModified(params: {
+    time: number;
+    t: ReturnType<typeof useTranslation>["t"];
+}): string {
+    const { time, t } = params;
 
     const date = new Date(time);
     const today = new Date();
@@ -358,11 +361,11 @@ function getFormattedLastModified(params: { time: number }): string {
     );
 
     if (diffDays === 0) {
-        return "Today";
+        return t("today");
     }
 
     if (diffDays === 1) {
-        return "Yesterday";
+        return t("yesterday");
     }
 
     return new Intl.DateTimeFormat(undefined, {
@@ -625,7 +628,7 @@ export function DeleteSelectionDialog(props: {
             buttons={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button startIcon={getIconUrlByName("Delete")} onClick={onConfirm}>
                         {t("delete")}
@@ -646,6 +649,7 @@ function ErrorState(props: {
     const { classes } = useStyles({
         isDragActive: false
     });
+    const { t } = useTranslation({ S3ExplorerMainView });
 
     return (
         <div className={classes.errorState}>
@@ -653,12 +657,14 @@ function ErrorState(props: {
                 <Icon icon={getIconUrlByName("ErrorOutline")} size="large" />
             </div>
             <div className={classes.errorTitle}>
-                {errorCase === "access denied" ? "Access denied" : "Bucket not found"}
+                {errorCase === "access denied"
+                    ? t("access denied")
+                    : t("bucket not found")}
             </div>
             <div className={classes.errorDescription}>
                 {errorCase === "access denied"
-                    ? "You do not have permission to list this S3 location."
-                    : "The requested bucket does not exist or is not reachable with the current profile."}
+                    ? t("access denied description")
+                    : t("bucket not found description")}
             </div>
         </div>
     );
@@ -775,7 +781,9 @@ function ItemRow(props: ItemRowProps) {
                         onCheckboxChange();
                     }}
                     inputProps={{
-                        "aria-label": `Select ${item.displayName}`
+                        "aria-label": t("select item", {
+                            itemName: item.displayName
+                        })
                     }}
                 />
             </td>
@@ -824,7 +832,7 @@ function ItemRow(props: ItemRowProps) {
                                                 icon={getIconUrlByName("Public")}
                                                 size="extra small"
                                             />
-                                            Public
+                                            {t("public")}
                                         </span>
                                     )}
 
@@ -839,7 +847,7 @@ function ItemRow(props: ItemRowProps) {
                                                     classes.statusPillWarning
                                                 )}
                                             >
-                                                Deleting...
+                                                {t("deleting")}
                                             </span>
                                         )}
                                         {!item.isDeleting && isUploadInProgress && (
@@ -855,7 +863,7 @@ function ItemRow(props: ItemRowProps) {
                                                             classes.statusPillLabel
                                                         }
                                                     >
-                                                        Uploading
+                                                        {t("uploading")}
                                                     </span>
                                                     <span
                                                         className={
@@ -1065,11 +1073,11 @@ function ItemRow(props: ItemRowProps) {
             </td>
             <td className={classes.metaCell}>
                 {item.type === "object"
-                    ? getFormattedLastModified({ time: item.lastModified })
+                    ? getFormattedLastModified({ time: item.lastModified, t })
                     : "\u00A0"}
             </td>
             <td className={cx(classes.metaCell, classes.sizeCell)}>
-                {item.type === "object" ? getFormattedSize(item.size) : "Folder"}
+                {item.type === "object" ? getFormattedSize(item.size) : t("folder")}
             </td>
         </tr>
     );
@@ -1677,7 +1685,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                         />
                                     </div>
                                     <div className={classes.dropOverlayTitle}>
-                                        Drag and drop to import files
+                                        {t("drag and drop to import files")}
                                     </div>
                                 </div>
                             </div>
@@ -1694,21 +1702,22 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                     />
                                 </div>
                                 <div className={classes.emptyStateTitle}>
-                                    This prefix is empty
+                                    {t("this prefix is empty")}
                                 </div>
                                 <div className={classes.emptyStateDescription}>
-                                    Upload files or create a folder to start populating
-                                    this location.
+                                    {t("empty prefix description")}
                                 </div>
                                 <div className={classes.emptyStateActions}>
-                                    <Button onClick={openFilePicker}>Upload files</Button>
+                                    <Button onClick={openFilePicker}>
+                                        {t("upload files")}
+                                    </Button>
                                     <Button
                                         variant="secondary"
                                         onClick={() =>
                                             setIsCreateDirectoryDialogOpen(true)
                                         }
                                     >
-                                        New folder
+                                        {t("new folder")}
                                     </Button>
                                 </div>
                             </div>
@@ -1742,7 +1751,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         );
                                                     }}
                                                     inputProps={{
-                                                        "aria-label": "Select all items"
+                                                        "aria-label":
+                                                            t("select all items")
                                                     }}
                                                 />
                                             </th>
@@ -1757,7 +1767,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         handleSortToggle("name")
                                                     }
                                                 >
-                                                    Name
+                                                    {t("name")}
                                                     <span
                                                         className={cx(
                                                             classes.sortDirection,
@@ -1785,7 +1795,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         handleSortToggle("lastModified")
                                                     }
                                                 >
-                                                    Last modified
+                                                    {t("last modified")}
                                                     <span
                                                         className={cx(
                                                             classes.sortDirection,
@@ -1816,7 +1826,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         handleSortToggle("size")
                                                     }
                                                 >
-                                                    Size
+                                                    {t("size")}
                                                     <span
                                                         className={cx(
                                                             classes.sortDirection,
@@ -2399,5 +2409,24 @@ const { i18n } = declareComponentKeys<
     | "object"
     | "folder is public"
     | "folder is private"
+    | "today"
+    | "yesterday"
+    | "access denied"
+    | "bucket not found"
+    | "access denied description"
+    | "bucket not found description"
+    | { K: "select item"; P: { itemName: string }; R: string }
+    | "select all items"
+    | "public"
+    | "deleting"
+    | "uploading"
+    | "drag and drop to import files"
+    | "this prefix is empty"
+    | "empty prefix description"
+    | "upload files"
+    | "new folder"
+    | "name"
+    | "last modified"
+    | "size"
 >()({ S3ExplorerMainView });
 export type I18n = typeof i18n;

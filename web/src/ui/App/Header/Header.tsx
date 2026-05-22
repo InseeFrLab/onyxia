@@ -39,12 +39,7 @@ export function Header(props: Props) {
                 link={routes.home().link}
             />
             <RegionSelect className={classes.regionSelect} tRegion={t("region")} />
-            {isUserLoggedIn && (
-                <ProjectSelect
-                    className={classes.projectSelect}
-                    tProject={t("project")}
-                />
-            )}
+            {isUserLoggedIn && <ProjectSelect className={classes.projectSelect} />}
             <div className={classes.rightEndActionsContainer}>
                 {env.HEADER_LINKS.map(({ url, ...rest }) => ({
                     link: urlToLink(url),
@@ -81,7 +76,7 @@ export function Header(props: Props) {
     );
 }
 
-const { i18n } = declareComponentKeys<"logout" | "login" | "project" | "region">()({
+const { i18n } = declareComponentKeys<"logout" | "login" | "region">()({
     Header
 });
 export type I18n = typeof i18n;

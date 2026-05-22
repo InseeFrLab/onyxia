@@ -185,6 +185,108 @@ export const translations: Translations<"no"> = {
         cancel: "Avbryt",
         overwrite: "Overskriv"
     },
+    ConfirmCustomS3ConfigDeletionDialog: {
+        "dialog title": undefined,
+        cancel: undefined,
+        yes: undefined
+    },
+    DisplayErrorDialog: {
+        error: undefined,
+        ok: undefined
+    },
+    S3Explorer: {
+        "page header title": undefined,
+        "create profile": undefined,
+        back: undefined,
+        upload: undefined,
+        "create new prefix": undefined
+    },
+    S3ShareObjectDialogContainer: {
+        "dialog title": undefined
+    },
+    S3BookmarksBar: {
+        "s3 bookmarks aria label": undefined,
+        "show more bookmarks": undefined
+    },
+    S3BookmarkItem: {
+        "open bookmark": undefined,
+        "open bucket": undefined,
+        "bookmark actions": undefined,
+        rename: undefined,
+        delete: undefined,
+        "rename bookmark": undefined,
+        "delete bookmark": undefined
+    },
+    S3BookmarksEntryPointList: {
+        "s3 bookmark entry points aria label": undefined,
+        bookmarks: undefined,
+        "no bookmarks yet": undefined,
+        "storage locations": undefined
+    },
+    S3DialogCopyField: {
+        "generating url": undefined,
+        copy: undefined,
+        copied: undefined
+    },
+    S3DialogItemSummary: {
+        public: undefined
+    },
+    S3ProfileSelect: {
+        "select s3 profile aria label": undefined,
+        "profile settings aria label": undefined,
+        "s3 profiles aria label": undefined,
+        "new s3 profile": undefined
+    },
+    S3SelectionActionBar: {
+        download: undefined,
+        delete: undefined,
+        copied: undefined,
+        "copy s3 path": undefined,
+        share: undefined,
+        "make public": undefined,
+        "make private": undefined,
+        "one selected": undefined,
+        "many selected": undefined,
+        "clear selection": undefined
+    },
+    ConfirmAbortUploadDialog: {
+        "dialog title": undefined,
+        "dialog body": undefined,
+        "continue upload": undefined,
+        "cancel upload": undefined
+    },
+    S3Uploads: {
+        "uploading count": undefined,
+        "upload count": undefined,
+        "expand uploads": undefined,
+        "collapse uploads": undefined,
+        "close uploads": undefined,
+        "uploading status": undefined,
+        completed: undefined,
+        cancelled: undefined,
+        error: undefined,
+        "uploaded size of total size": undefined,
+        of: undefined,
+        "open uploaded directory": undefined,
+        "cancel upload": undefined,
+        "retry upload": undefined
+    },
+    CustomNoRowsOverlay: {
+        "no rows": undefined
+    },
+    DataTextEditor: {
+        "not a valid format": undefined,
+        format: undefined,
+        "all defaults": undefined,
+        schema: undefined
+    },
+    JsonSchemaDialog: {
+        "json schema": undefined,
+        ok: undefined
+    },
+    SelectFormField: {
+        "empty string": undefined
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bokmerkenavn",
         "add dialog title": "Legg denne plasseringen til i bokmerker",
@@ -265,7 +367,26 @@ export const translations: Translations<"no"> = {
         folder: "Mappe",
         object: "Objekt",
         "folder is public": "Mappen er offentlig",
-        "folder is private": "Mappen er privat"
+        "folder is private": "Mappen er privat",
+        today: undefined,
+        yesterday: undefined,
+        "access denied": undefined,
+        "bucket not found": undefined,
+        "access denied description": undefined,
+        "bucket not found description": undefined,
+        "select item": undefined,
+        "select all items": undefined,
+        public: undefined,
+        deleting: undefined,
+        uploading: undefined,
+        "drag and drop to import files": undefined,
+        "this prefix is empty": undefined,
+        "empty prefix description": undefined,
+        "upload files": undefined,
+        "new folder": undefined,
+        name: undefined,
+        "last modified": undefined,
+        size: undefined
     },
     S3ShareObjectDialog: {
         "generating public URL": "Genererer offentlig URL...",
@@ -277,7 +398,11 @@ export const translations: Translations<"no"> = {
         "public description":
             "Alle med URL-en kan få tilgang til dette objektet. Lenken utløper aldri fordi objektet ligger i et offentlig prefiks.",
         "signed description":
-            "Opprett en signert URL med begrenset gyldighetsperiode. For å dele en URL som ikke utløper, gjør et av de overordnede prefiksene til dette objektet offentlig."
+            "Opprett en signert URL med begrenset gyldighetsperiode. For å dele en URL som ikke utløper, gjør et av de overordnede prefiksene til dette objektet offentlig.",
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "selected duration": undefined
     },
     S3ProfileDialog: {
         "detail title": "S3-profildetaljer",
@@ -439,8 +564,10 @@ export const translations: Translations<"no"> = {
     Header: {
         login: "Logg inn",
         logout: "Logg ut",
-        project: "Prosjekt",
         region: "Region"
+    },
+    ProjectSelect: {
+        project: "Prosjekt"
     },
     LeftBar: {
         reduce: "Reduser",
@@ -658,6 +785,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "reset to default": "Tilbakestill til standard"
     },
     ConfigurationTopLevelGroup: {
+        global: undefined,
         miscellaneous: "Diverse",
         "Configuration that applies to all charts":
             "Konfigurasjon som gjelder for alle diagrammer",
@@ -670,7 +798,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     },
     TextFormField: {
         "not matching pattern": ({ pattern }) => `Matcher ikke mønsteret ${pattern}`,
-        "toggle password visibility": "Bytt synlighet for passord"
+        "toggle password visibility": "Bytt synlighet for passord",
+        loading: undefined
     },
     FormFieldGroupComponent: {
         add: "Legg til"
@@ -706,7 +835,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     PodLogsTab: {
         "not necessarily first logs":
             "Dette er ikke nødvendigvis de første loggene, eldre logger kan ha blitt fjernet",
-        "new logs are displayed in realtime": "Nye logger vises i sanntid"
+        "new logs are displayed in realtime": "Nye logger vises i sanntid",
+        follow: undefined
     },
     MyServiceButtonBar: {
         back: "Tilbake",
@@ -790,7 +920,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                 Hendelser i Kubernetes navneområde, det er en sanntidsstrøm av{" "}
                 <code>kubectl get events</code>
             </>
-        )
+        ),
+        close: undefined
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Er du sikker?",
@@ -807,7 +938,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         refresh: "Oppdater",
         launch: "Ny tjeneste",
         trash: "Slett alt",
-        "trash my own": "Slett alle mine tjenester"
+        "trash my own": "Slett alle mine tjenester",
+        events: undefined
     },
     MyServicesCard: {
         service: "Tjeneste",
@@ -943,7 +1075,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     },
     UrlInput: {
         load: "Last",
-        reset: "Tøm"
+        reset: "Tøm",
+        "data source": undefined
     },
     CommandBar: {
         ok: "ok"
@@ -1124,6 +1257,17 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "add to bookmarks": "Legg til i bokmerker",
         "delete from bookmarks": "Slett fra bokmerker",
         bookmarked: "Bokmerket",
-        "edit s3 uri": "Rediger S3-URI"
+        "edit s3 uri": "Rediger S3-URI",
+        prefix: undefined,
+        "admin bookmark": undefined,
+        bookmark: undefined,
+        object: undefined,
+        public: undefined,
+        "go to s3 uri": undefined,
+        "s3 uri": undefined,
+        "edit from s3 root": undefined,
+        "edit object key": undefined,
+        "object key": undefined,
+        listing: undefined
     }
 };

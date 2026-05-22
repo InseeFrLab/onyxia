@@ -59,7 +59,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                       id<AccordionEntry>({
                           helmValuesPath:
                               createObjectThatThrowsIfAccessed<(string | number)[]>(),
-                          title: "global",
+                          title: t("global"),
                           description: t("Configuration that applies to all charts"),
                           canAdd: false,
                           canRemove: false,
@@ -153,6 +153,7 @@ const useStyles = tss.withName({ ConfigurationTopLevelGroup }).create(({ theme }
 
 const { i18n } = declareComponentKeys<
     | "miscellaneous"
+    | "global"
     | "Configuration that applies to all charts"
     | "Top level configuration values"
 >()({ ConfigurationTopLevelGroup });

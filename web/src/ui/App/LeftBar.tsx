@@ -107,7 +107,7 @@ export const LeftBar = memo((props: Props) => {
                 {
                     itemId: "dataCollection",
                     icon: getIconUrlByName("FolderSpecial"),
-                    label: "Data Collection",
+                    label: t("dataCollection"),
                     link: routes.dataCollection().link,
                     availability: isDevModeEnabled ? "available" : "not visible"
                 },

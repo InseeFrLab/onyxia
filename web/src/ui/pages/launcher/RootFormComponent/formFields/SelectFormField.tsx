@@ -5,6 +5,7 @@ import type { Stringifyable } from "core/tools/Stringifyable";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { tss } from "tss";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -46,6 +47,7 @@ export const SelectFormField = memo((props: Props) => {
     const inputId = useId();
 
     const { classes } = useStyles();
+    const { t } = useTranslation({ SelectFormField });
 
     return (
         <FormFieldWrapper
@@ -68,7 +70,7 @@ export const SelectFormField = memo((props: Props) => {
                     <MenuItem key={index} value={`${index}`}>
                         {(() => {
                             if (typeof option === "string") {
-                                return option === "" ? "(Empty string)" : option;
+                                return option === "" ? t("empty string") : option;
                             }
 
                             return <pre>{JSON.stringify(option, null, 2)}</pre>;
@@ -85,3 +87,6 @@ const useStyles = tss.withName({ SelectFormField }).create({
         minWidth: "min(200px, 100%)"
     }
 });
+
+const { i18n } = declareComponentKeys<"empty string">()({ SelectFormField });
+export type I18n = typeof i18n;

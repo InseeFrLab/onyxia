@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type ConfirmAbortUploadDialogProps = {
     isOpen: boolean;
@@ -11,18 +12,19 @@ export type ConfirmAbortUploadDialogProps = {
 
 export const ConfirmAbortUploadDialog = memo((props: ConfirmAbortUploadDialogProps) => {
     const { isOpen, onClose, onConfirm } = props;
+    const { t } = useTranslation({ ConfirmAbortUploadDialog });
 
     return (
         <Dialog
-            title="Cancel Upload?"
-            body="Your upload is not complete. Would you like to cancel the upload?"
+            title={t("dialog title")}
+            body={t("dialog body")}
             buttons={
                 <>
                     <Button onClick={onClose} autoFocus variant="secondary">
-                        Continue Upload
+                        {t("continue upload")}
                     </Button>
                     <Button autoFocus onClick={onConfirm}>
-                        Cancel Upload
+                        {t("cancel upload")}
                     </Button>
                 </>
             }
@@ -35,3 +37,8 @@ export const ConfirmAbortUploadDialog = memo((props: ConfirmAbortUploadDialogPro
 ConfirmAbortUploadDialog.displayName = symToStr({
     ConfirmAbortUploadDialog
 });
+
+const { i18n } = declareComponentKeys<
+    "dialog title" | "dialog body" | "continue upload" | "cancel upload"
+>()({ ConfirmAbortUploadDialog });
+export type I18n = typeof i18n;

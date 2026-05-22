@@ -3,7 +3,7 @@ import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import type { LocalizedString } from "ui/i18n";
 import type { Link } from "type-route";
 import { S3BookmarkItem } from "../S3BookmarksBarItem";
-import { useResolveLocalizedString } from "ui/i18n";
+import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 
 export type S3BookmarksEntryPointListProps = {
     className?: string;
@@ -27,6 +27,7 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
 
     const { classes, cx } = useStyles();
     const { resolveLocalizedString } = useResolveLocalizedString();
+    const { t } = useTranslation({ S3BookmarksEntryPointList });
 
     const activeItemKey = activeItemS3Uri ? stringifyS3Uri(activeItemS3Uri) : undefined;
     const customBookmarkItems = items.filter(item => !item.isReadonly);
@@ -74,29 +75,29 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
     return (
         <div
             className={cx(classes.root, className)}
-            aria-label="S3 bookmark entry points"
+            aria-label={t("s3 bookmark entry points aria label")}
         >
             {(customBookmarkItems.length > 0 || items.length === 0) && (
-                <section className={classes.section} aria-label="Bookmarks">
+                <section className={classes.section} aria-label={t("bookmarks")}>
                     <h2 className={cx(classes.sectionTitle, classes.sectionTitlePrimary)}>
-                        Bookmarks
+                        {t("bookmarks")}
                     </h2>
                     {customBookmarkItems.length === 0 ? (
-                        <div className={classes.emptyState}>No bookmarks yet.</div>
+                        <div className={classes.emptyState}>{t("no bookmarks yet")}</div>
                     ) : (
                         renderGrid(customBookmarkItems)
                     )}
                 </section>
             )}
             {defaultBucketItems.length > 0 && (
-                <section className={classes.section} aria-label="Storage locations">
+                <section className={classes.section} aria-label={t("storage locations")}>
                     <h2
                         className={cx(
                             classes.sectionTitle,
                             classes.sectionTitleSecondary
                         )}
                     >
-                        Storage locations
+                        {t("storage locations")}
                     </h2>
                     {renderGrid(defaultBucketItems)}
                 </section>
@@ -147,3 +148,11 @@ const useStyles = tss.withName({ S3BookmarksEntryPointList }).create(({ theme })
         maxWidth: "100%"
     }
 }));
+
+const { i18n } = declareComponentKeys<
+    | "s3 bookmark entry points aria label"
+    | "bookmarks"
+    | "no bookmarks yet"
+    | "storage locations"
+>()({ S3BookmarksEntryPointList });
+export type I18n = typeof i18n;

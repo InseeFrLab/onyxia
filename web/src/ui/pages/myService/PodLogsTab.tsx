@@ -107,7 +107,7 @@ function ActualLogs(props: { paginatedLogs: string[] }) {
                             }}
                         />
                     }
-                    label="Follow"
+                    label={t("follow")}
                 />
 
                 <Pagination
@@ -141,7 +141,7 @@ function ActualLogs(props: { paginatedLogs: string[] }) {
 }
 
 const { i18n } = declareComponentKeys<
-    "not necessarily first logs" | "new logs are displayed in realtime"
+    "not necessarily first logs" | "new logs are displayed in realtime" | "follow"
 >()({ PodLogsTab });
 
 export type I18n = typeof i18n;

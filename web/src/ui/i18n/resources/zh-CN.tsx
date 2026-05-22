@@ -167,6 +167,108 @@ export const translations: Translations<"zh-CN"> = {
         cancel: "取消",
         overwrite: "覆盖"
     },
+    ConfirmCustomS3ConfigDeletionDialog: {
+        "dialog title": undefined,
+        cancel: undefined,
+        yes: undefined
+    },
+    DisplayErrorDialog: {
+        error: undefined,
+        ok: undefined
+    },
+    S3Explorer: {
+        "page header title": undefined,
+        "create profile": undefined,
+        back: undefined,
+        upload: undefined,
+        "create new prefix": undefined
+    },
+    S3ShareObjectDialogContainer: {
+        "dialog title": undefined
+    },
+    S3BookmarksBar: {
+        "s3 bookmarks aria label": undefined,
+        "show more bookmarks": undefined
+    },
+    S3BookmarkItem: {
+        "open bookmark": undefined,
+        "open bucket": undefined,
+        "bookmark actions": undefined,
+        rename: undefined,
+        delete: undefined,
+        "rename bookmark": undefined,
+        "delete bookmark": undefined
+    },
+    S3BookmarksEntryPointList: {
+        "s3 bookmark entry points aria label": undefined,
+        bookmarks: undefined,
+        "no bookmarks yet": undefined,
+        "storage locations": undefined
+    },
+    S3DialogCopyField: {
+        "generating url": undefined,
+        copy: undefined,
+        copied: undefined
+    },
+    S3DialogItemSummary: {
+        public: undefined
+    },
+    S3ProfileSelect: {
+        "select s3 profile aria label": undefined,
+        "profile settings aria label": undefined,
+        "s3 profiles aria label": undefined,
+        "new s3 profile": undefined
+    },
+    S3SelectionActionBar: {
+        download: undefined,
+        delete: undefined,
+        copied: undefined,
+        "copy s3 path": undefined,
+        share: undefined,
+        "make public": undefined,
+        "make private": undefined,
+        "one selected": undefined,
+        "many selected": undefined,
+        "clear selection": undefined
+    },
+    ConfirmAbortUploadDialog: {
+        "dialog title": undefined,
+        "dialog body": undefined,
+        "continue upload": undefined,
+        "cancel upload": undefined
+    },
+    S3Uploads: {
+        "uploading count": undefined,
+        "upload count": undefined,
+        "expand uploads": undefined,
+        "collapse uploads": undefined,
+        "close uploads": undefined,
+        "uploading status": undefined,
+        completed: undefined,
+        cancelled: undefined,
+        error: undefined,
+        "uploaded size of total size": undefined,
+        of: undefined,
+        "open uploaded directory": undefined,
+        "cancel upload": undefined,
+        "retry upload": undefined
+    },
+    CustomNoRowsOverlay: {
+        "no rows": undefined
+    },
+    DataTextEditor: {
+        "not a valid format": undefined,
+        format: undefined,
+        "all defaults": undefined,
+        schema: undefined
+    },
+    JsonSchemaDialog: {
+        "json schema": undefined,
+        ok: undefined
+    },
+    SelectFormField: {
+        "empty string": undefined
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "书签名称",
         "add dialog title": "将此位置添加到书签",
@@ -241,7 +343,26 @@ export const translations: Translations<"zh-CN"> = {
         folder: "文件夹",
         object: "对象",
         "folder is public": "文件夹是公开的",
-        "folder is private": "文件夹是私有的"
+        "folder is private": "文件夹是私有的",
+        today: undefined,
+        yesterday: undefined,
+        "access denied": undefined,
+        "bucket not found": undefined,
+        "access denied description": undefined,
+        "bucket not found description": undefined,
+        "select item": undefined,
+        "select all items": undefined,
+        public: undefined,
+        deleting: undefined,
+        uploading: undefined,
+        "drag and drop to import files": undefined,
+        "this prefix is empty": undefined,
+        "empty prefix description": undefined,
+        "upload files": undefined,
+        "new folder": undefined,
+        name: undefined,
+        "last modified": undefined,
+        size: undefined
     },
     S3ShareObjectDialog: {
         "generating public URL": "正在生成公开 URL...",
@@ -253,7 +374,11 @@ export const translations: Translations<"zh-CN"> = {
         "public description":
             "任何拥有该 URL 的人都可以访问此对象。由于该对象位于公开前缀中，因此链接永不过期。",
         "signed description":
-            "创建一个有效期有限的签名 URL。若要共享永不过期的 URL，请公开此对象的某个上级前缀。"
+            "创建一个有效期有限的签名 URL。若要共享永不过期的 URL，请公开此对象的某个上级前缀。",
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "selected duration": undefined
     },
     S3ProfileDialog: {
         "detail title": "S3 配置文件详情",
@@ -402,8 +527,10 @@ export const translations: Translations<"zh-CN"> = {
     Header: {
         login: "登录",
         logout: "登出",
-        project: "项目",
         region: "区域"
+    },
+    ProjectSelect: {
+        project: "项目"
     },
     LeftBar: {
         reduce: "缩小",
@@ -611,6 +738,7 @@ ${
         "reset to default": "重置为默认值"
     },
     ConfigurationTopLevelGroup: {
+        global: undefined,
         miscellaneous: "杂项",
         "Configuration that applies to all charts": "适用于所有图表的配置",
         "Top level configuration values": "顶级配置值"
@@ -622,7 +750,8 @@ ${
     },
     TextFormField: {
         "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
-        "toggle password visibility": "切换密码可见性"
+        "toggle password visibility": "切换密码可见性",
+        loading: undefined
     },
     FormFieldGroupComponent: {
         add: "添加"
@@ -653,7 +782,8 @@ ${
     },
     PodLogsTab: {
         "not necessarily first logs": "这不一定是第一批日志，较旧的日志可能已被清除",
-        "new logs are displayed in realtime": "新日志实时显示"
+        "new logs are displayed in realtime": "新日志实时显示",
+        follow: undefined
     },
     MyServiceButtonBar: {
         back: "返回",
@@ -735,7 +865,8 @@ ${
                 Kubernetes 命名空间的事件，这是一个来自 <code>kubectl get events</code>
                 的实时流
             </>
-        )
+        ),
+        close: undefined
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "您确定?",
@@ -750,7 +881,8 @@ ${
         refresh: "刷新",
         launch: "新的服务",
         trash: "删除所有",
-        "trash my own": "删除您的所有服务"
+        "trash my own": "删除您的所有服务",
+        events: undefined
     },
     MyServicesCard: {
         service: "服务",
@@ -883,7 +1015,8 @@ ${
     },
     UrlInput: {
         load: "加载",
-        reset: "清空"
+        reset: "清空",
+        "data source": undefined
     },
     CommandBar: {
         ok: "是"
@@ -1061,6 +1194,17 @@ ${
         "add to bookmarks": "添加到书签",
         "delete from bookmarks": "从书签中删除",
         bookmarked: "已添加书签",
-        "edit s3 uri": "编辑 S3 URI"
+        "edit s3 uri": "编辑 S3 URI",
+        prefix: undefined,
+        "admin bookmark": undefined,
+        bookmark: undefined,
+        object: undefined,
+        public: undefined,
+        "go to s3 uri": undefined,
+        "s3 uri": undefined,
+        "edit from s3 root": undefined,
+        "edit object key": undefined,
+        "object key": undefined,
+        listing: undefined
     }
 };

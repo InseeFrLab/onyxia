@@ -185,6 +185,108 @@ export const translations: Translations<"fi"> = {
         cancel: "Peruuta",
         overwrite: "Korvaa"
     },
+    ConfirmCustomS3ConfigDeletionDialog: {
+        "dialog title": undefined,
+        cancel: undefined,
+        yes: undefined
+    },
+    DisplayErrorDialog: {
+        error: undefined,
+        ok: undefined
+    },
+    S3Explorer: {
+        "page header title": undefined,
+        "create profile": undefined,
+        back: undefined,
+        upload: undefined,
+        "create new prefix": undefined
+    },
+    S3ShareObjectDialogContainer: {
+        "dialog title": undefined
+    },
+    S3BookmarksBar: {
+        "s3 bookmarks aria label": undefined,
+        "show more bookmarks": undefined
+    },
+    S3BookmarkItem: {
+        "open bookmark": undefined,
+        "open bucket": undefined,
+        "bookmark actions": undefined,
+        rename: undefined,
+        delete: undefined,
+        "rename bookmark": undefined,
+        "delete bookmark": undefined
+    },
+    S3BookmarksEntryPointList: {
+        "s3 bookmark entry points aria label": undefined,
+        bookmarks: undefined,
+        "no bookmarks yet": undefined,
+        "storage locations": undefined
+    },
+    S3DialogCopyField: {
+        "generating url": undefined,
+        copy: undefined,
+        copied: undefined
+    },
+    S3DialogItemSummary: {
+        public: undefined
+    },
+    S3ProfileSelect: {
+        "select s3 profile aria label": undefined,
+        "profile settings aria label": undefined,
+        "s3 profiles aria label": undefined,
+        "new s3 profile": undefined
+    },
+    S3SelectionActionBar: {
+        download: undefined,
+        delete: undefined,
+        copied: undefined,
+        "copy s3 path": undefined,
+        share: undefined,
+        "make public": undefined,
+        "make private": undefined,
+        "one selected": undefined,
+        "many selected": undefined,
+        "clear selection": undefined
+    },
+    ConfirmAbortUploadDialog: {
+        "dialog title": undefined,
+        "dialog body": undefined,
+        "continue upload": undefined,
+        "cancel upload": undefined
+    },
+    S3Uploads: {
+        "uploading count": undefined,
+        "upload count": undefined,
+        "expand uploads": undefined,
+        "collapse uploads": undefined,
+        "close uploads": undefined,
+        "uploading status": undefined,
+        completed: undefined,
+        cancelled: undefined,
+        error: undefined,
+        "uploaded size of total size": undefined,
+        of: undefined,
+        "open uploaded directory": undefined,
+        "cancel upload": undefined,
+        "retry upload": undefined
+    },
+    CustomNoRowsOverlay: {
+        "no rows": undefined
+    },
+    DataTextEditor: {
+        "not a valid format": undefined,
+        format: undefined,
+        "all defaults": undefined,
+        schema: undefined
+    },
+    JsonSchemaDialog: {
+        "json schema": undefined,
+        ok: undefined
+    },
+    SelectFormField: {
+        "empty string": undefined
+    },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Kirjanmerkin nimi",
         "add dialog title": "Lisää tämä sijainti kirjanmerkkeihin",
@@ -263,7 +365,26 @@ export const translations: Translations<"fi"> = {
         folder: "Kansio",
         object: "Objekti",
         "folder is public": "Kansio on julkinen",
-        "folder is private": "Kansio on yksityinen"
+        "folder is private": "Kansio on yksityinen",
+        today: undefined,
+        yesterday: undefined,
+        "access denied": undefined,
+        "bucket not found": undefined,
+        "access denied description": undefined,
+        "bucket not found description": undefined,
+        "select item": undefined,
+        "select all items": undefined,
+        public: undefined,
+        deleting: undefined,
+        uploading: undefined,
+        "drag and drop to import files": undefined,
+        "this prefix is empty": undefined,
+        "empty prefix description": undefined,
+        "upload files": undefined,
+        "new folder": undefined,
+        name: undefined,
+        "last modified": undefined,
+        size: undefined
     },
     S3ShareObjectDialog: {
         "generating public URL": "Luodaan julkista URL-osoitetta...",
@@ -275,7 +396,11 @@ export const translations: Translations<"fi"> = {
         "public description":
             "Kuka tahansa URL-osoitteen saanut voi käyttää tätä objektia. Linkki ei vanhene, koska objekti on julkisessa etuliitteessä.",
         "signed description":
-            "Luo allekirjoitettu URL, jolla on rajattu voimassaoloaika. Jos haluat jakaa vanhentumattoman URL-osoitteen, tee jokin tämän objektin yläetuliitteistä julkiseksi."
+            "Luo allekirjoitettu URL, jolla on rajattu voimassaoloaika. Jos haluat jakaa vanhentumattoman URL-osoitteen, tee jokin tämän objektin yläetuliitteistä julkiseksi.",
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "selected duration": undefined
     },
     S3ProfileDialog: {
         "detail title": "S3-profiilin tiedot",
@@ -434,8 +559,10 @@ export const translations: Translations<"fi"> = {
     Header: {
         login: "Kirjaudu sisään",
         logout: "Kirjaudu ulos",
-        project: "Projekti",
         region: "Alue"
+    },
+    ProjectSelect: {
+        project: "Projekti"
     },
     LeftBar: {
         reduce: "Pienennä",
@@ -650,6 +777,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "reset to default": "Palauta oletusarvoon"
     },
     ConfigurationTopLevelGroup: {
+        global: undefined,
         miscellaneous: "Sekalaista",
         "Configuration that applies to all charts":
             "Konfiguraatio, joka koskee kaikkia kaavioita",
@@ -662,7 +790,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     TextFormField: {
         "not matching pattern": ({ pattern }) => `Ei vastaa mallia ${pattern}`,
-        "toggle password visibility": "Vaihda salasanan näkyvyyttä"
+        "toggle password visibility": "Vaihda salasanan näkyvyyttä",
+        loading: undefined
     },
     FormFieldGroupComponent: {
         add: "Lisää"
@@ -699,7 +828,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     PodLogsTab: {
         "not necessarily first logs":
             "Nämä eivät välttämättä ole ensimmäiset lokit, vanhemmat lokit saattavat olla poistettu",
-        "new logs are displayed in realtime": "Uudet lokit näytetään reaaliajassa"
+        "new logs are displayed in realtime": "Uudet lokit näytetään reaaliajassa",
+        follow: undefined
     },
     MyServiceButtonBar: {
         back: "Takaisin",
@@ -782,7 +912,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                 Kubernetes-nimiavaruuden tapahtumat, se on reaaliaikainen syöte komennosta{" "}
                 <code>kubectl get events</code>
             </>
-        )
+        ),
+        close: undefined
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Oletko varma?",
@@ -799,7 +930,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         refresh: "Päivitä",
         launch: "Uusi palvelu",
         trash: "Tyhjennä kaikki",
-        "trash my own": "Poista kaikki omat palvelut"
+        "trash my own": "Poista kaikki omat palvelut",
+        events: undefined
     },
     MyServicesCard: {
         service: "Palvelu",
@@ -937,7 +1069,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     UrlInput: {
         load: "Lataa",
-        reset: "Tyhjennä"
+        reset: "Tyhjennä",
+        "data source": undefined
     },
     CommandBar: {
         ok: "ok"
@@ -1117,6 +1250,17 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "add to bookmarks": "Lisää kirjanmerkkeihin",
         "delete from bookmarks": "Poista kirjanmerkeistä",
         bookmarked: "Kirjanmerkitty",
-        "edit s3 uri": "Muokkaa S3-URIa"
+        "edit s3 uri": "Muokkaa S3-URIa",
+        prefix: undefined,
+        "admin bookmark": undefined,
+        bookmark: undefined,
+        object: undefined,
+        public: undefined,
+        "go to s3 uri": undefined,
+        "s3 uri": undefined,
+        "edit from s3 root": undefined,
+        "edit object key": undefined,
+        "object key": undefined,
+        listing: undefined
     }
 };
