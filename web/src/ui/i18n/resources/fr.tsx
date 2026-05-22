@@ -283,7 +283,6 @@ export const translations: Translations<"fr"> = {
         "signed link validity aria label": "Durée de validité du lien signé",
         "generating signed URL": "Génération de l'URL signée...",
         "copy signed URL aria label": "Copier l'URL signée",
-        done: "Terminé",
         "public description":
             "Toute personne disposant de l'URL peut accéder à cet objet. Le lien n'expire jamais car l'objet se trouve dans un préfixe public.",
         "signed description":

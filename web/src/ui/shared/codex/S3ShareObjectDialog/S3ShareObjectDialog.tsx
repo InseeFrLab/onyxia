@@ -1,7 +1,6 @@
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
@@ -22,7 +21,6 @@ export namespace S3ShareObjectDialogProps {
         className?: string;
         objectBasename: string;
         httpUrl: string | undefined;
-        onDone: () => void;
     };
 
     export type Public = Common & {
@@ -46,7 +44,7 @@ assert<
 >;
 
 export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
-    const { className, objectBasename, httpUrl, isPublic, onDone } = props;
+    const { className, objectBasename, httpUrl, isPublic } = props;
 
     const { t } = useTranslation({ S3ShareObjectDialog });
     const { classes, cx } = useStyles();
@@ -122,10 +120,6 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                     </div>
                 </div>
             )}
-
-            <div className={classes.actions}>
-                <Button onClick={onDone}>{t("done")}</Button>
-            </div>
         </section>
     );
 }
@@ -225,16 +219,6 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
             paddingTop: theme.spacing(1.5),
             paddingBottom: theme.spacing(1.5)
         }
-    },
-    actions: {
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        gap: theme.spacing(1.5),
-        marginTop: theme.spacing(1),
-        "& .MuiButton-root": {
-            marginLeft: 0
-        }
     }
 }));
 
@@ -245,7 +229,6 @@ const { i18n } = declareComponentKeys<
     | "signed link validity aria label"
     | "generating signed URL"
     | "copy signed URL aria label"
-    | "done"
     | "public description"
     | "signed description"
 >()({ S3ShareObjectDialog });

@@ -41,28 +41,24 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                 body: dialogClasses.body,
                 buttons: dialogClasses.hiddenButtons
             }}
-            body={
-                state === undefined ? undefined : (
-                    <Body s3Uri={state.s3Uri} onClose={() => setState(undefined)} />
-                )
-            }
+            body={state === undefined ? undefined : <Body s3Uri={state.s3Uri} />}
             buttons={<></>}
             isOpen={state !== undefined}
             onClose={() => setState(undefined)}
+            showCloseButton
         />
     );
 }
 
 const Body = withLoader<{
     s3Uri: S3Uri.NonTerminatedByDelimiter;
-    onClose: () => void;
 }>({
     loader: async ({ s3Uri }) => {
         const core = await getCore();
         core.functions.s3ShareObjectUiController.load({ s3Uri });
     },
     FallbackComponent: () => null,
-    Component: ({ onClose }) => {
+    Component: () => {
         const mainView = useCoreState("s3ShareObjectUiController", "mainView");
 
         const {
@@ -73,7 +69,6 @@ const Body = withLoader<{
             <S3ShareObjectDialog_headless
                 objectBasename={mainView.objectBasename}
                 httpUrl={mainView.httpUrl}
-                onDone={onClose}
                 {...(mainView.isPublic === true
                     ? {
                           isPublic: true

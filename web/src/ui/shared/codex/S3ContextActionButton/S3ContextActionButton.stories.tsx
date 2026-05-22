@@ -70,7 +70,7 @@ const baseArgs: S3UriBarProps = {
             s3Uri: "s3://analytics-data/exports/2024/quarter-3/"
         }),
         makeHint({
-            type: "bookmark",
+            type: "bookmark-user",
             text: "exports/2024/",
             s3Uri: "s3://analytics-data/exports/2024/"
         })

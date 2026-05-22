@@ -272,7 +272,6 @@ export const translations: Translations<"fi"> = {
         "signed link validity aria label": "Allekirjoitetun linkin voimassaoloaika",
         "generating signed URL": "Luodaan allekirjoitettua URL-osoitetta...",
         "copy signed URL aria label": "Kopioi allekirjoitettu URL",
-        done: "Valmis",
         "public description":
             "Kuka tahansa URL-osoitteen saanut voi käyttää tätä objektia. Linkki ei vanhene, koska objekti on julkisessa etuliitteessä.",
         "signed description":
