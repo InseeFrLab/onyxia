@@ -358,8 +358,10 @@ export const translations: Translations<"en"> = {
     S3SelectionActionBar: {
         download: "Download",
         delete: "Delete",
-        copied: "Copied",
         "copy s3 path": "Copy S3 path",
+        "copy s3 uri tooltip": ({ s3UriStr }) => `Copy "${s3UriStr}"`,
+        "add to bookmarks": "Add to bookmarks",
+        "delete from bookmarks": "Delete from bookmarks",
         share: "Share",
         "make public": "Make public",
         "make private": "Make private",

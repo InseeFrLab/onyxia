@@ -1,5 +1,6 @@
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
+import { Tooltip } from "onyxia-ui/Tooltip";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
@@ -8,15 +9,39 @@ export type S3SelectionActionBarProps = {
     selectionCount: number;
     /** Function to clear the selection and hide the selection action bar */
     onClear: () => void;
-    onDownload: (() => void) | undefined;
-    onDelete: (() => void) | undefined;
-    onCopyS3Uri: (() => void) | undefined;
-    isCopyS3UriCopied?: boolean;
-    onBookmark: (() => void) | undefined;
-    bookmarkLabel?: string;
-    onShare: (() => void) | undefined;
-    onMakePublic: (() => void) | undefined;
-    onMakePrivate: (() => void) | undefined;
+    download:
+        | {
+              callback: () => void;
+          }
+        | undefined;
+    delete:
+        | {
+              callback: () => void;
+          }
+        | undefined;
+    copyS3Uri:
+        | {
+              callback: () => void;
+              s3UriStr: string;
+          }
+        | undefined;
+    bookmark:
+        | {
+              callback: () => void;
+              isBookmarked: boolean;
+          }
+        | undefined;
+    share:
+        | {
+              callback: () => void;
+          }
+        | undefined;
+    accessPolicy:
+        | {
+              callback: () => void;
+              isPublic: boolean;
+          }
+        | undefined;
 };
 
 type Action = {
@@ -24,6 +49,7 @@ type Action = {
     label: string;
     iconName: string;
     onClick: () => void;
+    tooltipTitle?: string;
 };
 
 export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
@@ -31,15 +57,12 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         className,
         selectionCount,
         onClear,
-        onDownload,
-        onDelete,
-        onCopyS3Uri,
-        isCopyS3UriCopied = false,
-        onBookmark,
-        bookmarkLabel = "Add to bookmarks",
-        onShare,
-        onMakePublic,
-        onMakePrivate
+        download,
+        delete: deleteAction,
+        copyS3Uri,
+        bookmark,
+        share,
+        accessPolicy
     } = props;
 
     const { classes, cx } = useStyles();
@@ -50,43 +73,44 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
             key: "download",
             label: t("download"),
             iconName: "FileDownload",
-            onClick: onDownload
+            onClick: download?.callback
         },
         {
             key: "delete",
             label: t("delete"),
             iconName: "Delete",
-            onClick: onDelete
+            onClick: deleteAction?.callback
         },
         {
             key: "copy",
-            label: isCopyS3UriCopied ? t("copied") : t("copy s3 path"),
-            iconName: isCopyS3UriCopied ? "Check" : "ContentCopy",
-            onClick: onCopyS3Uri
+            label: t("copy s3 path"),
+            iconName: "ContentCopy",
+            onClick: copyS3Uri?.callback,
+            tooltipTitle:
+                copyS3Uri === undefined
+                    ? undefined
+                    : t("copy s3 uri tooltip", { s3UriStr: copyS3Uri.s3UriStr })
         },
         {
             key: "bookmark",
-            label: bookmarkLabel,
-            iconName: "StarBorder",
-            onClick: onBookmark
+            label:
+                bookmark?.isBookmarked === true
+                    ? t("delete from bookmarks")
+                    : t("add to bookmarks"),
+            iconName: bookmark?.isBookmarked === true ? "Star" : "StarBorder",
+            onClick: bookmark?.callback
         },
         {
             key: "share",
             label: t("share"),
             iconName: "Share",
-            onClick: onShare
+            onClick: share?.callback
         },
         {
-            key: "make-public",
-            label: t("make public"),
-            iconName: "Public",
-            onClick: onMakePublic
-        },
-        {
-            key: "make-private",
-            label: t("make private"),
-            iconName: "PublicOff",
-            onClick: onMakePrivate
+            key: "access-policy",
+            label: accessPolicy?.isPublic === true ? t("make private") : t("make public"),
+            iconName: accessPolicy?.isPublic === true ? "PublicOff" : "Public",
+            onClick: accessPolicy?.callback
         }
     ].filter((action): action is Action => action.onClick !== undefined);
 
@@ -114,24 +138,24 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
             </div>
             <div className={classes.actions}>
                 {actions.map(action => (
-                    <button
-                        key={action.key}
-                        type="button"
-                        className={cx(
-                            classes.actionButton,
-                            action.key === "copy" &&
-                                isCopyS3UriCopied &&
-                                classes.actionButtonCopied
-                        )}
-                        onClick={action.onClick}
-                    >
-                        <Icon
-                            className={classes.actionIcon}
-                            icon={getIconUrl(action.iconName)}
-                            size="small"
-                        />
-                        <span className={classes.actionLabel}>{action.label}</span>
-                    </button>
+                    <Tooltip key={action.key} title={action.tooltipTitle ?? action.label}>
+                        <span className={classes.tooltipAnchor}>
+                            <button
+                                type="button"
+                                className={classes.actionButton}
+                                onClick={action.onClick}
+                            >
+                                <Icon
+                                    className={classes.actionIcon}
+                                    icon={getIconUrl(action.iconName)}
+                                    size="small"
+                                />
+                                <span className={classes.actionLabel}>
+                                    {action.label}
+                                </span>
+                            </button>
+                        </span>
+                    </Tooltip>
                 ))}
             </div>
         </div>
@@ -201,6 +225,10 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             flexWrap: "nowrap",
             minWidth: 0
         },
+        tooltipAnchor: {
+            display: "inline-flex",
+            flexShrink: 0
+        },
         actionButton: {
             border: "none",
             background: "transparent",
@@ -221,15 +249,6 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
             }
         },
-        actionButtonCopied: {
-            backgroundColor: theme.colors.useCases.alertSeverity.success.background,
-            "&:hover": {
-                backgroundColor: theme.colors.useCases.alertSeverity.success.background
-            },
-            "&:active": {
-                backgroundColor: theme.colors.useCases.alertSeverity.success.background
-            }
-        },
         actionIcon: {
             color: "currentColor",
             flexShrink: 0
@@ -244,8 +263,10 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
 const { i18n } = declareComponentKeys<
     | "download"
     | "delete"
-    | "copied"
     | "copy s3 path"
+    | { K: "copy s3 uri tooltip"; P: { s3UriStr: string }; R: string }
+    | "add to bookmarks"
+    | "delete from bookmarks"
     | "share"
     | "make public"
     | "make private"

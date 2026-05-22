@@ -17,13 +17,24 @@ type Story = StoryObj<typeof meta>;
 const baseArgs: S3SelectionActionBarProps = {
     selectionCount: 1,
     onClear: action("clear"),
-    onDownload: action("download"),
-    onDelete: action("delete"),
-    onCopyS3Uri: action("copyS3Uri"),
-    onBookmark: action("bookmark"),
-    onShare: action("share"),
-    onMakePublic: action("makePublic"),
-    onMakePrivate: undefined
+    download: {
+        callback: action("download")
+    },
+    delete: {
+        callback: action("delete")
+    },
+    copyS3Uri: {
+        callback: action("copyS3Uri"),
+        s3UriStr: "s3://demo-bucket/path/to/object.csv"
+    },
+    bookmark: {
+        callback: action("bookmark"),
+        isBookmarked: false
+    },
+    share: {
+        callback: action("share")
+    },
+    accessPolicy: undefined
 };
 
 export const SingleObject: Story = {
@@ -35,10 +46,28 @@ export const SingleObject: Story = {
 export const SinglePrefix: Story = {
     args: {
         ...baseArgs,
-        onDownload: undefined,
-        onShare: undefined,
-        onMakePublic: undefined,
-        onMakePrivate: action("makePrivate")
+        download: undefined,
+        share: undefined,
+        accessPolicy: {
+            callback: action("makePublic"),
+            isPublic: false
+        }
+    }
+};
+
+export const PublicBookmarkedPrefix: Story = {
+    args: {
+        ...baseArgs,
+        download: undefined,
+        bookmark: {
+            callback: action("bookmark"),
+            isBookmarked: true
+        },
+        share: undefined,
+        accessPolicy: {
+            callback: action("makePrivate"),
+            isPublic: true
+        }
     }
 };
 
@@ -46,11 +75,10 @@ export const MultipleSelection: Story = {
     args: {
         ...baseArgs,
         selectionCount: 2,
-        onDownload: undefined,
-        onCopyS3Uri: undefined,
-        onBookmark: undefined,
-        onShare: undefined,
-        onMakePublic: undefined,
-        onMakePrivate: undefined
+        download: undefined,
+        copyS3Uri: undefined,
+        bookmark: undefined,
+        share: undefined,
+        accessPolicy: undefined
     }
 };

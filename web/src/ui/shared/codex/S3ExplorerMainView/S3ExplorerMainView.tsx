@@ -1550,68 +1550,74 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                         <S3SelectionActionBar
                             selectionCount={selectedItems.length}
                             onClear={clearSelection}
-                            onDownload={
+                            download={
                                 selectedObjectForSingleItemAction === undefined ||
                                 !getIsItemActionAvailable(
                                     selectedObjectForSingleItemAction
                                 )
                                     ? undefined
-                                    : () =>
-                                          requestDownloadForItems([
-                                              selectedObjectForSingleItemAction
-                                          ])
+                                    : {
+                                          callback: () =>
+                                              requestDownloadForItems([
+                                                  selectedObjectForSingleItemAction
+                                              ])
+                                      }
                             }
-                            onDelete={() => requestDeletionForItems(selectedItems)}
-                            onCopyS3Uri={
+                            delete={{
+                                callback: () => requestDeletionForItems(selectedItems)
+                            }}
+                            copyS3Uri={
                                 selectedItemForSingleItemAction === undefined
                                     ? undefined
-                                    : copySelectedS3Uri
+                                    : {
+                                          callback: copySelectedS3Uri,
+                                          s3UriStr: stringifyS3Uri(
+                                              selectedItemForSingleItemAction.s3Uri
+                                          )
+                                      }
                             }
-                            onBookmark={
+                            bookmark={
                                 selectedItemForSingleItemAction === undefined ||
                                 !getIsItemActionAvailable(selectedItemForSingleItemAction)
                                     ? undefined
-                                    : () =>
-                                          requestBookmarkForItem(
-                                              selectedItemForSingleItemAction
+                                    : {
+                                          callback: () =>
+                                              requestBookmarkForItem(
+                                                  selectedItemForSingleItemAction
+                                              ),
+                                          isBookmarked: bookmarkedItemKeySet.has(
+                                              stringifyS3Uri(
+                                                  selectedItemForSingleItemAction.s3Uri
+                                              )
                                           )
+                                      }
                             }
-                            bookmarkLabel={
-                                selectedItemForSingleItemAction !== undefined &&
-                                bookmarkedItemKeySet.has(
-                                    stringifyS3Uri(selectedItemForSingleItemAction.s3Uri)
-                                )
-                                    ? t("delete from bookmarks")
-                                    : t("add to bookmarks")
-                            }
-                            onShare={
+                            share={
                                 selectedObjectForSingleItemAction === undefined ||
                                 !getIsItemActionAvailable(
                                     selectedObjectForSingleItemAction
                                 )
                                     ? undefined
-                                    : () =>
-                                          requestShareForObject(
-                                              selectedObjectForSingleItemAction
-                                          )
+                                    : {
+                                          callback: () =>
+                                              requestShareForObject(
+                                                  selectedObjectForSingleItemAction
+                                              )
+                                      }
                             }
-                            onMakePublic={
+                            accessPolicy={
                                 selectedPrefixForSingleItemAction === undefined ||
-                                selectedPrefixPolicyAction !== "make public"
+                                selectedPrefixPolicyAction === undefined
                                     ? undefined
-                                    : () =>
-                                          requestPrefixPolicyChangeForItem(
-                                              selectedPrefixForSingleItemAction
-                                          )
-                            }
-                            onMakePrivate={
-                                selectedPrefixForSingleItemAction === undefined ||
-                                selectedPrefixPolicyAction !== "undo make public"
-                                    ? undefined
-                                    : () =>
-                                          requestPrefixPolicyChangeForItem(
-                                              selectedPrefixForSingleItemAction
-                                          )
+                                    : {
+                                          callback: () =>
+                                              requestPrefixPolicyChangeForItem(
+                                                  selectedPrefixForSingleItemAction
+                                              ),
+                                          isPublic:
+                                              selectedPrefixPolicyAction ===
+                                              "undo make public"
+                                      }
                             }
                         />
                     )}

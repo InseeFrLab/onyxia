@@ -4,7 +4,7 @@
 
 Its primary purpose is to expose the actions that the parent component declares available for the current selection.
 
-The component reflects the selection count but does not manage selection state or infer which actions make sense for the selected S3 items.
+The component reflects the selection count and derives action labels/icons from the action object state, but does not manage selection state or infer which actions make sense for the selected S3 items.
 
 # Props
 
@@ -17,17 +17,44 @@ type S3SelectionActionBarProps = {
     /** Function to clear the selection and hide the selection action bar */
     onClear: () => void;
 
-    onDownload: (() => void) | undefined;
+    download:
+        | {
+              callback: () => void;
+          }
+        | undefined;
 
-    onDelete: (() => void) | undefined;
+    delete:
+        | {
+              callback: () => void;
+          }
+        | undefined;
 
-    onCopyS3Uri: (() => void) | undefined;
+    copyS3Uri:
+        | {
+              callback: () => void;
+              s3UriStr: string;
+          }
+        | undefined;
 
-    onShare: (() => void) | undefined;
+    bookmark:
+        | {
+              callback: () => void;
+              isBookmarked: boolean;
+          }
+        | undefined;
 
-    onMakePublic: (() => void) | undefined;
+    share:
+        | {
+              callback: () => void;
+          }
+        | undefined;
 
-    onMakePrivate: (() => void) | undefined;
+    accessPolicy:
+        | {
+              callback: () => void;
+              isPublic: boolean;
+          }
+        | undefined;
 };
 ```
 
@@ -84,25 +111,38 @@ Each action is rendered as:
 
 The component does not inspect selected S3 URIs or decide action availability from selection shape.
 
-Each action button is rendered only when its callback prop is defined.
+Each action button is rendered only when its action object prop is defined.
 
 ### Optional actions
 
-- Download → rendered when `onDownload !== undefined`
-- Delete → rendered when `onDelete !== undefined`
-- Copy S3 path → rendered when `onCopyS3Uri !== undefined`
-- Share → rendered when `onShare !== undefined`
-- Make public → rendered when `onMakePublic !== undefined`
-- Make private → rendered when `onMakePrivate !== undefined`
+- Download → rendered when `download !== undefined`
+- Delete → rendered when `delete !== undefined`
+- Copy S3 path → rendered when `copyS3Uri !== undefined`
+- Bookmark → rendered when `bookmark !== undefined`
+- Share → rendered when `share !== undefined`
+- Access policy → rendered when `accessPolicy !== undefined`
 
-Clicking a rendered action calls its matching callback.
+Clicking a rendered action calls the matching action object's `callback`.
 
 The parent component is responsible for passing `undefined` for actions that do not make sense for the current context, such as single-object-only or single-selection-only actions.
 
+### Derived action labels
+
+The parent must not pass labels for stateful actions.
+
+- Copy S3 path is labelled `Copy S3 path`.
+- Copy S3 path displays a hover tooltip formatted as `Copy "<s3UriStr>"`.
+- Bookmark is labelled `Add to bookmarks` when `bookmark.isBookmarked === false`.
+- Bookmark is labelled `Delete from bookmarks` when `bookmark.isBookmarked === true`.
+- Access policy is labelled `Make public` when `accessPolicy.isPublic === false`.
+- Access policy is labelled `Make private` when `accessPolicy.isPublic === true`.
+
 ### Optional action icons
 
-- Make public uses the `Public` icon.
-- Make private uses the `PublicOff` icon.
+- Bookmark uses the `StarBorder` icon when `bookmark.isBookmarked === false`.
+- Bookmark uses the `Star` icon when `bookmark.isBookmarked === true`.
+- Access policy uses the `Public` icon when `accessPolicy.isPublic === false`.
+- Access policy uses the `PublicOff` icon when `accessPolicy.isPublic === true`.
 
 # Layout Rules
 
