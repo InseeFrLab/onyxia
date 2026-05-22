@@ -39,10 +39,9 @@ export type S3UriBarProps = {
         isHintSelection: boolean;
     }) => void;
     hints: {
-        type: "object" | "key-segment" | "bookmark";
+        type: "object" | "key-segment" | "bookmark-admin" | "bookmark-user";
         text: string;
         s3Uri: S3Uri;
-        isReadonly?: boolean;
     }[];
     areHintsLoading: boolean;
     isBookmarked: boolean;
@@ -113,17 +112,34 @@ function getHintTypeLabel(type: HintType): string {
     switch (type) {
         case "key-segment":
             return "Prefix";
-        case "bookmark":
+        case "bookmark-admin":
+            return "Admin bookmark";
+        case "bookmark-user":
             return "Bookmark";
         case "object":
             return "Object";
     }
 }
 
-function getHintTypeIcon(type: Exclude<HintType, "bookmark" | "key-segment">): string {
+function getHintTypeIcon(
+    type: Exclude<HintType, "bookmark-user" | "key-segment">
+): string {
     switch (type) {
+        case "bookmark-admin":
+            return getIconUrlByName("Domain");
         case "object":
             return getIconUrlByName("Description");
+    }
+}
+
+function getIsBookmarkHintType(type: HintType): boolean {
+    switch (type) {
+        case "bookmark-admin":
+        case "bookmark-user":
+            return true;
+        case "key-segment":
+        case "object":
+            return false;
     }
 }
 
@@ -151,7 +167,7 @@ function getDisplayedHints(params: {
 
         return displayedHints.filter(
             hint =>
-                hint.type === "bookmark" &&
+                getIsBookmarkHintType(hint.type) &&
                 hint.text.toLocaleLowerCase().startsWith(normalizedDraft)
         );
     }
@@ -162,7 +178,7 @@ function getDisplayedHints(params: {
 
     if (
         s3Uri.keySegments.length === 0 &&
-        hints.filter(hint => hint.type !== "bookmark").length === 0
+        hints.filter(hint => !getIsBookmarkHintType(hint.type)).length === 0
     ) {
         return displayedHints;
     }
@@ -1784,11 +1800,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                     <span
                                         className={cx(
                                             classes.hintType,
-                                            hint.type === "bookmark" &&
-                                                hint.isReadonly !== true &&
+                                            hint.type === "bookmark-user" &&
                                                 classes.hintTypeBookmark,
-                                            hint.type === "bookmark" &&
-                                                hint.isReadonly === true &&
+                                            hint.type === "bookmark-admin" &&
                                                 classes.hintTypeBucket,
                                             hint.type === "key-segment" &&
                                                 classes.hintTypeBucket,
@@ -1798,12 +1812,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                         aria-label={getHintTypeLabel(hint.type)}
                                         title={getHintTypeLabel(hint.type)}
                                     >
-                                        {hint.type === "bookmark" &&
-                                        hint.isReadonly === true ? (
-                                            <FolderIcon
-                                                className={classes.hintTypeSvgIcon}
-                                            />
-                                        ) : hint.type === "bookmark" ? (
+                                        {hint.type === "bookmark-user" ? (
                                             <StarIcon
                                                 className={classes.hintTypeSvgIcon}
                                             />

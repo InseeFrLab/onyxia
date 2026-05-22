@@ -155,7 +155,7 @@ const baseArgs: S3UriBarProps = {
             s3Uri: "s3://analytics-data/exports/2024/quarter-1/report.parquet"
         }),
         makeHint({
-            type: "bookmark",
+            type: "bookmark-user",
             text: "exports/2024/",
             s3Uri: "s3://analytics-data/exports/2024/"
         })
@@ -287,7 +287,7 @@ export const HashDelimiter: Story = {
                 delimiter: "#"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "foo#bar#",
                 s3Uri: "s3://mybucket/foo#bar#",
                 delimiter: "#"
@@ -305,12 +305,12 @@ export const EditingModeWithShortcuts: Story = {
         }),
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "2024/quarter-1/",
                 s3Uri: "s3://analytics-data/exports/2024/quarter-1/"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "raw/events/",
                 s3Uri: "s3://analytics-data/raw/events/"
             }),
@@ -337,17 +337,17 @@ export const EditingModeWithManyHints: Story = {
         }),
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "2024/",
                 s3Uri: "s3://analytics-data/exports/2024/"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "2024/quarter-1/",
                 s3Uri: "s3://analytics-data/exports/2024/quarter-1/"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "raw/events/",
                 s3Uri: "s3://analytics-data/raw/events/"
             }),
@@ -419,12 +419,12 @@ export const EditingModeWithVeryLongHints: Story = {
         }),
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/",
                 s3Uri: "s3://analytics-data/raw/events/2025/region=eu-west-1/source=streaming-ingestion/job=very-long-job-name-with-version-v12/"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/",
                 s3Uri: "s3://analytics-data/dashboards/internal/department=analytics/team=core-platform/topic=quarterly-business-review/"
             }),
@@ -497,7 +497,7 @@ function ControlledS3UriBarStory() {
 
         return [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: `${bucketData.keySegments[0]}${s3Uri.delimiter}`,
                 s3Uri: `s3://${s3Uri.bucket}/${bucketData.keySegments[0]}${s3Uri.delimiter}`
             }),
@@ -602,12 +602,12 @@ function UndefinedPrefixLockedEditingStory() {
                 }
                 hints={[
                     makeHint({
-                        type: "bookmark",
+                        type: "bookmark-user",
                         text: "s3://mybucket/",
                         s3Uri: "s3://mybucket/"
                     }),
                     makeHint({
-                        type: "bookmark",
+                        type: "bookmark-admin",
                         text: "s3://donnee-insee/diffusion/",
                         s3Uri: "s3://donnee-insee/diffusion/"
                     }),
@@ -682,12 +682,12 @@ export const UndefinedPrefixLockedEditingWithBookmarkHints: Story = {
         s3Uri: undefined,
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "s3://mybucket/",
                 s3Uri: "s3://mybucket/"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-admin",
                 text: "s3://donnee-insee/diffusion/",
                 s3Uri: "s3://donnee-insee/diffusion/"
             })
@@ -703,12 +703,12 @@ export const HomeInactiveSearchState: Story = {
         s3Uri: undefined,
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "s3://analytics-data/",
                 s3Uri: "s3://analytics-data/"
             }),
             makeHint({
-                type: "bookmark",
+                type: "bookmark-admin",
                 text: "s3://shared-datasets/curated/",
                 s3Uri: "s3://shared-datasets/curated/"
             })
@@ -724,7 +724,7 @@ export const HomeInactiveHovered: Story = {
         s3Uri: undefined,
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "s3://analytics-data/",
                 s3Uri: "s3://analytics-data/"
             })
@@ -745,7 +745,7 @@ export const HomeInactiveFocused: Story = {
         s3Uri: undefined,
         hints: [
             makeHint({
-                type: "bookmark",
+                type: "bookmark-user",
                 text: "s3://analytics-data/",
                 s3Uri: "s3://analytics-data/"
             })

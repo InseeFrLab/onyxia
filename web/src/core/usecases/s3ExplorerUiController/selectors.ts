@@ -51,10 +51,9 @@ export type MainView = {
               }
             | undefined;
         hints: {
-            type: "object" | "key-segment" | "bookmark";
+            type: "object" | "key-segment" | "bookmark-user" | "bookmark-admin";
             text: string;
             s3Uri: S3Uri;
-            isReadonly?: boolean;
         }[];
         bookmarkStatus:
             | {
@@ -544,8 +543,10 @@ const uriBar = createSelector(
             [...hints].sort((a, b) => {
                 const getRank = (hint: typeof a) => {
                     switch (hint.type) {
-                        case "bookmark":
-                            return hint.isReadonly ? 1 : 0;
+                        case "bookmark-user":
+                            return 0;
+                        case "bookmark-admin":
+                            return 1;
                         case "key-segment":
                             return 2;
                         case "object":
@@ -562,10 +563,9 @@ const uriBar = createSelector(
                 s3Uri: undefined,
                 hints: sortHints(
                     bookmarks.items.map(bookmark => ({
-                        type: "bookmark",
+                        type: bookmark.isReadonly ? "bookmark-admin" : "bookmark-user",
                         text: stringifyS3Uri(bookmark.s3Uri),
-                        s3Uri: bookmark.s3Uri,
-                        isReadonly: bookmark.isReadonly
+                        s3Uri: bookmark.s3Uri
                     }))
                 ),
                 bookmarkStatus: {
@@ -610,7 +610,7 @@ const uriBar = createSelector(
                 );
             })
             .map(bookmark => ({
-                type: "bookmark" as const,
+                type: bookmark.isReadonly ? "bookmark-admin" : ("bookmark-user" as const),
                 text: (() => {
                     if (
                         !getIsInside({ s3UriPrefix: s3Uri, s3Uri: bookmark.s3Uri })
@@ -633,8 +633,7 @@ const uriBar = createSelector(
 
                     return text;
                 })(),
-                s3Uri: bookmark.s3Uri,
-                isReadonly: bookmark.isReadonly
+                s3Uri: bookmark.s3Uri
             }));
 
         if (listedPrefix === undefined || listedPrefix.isErrored || isListing) {

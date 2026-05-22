@@ -54,16 +54,16 @@ export type S3UriBarProps = {
      * - a parsed S3Uri when the current input is parsable
      * - undefined when the current input is not parsable
      * This enables the parent/core layer to compute the right hints while the user types.
-     * When s3Uri is undefined there can be hint but only of type "bookmark".
+     * When s3Uri is undefined there can be hints but only of type "bookmark-admin" or "bookmark-user".
      * For example hints can be:
      * [
      *  {
-     *      type: "bookmark",
+     *      type: "bookmark-user",
      *      text: "s3://mybucket/",
      *      s3Uri: parseS3Uri({ value: "s3://mybucket/", delimiter: "/" })
      *  },
      *  {
-     *      type: "bookmark",
+     *      type: "bookmark-admin",
      *      text: "s3://donee-insee/diffusion/",
      *      s3Uri: parseS3Uri({
      *          value: "s3://donee-insee/diffusion/",
@@ -113,7 +113,8 @@ export type S3UriBarProps = {
      *
      * - type: "object" => object entry. Example "foo.csv"
      * - type: "key-segment" => common prefix / folder-like segment. Example "quarter-2"
-     * - type: "bookmark" => Known location. Example "2026/quarter-2/foo.csv"
+     * - type: "bookmark-admin" => Admin-provided known location. Example "2026/quarter-2/foo.csv"
+     * - type: "bookmark-user" => User-provided known location. Example "2026/quarter-2/foo.csv"
      *
      * Note: ordering, debouncing, and content correctness are external responsibilities.
      *
@@ -126,7 +127,7 @@ export type S3UriBarProps = {
      * trying to reconstruct a new URI by appending `text` to the current draft.
      */
     hints: {
-        type: "object" | "key-segment" | "bookmark";
+        type: "object" | "key-segment" | "bookmark-admin" | "bookmark-user";
         text: string;
         s3Uri: S3Uri;
     }[];
