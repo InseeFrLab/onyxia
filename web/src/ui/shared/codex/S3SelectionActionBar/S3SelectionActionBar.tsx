@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { useEffect, useState, type ReactElement, type ReactNode } from "react";
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { Tooltip } from "onyxia-ui/Tooltip";
@@ -52,7 +52,7 @@ type Action = {
     label: string;
     icon: ReactElement;
     onClick: () => void;
-    tooltipTitle?: string;
+    tooltipTitle?: ReactNode;
     isActive?: boolean;
 };
 
@@ -75,6 +75,32 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 
     const { classes, cx } = useStyles();
     const { t } = useTranslation({ S3SelectionActionBar });
+    const [isS3UriCopied, setIsS3UriCopied] = useState(false);
+
+    useEffect(() => {
+        setIsS3UriCopied(false);
+    }, [copyS3Uri?.s3UriStr]);
+
+    useEffect(() => {
+        if (!isS3UriCopied) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => setIsS3UriCopied(false), 1400);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [isS3UriCopied]);
+
+    const copiedTooltipTitle = (
+        <span className={classes.copiedTooltip}>
+            <Icon
+                className={classes.copiedTooltipIcon}
+                icon={getIconUrlByName("Check")}
+                size="extra small"
+            />
+            {t("copied")}
+        </span>
+    );
 
     const actionCandidates: OptionalAction[] = [
         {
@@ -111,11 +137,19 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                     size="small"
                 />
             ),
-            onClick: copyS3Uri?.callback,
+            onClick:
+                copyS3Uri === undefined
+                    ? undefined
+                    : () => {
+                          copyS3Uri.callback();
+                          setIsS3UriCopied(true);
+                      },
             tooltipTitle:
                 copyS3Uri === undefined
                     ? undefined
-                    : t("copy s3 uri tooltip", { s3UriStr: copyS3Uri.s3UriStr })
+                    : isS3UriCopied
+                      ? copiedTooltipTitle
+                      : t("copy s3 uri tooltip", { s3UriStr: copyS3Uri.s3UriStr })
         },
         {
             key: "bookmark",
@@ -336,6 +370,16 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
         actionLabel: {
             ...label1Style,
             whiteSpace: "nowrap"
+        },
+        copiedTooltip: {
+            display: "inline-flex",
+            alignItems: "center",
+            gap: theme.spacing(0.75),
+            color: theme.colors.useCases.alertSeverity.success.main
+        },
+        copiedTooltipIcon: {
+            color: "currentColor",
+            flexShrink: 0
         }
     };
 });
@@ -344,6 +388,7 @@ const { i18n } = declareComponentKeys<
     | "download"
     | "delete"
     | "copy s3 path"
+    | "copied"
     | { K: "copy s3 uri tooltip"; P: { s3UriStr: string }; R: string }
     | "add to bookmarks"
     | "delete from bookmarks"

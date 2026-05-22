@@ -359,6 +359,7 @@ export const translations: Translations<"en"> = {
         download: "Download",
         delete: "Delete",
         "copy s3 path": "Copy S3 path",
+        copied: "Copied",
         "copy s3 uri tooltip": ({ s3UriStr }) => `Copy "${s3UriStr}"`,
         "add to bookmarks": "Add to bookmarks",
         "delete from bookmarks": "Delete from bookmarks",

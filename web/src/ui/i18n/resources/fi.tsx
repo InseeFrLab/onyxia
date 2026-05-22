@@ -241,6 +241,7 @@ export const translations: Translations<"fi"> = {
         download: undefined,
         delete: undefined,
         "copy s3 path": undefined,
+        copied: undefined,
         "copy s3 uri tooltip": undefined,
         "add to bookmarks": undefined,
         "delete from bookmarks": undefined,

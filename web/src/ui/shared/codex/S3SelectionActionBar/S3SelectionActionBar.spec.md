@@ -132,6 +132,7 @@ The parent must not pass labels for stateful actions.
 
 - Copy S3 path is labelled `Copy S3 path`.
 - Copy S3 path displays a hover tooltip formatted as `Copy "<s3UriStr>"`.
+- After clicking Copy S3 path, the tooltip displays a success-colored checkmark icon and the label `Copied` for a short confirmation period. The action button itself keeps the same icon and label to avoid layout shift.
 - Bookmark is labelled `Add to bookmarks` when `bookmark.isBookmarked === false`.
 - Bookmark is labelled `Delete from bookmarks` when `bookmark.isBookmarked === true`.
 - Access policy is labelled `Make public` when `accessPolicy.isPublic === false`.
