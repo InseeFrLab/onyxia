@@ -1,8 +1,11 @@
+import type { ReactElement } from "react";
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarIcon from "@mui/icons-material/Star";
 
 export type S3SelectionActionBarProps = {
     className?: string;
@@ -47,9 +50,14 @@ export type S3SelectionActionBarProps = {
 type Action = {
     key: string;
     label: string;
-    iconName: string;
+    icon: ReactElement;
     onClick: () => void;
     tooltipTitle?: string;
+    isActive?: boolean;
+};
+
+type OptionalAction = Omit<Action, "onClick"> & {
+    onClick: (() => void) | undefined;
 };
 
 export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
@@ -68,23 +76,41 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const { classes, cx } = useStyles();
     const { t } = useTranslation({ S3SelectionActionBar });
 
-    const actions = [
+    const actionCandidates: OptionalAction[] = [
         {
             key: "download",
             label: t("download"),
-            iconName: "FileDownload",
+            icon: (
+                <Icon
+                    className={classes.actionIcon}
+                    icon={getIconUrl("FileDownload")}
+                    size="small"
+                />
+            ),
             onClick: download?.callback
         },
         {
             key: "delete",
             label: t("delete"),
-            iconName: "Delete",
+            icon: (
+                <Icon
+                    className={classes.actionIcon}
+                    icon={getIconUrl("Delete")}
+                    size="small"
+                />
+            ),
             onClick: deleteAction?.callback
         },
         {
             key: "copy",
             label: t("copy s3 path"),
-            iconName: "ContentCopy",
+            icon: (
+                <Icon
+                    className={classes.actionIcon}
+                    icon={getIconUrl("ContentCopy")}
+                    size="small"
+                />
+            ),
             onClick: copyS3Uri?.callback,
             tooltipTitle:
                 copyS3Uri === undefined
@@ -97,22 +123,46 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                 bookmark?.isBookmarked === true
                     ? t("delete from bookmarks")
                     : t("add to bookmarks"),
-            iconName: bookmark?.isBookmarked === true ? "Star" : "StarBorder",
-            onClick: bookmark?.callback
+            icon:
+                bookmark?.isBookmarked === true ? (
+                    <StarIcon className={classes.actionIcon} fontSize="small" />
+                ) : (
+                    <StarBorderIcon className={classes.actionIcon} fontSize="small" />
+                ),
+            onClick: bookmark?.callback,
+            isActive: bookmark?.isBookmarked === true
         },
         {
             key: "share",
             label: t("share"),
-            iconName: "Share",
+            icon: (
+                <Icon
+                    className={classes.actionIcon}
+                    icon={getIconUrl("Share")}
+                    size="small"
+                />
+            ),
             onClick: share?.callback
         },
         {
             key: "access-policy",
             label: accessPolicy?.isPublic === true ? t("make private") : t("make public"),
-            iconName: accessPolicy?.isPublic === true ? "PublicOff" : "Public",
+            icon: (
+                <Icon
+                    className={classes.actionIcon}
+                    icon={getIconUrl(
+                        accessPolicy?.isPublic === true ? "PublicOff" : "Public"
+                    )}
+                    size="small"
+                />
+            ),
             onClick: accessPolicy?.callback
         }
-    ].filter((action): action is Action => action.onClick !== undefined);
+    ];
+
+    const actions = actionCandidates.filter(
+        (action): action is Action => action.onClick !== undefined
+    );
 
     const selectedLabel =
         selectionCount === 1
@@ -145,11 +195,14 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                                 className={classes.actionButton}
                                 onClick={action.onClick}
                             >
-                                <Icon
-                                    className={classes.actionIcon}
-                                    icon={getIconUrl(action.iconName)}
-                                    size="small"
-                                />
+                                <span
+                                    className={cx(
+                                        classes.actionIconFrame,
+                                        action.isActive && classes.actionIconFrameActive
+                                    )}
+                                >
+                                    {action.icon}
+                                </span>
                                 <span className={classes.actionLabel}>
                                     {action.label}
                                 </span>
@@ -164,6 +217,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 
 const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
     const label1Style = theme.typography.variants["label 1"].style;
+    const accentColor = theme.colors.useCases.buttons.actionActive;
 
     return {
         root: {
@@ -247,6 +301,26 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             },
             "&:active": {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
+            }
+        },
+        actionIconFrame: {
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            flexShrink: 0
+        },
+        actionIconFrameActive: {
+            backgroundColor: theme.colors.palette.focus.mainAlpha10,
+            color: accentColor,
+            "&:hover": {
+                backgroundColor: theme.colors.palette.focus.mainAlpha20
+            },
+            "& .MuiSvgIcon-root, & img, & svg, & path": {
+                color: accentColor,
+                fill: accentColor
             }
         },
         actionIcon: {
