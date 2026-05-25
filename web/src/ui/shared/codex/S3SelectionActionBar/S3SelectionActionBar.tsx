@@ -145,11 +145,13 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                           setIsS3UriCopied(true);
                       },
             tooltipTitle:
-                copyS3Uri === undefined
-                    ? undefined
-                    : isS3UriCopied
-                      ? copiedTooltipTitle
-                      : t("copy s3 uri tooltip", { s3UriStr: copyS3Uri.s3UriStr })
+                copyS3Uri === undefined ? undefined : isS3UriCopied ? (
+                    copiedTooltipTitle
+                ) : (
+                    <span style={{ whiteSpace: "nowrap" }}>
+                        {t("copy s3 uri tooltip", { s3UriStr: copyS3Uri.s3UriStr })}
+                    </span>
+                )
         },
         {
             key: "bookmark",
