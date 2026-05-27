@@ -12,6 +12,7 @@ import {
 import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
+import MuiTooltip from "@mui/material/Tooltip";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { alpha } from "@mui/material/styles";
@@ -738,6 +739,8 @@ function ItemRow(props: ItemRowProps) {
         onChangePrefixPolicy !== undefined && isItemActionAvailable;
     const isCopyAvailable = !item.isDeleting;
     const { t } = useTranslation({ S3ExplorerMainView });
+    const s3UriStr = stringifyS3Uri(item.s3Uri);
+    const [isS3UriCopied, setIsS3UriCopied] = useState(false);
     const itemKindLabelCapitalized =
         item.type === "prefix segment" ? t("folder") : t("object");
     const itemIconLabel =
@@ -750,6 +753,20 @@ function ItemRow(props: ItemRowProps) {
     const { classes, cx } = useStyles({
         isDragActive: false
     });
+
+    useEffect(() => {
+        setIsS3UriCopied(false);
+    }, [s3UriStr]);
+
+    useEffect(() => {
+        if (!isS3UriCopied) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => setIsS3UriCopied(false), 1400);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [isS3UriCopied]);
 
     return (
         <tr
@@ -901,6 +918,134 @@ function ItemRow(props: ItemRowProps) {
                     <div className={classes.rowActions}>
                         {showRowActions && (
                             <>
+                                {onDownload !== undefined && (
+                                    <Tooltip title={t("download")}>
+                                        <span className={classes.inlineActionWrapper}>
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName("FileDownload")}
+                                                aria-label={t("download")}
+                                                disabled={!isDownloadAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (
+                                                        !isDownloadAvailable ||
+                                                        onDownload === undefined
+                                                    ) {
+                                                        return;
+                                                    }
+
+                                                    onDownload();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                                <Tooltip title={t("delete")}>
+                                    <span className={classes.inlineActionWrapper}>
+                                        <IconButton
+                                            className={classes.rowActionButton}
+                                            icon={getIconUrlByName("Delete")}
+                                            aria-label={t("delete")}
+                                            disabled={item.isDeleting}
+                                            onClick={event => {
+                                                event.stopPropagation();
+                                                onDelete();
+                                            }}
+                                        />
+                                    </span>
+                                </Tooltip>
+                                <MuiTooltip
+                                    title={
+                                        <span className={classes.tooltipText}>
+                                            {isS3UriCopied ? (
+                                                <span className={classes.copiedTooltip}>
+                                                    <Icon
+                                                        className={
+                                                            classes.copiedTooltipIcon
+                                                        }
+                                                        icon={getIconUrlByName("Check")}
+                                                        size="extra small"
+                                                    />
+                                                    {t("copied")}
+                                                </span>
+                                            ) : (
+                                                <span className={classes.copyTooltip}>
+                                                    {t("copy s3 uri tooltip", {
+                                                        s3UriStr
+                                                    })}
+                                                </span>
+                                            )}
+                                        </span>
+                                    }
+                                    classes={{
+                                        tooltip: cx(
+                                            classes.tooltipBubble,
+                                            classes.copyTooltipBubble
+                                        )
+                                    }}
+                                >
+                                    <span className={classes.inlineActionWrapper}>
+                                        <IconButton
+                                            className={classes.rowActionButton}
+                                            icon={getIconUrlByName("ContentCopy")}
+                                            aria-label={t("copy s3 uri")}
+                                            disabled={!isCopyAvailable}
+                                            onClick={async event => {
+                                                event.stopPropagation();
+
+                                                if (!isCopyAvailable) {
+                                                    return;
+                                                }
+
+                                                await copyToClipboard(s3UriStr);
+                                                setIsS3UriCopied(true);
+                                            }}
+                                        />
+                                    </span>
+                                </MuiTooltip>
+                                {onBookmark !== undefined && (
+                                    <Tooltip
+                                        title={
+                                            isBookmarked
+                                                ? t("delete from bookmarks")
+                                                : t("add to bookmarks")
+                                        }
+                                    >
+                                        <span className={classes.inlineActionWrapper}>
+                                            <button
+                                                type="button"
+                                                className={cx(
+                                                    classes.rowActionButton,
+                                                    isBookmarked &&
+                                                        classes.rowActionButtonActive
+                                                )}
+                                                aria-label={
+                                                    isBookmarked
+                                                        ? t("delete from bookmarks")
+                                                        : t("add to bookmarks")
+                                                }
+                                                disabled={!isItemActionAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (!isItemActionAvailable) {
+                                                        return;
+                                                    }
+
+                                                    onBookmark();
+                                                }}
+                                            >
+                                                {isBookmarked ? (
+                                                    <StarIcon fontSize="small" />
+                                                ) : (
+                                                    <StarBorderIcon fontSize="small" />
+                                                )}
+                                            </button>
+                                        </span>
+                                    </Tooltip>
+                                )}
                                 {onShareObject !== undefined && (
                                     <Tooltip title={t("share")}>
                                         <span className={classes.inlineActionWrapper}>
@@ -965,101 +1110,6 @@ function ItemRow(props: ItemRowProps) {
                                             </span>
                                         </Tooltip>
                                     )}
-                                {onDownload !== undefined && (
-                                    <Tooltip title={t("download")}>
-                                        <span className={classes.inlineActionWrapper}>
-                                            <IconButton
-                                                className={classes.rowActionButton}
-                                                icon={getIconUrlByName("FileDownload")}
-                                                aria-label={t("download")}
-                                                disabled={!isDownloadAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (
-                                                        !isDownloadAvailable ||
-                                                        onDownload === undefined
-                                                    ) {
-                                                        return;
-                                                    }
-
-                                                    onDownload();
-                                                }}
-                                            />
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                {onBookmark !== undefined && (
-                                    <Tooltip
-                                        title={
-                                            isBookmarked
-                                                ? t("delete from bookmarks")
-                                                : t("add to bookmarks")
-                                        }
-                                    >
-                                        <span className={classes.inlineActionWrapper}>
-                                            <button
-                                                type="button"
-                                                className={cx(
-                                                    classes.rowActionButton,
-                                                    isBookmarked &&
-                                                        classes.rowActionButtonActive
-                                                )}
-                                                aria-label={
-                                                    isBookmarked
-                                                        ? t("delete from bookmarks")
-                                                        : t("add to bookmarks")
-                                                }
-                                                disabled={!isItemActionAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (!isItemActionAvailable) {
-                                                        return;
-                                                    }
-
-                                                    onBookmark();
-                                                }}
-                                            >
-                                                {isBookmarked ? (
-                                                    <StarIcon fontSize="small" />
-                                                ) : (
-                                                    <StarBorderIcon fontSize="small" />
-                                                )}
-                                            </button>
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                <Tooltip title={t("copy s3 path")}>
-                                    <span className={classes.inlineActionWrapper}>
-                                        <IconButton
-                                            className={classes.rowActionButton}
-                                            icon={getIconUrlByName("ContentCopy")}
-                                            aria-label={t("copy s3 path")}
-                                            disabled={!isCopyAvailable}
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                copyToClipboard(
-                                                    stringifyS3Uri(item.s3Uri)
-                                                );
-                                            }}
-                                        />
-                                    </span>
-                                </Tooltip>
-                                <Tooltip title={t("delete")}>
-                                    <span className={classes.inlineActionWrapper}>
-                                        <IconButton
-                                            className={classes.rowActionButton}
-                                            icon={getIconUrlByName("Delete")}
-                                            aria-label={t("delete")}
-                                            disabled={item.isDeleting}
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                onDelete();
-                                            }}
-                                        />
-                                    </span>
-                                </Tooltip>
                             </>
                         )}
                     </div>
@@ -2332,6 +2382,50 @@ const useStyles = tss
         inlineActionWrapper: {
             display: "inline-flex"
         },
+        copiedTooltip: {
+            display: "inline-flex",
+            alignItems: "center",
+            gap: theme.spacing(0.75),
+            color: theme.colors.useCases.alertSeverity.success.main,
+            lineHeight: 1
+        },
+        copiedTooltipIcon: {
+            color: "currentColor",
+            flexShrink: 0
+        },
+        tooltipText: {
+            ...theme.typography.variants.caption.style,
+            color: theme.colors.palette.light.light,
+            display: "inline-flex",
+            alignItems: "center",
+            lineHeight: 1
+        },
+        tooltipBubble: {
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 0,
+            padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
+            lineHeight: 1,
+            boxSizing: "border-box",
+            "& > *": {
+                display: "inline-flex",
+                alignItems: "center",
+                lineHeight: 1
+            }
+        },
+        copyTooltipBubble: {
+            maxWidth: "calc(100vw - 32px)"
+        },
+        copyTooltip: {
+            display: "inline-flex",
+            alignItems: "baseline",
+            gap: theme.spacing(0.75),
+            maxWidth: "calc(100vw - 64px)",
+            whiteSpace: "nowrap",
+            overflowX: "auto",
+            overflowY: "hidden"
+        },
         errorState: {
             display: "flex",
             flexDirection: "column",
@@ -2377,7 +2471,9 @@ const { i18n } = declareComponentKeys<
     | "uploaded"
     | "share"
     | "download"
-    | "copy s3 path"
+    | "copy s3 uri"
+    | "copied"
+    | { K: "copy s3 uri tooltip"; P: { s3UriStr: string }; R: string }
     | "add to bookmarks"
     | "delete from bookmarks"
     | "make public"
