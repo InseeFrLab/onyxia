@@ -240,7 +240,7 @@ export const translations: Translations<"fi"> = {
     S3SelectionActionBar: {
         download: undefined,
         delete: undefined,
-        "copy s3 path": undefined,
+        "copy s3 uri": "Kopioi S3-URI",
         copied: undefined,
         "copy s3 uri tooltip": undefined,
         "add to bookmarks": undefined,

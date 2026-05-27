@@ -130,7 +130,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         },
         {
             key: "copy",
-            label: t("copy s3 path"),
+            label: t("copy s3 uri"),
             icon: (
                 <Icon
                     className={classes.actionIcon}
@@ -440,7 +440,7 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
 const { i18n } = declareComponentKeys<
     | "download"
     | "delete"
-    | "copy s3 path"
+    | "copy s3 uri"
     | "copied"
     | { K: "copy s3 uri tooltip"; P: { s3UriStr: string }; R: string }
     | "add to bookmarks"

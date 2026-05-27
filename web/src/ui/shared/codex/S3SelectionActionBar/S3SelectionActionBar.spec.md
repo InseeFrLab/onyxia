@@ -117,7 +117,7 @@ Each action button is rendered only when its action object prop is defined.
 
 - Download → rendered when `download !== undefined`
 - Delete → rendered when `delete !== undefined`
-- Copy S3 path → rendered when `copyS3Uri !== undefined`
+- Copy S3 URI → rendered when `copyS3Uri !== undefined`
 - Bookmark → rendered when `bookmark !== undefined`
 - Share → rendered when `share !== undefined`
 - Access policy → rendered when `accessPolicy !== undefined`
@@ -130,9 +130,9 @@ The parent component is responsible for passing `undefined` for actions that do 
 
 The parent must not pass labels for stateful actions.
 
-- Copy S3 path is labelled `Copy S3 path`.
-- Copy S3 path displays a hover tooltip formatted as `Copy "<s3UriStr>"` and remains on one line when the value is long.
-- After clicking Copy S3 path, the tooltip displays a success-colored checkmark icon and the label `Copied` for a short confirmation period. The action button itself keeps the same icon and label to avoid layout shift.
+- Copy S3 URI is labelled `Copy S3 URI`.
+- Copy S3 URI displays a hover tooltip formatted as `Copy "<s3UriStr>"` and remains on one line when the value is long.
+- After clicking Copy S3 URI, the tooltip displays a success-colored checkmark icon and the label `Copied` for a short confirmation period. The action button itself keeps the same icon and label to avoid layout shift.
 - Bookmark is labelled `Add to bookmarks` when `bookmark.isBookmarked === false`.
 - Bookmark is labelled `Delete from bookmarks` when `bookmark.isBookmarked === true`.
 - Access policy is labelled `Make public` when `accessPolicy.isPublic === false`.

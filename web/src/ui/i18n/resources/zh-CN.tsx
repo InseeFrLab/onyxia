@@ -222,7 +222,7 @@ export const translations: Translations<"zh-CN"> = {
     S3SelectionActionBar: {
         download: undefined,
         delete: undefined,
-        "copy s3 path": undefined,
+        "copy s3 uri": "复制 S3 URI",
         copied: undefined,
         "copy s3 uri tooltip": undefined,
         "add to bookmarks": undefined,
