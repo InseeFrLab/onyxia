@@ -165,7 +165,8 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     bookmarkedS3Uris: [],
     onChangePrefixPolicy: action("changePrefixPolicy"),
     evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
-    isUploadDisabled: false
+    isUploadDisabled: false,
+    onDisplayCopyFeedback: action("onDisplayCopyFeedback")
 };
 
 function toListedItems(
@@ -225,6 +226,7 @@ function StatefulExplorer(
         | "bookmarkedS3Uris"
         | "onChangePrefixPolicy"
         | "evtAction"
+        | "onDisplayCopyFeedback"
     >
 ) {
     const [currentPrefix, setCurrentPrefix] =
@@ -358,6 +360,9 @@ function StatefulExplorer(
                     );
                 }}
                 evtAction={evtAction}
+                onDisplayCopyFeedback={({ s3Uri }) => {
+                    action("onDisplayCopyFeedback")(s3Uri);
+                }}
             />
         </div>
     );
@@ -404,6 +409,7 @@ export const EmptyPrefix: Story = {
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
+        onDisplayCopyFeedback: action("onDisplayCopyFeedback"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
     },
@@ -431,6 +437,7 @@ export const AccessDenied: Story = {
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
+        onDisplayCopyFeedback: action("onDisplayCopyFeedback"),
         isUploadDisabled: false
     },
     render: args => (

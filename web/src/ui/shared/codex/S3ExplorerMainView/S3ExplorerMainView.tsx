@@ -71,6 +71,8 @@ export type S3ExplorerMainViewProps = {
 
     onBookmark: (params: { s3Uri: S3Uri }) => void;
 
+    onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
+
     bookmarkedS3Uris: S3Uri[];
 
     onChangePrefixPolicy: (params: {
@@ -123,7 +125,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         bookmarkedS3Uris,
         onChangePrefixPolicy,
         evtAction,
-        isUploadDisabled
+        isUploadDisabled,
+        onDisplayCopyFeedback
     } = props;
 
     const [sortState, setSortState] = useState<SortState>({
@@ -578,7 +581,18 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                     : {
                                           s3UriStr: stringifyS3Uri(
                                               selectedItemForSingleItemAction.s3Uri
-                                          )
+                                          ),
+                                          callback: async () => {
+                                              await copyToClipboard(
+                                                  stringifyS3Uri(
+                                                      selectedItemForSingleItemAction.s3Uri
+                                                  )
+                                              );
+
+                                              onDisplayCopyFeedback({
+                                                  s3Uri: selectedItemForSingleItemAction.s3Uri
+                                              });
+                                          }
                                       }
                             }
                             bookmark={
@@ -918,6 +932,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                                       item
                                                                   )
                                                             : undefined
+                                                    }
+                                                    onDisplayCopyFeedback={
+                                                        onDisplayCopyFeedback
                                                     }
                                                 />
                                             );
@@ -2084,6 +2101,7 @@ type ItemRowProps = {
     onDownload: (() => void) | undefined;
     onBookmark: (() => void) | undefined;
     onCheckboxChange: () => void;
+    onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
 };
 
 function ItemRow(props: ItemRowProps) {
@@ -2100,7 +2118,8 @@ function ItemRow(props: ItemRowProps) {
         onChangePrefixPolicy,
         onDownload,
         onBookmark,
-        onCheckboxChange
+        onCheckboxChange,
+        onDisplayCopyFeedback
     } = props;
 
     const progressPercent = getProgressPercent(item);
@@ -2378,6 +2397,9 @@ function ItemRow(props: ItemRowProps) {
 
                                                 await copyToClipboard(s3UriStr);
                                                 setIsS3UriCopied(true);
+                                                onDisplayCopyFeedback({
+                                                    s3Uri: item.s3Uri
+                                                });
                                             }}
                                         />
                                     </span>

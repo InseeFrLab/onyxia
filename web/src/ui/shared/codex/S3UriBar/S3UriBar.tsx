@@ -26,6 +26,8 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import s3UriBucketSvgUrl from "ui/assets/svg/S3UriBucket.svg";
 import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 import { assert } from "tsafe";
+import { type NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
 
 export type S3UriBarProps = {
     className?: string;
@@ -47,356 +49,11 @@ export type S3UriBarProps = {
     areHintsLoading: boolean;
     isBookmarked: boolean;
     onToggleBookmark: ((props: { s3Uri: S3Uri }) => void) | undefined;
+    evtAction: NonPostableEvt<{
+        action: "display copy feedback";
+        s3Uri: S3Uri;
+    }>;
 };
-
-type NavigationCrumb = {
-    label: string;
-    kind: "root" | "bucket" | "segment";
-    s3Uri: S3Uri;
-    isCurrent: boolean;
-};
-
-type DisplayCrumb =
-    | NavigationCrumb
-    | {
-          label: "...";
-          kind: "ellipsis";
-      };
-
-type DisplayCrumbItem = {
-    crumb: DisplayCrumb;
-    index: number;
-    isPublic: boolean;
-    isPublicStart: boolean;
-};
-
-type NavigationCrumbItem = {
-    crumb: NavigationCrumb;
-    index: number;
-    isPublic: boolean;
-    isPublicStart: boolean;
-};
-
-const longPressDelayMs = 200;
-const hintsPanelHorizontalEdgePaddingPx = 8;
-const hintsPanelVerticalOffsetPx = 6;
-const hintsPanelFallbackWidthPx = 280;
-const defaultDraftS3Uri = "s3://";
-type CrumbKind = DisplayCrumb["kind"];
-type HintType = S3UriBarProps["hints"][number]["type"];
-type DisplayedHint =
-    | (S3UriBarProps["hints"][number] & {
-          action: "select-hint";
-      })
-    | {
-          type: "key-segment";
-          text: ".";
-          action: "exit-edit-mode";
-      };
-const hintMiddleEllipsisMaxLength = 58;
-const hintMiddleEllipsisHeadLength = 34;
-const hintMiddleEllipsisTailLength = 20;
-
-function collapseMiddle(text: string): string {
-    if (text.length <= hintMiddleEllipsisMaxLength) {
-        return text;
-    }
-
-    return `${text.slice(0, hintMiddleEllipsisHeadLength)}...${text.slice(
-        -hintMiddleEllipsisTailLength
-    )}`;
-}
-
-function getHintTypeLabel(
-    type: HintType,
-    t: ReturnType<typeof useTranslation>["t"]
-): string {
-    switch (type) {
-        case "key-segment":
-            return t("prefix");
-        case "bookmark-admin":
-            return t("admin bookmark");
-        case "bookmark-user":
-            return t("bookmark");
-        case "object":
-            return t("object");
-    }
-}
-
-function getHintTypeIcon(
-    type: Exclude<HintType, "bookmark-user" | "key-segment">
-): string {
-    switch (type) {
-        case "bookmark-admin":
-            return getIconUrlByName("Domain");
-        case "object":
-            return getIconUrlByName("Description");
-    }
-}
-
-function getIsBookmarkHintType(type: HintType): boolean {
-    switch (type) {
-        case "bookmark-admin":
-        case "bookmark-user":
-            return true;
-        case "key-segment":
-        case "object":
-            return false;
-    }
-}
-
-function getIsCursorAtEnd(input: HTMLInputElement): boolean {
-    const selectionStart = input.selectionStart ?? input.value.length;
-    const selectionEnd = input.selectionEnd ?? input.value.length;
-
-    return selectionStart === input.value.length && selectionEnd === input.value.length;
-}
-
-function getDisplayedHints(params: {
-    draftS3Uri: string;
-    hints: S3UriBarProps["hints"];
-    s3Uri: S3Uri | undefined;
-}): DisplayedHint[] {
-    const { draftS3Uri, hints, s3Uri } = params;
-
-    const displayedHints = hints.map<DisplayedHint>(hint => ({
-        ...hint,
-        action: "select-hint"
-    }));
-
-    if (s3Uri === undefined) {
-        const normalizedDraft = draftS3Uri.trim().toLocaleLowerCase();
-
-        return displayedHints.filter(
-            hint =>
-                getIsBookmarkHintType(hint.type) &&
-                hint.text.toLocaleLowerCase().startsWith(normalizedDraft)
-        );
-    }
-
-    if (!s3Uri.isDelimiterTerminated) {
-        return displayedHints;
-    }
-
-    if (
-        s3Uri.keySegments.length === 0 &&
-        hints.filter(hint => !getIsBookmarkHintType(hint.type)).length === 0
-    ) {
-        return displayedHints;
-    }
-
-    return [
-        {
-            type: "key-segment",
-            text: ".",
-            action: "exit-edit-mode"
-        },
-        ...displayedHints
-    ];
-}
-
-function getSeparatorTokenBetweenKinds(params: {
-    leftKind: CrumbKind;
-    rightKind: CrumbKind;
-    delimiter: string;
-}): string | undefined {
-    const { leftKind, rightKind, delimiter } = params;
-
-    if (leftKind === "root" && rightKind === "bucket") {
-        return undefined;
-    }
-
-    if (leftKind === "bucket") {
-        return "/";
-    }
-
-    return delimiter;
-}
-
-function shouldShowSeparatorAtIndex(
-    crumbs: Array<{ kind: CrumbKind }>,
-    index: number,
-    delimiter: string
-): boolean {
-    if (index >= crumbs.length - 1) {
-        return false;
-    }
-
-    return (
-        getSeparatorTokenBetweenKinds({
-            leftKind: crumbs[index].kind,
-            rightKind: crumbs[index + 1].kind,
-            delimiter
-        }) !== undefined
-    );
-}
-
-function getSeparatorCount(
-    crumbs: Array<{ kind: CrumbKind }>,
-    delimiter: string
-): number {
-    let count = 0;
-
-    for (let index = 0; index < crumbs.length - 1; index += 1) {
-        if (shouldShowSeparatorAtIndex(crumbs, index, delimiter)) {
-            count += 1;
-        }
-    }
-
-    return count;
-}
-
-function getTrailingSeparatorToken(s3Uri: S3Uri): string | undefined {
-    if (!s3Uri.isDelimiterTerminated) {
-        return undefined;
-    }
-
-    if (s3Uri.keySegments.length === 0) {
-        return "/";
-    }
-
-    return s3Uri.delimiter;
-}
-
-function getIsS3UriSameOrUnderPublicPrefix(params: {
-    s3Uri: S3Uri;
-    s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter;
-}): boolean {
-    const { s3Uri, s3Uri_publicPrefix } = params;
-
-    if (
-        s3Uri.bucket !== s3Uri_publicPrefix.bucket ||
-        s3Uri.delimiter !== s3Uri_publicPrefix.delimiter
-    ) {
-        return false;
-    }
-
-    return stringifyS3Uri(s3Uri).startsWith(stringifyS3Uri(s3Uri_publicPrefix));
-}
-
-function getIsNavigationCrumbPublic(params: {
-    crumbS3Uri: S3Uri;
-    currentS3Uri: S3Uri;
-    s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter | undefined;
-}): boolean {
-    const { crumbS3Uri, currentS3Uri, s3Uri_publicPrefix } = params;
-
-    if (s3Uri_publicPrefix === undefined) {
-        return false;
-    }
-
-    if (
-        !getIsS3UriSameOrUnderPublicPrefix({
-            s3Uri: currentS3Uri,
-            s3Uri_publicPrefix
-        })
-    ) {
-        return false;
-    }
-
-    return getIsS3UriSameOrUnderPublicPrefix({
-        s3Uri: crumbS3Uri,
-        s3Uri_publicPrefix
-    });
-}
-
-function getSeparatorWidthForKinds(params: {
-    leftKind: CrumbKind;
-    rightKind: CrumbKind;
-    delimiter: string;
-    slashSeparatorWidth: number;
-    delimiterSeparatorWidth: number;
-}): number {
-    const {
-        leftKind,
-        rightKind,
-        delimiter,
-        slashSeparatorWidth,
-        delimiterSeparatorWidth
-    } = params;
-    const token = getSeparatorTokenBetweenKinds({
-        leftKind,
-        rightKind,
-        delimiter
-    });
-
-    if (token === undefined) {
-        return 0;
-    }
-
-    return token === "/" ? slashSeparatorWidth : delimiterSeparatorWidth;
-}
-
-function getBucketRootPrefix(params: { bucket: string; delimiter: string }): S3Uri {
-    const { bucket, delimiter } = params;
-
-    return {
-        bucket,
-        delimiter,
-        keySegments: [],
-        isDelimiterTerminated: true
-    };
-}
-
-function tryParseS3Uri(params: { s3Uri: string; delimiter: string }): S3Uri | undefined {
-    const { s3Uri, delimiter } = params;
-
-    try {
-        return parseS3Uri({
-            value: s3Uri,
-            delimiter
-        });
-    } catch {
-        return undefined;
-    }
-}
-
-function getCanonicalS3UriValue(s3Uri: S3Uri | undefined): string {
-    return s3Uri === undefined ? defaultDraftS3Uri : stringifyS3Uri(s3Uri);
-}
-
-function getBreadcrumbs(params: { s3Uri: S3Uri }): NavigationCrumb[] {
-    const { s3Uri } = params;
-    const { bucket, delimiter } = s3Uri;
-    const bucketRootS3Uri = getBucketRootPrefix({ bucket, delimiter });
-
-    const segmentLabels = s3Uri.keySegments;
-
-    const crumbs: NavigationCrumb[] = [
-        {
-            label: "s3://",
-            kind: "root",
-            s3Uri: bucketRootS3Uri,
-            isCurrent: false
-        },
-        {
-            label: bucket,
-            kind: "bucket",
-            s3Uri: bucketRootS3Uri,
-            isCurrent: segmentLabels.length === 0
-        }
-    ];
-
-    segmentLabels.forEach((segmentLabel, index) => {
-        const isLast = index === segmentLabels.length - 1;
-
-        const segmentS3Uri: S3Uri = {
-            bucket,
-            delimiter,
-            keySegments: segmentLabels.slice(0, index + 1),
-            isDelimiterTerminated: isLast ? s3Uri.isDelimiterTerminated : true
-        };
-
-        crumbs.push({
-            label: segmentLabel,
-            kind: "segment",
-            s3Uri: segmentS3Uri,
-            isCurrent: isLast
-        });
-    });
-
-    return crumbs;
-}
 
 export function S3UriBar(props: S3UriBarProps) {
     const {
@@ -406,7 +63,8 @@ export function S3UriBar(props: S3UriBarProps) {
         hints,
         areHintsLoading,
         isBookmarked,
-        onToggleBookmark
+        onToggleBookmark,
+        evtAction
     } = props;
 
     const currentS3Uri = s3Uri?.s3Uri;
@@ -438,7 +96,7 @@ export function S3UriBar(props: S3UriBarProps) {
     const [copyFeedback, setCopyFeedback] = useState<
         { value: string; copiedAt: number } | undefined
     >(undefined);
-    const isCopied = currentS3Uri !== undefined && copyFeedback?.value === canonicalS3Uri;
+    const isCopied = copyFeedback !== undefined;
     const crumbs = useMemo(
         () => (isUndefinedPrefixMode ? [] : getBreadcrumbs({ s3Uri: normalizedS3Uri })),
         [isUndefinedPrefixMode, normalizedS3Uri]
@@ -510,6 +168,23 @@ export function S3UriBar(props: S3UriBarProps) {
     const isInactiveHomeState = isUndefinedPrefixMode && !isEditing;
     const { classes, cx } = useStyles({ isEditing });
     const { t } = useTranslation({ S3UriBar });
+
+    const displayCopyFeedback = useCallback((s3Uri: S3Uri) => {
+        setCopyFeedback({
+            value: stringifyS3Uri(s3Uri),
+            copiedAt: Date.now()
+        });
+    }, []);
+
+    useEvt(
+        ctx => {
+            evtAction?.pipe(ctx).attach(
+                data => data.action === "display copy feedback",
+                ({ s3Uri }) => displayCopyFeedback(s3Uri)
+            );
+        },
+        [displayCopyFeedback, evtAction]
+    );
 
     const syncInputCursorState = useCallback(
         (input: HTMLInputElement | null = inputRef.current) => {
@@ -1347,17 +1022,17 @@ export function S3UriBar(props: S3UriBarProps) {
                             }
                         />
                     </div>
-                ) : isCopied && currentS3Uri !== undefined ? (
+                ) : copyFeedback !== undefined ? (
                     <div
                         className={classes.copiedPathDisplay}
                         data-s3-uri-ignore-edit="true"
                         aria-label={t("copied path", {
-                            s3Uri: stringifyS3Uri(currentS3Uri)
+                            s3Uri: copyFeedback.value
                         })}
                     >
                         <Icon icon={getIconUrlByName("ContentCopy")} size="extra small" />
                         <span className={classes.copiedPathText}>
-                            {stringifyS3Uri(currentS3Uri)}
+                            {copyFeedback.value}
                         </span>
                     </div>
                 ) : isInactiveHomeState ? (
@@ -1703,10 +1378,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                         const value = stringifyS3Uri(currentS3Uri);
 
                                         await copyToClipboard(value);
-                                        setCopyFeedback({
-                                            value,
-                                            copiedAt: Date.now()
-                                        });
+                                        displayCopyFeedback(currentS3Uri);
                                     }}
                                     className={classes.actionButton}
                                 />
@@ -2356,3 +2028,352 @@ const { i18n } = declareComponentKeys<
     | "listing"
 >()({ S3UriBar });
 export type I18n = typeof i18n;
+
+type NavigationCrumb = {
+    label: string;
+    kind: "root" | "bucket" | "segment";
+    s3Uri: S3Uri;
+    isCurrent: boolean;
+};
+
+type DisplayCrumb =
+    | NavigationCrumb
+    | {
+          label: "...";
+          kind: "ellipsis";
+      };
+
+type DisplayCrumbItem = {
+    crumb: DisplayCrumb;
+    index: number;
+    isPublic: boolean;
+    isPublicStart: boolean;
+};
+
+type NavigationCrumbItem = {
+    crumb: NavigationCrumb;
+    index: number;
+    isPublic: boolean;
+    isPublicStart: boolean;
+};
+
+const longPressDelayMs = 200;
+const hintsPanelHorizontalEdgePaddingPx = 8;
+const hintsPanelVerticalOffsetPx = 6;
+const hintsPanelFallbackWidthPx = 280;
+const defaultDraftS3Uri = "s3://";
+type CrumbKind = DisplayCrumb["kind"];
+type HintType = S3UriBarProps["hints"][number]["type"];
+type DisplayedHint =
+    | (S3UriBarProps["hints"][number] & {
+          action: "select-hint";
+      })
+    | {
+          type: "key-segment";
+          text: ".";
+          action: "exit-edit-mode";
+      };
+const hintMiddleEllipsisMaxLength = 58;
+const hintMiddleEllipsisHeadLength = 34;
+const hintMiddleEllipsisTailLength = 20;
+
+function collapseMiddle(text: string): string {
+    if (text.length <= hintMiddleEllipsisMaxLength) {
+        return text;
+    }
+
+    return `${text.slice(0, hintMiddleEllipsisHeadLength)}...${text.slice(
+        -hintMiddleEllipsisTailLength
+    )}`;
+}
+
+function getHintTypeLabel(
+    type: HintType,
+    t: ReturnType<typeof useTranslation>["t"]
+): string {
+    switch (type) {
+        case "key-segment":
+            return t("prefix");
+        case "bookmark-admin":
+            return t("admin bookmark");
+        case "bookmark-user":
+            return t("bookmark");
+        case "object":
+            return t("object");
+    }
+}
+
+function getHintTypeIcon(
+    type: Exclude<HintType, "bookmark-user" | "key-segment">
+): string {
+    switch (type) {
+        case "bookmark-admin":
+            return getIconUrlByName("Domain");
+        case "object":
+            return getIconUrlByName("Description");
+    }
+}
+
+function getIsBookmarkHintType(type: HintType): boolean {
+    switch (type) {
+        case "bookmark-admin":
+        case "bookmark-user":
+            return true;
+        case "key-segment":
+        case "object":
+            return false;
+    }
+}
+
+function getIsCursorAtEnd(input: HTMLInputElement): boolean {
+    const selectionStart = input.selectionStart ?? input.value.length;
+    const selectionEnd = input.selectionEnd ?? input.value.length;
+
+    return selectionStart === input.value.length && selectionEnd === input.value.length;
+}
+
+function getDisplayedHints(params: {
+    draftS3Uri: string;
+    hints: S3UriBarProps["hints"];
+    s3Uri: S3Uri | undefined;
+}): DisplayedHint[] {
+    const { draftS3Uri, hints, s3Uri } = params;
+
+    const displayedHints = hints.map<DisplayedHint>(hint => ({
+        ...hint,
+        action: "select-hint"
+    }));
+
+    if (s3Uri === undefined) {
+        const normalizedDraft = draftS3Uri.trim().toLocaleLowerCase();
+
+        return displayedHints.filter(
+            hint =>
+                getIsBookmarkHintType(hint.type) &&
+                hint.text.toLocaleLowerCase().startsWith(normalizedDraft)
+        );
+    }
+
+    if (!s3Uri.isDelimiterTerminated) {
+        return displayedHints;
+    }
+
+    if (
+        s3Uri.keySegments.length === 0 &&
+        hints.filter(hint => !getIsBookmarkHintType(hint.type)).length === 0
+    ) {
+        return displayedHints;
+    }
+
+    return [
+        {
+            type: "key-segment",
+            text: ".",
+            action: "exit-edit-mode"
+        },
+        ...displayedHints
+    ];
+}
+
+function getSeparatorTokenBetweenKinds(params: {
+    leftKind: CrumbKind;
+    rightKind: CrumbKind;
+    delimiter: string;
+}): string | undefined {
+    const { leftKind, rightKind, delimiter } = params;
+
+    if (leftKind === "root" && rightKind === "bucket") {
+        return undefined;
+    }
+
+    if (leftKind === "bucket") {
+        return "/";
+    }
+
+    return delimiter;
+}
+
+function shouldShowSeparatorAtIndex(
+    crumbs: Array<{ kind: CrumbKind }>,
+    index: number,
+    delimiter: string
+): boolean {
+    if (index >= crumbs.length - 1) {
+        return false;
+    }
+
+    return (
+        getSeparatorTokenBetweenKinds({
+            leftKind: crumbs[index].kind,
+            rightKind: crumbs[index + 1].kind,
+            delimiter
+        }) !== undefined
+    );
+}
+
+function getSeparatorCount(
+    crumbs: Array<{ kind: CrumbKind }>,
+    delimiter: string
+): number {
+    let count = 0;
+
+    for (let index = 0; index < crumbs.length - 1; index += 1) {
+        if (shouldShowSeparatorAtIndex(crumbs, index, delimiter)) {
+            count += 1;
+        }
+    }
+
+    return count;
+}
+
+function getTrailingSeparatorToken(s3Uri: S3Uri): string | undefined {
+    if (!s3Uri.isDelimiterTerminated) {
+        return undefined;
+    }
+
+    if (s3Uri.keySegments.length === 0) {
+        return "/";
+    }
+
+    return s3Uri.delimiter;
+}
+
+function getIsS3UriSameOrUnderPublicPrefix(params: {
+    s3Uri: S3Uri;
+    s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter;
+}): boolean {
+    const { s3Uri, s3Uri_publicPrefix } = params;
+
+    if (
+        s3Uri.bucket !== s3Uri_publicPrefix.bucket ||
+        s3Uri.delimiter !== s3Uri_publicPrefix.delimiter
+    ) {
+        return false;
+    }
+
+    return stringifyS3Uri(s3Uri).startsWith(stringifyS3Uri(s3Uri_publicPrefix));
+}
+
+function getIsNavigationCrumbPublic(params: {
+    crumbS3Uri: S3Uri;
+    currentS3Uri: S3Uri;
+    s3Uri_publicPrefix: S3Uri.TerminatedByDelimiter | undefined;
+}): boolean {
+    const { crumbS3Uri, currentS3Uri, s3Uri_publicPrefix } = params;
+
+    if (s3Uri_publicPrefix === undefined) {
+        return false;
+    }
+
+    if (
+        !getIsS3UriSameOrUnderPublicPrefix({
+            s3Uri: currentS3Uri,
+            s3Uri_publicPrefix
+        })
+    ) {
+        return false;
+    }
+
+    return getIsS3UriSameOrUnderPublicPrefix({
+        s3Uri: crumbS3Uri,
+        s3Uri_publicPrefix
+    });
+}
+
+function getSeparatorWidthForKinds(params: {
+    leftKind: CrumbKind;
+    rightKind: CrumbKind;
+    delimiter: string;
+    slashSeparatorWidth: number;
+    delimiterSeparatorWidth: number;
+}): number {
+    const {
+        leftKind,
+        rightKind,
+        delimiter,
+        slashSeparatorWidth,
+        delimiterSeparatorWidth
+    } = params;
+    const token = getSeparatorTokenBetweenKinds({
+        leftKind,
+        rightKind,
+        delimiter
+    });
+
+    if (token === undefined) {
+        return 0;
+    }
+
+    return token === "/" ? slashSeparatorWidth : delimiterSeparatorWidth;
+}
+
+function getBucketRootPrefix(params: { bucket: string; delimiter: string }): S3Uri {
+    const { bucket, delimiter } = params;
+
+    return {
+        bucket,
+        delimiter,
+        keySegments: [],
+        isDelimiterTerminated: true
+    };
+}
+
+function tryParseS3Uri(params: { s3Uri: string; delimiter: string }): S3Uri | undefined {
+    const { s3Uri, delimiter } = params;
+
+    try {
+        return parseS3Uri({
+            value: s3Uri,
+            delimiter
+        });
+    } catch {
+        return undefined;
+    }
+}
+
+function getCanonicalS3UriValue(s3Uri: S3Uri | undefined): string {
+    return s3Uri === undefined ? defaultDraftS3Uri : stringifyS3Uri(s3Uri);
+}
+
+function getBreadcrumbs(params: { s3Uri: S3Uri }): NavigationCrumb[] {
+    const { s3Uri } = params;
+    const { bucket, delimiter } = s3Uri;
+    const bucketRootS3Uri = getBucketRootPrefix({ bucket, delimiter });
+
+    const segmentLabels = s3Uri.keySegments;
+
+    const crumbs: NavigationCrumb[] = [
+        {
+            label: "s3://",
+            kind: "root",
+            s3Uri: bucketRootS3Uri,
+            isCurrent: false
+        },
+        {
+            label: bucket,
+            kind: "bucket",
+            s3Uri: bucketRootS3Uri,
+            isCurrent: segmentLabels.length === 0
+        }
+    ];
+
+    segmentLabels.forEach((segmentLabel, index) => {
+        const isLast = index === segmentLabels.length - 1;
+
+        const segmentS3Uri: S3Uri = {
+            bucket,
+            delimiter,
+            keySegments: segmentLabels.slice(0, index + 1),
+            isDelimiterTerminated: isLast ? s3Uri.isDelimiterTerminated : true
+        };
+
+        crumbs.push({
+            label: segmentLabel,
+            kind: "segment",
+            s3Uri: segmentS3Uri,
+            isCurrent: isLast
+        });
+    });
+
+    return crumbs;
+}

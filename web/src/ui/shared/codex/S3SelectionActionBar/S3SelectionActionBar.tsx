@@ -6,7 +6,6 @@ import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 export type S3SelectionActionBarProps = {
     className?: string;
@@ -26,6 +25,7 @@ export type S3SelectionActionBarProps = {
     copyS3Uri:
         | {
               s3UriStr: string;
+              callback: () => void;
           }
         | undefined;
     bookmark:
@@ -141,9 +141,9 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
             onClick:
                 copyS3Uri === undefined
                     ? undefined
-                    : async () => {
-                          await copyToClipboard(copyS3Uri.s3UriStr);
+                    : () => {
                           setIsS3UriCopied(true);
+                          copyS3Uri.callback();
                       },
             tooltipTitle:
                 copyS3Uri === undefined ? undefined : isS3UriCopied ? (

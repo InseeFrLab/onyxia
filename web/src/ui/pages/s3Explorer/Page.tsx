@@ -99,6 +99,13 @@ function S3Explorer() {
         Evt.create<"CHOSE FILES TO UPLOAD">()
     );
 
+    const evtS3UriBarAction = useConst(() =>
+        Evt.create<{
+            action: "display copy feedback";
+            s3Uri: S3Uri;
+        }>()
+    );
+
     const {
         functions: { s3ExplorerUiController },
         evts: { evtS3ExplorerUiController }
@@ -407,6 +414,7 @@ function S3Explorer() {
                                     isBookmarked={
                                         mainView.uriBar.bookmarkStatus.isBookmarked
                                     }
+                                    evtAction={evtS3UriBarAction}
                                 />
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("UploadFileOutlined")}
@@ -526,6 +534,12 @@ function S3Explorer() {
                                     )}
                                     evtAction={evtS3ExplorerMainViewAction}
                                     isUploadDisabled={mainView.isUploadButtonDisabled}
+                                    onDisplayCopyFeedback={({ s3Uri }) =>
+                                        evtS3UriBarAction.post({
+                                            action: "display copy feedback",
+                                            s3Uri
+                                        })
+                                    }
                                 />
                             )}
                             {mainView.fullyQualifiedUri.isFullyQualifiedUri &&

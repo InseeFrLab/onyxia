@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { useEffect, useMemo, useState } from "react";
 import { userEvent, within } from "@storybook/test";
+import { Evt } from "evt";
+import { useConst } from "powerhooks";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3UriBar, type S3UriBarProps } from "./S3UriBar";
 
@@ -133,6 +135,38 @@ function StatefulS3UriBar(args: S3UriBarProps) {
     );
 }
 
+function ImperativeCopyFeedbackStory(args: S3UriBarProps) {
+    const evtAction = useConst(() =>
+        Evt.create<{
+            action: "display copy feedback";
+            s3Uri: S3Uri;
+        }>()
+    );
+    const feedbackS3Uri = useMemo(
+        () => parsePrefixOrThrow("s3://analytics-data/exports/manual-copy.csv"),
+        []
+    );
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <StatefulS3UriBar {...args} evtAction={evtAction} />
+            <button
+                type="button"
+                style={{ width: "fit-content" }}
+                onClick={() => {
+                    evtAction.post({
+                        action: "display copy feedback",
+                        s3Uri: feedbackS3Uri
+                    });
+                    action("displayCopyFeedback")(stringifyS3Uri(feedbackS3Uri));
+                }}
+            >
+                Display External Copy Feedback
+            </button>
+        </div>
+    );
+}
+
 const baseArgs: S3UriBarProps = {
     s3Uri: parseS3UriBarS3Uri({
         s3Uri: "s3://analytics-data/exports/2024/quarter-1/report.csv"
@@ -162,7 +196,8 @@ const baseArgs: S3UriBarProps = {
     ],
     areHintsLoading: false,
     isBookmarked: false,
-    onToggleBookmark: action("toggleBookmark")
+    onToggleBookmark: action("toggleBookmark"),
+    evtAction: Evt.create<{ action: "display copy feedback"; s3Uri: S3Uri }>()
 };
 
 export const NavigationMode: Story = {
@@ -184,6 +219,20 @@ export const CopyActionWithInternalFeedback: Story = {
         }
     },
     render: args => <StatefulS3UriBar {...args} />
+};
+
+export const CopyFeedbackFromImperativeSignal: Story = {
+    args: {
+        ...baseArgs
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: "The parent can post an imperative action after it has copied a URI elsewhere. The bar only displays feedback for the provided URI; it does not write to the clipboard."
+            }
+        }
+    },
+    render: args => <ImperativeCopyFeedbackStory {...args} />
 };
 
 export const ActiveBreadcrumbState: Story = {
@@ -545,6 +594,13 @@ function ControlledS3UriBarStory() {
     const isBookmarked =
         currentS3Uri !== undefined && bookmarkedS3Uris.includes(currentS3Uri);
 
+    const evtAction = useConst(() =>
+        Evt.create<{
+            action: "display copy feedback";
+            s3Uri: S3Uri;
+        }>()
+    );
+
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <S3UriBar
@@ -577,6 +633,7 @@ function ControlledS3UriBarStory() {
                     );
                     action("toggleBookmark")(currentS3Uri);
                 }}
+                evtAction={evtAction}
             />
 
             <div
@@ -602,6 +659,13 @@ function UndefinedPrefixLockedEditingStory() {
     const [s3Uri, setS3Uri] = useState<S3Uri | undefined>(undefined);
     const [lastCommittedS3Uri, setLastCommittedS3Uri] = useState<string | undefined>(
         undefined
+    );
+
+    const evtAction = useConst(() =>
+        Evt.create<{
+            action: "display copy feedback";
+            s3Uri: S3Uri;
+        }>()
     );
 
     return (
@@ -644,6 +708,7 @@ function UndefinedPrefixLockedEditingStory() {
                     });
                 }}
                 onToggleBookmark={undefined}
+                evtAction={evtAction}
             />
 
             <button

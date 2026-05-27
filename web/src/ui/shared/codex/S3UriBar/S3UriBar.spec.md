@@ -24,6 +24,8 @@ The component is responsible for:
 
 - Copying the current S3 URI to the clipboard when the user activates the copy action.
 - Showing and clearing its own copied feedback. Parent code does not provide copied state and does not receive a copy callback.
+- Showing the same copied feedback when the parent emits an imperative copy-feedback action for a provided S3 URI.
+- The imperative copy-feedback action must not perform clipboard writes. It is only visual feedback for copy work already handled outside of this component.
 
 ## Modes
 
@@ -35,6 +37,14 @@ The component has two modes:
 ## Props Contract
 
 ```ts
+import type { NonPostableEvt } from "evt";
+import type { S3Uri } from "core/tools/S3Uri";
+
+export type S3UriBarAction = {
+    action: "display copy feedback";
+    s3Uri: S3Uri;
+};
+
 export type S3UriBarProps = {
     className?: string;
 
@@ -158,6 +168,19 @@ export type S3UriBarProps = {
      * Can be undefined when bookmarks are not editable in the current context.
      */
     onToggleBookmark?: (props: { s3Uri: S3Uri }) => void;
+
+    /**
+     * Optional imperative action bus.
+     *
+     * Supported action:
+     * - { action: "display copy feedback", s3Uri }
+     *
+     * This lets a parent display copied feedback in the bar after an external copy
+     * operation, for example copying a selected object from another toolbar.
+     * The component must only display feedback for the provided URI. It must not
+     * call copyToClipboard in response to this action.
+     */
+    evtAction?: NonPostableEvt<S3UriBarAction>;
 };
 ```
 
@@ -170,6 +193,7 @@ export type S3UriBarProps = {
     - For `s3://bucket/a/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because the current crumb is the public prefix itself.
     - Copy button click => stringify the current S3 URI and copy it with `copyToClipboard`.
     - Copied feedback is internal to the component and should reset after a short delay or when the current S3 URI changes.
+    - `evtAction` `{ action: "display copy feedback", s3Uri }` => stringify the provided S3 URI and display copied feedback without calling `copyToClipboard`.
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
     - Segment short click => request navigation (`onS3UriChange`).

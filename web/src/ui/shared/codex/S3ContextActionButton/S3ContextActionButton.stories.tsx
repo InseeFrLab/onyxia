@@ -5,6 +5,7 @@ import { parseS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3UriBar, type S3UriBarProps } from "../S3UriBar";
 import { S3ContextActionButton } from "./S3ContextActionButton";
 import { getIconUrlByName } from "lazy-icons";
+import { Evt } from "evt";
 
 const meta = {
     title: "Shared/S3ContextActionButton",
@@ -77,7 +78,11 @@ const baseArgs: S3UriBarProps = {
     ],
     areHintsLoading: false,
     isBookmarked: false,
-    onToggleBookmark: action("toggleBookmark")
+    onToggleBookmark: action("toggleBookmark"),
+    evtAction: Evt.create<{
+        action: "display copy feedback";
+        s3Uri: S3Uri;
+    }>()
 };
 
 function ComposedHeader() {
