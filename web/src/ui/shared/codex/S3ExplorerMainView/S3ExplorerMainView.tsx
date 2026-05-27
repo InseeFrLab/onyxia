@@ -108,1025 +108,6 @@ export namespace S3ExplorerMainViewProps {
     }
 }
 
-type SortState = {
-    key: "name" | "size" | "lastModified";
-    direction: "asc" | "desc";
-};
-
-export type DeleteDialogState = {
-    items: S3ExplorerMainViewProps.Item[];
-};
-
-type PrefixPolicyAction = Parameters<
-    S3ExplorerMainViewProps["onChangePrefixPolicy"]
->[0]["action"];
-
-type ObjectToUpload = Parameters<
-    S3ExplorerMainViewProps["onPutObjects"]
->[0]["files"][number];
-
-type DataTransferItemWithWebkitGetAsEntry = DataTransferItem & {
-    webkitGetAsEntry?: () => FileSystemEntryLike | null;
-};
-
-type FileSystemEntryLike = {
-    readonly isFile: boolean;
-    readonly isDirectory: boolean;
-    readonly name: string;
-};
-
-type FileSystemFileEntryLike = FileSystemEntryLike & {
-    readonly isFile: true;
-    readonly isDirectory: false;
-    file: (
-        successCallback: (file: File) => void,
-        errorCallback?: (error: DOMException) => void
-    ) => void;
-};
-
-type FileSystemDirectoryEntryLike = FileSystemEntryLike & {
-    readonly isFile: false;
-    readonly isDirectory: true;
-    createReader: () => FileSystemDirectoryReaderLike;
-};
-
-type FileSystemDirectoryReaderLike = {
-    readEntries: (
-        successCallback: (entries: FileSystemEntryLike[]) => void,
-        errorCallback?: (error: DOMException) => void
-    ) => void;
-};
-
-function getItemKey(item: S3ExplorerMainViewProps.Item): string {
-    return stringifyS3Uri(item.s3Uri);
-}
-
-function tryApplyPendingPreSelection(params: {
-    isListing: boolean;
-    listedPrefix: S3ExplorerMainViewProps["listedPrefix"];
-    pendingPreSelectedS3UriRef: MutableRefObject<
-        S3Uri.NonTerminatedByDelimiter | undefined
-    >;
-    lastSelectedItemKeyRef: MutableRefObject<string | undefined>;
-    setSelectedItemKeys: Dispatch<SetStateAction<string[]>>;
-}) {
-    const {
-        isListing,
-        listedPrefix,
-        pendingPreSelectedS3UriRef,
-        lastSelectedItemKeyRef,
-        setSelectedItemKeys
-    } = params;
-
-    if (listedPrefix.isErrored || isListing) {
-        return;
-    }
-
-    const pendingPreSelectedS3Uri = pendingPreSelectedS3UriRef.current;
-
-    if (pendingPreSelectedS3Uri === undefined) {
-        return;
-    }
-
-    const preSelectedItemKey = stringifyS3Uri(pendingPreSelectedS3Uri);
-    const hasMatchingItem = listedPrefix.items.some(
-        item =>
-            item.type === "object" &&
-            !item.isDeleting &&
-            getItemKey(item) === preSelectedItemKey
-    );
-
-    if (!hasMatchingItem) {
-        return;
-    }
-
-    setSelectedItemKeys([preSelectedItemKey]);
-    lastSelectedItemKeyRef.current = preSelectedItemKey;
-    pendingPreSelectedS3UriRef.current = undefined;
-}
-
-function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
-    return files.map(file => {
-        const relativePathSegments = file.webkitRelativePath
-            .split("/")
-            .filter(Boolean)
-            .slice(0, -1);
-
-        return {
-            relativePathSegments,
-            fileBasename: file.name,
-            blob: file as Blob
-        };
-    });
-}
-
-function getFileSystemEntry(item: DataTransferItem): FileSystemEntryLike | null {
-    return (item as DataTransferItemWithWebkitGetAsEntry).webkitGetAsEntry?.() ?? null;
-}
-
-function getHasDraggedFiles(dataTransfer: DataTransfer): boolean {
-    if (dataTransfer.items.length !== 0) {
-        return Array.from(dataTransfer.items).some(item => item.kind === "file");
-    }
-
-    return dataTransfer.types.includes("Files");
-}
-
-function readFileEntry(entry: FileSystemFileEntryLike): Promise<File> {
-    return new Promise((resolve, reject) => entry.file(resolve, error => reject(error)));
-}
-
-function readDirectoryEntries(
-    entry: FileSystemDirectoryEntryLike
-): Promise<FileSystemEntryLike[]> {
-    const reader = entry.createReader();
-    const entries: FileSystemEntryLike[] = [];
-
-    return new Promise((resolve, reject) => {
-        const readNextBatch = () => {
-            reader.readEntries(
-                batch => {
-                    if (batch.length === 0) {
-                        resolve(entries);
-                        return;
-                    }
-
-                    entries.push(...batch);
-                    readNextBatch();
-                },
-                error => reject(error)
-            );
-        };
-
-        readNextBatch();
-    });
-}
-
-async function getObjectsToUploadFromFileSystemEntry(params: {
-    entry: FileSystemEntryLike;
-    relativePathSegments: string[];
-}): Promise<ObjectToUpload[]> {
-    const { entry, relativePathSegments } = params;
-
-    if (entry.isFile) {
-        const file = await readFileEntry(entry as FileSystemFileEntryLike);
-
-        return [
-            {
-                relativePathSegments: [...relativePathSegments],
-                fileBasename: file.name,
-                blob: file
-            }
-        ];
-    }
-
-    const directoryEntry = entry as FileSystemDirectoryEntryLike;
-    const childEntries = await readDirectoryEntries(directoryEntry);
-    const childRelativePathSegments = [...relativePathSegments, directoryEntry.name];
-
-    return (
-        await Promise.all(
-            childEntries.map(childEntry =>
-                getObjectsToUploadFromFileSystemEntry({
-                    entry: childEntry,
-                    relativePathSegments: childRelativePathSegments
-                })
-            )
-        )
-    ).flat();
-}
-
-async function getObjectsToUploadFromDroppedItems(params: {
-    items: readonly DataTransferItem[];
-    files: readonly File[];
-}): Promise<ObjectToUpload[]> {
-    const { items, files } = params;
-    const fileItems = items.filter(
-        (item): item is DataTransferItem => item.kind === "file"
-    );
-    const itemsWithEntries = fileItems.map(item => ({
-        item,
-        entry: getFileSystemEntry(item)
-    }));
-    const hasFileSystemEntrySupport = itemsWithEntries.some(
-        ({ entry }) => entry !== null
-    );
-
-    const droppedObjects = (
-        await Promise.all(
-            itemsWithEntries.map(async ({ item, entry }) => {
-                if (entry !== null) {
-                    return getObjectsToUploadFromFileSystemEntry({
-                        entry,
-                        relativePathSegments: []
-                    });
-                }
-
-                const file = item.getAsFile();
-
-                if (file === null) {
-                    return [];
-                }
-
-                return getObjectsToUploadFromFiles([file]);
-            })
-        )
-    ).flat();
-
-    if (hasFileSystemEntrySupport) {
-        return droppedObjects;
-    }
-
-    return getObjectsToUploadFromFiles(files);
-}
-
-function getFormattedSize(size: number): string {
-    return bytes(size) ?? `${size}B`;
-}
-
-function getDayStamp(date: Date): number {
-    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getFormattedLastModified(params: {
-    time: number;
-    t: ReturnType<typeof useTranslation>["t"];
-}): string {
-    const { time, t } = params;
-
-    const date = new Date(time);
-    const today = new Date();
-    const diffDays = Math.floor(
-        (getDayStamp(today) - getDayStamp(date)) / (24 * 60 * 60 * 1000)
-    );
-
-    if (diffDays === 0) {
-        return t("today");
-    }
-
-    if (diffDays === 1) {
-        return t("yesterday");
-    }
-
-    return new Intl.DateTimeFormat(undefined, {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    }).format(date);
-}
-
-function getProgressPercent(item: S3ExplorerMainViewProps.Item): number | undefined {
-    if (item.uploadProgressPercent === undefined) {
-        return undefined;
-    }
-
-    if (!Number.isFinite(item.uploadProgressPercent)) {
-        return undefined;
-    }
-
-    return Math.max(0, Math.min(100, item.uploadProgressPercent));
-}
-
-function getIsItemActionAvailable(item: S3ExplorerMainViewProps.Item): boolean {
-    if (item.isDeleting) {
-        return false;
-    }
-
-    const progressPercent = getProgressPercent(item);
-
-    return progressPercent === undefined || progressPercent === 100;
-}
-
-function getPrefixPolicyAction(
-    item: S3ExplorerMainViewProps.Item
-): PrefixPolicyAction | undefined {
-    if (item.type !== "prefix segment") {
-        return undefined;
-    }
-
-    if (item.policy.isPublic) {
-        return "undo make public";
-    }
-
-    if (item.policy.canBeMadePublic) {
-        return "make public";
-    }
-
-    return undefined;
-}
-
-function getPrefixPolicyActionLabel(
-    action: PrefixPolicyAction,
-    t: ReturnType<typeof useTranslation>["t"]
-): string {
-    return action === "make public" ? t("make public") : t("make private");
-}
-
-function getPrefixPolicyActionIconName(
-    action: PrefixPolicyAction
-): "Public" | "PublicOff" {
-    return action === "make public" ? "Public" : "PublicOff";
-}
-
-function getSortedItems(params: {
-    items: S3ExplorerMainViewProps.Item[];
-    sortState: SortState;
-}): S3ExplorerMainViewProps.Item[] {
-    const { items, sortState } = params;
-
-    return [...items].sort((a, b) => {
-        if (a.type !== b.type) {
-            return a.type === "prefix segment" ? -1 : 1;
-        }
-
-        if (a.type === "prefix segment" && b.type === "prefix segment") {
-            return a.displayName.localeCompare(b.displayName);
-        }
-
-        assert(a.type === "object");
-        assert(b.type === "object");
-
-        const directionMultiplier = sortState.direction === "asc" ? 1 : -1;
-
-        let comparison = 0;
-
-        switch (sortState.key) {
-            case "name":
-                comparison = a.displayName.localeCompare(b.displayName);
-                break;
-            case "size":
-                comparison = a.size - b.size;
-                break;
-            case "lastModified":
-                comparison = a.lastModified - b.lastModified;
-                break;
-        }
-
-        if (comparison === 0) {
-            comparison = a.displayName.localeCompare(b.displayName);
-        }
-
-        return comparison * directionMultiplier;
-    });
-}
-
-function getSortIndicatorProps(params: { sortState: SortState; key: SortState["key"] }) {
-    const { sortState, key } = params;
-
-    const isActive = sortState.key === key;
-
-    return {
-        isActive,
-        ariaSort: isActive
-            ? sortState.direction === "asc"
-                ? "ascending"
-                : "descending"
-            : "none",
-        icon: getIconUrlByName(
-            !isActive
-                ? "UnfoldMore"
-                : sortState.direction === "asc"
-                  ? "ArrowUpward"
-                  : "ArrowDownward"
-        )
-    } as const;
-}
-
-function CreateDirectoryDialog(props: {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (params: { prefixSegment: string }) => void;
-}) {
-    const { open, onClose, onSubmit } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
-
-    const [draft, setDraft] = useState("");
-    const [isDraftValid, setIsDraftValid] = useState(false);
-
-    useEffect(() => {
-        if (!open) {
-            return;
-        }
-
-        setDraft("");
-        setIsDraftValid(false);
-    }, [open]);
-
-    const submit = () => {
-        const trimmedDraft = draft.trim();
-
-        if (trimmedDraft === "") {
-            return;
-        }
-
-        onSubmit({
-            prefixSegment: trimmedDraft
-        });
-    };
-
-    return (
-        <Dialog
-            isOpen={open}
-            onClose={onClose}
-            title={t("create prefix dialog title")}
-            subtitle={t("create prefix dialog subtitle")}
-            body={
-                open && (
-                    <S3DialogTextInput
-                        autoFocus={true}
-                        label={t("prefix name field label")}
-                        value={draft}
-                        error={
-                            !isDraftValid && draft !== ""
-                                ? t("prefix name empty error")
-                                : undefined
-                        }
-                        onChange={value => {
-                            setDraft(value);
-                            setIsDraftValid(value.trim() !== "");
-                        }}
-                        onEnterKeyDown={() => {
-                            if (isDraftValid) {
-                                submit();
-                            }
-                        }}
-                    />
-                )
-            }
-            buttons={
-                <>
-                    <Button variant="secondary" onClick={onClose}>
-                        {t("cancel")}
-                    </Button>
-                    <Button
-                        disabled={!isDraftValid}
-                        onClick={isDraftValid ? submit : undefined}
-                    >
-                        {t("create prefix")}
-                    </Button>
-                </>
-            }
-        />
-    );
-}
-
-export function DeleteSelectionDialog(props: {
-    state: DeleteDialogState | undefined;
-    onClose: () => void;
-    onConfirm: () => void;
-}) {
-    const { state, onClose, onConfirm } = props;
-    const { t } = useTranslation({ S3ExplorerMainView });
-    const dialogClasses = useS3DialogClasses();
-    const { classes } = useStyles_DeleteSelectionDialog();
-
-    return (
-        <Dialog
-            isOpen={state !== undefined}
-            onClose={onClose}
-            className={dialogClasses.paper}
-            maxWidth={false}
-            muiDialogClasses={{ root: dialogClasses.overlayRoot }}
-            title={t("delete selection dialog title")}
-            subtitle={t("delete selection dialog subtitle")}
-            classes={{
-                title: dialogClasses.title,
-                subtitle: dialogClasses.subtitle,
-                body: dialogClasses.body,
-                buttons: dialogClasses.buttons
-            }}
-            body={
-                state !== undefined && (
-                    <div className={classes.body}>
-                        <div className={classes.description}>
-                            {t("delete selection dialog body", {
-                                count: state.items.length
-                            })}
-                        </div>
-                        <div className={classes.itemList}>
-                            {state.items.map(item => (
-                                <S3DialogItemSummary
-                                    key={getItemKey(item)}
-                                    name={`${item.displayName}${
-                                        item.type === "prefix segment" ? "/" : ""
-                                    }`}
-                                    icon={
-                                        item.type === "prefix segment"
-                                            ? "folder"
-                                            : "object"
-                                    }
-                                    isPublic={
-                                        item.type === "prefix segment" &&
-                                        item.policy.isPublic
-                                    }
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )
-            }
-            buttons={
-                <>
-                    <Button variant="secondary" onClick={onClose}>
-                        {t("cancel")}
-                    </Button>
-                    <Button startIcon={getIconUrlByName("Delete")} onClick={onConfirm}>
-                        {t("delete")}
-                    </Button>
-                </>
-            }
-        />
-    );
-}
-
-function ErrorState(props: {
-    errorCase: Extract<
-        S3ExplorerMainViewProps["listedPrefix"],
-        { isErrored: true }
-    >["errorCase"];
-}) {
-    const { errorCase } = props;
-    const { classes } = useStyles({
-        isDragActive: false
-    });
-    const { t } = useTranslation({ S3ExplorerMainView });
-
-    return (
-        <div className={classes.errorState}>
-            <div className={classes.errorIcon}>
-                <Icon icon={getIconUrlByName("ErrorOutline")} size="large" />
-            </div>
-            <div className={classes.errorTitle}>
-                {errorCase === "access denied"
-                    ? t("access denied")
-                    : t("bucket not found")}
-            </div>
-            <div className={classes.errorDescription}>
-                {errorCase === "access denied"
-                    ? t("access denied description")
-                    : t("bucket not found description")}
-            </div>
-        </div>
-    );
-}
-
-const useStyles_DeleteSelectionDialog = tss
-    .withName({ DeleteSelectionDialog })
-    .create(({ theme }) => ({
-        body: {
-            minWidth: 520,
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(3),
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        description: {
-            lineHeight: 1.5
-        },
-        itemList: {
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.spacing(2),
-            maxHeight: 240,
-            overflow: "auto",
-            minWidth: 0
-        }
-    }));
-
-type ItemRowProps = {
-    item: S3ExplorerMainViewProps.Item;
-    isSelected: boolean;
-    isBookmarked: boolean;
-    isStriped: boolean;
-    showRowActions: boolean;
-    onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
-    onNavigate: () => void;
-    onDelete: () => void;
-    onShareObject: (() => void) | undefined;
-    onChangePrefixPolicy: (() => void) | undefined;
-    onDownload: (() => void) | undefined;
-    onBookmark: (() => void) | undefined;
-    onCheckboxChange: () => void;
-};
-
-function ItemRow(props: ItemRowProps) {
-    const {
-        item,
-        isSelected,
-        isBookmarked,
-        isStriped,
-        showRowActions,
-        onRowClick,
-        onNavigate,
-        onDelete,
-        onShareObject,
-        onChangePrefixPolicy,
-        onDownload,
-        onBookmark,
-        onCheckboxChange
-    } = props;
-
-    const progressPercent = getProgressPercent(item);
-    const isUploadInProgress =
-        progressPercent !== undefined && progressPercent < 100 && !item.isDeleting;
-    const canNavigate =
-        !item.isDeleting && !(item.type === "object" && isUploadInProgress);
-    const isItemActionAvailable = getIsItemActionAvailable(item);
-    const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
-    const isShareAvailable = onShareObject !== undefined && isItemActionAvailable;
-    const prefixPolicyAction = getPrefixPolicyAction(item);
-    const isPrefixPolicyActionAvailable =
-        onChangePrefixPolicy !== undefined && isItemActionAvailable;
-    const isCopyAvailable = !item.isDeleting;
-    const { t } = useTranslation({ S3ExplorerMainView });
-    const s3UriStr = stringifyS3Uri(item.s3Uri);
-    const [isS3UriCopied, setIsS3UriCopied] = useState(false);
-    const itemKindLabelCapitalized =
-        item.type === "prefix segment" ? t("folder") : t("object");
-    const itemIconLabel =
-        item.type === "prefix segment"
-            ? item.policy.isPublic
-                ? t("folder is public")
-                : t("folder is private")
-            : itemKindLabelCapitalized;
-
-    const { classes, cx } = useStyles({
-        isDragActive: false
-    });
-
-    useEffect(() => {
-        setIsS3UriCopied(false);
-    }, [s3UriStr]);
-
-    useEffect(() => {
-        if (!isS3UriCopied) {
-            return;
-        }
-
-        const timeoutId = window.setTimeout(() => setIsS3UriCopied(false), 1400);
-
-        return () => window.clearTimeout(timeoutId);
-    }, [isS3UriCopied]);
-
-    return (
-        <tr
-            className={cx(
-                classes.tableRow,
-                isStriped && classes.tableRowStriped,
-                isSelected && classes.tableRowSelected,
-                item.isDeleting && classes.tableRowBusy
-            )}
-            onClick={onRowClick}
-            onDoubleClick={() => {
-                if (canNavigate) {
-                    onNavigate();
-                }
-            }}
-        >
-            <td className={classes.checkboxCell}>
-                <Checkbox
-                    checked={isSelected}
-                    disabled={item.isDeleting}
-                    onClick={event => {
-                        event.stopPropagation();
-                    }}
-                    onChange={event => {
-                        event.stopPropagation();
-                        onCheckboxChange();
-                    }}
-                    inputProps={{
-                        "aria-label": t("select item", {
-                            itemName: item.displayName
-                        })
-                    }}
-                />
-            </td>
-            <td className={classes.nameCell}>
-                <div className={classes.nameCellContent}>
-                    <div className={classes.itemIdentity}>
-                        <Tooltip title={itemIconLabel}>
-                            <div
-                                className={classes.itemIconWrapper}
-                                role="img"
-                                aria-label={itemIconLabel}
-                            >
-                                <Icon
-                                    icon={getIconUrlByName(
-                                        item.type === "prefix segment"
-                                            ? "Folder"
-                                            : "Description"
-                                    )}
-                                    size="small"
-                                />
-                            </div>
-                        </Tooltip>
-                        <div className={classes.itemNameBlock}>
-                            <div className={classes.itemPrimaryRow}>
-                                <button
-                                    type="button"
-                                    className={classes.itemNameButton}
-                                    title={
-                                        item.type === "prefix segment"
-                                            ? `${item.displayName}/`
-                                            : item.displayName
-                                    }
-                                    disabled={!canNavigate}
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        onNavigate();
-                                    }}
-                                >
-                                    {item.displayName}
-                                </button>
-
-                                {item.type === "prefix segment" &&
-                                    item.policy.isPublic && (
-                                        <span className={classes.itemPublicTag}>
-                                            <Icon
-                                                icon={getIconUrlByName("Public")}
-                                                size="extra small"
-                                            />
-                                            {t("public")}
-                                        </span>
-                                    )}
-
-                                {(item.isDeleting ||
-                                    isUploadInProgress ||
-                                    progressPercent === 100) && (
-                                    <div className={classes.itemMetaRow}>
-                                        {item.isDeleting && (
-                                            <span
-                                                className={cx(
-                                                    classes.statusPill,
-                                                    classes.statusPillWarning
-                                                )}
-                                            >
-                                                {t("deleting")}
-                                            </span>
-                                        )}
-                                        {!item.isDeleting && isUploadInProgress && (
-                                            <>
-                                                <span
-                                                    className={cx(
-                                                        classes.statusPill,
-                                                        classes.statusPillUploading
-                                                    )}
-                                                >
-                                                    <span
-                                                        className={
-                                                            classes.statusPillLabel
-                                                        }
-                                                    >
-                                                        {t("uploading")}
-                                                    </span>
-                                                    <span
-                                                        className={
-                                                            classes.statusPillPercent
-                                                        }
-                                                    >
-                                                        {Math.round(progressPercent)}%
-                                                    </span>
-                                                </span>
-                                                <div
-                                                    className={
-                                                        classes.inlineProgressTrack
-                                                    }
-                                                >
-                                                    <div
-                                                        className={
-                                                            classes.inlineProgressFill
-                                                        }
-                                                        style={{
-                                                            width: `${progressPercent}%`
-                                                        }}
-                                                    />
-                                                </div>
-                                            </>
-                                        )}
-                                        {!item.isDeleting &&
-                                            !isUploadInProgress &&
-                                            progressPercent === 100 && (
-                                                <span className={classes.statusPill}>
-                                                    {t("uploaded")}
-                                                </span>
-                                            )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                    <div className={classes.rowActions}>
-                        {showRowActions && (
-                            <>
-                                {onDownload !== undefined && (
-                                    <Tooltip title={t("download")}>
-                                        <span className={classes.inlineActionWrapper}>
-                                            <IconButton
-                                                className={classes.rowActionButton}
-                                                icon={getIconUrlByName("FileDownload")}
-                                                aria-label={t("download")}
-                                                disabled={!isDownloadAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (
-                                                        !isDownloadAvailable ||
-                                                        onDownload === undefined
-                                                    ) {
-                                                        return;
-                                                    }
-
-                                                    onDownload();
-                                                }}
-                                            />
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                <Tooltip title={t("delete")}>
-                                    <span className={classes.inlineActionWrapper}>
-                                        <IconButton
-                                            className={classes.rowActionButton}
-                                            icon={getIconUrlByName("Delete")}
-                                            aria-label={t("delete")}
-                                            disabled={item.isDeleting}
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                onDelete();
-                                            }}
-                                        />
-                                    </span>
-                                </Tooltip>
-                                <MuiTooltip
-                                    title={
-                                        <span className={classes.tooltipText}>
-                                            {isS3UriCopied ? (
-                                                <span className={classes.copiedTooltip}>
-                                                    <Icon
-                                                        className={
-                                                            classes.copiedTooltipIcon
-                                                        }
-                                                        icon={getIconUrlByName("Check")}
-                                                        size="extra small"
-                                                    />
-                                                    {t("copied")}
-                                                </span>
-                                            ) : (
-                                                <span className={classes.copyTooltip}>
-                                                    {t("copy s3 uri tooltip", {
-                                                        s3UriStr
-                                                    })}
-                                                </span>
-                                            )}
-                                        </span>
-                                    }
-                                    classes={{
-                                        tooltip: cx(
-                                            classes.tooltipBubble,
-                                            classes.copyTooltipBubble
-                                        )
-                                    }}
-                                >
-                                    <span className={classes.inlineActionWrapper}>
-                                        <IconButton
-                                            className={classes.rowActionButton}
-                                            icon={getIconUrlByName("ContentCopy")}
-                                            aria-label={t("copy s3 uri")}
-                                            disabled={!isCopyAvailable}
-                                            onClick={async event => {
-                                                event.stopPropagation();
-
-                                                if (!isCopyAvailable) {
-                                                    return;
-                                                }
-
-                                                await copyToClipboard(s3UriStr);
-                                                setIsS3UriCopied(true);
-                                            }}
-                                        />
-                                    </span>
-                                </MuiTooltip>
-                                {onBookmark !== undefined && (
-                                    <Tooltip
-                                        title={
-                                            isBookmarked
-                                                ? t("delete from bookmarks")
-                                                : t("add to bookmarks")
-                                        }
-                                    >
-                                        <span className={classes.inlineActionWrapper}>
-                                            <button
-                                                type="button"
-                                                className={cx(
-                                                    classes.rowActionButton,
-                                                    isBookmarked &&
-                                                        classes.rowActionButtonActive
-                                                )}
-                                                aria-label={
-                                                    isBookmarked
-                                                        ? t("delete from bookmarks")
-                                                        : t("add to bookmarks")
-                                                }
-                                                disabled={!isItemActionAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (!isItemActionAvailable) {
-                                                        return;
-                                                    }
-
-                                                    onBookmark();
-                                                }}
-                                            >
-                                                {isBookmarked ? (
-                                                    <StarIcon fontSize="small" />
-                                                ) : (
-                                                    <StarBorderIcon fontSize="small" />
-                                                )}
-                                            </button>
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                {onShareObject !== undefined && (
-                                    <Tooltip title={t("share")}>
-                                        <span className={classes.inlineActionWrapper}>
-                                            <IconButton
-                                                className={classes.rowActionButton}
-                                                icon={getIconUrlByName("Share")}
-                                                aria-label={t("share")}
-                                                disabled={!isShareAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (
-                                                        !isShareAvailable ||
-                                                        onShareObject === undefined
-                                                    ) {
-                                                        return;
-                                                    }
-
-                                                    onShareObject();
-                                                }}
-                                            />
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                {prefixPolicyAction !== undefined &&
-                                    onChangePrefixPolicy !== undefined && (
-                                        <Tooltip
-                                            title={getPrefixPolicyActionLabel(
-                                                prefixPolicyAction,
-                                                t
-                                            )}
-                                        >
-                                            <span className={classes.inlineActionWrapper}>
-                                                <IconButton
-                                                    className={classes.rowActionButton}
-                                                    icon={getIconUrlByName(
-                                                        getPrefixPolicyActionIconName(
-                                                            prefixPolicyAction
-                                                        )
-                                                    )}
-                                                    aria-label={getPrefixPolicyActionLabel(
-                                                        prefixPolicyAction,
-                                                        t
-                                                    )}
-                                                    disabled={
-                                                        !isPrefixPolicyActionAvailable
-                                                    }
-                                                    onClick={event => {
-                                                        event.stopPropagation();
-
-                                                        if (
-                                                            !isPrefixPolicyActionAvailable ||
-                                                            onChangePrefixPolicy ===
-                                                                undefined
-                                                        ) {
-                                                            return;
-                                                        }
-
-                                                        onChangePrefixPolicy();
-                                                    }}
-                                                />
-                                            </span>
-                                        </Tooltip>
-                                    )}
-                            </>
-                        )}
-                    </div>
-                </div>
-            </td>
-            <td className={classes.metaCell}>
-                {item.type === "object"
-                    ? getFormattedLastModified({ time: item.lastModified, t })
-                    : "\u00A0"}
-            </td>
-            <td className={cx(classes.metaCell, classes.sizeCell)}>
-                {item.type === "object" ? getFormattedSize(item.size) : t("folder")}
-            </td>
-        </tr>
-    );
-}
-
 export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const {
         className,
@@ -2503,3 +1484,1022 @@ const { i18n } = declareComponentKeys<
     | "size"
 >()({ S3ExplorerMainView });
 export type I18n = typeof i18n;
+
+type SortState = {
+    key: "name" | "size" | "lastModified";
+    direction: "asc" | "desc";
+};
+
+export type DeleteDialogState = {
+    items: S3ExplorerMainViewProps.Item[];
+};
+
+type PrefixPolicyAction = Parameters<
+    S3ExplorerMainViewProps["onChangePrefixPolicy"]
+>[0]["action"];
+
+type ObjectToUpload = Parameters<
+    S3ExplorerMainViewProps["onPutObjects"]
+>[0]["files"][number];
+
+type DataTransferItemWithWebkitGetAsEntry = DataTransferItem & {
+    webkitGetAsEntry?: () => FileSystemEntryLike | null;
+};
+
+type FileSystemEntryLike = {
+    readonly isFile: boolean;
+    readonly isDirectory: boolean;
+    readonly name: string;
+};
+
+type FileSystemFileEntryLike = FileSystemEntryLike & {
+    readonly isFile: true;
+    readonly isDirectory: false;
+    file: (
+        successCallback: (file: File) => void,
+        errorCallback?: (error: DOMException) => void
+    ) => void;
+};
+
+type FileSystemDirectoryEntryLike = FileSystemEntryLike & {
+    readonly isFile: false;
+    readonly isDirectory: true;
+    createReader: () => FileSystemDirectoryReaderLike;
+};
+
+type FileSystemDirectoryReaderLike = {
+    readEntries: (
+        successCallback: (entries: FileSystemEntryLike[]) => void,
+        errorCallback?: (error: DOMException) => void
+    ) => void;
+};
+
+function getItemKey(item: S3ExplorerMainViewProps.Item): string {
+    return stringifyS3Uri(item.s3Uri);
+}
+
+function tryApplyPendingPreSelection(params: {
+    isListing: boolean;
+    listedPrefix: S3ExplorerMainViewProps["listedPrefix"];
+    pendingPreSelectedS3UriRef: MutableRefObject<
+        S3Uri.NonTerminatedByDelimiter | undefined
+    >;
+    lastSelectedItemKeyRef: MutableRefObject<string | undefined>;
+    setSelectedItemKeys: Dispatch<SetStateAction<string[]>>;
+}) {
+    const {
+        isListing,
+        listedPrefix,
+        pendingPreSelectedS3UriRef,
+        lastSelectedItemKeyRef,
+        setSelectedItemKeys
+    } = params;
+
+    if (listedPrefix.isErrored || isListing) {
+        return;
+    }
+
+    const pendingPreSelectedS3Uri = pendingPreSelectedS3UriRef.current;
+
+    if (pendingPreSelectedS3Uri === undefined) {
+        return;
+    }
+
+    const preSelectedItemKey = stringifyS3Uri(pendingPreSelectedS3Uri);
+    const hasMatchingItem = listedPrefix.items.some(
+        item =>
+            item.type === "object" &&
+            !item.isDeleting &&
+            getItemKey(item) === preSelectedItemKey
+    );
+
+    if (!hasMatchingItem) {
+        return;
+    }
+
+    setSelectedItemKeys([preSelectedItemKey]);
+    lastSelectedItemKeyRef.current = preSelectedItemKey;
+    pendingPreSelectedS3UriRef.current = undefined;
+}
+
+function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
+    return files.map(file => {
+        const relativePathSegments = file.webkitRelativePath
+            .split("/")
+            .filter(Boolean)
+            .slice(0, -1);
+
+        return {
+            relativePathSegments,
+            fileBasename: file.name,
+            blob: file as Blob
+        };
+    });
+}
+
+function getFileSystemEntry(item: DataTransferItem): FileSystemEntryLike | null {
+    return (item as DataTransferItemWithWebkitGetAsEntry).webkitGetAsEntry?.() ?? null;
+}
+
+function getHasDraggedFiles(dataTransfer: DataTransfer): boolean {
+    if (dataTransfer.items.length !== 0) {
+        return Array.from(dataTransfer.items).some(item => item.kind === "file");
+    }
+
+    return dataTransfer.types.includes("Files");
+}
+
+function readFileEntry(entry: FileSystemFileEntryLike): Promise<File> {
+    return new Promise((resolve, reject) => entry.file(resolve, error => reject(error)));
+}
+
+function readDirectoryEntries(
+    entry: FileSystemDirectoryEntryLike
+): Promise<FileSystemEntryLike[]> {
+    const reader = entry.createReader();
+    const entries: FileSystemEntryLike[] = [];
+
+    return new Promise((resolve, reject) => {
+        const readNextBatch = () => {
+            reader.readEntries(
+                batch => {
+                    if (batch.length === 0) {
+                        resolve(entries);
+                        return;
+                    }
+
+                    entries.push(...batch);
+                    readNextBatch();
+                },
+                error => reject(error)
+            );
+        };
+
+        readNextBatch();
+    });
+}
+
+async function getObjectsToUploadFromFileSystemEntry(params: {
+    entry: FileSystemEntryLike;
+    relativePathSegments: string[];
+}): Promise<ObjectToUpload[]> {
+    const { entry, relativePathSegments } = params;
+
+    if (entry.isFile) {
+        const file = await readFileEntry(entry as FileSystemFileEntryLike);
+
+        return [
+            {
+                relativePathSegments: [...relativePathSegments],
+                fileBasename: file.name,
+                blob: file
+            }
+        ];
+    }
+
+    const directoryEntry = entry as FileSystemDirectoryEntryLike;
+    const childEntries = await readDirectoryEntries(directoryEntry);
+    const childRelativePathSegments = [...relativePathSegments, directoryEntry.name];
+
+    return (
+        await Promise.all(
+            childEntries.map(childEntry =>
+                getObjectsToUploadFromFileSystemEntry({
+                    entry: childEntry,
+                    relativePathSegments: childRelativePathSegments
+                })
+            )
+        )
+    ).flat();
+}
+
+async function getObjectsToUploadFromDroppedItems(params: {
+    items: readonly DataTransferItem[];
+    files: readonly File[];
+}): Promise<ObjectToUpload[]> {
+    const { items, files } = params;
+    const fileItems = items.filter(
+        (item): item is DataTransferItem => item.kind === "file"
+    );
+    const itemsWithEntries = fileItems.map(item => ({
+        item,
+        entry: getFileSystemEntry(item)
+    }));
+    const hasFileSystemEntrySupport = itemsWithEntries.some(
+        ({ entry }) => entry !== null
+    );
+
+    const droppedObjects = (
+        await Promise.all(
+            itemsWithEntries.map(async ({ item, entry }) => {
+                if (entry !== null) {
+                    return getObjectsToUploadFromFileSystemEntry({
+                        entry,
+                        relativePathSegments: []
+                    });
+                }
+
+                const file = item.getAsFile();
+
+                if (file === null) {
+                    return [];
+                }
+
+                return getObjectsToUploadFromFiles([file]);
+            })
+        )
+    ).flat();
+
+    if (hasFileSystemEntrySupport) {
+        return droppedObjects;
+    }
+
+    return getObjectsToUploadFromFiles(files);
+}
+
+function getFormattedSize(size: number): string {
+    return bytes(size) ?? `${size}B`;
+}
+
+function getDayStamp(date: Date): number {
+    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function getFormattedLastModified(params: {
+    time: number;
+    t: ReturnType<typeof useTranslation>["t"];
+}): string {
+    const { time, t } = params;
+
+    const date = new Date(time);
+    const today = new Date();
+    const diffDays = Math.floor(
+        (getDayStamp(today) - getDayStamp(date)) / (24 * 60 * 60 * 1000)
+    );
+
+    if (diffDays === 0) {
+        return t("today");
+    }
+
+    if (diffDays === 1) {
+        return t("yesterday");
+    }
+
+    return new Intl.DateTimeFormat(undefined, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    }).format(date);
+}
+
+function getProgressPercent(item: S3ExplorerMainViewProps.Item): number | undefined {
+    if (item.uploadProgressPercent === undefined) {
+        return undefined;
+    }
+
+    if (!Number.isFinite(item.uploadProgressPercent)) {
+        return undefined;
+    }
+
+    return Math.max(0, Math.min(100, item.uploadProgressPercent));
+}
+
+function getIsItemActionAvailable(item: S3ExplorerMainViewProps.Item): boolean {
+    if (item.isDeleting) {
+        return false;
+    }
+
+    const progressPercent = getProgressPercent(item);
+
+    return progressPercent === undefined || progressPercent === 100;
+}
+
+function getPrefixPolicyAction(
+    item: S3ExplorerMainViewProps.Item
+): PrefixPolicyAction | undefined {
+    if (item.type !== "prefix segment") {
+        return undefined;
+    }
+
+    if (item.policy.isPublic) {
+        return "undo make public";
+    }
+
+    if (item.policy.canBeMadePublic) {
+        return "make public";
+    }
+
+    return undefined;
+}
+
+function getPrefixPolicyActionLabel(
+    action: PrefixPolicyAction,
+    t: ReturnType<typeof useTranslation>["t"]
+): string {
+    return action === "make public" ? t("make public") : t("make private");
+}
+
+function getPrefixPolicyActionIconName(
+    action: PrefixPolicyAction
+): "Public" | "PublicOff" {
+    return action === "make public" ? "Public" : "PublicOff";
+}
+
+function getSortedItems(params: {
+    items: S3ExplorerMainViewProps.Item[];
+    sortState: SortState;
+}): S3ExplorerMainViewProps.Item[] {
+    const { items, sortState } = params;
+
+    return [...items].sort((a, b) => {
+        if (a.type !== b.type) {
+            return a.type === "prefix segment" ? -1 : 1;
+        }
+
+        if (a.type === "prefix segment" && b.type === "prefix segment") {
+            return a.displayName.localeCompare(b.displayName);
+        }
+
+        assert(a.type === "object");
+        assert(b.type === "object");
+
+        const directionMultiplier = sortState.direction === "asc" ? 1 : -1;
+
+        let comparison = 0;
+
+        switch (sortState.key) {
+            case "name":
+                comparison = a.displayName.localeCompare(b.displayName);
+                break;
+            case "size":
+                comparison = a.size - b.size;
+                break;
+            case "lastModified":
+                comparison = a.lastModified - b.lastModified;
+                break;
+        }
+
+        if (comparison === 0) {
+            comparison = a.displayName.localeCompare(b.displayName);
+        }
+
+        return comparison * directionMultiplier;
+    });
+}
+
+function getSortIndicatorProps(params: { sortState: SortState; key: SortState["key"] }) {
+    const { sortState, key } = params;
+
+    const isActive = sortState.key === key;
+
+    return {
+        isActive,
+        ariaSort: isActive
+            ? sortState.direction === "asc"
+                ? "ascending"
+                : "descending"
+            : "none",
+        icon: getIconUrlByName(
+            !isActive
+                ? "UnfoldMore"
+                : sortState.direction === "asc"
+                  ? "ArrowUpward"
+                  : "ArrowDownward"
+        )
+    } as const;
+}
+
+function CreateDirectoryDialog(props: {
+    open: boolean;
+    onClose: () => void;
+    onSubmit: (params: { prefixSegment: string }) => void;
+}) {
+    const { open, onClose, onSubmit } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
+
+    const [draft, setDraft] = useState("");
+    const [isDraftValid, setIsDraftValid] = useState(false);
+
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+
+        setDraft("");
+        setIsDraftValid(false);
+    }, [open]);
+
+    const submit = () => {
+        const trimmedDraft = draft.trim();
+
+        if (trimmedDraft === "") {
+            return;
+        }
+
+        onSubmit({
+            prefixSegment: trimmedDraft
+        });
+    };
+
+    return (
+        <Dialog
+            isOpen={open}
+            onClose={onClose}
+            title={t("create prefix dialog title")}
+            subtitle={t("create prefix dialog subtitle")}
+            body={
+                open && (
+                    <S3DialogTextInput
+                        autoFocus={true}
+                        label={t("prefix name field label")}
+                        value={draft}
+                        error={
+                            !isDraftValid && draft !== ""
+                                ? t("prefix name empty error")
+                                : undefined
+                        }
+                        onChange={value => {
+                            setDraft(value);
+                            setIsDraftValid(value.trim() !== "");
+                        }}
+                        onEnterKeyDown={() => {
+                            if (isDraftValid) {
+                                submit();
+                            }
+                        }}
+                    />
+                )
+            }
+            buttons={
+                <>
+                    <Button variant="secondary" onClick={onClose}>
+                        {t("cancel")}
+                    </Button>
+                    <Button
+                        disabled={!isDraftValid}
+                        onClick={isDraftValid ? submit : undefined}
+                    >
+                        {t("create prefix")}
+                    </Button>
+                </>
+            }
+        />
+    );
+}
+
+export function DeleteSelectionDialog(props: {
+    state: DeleteDialogState | undefined;
+    onClose: () => void;
+    onConfirm: () => void;
+}) {
+    const { state, onClose, onConfirm } = props;
+    const { t } = useTranslation({ S3ExplorerMainView });
+    const dialogClasses = useS3DialogClasses();
+    const { classes } = useStyles_DeleteSelectionDialog();
+
+    return (
+        <Dialog
+            isOpen={state !== undefined}
+            onClose={onClose}
+            className={dialogClasses.paper}
+            maxWidth={false}
+            muiDialogClasses={{ root: dialogClasses.overlayRoot }}
+            title={t("delete selection dialog title")}
+            subtitle={t("delete selection dialog subtitle")}
+            classes={{
+                title: dialogClasses.title,
+                subtitle: dialogClasses.subtitle,
+                body: dialogClasses.body,
+                buttons: dialogClasses.buttons
+            }}
+            body={
+                state !== undefined && (
+                    <div className={classes.body}>
+                        <div className={classes.description}>
+                            {t("delete selection dialog body", {
+                                count: state.items.length
+                            })}
+                        </div>
+                        <div className={classes.itemList}>
+                            {state.items.map(item => (
+                                <S3DialogItemSummary
+                                    key={getItemKey(item)}
+                                    name={`${item.displayName}${
+                                        item.type === "prefix segment" ? "/" : ""
+                                    }`}
+                                    icon={
+                                        item.type === "prefix segment"
+                                            ? "folder"
+                                            : "object"
+                                    }
+                                    isPublic={
+                                        item.type === "prefix segment" &&
+                                        item.policy.isPublic
+                                    }
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )
+            }
+            buttons={
+                <>
+                    <Button variant="secondary" onClick={onClose}>
+                        {t("cancel")}
+                    </Button>
+                    <Button startIcon={getIconUrlByName("Delete")} onClick={onConfirm}>
+                        {t("delete")}
+                    </Button>
+                </>
+            }
+        />
+    );
+}
+
+function ErrorState(props: {
+    errorCase: Extract<
+        S3ExplorerMainViewProps["listedPrefix"],
+        { isErrored: true }
+    >["errorCase"];
+}) {
+    const { errorCase } = props;
+    const { classes } = useStyles({
+        isDragActive: false
+    });
+    const { t } = useTranslation({ S3ExplorerMainView });
+
+    return (
+        <div className={classes.errorState}>
+            <div className={classes.errorIcon}>
+                <Icon icon={getIconUrlByName("ErrorOutline")} size="large" />
+            </div>
+            <div className={classes.errorTitle}>
+                {errorCase === "access denied"
+                    ? t("access denied")
+                    : t("bucket not found")}
+            </div>
+            <div className={classes.errorDescription}>
+                {errorCase === "access denied"
+                    ? t("access denied description")
+                    : t("bucket not found description")}
+            </div>
+        </div>
+    );
+}
+
+const useStyles_DeleteSelectionDialog = tss
+    .withName({ DeleteSelectionDialog })
+    .create(({ theme }) => ({
+        body: {
+            minWidth: 520,
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(3),
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        description: {
+            lineHeight: 1.5
+        },
+        itemList: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(2),
+            maxHeight: 240,
+            overflow: "auto",
+            minWidth: 0
+        }
+    }));
+
+type ItemRowProps = {
+    item: S3ExplorerMainViewProps.Item;
+    isSelected: boolean;
+    isBookmarked: boolean;
+    isStriped: boolean;
+    showRowActions: boolean;
+    onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
+    onNavigate: () => void;
+    onDelete: () => void;
+    onShareObject: (() => void) | undefined;
+    onChangePrefixPolicy: (() => void) | undefined;
+    onDownload: (() => void) | undefined;
+    onBookmark: (() => void) | undefined;
+    onCheckboxChange: () => void;
+};
+
+function ItemRow(props: ItemRowProps) {
+    const {
+        item,
+        isSelected,
+        isBookmarked,
+        isStriped,
+        showRowActions,
+        onRowClick,
+        onNavigate,
+        onDelete,
+        onShareObject,
+        onChangePrefixPolicy,
+        onDownload,
+        onBookmark,
+        onCheckboxChange
+    } = props;
+
+    const progressPercent = getProgressPercent(item);
+    const isUploadInProgress =
+        progressPercent !== undefined && progressPercent < 100 && !item.isDeleting;
+    const canNavigate =
+        !item.isDeleting && !(item.type === "object" && isUploadInProgress);
+    const isItemActionAvailable = getIsItemActionAvailable(item);
+    const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
+    const isShareAvailable = onShareObject !== undefined && isItemActionAvailable;
+    const prefixPolicyAction = getPrefixPolicyAction(item);
+    const isPrefixPolicyActionAvailable =
+        onChangePrefixPolicy !== undefined && isItemActionAvailable;
+    const isCopyAvailable = !item.isDeleting;
+    const { t } = useTranslation({ S3ExplorerMainView });
+    const s3UriStr = stringifyS3Uri(item.s3Uri);
+    const [isS3UriCopied, setIsS3UriCopied] = useState(false);
+    const itemKindLabelCapitalized =
+        item.type === "prefix segment" ? t("folder") : t("object");
+    const itemIconLabel =
+        item.type === "prefix segment"
+            ? item.policy.isPublic
+                ? t("folder is public")
+                : t("folder is private")
+            : itemKindLabelCapitalized;
+
+    const { classes, cx } = useStyles({
+        isDragActive: false
+    });
+
+    useEffect(() => {
+        setIsS3UriCopied(false);
+    }, [s3UriStr]);
+
+    useEffect(() => {
+        if (!isS3UriCopied) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => setIsS3UriCopied(false), 1400);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [isS3UriCopied]);
+
+    return (
+        <tr
+            className={cx(
+                classes.tableRow,
+                isStriped && classes.tableRowStriped,
+                isSelected && classes.tableRowSelected,
+                item.isDeleting && classes.tableRowBusy
+            )}
+            onClick={onRowClick}
+            onDoubleClick={() => {
+                if (canNavigate) {
+                    onNavigate();
+                }
+            }}
+        >
+            <td className={classes.checkboxCell}>
+                <Checkbox
+                    checked={isSelected}
+                    disabled={item.isDeleting}
+                    onClick={event => {
+                        event.stopPropagation();
+                    }}
+                    onChange={event => {
+                        event.stopPropagation();
+                        onCheckboxChange();
+                    }}
+                    inputProps={{
+                        "aria-label": t("select item", {
+                            itemName: item.displayName
+                        })
+                    }}
+                />
+            </td>
+            <td className={classes.nameCell}>
+                <div className={classes.nameCellContent}>
+                    <div className={classes.itemIdentity}>
+                        <Tooltip title={itemIconLabel}>
+                            <div
+                                className={classes.itemIconWrapper}
+                                role="img"
+                                aria-label={itemIconLabel}
+                            >
+                                <Icon
+                                    icon={getIconUrlByName(
+                                        item.type === "prefix segment"
+                                            ? "Folder"
+                                            : "Description"
+                                    )}
+                                    size="small"
+                                />
+                            </div>
+                        </Tooltip>
+                        <div className={classes.itemNameBlock}>
+                            <div className={classes.itemPrimaryRow}>
+                                <button
+                                    type="button"
+                                    className={classes.itemNameButton}
+                                    title={
+                                        item.type === "prefix segment"
+                                            ? `${item.displayName}/`
+                                            : item.displayName
+                                    }
+                                    disabled={!canNavigate}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        onNavigate();
+                                    }}
+                                >
+                                    {item.displayName}
+                                </button>
+
+                                {item.type === "prefix segment" &&
+                                    item.policy.isPublic && (
+                                        <span className={classes.itemPublicTag}>
+                                            <Icon
+                                                icon={getIconUrlByName("Public")}
+                                                size="extra small"
+                                            />
+                                            {t("public")}
+                                        </span>
+                                    )}
+
+                                {(item.isDeleting ||
+                                    isUploadInProgress ||
+                                    progressPercent === 100) && (
+                                    <div className={classes.itemMetaRow}>
+                                        {item.isDeleting && (
+                                            <span
+                                                className={cx(
+                                                    classes.statusPill,
+                                                    classes.statusPillWarning
+                                                )}
+                                            >
+                                                {t("deleting")}
+                                            </span>
+                                        )}
+                                        {!item.isDeleting && isUploadInProgress && (
+                                            <>
+                                                <span
+                                                    className={cx(
+                                                        classes.statusPill,
+                                                        classes.statusPillUploading
+                                                    )}
+                                                >
+                                                    <span
+                                                        className={
+                                                            classes.statusPillLabel
+                                                        }
+                                                    >
+                                                        {t("uploading")}
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            classes.statusPillPercent
+                                                        }
+                                                    >
+                                                        {Math.round(progressPercent)}%
+                                                    </span>
+                                                </span>
+                                                <div
+                                                    className={
+                                                        classes.inlineProgressTrack
+                                                    }
+                                                >
+                                                    <div
+                                                        className={
+                                                            classes.inlineProgressFill
+                                                        }
+                                                        style={{
+                                                            width: `${progressPercent}%`
+                                                        }}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                        {!item.isDeleting &&
+                                            !isUploadInProgress &&
+                                            progressPercent === 100 && (
+                                                <span className={classes.statusPill}>
+                                                    {t("uploaded")}
+                                                </span>
+                                            )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={classes.rowActions}>
+                        {showRowActions && (
+                            <>
+                                {onDownload !== undefined && (
+                                    <Tooltip title={t("download")}>
+                                        <span className={classes.inlineActionWrapper}>
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName("FileDownload")}
+                                                aria-label={t("download")}
+                                                disabled={!isDownloadAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (
+                                                        !isDownloadAvailable ||
+                                                        onDownload === undefined
+                                                    ) {
+                                                        return;
+                                                    }
+
+                                                    onDownload();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                                <Tooltip title={t("delete")}>
+                                    <span className={classes.inlineActionWrapper}>
+                                        <IconButton
+                                            className={classes.rowActionButton}
+                                            icon={getIconUrlByName("Delete")}
+                                            aria-label={t("delete")}
+                                            disabled={item.isDeleting}
+                                            onClick={event => {
+                                                event.stopPropagation();
+                                                onDelete();
+                                            }}
+                                        />
+                                    </span>
+                                </Tooltip>
+                                <MuiTooltip
+                                    title={
+                                        <span className={classes.tooltipText}>
+                                            {isS3UriCopied ? (
+                                                <span className={classes.copiedTooltip}>
+                                                    <Icon
+                                                        className={
+                                                            classes.copiedTooltipIcon
+                                                        }
+                                                        icon={getIconUrlByName("Check")}
+                                                        size="extra small"
+                                                    />
+                                                    {t("copied")}
+                                                </span>
+                                            ) : (
+                                                <span className={classes.copyTooltip}>
+                                                    {t("copy s3 uri tooltip", {
+                                                        s3UriStr
+                                                    })}
+                                                </span>
+                                            )}
+                                        </span>
+                                    }
+                                    classes={{
+                                        tooltip: cx(
+                                            classes.tooltipBubble,
+                                            classes.copyTooltipBubble
+                                        )
+                                    }}
+                                >
+                                    <span className={classes.inlineActionWrapper}>
+                                        <IconButton
+                                            className={classes.rowActionButton}
+                                            icon={getIconUrlByName("ContentCopy")}
+                                            aria-label={t("copy s3 uri")}
+                                            disabled={!isCopyAvailable}
+                                            onClick={async event => {
+                                                event.stopPropagation();
+
+                                                if (!isCopyAvailable) {
+                                                    return;
+                                                }
+
+                                                await copyToClipboard(s3UriStr);
+                                                setIsS3UriCopied(true);
+                                            }}
+                                        />
+                                    </span>
+                                </MuiTooltip>
+                                {onBookmark !== undefined && (
+                                    <Tooltip
+                                        title={
+                                            isBookmarked
+                                                ? t("delete from bookmarks")
+                                                : t("add to bookmarks")
+                                        }
+                                    >
+                                        <span className={classes.inlineActionWrapper}>
+                                            <button
+                                                type="button"
+                                                className={cx(
+                                                    classes.rowActionButton,
+                                                    isBookmarked &&
+                                                        classes.rowActionButtonActive
+                                                )}
+                                                aria-label={
+                                                    isBookmarked
+                                                        ? t("delete from bookmarks")
+                                                        : t("add to bookmarks")
+                                                }
+                                                disabled={!isItemActionAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (!isItemActionAvailable) {
+                                                        return;
+                                                    }
+
+                                                    onBookmark();
+                                                }}
+                                            >
+                                                {isBookmarked ? (
+                                                    <StarIcon fontSize="small" />
+                                                ) : (
+                                                    <StarBorderIcon fontSize="small" />
+                                                )}
+                                            </button>
+                                        </span>
+                                    </Tooltip>
+                                )}
+                                {onShareObject !== undefined && (
+                                    <Tooltip title={t("share")}>
+                                        <span className={classes.inlineActionWrapper}>
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName("Share")}
+                                                aria-label={t("share")}
+                                                disabled={!isShareAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (
+                                                        !isShareAvailable ||
+                                                        onShareObject === undefined
+                                                    ) {
+                                                        return;
+                                                    }
+
+                                                    onShareObject();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                                {prefixPolicyAction !== undefined &&
+                                    onChangePrefixPolicy !== undefined && (
+                                        <Tooltip
+                                            title={getPrefixPolicyActionLabel(
+                                                prefixPolicyAction,
+                                                t
+                                            )}
+                                        >
+                                            <span className={classes.inlineActionWrapper}>
+                                                <IconButton
+                                                    className={classes.rowActionButton}
+                                                    icon={getIconUrlByName(
+                                                        getPrefixPolicyActionIconName(
+                                                            prefixPolicyAction
+                                                        )
+                                                    )}
+                                                    aria-label={getPrefixPolicyActionLabel(
+                                                        prefixPolicyAction,
+                                                        t
+                                                    )}
+                                                    disabled={
+                                                        !isPrefixPolicyActionAvailable
+                                                    }
+                                                    onClick={event => {
+                                                        event.stopPropagation();
+
+                                                        if (
+                                                            !isPrefixPolicyActionAvailable ||
+                                                            onChangePrefixPolicy ===
+                                                                undefined
+                                                        ) {
+                                                            return;
+                                                        }
+
+                                                        onChangePrefixPolicy();
+                                                    }}
+                                                />
+                                            </span>
+                                        </Tooltip>
+                                    )}
+                            </>
+                        )}
+                    </div>
+                </div>
+            </td>
+            <td className={classes.metaCell}>
+                {item.type === "object"
+                    ? getFormattedLastModified({ time: item.lastModified, t })
+                    : "\u00A0"}
+            </td>
+            <td className={cx(classes.metaCell, classes.sizeCell)}>
+                {item.type === "object" ? getFormattedSize(item.size) : t("folder")}
+            </td>
+        </tr>
+    );
+}
