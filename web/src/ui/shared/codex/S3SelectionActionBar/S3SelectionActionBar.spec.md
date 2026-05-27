@@ -131,7 +131,7 @@ The parent component is responsible for passing `undefined` for actions that do 
 The parent must not pass labels for stateful actions.
 
 - Copy S3 path is labelled `Copy S3 path`.
-- Copy S3 path displays a hover tooltip formatted as `Copy <s3Uri>` where the S3 URI is rendered as single-line code and remains contained within the tooltip bubble for long values.
+- Copy S3 path displays a hover tooltip formatted as `Copy "<s3UriStr>"` and remains on one line when the value is long.
 - After clicking Copy S3 path, the tooltip displays a success-colored checkmark icon and the label `Copied` for a short confirmation period. The action button itself keeps the same icon and label to avoid layout shift.
 - Bookmark is labelled `Add to bookmarks` when `bookmark.isBookmarked === false`.
 - Bookmark is labelled `Delete from bookmarks` when `bookmark.isBookmarked === true`.

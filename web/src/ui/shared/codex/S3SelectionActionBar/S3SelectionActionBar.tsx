@@ -151,11 +151,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                 ) : (
                     <span className={classes.copyTooltip}>
                         {t("copy s3 uri tooltip", {
-                            s3Uri: (
-                                <code className={classes.copyTooltipUri}>
-                                    {copyS3Uri.s3UriStr}
-                                </code>
-                            )
+                            s3UriStr: copyS3Uri.s3UriStr
                         })}
                     </span>
                 ),
@@ -412,17 +408,8 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             gap: theme.spacing(0.75),
             maxWidth: "calc(100vw - 64px)",
             whiteSpace: "nowrap",
-            overflow: "hidden"
-        },
-        copyTooltipUri: {
-            display: "inline-block",
-            flex: "1 1 auto",
-            minWidth: 0,
-            maxWidth: "100%",
-            whiteSpace: "nowrap",
             overflowX: "auto",
-            overflowY: "hidden",
-            fontFamily: "monospace"
+            overflowY: "hidden"
         }
     };
 });
@@ -432,7 +419,7 @@ const { i18n } = declareComponentKeys<
     | "delete"
     | "copy s3 path"
     | "copied"
-    | { K: "copy s3 uri tooltip"; P: { s3Uri: ReactNode }; R: ReactNode }
+    | { K: "copy s3 uri tooltip"; P: { s3UriStr: string }; R: string }
     | "add to bookmarks"
     | "delete from bookmarks"
     | "share"
