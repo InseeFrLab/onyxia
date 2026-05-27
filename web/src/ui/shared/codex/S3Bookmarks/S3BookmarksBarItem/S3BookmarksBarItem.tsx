@@ -173,18 +173,6 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
         return getShortS3UriLabel(s3Uri);
     }, [displayName, resolveLocalizedString, s3Uri]);
 
-    const entryPointTitle = useMemo(() => {
-        if (!isEntryPoint) {
-            return label;
-        }
-
-        if (!isCustomBookmark) {
-            return s3Uri.bucket;
-        }
-
-        return label;
-    }, [isCustomBookmark, isEntryPoint, label, s3Uri.bucket]);
-
     const entryPointSubtitle = isEntryPoint ? fullS3Uri : undefined;
     const linkAriaLabel = isEntryPoint
         ? isCustomBookmark
@@ -361,9 +349,7 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                         shouldInlineExpand && classes.labelRowInline
                     )}
                 >
-                    <span className={classes.labelText}>
-                        {isEntryPoint ? entryPointTitle : label}
-                    </span>
+                    <span className={classes.labelText}>{label}</span>
                     {callbacks !== undefined && shouldInlineExpand && (
                         <span className={classes.inlineActions}>
                             <span
