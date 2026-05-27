@@ -38,6 +38,8 @@ export type Props = {
 
     onEdit: (() => void) | undefined;
 
+    onDelete: (() => void) | undefined;
+
     endpointUrl: string;
     defaultRegion: string | undefined;
 
@@ -66,6 +68,7 @@ export function S3ProfileDetails(props: Props) {
         onSelectedProfileChange,
         onCreateNewProfile,
         onEdit,
+        onDelete,
         endpointUrl,
         defaultRegion,
         accessCredentials,
@@ -125,6 +128,16 @@ export function S3ProfileDetails(props: Props) {
                     >
                         {t("edit")}
                     </Button>
+                    {onDelete !== undefined && (
+                        <Button
+                            className={classes.deleteButton}
+                            variant="ternary"
+                            startIcon={getIconUrlByName("Delete")}
+                            onClick={onDelete}
+                        >
+                            {t("delete")}
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -716,6 +729,9 @@ const useStyles = tss.withName({ S3ProfileDetails }).create(({ theme }) => ({
     editButton: {
         flex: "none"
     },
+    deleteButton: {
+        flex: "none"
+    },
     sectionCard: {
         display: "flex",
         flexDirection: "column",
@@ -1046,6 +1062,7 @@ const { i18n } = declareComponentKeys<
     | "read only"
     | "custom"
     | "edit"
+    | "delete"
     | "connection details title"
     | "connection details subtitle"
     | "endpoint url label"

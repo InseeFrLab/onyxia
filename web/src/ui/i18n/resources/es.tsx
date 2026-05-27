@@ -423,6 +423,7 @@ export const translations: Translations<"es"> = {
         "read only": "Solo lectura",
         custom: "Personalizado",
         edit: "Editar",
+        delete: "Eliminar",
         "connection details title": "Detalles de conexión",
         "connection details subtitle":
             "Usa estos valores al configurar clientes S3 fuera del explorador.",

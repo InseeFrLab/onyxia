@@ -417,6 +417,7 @@ export const translations: Translations<"no"> = {
         "read only": "Skrivebeskyttet",
         custom: "Egendefinert",
         edit: "Rediger",
+        delete: "Slett",
         "connection details title": "Tilkoblingsdetaljer",
         "connection details subtitle":
             "Bruk disse verdiene når du konfigurerer S3-klienter utenfor utforskeren.",

@@ -8,6 +8,7 @@
 - Let the user switch to another available profile through `onSelectedProfileChange`.
 - Let the user start profile creation through `onCreateNewProfile`.
 - Expose the edit action when available, and render it disabled when the selected profile is read-only.
+- Expose the delete action next to edit when `onDelete` is provided.
 - Display connection fields for the endpoint URL and the default region when a default region exists.
 - Display access credentials when provided:
     - access key ID,
@@ -24,7 +25,7 @@
 
 - It does not fetch profiles, credentials, or snippets.
 - It does not own the selected profile or selected technology state.
-- It does not create, edit, renew, or persist profiles itself.
+- It does not create, edit, delete, renew, or persist profiles itself.
 - It does not decide which snippets are available; that comes from the controller.
 
 ## Props Contract
@@ -32,3 +33,5 @@
 The parent must provide at least one profile name and keep `profileName` synchronized with `availableProfileNames`. `technology` must be one of `availableTechnologies`, and `codeSnippet` must correspond to the selected profile and technology.
 
 Credential copy buttons always copy the raw credential value even though the rendered text is shortened.
+
+When `onDelete` is undefined, no delete affordance is rendered. When `onDelete` is defined, the delete button invokes it without owning confirmation or persistence logic.

@@ -91,5 +91,20 @@ export const thunks = {
             assert(doesProfileExist);
 
             await dispatch(thunks.load());
+        },
+    deleteProfile:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const s3Profile = s3ProfilesManagement.selectors.ambientS3Profile(getState());
+
+            assert(s3Profile !== undefined);
+
+            await dispatch(
+                s3ProfilesManagement.protectedThunks.deleteS3Profile({
+                    profileName: s3Profile.profileName
+                })
+            );
         }
 } satisfies Thunks;

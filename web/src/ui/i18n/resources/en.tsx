@@ -405,6 +405,7 @@ export const translations: Translations<"en"> = {
         "read only": "Read-only",
         custom: "Custom",
         edit: "Edit",
+        delete: "Delete",
         "connection details title": "Connection details",
         "connection details subtitle":
             "Use these values when configuring S3 clients outside the explorer.",

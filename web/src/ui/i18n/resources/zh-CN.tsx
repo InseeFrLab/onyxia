@@ -393,6 +393,7 @@ export const translations: Translations<"zh-CN"> = {
         "read only": "只读",
         custom: "自定义",
         edit: "编辑",
+        delete: "删除",
         "connection details title": "连接详情",
         "connection details subtitle": "在资源管理器外配置 S3 客户端时使用这些值。",
         "endpoint url label": "端点 URL",

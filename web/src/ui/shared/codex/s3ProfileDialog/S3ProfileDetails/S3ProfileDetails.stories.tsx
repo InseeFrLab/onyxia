@@ -107,6 +107,7 @@ function StatefulS3ProfileDetails(props: Props & { profiles: ProfileFixture[] })
             defaultRegion={selectedProfile.defaultRegion}
             accessCredentials={selectedProfile.accessCredentials}
             onEdit={selectedProfile.isReadonly ? undefined : initialProps.onEdit}
+            onDelete={selectedProfile.isReadonly ? undefined : initialProps.onDelete}
             technology={technology}
             onTechnologyChange={params => {
                 initialProps.onTechnologyChange(params);
@@ -167,6 +168,7 @@ const baseArgs: Props = {
     onSelectedProfileChange: action("selectedProfileChange"),
     onCreateNewProfile: action("createNewProfile"),
     onEdit: action("edit"),
+    onDelete: action("delete"),
     endpointUrl: defaultProfile.endpointUrl,
     defaultRegion: defaultProfile.defaultRegion,
     accessCredentials: defaultProfile.accessCredentials,

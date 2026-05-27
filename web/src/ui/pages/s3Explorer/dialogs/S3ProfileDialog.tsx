@@ -33,6 +33,8 @@ export function S3ProfileDialog(props: S3ProfileDialogProps) {
         [evtOpen]
     );
 
+    const onClose = () => setActiveView(undefined);
+
     if (activeView === undefined) {
         return null;
     }
@@ -58,6 +60,7 @@ export function S3ProfileDialog(props: S3ProfileDialogProps) {
                             <S3ProfileDetails
                                 onCreateNewProfile={() => setActiveView("create")}
                                 onEdit={() => setActiveView("edit")}
+                                onClose={onClose}
                             />
                         );
                     case "create":
@@ -65,7 +68,7 @@ export function S3ProfileDialog(props: S3ProfileDialogProps) {
                         return (
                             <S3ProfileForm
                                 isEdit={activeView === "edit"}
-                                onClose={() => setActiveView(undefined)}
+                                onClose={onClose}
                             />
                         );
                 }
@@ -205,13 +208,14 @@ export type I18n = typeof i18n;
 const S3ProfileDetails = withLoader<{
     onCreateNewProfile: () => void;
     onEdit: () => void;
+    onClose: () => void;
 }>({
     loader: async () => {
         const core = await getCore();
         await core.functions.s3ProfilesDetailsUiController.load();
     },
     FallbackComponent: () => null,
-    Component: ({ onCreateNewProfile, onEdit }) => {
+    Component: ({ onCreateNewProfile, onEdit, onClose }) => {
         const mainView = useCoreState("s3ProfilesDetailsUiController", "mainView");
 
         const {
@@ -227,6 +231,14 @@ const S3ProfileDetails = withLoader<{
                 }
                 onCreateNewProfile={onCreateNewProfile}
                 onEdit={mainView.isReadonly ? undefined : onEdit}
+                onDelete={
+                    mainView.isReadonly
+                        ? undefined
+                        : () => {
+                              s3ProfilesDetailsUiController.deleteProfile();
+                              onClose();
+                          }
+                }
                 endpointUrl={mainView.endpointUrl}
                 defaultRegion={mainView.defaultRegion}
                 accessCredentials={

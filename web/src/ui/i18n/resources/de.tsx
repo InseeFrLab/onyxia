@@ -428,6 +428,7 @@ export const translations: Translations<"de"> = {
         "read only": "Schreibgeschützt",
         custom: "Benutzerdefiniert",
         edit: "Bearbeiten",
+        delete: "Löschen",
         "connection details title": "Verbindungsdetails",
         "connection details subtitle":
             "Verwende diese Werte, wenn du S3-Clients außerhalb des Explorers konfigurierst.",

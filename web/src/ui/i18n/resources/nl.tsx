@@ -420,6 +420,7 @@ export const translations: Translations<"nl"> = {
         "read only": "Alleen-lezen",
         custom: "Aangepast",
         edit: "Bewerken",
+        delete: "Verwijderen",
         "connection details title": "Verbindingsgegevens",
         "connection details subtitle":
             "Gebruik deze waarden bij het configureren van S3-clients buiten de explorer.",

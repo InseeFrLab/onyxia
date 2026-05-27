@@ -415,6 +415,7 @@ export const translations: Translations<"fi"> = {
         "read only": "Vain luku",
         custom: "Mukautettu",
         edit: "Muokkaa",
+        delete: "Poista",
         "connection details title": "Yhteystiedot",
         "connection details subtitle":
             "Käytä näitä arvoja, kun määrität S3-asiakkaita selaimen ulkopuolella.",
