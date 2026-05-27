@@ -1260,7 +1260,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "datasets parsing error": "Impossibile analizzare i dataset del catalogo."
     },
     S3UriBar: {
-        search: "Cercare..",
+        explore: "Esplora..",
         "copy s3 path": "Copia percorso S3",
         copied: "Copiato",
         "copied path": ({ s3Uri }) => `Percorso copiato: ${s3Uri}`,

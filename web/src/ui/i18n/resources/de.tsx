@@ -1274,7 +1274,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             "Die Datensätze des Katalogs konnten nicht analysiert werden."
     },
     S3UriBar: {
-        search: "Suchen..",
+        explore: "Erkunden..",
         "copy s3 path": "S3-Pfad kopieren",
         copied: "Kopiert",
         "copied path": ({ s3Uri }) => `Kopierter Pfad: ${s3Uri}`,

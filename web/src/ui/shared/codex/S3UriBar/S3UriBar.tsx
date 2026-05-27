@@ -1355,7 +1355,7 @@ export function S3UriBar(props: S3UriBarProps) {
                             />
                         </span>
                         <span className={classes.inactiveHomePlaceholder}>
-                            {t("search")}
+                            {t("explore")}
                         </span>
                     </div>
                 ) : (
@@ -2314,7 +2314,7 @@ const useStyles = tss
     });
 
 const { i18n } = declareComponentKeys<
-    | "search"
+    | "explore"
     | "copy s3 path"
     | "copied"
     | { K: "copied path"; P: { s3Uri: string }; R: string }

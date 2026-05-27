@@ -1254,7 +1254,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "datasets parsing error": "Kunne ikke tolke datasett fra katalogen."
     },
     S3UriBar: {
-        search: "Søk..",
+        explore: "Utforsk..",
         "copy s3 path": "Kopier S3-sti",
         copied: "Kopiert",
         "copied path": ({ s3Uri }) => `Kopiert sti: ${s3Uri}`,

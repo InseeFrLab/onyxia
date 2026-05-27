@@ -1247,7 +1247,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "datasets parsing error": "Katalogin datasettejä ei voitu jäsentää."
     },
     S3UriBar: {
-        search: "Haku..",
+        explore: "Selaa..",
         "copy s3 path": "Kopioi S3-polku",
         copied: "Kopioitu",
         "copied path": ({ s3Uri }) => `Kopioitu polku: ${s3Uri}`,

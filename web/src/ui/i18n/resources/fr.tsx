@@ -1274,7 +1274,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Impossible d'analyser les jeux de données du catalogue."
     },
     S3UriBar: {
-        search: "Rechercher..",
+        explore: "Explorer..",
         "copy s3 path": "Copier le chemin S3",
         copied: "Copié",
         "copied path": ({ s3Uri }) => `Chemin copié : ${s3Uri}`,

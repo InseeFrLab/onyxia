@@ -1263,7 +1263,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "De datasets uit de catalogus konden niet worden geparseerd."
     },
     S3UriBar: {
-        search: "Zoeken..",
+        explore: "Verkennen..",
         "copy s3 path": "S3-pad kopiëren",
         copied: "Gekopieerd",
         "copied path": ({ s3Uri }) => `Gekopieerd pad: ${s3Uri}`,

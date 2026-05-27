@@ -1255,7 +1255,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         ok: "Ok"
     },
     S3UriBar: {
-        search: "Search..",
+        explore: "Explore..",
         "copy s3 path": "Copy S3 path",
         copied: "Copied",
         "copied path": ({ s3Uri }) => `Copied path: ${s3Uri}`,

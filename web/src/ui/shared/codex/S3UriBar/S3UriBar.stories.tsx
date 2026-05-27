@@ -734,7 +734,7 @@ export const HomeInactiveHovered: Story = {
     render: args => <StatefulS3UriBar {...args} />,
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        const homeInactiveTrigger = canvas.getByText(/rechercher|search/i);
+        const homeInactiveTrigger = canvas.getByText(/explorer|explore/i);
         await userEvent.hover(homeInactiveTrigger);
     }
 };
@@ -755,7 +755,7 @@ export const HomeInactiveFocused: Story = {
     render: args => <StatefulS3UriBar {...args} />,
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        const homeInactiveTrigger = canvas.getByText(/rechercher|search/i);
+        const homeInactiveTrigger = canvas.getByText(/explorer|explore/i);
         await userEvent.click(homeInactiveTrigger);
     }
 };

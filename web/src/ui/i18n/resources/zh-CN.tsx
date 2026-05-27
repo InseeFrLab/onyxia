@@ -1191,7 +1191,7 @@ ${
         "datasets parsing error": "无法解析目录中的数据集。"
     },
     S3UriBar: {
-        search: "搜索..",
+        explore: "浏览..",
         "copy s3 path": "复制 S3 路径",
         copied: "已复制",
         "copied path": ({ s3Uri }) => `已复制路径：${s3Uri}`,

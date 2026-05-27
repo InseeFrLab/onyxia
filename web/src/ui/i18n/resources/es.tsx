@@ -1264,7 +1264,7 @@ export const translations: Translations<"es"> = {
             "No se pudieron analizar los conjuntos de datos del catálogo."
     },
     S3UriBar: {
-        search: "Buscar..",
+        explore: "Explorar..",
         "copy s3 path": "Copiar ruta S3",
         copied: "Copiado",
         "copied path": ({ s3Uri }) => `Ruta copiada: ${s3Uri}`,
