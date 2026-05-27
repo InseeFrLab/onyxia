@@ -258,7 +258,12 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                                     {action.tooltipTitle}
                                 </span>
                             }
-                            classes={{ tooltip: action.tooltipClassName }}
+                            classes={{
+                                tooltip: cx(
+                                    classes.tooltipBubble,
+                                    action.tooltipClassName
+                                )
+                            }}
                         >
                             <span className={classes.tooltipAnchor}>{button}</span>
                         </MuiTooltip>
@@ -389,7 +394,8 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             display: "inline-flex",
             alignItems: "center",
             gap: theme.spacing(0.75),
-            color: theme.colors.useCases.alertSeverity.success.main
+            color: theme.colors.useCases.alertSeverity.success.main,
+            lineHeight: 1
         },
         copiedTooltipIcon: {
             color: "currentColor",
@@ -397,7 +403,24 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
         },
         tooltipText: {
             ...theme.typography.variants.caption.style,
-            color: theme.colors.palette.light.light
+            color: theme.colors.palette.light.light,
+            display: "inline-flex",
+            alignItems: "center",
+            lineHeight: 1
+        },
+        tooltipBubble: {
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 0,
+            padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
+            lineHeight: 1,
+            boxSizing: "border-box",
+            "& > *": {
+                display: "inline-flex",
+                alignItems: "center",
+                lineHeight: 1
+            }
         },
         copyTooltipBubble: {
             maxWidth: "calc(100vw - 32px)"
