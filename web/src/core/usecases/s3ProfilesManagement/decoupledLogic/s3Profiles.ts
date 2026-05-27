@@ -104,7 +104,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                 })();
 
                 const buildFromRole = (params: {
-                    resolvedTemplatedStsRole: ResolvedTemplateStsRole | undefined;
+                    resolvedTemplatedStsRole: ResolvedTemplateStsRole;
                 }): S3Profile.DefinedInRegion => {
                     const { resolvedTemplatedStsRole } = params;
 
@@ -119,18 +119,9 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                         role: resolvedTemplatedStsRole
                     };
 
-                    const profileName = (() => {
-                        if (resolvedTemplatedStsRole === undefined) {
-                            assert(c.profileName !== undefined);
-                            return c.profileName;
-                        }
-
-                        return resolvedTemplatedStsRole.profileName;
-                    })();
-
                     return {
                         origin: "defined in region",
-                        profileName,
+                        profileName: resolvedTemplatedStsRole.profileName,
                         bookmarks: [
                             ...resolvedTemplatedBookmarks_forThisProfile
                                 .filter(({ forProfileNames }) => {
@@ -178,7 +169,11 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                 userConfigs_s3BookmarksStr:
                                     fromVault.userConfigs_s3BookmarksStr
                             })
-                                .filter(entry => entry.profileName === profileName)
+                                .filter(
+                                    entry =>
+                                        entry.profileName ===
+                                        resolvedTemplatedStsRole.profileName
+                                )
                                 .map(entry => ({
                                     isReadonly: false,
                                     displayName: entry.displayName ?? undefined,
@@ -203,9 +198,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     return entry.stsRoles;
                 })();
 
-                if (resolvedTemplatedStsRoles_forThisProfile.length === 0) {
-                    return [buildFromRole({ resolvedTemplatedStsRole: undefined })];
-                }
+                assert(resolvedTemplatedStsRoles_forThisProfile.length !== 0);
 
                 return resolvedTemplatedStsRoles_forThisProfile.map(
                     resolvedTemplatedStsRole =>

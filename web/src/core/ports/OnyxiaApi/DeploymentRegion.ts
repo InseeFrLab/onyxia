@@ -105,7 +105,6 @@ export type DeploymentRegion = {
 };
 export namespace DeploymentRegion {
     export type S3Profile = {
-        profileName: string | undefined;
         url: string;
         pathStyleAccess: boolean;
         region: string | undefined;
@@ -139,8 +138,6 @@ export namespace DeploymentRegion {
         export type Bookmark = {
             s3UriStr_templated: string;
             title: LocalizedString;
-            description: LocalizedString | undefined;
-            tags: LocalizedString[];
             forProfileNames: string[];
         } & (
             | {

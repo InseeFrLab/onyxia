@@ -7,8 +7,6 @@ import { type S3Uri, parseS3Uri } from "core/tools/S3Uri";
 
 export type ResolvedTemplateBookmark = {
     title: LocalizedString;
-    description: LocalizedString | undefined;
-    tags: LocalizedString[];
     s3Uri: S3Uri;
     forProfileNames: string[];
 };
@@ -27,8 +25,6 @@ export async function resolveTemplatedBookmark(params: {
                     delimiter: "/"
                 }),
                 title: bookmark_region.title,
-                description: bookmark_region.description,
-                tags: bookmark_region.tags,
                 forProfileNames: bookmark_region.forProfileNames
             })
         ];
@@ -125,11 +121,6 @@ export async function resolveTemplatedBookmark(params: {
                     delimiter: "/"
                 }),
                 title: substituteLocalizedString(bookmark_region.title),
-                description:
-                    bookmark_region.description === undefined
-                        ? undefined
-                        : substituteLocalizedString(bookmark_region.description),
-                tags: bookmark_region.tags.map(tag => substituteLocalizedString(tag)),
                 forProfileNames: bookmark_region.forProfileNames.map(profileName =>
                     substituteTemplateString(profileName)
                 )

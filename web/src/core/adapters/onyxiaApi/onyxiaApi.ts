@@ -240,29 +240,9 @@ export function createOnyxiaApi(params: {
                                         )
                                         .map(
                                             (
-                                                s3Config_api,
-                                                _i,
-                                                arr
+                                                s3Config_api
                                             ): DeploymentRegion.S3Profile => {
                                                 return {
-                                                    profileName: (() => {
-                                                        if (
-                                                            s3Config_api.profileName !==
-                                                            undefined
-                                                        ) {
-                                                            return s3Config_api.profileName;
-                                                        }
-
-                                                        if (
-                                                            s3Config_api.sts?.role ===
-                                                            undefined
-                                                        ) {
-                                                            assert(arr.length === 1);
-                                                            return "default";
-                                                        }
-
-                                                        return undefined;
-                                                    })(),
                                                     url: s3Config_api.URL,
                                                     pathStyleAccess:
                                                         s3Config_api.pathStyleAccess ??
@@ -325,21 +305,16 @@ export function createOnyxiaApi(params: {
                                                         } as any;
                                                     })(),
                                                     bookmarks: (
-                                                        s3Config_api.bookmarkedDirectories ??
-                                                        []
+                                                        s3Config_api.bookmarks ?? []
                                                     ).map(
                                                         (
                                                             bookmarkedDirectory_api
                                                         ): DeploymentRegion.S3Profile.Bookmark => {
                                                             return id<DeploymentRegion.S3Profile.Bookmark>(
                                                                 {
-                                                                    s3UriStr_templated: `s3://${bookmarkedDirectory_api.fullPath}`,
+                                                                    s3UriStr_templated:
+                                                                        bookmarkedDirectory_api.s3Uri,
                                                                     title: bookmarkedDirectory_api.title,
-                                                                    description:
-                                                                        bookmarkedDirectory_api.description,
-                                                                    tags:
-                                                                        bookmarkedDirectory_api.tags ??
-                                                                        [],
                                                                     forProfileNames:
                                                                         (() => {
                                                                             const v =

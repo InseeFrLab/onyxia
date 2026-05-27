@@ -40,12 +40,10 @@ export namespace ParamsOfCreateS3Client {
         stsUrl: string | undefined;
         oidcParams: OidcParams_Partial;
         durationSeconds: number | undefined;
-        role:
-            | {
-                  roleARN: string;
-                  roleSessionName: string;
-              }
-            | undefined;
+        role: {
+            roleARN: string;
+            roleSessionName: string;
+        };
     };
 }
 
@@ -129,8 +127,8 @@ export function createS3Client(
                         const cmd = new AssumeRoleWithWebIdentityCommand({
                             WebIdentityToken: webIdentityToken,
                             DurationSeconds: params.durationSeconds ?? 7 * 24 * 3600,
-                            RoleArn: params.role?.roleARN,
-                            RoleSessionName: params.role?.roleSessionName
+                            RoleArn: params.role.roleARN || undefined,
+                            RoleSessionName: params.role.roleSessionName || undefined
                         });
 
                         const { Credentials: credentials } = await sts.send(cmd);

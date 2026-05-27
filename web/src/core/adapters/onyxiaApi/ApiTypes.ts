@@ -83,7 +83,6 @@ export type ApiTypes = {
             };
             data?: {
                 S3?: ArrayOrNot<{
-                    profileName?: string;
                     URL: string;
                     pathStyleAccess?: true;
 
@@ -91,11 +90,11 @@ export type ApiTypes = {
                     sts?: {
                         URL?: string;
                         durationSeconds?: number;
-                        role?: ArrayOrNot<
+                        role: ArrayOrNot<
                             {
+                                profileName: string;
                                 roleARN: string;
                                 roleSessionName: string;
-                                profileName: string;
                             } & (
                                 | { claimName?: undefined }
                                 | {
@@ -107,26 +106,9 @@ export type ApiTypes = {
                         >;
                         oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                     };
-
-                    /** Ok to be undefined only if sts is undefined */
-                    // NOTE: Remove in next major
-                    workingDirectory?:
-                        | {
-                              bucketMode: "shared";
-                              bucketName: string;
-                              prefix: string;
-                              prefixGroup: string;
-                          }
-                        | {
-                              bucketMode: "multi";
-                              bucketNamePrefix: string;
-                              bucketNamePrefixGroup: string;
-                          };
-                    bookmarkedDirectories?: ({
-                        fullPath: string;
+                    bookmarks?: ({
+                        s3Uri: string;
                         title: LocalizedString;
-                        description?: LocalizedString;
-                        tags?: LocalizedString[];
                         forProfileName?: string | string[];
                     } & (
                         | { claimName?: undefined }
