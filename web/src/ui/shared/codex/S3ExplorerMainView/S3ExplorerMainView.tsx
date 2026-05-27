@@ -34,6 +34,7 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
 import { evtS3Uri_preSelected } from "./preSelectedS3Uri";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -68,8 +69,6 @@ export type S3ExplorerMainViewProps = {
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
     onBookmark: (params: { s3Uri: S3Uri }) => void;
-
-    onCopyS3Uri: (params: { s3Uri: S3Uri }) => void;
 
     bookmarkedS3Uris: S3Uri[];
 
@@ -706,7 +705,6 @@ type ItemRowProps = {
     onChangePrefixPolicy: (() => void) | undefined;
     onDownload: (() => void) | undefined;
     onBookmark: (() => void) | undefined;
-    onCopyS3Uri: () => void;
     onCheckboxChange: () => void;
 };
 
@@ -724,7 +722,6 @@ function ItemRow(props: ItemRowProps) {
         onChangePrefixPolicy,
         onDownload,
         onBookmark,
-        onCopyS3Uri,
         onCheckboxChange
     } = props;
 
@@ -1042,12 +1039,9 @@ function ItemRow(props: ItemRowProps) {
                                             disabled={!isCopyAvailable}
                                             onClick={event => {
                                                 event.stopPropagation();
-
-                                                if (!isCopyAvailable) {
-                                                    return;
-                                                }
-
-                                                onCopyS3Uri();
+                                                copyToClipboard(
+                                                    stringifyS3Uri(item.s3Uri)
+                                                );
                                             }}
                                         />
                                     </span>
@@ -1095,7 +1089,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onDownload,
         onShareObject,
         onBookmark,
-        onCopyS3Uri,
         bookmarkedS3Uris,
         onChangePrefixPolicy,
         evtAction,
@@ -1462,24 +1455,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         lastSelectedItemKeyRef.current = undefined;
     };
 
-    const copySelectedS3Uri = () => {
-        if (selectedItems.length !== 1) {
-            return;
-        }
-
-        const selectedItem = selectedItems[0];
-
-        onCopyS3Uri({
-            s3Uri: selectedItem.s3Uri
-        });
-    };
-
-    const copyItemS3Uri = (item: S3ExplorerMainViewProps.Item) => {
-        onCopyS3Uri({
-            s3Uri: item.s3Uri
-        });
-    };
-
     const handleNavigate = (s3Uri: S3Uri) => {
         clearSelection();
         onNavigate({ s3Uri });
@@ -1570,7 +1545,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 selectedItemForSingleItemAction === undefined
                                     ? undefined
                                     : {
-                                          callback: copySelectedS3Uri,
                                           s3UriStr: stringifyS3Uri(
                                               selectedItemForSingleItemAction.s3Uri
                                           )
@@ -1913,9 +1887,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                                       item
                                                                   )
                                                             : undefined
-                                                    }
-                                                    onCopyS3Uri={() =>
-                                                        copyItemS3Uri(item)
                                                     }
                                                 />
                                             );

@@ -172,6 +172,20 @@ export const NavigationMode: Story = {
     render: args => <StatefulS3UriBar {...args} />
 };
 
+export const CopyActionWithInternalFeedback: Story = {
+    args: {
+        ...baseArgs
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: "The copy button writes the current S3 URI to the clipboard and manages copied feedback internally."
+            }
+        }
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
 export const ActiveBreadcrumbState: Story = {
     args: {
         ...baseArgs

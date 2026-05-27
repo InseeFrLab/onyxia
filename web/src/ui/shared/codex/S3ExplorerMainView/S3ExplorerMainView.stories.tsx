@@ -162,7 +162,6 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onDownload: action("download"),
     onShareObject: action("shareObject"),
     onBookmark: action("bookmark"),
-    onCopyS3Uri: action("copyS3Uri"),
     bookmarkedS3Uris: [],
     onChangePrefixPolicy: action("changePrefixPolicy"),
     evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
@@ -223,7 +222,6 @@ function StatefulExplorer(
         | "onDownload"
         | "onShareObject"
         | "onBookmark"
-        | "onCopyS3Uri"
         | "bookmarkedS3Uris"
         | "onChangePrefixPolicy"
         | "evtAction"
@@ -333,9 +331,6 @@ function StatefulExplorer(
                 onBookmark={({ s3Uri }) => {
                     action("bookmark")(s3Uri);
                 }}
-                onCopyS3Uri={({ s3Uri }) => {
-                    action("copyS3Uri")(s3Uri);
-                }}
                 bookmarkedS3Uris={[]}
                 onChangePrefixPolicy={({ action: policyAction, s3Uri }) => {
                     action("changePrefixPolicy")({ action: policyAction, s3Uri });
@@ -407,7 +402,6 @@ export const EmptyPrefix: Story = {
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onBookmark: action("bookmark"),
-        onCopyS3Uri: action("copyS3Uri"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
@@ -434,7 +428,6 @@ export const AccessDenied: Story = {
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onBookmark: action("bookmark"),
-        onCopyS3Uri: action("copyS3Uri"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),

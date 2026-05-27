@@ -22,6 +22,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
 import s3UriBucketSvgUrl from "ui/assets/svg/S3UriBucket.svg";
 import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 import { assert } from "tsafe";
@@ -45,9 +46,7 @@ export type S3UriBarProps = {
     }[];
     areHintsLoading: boolean;
     isBookmarked: boolean;
-    onToggleBookmark?: (props: { s3Uri: S3Uri }) => void;
-    copiedS3Uri?: S3Uri;
-    onCopyS3Uri?: (props: { s3Uri: S3Uri }) => void;
+    onToggleBookmark: ((props: { s3Uri: S3Uri }) => void) | undefined;
 };
 
 type NavigationCrumb = {
@@ -407,9 +406,7 @@ export function S3UriBar(props: S3UriBarProps) {
         hints,
         areHintsLoading,
         isBookmarked,
-        onToggleBookmark,
-        copiedS3Uri,
-        onCopyS3Uri
+        onToggleBookmark
     } = props;
 
     const currentS3Uri = s3Uri?.s3Uri;
@@ -434,14 +431,14 @@ export function S3UriBar(props: S3UriBarProps) {
         };
     }, [currentS3Uri]);
     const isUndefinedPrefixMode = currentS3Uri === undefined;
-    const isCopied =
-        currentS3Uri !== undefined &&
-        copiedS3Uri !== undefined &&
-        stringifyS3Uri(currentS3Uri) === stringifyS3Uri(copiedS3Uri);
     const canonicalS3Uri = useMemo(
         () => getCanonicalS3UriValue(currentS3Uri),
         [currentS3Uri]
     );
+    const [copyFeedback, setCopyFeedback] = useState<
+        { value: string; copiedAt: number } | undefined
+    >(undefined);
+    const isCopied = currentS3Uri !== undefined && copyFeedback?.value === canonicalS3Uri;
     const crumbs = useMemo(
         () => (isUndefinedPrefixMode ? [] : getBreadcrumbs({ s3Uri: normalizedS3Uri })),
         [isUndefinedPrefixMode, normalizedS3Uri]
@@ -870,6 +867,24 @@ export function S3UriBar(props: S3UriBarProps) {
             }
         };
     }, []);
+
+    useEffect(() => {
+        setCopyFeedback(undefined);
+    }, [canonicalS3Uri]);
+
+    useEffect(() => {
+        if (copyFeedback === undefined) {
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            setCopyFeedback(undefined);
+        }, 1400);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [copyFeedback]);
 
     const clearLongPressTimeout = () => {
         if (longPressTimeoutRef.current === undefined) {
@@ -1675,17 +1690,23 @@ export function S3UriBar(props: S3UriBarProps) {
                             {t("copied")}
                         </span>
                     )}
-                    {!isUndefinedPrefixMode && onCopyS3Uri !== undefined && (
+                    {!isUndefinedPrefixMode && (
                         <Tooltip title={t("copy s3 path")}>
                             <div data-s3-uri-ignore-edit="true">
                                 <IconButton
                                     aria-label={t("copy s3 path")}
                                     icon={getIconUrlByName("ContentCopy")}
                                     size="default"
-                                    onClick={event => {
+                                    onClick={async event => {
                                         event.stopPropagation();
                                         assert(currentS3Uri !== undefined);
-                                        onCopyS3Uri({ s3Uri: currentS3Uri });
+                                        const value = stringifyS3Uri(currentS3Uri);
+
+                                        await copyToClipboard(value);
+                                        setCopyFeedback({
+                                            value,
+                                            copiedAt: Date.now()
+                                        });
                                     }}
                                     className={classes.actionButton}
                                 />

@@ -20,6 +20,11 @@ The parent (or surrounding usecase layer) is responsible for:
 - Exposing whether hint computation is currently in flight.
 - Deciding whether bookmark toggling is available.
 
+The component is responsible for:
+
+- Copying the current S3 URI to the clipboard when the user activates the copy action.
+- Showing and clearing its own copied feedback. Parent code does not provide copied state and does not receive a copy callback.
+
 ## Modes
 
 The component has two modes:
@@ -163,6 +168,8 @@ export type S3UriBarProps = {
     - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because `a/` is the public prefix itself.
     - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/b/`, the public marker starts on `b`, because `b/` is the last crumb of the public prefix.
     - For `s3://bucket/a/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because the current crumb is the public prefix itself.
+    - Copy button click => stringify the current S3 URI and copy it with `copyToClipboard`.
+    - Copied feedback is internal to the component and should reset after a short delay or when the current S3 URI changes.
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
     - Segment short click => request navigation (`onS3UriChange`).

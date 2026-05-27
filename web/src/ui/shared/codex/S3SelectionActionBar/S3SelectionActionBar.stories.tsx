@@ -24,7 +24,6 @@ const baseArgs: S3SelectionActionBarProps = {
         callback: action("delete")
     },
     copyS3Uri: {
-        callback: action("copyS3Uri"),
         s3UriStr: "s3://demo-bucket/path/to/object.csv"
     },
     bookmark: {

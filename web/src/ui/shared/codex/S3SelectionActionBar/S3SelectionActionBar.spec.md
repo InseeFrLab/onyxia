@@ -31,7 +31,6 @@ type S3SelectionActionBarProps = {
 
     copyS3Uri:
         | {
-              callback: () => void;
               s3UriStr: string;
           }
         | undefined;
@@ -122,9 +121,12 @@ Each action button is rendered only when its action object prop is defined.
 - Share → rendered when `share !== undefined`
 - Access policy → rendered when `accessPolicy !== undefined`
 
-Clicking a rendered action calls the matching action object's `callback`.
+Clicking a rendered action calls the matching action object's `callback`, except for Copy S3 URI.
+
+Clicking Copy S3 URI copies `copyS3Uri.s3UriStr` to the clipboard by using `copyToClipboard(copyS3Uri.s3UriStr)`, then shows the copied confirmation state.
 
 The parent component is responsible for passing `undefined` for actions that do not make sense for the current context, such as single-object-only or single-selection-only actions.
+For Copy S3 URI, the parent provides only the URI string to copy; clipboard handling is owned by this component.
 
 ### Derived action labels
 
@@ -132,7 +134,7 @@ The parent must not pass labels for stateful actions.
 
 - Copy S3 URI is labelled `Copy S3 URI`.
 - Copy S3 URI displays a hover tooltip formatted as `Copy "<s3UriStr>"` and remains on one line when the value is long.
-- After clicking Copy S3 URI, the tooltip displays a success-colored checkmark icon and the label `Copied` for a short confirmation period. The action button itself keeps the same icon and label to avoid layout shift.
+- After clicking Copy S3 URI, the component awaits the clipboard copy, then the tooltip displays a success-colored checkmark icon and the label `Copied` for a short confirmation period. The action button itself keeps the same icon and label to avoid layout shift.
 - Bookmark is labelled `Add to bookmarks` when `bookmark.isBookmarked === false`.
 - Bookmark is labelled `Delete from bookmarks` when `bookmark.isBookmarked === true`.
 - Access policy is labelled `Make public` when `accessPolicy.isPublic === false`.

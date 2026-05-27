@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
 import { assert } from "tsafe/assert";
@@ -29,7 +29,6 @@ import { customIcons } from "lazy-icons";
 import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 const Page = withLoader({
     loader,
@@ -136,7 +135,6 @@ function S3Explorer() {
     const mainView = useCoreState("s3ExplorerUiController", "mainView");
     const { resolveLocalizedString } = useResolveLocalizedString();
     const { t } = useTranslation({ S3Explorer });
-    const [copiedS3Uri, setCopiedS3Uri] = useState<S3Uri | undefined>(undefined);
 
     const { css, theme } = useStyles();
 
@@ -182,13 +180,6 @@ function S3Explorer() {
         });
     };
 
-    const copyS3Uri = async (params: { s3Uri: S3Uri }) => {
-        const { s3Uri } = params;
-
-        await copyToClipboard(stringifyS3Uri(s3Uri));
-        setCopiedS3Uri(s3Uri);
-    };
-
     const toggleBookmarkFromDataView = (params: { s3Uri: S3Uri }) => {
         const { s3Uri } = params;
         const existingBookmark = mainView.bookmarks.items.find(
@@ -205,16 +196,6 @@ function S3Explorer() {
 
         openBookmarkDialog({ s3Uri });
     };
-
-    useEffect(() => {
-        if (copiedS3Uri === undefined) {
-            return;
-        }
-
-        const timeoutId = window.setTimeout(() => setCopiedS3Uri(undefined), 1800);
-
-        return () => window.clearTimeout(timeoutId);
-    }, [copiedS3Uri]);
 
     const props_bookmarkBar = {
         items: mainView.bookmarks.items,
@@ -379,8 +360,6 @@ function S3Explorer() {
                                     s3Uri={mainView.uriBar.s3Uri}
                                     hints={mainView.uriBar.hints}
                                     areHintsLoading={mainView.isListing}
-                                    copiedS3Uri={copiedS3Uri}
-                                    onCopyS3Uri={copyS3Uri}
                                     onS3UriChange={({ s3Uri, isHintSelection }) =>
                                         s3ExplorerUiController.listPrefix({
                                             s3Uri,
@@ -542,7 +521,6 @@ function S3Explorer() {
                                         });
                                     }}
                                     onBookmark={toggleBookmarkFromDataView}
-                                    onCopyS3Uri={copyS3Uri}
                                     bookmarkedS3Uris={mainView.bookmarks.items.map(
                                         item => item.s3Uri
                                     )}
