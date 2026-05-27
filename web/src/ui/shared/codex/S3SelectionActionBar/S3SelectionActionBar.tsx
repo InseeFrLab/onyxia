@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactElement, type ReactNode } from "react";
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
-import { Tooltip } from "onyxia-ui/Tooltip";
+import MuiTooltip from "@mui/material/Tooltip";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -53,6 +53,7 @@ type Action = {
     icon: ReactElement;
     onClick: () => void;
     tooltipTitle?: ReactNode;
+    tooltipClassName?: string;
     isActive?: boolean;
 };
 
@@ -148,10 +149,17 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                 copyS3Uri === undefined ? undefined : isS3UriCopied ? (
                     copiedTooltipTitle
                 ) : (
-                    <span style={{ whiteSpace: "nowrap" }}>
-                        {t("copy s3 uri tooltip", { s3UriStr: copyS3Uri.s3UriStr })}
+                    <span className={classes.copyTooltip}>
+                        {t("copy s3 uri tooltip", {
+                            s3Uri: (
+                                <code className={classes.copyTooltipUri}>
+                                    {copyS3Uri.s3UriStr}
+                                </code>
+                            )
+                        })}
                     </span>
-                )
+                ),
+            tooltipClassName: classes.copyTooltipBubble
         },
         {
             key: "bookmark",
@@ -247,9 +255,17 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                     }
 
                     return (
-                        <Tooltip key={action.key} title={action.tooltipTitle}>
+                        <MuiTooltip
+                            key={action.key}
+                            title={
+                                <span className={classes.tooltipText}>
+                                    {action.tooltipTitle}
+                                </span>
+                            }
+                            classes={{ tooltip: action.tooltipClassName }}
+                        >
                             <span className={classes.tooltipAnchor}>{button}</span>
-                        </Tooltip>
+                        </MuiTooltip>
                     );
                 })}
             </div>
@@ -382,6 +398,31 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
         copiedTooltipIcon: {
             color: "currentColor",
             flexShrink: 0
+        },
+        tooltipText: {
+            ...theme.typography.variants.caption.style,
+            color: theme.colors.palette.light.light
+        },
+        copyTooltipBubble: {
+            maxWidth: "calc(100vw - 32px)"
+        },
+        copyTooltip: {
+            display: "inline-flex",
+            alignItems: "baseline",
+            gap: theme.spacing(0.75),
+            maxWidth: "calc(100vw - 64px)",
+            whiteSpace: "nowrap",
+            overflow: "hidden"
+        },
+        copyTooltipUri: {
+            display: "inline-block",
+            flex: "1 1 auto",
+            minWidth: 0,
+            maxWidth: "100%",
+            whiteSpace: "nowrap",
+            overflowX: "auto",
+            overflowY: "hidden",
+            fontFamily: "monospace"
         }
     };
 });
@@ -391,7 +432,7 @@ const { i18n } = declareComponentKeys<
     | "delete"
     | "copy s3 path"
     | "copied"
-    | { K: "copy s3 uri tooltip"; P: { s3UriStr: string }; R: string }
+    | { K: "copy s3 uri tooltip"; P: { s3Uri: ReactNode }; R: ReactNode }
     | "add to bookmarks"
     | "delete from bookmarks"
     | "share"
