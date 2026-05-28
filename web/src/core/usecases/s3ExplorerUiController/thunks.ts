@@ -9,9 +9,8 @@ import { id } from "tsafe/id";
 import { type S3Uri, parseS3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import { createWaitForDebounce } from "core/tools/waitForDebounce";
-import type { State } from "./state";
+import { type State, name } from "./state";
 import { Evt } from "evt";
-import { onlyIfChanged } from "evt/operators";
 import { Deferred } from "evt/tools/Deferred";
 import {
     getHasPrefixBeMadePublic,
@@ -515,7 +514,7 @@ export const thunks = {
         async (...args) => {
             const { files } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             const profileName = privateSelectors.profileName(getState());
 
@@ -525,36 +524,69 @@ export const thunks = {
 
             assert(s3Uri !== undefined);
 
-            await Promise.all(
-                files
-                    .map(file => ({
-                        file,
-                        s3Uri_object: id<S3Uri.NonTerminatedByDelimiter>({
-                            delimiter: s3Uri.delimiter,
-                            bucket: s3Uri.bucket,
-                            keySegments: [
-                                ...s3Uri.keySegments,
-                                ...file.relativePathSegments,
-                                file.fileBasename
-                            ],
-                            isDelimiterTerminated: false
-                        })
-                    }))
-                    .sort((a, b) =>
-                        stringifyS3Uri(a.s3Uri_object).localeCompare(
-                            stringifyS3Uri(b.s3Uri_object)
-                        )
+            const objectsToPut = files
+                .map(file => ({
+                    file,
+                    s3Uri_object: id<S3Uri.NonTerminatedByDelimiter>({
+                        delimiter: s3Uri.delimiter,
+                        bucket: s3Uri.bucket,
+                        keySegments: [
+                            ...s3Uri.keySegments,
+                            ...file.relativePathSegments,
+                            file.fileBasename
+                        ],
+                        isDelimiterTerminated: false
+                    })
+                }))
+                .sort((a, b) =>
+                    stringifyS3Uri(a.s3Uri_object).localeCompare(
+                        stringifyS3Uri(b.s3Uri_object)
                     )
-                    .map(({ file, s3Uri_object }) =>
-                        dispatch(
-                            privateThunks.putObject({
-                                profileName,
-                                s3Uri: s3Uri_object,
-                                blob: file.blob
-                            })
-                        )
-                    )
+                );
+
+            const prs: Promise<void>[] = [];
+
+            let isUploadCanceled = false;
+
+            const ctx = Evt.newCtx();
+
+            evtAction.attachOnce(
+                action =>
+                    action.usecaseName === name && action.actionName === "uploadFlushed",
+                ctx,
+                () => {
+                    isUploadCanceled = true;
+                }
             );
+
+            for (const { file, s3Uri_object } of objectsToPut) {
+                // NOTE: This is a hack, because our selectors have a non linear complexity
+                // so if we add too much entries in the uploads states things starts to slow down.
+                // We artificially pad as a workaround.
+                if (privateSelectors.uploads(getState()).length > 20) {
+                    await new Promise<void>(resolve => setTimeout(resolve, 2_000));
+                } else {
+                    await new Promise<void>(resolve => setTimeout(resolve, 10));
+                }
+
+                if (isUploadCanceled) {
+                    break;
+                }
+
+                prs.push(
+                    dispatch(
+                        privateThunks.putObject({
+                            profileName,
+                            s3Uri: s3Uri_object,
+                            blob: file.blob
+                        })
+                    )
+                );
+            }
+
+            ctx.done();
+
+            await Promise.all(prs);
         },
 
     createDirectory:
@@ -754,7 +786,7 @@ export const privateThunks = {
         async (...args) => {
             const { profileName, s3Uri, blob } = params;
 
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch, , { evtAction }] = args;
 
             {
                 const doesExist = await (async () => {
@@ -805,7 +837,7 @@ export const privateThunks = {
                 }
             }
 
-            const cmdId = Date.now();
+            const cmdId = Date.now() + Math.random();
 
             dispatch(
                 actions.commandLogIssued({
@@ -826,20 +858,24 @@ export const privateThunks = {
 
             const ctx = Evt.newCtx();
 
-            evtAction
-                .pipe(ctx, () => [privateSelectors.uploads(getState())])
-                .pipe(onlyIfChanged())
-                .attach(uploads => {
-                    const upload = uploads.find(
-                        upload =>
-                            upload.profileName === profileName &&
-                            same(upload.s3Uri, s3Uri)
-                    );
+            evtAction.setMaxHandlers(4000);
 
-                    if (upload === undefined) {
-                        evtCancel.post();
-                    }
-                });
+            evtAction.attachOnce(
+                action =>
+                    action.usecaseName === name && action.actionName === "uploadFlushed",
+                ctx,
+                () => evtCancel.post()
+            );
+
+            evtAction.attachOnce(
+                action =>
+                    action.usecaseName === name &&
+                    action.actionName === "uploadCanceled" &&
+                    action.payload.profileName === profileName &&
+                    same(action.payload.s3Uri, s3Uri),
+                ctx,
+                () => evtCancel.post()
+            );
 
             evtCancel.attachOnce(() => {
                 actions.commandLogCancelled({
