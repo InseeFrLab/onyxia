@@ -879,13 +879,6 @@ export const privateThunks = {
                 case "success":
                     break;
                 case "canceled":
-                    dispatch(
-                        actions.putObjectStopped({
-                            profileName,
-                            s3Uri: s3Uri,
-                            stoppedStatus: { case: "canceled" }
-                        })
-                    );
                     break;
                 case "failed":
                     console.error(
