@@ -6,7 +6,13 @@ import { assert, type Equals } from "tsafe/assert";
 import { actions } from "./state";
 import { formatDuration } from "core/tools/timeFormat/formatDuration";
 import { id } from "tsafe/id";
-import { type S3Uri, parseS3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
+import {
+    type S3Uri,
+    parseS3Uri,
+    stringifyS3Uri,
+    getIsInside,
+    getS3UriKey
+} from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import { createWaitForDebounce } from "core/tools/waitForDebounce";
 import { type State, name } from "./state";
@@ -462,7 +468,8 @@ export const thunks = {
                 privateThunks.putObject({
                     profileName,
                     s3Uri,
-                    blob: blobWrap.blob
+                    blob: blobWrap.blob,
+                    doCheckExistence: true
                 })
             );
         },
@@ -524,10 +531,28 @@ export const thunks = {
 
             assert(s3Uri !== undefined);
 
+            const listedPrefix_items = (() => {
+                const listedPrefix_state =
+                    privateSelectors.listedPrefix_state(getState());
+
+                if (listedPrefix_state === undefined) {
+                    return undefined;
+                }
+
+                if (listedPrefix_state.current === undefined) {
+                    return undefined;
+                }
+
+                if (!same(listedPrefix_state.current.s3Uri, s3Uri)) {
+                    return undefined;
+                }
+
+                return listedPrefix_state.current.items;
+            })();
+
             const objectsToPut = files
-                .map(file => ({
-                    file,
-                    s3Uri_object: id<S3Uri.NonTerminatedByDelimiter>({
+                .map(file => {
+                    const s3Uri_object = id<S3Uri.NonTerminatedByDelimiter>({
                         delimiter: s3Uri.delimiter,
                         bucket: s3Uri.bucket,
                         keySegments: [
@@ -536,8 +561,68 @@ export const thunks = {
                             file.fileBasename
                         ],
                         isDelimiterTerminated: false
-                    })
-                }))
+                    });
+
+                    const doCheckExistence = (() => {
+                        if (listedPrefix_items === undefined) {
+                            return true;
+                        }
+
+                        if (
+                            s3Uri.bucket !== s3Uri_object.bucket ||
+                            s3Uri.delimiter !== s3Uri_object.delimiter
+                        ) {
+                            return true;
+                        }
+
+                        const listedPrefix_key = getS3UriKey(s3Uri);
+                        const s3Uri_object_key = getS3UriKey(s3Uri_object);
+
+                        if (!s3Uri_object_key.startsWith(listedPrefix_key)) {
+                            return true;
+                        }
+
+                        const keyRelativeToListedPrefix = s3Uri_object_key.slice(
+                            listedPrefix_key.length
+                        );
+
+                        const indexOfDelimiter = keyRelativeToListedPrefix.indexOf(
+                            s3Uri.delimiter
+                        );
+
+                        if (indexOfDelimiter === -1) {
+                            return (
+                                listedPrefix_items.find(
+                                    item =>
+                                        item.type === "object" &&
+                                        same(item.s3Uri, s3Uri_object)
+                                ) !== undefined
+                            );
+                        }
+
+                        const prefixKeyOfObjectInListedPrefix =
+                            listedPrefix_key +
+                            keyRelativeToListedPrefix.slice(
+                                0,
+                                indexOfDelimiter + s3Uri.delimiter.length
+                            );
+
+                        return (
+                            listedPrefix_items.find(
+                                item =>
+                                    item.type === "prefix" &&
+                                    getS3UriKey(item.s3Uri) ===
+                                        prefixKeyOfObjectInListedPrefix
+                            ) !== undefined
+                        );
+                    })();
+
+                    return {
+                        file,
+                        s3Uri_object,
+                        doCheckExistence
+                    };
+                })
                 .sort((a, b) =>
                     stringifyS3Uri(a.s3Uri_object).localeCompare(
                         stringifyS3Uri(b.s3Uri_object)
@@ -559,7 +644,7 @@ export const thunks = {
                 }
             );
 
-            for (const { file, s3Uri_object } of objectsToPut) {
+            for (const { file, s3Uri_object, doCheckExistence } of objectsToPut) {
                 // NOTE: This is a hack, because our selectors have a non linear complexity
                 // so if we add too much entries in the uploads states things starts to slow down.
                 // We artificially pad as a workaround.
@@ -578,7 +663,8 @@ export const thunks = {
                         privateThunks.putObject({
                             profileName,
                             s3Uri: s3Uri_object,
-                            blob: file.blob
+                            blob: file.blob,
+                            doCheckExistence
                         })
                     )
                 );
@@ -782,13 +868,18 @@ export const privateThunks = {
             profileName: string;
             s3Uri: S3Uri.NonTerminatedByDelimiter;
             blob: Blob;
+            doCheckExistence: boolean;
         }) =>
         async (...args) => {
-            const { profileName, s3Uri, blob } = params;
+            const { profileName, s3Uri, blob, doCheckExistence } = params;
 
             const [dispatch, , { evtAction }] = args;
 
-            {
+            existence_check: {
+                if (!doCheckExistence) {
+                    break existence_check;
+                }
+
                 const doesExist = await (async () => {
                     const s3Client = await dispatch(
                         s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
