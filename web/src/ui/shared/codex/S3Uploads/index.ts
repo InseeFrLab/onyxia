@@ -1,1 +1,1 @@
-export * from "./S3Upload";
+export * from "./S3Uploads";

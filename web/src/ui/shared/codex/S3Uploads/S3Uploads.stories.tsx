@@ -3,7 +3,7 @@ import { action } from "@storybook/addon-actions";
 import type { S3Uri } from "core/tools/S3Uri";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { Link } from "type-route";
-import { S3Uploads, type S3UploadsProps } from "./S3Upload";
+import { S3Uploads, type S3UploadsProps } from "./S3Uploads";
 
 const meta = {
     title: "Shared/S3Uploads",

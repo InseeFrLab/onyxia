@@ -35,7 +35,7 @@ export type ComponentKey =
     | import("ui/shared/codex/S3ProfileSelect").I18n
     | import("ui/shared/codex/S3SelectionActionBar").I18n
     | import("ui/shared/codex/S3Uploads/ConfirmAbortUploadDialog").I18n
-    | import("ui/shared/codex/S3Uploads/S3Upload").I18n
+    | import("ui/shared/codex/S3Uploads/S3Uploads").I18n
     | import("ui/shared/codex/s3ProfileDialog/S3ProfileDetails").I18n
     | import("ui/shared/codex/s3ProfileDialog/S3ProfileForm").I18n
     | import("ui/App/Header/Header").I18n
