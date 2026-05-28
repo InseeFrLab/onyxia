@@ -5,7 +5,6 @@ import type { Language, getTranslation as ofTypeGetTranslation } from "ui/i18n";
 import { symToStr } from "tsafe/symToStr";
 import type { session as ofTypeSession, routes as ofTypeRoutes } from "ui/routes";
 import type { Param0 } from "tsafe/Param0";
-import { id } from "tsafe/id";
 import type { Core, Context as CoreContext } from "core/bootstrap";
 
 export type Onyxia = {
@@ -28,11 +27,18 @@ export type Onyxia = {
                 | "route params changed"
         ) => void
     ) => void;
+    evtGlobalDialog: typeof import("ui/App/GlobalDialog").evtGlobalDialog;
 };
 
-const attachToGlobalIfReady = () => {
+const attachToGlobalIfReady = async () => {
     if (symToStr({ onyxia }) in window) {
         return;
+    }
+
+    if (onyxia.evtGlobalDialog === undefined) {
+        const { evtGlobalDialog } = await import("ui/App/GlobalDialog");
+
+        onyxia.evtGlobalDialog = evtGlobalDialog;
     }
 
     if (Object.values(onyxia).some(value => value === undefined)) {
@@ -47,12 +53,21 @@ const attachToGlobalIfReady = () => {
 const callbacks: Param0<Onyxia["addEventListener"]>[] = [attachToGlobalIfReady];
 
 const onyxia: Onyxia = {
-    ...id<Pick<Onyxia, "addEventListener">>({
-        addEventListener: callback => {
-            callbacks.push(callback);
-        }
-    })
-} as any;
+    core: undefined as any,
+    coreAdapters: undefined as any,
+    theme: undefined as any,
+    css: undefined as any,
+    cx: undefined as any,
+    lang: undefined as any,
+    setLang: undefined as any,
+    getTranslation: undefined as any,
+    routes: undefined as any,
+    route: undefined as any,
+    evtGlobalDialog: undefined as any,
+    addEventListener: callback => {
+        callbacks.push(callback);
+    }
+};
 
 export function pluginSystemInitCore(params: { core: Core; context: CoreContext }) {
     const { core, context } = params;

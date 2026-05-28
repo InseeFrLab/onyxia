@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState, memo } from "react";
-import { createMarkdown } from "onyxia-ui/Markdown";
+import { createMarkdown, Markdown as Markdown_base } from "onyxia-ui/Markdown";
 import type { Param0 } from "tsafe";
 import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
 import { ensureUrlIsSafe } from "./ensureUrlIsSafe";
@@ -26,9 +26,16 @@ export const LocalizedMarkdown = memo(
         props: Omit<Param0<typeof Markdown>, "children" | "lang"> & {
             urlSourceOnly?: boolean;
             children: LocalizedString;
+            onLinkClick?: (params: { href: string }) => void;
         }
     ) => {
-        const { children: localizedString, urlSourceOnly = false, ...rest } = props;
+        const {
+            children: localizedString,
+            urlSourceOnly = false,
+            onLinkClick,
+            getLinkProps,
+            ...rest
+        } = props;
 
         const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
             labelWhenMismatchingLanguage: true
@@ -103,9 +110,32 @@ export const LocalizedMarkdown = memo(
         }
 
         return (
-            <Markdown {...rest} lang={langAttrValue}>
+            <Markdown_base
+                {...rest}
+                lang={langAttrValue}
+                getLinkProps={({ href }) => {
+                    const linkProps = (() => {
+                        if (getLinkProps !== undefined) {
+                            return getLinkProps({ href });
+                        }
+
+                        return urlToLink(href);
+                    })();
+
+                    const onClick_original = linkProps.onClick;
+
+                    linkProps.onClick = (...args: any[]) => {
+                        onLinkClick?.({ href });
+
+                        // @ts-expect-error
+                        return onClick_original?.(...args);
+                    };
+
+                    return linkProps;
+                }}
+            >
                 {markdown}
-            </Markdown>
+            </Markdown_base>
         );
     }
 );

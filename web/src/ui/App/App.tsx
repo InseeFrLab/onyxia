@@ -8,6 +8,7 @@ import { evtLang, useLang } from "ui/i18n";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
+import { GlobalDialog } from "./GlobalDialog";
 import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { injectOnyxiaInstancePublicUrl } from "keycloak-theme/login/onyxiaInstancePublicUrl";
@@ -68,6 +69,7 @@ export function App() {
                         message={env.GLOBAL_ALERT.message}
                     />
                 )}
+                <GlobalDialog />
                 <Header className={classes.header} />
                 <section className={classes.betweenHeaderAndFooter}>
                     <LeftBar className={classes.leftBar} />
