@@ -438,7 +438,8 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
     },
     list: {
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        overflow: "auto"
     },
     item: {
         position: "relative",

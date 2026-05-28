@@ -73,6 +73,7 @@ const useStyles = tss.withName({ Uploads }).create(({ theme }) => ({
         position: "fixed",
         bottom: theme.spacing(6),
         right: theme.spacing(4),
-        width: 500
+        width: 500,
+        maxHeight: `min(${window.innerHeight - 200}px, 700px)`
     }
 }));
