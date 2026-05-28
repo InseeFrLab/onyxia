@@ -68,7 +68,7 @@ const baseArgs: S3UploadsProps = {
             size: 7_800_000,
             completionPercent: 72,
             uploadStartTime: 1_712_250_000_000,
-            stoppedStatus: undefined
+            erroredErrorMessage: undefined
         },
         {
             profileName: "prod",
@@ -76,7 +76,7 @@ const baseArgs: S3UploadsProps = {
             size: 5_400_000,
             completionPercent: 28,
             uploadStartTime: 1_712_250_030_000,
-            stoppedStatus: undefined
+            erroredErrorMessage: undefined
         }
     ],
     onClose: action("close uploads"),
@@ -108,7 +108,7 @@ export const Completed: Story = {
                 size: 7_800_000,
                 completionPercent: 100,
                 uploadStartTime: 1_712_250_000_000,
-                stoppedStatus: undefined
+                erroredErrorMessage: undefined
             },
             {
                 profileName: "research",
@@ -116,7 +116,7 @@ export const Completed: Story = {
                 size: 12_400_000,
                 completionPercent: 100,
                 uploadStartTime: 1_712_250_060_000,
-                stoppedStatus: undefined
+                erroredErrorMessage: undefined
             }
         ]
     },
@@ -133,7 +133,7 @@ export const Mixed: Story = {
                 size: 7_800_000,
                 completionPercent: 100,
                 uploadStartTime: 1_712_250_000_000,
-                stoppedStatus: undefined
+                erroredErrorMessage: undefined
             },
             {
                 profileName: "prod",
@@ -141,7 +141,7 @@ export const Mixed: Story = {
                 size: 5_400_000,
                 completionPercent: 38,
                 uploadStartTime: 1_712_250_030_000,
-                stoppedStatus: undefined
+                erroredErrorMessage: undefined
             },
             {
                 profileName: "research",
@@ -149,20 +149,7 @@ export const Mixed: Story = {
                 size: 12_400_000,
                 completionPercent: 100,
                 uploadStartTime: 1_712_250_060_000,
-                stoppedStatus: {
-                    case: "errored",
-                    errorMessage: "Network error"
-                }
-            },
-            {
-                profileName: "research",
-                s3Uri: modelBin,
-                size: 12_400_000,
-                completionPercent: 46,
-                uploadStartTime: 1_712_250_090_000,
-                stoppedStatus: {
-                    case: "canceled"
-                }
+                erroredErrorMessage: "Network error"
             }
         ]
     },

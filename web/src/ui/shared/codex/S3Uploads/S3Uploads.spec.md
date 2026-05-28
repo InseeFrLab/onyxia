@@ -7,7 +7,7 @@
 It is responsible for:
 
 - surfacing upload progress,
-- showing stopped outcomes such as canceled or errored uploads,
+- showing errored upload outcomes,
 - exposing row-level actions for cancel, retry, and open-directory,
 - letting the parent close the panel entirely.
 
@@ -27,10 +27,7 @@ type S3UploadsProps = {
         size: number;
         completionPercent: number;
         uploadStartTime: number;
-        stoppedStatus:
-            | { case: "canceled" }
-            | { case: "errored"; errorMessage: string }
-            | undefined;
+        erroredErrorMessage: string | undefined;
     }[];
     onClose: () => void;
     onCancelUpload: (params: {
@@ -55,12 +52,11 @@ If `uploads` is empty, the component renders nothing.
 
 ## Derived States
 
-The component derives visual state from `completionPercent` and `stoppedStatus`.
+The component derives visual state from `completionPercent` and `erroredErrorMessage`.
 
-- Uploading: `stoppedStatus === undefined && completionPercent < 100`
-- Completed: `stoppedStatus === undefined && completionPercent === 100`
-- Canceled: `stoppedStatus?.case === "canceled"`
-- Error: `stoppedStatus?.case === "errored"`
+- Uploading: `erroredErrorMessage === undefined && completionPercent < 100`
+- Completed: `erroredErrorMessage === undefined && completionPercent === 100`
+- Error: `erroredErrorMessage !== undefined`
 
 `uploadStartTime` is not displayed directly, but it is part of the upload identity and
 can be used by the parent for ordering or lifecycle management.
@@ -120,16 +116,8 @@ Expected behavior:
 
 - show the total size,
 - display an error status,
-- append `errorMessage` when it is non-empty,
+- append `erroredErrorMessage` when it is non-empty,
 - expose a retry action through `onRetryUpload`.
-
-### Canceled
-
-Expected behavior:
-
-- show the total size,
-- display a canceled status,
-- render no trailing action.
 
 ## Layout And Visual Rules
 
@@ -139,4 +127,3 @@ Expected behavior:
 - Uploading rows show a thin bottom progress bar.
 - Completed statuses use success color treatment.
 - Errored statuses use error color treatment.
-- Canceled statuses use a muted text treatment.

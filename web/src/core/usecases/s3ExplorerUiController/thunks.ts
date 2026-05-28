@@ -893,13 +893,10 @@ export const privateThunks = {
                     });
 
                     dispatch(
-                        actions.putObjectStopped({
+                        actions.putObjectErrored({
                             profileName,
                             s3Uri: s3Uri,
-                            stoppedStatus: {
-                                case: "errored",
-                                errorMessage: resultOfPutObject.error.message
-                            }
+                            erroredErrorMessage: resultOfPutObject.error.message
                         })
                     );
                     break;

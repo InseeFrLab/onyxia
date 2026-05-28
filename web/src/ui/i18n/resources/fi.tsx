@@ -266,7 +266,6 @@ export const translations: Translations<"fi"> = {
         "close uploads": undefined,
         "uploading status": undefined,
         completed: undefined,
-        cancelled: undefined,
         error: undefined,
         "uploaded size of total size": undefined,
         of: undefined,

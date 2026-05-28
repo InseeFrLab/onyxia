@@ -388,7 +388,6 @@ export const translations: Translations<"en"> = {
         "close uploads": "Close uploads",
         "uploading status": "Uploading...",
         completed: "Completed",
-        cancelled: "Cancelled",
         error: "Error",
         "uploaded size of total size": ({ uploadedSize, totalSize }) =>
             `${uploadedSize} of ${totalSize}`,

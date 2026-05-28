@@ -30,10 +30,7 @@ export namespace State {
         size: number;
         completionPercent: number;
         uploadStartTime: number;
-        stoppedStatus:
-            | { case: "canceled" }
-            | { case: "errored"; errorMessage: string }
-            | undefined;
+        erroredErrorMessage: string | undefined;
     };
 
     export type Deletion = {
@@ -129,13 +126,10 @@ export const { reducer, actions } = createUsecaseActions({
                     break retry_case;
                 }
 
-                assert(
-                    upload.stoppedStatus !== undefined &&
-                        upload.stoppedStatus.case === "errored"
-                );
+                assert(upload.erroredErrorMessage !== undefined);
 
                 upload.completionPercent = 0;
-                upload.stoppedStatus = undefined;
+                upload.erroredErrorMessage = undefined;
                 upload.uploadStartTime = Date.now();
 
                 return;
@@ -147,7 +141,7 @@ export const { reducer, actions } = createUsecaseActions({
                 size,
                 completionPercent: 0,
                 uploadStartTime: Date.now(),
-                stoppedStatus: undefined
+                erroredErrorMessage: undefined
             });
         },
         uploadFlushed: state => {
@@ -166,7 +160,7 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(upload_toDelete !== undefined);
-            assert(upload_toDelete.stoppedStatus === undefined);
+            assert(upload_toDelete.erroredErrorMessage === undefined);
 
             const i = state.uploads.indexOf(upload_toDelete);
 
@@ -193,12 +187,12 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(upload !== undefined);
-            assert(upload.stoppedStatus === undefined);
+            assert(upload.erroredErrorMessage === undefined);
 
-            upload.stoppedStatus = undefined;
+            upload.erroredErrorMessage = undefined;
             upload.completionPercent = completionPercent;
         },
-        putObjectStopped: (
+        putObjectErrored: (
             state,
             {
                 payload
@@ -206,24 +200,21 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     profileName: string;
                     s3Uri: S3Uri.NonTerminatedByDelimiter;
-                    stoppedStatus:
-                        | { case: "canceled" }
-                        | { case: "errored"; errorMessage: string }
-                        | undefined;
+                    erroredErrorMessage: string;
                 };
             }
         ) => {
-            const { profileName, s3Uri, stoppedStatus } = payload;
+            const { profileName, s3Uri, erroredErrorMessage } = payload;
 
             const upload = state.uploads.find(
                 upload => upload.profileName === profileName && same(upload.s3Uri, s3Uri)
             );
 
             assert(upload !== undefined);
-            assert(upload.stoppedStatus === undefined);
+            assert(upload.erroredErrorMessage === undefined);
             assert(upload.completionPercent !== 100);
 
-            upload.stoppedStatus = stoppedStatus;
+            upload.erroredErrorMessage = erroredErrorMessage;
         },
         listingCleared: (state, { payload }: { payload: { profileName: string } }) => {
             const { profileName } = payload;

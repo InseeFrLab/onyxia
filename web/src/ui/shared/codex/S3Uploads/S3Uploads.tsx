@@ -17,19 +17,16 @@ export type S3UploadsProps = {
         size: number;
         completionPercent: number;
         uploadStartTime: number;
-        stoppedStatus:
-            | { case: "canceled" }
-            | { case: "errored"; errorMessage: string }
-            | undefined;
+        erroredErrorMessage: string | undefined;
     }[];
     onClose: () => void;
-    // NOTE: We assert it refers to an upload with stoppedStatus is undefined
+    // NOTE: We assert it refers to an upload that is still running.
     onCancelUpload: (params: {
         profileName: string;
         s3Uri: S3Uri.NonTerminatedByDelimiter;
     }) => void;
 
-    // NOTE: We assert that it points to an upload with stoppedStatus errored
+    // NOTE: We assert that it points to an errored upload.
     onRetryUpload: (params: {
         profileName: string;
         s3Uri: S3Uri.NonTerminatedByDelimiter;
@@ -78,7 +75,8 @@ export function S3Uploads(props: S3UploadsProps) {
     };
 
     const runningUploads = uploads.filter(
-        upload => upload.stoppedStatus === undefined && upload.completionPercent < 100
+        upload =>
+            upload.erroredErrorMessage === undefined && upload.completionPercent < 100
     );
     const uploadingCount = runningUploads.length;
     const uploadCount = uploads.length;
@@ -154,12 +152,9 @@ export function S3Uploads(props: S3UploadsProps) {
                             Math.min(100, upload.completionPercent)
                         );
                         const roundedPercent = Math.round(percent);
-                        const isCompleted =
-                            upload.stoppedStatus === undefined && percent === 100;
-                        const isUploading =
-                            upload.stoppedStatus === undefined && !isCompleted;
-                        const isCancelled = upload.stoppedStatus?.case === "canceled";
-                        const isError = upload.stoppedStatus?.case === "errored";
+                        const isError = upload.erroredErrorMessage !== undefined;
+                        const isCompleted = !isError && percent === 100;
+                        const isUploading = !isError && !isCompleted;
                         const uploadedSize = Math.round((upload.size * percent) / 100);
                         const totalSizeLabel = getFormattedSize(upload.size);
                         const uploadedSizeLabel = getFormattedSize(uploadedSize);
@@ -172,10 +167,6 @@ export function S3Uploads(props: S3UploadsProps) {
                                 return t("completed");
                             }
 
-                            if (isCancelled) {
-                                return t("cancelled");
-                            }
-
                             return t("error");
                         })();
                         const sizeLabel = isUploading
@@ -185,9 +176,9 @@ export function S3Uploads(props: S3UploadsProps) {
                               })
                             : totalSizeLabel;
                         const messageSuffix =
-                            upload.stoppedStatus?.case === "errored" &&
-                            upload.stoppedStatus.errorMessage !== ""
-                                ? ` - ${upload.stoppedStatus.errorMessage}`
+                            upload.erroredErrorMessage !== undefined &&
+                            upload.erroredErrorMessage !== ""
+                                ? ` - ${upload.erroredErrorMessage}`
                                 : "";
                         const metaPrefix = sizeLabel;
                         const metaStatus = isUploading
@@ -258,9 +249,7 @@ export function S3Uploads(props: S3UploadsProps) {
                                                     classes.metaStatus,
                                                     isCompleted &&
                                                         classes.metaStatusSuccess,
-                                                    isError && classes.metaStatusError,
-                                                    isCancelled &&
-                                                        classes.metaStatusCancelled
+                                                    isError && classes.metaStatusError
                                                 )}
                                             >
                                                 {isCompleted && (
@@ -558,9 +547,6 @@ const useStyles = tss.withName({ S3Uploads }).create(({ theme }) => ({
     metaStatusError: {
         color: theme.colors.useCases.alertSeverity.error.main
     },
-    metaStatusCancelled: {
-        color: theme.colors.useCases.typography.textDisabled
-    },
     itemProgress: {
         position: "absolute",
         left: 0,
@@ -607,7 +593,6 @@ const { i18n } = declareComponentKeys<
     | "close uploads"
     | "uploading status"
     | "completed"
-    | "cancelled"
     | "error"
     | {
           K: "uploaded size of total size";

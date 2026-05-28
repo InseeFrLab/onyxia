@@ -16,7 +16,7 @@ export function computeUploadStatusAtPrefix(params: {
     > = {};
 
     for (const upload of uploads) {
-        if (upload.stoppedStatus !== undefined) {
+        if (upload.erroredErrorMessage !== undefined) {
             continue;
         }
 
