@@ -256,7 +256,8 @@ export const protectedThunks = {
                         );
 
                         const s3Profile_vault = s3Profiles_vault.find(
-                            s3Profile => s3Profile.creationTime === s3Profile.creationTime
+                            s3Profile_i =>
+                                s3Profile_i.creationTime === s3Profile.creationTime
                         );
 
                         assert(s3Profile_vault !== undefined);
