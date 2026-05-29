@@ -518,20 +518,12 @@ const useStyles = tss
         const baseBackground = isBar
             ? "transparent"
             : theme.colors.useCases.surfaces.surface2;
-        const hoverBackground = isBar
-            ? theme.colors.useCases.surfaces.surface2
-            : theme.colors.useCases.surfaces.surface2;
-        const pressedBackground = isBar
-            ? theme.colors.useCases.surfaces.surface2
-            : isReadonly
-              ? theme.colors.useCases.surfaces.surface2
-              : theme.colors.useCases.surfaces.surface2;
+        const hoverBackground = theme.colors.useCases.surfaces.surface2;
+        const pressedBackground = theme.colors.useCases.surfaces.surface2;
         const activeBackground = isBar
             ? "transparent"
             : theme.colors.useCases.surfaces.surface2;
-        const activeHoverBackground = isBar
-            ? theme.colors.useCases.surfaces.surface2
-            : theme.colors.useCases.surfaces.surface2;
+        const activeHoverBackground = theme.colors.useCases.surfaces.surface2;
         const labelColor = isBar
             ? isActive
                 ? theme.colors.useCases.typography.textPrimary
