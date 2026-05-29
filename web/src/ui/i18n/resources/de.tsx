@@ -203,7 +203,7 @@ export const translations: Translations<"de"> = {
         ok: undefined
     },
     S3Explorer: {
-        "page header title": undefined,
+        "page header title": "Datenspeicher",
         "create profile": undefined,
         back: undefined,
         upload: undefined,
@@ -599,7 +599,7 @@ export const translations: Translations<"de"> = {
             "Funktionen spezifisch für diese Onyxia-Instanz",
         dataExplorer: "Daten-Explorer",
         dataCollection: "Sammlungs-Explorer",
-        s3Explorer: "Datei-Explorer",
+        s3Explorer: "Datenspeicher",
         sqlOlapShell: "SQL OLAP-Shell"
     },
     AutoLogoutCountdown: {

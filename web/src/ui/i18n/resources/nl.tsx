@@ -199,7 +199,7 @@ export const translations: Translations<"nl"> = {
         ok: undefined
     },
     S3Explorer: {
-        "page header title": undefined,
+        "page header title": "Gegevensopslag",
         "create profile": undefined,
         back: undefined,
         upload: undefined,
@@ -589,7 +589,7 @@ export const translations: Translations<"nl"> = {
             "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
         dataExplorer: "Data Verkenner",
         dataCollection: "Collecties Verkenner",
-        s3Explorer: "Bestandsverkenner",
+        s3Explorer: "Gegevensopslag",
         sqlOlapShell: "SQL OLAP Shell"
     },
     AutoLogoutCountdown: {

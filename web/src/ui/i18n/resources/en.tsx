@@ -315,7 +315,7 @@ export const translations: Translations<"en"> = {
         "selected duration": "the selected duration"
     },
     S3Explorer: {
-        "page header title": "File Explorer",
+        "page header title": "Data Storage",
         "create profile": "Create Profile",
         back: "Back",
         upload: "Upload",
@@ -575,7 +575,7 @@ export const translations: Translations<"en"> = {
         "divider: onyxia instance specific features": "Onyxia instance specific features",
         dataExplorer: "Data Explorer",
         dataCollection: "Data Collection",
-        s3Explorer: "File Explorer",
+        s3Explorer: "Data Storage",
         sqlOlapShell: "SQL Olap Shell"
     },
     AutoLogoutCountdown: {

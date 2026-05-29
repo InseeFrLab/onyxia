@@ -195,7 +195,7 @@ export const translations: Translations<"no"> = {
         ok: undefined
     },
     S3Explorer: {
-        "page header title": undefined,
+        "page header title": "Datalagring",
         "create profile": undefined,
         back: undefined,
         upload: undefined,
@@ -587,7 +587,7 @@ export const translations: Translations<"no"> = {
             "Onyxia-instansspesifikke funksjoner",
         dataExplorer: "Datautforsker",
         dataCollection: "Samlingseksplorer",
-        s3Explorer: "Filutforsker",
+        s3Explorer: "Datalagring",
         sqlOlapShell: "SQL OLAP-Skall"
     },
     AutoLogoutCountdown: {

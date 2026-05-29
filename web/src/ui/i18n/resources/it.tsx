@@ -197,7 +197,7 @@ export const translations: Translations<"it"> = {
         ok: undefined
     },
     S3Explorer: {
-        "page header title": undefined,
+        "page header title": "Archiviazione dati",
         "create profile": undefined,
         back: undefined,
         upload: undefined,
@@ -588,7 +588,7 @@ export const translations: Translations<"it"> = {
             "Funzioni specifiche di questa istanza di Onyxia",
         dataExplorer: "Esploratore di Dati",
         dataCollection: "Esploratore di Collezioni",
-        s3Explorer: "Esploratore di file",
+        s3Explorer: "Archiviazione dati",
         sqlOlapShell: "Guscio SQL OLAP"
     },
     AutoLogoutCountdown: {

@@ -195,7 +195,7 @@ export const translations: Translations<"fi"> = {
         ok: undefined
     },
     S3Explorer: {
-        "page header title": undefined,
+        "page header title": "Tietojen tallennus",
         "create profile": undefined,
         back: undefined,
         upload: undefined,
@@ -582,7 +582,7 @@ export const translations: Translations<"fi"> = {
             "Onyxia-instanssin erityisominaisuudet",
         dataExplorer: "Data Explorer",
         dataCollection: "Kokoelmien selains",
-        s3Explorer: "Tiedostoselain",
+        s3Explorer: "Tietojen tallennus",
         sqlOlapShell: "SQL OLAP-kuori"
     },
     AutoLogoutCountdown: {

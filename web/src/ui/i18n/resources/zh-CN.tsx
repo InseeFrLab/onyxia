@@ -177,7 +177,7 @@ export const translations: Translations<"zh-CN"> = {
         ok: undefined
     },
     S3Explorer: {
-        "page header title": undefined,
+        "page header title": "数据存储",
         "create profile": undefined,
         back: undefined,
         upload: undefined,
@@ -549,7 +549,7 @@ export const translations: Translations<"zh-CN"> = {
         "divider: onyxia instance specific features": "Onyxia实例特定功能",
         dataExplorer: "数据浏览器",
         dataCollection: "集合浏览器",
-        s3Explorer: "文件浏览器",
+        s3Explorer: "数据存储",
         sqlOlapShell: "SQL OLAP 外壳"
     },
     AutoLogoutCountdown: {
