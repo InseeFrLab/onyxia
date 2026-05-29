@@ -10,7 +10,7 @@ export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
     Account: {
         profile: "Profiel",
-        git: undefined,
+        git: "Git",
         k8sCodeSnippets: "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
         text1: "Mijn account",
@@ -190,108 +190,110 @@ export const translations: Translations<"nl"> = {
         overwrite: "Overschrijven"
     },
     ConfirmCustomS3ConfigDeletionDialog: {
-        "dialog title": undefined,
-        cancel: undefined,
-        yes: undefined
+        "dialog title": "Verwijderen van aangepaste S3-configuratie bevestigen?",
+        cancel: "Annuleren",
+        yes: "Ja"
     },
     DisplayErrorDialog: {
-        error: undefined,
-        ok: undefined
+        error: "Fout",
+        ok: "Ok"
     },
     S3Explorer: {
         "page header title": "Gegevensopslag",
-        "create profile": undefined,
-        back: undefined,
-        upload: undefined,
-        "create new prefix": undefined
+        "create profile": "Profiel maken",
+        back: "Terug",
+        upload: "Uploaden",
+        "create new prefix": "Nieuwe prefix maken"
     },
     S3ShareObjectDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Object delen"
     },
     S3BookmarksBar: {
-        "s3 bookmarks aria label": undefined,
-        "show more bookmarks": undefined
+        "s3 bookmarks aria label": "S3-bladwijzers",
+        "show more bookmarks": "Meer bladwijzers tonen"
     },
     S3BookmarkItem: {
-        "open bookmark": undefined,
-        "open bucket": undefined,
-        "bookmark actions": undefined,
-        rename: undefined,
-        delete: undefined,
-        "rename bookmark": undefined,
-        "delete bookmark": undefined
+        "open bookmark": "Bladwijzer openen",
+        "open bucket": "Bucket openen",
+        "bookmark actions": "Bladwijzeracties",
+        rename: "Naam wijzigen",
+        delete: "Verwijderen",
+        "rename bookmark": "Bladwijzer hernoemen",
+        "delete bookmark": "Bladwijzer verwijderen"
     },
     S3BookmarksEntryPointList: {
-        "s3 bookmark entry points aria label": undefined,
-        bookmarks: undefined,
-        "no bookmarks yet": undefined,
-        "storage locations": undefined
+        "s3 bookmark entry points aria label": "S3-bladwijzeringangen",
+        bookmarks: "Bladwijzers",
+        "no bookmarks yet": "Nog geen bladwijzers.",
+        "storage locations": "Opslaglocaties"
     },
     S3DialogCopyField: {
-        "generating url": undefined,
-        copy: undefined,
-        copied: undefined
+        "generating url": "URL wordt gegenereerd...",
+        copy: "Kopiëren",
+        copied: "Gekopieerd"
     },
     S3DialogItemSummary: {
-        public: undefined
+        public: "Openbaar"
     },
     S3ProfileSelect: {
-        "select s3 profile aria label": undefined,
-        "profile settings aria label": undefined,
-        "s3 profiles aria label": undefined,
-        "new s3 profile": undefined
+        "select s3 profile aria label": "S3-profiel selecteren",
+        "profile settings aria label": "Profielinstellingen",
+        "s3 profiles aria label": "S3-profielen",
+        "new s3 profile": "Nieuw S3-profiel"
     },
     S3SelectionActionBar: {
-        download: undefined,
-        delete: undefined,
+        download: "Downloaden",
+        delete: "Verwijderen",
         "copy s3 uri": "S3-URI kopiëren",
-        copied: undefined,
-        "copy s3 uri tooltip": undefined,
-        "add to bookmarks": undefined,
-        "delete from bookmarks": undefined,
-        share: undefined,
-        "make public": undefined,
-        "make private": undefined,
-        "one selected": undefined,
-        "many selected": undefined,
-        "clear selection": undefined
+        copied: "Gekopieerd",
+        "copy s3 uri tooltip": ({ s3UriStr }) => `Kopiëren "${s3UriStr}"`,
+        "add to bookmarks": "Toevoegen aan bladwijzers",
+        "delete from bookmarks": "Verwijderen uit bladwijzers",
+        share: "Delen",
+        "make public": "Openbaar maken",
+        "make private": "Privé maken",
+        "one selected": "1 geselecteerd",
+        "many selected": ({ count }) => `${count} geselecteerd`,
+        "clear selection": "Selectie wissen"
     },
     ConfirmAbortUploadDialog: {
-        "dialog title": undefined,
-        "dialog body": undefined,
-        "continue upload": undefined,
-        "cancel upload": undefined
+        "dialog title": "Upload annuleren?",
+        "dialog body": "Je upload is nog niet voltooid. Wil je de upload annuleren?",
+        "continue upload": "Upload voortzetten",
+        "cancel upload": "Upload annuleren"
     },
     S3Uploads: {
-        "uploading count": undefined,
-        "upload count": undefined,
-        "expand uploads": undefined,
-        "collapse uploads": undefined,
-        "close uploads": undefined,
-        "uploading status": undefined,
-        completed: undefined,
-        error: undefined,
-        "uploaded size of total size": undefined,
-        of: undefined,
-        "open uploaded directory": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined
+        "uploading count": ({ count }) =>
+            `Bezig met uploaden van ${count} item${count === 1 ? "" : "s"}...`,
+        "upload count": ({ count }) => `${count} upload${count === 1 ? "" : "s"}`,
+        "expand uploads": "Uploads uitklappen",
+        "collapse uploads": "Uploads inklappen",
+        "close uploads": "Uploads sluiten",
+        "uploading status": "Bezig met uploaden...",
+        completed: "Voltooid",
+        error: "Fout",
+        "uploaded size of total size": ({ uploadedSize, totalSize }) =>
+            `${uploadedSize} van ${totalSize}`,
+        of: "van",
+        "open uploaded directory": "Geüploade map openen",
+        "cancel upload": "Upload annuleren",
+        "retry upload": "Upload opnieuw proberen"
     },
     CustomNoRowsOverlay: {
-        "no rows": undefined
+        "no rows": "Geen rijen"
     },
     DataTextEditor: {
-        "not a valid format": undefined,
-        format: undefined,
-        "all defaults": undefined,
-        schema: undefined
+        "not a valid format": ({ format }) => `Geen geldige indeling: ${format}`,
+        format: "Indeling",
+        "all defaults": "Alle standaardwaarden",
+        schema: "Schema"
     },
     JsonSchemaDialog: {
-        "json schema": undefined,
-        ok: undefined
+        "json schema": "JSON-schema",
+        ok: "Ok"
     },
     SelectFormField: {
-        "empty string": undefined
+        "empty string": "(Lege tekenreeks)"
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Bladwijzernaam",
@@ -366,7 +368,7 @@ export const translations: Translations<"nl"> = {
         download: "Downloaden",
         "copy s3 uri": "S3-URI kopiëren",
         copied: "Gekopieerd",
-        "copy s3 uri tooltip": undefined,
+        "copy s3 uri tooltip": ({ s3UriStr }) => `Kopiëren "${s3UriStr}"`,
         "add to bookmarks": "Aan bladwijzers toevoegen",
         "delete from bookmarks": "Uit bladwijzers verwijderen",
         "make public": "Openbaar maken",
@@ -375,25 +377,28 @@ export const translations: Translations<"nl"> = {
         object: "Object",
         "folder is public": "Map is openbaar",
         "folder is private": "Map is privé",
-        today: undefined,
-        yesterday: undefined,
-        "access denied": undefined,
-        "bucket not found": undefined,
-        "access denied description": undefined,
-        "bucket not found description": undefined,
-        "select item": undefined,
-        "select all items": undefined,
-        public: undefined,
-        deleting: undefined,
-        uploading: undefined,
-        "drag and drop to import files": undefined,
-        "this prefix is empty": undefined,
-        "empty prefix description": undefined,
-        "upload files": undefined,
-        "new folder": undefined,
-        name: undefined,
-        "last modified": undefined,
-        size: undefined
+        today: "Vandaag",
+        yesterday: "Gisteren",
+        "access denied": "Toegang geweigerd",
+        "bucket not found": "Bucket niet gevonden",
+        "access denied description":
+            "Je hebt geen toestemming om deze S3-locatie weer te geven.",
+        "bucket not found description":
+            "De gevraagde bucket bestaat niet of is niet bereikbaar met het huidige profiel.",
+        "select item": ({ itemName }) => `Selecteer ${itemName}`,
+        "select all items": "Alle items selecteren",
+        public: "Openbaar",
+        deleting: "Bezig met verwijderen...",
+        uploading: "Bezig met uploaden",
+        "drag and drop to import files": "Sleep bestanden hierheen om ze te importeren",
+        "this prefix is empty": "Deze prefix is leeg",
+        "empty prefix description":
+            "Upload bestanden of maak een map om deze locatie te vullen.",
+        "upload files": "Bestanden uploaden",
+        "new folder": "Nieuwe map",
+        name: "Naam",
+        "last modified": "Laatst gewijzigd",
+        size: "Grootte"
     },
     S3ShareObjectDialog: {
         "generating public URL": "Openbare URL genereren...",
@@ -406,10 +411,10 @@ export const translations: Translations<"nl"> = {
             "Iedereen met de URL heeft toegang tot dit object. De link verloopt nooit omdat het object in een openbare prefix staat.",
         "signed description":
             "Maak een ondertekende URL met een beperkte geldigheidsduur. Maak een bovenliggende prefix van dit object openbaar om een URL te delen die niet verloopt.",
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "selected duration": undefined
+        "validity duration one hour": "1 uur",
+        "validity duration one day": "1 dag",
+        "validity duration one week": "1 week",
+        "selected duration": "de geselecteerde duur"
     },
     S3ProfileDialog: {
         "detail title": "S3-profielgegevens",
@@ -794,7 +799,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "reset to default": "Terugzetten naar standaardwaarden"
     },
     ConfigurationTopLevelGroup: {
-        global: undefined,
+        global: "global",
         miscellaneous: "Diverse",
         "Configuration that applies to all charts":
             "Configuratie die op alle grafieken van toepassing is",
@@ -809,7 +814,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "not matching pattern": ({ pattern }) =>
             `Komt niet overeen met het patroon ${pattern}`,
         "toggle password visibility": "Wachtwoordzichtbaarheid wisselen",
-        loading: undefined
+        loading: "Laden..."
     },
     FormFieldGroupComponent: {
         add: "Toevoegen"
@@ -847,7 +852,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Dit zijn niet noodzakelijkerwijs de eerste logs, oudere logs kunnen zijn verwijderd",
         "new logs are displayed in realtime":
             "Nieuwe logs worden in realtime weergegeven",
-        follow: undefined
+        follow: "Volgen"
     },
     MyServiceButtonBar: {
         back: "Terug",
@@ -933,7 +938,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 <code>kubectl get events</code>
             </>
         ),
-        close: undefined
+        close: "Sluiten"
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Bent u zeker?",
@@ -951,7 +956,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         launch: "Nieuwe dienst",
         trash: "Alles verwijderen",
         "trash my own": "Al mijn diensten verwijderen",
-        events: undefined
+        events: "Gebeurtenissen"
     },
     MyServicesCard: {
         service: "Dienst",
@@ -1089,7 +1094,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     UrlInput: {
         load: "Laden",
         reset: "Leegmaken",
-        "data source": undefined
+        "data source": "Gegevensbron"
     },
     CommandBar: {
         ok: "ok"
@@ -1272,16 +1277,17 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "delete from bookmarks": "Uit bladwijzers verwijderen",
         bookmarked: "Bladwijzer",
         "edit s3 uri": "S3-URI bewerken",
-        prefix: undefined,
-        "admin bookmark": undefined,
-        bookmark: undefined,
-        object: undefined,
-        public: undefined,
-        "go to s3 uri": undefined,
-        "s3 uri": undefined,
-        "edit from s3 root": undefined,
-        "edit object key": undefined,
-        "object key": undefined,
-        listing: undefined
+        prefix: "Prefix",
+        "admin bookmark": "Beheerbladwijzer",
+        bookmark: "Bladwijzer",
+        object: "Object",
+        public: "Openbaar",
+        "go to s3 uri": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Openbaar. " : ""}Ga naar ${s3Uri}`,
+        "s3 uri": "S3 URI",
+        "edit from s3 root": "Bewerken vanaf S3-root",
+        "edit object key": "Objectsleutel bewerken",
+        "object key": "Objectsleutel",
+        listing: "Lijst wordt geladen..."
     }
 };

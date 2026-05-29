@@ -189,108 +189,110 @@ export const translations: Translations<"es"> = {
         overwrite: "Sobrescribir"
     },
     ConfirmCustomS3ConfigDeletionDialog: {
-        "dialog title": undefined,
-        cancel: undefined,
-        yes: undefined
+        "dialog title": "¿Confirmar la eliminación de la configuración S3 personalizada?",
+        cancel: "Cancelar",
+        yes: "Sí"
     },
     DisplayErrorDialog: {
-        error: undefined,
-        ok: undefined
+        error: "Error",
+        ok: "Ok"
     },
     S3Explorer: {
         "page header title": "Almacenamiento de datos",
-        "create profile": undefined,
-        back: undefined,
-        upload: undefined,
-        "create new prefix": undefined
+        "create profile": "Crear perfil",
+        back: "Atrás",
+        upload: "Subir",
+        "create new prefix": "Crear nuevo prefijo"
     },
     S3ShareObjectDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Compartir objeto"
     },
     S3BookmarksBar: {
-        "s3 bookmarks aria label": undefined,
-        "show more bookmarks": undefined
+        "s3 bookmarks aria label": "Marcadores S3",
+        "show more bookmarks": "Mostrar más marcadores"
     },
     S3BookmarkItem: {
-        "open bookmark": undefined,
-        "open bucket": undefined,
-        "bookmark actions": undefined,
-        rename: undefined,
-        delete: undefined,
-        "rename bookmark": undefined,
-        "delete bookmark": undefined
+        "open bookmark": "Abrir marcador",
+        "open bucket": "Abrir bucket",
+        "bookmark actions": "Acciones del marcador",
+        rename: "Renombrar",
+        delete: "Eliminar",
+        "rename bookmark": "Renombrar marcador",
+        "delete bookmark": "Eliminar marcador"
     },
     S3BookmarksEntryPointList: {
-        "s3 bookmark entry points aria label": undefined,
-        bookmarks: undefined,
-        "no bookmarks yet": undefined,
-        "storage locations": undefined
+        "s3 bookmark entry points aria label": "Entradas de marcadores S3",
+        bookmarks: "Marcadores",
+        "no bookmarks yet": "Aún no hay marcadores.",
+        "storage locations": "Ubicaciones de almacenamiento"
     },
     S3DialogCopyField: {
-        "generating url": undefined,
-        copy: undefined,
-        copied: undefined
+        "generating url": "Generando URL...",
+        copy: "Copiar",
+        copied: "Copiado"
     },
     S3DialogItemSummary: {
-        public: undefined
+        public: "Público"
     },
     S3ProfileSelect: {
-        "select s3 profile aria label": undefined,
-        "profile settings aria label": undefined,
-        "s3 profiles aria label": undefined,
-        "new s3 profile": undefined
+        "select s3 profile aria label": "Seleccionar perfil S3",
+        "profile settings aria label": "Configuración del perfil",
+        "s3 profiles aria label": "Perfiles S3",
+        "new s3 profile": "Nuevo perfil S3"
     },
     S3SelectionActionBar: {
-        download: undefined,
-        delete: undefined,
+        download: "Descargar",
+        delete: "Eliminar",
         "copy s3 uri": "Copiar URI S3",
-        copied: undefined,
-        "copy s3 uri tooltip": undefined,
-        "add to bookmarks": undefined,
-        "delete from bookmarks": undefined,
-        share: undefined,
-        "make public": undefined,
-        "make private": undefined,
-        "one selected": undefined,
-        "many selected": undefined,
-        "clear selection": undefined
+        copied: "Copiado",
+        "copy s3 uri tooltip": ({ s3UriStr }) => `Copiar "${s3UriStr}"`,
+        "add to bookmarks": "Añadir a marcadores",
+        "delete from bookmarks": "Eliminar de marcadores",
+        share: "Compartir",
+        "make public": "Hacer público",
+        "make private": "Hacer privado",
+        "one selected": "1 seleccionado",
+        "many selected": ({ count }) => `${count} seleccionados`,
+        "clear selection": "Limpiar selección"
     },
     ConfirmAbortUploadDialog: {
-        "dialog title": undefined,
-        "dialog body": undefined,
-        "continue upload": undefined,
-        "cancel upload": undefined
+        "dialog title": "¿Cancelar subida?",
+        "dialog body": "La subida no se ha completado. ¿Quieres cancelarla?",
+        "continue upload": "Continuar subida",
+        "cancel upload": "Cancelar subida"
     },
     S3Uploads: {
-        "uploading count": undefined,
-        "upload count": undefined,
-        "expand uploads": undefined,
-        "collapse uploads": undefined,
-        "close uploads": undefined,
-        "uploading status": undefined,
-        completed: undefined,
-        error: undefined,
-        "uploaded size of total size": undefined,
-        of: undefined,
-        "open uploaded directory": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined
+        "uploading count": ({ count }) =>
+            `Subiendo ${count} elemento${count === 1 ? "" : "s"}...`,
+        "upload count": ({ count }) => `${count} subida${count === 1 ? "" : "s"}`,
+        "expand uploads": "Expandir subidas",
+        "collapse uploads": "Contraer subidas",
+        "close uploads": "Cerrar subidas",
+        "uploading status": "Subiendo...",
+        completed: "Completado",
+        error: "Error",
+        "uploaded size of total size": ({ uploadedSize, totalSize }) =>
+            `${uploadedSize} de ${totalSize}`,
+        of: "de",
+        "open uploaded directory": "Abrir directorio subido",
+        "cancel upload": "Cancelar subida",
+        "retry upload": "Reintentar subida"
     },
     CustomNoRowsOverlay: {
-        "no rows": undefined
+        "no rows": "Sin filas"
     },
     DataTextEditor: {
-        "not a valid format": undefined,
-        format: undefined,
-        "all defaults": undefined,
-        schema: undefined
+        "not a valid format": ({ format }) => `No es un formato válido: ${format}`,
+        format: "Formato",
+        "all defaults": "Todos los valores predeterminados",
+        schema: "Esquema"
     },
     JsonSchemaDialog: {
-        "json schema": undefined,
-        ok: undefined
+        "json schema": "Esquema JSON",
+        ok: "Ok"
     },
     SelectFormField: {
-        "empty string": undefined
+        "empty string": "(Cadena vacía)"
     },
     CreateOrRenameBookmarkDialog: {
         "dialog title": "Nombre del marcador",
@@ -369,7 +371,7 @@ export const translations: Translations<"es"> = {
         download: "Descargar",
         "copy s3 uri": "Copiar URI S3",
         copied: "Copiado",
-        "copy s3 uri tooltip": undefined,
+        "copy s3 uri tooltip": ({ s3UriStr }) => `Copiar "${s3UriStr}"`,
         "add to bookmarks": "Añadir a marcadores",
         "delete from bookmarks": "Eliminar de marcadores",
         "make public": "Hacer público",
@@ -378,25 +380,27 @@ export const translations: Translations<"es"> = {
         object: "Objeto",
         "folder is public": "La carpeta es pública",
         "folder is private": "La carpeta es privada",
-        today: undefined,
-        yesterday: undefined,
-        "access denied": undefined,
-        "bucket not found": undefined,
-        "access denied description": undefined,
-        "bucket not found description": undefined,
-        "select item": undefined,
-        "select all items": undefined,
-        public: undefined,
-        deleting: undefined,
-        uploading: undefined,
-        "drag and drop to import files": undefined,
-        "this prefix is empty": undefined,
-        "empty prefix description": undefined,
-        "upload files": undefined,
-        "new folder": undefined,
-        name: undefined,
-        "last modified": undefined,
-        size: undefined
+        today: "Hoy",
+        yesterday: "Ayer",
+        "access denied": "Acceso denegado",
+        "bucket not found": "Bucket no encontrado",
+        "access denied description": "No tienes permiso para listar esta ubicación S3.",
+        "bucket not found description":
+            "El bucket solicitado no existe o no es accesible con el perfil actual.",
+        "select item": ({ itemName }) => `Seleccionar ${itemName}`,
+        "select all items": "Seleccionar todos los elementos",
+        public: "Público",
+        deleting: "Eliminando...",
+        uploading: "Subiendo",
+        "drag and drop to import files": "Arrastra y suelta para importar archivos",
+        "this prefix is empty": "Este prefijo está vacío",
+        "empty prefix description":
+            "Sube archivos o crea una carpeta para empezar a llenar esta ubicación.",
+        "upload files": "Subir archivos",
+        "new folder": "Nueva carpeta",
+        name: "Nombre",
+        "last modified": "Última modificación",
+        size: "Tamaño"
     },
     S3ShareObjectDialog: {
         "generating public URL": "Generando URL pública...",
@@ -409,10 +413,10 @@ export const translations: Translations<"es"> = {
             "Cualquier persona con la URL puede acceder a este objeto. El enlace nunca expira porque el objeto está dentro de un prefijo público.",
         "signed description":
             "Crea una URL firmada con un periodo de validez limitado. Para compartir una URL que no expire, haz público uno de los prefijos superiores de este objeto.",
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "selected duration": undefined
+        "validity duration one hour": "1 hora",
+        "validity duration one day": "1 día",
+        "validity duration one week": "1 semana",
+        "selected duration": "la duración seleccionada"
     },
     S3ProfileDialog: {
         "detail title": "Detalle del perfil S3",
@@ -795,7 +799,7 @@ export const translations: Translations<"es"> = {
         "reset to default": "Restablecer a los valores predeterminados"
     },
     ConfigurationTopLevelGroup: {
-        global: undefined,
+        global: "global",
         miscellaneous: "Varios",
         "Configuration that applies to all charts":
             "Configuración que se aplica a todos los gráficos",
@@ -809,7 +813,7 @@ export const translations: Translations<"es"> = {
     TextFormField: {
         "not matching pattern": ({ pattern }) => `No coincide con el patrón ${pattern}`,
         "toggle password visibility": "Alternar la visibilidad de la contraseña",
-        loading: undefined
+        loading: "Cargando..."
     },
     FormFieldGroupComponent: {
         add: "Añadir"
@@ -847,7 +851,7 @@ export const translations: Translations<"es"> = {
             "Estos no son necesariamente los primeros registros, los registros más antiguos podrían haber sido eliminados",
         "new logs are displayed in realtime":
             "Los nuevos registros se muestran en tiempo real",
-        follow: undefined
+        follow: "Seguir"
     },
     MyServiceButtonBar: {
         back: "Volver",
@@ -933,7 +937,7 @@ export const translations: Translations<"es"> = {
                 tiempo real de <code>kubectl get events</code>
             </>
         ),
-        close: undefined
+        close: "Cerrar"
     },
     MyServicesConfirmDeleteDialog: {
         "confirm delete title": "¿Estás seguro?",
@@ -951,7 +955,7 @@ export const translations: Translations<"es"> = {
         launch: "Nuevo servicio",
         trash: "Eliminar todo",
         "trash my own": "Eliminar todos mis servicios",
-        events: undefined
+        events: "Eventos"
     },
     MyServicesCard: {
         service: "Servicio",
@@ -1090,7 +1094,7 @@ export const translations: Translations<"es"> = {
     UrlInput: {
         load: "Cargar",
         reset: "Vaciar",
-        "data source": undefined
+        "data source": "Fuente de datos"
     },
     CommandBar: {
         ok: "Aceptar"
@@ -1273,16 +1277,17 @@ export const translations: Translations<"es"> = {
         "delete from bookmarks": "Eliminar de marcadores",
         bookmarked: "Marcado",
         "edit s3 uri": "Editar URI S3",
-        prefix: undefined,
-        "admin bookmark": undefined,
-        bookmark: undefined,
-        object: undefined,
-        public: undefined,
-        "go to s3 uri": undefined,
-        "s3 uri": undefined,
-        "edit from s3 root": undefined,
-        "edit object key": undefined,
-        "object key": undefined,
-        listing: undefined
+        prefix: "Prefijo",
+        "admin bookmark": "Marcador de administración",
+        bookmark: "Marcador",
+        object: "Objeto",
+        public: "Público",
+        "go to s3 uri": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Público. " : ""}Ir a ${s3Uri}`,
+        "s3 uri": "S3 URI",
+        "edit from s3 root": "Editar desde la raíz S3",
+        "edit object key": "Editar clave del objeto",
+        "object key": "Clave del objeto",
+        listing: "Listando..."
     }
 };
