@@ -6942,10 +6942,10 @@ oniguruma-to-es@0.7.0:
     regex "^5.0.2"
     regex-recursion "^4.3.0"
 
-onyxia-ui@^6.11.2:
-  version "6.11.2"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.11.2.tgz#df2f34e9d395b801548adc2a7779a26a2dd8f7a6"
-  integrity sha512-itYUXj9rSIJiGeZjW5bld1UnkLjj/ZXYYmRKCh6iEITPbp+OIf7DGotV1/67b/0OYpvZuF9hGvhze6uNolf/LQ==
+onyxia-ui@^6.11.4:
+  version "6.11.4"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-6.11.4.tgz#350550a9e0b3b58d8c9b583b7439a1133e9fd4dc"
+  integrity sha512-9uTvAzROdPHhprctGrPMbowyRszzTxg1Q0Grb3OkDPF7TwjwJzeeqBd1G1momk/IrPIhd2U+x3e5wNEz/jKaQg==
   dependencies:
     "@mui/icons-material" "^6.1.7"
     "@types/memoizee" "^0.4.11"
