@@ -6,7 +6,7 @@
       <img src="https://github.com/InseeFrLab/onyxia/actions/workflows/ci.yaml/badge.svg">
     </a>
     <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">
-      <img src="https://img.shields.io/badge/slack-550_Members-brightgreen.svg?logo=slack">
+      <img src="https://img.shields.io/badge/slack-1137_Members-brightgreen.svg?logo=slack">
     </a>
 </p>
 
