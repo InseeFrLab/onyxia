@@ -51,7 +51,10 @@ export function computeUploadStatusAtPrefix(params: {
         const s3Uri_newItem: S3Uri.TerminatedByDelimiter = {
             bucket: upload.s3Uri.bucket,
             delimiter: upload.s3Uri.delimiter,
-            keySegments: upload.s3Uri.keySegments.slice(0, s3Uri.keySegments.length + 1),
+            keySegments: upload.s3Uri.keySegments.slice(
+                0,
+                s3Uri.keySegments.length + (s3Uri.isDelimiterTerminated ? 1 : 0)
+            ),
             isDelimiterTerminated: true
         };
 
