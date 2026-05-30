@@ -360,7 +360,6 @@ export const translations: Translations<"no"> = {
         "delete selection dialog body": ({ count }) =>
             `Du er i ferd med å slette ${count} valgt${count > 1 ? "e elementer" : " element"}. Hvis du sletter et prefiks, slettes også alt innholdet i det.`,
         delete: "Slett",
-        uploaded: "Lastet opp",
         share: "Del",
         download: "Last ned",
         "copy s3 uri": "Kopier S3-URI",

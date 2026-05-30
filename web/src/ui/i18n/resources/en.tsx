@@ -261,7 +261,6 @@ export const translations: Translations<"en"> = {
         "delete selection dialog body": ({ count }) =>
             `You are about to delete ${count} selected item${count > 1 ? "s" : ""}. Deleting a prefix also deletes everything inside it.`,
         delete: "Delete",
-        uploaded: "Uploaded",
         share: "Share",
         download: "Download",
         "copy s3 uri": "Copy S3 URI",

@@ -369,7 +369,6 @@ export const translations: Translations<"fr"> = {
         "delete selection dialog body": ({ count }) =>
             `Vous êtes sur le point de supprimer ${count} élément${count > 1 ? "s" : ""} sélectionné${count > 1 ? "s" : ""}. Supprimer un préfixe supprime aussi tout son contenu.`,
         delete: "Supprimer",
-        uploaded: "Téléversé",
         share: "Partager",
         download: "Télécharger",
         "copy s3 uri": "Copier l'URI S3",

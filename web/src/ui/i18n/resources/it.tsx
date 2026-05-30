@@ -365,7 +365,6 @@ export const translations: Translations<"it"> = {
         "delete selection dialog body": ({ count }) =>
             `Stai per eliminare ${count} element${count > 1 ? "i" : "o"} selezionat${count > 1 ? "i" : "o"}. Eliminare un prefisso elimina anche tutto il suo contenuto.`,
         delete: "Elimina",
-        uploaded: "Caricato",
         share: "Condividi",
         download: "Scarica",
         "copy s3 uri": "Copia URI S3",

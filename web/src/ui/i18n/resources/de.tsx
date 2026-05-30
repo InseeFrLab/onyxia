@@ -374,7 +374,6 @@ export const translations: Translations<"de"> = {
         "delete selection dialog body": ({ count }) =>
             `Du bist dabei, ${count} ausgewählte${count > 1 ? " Elemente" : "s Element"} zu löschen. Beim Löschen eines Präfixes wird auch alles darin gelöscht.`,
         delete: "Löschen",
-        uploaded: "Hochgeladen",
         share: "Teilen",
         download: "Herunterladen",
         "copy s3 uri": "S3-URI kopieren",

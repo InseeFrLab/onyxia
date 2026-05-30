@@ -451,9 +451,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     return false;
                 }
 
-                const progressPercent = getProgressPercent(item);
-
-                return progressPercent === undefined || progressPercent === 100;
+                return getProgressPercent(item) === undefined;
             }
         );
 
@@ -1466,7 +1464,6 @@ const { i18n } = declareComponentKeys<
     | "delete selection dialog subtitle"
     | { K: "delete selection dialog body"; P: { count: number }; R: string }
     | "delete"
-    | "uploaded"
     | "share"
     | "download"
     | "copy s3 uri"
@@ -1786,9 +1783,7 @@ function getIsItemActionAvailable(item: S3ExplorerMainViewProps.Item): boolean {
         return false;
     }
 
-    const progressPercent = getProgressPercent(item);
-
-    return progressPercent === undefined || progressPercent === 100;
+    return getProgressPercent(item) === undefined;
 }
 
 function getPrefixPolicyAction(
@@ -2123,10 +2118,8 @@ function ItemRow(props: ItemRowProps) {
     } = props;
 
     const progressPercent = getProgressPercent(item);
-    const isUploadInProgress =
-        progressPercent !== undefined && progressPercent < 100 && !item.isDeleting;
-    const canNavigate =
-        !item.isDeleting && !(item.type === "object" && isUploadInProgress);
+    const isUploading = progressPercent !== undefined && !item.isDeleting;
+    const canNavigate = !item.isDeleting && !(item.type === "object" && isUploading);
     const isItemActionAvailable = getIsItemActionAvailable(item);
     const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
     const isShareAvailable = onShareObject !== undefined && isItemActionAvailable;
@@ -2246,9 +2239,7 @@ function ItemRow(props: ItemRowProps) {
                                         </span>
                                     )}
 
-                                {(item.isDeleting ||
-                                    isUploadInProgress ||
-                                    progressPercent === 100) && (
+                                {(item.isDeleting || isUploading) && (
                                     <div className={classes.itemMetaRow}>
                                         {item.isDeleting && (
                                             <span
@@ -2260,7 +2251,7 @@ function ItemRow(props: ItemRowProps) {
                                                 {t("deleting")}
                                             </span>
                                         )}
-                                        {!item.isDeleting && isUploadInProgress && (
+                                        {isUploading && (
                                             <>
                                                 <span
                                                     className={cx(
@@ -2299,13 +2290,6 @@ function ItemRow(props: ItemRowProps) {
                                                 </div>
                                             </>
                                         )}
-                                        {!item.isDeleting &&
-                                            !isUploadInProgress &&
-                                            progressPercent === 100 && (
-                                                <span className={classes.statusPill}>
-                                                    {t("uploaded")}
-                                                </span>
-                                            )}
                                     </div>
                                 )}
                             </div>

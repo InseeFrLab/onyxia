@@ -335,7 +335,6 @@ export const translations: Translations<"zh-CN"> = {
         "delete selection dialog body": ({ count }) =>
             `你即将删除 ${count} 个所选项目。删除前缀也会删除其中的所有内容。`,
         delete: "删除",
-        uploaded: "已上传",
         share: "共享",
         download: "下载",
         "copy s3 uri": "复制 S3 URI",

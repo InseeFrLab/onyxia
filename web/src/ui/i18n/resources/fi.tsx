@@ -357,7 +357,6 @@ export const translations: Translations<"fi"> = {
         "delete selection dialog body": ({ count }) =>
             `Olet poistamassa ${count} valittua kohdetta. Etuliitteen poistaminen poistaa myös kaiken sen sisältä.`,
         delete: "Poista",
-        uploaded: "Ladattu",
         share: "Jaa",
         download: "Lataa",
         "copy s3 uri": "Kopioi S3-URI",

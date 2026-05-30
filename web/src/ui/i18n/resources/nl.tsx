@@ -363,7 +363,6 @@ export const translations: Translations<"nl"> = {
         "delete selection dialog body": ({ count }) =>
             `Je staat op het punt ${count} geselecteerd${count > 1 ? "e items" : " item"} te verwijderen. Het verwijderen van een prefix verwijdert ook alles erin.`,
         delete: "Verwijderen",
-        uploaded: "Geüpload",
         share: "Delen",
         download: "Downloaden",
         "copy s3 uri": "S3-URI kopiëren",
