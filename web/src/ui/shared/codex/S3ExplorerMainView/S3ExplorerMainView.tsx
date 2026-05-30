@@ -1287,7 +1287,8 @@ const useStyles = tss
             alignItems: "center",
             minHeight: 24,
             borderRadius: 999,
-            padding: `${theme.spacing(0.5)} ${theme.spacing(1.25)}`,
+            ...theme.spacing.rightLeft("padding", 2),
+            ...theme.spacing.rightLeft("margin", 2),
             fontSize: 12,
             fontWeight: 600,
             lineHeight: 1,
@@ -1299,9 +1300,7 @@ const useStyles = tss
             backgroundColor: theme.colors.useCases.surfaces.surface3
         },
         statusPillUploading: {
-            gap: theme.spacing(0.5),
-            paddingLeft: theme.spacing(1.5),
-            paddingRight: theme.spacing(1.5)
+            gap: theme.spacing(0.5)
         },
         statusPillLabel: {
             display: "inline-block"
