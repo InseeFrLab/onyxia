@@ -375,10 +375,6 @@ const items = createSelector(
                 continue;
             }
 
-            if (item_actual.displayName === ".keep") {
-                continue;
-            }
-
             items.push(item_actual);
         }
 
@@ -397,8 +393,9 @@ const items = createSelector(
     }
 );
 
-const uploads = createSelector(uploads_profile, (uploads_profile): MainView["uploads"] =>
-    uploads_profile.filter(upload => upload.s3Uri.keySegments.at(-1) !== ".keep")
+const uploads = createSelector(
+    uploads_profile,
+    (uploads_profile): MainView["uploads"] => uploads_profile
 );
 
 const listedPrefix = createSelector(

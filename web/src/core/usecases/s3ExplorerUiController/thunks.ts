@@ -682,19 +682,21 @@ export const thunks = {
         async (...args) => {
             const { prefixSegment } = params;
 
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
+
+            const s3Uri = privateSelectors.s3Uri(getState());
+
+            assert(s3Uri !== undefined);
+
+            assert(s3Uri.isDelimiterTerminated);
 
             await dispatch(
-                thunks.putObjects({
-                    files: [
-                        {
-                            relativePathSegments: [prefixSegment],
-                            fileBasename: ".keep",
-                            blob: new Blob(["This file tells that a directory exists"], {
-                                type: "text/plain"
-                            })
-                        }
-                    ]
+                thunks.listPrefix({
+                    s3Uri: {
+                        ...s3Uri,
+                        keySegments: [...s3Uri.keySegments, prefixSegment]
+                    },
+                    debounce: false
                 })
             );
         },
