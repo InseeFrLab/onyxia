@@ -1206,6 +1206,7 @@ ${
         "copied path": ({ s3Uri }) => `已复制路径：${s3Uri}`,
         "add to bookmarks": "添加到书签",
         "delete from bookmarks": "从书签中删除",
+        "pinned storage location": "已固定的存储位置",
         bookmarked: "已添加书签",
         "edit s3 uri": "编辑 S3 URI",
         prefix: "前缀",

@@ -1297,6 +1297,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "copied path": ({ s3Uri }) => `Kopierter Pfad: ${s3Uri}`,
         "add to bookmarks": "Zu Lesezeichen hinzufügen",
         "delete from bookmarks": "Aus Lesezeichen entfernen",
+        "pinned storage location": "Angehefteter Speicherort",
         bookmarked: "Als Lesezeichen gespeichert",
         "edit s3 uri": "S3-URI bearbeiten",
         prefix: "Präfix",

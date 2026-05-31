@@ -1281,6 +1281,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "copied path": ({ s3Uri }) => `Percorso copiato: ${s3Uri}`,
         "add to bookmarks": "Aggiungi ai segnalibri",
         "delete from bookmarks": "Elimina dai segnalibri",
+        "pinned storage location": "Posizione di archiviazione fissata",
         bookmarked: "Nei segnalibri",
         "edit s3 uri": "Modifica URI S3",
         prefix: "Prefisso",

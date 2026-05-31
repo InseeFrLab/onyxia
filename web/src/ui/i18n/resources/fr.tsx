@@ -1294,6 +1294,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "copied path": ({ s3Uri }) => `Chemin copié : ${s3Uri}`,
         "add to bookmarks": "Ajouter aux favoris",
         "delete from bookmarks": "Supprimer des favoris",
+        "pinned storage location": "Emplacement de stockage épinglé",
         bookmarked: "Dans les favoris",
         "edit s3 uri": "Modifier l'URI S3",
         prefix: "Préfixe",

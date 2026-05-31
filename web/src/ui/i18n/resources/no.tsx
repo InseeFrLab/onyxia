@@ -1274,6 +1274,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "copied path": ({ s3Uri }) => `Kopiert sti: ${s3Uri}`,
         "add to bookmarks": "Legg til i bokmerker",
         "delete from bookmarks": "Slett fra bokmerker",
+        "pinned storage location": "Festet lagringssted",
         bookmarked: "Bokmerket",
         "edit s3 uri": "Rediger S3-URI",
         prefix: "Prefiks",

@@ -1269,6 +1269,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "copied path": ({ s3Uri }) => `Copied path: ${s3Uri}`,
         "add to bookmarks": "Add to bookmarks",
         "delete from bookmarks": "Delete from bookmarks",
+        "pinned storage location": "Pinned storage location",
         bookmarked: "Bookmarked",
         "edit s3 uri": "Edit S3 URI",
         prefix: "Prefix",

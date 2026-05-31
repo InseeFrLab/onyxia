@@ -1282,6 +1282,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "copied path": ({ s3Uri }) => `Gekopieerd pad: ${s3Uri}`,
         "add to bookmarks": "Aan bladwijzers toevoegen",
         "delete from bookmarks": "Uit bladwijzers verwijderen",
+        "pinned storage location": "Vastgezette opslaglocatie",
         bookmarked: "Bladwijzer",
         "edit s3 uri": "S3-URI bewerken",
         prefix: "Prefix",

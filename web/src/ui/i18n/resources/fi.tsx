@@ -1265,6 +1265,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "copied path": ({ s3Uri }) => `Kopioitu polku: ${s3Uri}`,
         "add to bookmarks": "Lisää kirjanmerkkeihin",
         "delete from bookmarks": "Poista kirjanmerkeistä",
+        "pinned storage location": "Kiinnitetty tallennussijainti",
         bookmarked: "Kirjanmerkitty",
         "edit s3 uri": "Muokkaa S3-URIa",
         prefix: "Etuliite",

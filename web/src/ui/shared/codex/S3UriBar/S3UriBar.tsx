@@ -18,6 +18,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import FolderIcon from "@mui/icons-material/Folder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
+import BusinessIcon from "@mui/icons-material/Business";
 import { getIconUrlByName } from "lazy-icons";
 import { useDomRect } from "powerhooks/useDomRect";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
@@ -874,7 +875,11 @@ export function S3UriBar(props: S3UriBarProps) {
             ? []
             : displayKeyCrumbItems.slice(firstPublicKeyCrumbIndex);
     const isKeyGroupSplitByPublicPrefix = publicKeyCrumbItems.length > 0;
-    const bookmarkIcon = isBookmarked ? StarIcon : StarBorderIcon;
+    const bookmarkIcon = isBookmarked
+        ? onToggleBookmark === undefined
+            ? BusinessIcon
+            : StarIcon
+        : StarBorderIcon;
     const renderPublicMarker = (isPublicStart: boolean) =>
         isPublicStart ? (
             <span className={classes.publicMarker} title={t("public")} aria-hidden="true">
@@ -1388,21 +1393,21 @@ export function S3UriBar(props: S3UriBarProps) {
                     {!isUndefinedPrefixMode && (onToggleBookmark || isBookmarked) && (
                         <Tooltip
                             title={
-                                onToggleBookmark
-                                    ? isBookmarked
-                                        ? t("delete from bookmarks")
-                                        : t("add to bookmarks")
-                                    : t("bookmarked")
+                                isBookmarked
+                                    ? onToggleBookmark === undefined
+                                        ? t("pinned storage location")
+                                        : t("delete from bookmarks")
+                                    : t("add to bookmarks")
                             }
                         >
                             <div data-s3-uri-ignore-edit="true">
                                 <IconButton
                                     aria-label={
-                                        onToggleBookmark
-                                            ? isBookmarked
-                                                ? t("delete from bookmarks")
-                                                : t("add to bookmarks")
-                                            : t("bookmarked")
+                                        isBookmarked
+                                            ? onToggleBookmark === undefined
+                                                ? t("pinned storage location")
+                                                : t("delete from bookmarks")
+                                            : t("add to bookmarks")
                                     }
                                     icon={bookmarkIcon}
                                     size="default"
@@ -2013,6 +2018,7 @@ const { i18n } = declareComponentKeys<
     | { K: "copied path"; P: { s3Uri: string }; R: string }
     | "add to bookmarks"
     | "delete from bookmarks"
+    | "pinned storage location"
     | "bookmarked"
     | "edit s3 uri"
     | "prefix"

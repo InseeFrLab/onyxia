@@ -1283,6 +1283,7 @@ export const translations: Translations<"es"> = {
         "copied path": ({ s3Uri }) => `Ruta copiada: ${s3Uri}`,
         "add to bookmarks": "Añadir a marcadores",
         "delete from bookmarks": "Eliminar de marcadores",
+        "pinned storage location": "Ubicación de almacenamiento fijada",
         bookmarked: "Marcado",
         "edit s3 uri": "Editar URI S3",
         prefix: "Prefijo",
