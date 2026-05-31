@@ -90,14 +90,16 @@ export type MainView = {
           };
 
     listedPrefix:
-        | {
-              isErrored: true;
-              errorCase: State.ListedPrefix.ErrorCase;
-          }
-        | {
-              isErrored: false;
-              items: MainView.Item[];
-          }
+        | ({ s3Uri: S3Uri } & (
+              | {
+                    isErrored: true;
+                    errorCase: State.ListedPrefix.ErrorCase;
+                }
+              | {
+                    isErrored: false;
+                    items: MainView.Item[];
+                }
+          ))
         | undefined;
 
     commandLogsEntries: State.CommandLogsEntry[];
@@ -413,6 +415,7 @@ const listedPrefix = createSelector(
             listedPrefix_state.next.errorCase !== undefined
         ) {
             return {
+                s3Uri: listedPrefix_state.next.s3Uri,
                 isErrored: true,
                 errorCase: listedPrefix_state.next.errorCase
             };
@@ -426,6 +429,7 @@ const listedPrefix = createSelector(
         assert(items !== undefined);
 
         return {
+            s3Uri: listedPrefix_state.current.s3Uri,
             isErrored: false,
             items
         };
@@ -471,8 +475,7 @@ const fullyQualifiedUri = createSelector(
 
 const isBackButtonDisabled = createSelector(
     s3Uri,
-    (s3Uri): MainView["isBackButtonDisabled"] =>
-        s3Uri === undefined || s3Uri.keySegments.length === 0
+    (s3Uri): MainView["isBackButtonDisabled"] => s3Uri === undefined
 );
 
 const directoryCreationButton = createSelector(

@@ -41,7 +41,8 @@ export type S3ExplorerMainViewProps = {
     className?: string;
 
     isListing: boolean;
-    listedPrefix:
+
+    listedPrefix: { s3Uri: S3Uri } & (
         | {
               isErrored: true;
               errorCase: "access denied" | "no such bucket";
@@ -49,9 +50,12 @@ export type S3ExplorerMainViewProps = {
         | {
               isErrored: false;
               items: S3ExplorerMainViewProps.Item[];
-          };
+          }
+    );
 
     onNavigate: (params: { s3Uri: S3Uri }) => void;
+
+    onNavigateBack: () => void;
 
     onPutObjects: (params: {
         files: {
@@ -116,6 +120,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         isListing,
         listedPrefix,
         onNavigate,
+        onNavigateBack,
         onPutObjects,
         onCreateDirectory,
         onDelete,
@@ -150,7 +155,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const { classes, cx } = useStyles({ isDragActive });
     const { t } = useTranslation({ S3ExplorerMainView });
 
+    const isUploadToListedPrefixDisabled =
+        isUploadDisabled ||
+        listedPrefix.isErrored ||
+        !listedPrefix.s3Uri.isDelimiterTerminated;
+
     const openFilePicker = () => {
+        if (isUploadToListedPrefixDisabled) {
+            return;
+        }
+
         const input = fileInputRef.current;
 
         if (input === null) {
@@ -175,7 +189,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     openFilePicker();
                 }
             ),
-        [evtAction]
+        [evtAction, isUploadToListedPrefixDisabled]
     );
 
     useEffect(() => {
@@ -235,13 +249,13 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     }, [isListing, listedPrefix]);
 
     useEffect(() => {
-        if (!isUploadDisabled) {
+        if (!isUploadToListedPrefixDisabled) {
             return;
         }
 
         dragDepthRef.current = 0;
         setIsDragActive(false);
-    }, [isUploadDisabled]);
+    }, [isUploadToListedPrefixDisabled]);
 
     const items = listedPrefix.isErrored
         ? []
@@ -364,6 +378,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     };
 
     const handleUploadFiles = (files: readonly File[]) => {
+        if (isUploadToListedPrefixDisabled) {
+            return;
+        }
+
         if (files.length === 0) {
             return;
         }
@@ -382,7 +400,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         dragDepthRef.current = 0;
         setIsDragActive(false);
 
-        if (isUploadDisabled) {
+        if (isUploadToListedPrefixDisabled) {
             return;
         }
 
@@ -649,7 +667,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
                         event.preventDefault();
 
-                        if (isUploadDisabled) {
+                        if (isUploadToListedPrefixDisabled) {
                             dragDepthRef.current = 0;
                             setIsDragActive(false);
                             return;
@@ -665,7 +683,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
                         event.preventDefault();
 
-                        if (isUploadDisabled) {
+                        if (isUploadToListedPrefixDisabled) {
                             dragDepthRef.current = 0;
                             event.dataTransfer.dropEffect = "none";
                             setIsDragActive(false);
@@ -682,7 +700,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
                         event.preventDefault();
 
-                        if (isUploadDisabled) {
+                        if (isUploadToListedPrefixDisabled) {
                             dragDepthRef.current = 0;
                             setIsDragActive(false);
                             return;
@@ -717,33 +735,73 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
                     <div className={classes.contentShell}>
                         {items.length === 0 ? (
-                            <div className={classes.emptyState}>
-                                <div className={classes.emptyStateIcon}>
-                                    <Icon
-                                        icon={getIconUrlByName("Folder")}
-                                        size="large"
-                                    />
+                            !listedPrefix.s3Uri.isDelimiterTerminated ? (
+                                <div className={classes.emptyState}>
+                                    <div className={classes.emptyStateIcon}>
+                                        <Icon
+                                            icon={getIconUrlByName("Description")}
+                                            size="large"
+                                        />
+                                    </div>
+                                    <div className={classes.emptyStateTitle}>
+                                        {t("no objects found")}
+                                    </div>
+                                    <div className={classes.emptyStateDescription}>
+                                        {t("no objects found description", {
+                                            s3UriStr: stringifyS3Uri(listedPrefix.s3Uri)
+                                        })}
+                                    </div>
+                                    <div className={classes.emptyStateActions}>
+                                        <Button
+                                            variant="secondary"
+                                            startIcon={getIconUrlByName("ArrowBack")}
+                                            onClick={onNavigateBack}
+                                        >
+                                            {t("go back")}
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className={classes.emptyStateTitle}>
-                                    {t("this prefix is empty")}
+                            ) : (
+                                <div className={classes.emptyState}>
+                                    <div className={classes.emptyStateDropZone}>
+                                        <div className={classes.emptyStateIcon}>
+                                            <Icon
+                                                icon={getIconUrlByName(
+                                                    "UploadFileOutlined"
+                                                )}
+                                                size="large"
+                                            />
+                                        </div>
+                                        <div className={classes.emptyStateTitle}>
+                                            {t("this prefix is empty")}
+                                        </div>
+                                        <div className={classes.emptyStateDescription}>
+                                            {t("empty prefix upload description")}
+                                        </div>
+                                        <div className={classes.emptyStateActions}>
+                                            <Button
+                                                startIcon={getIconUrlByName(
+                                                    "UploadFileOutlined"
+                                                )}
+                                                disabled={isUploadToListedPrefixDisabled}
+                                                onClick={openFilePicker}
+                                            >
+                                                {t("upload files here")}
+                                            </Button>
+                                            <Button
+                                                variant="secondary"
+                                                startIcon={getIconUrlByName("ArrowBack")}
+                                                onClick={onNavigateBack}
+                                            >
+                                                {t("go back")}
+                                            </Button>
+                                        </div>
+                                        <div className={classes.emptyStateDropHint}>
+                                            {t("drop files here hint")}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className={classes.emptyStateDescription}>
-                                    {t("empty prefix description")}
-                                </div>
-                                <div className={classes.emptyStateActions}>
-                                    <Button onClick={openFilePicker}>
-                                        {t("upload files")}
-                                    </Button>
-                                    <Button
-                                        variant="secondary"
-                                        onClick={() =>
-                                            setIsCreateDirectoryDialogOpen(true)
-                                        }
-                                    >
-                                        {t("new folder")}
-                                    </Button>
-                                </div>
-                            </div>
+                            )
                         ) : (
                             <div className={classes.tableScrollArea}>
                                 <table className={classes.table}>
@@ -952,7 +1010,7 @@ const useStyles = tss
     .withName({ S3ExplorerMainView })
     .withParams<{ isDragActive: boolean }>()
     .withNestedSelectors<"rowActions" | "itemIconWrapper">()
-    .create(({ theme, classes /*isDragActive*/ }) => ({
+    .create(({ theme, classes, isDragActive }) => ({
         root: {
             display: "flex",
             flexDirection: "column",
@@ -1045,6 +1103,8 @@ const useStyles = tss
             color: theme.colors.useCases.typography.textPrimary
         },
         emptyState: {
+            flex: 1,
+            minHeight: 320,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -1053,10 +1113,29 @@ const useStyles = tss
             padding: theme.spacing(4),
             gap: theme.spacing(1.5)
         },
+        emptyStateDropZone: {
+            width: "min(680px, 100%)",
+            boxSizing: "border-box",
+            borderRadius: 8,
+            border: `2px dashed ${
+                isDragActive
+                    ? theme.colors.useCases.typography.textFocus
+                    : theme.colors.useCases.surfaces.surface3
+            }`,
+            backgroundColor: isDragActive
+                ? theme.colors.useCases.surfaces.surfaceFocus1
+                : alpha(theme.colors.useCases.surfaces.surface1, 0.72),
+            padding: theme.spacing(5),
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: theme.spacing(1.5),
+            transition: "background-color 160ms ease, border-color 160ms ease"
+        },
         emptyStateIcon: {
             width: 56,
             height: 56,
-            borderRadius: 18,
+            borderRadius: 8,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -1067,9 +1146,14 @@ const useStyles = tss
             color: theme.colors.useCases.typography.textPrimary
         },
         emptyStateDescription: {
-            maxWidth: 420,
+            maxWidth: 520,
             color: theme.colors.useCases.typography.textSecondary,
-            lineHeight: 1.6
+            lineHeight: 1.6,
+            overflowWrap: "anywhere"
+        },
+        emptyStateDropHint: {
+            color: theme.colors.useCases.typography.textSecondary,
+            marginTop: theme.spacing(0.5)
         },
         emptyStateActions: {
             display: "flex",
@@ -1488,9 +1572,15 @@ const { i18n } = declareComponentKeys<
     | "deleting"
     | "uploading"
     | "drag and drop to import files"
+    | "go back"
+    | "no objects found"
+    | { K: "no objects found description"; P: { s3UriStr: string }; R: string }
     | "this prefix is empty"
     | "empty prefix description"
+    | "empty prefix upload description"
     | "upload files"
+    | "upload files here"
+    | "drop files here hint"
     | "new folder"
     | "name"
     | "last modified"

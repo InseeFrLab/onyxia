@@ -390,10 +390,18 @@ export const translations: Translations<"nl"> = {
         deleting: "Bezig met verwijderen...",
         uploading: "Bezig met uploaden",
         "drag and drop to import files": "Sleep bestanden hierheen om ze te importeren",
+        "go back": "Terug",
+        "no objects found": "Geen objecten gevonden",
+        "no objects found description": ({ s3UriStr }) =>
+            `Er zijn geen objecten waarvan de sleutel begint met "${s3UriStr}".`,
         "this prefix is empty": "Deze prefix is leeg",
         "empty prefix description":
             "Upload bestanden of maak een map om deze locatie te vullen.",
+        "empty prefix upload description":
+            "Upload hier bestanden of sleep ze naar dit gebied.",
         "upload files": "Bestanden uploaden",
+        "upload files here": "Bestanden hier uploaden",
+        "drop files here hint": "Sleep bestanden ergens in dit gebied om ze te uploaden.",
         "new folder": "Nieuwe map",
         name: "Naam",
         "last modified": "Laatst gewijzigd",

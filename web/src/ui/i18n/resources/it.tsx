@@ -392,10 +392,19 @@ export const translations: Translations<"it"> = {
         deleting: "Eliminazione...",
         uploading: "Caricamento",
         "drag and drop to import files": "Trascina e rilascia per importare file",
+        "go back": "Indietro",
+        "no objects found": "Nessun oggetto trovato",
+        "no objects found description": ({ s3UriStr }) =>
+            `Non ci sono oggetti con chiave che inizia per "${s3UriStr}".`,
         "this prefix is empty": "Questo prefisso è vuoto",
         "empty prefix description":
             "Carica file o crea una cartella per iniziare a popolare questa posizione.",
+        "empty prefix upload description":
+            "Carica file qui oppure trascinali e rilasciali in quest'area.",
         "upload files": "Carica file",
+        "upload files here": "Carica file qui",
+        "drop files here hint":
+            "Rilascia file in qualsiasi punto di quest'area per caricarli.",
         "new folder": "Nuova cartella",
         name: "Nome",
         "last modified": "Ultima modifica",

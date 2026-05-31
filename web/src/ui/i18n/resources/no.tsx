@@ -387,10 +387,19 @@ export const translations: Translations<"no"> = {
         deleting: "Sletter...",
         uploading: "Laster opp",
         "drag and drop to import files": "Dra og slipp for å importere filer",
+        "go back": "Gå tilbake",
+        "no objects found": "Ingen objekter funnet",
+        "no objects found description": ({ s3UriStr }) =>
+            `Det finnes ingen objekter med nøkkel som starter med "${s3UriStr}".`,
         "this prefix is empty": "Dette prefikset er tomt",
         "empty prefix description":
             "Last opp filer eller opprett en mappe for å begynne å fylle denne plasseringen.",
+        "empty prefix upload description":
+            "Last opp filer her eller dra og slipp dem i dette området.",
         "upload files": "Last opp filer",
+        "upload files here": "Last opp filer her",
+        "drop files here hint":
+            "Slipp filer hvor som helst i dette området for å laste dem opp.",
         "new folder": "Ny mappe",
         name: "Navn",
         "last modified": "Sist endret",

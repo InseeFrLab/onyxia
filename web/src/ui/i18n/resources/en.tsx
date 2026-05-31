@@ -288,10 +288,18 @@ export const translations: Translations<"en"> = {
         deleting: "Deleting...",
         uploading: "Uploading",
         "drag and drop to import files": "Drag and drop to import files",
+        "go back": "Go back",
+        "no objects found": "No objects found",
+        "no objects found description": ({ s3UriStr }) =>
+            `There are no objects whose key starts with "${s3UriStr}".`,
         "this prefix is empty": "This prefix is empty",
         "empty prefix description":
             "Upload files or create a folder to start populating this location.",
+        "empty prefix upload description":
+            "Upload files here or drag and drop them into this area.",
         "upload files": "Upload files",
+        "upload files here": "Upload files here",
+        "drop files here hint": "Drop files anywhere in this area to upload them.",
         "new folder": "New folder",
         name: "Name",
         "last modified": "Last modified",

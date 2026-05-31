@@ -492,6 +492,7 @@ function S3Explorer() {
                                     })}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
+                                    onNavigateBack={s3ExplorerUiController.navigateBack}
                                     onNavigate={({ s3Uri }) =>
                                         s3ExplorerUiController.listPrefix({
                                             s3Uri,

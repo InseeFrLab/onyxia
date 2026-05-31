@@ -152,10 +152,12 @@ const nestedNodes: MockNode[] = [
 const placeholderArgs: S3ExplorerMainViewProps = {
     isListing: false,
     listedPrefix: {
+        s3Uri: defaultPrefix,
         isErrored: false,
         items: []
     },
     onNavigate: action("navigate"),
+    onNavigateBack: action("navigateBack"),
     onPutObjects: action("putObjects"),
     onCreateDirectory: action("createDirectory"),
     onDelete: action("delete"),
@@ -207,6 +209,7 @@ function toListedItems(
         });
 
     return {
+        s3Uri: currentPrefix,
         isErrored: false,
         items
     };
@@ -217,6 +220,7 @@ function StatefulExplorer(
         S3ExplorerMainViewProps,
         | "listedPrefix"
         | "onNavigate"
+        | "onNavigateBack"
         | "onCreateDirectory"
         | "onDelete"
         | "onPutObjects"
@@ -255,6 +259,10 @@ function StatefulExplorer(
                     if (s3Uri.isDelimiterTerminated) {
                         setCurrentPrefix(s3Uri);
                     }
+                }}
+                onNavigateBack={() => {
+                    action("navigateBack")();
+                    setCurrentPrefix(defaultPrefix);
                 }}
                 onCreateDirectory={({ prefixSegment }) => {
                     action("createDirectory")(prefixSegment);
@@ -397,10 +405,12 @@ export const EmptyPrefix: Story = {
     args: {
         isListing: false,
         listedPrefix: {
+            s3Uri: defaultPrefix,
             isErrored: false,
             items: []
         },
         onNavigate: action("navigate"),
+        onNavigateBack: action("navigateBack"),
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
@@ -424,10 +434,12 @@ export const AccessDenied: Story = {
     args: {
         isListing: false,
         listedPrefix: {
+            s3Uri: defaultPrefix,
             isErrored: true,
             errorCase: "access denied"
         },
         onNavigate: action("navigate"),
+        onNavigateBack: action("navigateBack"),
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),

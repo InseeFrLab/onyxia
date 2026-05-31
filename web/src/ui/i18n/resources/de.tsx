@@ -401,10 +401,19 @@ export const translations: Translations<"de"> = {
         deleting: "Wird gelöscht...",
         uploading: "Wird hochgeladen",
         "drag and drop to import files": "Dateien per Drag-and-drop importieren",
+        "go back": "Zurück",
+        "no objects found": "Keine Objekte gefunden",
+        "no objects found description": ({ s3UriStr }) =>
+            `Es gibt keine Objekte, deren Schlüssel mit "${s3UriStr}" beginnt.`,
         "this prefix is empty": "Dieser Präfix ist leer",
         "empty prefix description":
             "Lade Dateien hoch oder erstelle einen Ordner, um diesen Speicherort zu befüllen.",
+        "empty prefix upload description":
+            "Lade hier Dateien hoch oder ziehe sie per Drag-and-drop in diesen Bereich.",
         "upload files": "Dateien hochladen",
+        "upload files here": "Dateien hier hochladen",
+        "drop files here hint":
+            "Lege Dateien irgendwo in diesem Bereich ab, um sie hochzuladen.",
         "new folder": "Neuer Ordner",
         name: "Name",
         "last modified": "Zuletzt geändert",

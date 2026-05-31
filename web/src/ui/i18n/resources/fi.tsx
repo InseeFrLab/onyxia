@@ -383,10 +383,19 @@ export const translations: Translations<"fi"> = {
         deleting: "Poistetaan...",
         uploading: "Ladataan",
         "drag and drop to import files": "Vedä ja pudota tiedostoja tuodaksesi ne",
+        "go back": "Takaisin",
+        "no objects found": "Objekteja ei löytynyt",
+        "no objects found description": ({ s3UriStr }) =>
+            `Ei objekteja, joiden avain alkaa merkkijonolla "${s3UriStr}".`,
         "this prefix is empty": "Tämä etuliite on tyhjä",
         "empty prefix description":
             "Lataa tiedostoja tai luo kansio aloittaaksesi tämän sijainnin täyttämisen.",
+        "empty prefix upload description":
+            "Lataa tiedostoja tähän tai vedä ja pudota ne tälle alueelle.",
         "upload files": "Lataa tiedostoja",
+        "upload files here": "Lataa tiedostoja tähän",
+        "drop files here hint":
+            "Pudota tiedostoja mihin tahansa tälle alueelle ladataksesi ne.",
         "new folder": "Uusi kansio",
         name: "Nimi",
         "last modified": "Viimeksi muokattu",

@@ -497,15 +497,17 @@ export const thunks = {
             const s3Uri = privateSelectors.s3Uri(getState());
 
             assert(s3Uri !== undefined);
-            assert(s3Uri.keySegments.length !== 0);
 
             await dispatch(
                 thunks.listPrefix({
-                    s3Uri: {
-                        ...s3Uri,
-                        keySegments: s3Uri.keySegments.slice(0, -1),
-                        isDelimiterTerminated: true
-                    },
+                    s3Uri:
+                        s3Uri.keySegments.length === 0
+                            ? undefined
+                            : {
+                                  ...s3Uri,
+                                  keySegments: s3Uri.keySegments.slice(0, -1),
+                                  isDelimiterTerminated: true
+                              },
                     debounce: false
                 })
             );
