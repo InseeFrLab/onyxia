@@ -650,7 +650,11 @@ export const thunks = {
                 // NOTE: This is a hack, because our selectors have a non linear complexity
                 // so if we add too much entries in the uploads states things starts to slow down.
                 // We artificially pad as a workaround.
-                if (privateSelectors.uploads(getState()).length > 20) {
+                if (
+                    privateSelectors
+                        .uploads(getState())
+                        .filter(upload => upload.completionPercent !== 100).length > 20
+                ) {
                     await new Promise<void>(resolve => setTimeout(resolve, 2_000));
                 } else {
                     await new Promise<void>(resolve => setTimeout(resolve, 10));
