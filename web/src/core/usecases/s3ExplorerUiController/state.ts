@@ -108,41 +108,50 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    profileName: string;
-                    s3Uri: S3Uri.NonTerminatedByDelimiter;
-                    size: number;
+                    objects: {
+                        profileName: string;
+                        s3Uri: S3Uri.NonTerminatedByDelimiter;
+                        size: number;
+                    }[];
                 };
             }
         ) => {
-            const { profileName, s3Uri, size } = payload;
+            const { objects } = payload;
 
-            retry_case: {
-                const upload = state.uploads.find(
-                    upload =>
-                        upload.profileName === profileName && same(upload.s3Uri, s3Uri)
-                );
+            const uploads_errored = state.uploads.filter(
+                upload => upload.erroredErrorMessage !== undefined
+            );
 
-                if (upload === undefined) {
-                    break retry_case;
+            const now = Date.now();
+
+            for (const { profileName, s3Uri, size } of objects) {
+                retry_case: {
+                    const upload_errored = uploads_errored.find(
+                        upload_errored =>
+                            upload_errored.profileName === profileName &&
+                            same(upload_errored.s3Uri, s3Uri)
+                    );
+
+                    if (upload_errored === undefined) {
+                        break retry_case;
+                    }
+
+                    upload_errored.completionPercent = 0;
+                    upload_errored.erroredErrorMessage = undefined;
+                    upload_errored.uploadStartTime = now;
+
+                    continue;
                 }
 
-                assert(upload.erroredErrorMessage !== undefined);
-
-                upload.completionPercent = 0;
-                upload.erroredErrorMessage = undefined;
-                upload.uploadStartTime = Date.now();
-
-                return;
+                state.uploads.push({
+                    profileName,
+                    s3Uri,
+                    size,
+                    completionPercent: 0,
+                    uploadStartTime: now,
+                    erroredErrorMessage: undefined
+                });
             }
-
-            state.uploads.push({
-                profileName,
-                s3Uri,
-                size,
-                completionPercent: 0,
-                uploadStartTime: Date.now(),
-                erroredErrorMessage: undefined
-            });
         },
         uploadFlushed: state => {
             state.uploads = [];
@@ -341,18 +350,22 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    cmdId: number;
-                    cmd: string;
+                    cmds: {
+                        cmdId: number;
+                        cmd: string;
+                    }[];
                 };
             }
         ) => {
-            const { cmdId, cmd } = payload;
+            const { cmds } = payload;
 
-            state.commandLogsEntries.push({
-                cmdId,
-                cmd,
-                resp: undefined
-            });
+            for (const { cmd, cmdId } of cmds) {
+                state.commandLogsEntries.push({
+                    cmdId,
+                    cmd,
+                    resp: undefined
+                });
+            }
         },
         commandLogCancelled: (
             state,

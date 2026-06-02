@@ -235,8 +235,12 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
 
                     dispatch(
                         actions.commandLogIssued({
-                            cmdId,
-                            cmd: `mc mb s3/${bucket}`
+                            cmds: [
+                                {
+                                    cmdId,
+                                    cmd: `mc mb s3/${bucket}`
+                                }
+                            ]
                         })
                     );
 

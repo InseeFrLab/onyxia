@@ -373,8 +373,12 @@ export const thunks = {
 
             dispatch(
                 actions.commandLogIssued({
-                    cmdId,
-                    cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
+                    cmds: [
+                        {
+                            cmdId,
+                            cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
+                        }
+                    ]
                 })
             );
 
@@ -466,6 +470,19 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.putObject({
+                    dispatchProxy: ({ commandLogIssued, putObjectStarted }) => {
+                        dispatch(
+                            actions.commandLogIssued({
+                                cmds: [commandLogIssued]
+                            })
+                        );
+                        dispatch(
+                            actions.putObjectStarted({
+                                objects: [putObjectStarted]
+                            })
+                        );
+                        return Promise.resolve();
+                    },
                     profileName,
                     s3Uri,
                     blob: blobWrap.blob,
@@ -523,7 +540,7 @@ export const thunks = {
         async (...args) => {
             const { files } = params;
 
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch, getState] = args;
 
             const profileName = privateSelectors.profileName(getState());
 
@@ -631,54 +648,65 @@ export const thunks = {
                     )
                 );
 
-            const prs: Promise<void>[] = [];
+            const prPutObject_arr: Promise<void>[] = [];
 
-            let isUploadCanceled = false;
+            const actionPayloads: {
+                commandLogIssued: {
+                    cmdId: number;
+                    cmd: string;
+                };
+                putObjectStarted: {
+                    profileName: string;
+                    s3Uri: S3Uri.NonTerminatedByDelimiter;
+                    size: number;
+                };
+            }[] = [];
 
-            const ctx = Evt.newCtx();
+            const prDispatchProxyCalled_arr: Promise<void>[] = [];
 
-            evtAction.attachOnce(
-                action =>
-                    action.usecaseName === name && action.actionName === "uploadFlushed",
-                ctx,
-                () => {
-                    isUploadCanceled = true;
-                }
-            );
+            const dAllDispatched = new Deferred<void>();
 
             for (const { file, s3Uri_object, doCheckExistence } of objectsToPut) {
-                // NOTE: This is a hack, because our selectors have a non linear complexity
-                // so if we add too much entries in the uploads states things starts to slow down.
-                // We artificially pad as a workaround.
-                if (
-                    privateSelectors
-                        .uploads(getState())
-                        .filter(upload => upload.completionPercent !== 100).length > 20
-                ) {
-                    await new Promise<void>(resolve => setTimeout(resolve, 2_000));
-                } else {
-                    await new Promise<void>(resolve => setTimeout(resolve, 10));
-                }
+                const dDispatchProxyCalled = new Deferred<void>();
 
-                if (isUploadCanceled) {
-                    break;
-                }
+                prDispatchProxyCalled_arr.push(dDispatchProxyCalled.pr);
 
-                prs.push(
+                prPutObject_arr.push(
                     dispatch(
                         privateThunks.putObject({
                             profileName,
                             s3Uri: s3Uri_object,
                             blob: file.blob,
-                            doCheckExistence
+                            doCheckExistence,
+                            dispatchProxy: action => {
+                                actionPayloads.push(action);
+                                dDispatchProxyCalled.resolve();
+                                return dAllDispatched.pr;
+                            }
                         })
                     )
                 );
             }
 
-            ctx.done();
+            await Promise.all(prDispatchProxyCalled_arr);
 
-            await Promise.all(prs);
+            dispatch(
+                actions.commandLogIssued({
+                    cmds: actionPayloads.map(({ commandLogIssued }) => commandLogIssued)
+                })
+            );
+
+            dispatch(
+                actions.putObjectStarted({
+                    objects: actionPayloads.map(
+                        ({ putObjectStarted }) => putObjectStarted
+                    )
+                })
+            );
+
+            dAllDispatched.resolve();
+
+            await Promise.all(prPutObject_arr);
         },
 
     createDirectory:
@@ -748,8 +776,12 @@ export const thunks = {
 
                 dispatch(
                     actions.commandLogIssued({
-                        cmdId,
-                        cmd: `aws s3 rm ${stringifyS3Uri(s3Uri)}`
+                        cmds: [
+                            {
+                                cmdId,
+                                cmd: `aws s3 rm ${stringifyS3Uri(s3Uri)}`
+                            }
+                        ]
                     })
                 );
 
@@ -826,8 +858,12 @@ export const thunks = {
 
             dispatch(
                 actions.commandLogIssued({
-                    cmdId,
-                    cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
+                    cmds: [
+                        {
+                            cmdId,
+                            cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
+                        }
+                    ]
                 })
             );
 
@@ -877,9 +913,20 @@ export const privateThunks = {
             s3Uri: S3Uri.NonTerminatedByDelimiter;
             blob: Blob;
             doCheckExistence: boolean;
+            dispatchProxy: (action: {
+                commandLogIssued: {
+                    cmdId: number;
+                    cmd: string;
+                };
+                putObjectStarted: {
+                    profileName: string;
+                    s3Uri: S3Uri.NonTerminatedByDelimiter;
+                    size: number;
+                };
+            }) => Promise<void>;
         }) =>
         async (...args) => {
-            const { profileName, s3Uri, blob, doCheckExistence } = params;
+            const { profileName, s3Uri, blob, doCheckExistence, dispatchProxy } = params;
 
             const [dispatch, , { evtAction }] = args;
 
@@ -938,20 +985,17 @@ export const privateThunks = {
 
             const cmdId = Date.now() + Math.random();
 
-            dispatch(
-                actions.commandLogIssued({
+            await dispatchProxy({
+                commandLogIssued: {
                     cmdId,
                     cmd: `mc cp ./${s3Uri.keySegments.at(-1)} ${stringifyS3Uri(s3Uri)}`
-                })
-            );
-
-            dispatch(
-                actions.putObjectStarted({
+                },
+                putObjectStarted: {
                     profileName,
                     s3Uri: s3Uri,
                     size: blob.size
-                })
-            );
+                }
+            });
 
             const evtCancel = Evt.create();
 
@@ -1091,8 +1135,12 @@ export const privateThunks = {
             const cmdId = Date.now();
             dispatch(
                 actions.commandLogIssued({
-                    cmdId,
-                    cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
+                    cmds: [
+                        {
+                            cmdId,
+                            cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
+                        }
+                    ]
                 })
             );
 
