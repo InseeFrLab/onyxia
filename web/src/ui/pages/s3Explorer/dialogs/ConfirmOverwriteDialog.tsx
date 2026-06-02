@@ -1,13 +1,15 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import { assert } from "tsafe/assert";
-import type { Evt, UnpackEvt } from "evt";
-import { useEvt } from "evt/hooks";
+import { Evt, type UnpackEvt } from "evt";
+import { useEvt, useRerenderOnStateChange } from "evt/hooks";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { tss } from "tss";
+import { useConst } from "powerhooks/useConst";
+import * as runExclusive from "run-exclusive";
 
 export type ConfirmOverwriteDialogProps = {
     evtOpen: Evt<{
@@ -22,35 +24,50 @@ export const ConfirmOverwriteDialog = memo((props: ConfirmOverwriteDialogProps) 
     const { t } = useTranslation({ ConfirmOverwriteDialog });
     const { classes } = useStyles();
 
-    const [state, setState] = useState<
-        UnpackEvt<ConfirmOverwriteDialogProps["evtOpen"]> | undefined
-    >(undefined);
+    const evtState = useConst(() =>
+        Evt.create<UnpackEvt<ConfirmOverwriteDialogProps["evtOpen"]> | undefined>(
+            undefined
+        )
+    );
+
+    useRerenderOnStateChange(evtState);
 
     useEvt(
         ctx => {
-            evtOpen.attach(ctx, eventData => setState(eventData));
+            evtOpen.attach(
+                ctx,
+                runExclusive.build(async eventData => {
+                    await evtState.waitFor(state => state === undefined);
+
+                    if (ctx.completionStatus !== undefined) {
+                        return;
+                    }
+
+                    evtState.state = eventData;
+                })
+            );
         },
         [evtOpen]
     );
 
     const close = (doOverwrite: boolean) => {
-        setState(state => {
-            assert(state !== undefined);
+        assert(evtState.state !== undefined);
 
-            state.resolveResponse({ doOverwrite });
+        evtState.state.resolveResponse({ doOverwrite });
 
-            return undefined;
-        });
+        evtState.state = undefined;
     };
 
     return (
         <Dialog
             title={t("dialog title")}
             subtitle={
-                state === undefined ? (
+                evtState.state === undefined ? (
                     ""
                 ) : (
-                    <span className={classes.s3Uri}>{stringifyS3Uri(state.s3Uri)}</span>
+                    <span className={classes.s3Uri}>
+                        {stringifyS3Uri(evtState.state.s3Uri)}
+                    </span>
                 )
             }
             body={t("dialog body")}
@@ -69,7 +86,7 @@ export const ConfirmOverwriteDialog = memo((props: ConfirmOverwriteDialogProps) 
                     </Button>
                 </>
             }
-            isOpen={state !== undefined}
+            isOpen={evtState.state !== undefined}
             onClose={() => close(false)}
         />
     );

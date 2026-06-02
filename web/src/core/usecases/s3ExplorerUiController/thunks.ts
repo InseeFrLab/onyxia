@@ -664,33 +664,35 @@ export const thunks = {
 
             evtAction.setMaxHandlers(objectsToPut.length * 2 + 100);
 
-            const prDispatchProxyCalled_arr: Promise<void>[] = [];
+            const prDispatchProxyCalledOrAborted_arr: Promise<void>[] = [];
 
             const dAllDispatched = new Deferred<void>();
 
             for (const { file, s3Uri_object, doCheckExistence } of objectsToPut) {
-                const dDispatchProxyCalled = new Deferred<void>();
+                const dDispatchProxyCalledOrAborted = new Deferred<void>();
 
-                prDispatchProxyCalled_arr.push(dDispatchProxyCalled.pr);
+                prDispatchProxyCalledOrAborted_arr.push(dDispatchProxyCalledOrAborted.pr);
 
-                prPutObject_arr.push(
-                    dispatch(
-                        privateThunks.putObject({
-                            profileName,
-                            s3Uri: s3Uri_object,
-                            blob: file.blob,
-                            doCheckExistence,
-                            dispatchProxy: action => {
-                                actionPayloads.push(action);
-                                dDispatchProxyCalled.resolve();
-                                return dAllDispatched.pr;
-                            }
-                        })
-                    )
+                const prPutObject = dispatch(
+                    privateThunks.putObject({
+                        profileName,
+                        s3Uri: s3Uri_object,
+                        blob: file.blob,
+                        doCheckExistence,
+                        dispatchProxy: action => {
+                            actionPayloads.push(action);
+                            dDispatchProxyCalledOrAborted.resolve();
+                            return dAllDispatched.pr;
+                        }
+                    })
                 );
+
+                prPutObject_arr.push(prPutObject);
+
+                prPutObject.then(() => dDispatchProxyCalledOrAborted.resolve());
             }
 
-            await Promise.all(prDispatchProxyCalled_arr);
+            await Promise.all(prDispatchProxyCalledOrAborted_arr);
 
             dispatch(
                 actions.commandLogIssued({
