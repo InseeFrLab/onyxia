@@ -317,14 +317,22 @@ export function createS3Client(
                             delimiter: Delimiter,
                             value: `s3://${Bucket}/${key}`
                         });
-                        assert(!s3Uri.isDelimiterTerminated);
-
+                        if (s3Uri.isDelimiterTerminated) {
+                            console.warn(
+                                [
+                                    `Skipping "${key}".`,
+                                    "Objects with key that's ends with a delimiter can't be handled."
+                                ].join(" ")
+                            );
+                            return undefined;
+                        }
                         return id<S3Client.ListObjectsReturn.Success.Object>({
                             s3Uri,
                             lastModified: LastModified.getTime(),
                             size: Size
                         });
-                    }),
+                    })
+                    .filter(exclude(undefined)),
 
                 prefixes: (resp.CommonPrefixes ?? [])
                     .map(({ Prefix }) => Prefix)
