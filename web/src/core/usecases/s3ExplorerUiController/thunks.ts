@@ -540,7 +540,7 @@ export const thunks = {
         async (...args) => {
             const { files } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             const profileName = privateSelectors.profileName(getState());
 
@@ -661,6 +661,8 @@ export const thunks = {
                     size: number;
                 };
             }[] = [];
+
+            evtAction.setMaxHandlers(objectsToPut.length * 2 + 100);
 
             const prDispatchProxyCalled_arr: Promise<void>[] = [];
 
@@ -1000,8 +1002,6 @@ export const privateThunks = {
             const evtCancel = Evt.create();
 
             const ctx = Evt.newCtx();
-
-            evtAction.setMaxHandlers(4000);
 
             evtAction.attachOnce(
                 action =>
