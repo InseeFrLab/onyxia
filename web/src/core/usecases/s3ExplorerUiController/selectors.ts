@@ -762,6 +762,18 @@ const doesListedPrefixHaveFinishedUpload = createSelector(
         listedPrefix.items.find(item => item.uploadProgressPercent === 100) !== undefined
 );
 
+const doesListedPrefixHaveOngoingUpload = createSelector(
+    listedPrefix,
+    listedPrefix =>
+        listedPrefix !== undefined &&
+        !listedPrefix.isErrored &&
+        listedPrefix.items.find(
+            item =>
+                item.uploadProgressPercent !== undefined &&
+                item.uploadProgressPercent !== 100
+        ) !== undefined
+);
+
 const isFullyQualifiedDataFileUri = createSelector(
     fullyQualifiedUri,
     fullyQualifiedUri =>
@@ -774,6 +786,7 @@ export const privateSelectors = {
     profileName,
     s3Uri_currentlyListing,
     doesListedPrefixHaveFinishedUpload,
+    doesListedPrefixHaveOngoingUpload,
     listedPrefix_state,
     isFullyQualifiedDataFileUri,
     uploads: createSelector(state, state => state.uploads)
