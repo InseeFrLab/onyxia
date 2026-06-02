@@ -61,15 +61,13 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
         .pipe(action => action.usecaseName === name)
         .pipe(() => [privateSelectors.doesListedPrefixHaveFinishedUpload(getState())])
         .pipe(onlyIfChanged())
-        .attach(
-            doesListedPrefixHaveFinishedUpload => doesListedPrefixHaveFinishedUpload,
-            () =>
-                dispatch(
-                    thunks.listPrefix({
-                        s3Uri: privateSelectors.s3Uri(getState()),
-                        debounce: false
-                    })
-                )
+        .attach(() =>
+            dispatch(
+                thunks.listPrefix({
+                    s3Uri: privateSelectors.s3Uri(getState()),
+                    debounce: false
+                })
+            )
         );
 
     evtAction

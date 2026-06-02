@@ -19,7 +19,9 @@ export type S3UploadsProps = {
         uploadStartTime: number;
         erroredErrorMessage: string | undefined;
     }[];
-    onClose: () => void;
+
+    onFlushUploads: () => void;
+
     // NOTE: We assert it refers to an upload that is still running.
     onCancelUpload: (params: {
         profileName: string;
@@ -60,7 +62,7 @@ export function S3Uploads(props: S3UploadsProps) {
     const {
         className,
         uploads,
-        onClose,
+        onFlushUploads,
         onCancelUpload,
         onRetryUpload,
         getDirectoryLink
@@ -83,7 +85,7 @@ export function S3Uploads(props: S3UploadsProps) {
 
     const handleClose = () => {
         if (runningUploads.length === 0) {
-            onClose();
+            onFlushUploads();
             return;
         }
 
@@ -91,15 +93,8 @@ export function S3Uploads(props: S3UploadsProps) {
     };
 
     const handleConfirmAbortUpload = () => {
-        runningUploads.forEach(({ profileName, s3Uri }) =>
-            onCancelUpload({
-                profileName,
-                s3Uri
-            })
-        );
-
         setIsConfirmAbortUploadDialogOpen(false);
-        onClose();
+        onFlushUploads();
     };
 
     if (uploadCount === 0) {

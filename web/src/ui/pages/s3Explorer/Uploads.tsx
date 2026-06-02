@@ -42,7 +42,7 @@ function Uploads_2() {
             className={classes.root}
             uploads={uploads}
             onCancelUpload={s3ExplorerUiController.cancelUpload}
-            onClose={s3ExplorerUiController.flushUploads}
+            onFlushUploads={s3ExplorerUiController.flushUploads}
             onRetryUpload={s3ExplorerUiController.retryPutObject}
             getDirectoryLink={({ profileName, s3Uri }) => {
                 const link = routes.s3Explorer({

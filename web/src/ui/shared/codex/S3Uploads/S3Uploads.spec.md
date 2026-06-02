@@ -9,7 +9,7 @@ It is responsible for:
 - surfacing upload progress,
 - showing errored upload outcomes,
 - exposing row-level actions for cancel, retry, and open-directory,
-- letting the parent close the panel entirely.
+- asking the parent to flush rendered uploads when the panel can be dismissed.
 
 The component is presentational. It does not own upload execution or navigation state.
 
@@ -29,7 +29,7 @@ type S3UploadsProps = {
         uploadStartTime: number;
         erroredErrorMessage: string | undefined;
     }[];
-    onClose: () => void;
+    onFlushUploads: () => void;
     onCancelUpload: (params: {
         profileName: string;
         s3Uri: S3Uri.NonTerminatedByDelimiter;
@@ -48,7 +48,8 @@ type S3UploadsProps = {
 The parent owns ordering. If uploads should appear newest-first or most-relevant-first,
 the parent must provide them in that order.
 
-If `uploads` is empty, the component renders nothing.
+If `uploads` is empty, the component renders nothing. The parent is expected to
+remove the panel by making `uploads` empty, including after `onFlushUploads`.
 
 ## Derived States
 
@@ -67,7 +68,7 @@ The header contains:
 
 - a summary title,
 - a collapse / expand toggle,
-- a trailing close affordance wired to `onClose`.
+- a trailing close affordance that either flushes uploads or asks for confirmation.
 
 Title behavior:
 
@@ -77,7 +78,12 @@ Title behavior:
 Close behavior:
 
 - the close affordance is always enabled,
-- it must remain callable even while uploads are still running.
+- if no upload is running, it calls `onFlushUploads`,
+- if at least one upload is running, it opens the abort confirmation dialog,
+- confirming the dialog calls `onFlushUploads`,
+- confirming the dialog does not call `onCancelUpload` for each running upload,
+- once the parent responds to `onFlushUploads` by passing `uploads: []`, the component
+  renders nothing and the panel closes automatically.
 
 Collapse behavior:
 

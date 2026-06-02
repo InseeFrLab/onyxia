@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
+import { useEffect, useState } from "react";
 import type { S3Uri } from "core/tools/S3Uri";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { Link } from "type-route";
@@ -79,17 +80,34 @@ const baseArgs: S3UploadsProps = {
             erroredErrorMessage: undefined
         }
     ],
-    onClose: action("close uploads"),
+    onFlushUploads: action("flush uploads"),
     onCancelUpload: params => action("cancel upload")(params),
     onRetryUpload: params => action("retry upload")(params),
     getDirectoryLink: makeDirectoryLink
 };
 
-const renderPanel: Story["render"] = args => (
-    <div style={{ width: 420 }}>
-        <S3Uploads {...args} />
-    </div>
-);
+function S3UploadsStory(props: S3UploadsProps) {
+    const [uploads, setUploads] = useState(props.uploads);
+
+    useEffect(() => {
+        setUploads(props.uploads);
+    }, [props.uploads]);
+
+    return (
+        <div style={{ width: 420 }}>
+            <S3Uploads
+                {...props}
+                uploads={uploads}
+                onFlushUploads={() => {
+                    props.onFlushUploads();
+                    setUploads([]);
+                }}
+            />
+        </div>
+    );
+}
+
+const renderPanel: Story["render"] = args => <S3UploadsStory {...args} />;
 
 export const Uploading: Story = {
     args: {
