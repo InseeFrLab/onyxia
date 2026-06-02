@@ -182,8 +182,8 @@ export const translations: Translations<"no"> = {
     ConfirmOverwriteDialog: {
         "dialog title": "Filen finnes allerede",
         "dialog body": "Vil du overskrive den eksisterende filen?",
-        cancel: "Avbryt",
-        overwrite: "Overskriv"
+        "no, keep the existing file": "Nei, behold den eksisterende filen",
+        "yes, overwrite": "Ja, overskriv"
     },
     ConfirmCustomS3ConfigDeletionDialog: {
         "dialog title": "Bekreft sletting av egendefinert S3-konfigurasjon?",

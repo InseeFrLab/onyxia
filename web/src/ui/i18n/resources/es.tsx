@@ -185,8 +185,8 @@ export const translations: Translations<"es"> = {
     ConfirmOverwriteDialog: {
         "dialog title": "El archivo ya existe",
         "dialog body": "¿Desea sobrescribir el archivo existente?",
-        cancel: "Cancelar",
-        overwrite: "Sobrescribir"
+        "no, keep the existing file": "No, conservar el archivo existente",
+        "yes, overwrite": "Sí, sobrescribir"
     },
     ConfirmCustomS3ConfigDeletionDialog: {
         "dialog title": "¿Confirmar la eliminación de la configuración S3 personalizada?",

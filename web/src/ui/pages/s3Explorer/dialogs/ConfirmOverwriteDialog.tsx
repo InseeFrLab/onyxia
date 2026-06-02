@@ -79,10 +79,10 @@ export const ConfirmOverwriteDialog = memo((props: ConfirmOverwriteDialogProps) 
             buttons={
                 <>
                     <Button onClick={() => close(false)} autoFocus variant="secondary">
-                        {t("cancel")}
+                        {t("no, keep the existing file")}
                     </Button>
                     <Button onClick={() => close(true)} autoFocus>
-                        {t("overwrite")}
+                        {t("yes, overwrite")}
                     </Button>
                 </>
             }
@@ -97,7 +97,7 @@ ConfirmOverwriteDialog.displayName = symToStr({
 });
 
 const { i18n } = declareComponentKeys<
-    "dialog title" | "dialog body" | "cancel" | "overwrite"
+    "dialog title" | "dialog body" | "no, keep the existing file" | "yes, overwrite"
 >()({ ConfirmOverwriteDialog });
 
 export type I18n = typeof i18n;

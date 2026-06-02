@@ -182,8 +182,8 @@ export const translations: Translations<"fi"> = {
     ConfirmOverwriteDialog: {
         "dialog title": "Tiedosto on jo olemassa",
         "dialog body": "Haluatko korvata olemassa olevan tiedoston?",
-        cancel: "Peruuta",
-        overwrite: "Korvaa"
+        "no, keep the existing file": "Ei, säilytä olemassa oleva tiedosto",
+        "yes, overwrite": "Kyllä, korvaa"
     },
     ConfirmCustomS3ConfigDeletionDialog: {
         "dialog title": "Vahvistetaanko mukautetun S3-määrityksen poistaminen?",

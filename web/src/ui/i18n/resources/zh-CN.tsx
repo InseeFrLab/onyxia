@@ -164,8 +164,8 @@ export const translations: Translations<"zh-CN"> = {
     ConfirmOverwriteDialog: {
         "dialog title": "文件已存在",
         "dialog body": "是否要覆盖现有文件？",
-        cancel: "取消",
-        overwrite: "覆盖"
+        "no, keep the existing file": "否，保留现有文件",
+        "yes, overwrite": "是，覆盖"
     },
     ConfirmCustomS3ConfigDeletionDialog: {
         "dialog title": "确认删除自定义 S3 配置？",
