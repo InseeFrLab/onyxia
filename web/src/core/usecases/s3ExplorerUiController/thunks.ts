@@ -23,7 +23,7 @@ import {
     makePrefixPublic,
     undoMakePrefixPublic,
     getIsWithinPrefixThatHasBeenMadePublic
-} from "core/tools/bucketPolicies";
+} from "./decoupledLogic/bucketPolicies";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({

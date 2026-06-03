@@ -1,6 +1,5 @@
 import type { S3Uri } from "core/tools/S3Uri";
 import type { NonPostableEvt } from "evt";
-import type { BucketPolicies } from "core/tools/bucketPolicies";
 
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<
@@ -65,15 +64,17 @@ export type S3Client = {
 
     getBucketPolicies: (params: {
         bucket: string;
-    }) => Promise<BucketPolicies | undefined>;
+    }) => Promise<S3Client.BucketPolicies | undefined>;
 
     putBucketPolicies: (params: {
         bucket: string;
-        bucketPolicies: BucketPolicies;
+        bucketPolicies: S3Client.BucketPolicies;
     }) => Promise<{ isSuccess: true } | { isSuccess: false; errorMessage: string }>;
 };
 
 export namespace S3Client {
+    export type BucketPolicies = Record<string, unknown>;
+
     export type ListObjectsReturn = ListObjectsReturn.Error | ListObjectsReturn.Success;
 
     export namespace ListObjectsReturn {

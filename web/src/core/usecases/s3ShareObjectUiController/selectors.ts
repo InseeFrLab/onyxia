@@ -3,7 +3,7 @@ import { name, type State } from "./state";
 import { createSelector } from "clean-architecture";
 import { assert, id } from "tsafe";
 import * as s3ExplorerUiController from "core/usecases/s3ExplorerUiController";
-import { getIsWithinPrefixThatHasBeenMadePublic } from "core/tools/bucketPolicies";
+import { getIsWithinPrefixThatHasBeenMadePublic } from "core/usecases/s3ExplorerUiController/decoupledLogic/bucketPolicies";
 
 const state = (rootState: RootState) => rootState[name];
 

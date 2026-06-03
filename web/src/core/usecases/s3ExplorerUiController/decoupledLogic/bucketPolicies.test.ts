@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assert } from "tsafe/assert";
-import { parseS3Uri, type S3Uri } from "./S3Uri";
+import { parseS3Uri, type S3Uri } from "core/tools/S3Uri";
 import {
     getHasPrefixBeMadePublic,
     getIsWithinPrefixThatHasBeenMadePublic,

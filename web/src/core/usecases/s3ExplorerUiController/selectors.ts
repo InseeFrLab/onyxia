@@ -11,7 +11,7 @@ import { name, type State } from "./state";
 import {
     getHasPrefixBeMadePublic,
     getIsWithinPrefixThatHasBeenMadePublic
-} from "core/tools/bucketPolicies";
+} from "./decoupledLogic/bucketPolicies";
 
 export type RouteParams = {
     profile?: string;

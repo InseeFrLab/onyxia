@@ -1,8 +1,11 @@
 import { getS3UriKey } from "core/tools/S3Uri";
 import type { S3Uri } from "core/tools/S3Uri";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
+import type { S3Client } from "core/ports/S3Client";
 
 export type BucketPolicies = Record<string, unknown>;
+
+assert<Equals<S3Client.BucketPolicies, BucketPolicies>>;
 
 type BucketPoliciesByBucket = Record<
     string,

@@ -1,5 +1,4 @@
 import type { S3Client } from "core/ports/S3Client";
-import type { BucketPolicies } from "core/tools/bucketPolicies";
 import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistence
@@ -624,7 +623,7 @@ export function createS3Client(
             const bucketPolicies: unknown = JSON.parse(policy);
 
             assert(
-                typeGuard<BucketPolicies>(
+                typeGuard<S3Client.BucketPolicies>(
                     bucketPolicies,
                     typeof bucketPolicies === "object" &&
                         bucketPolicies !== null &&

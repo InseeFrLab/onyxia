@@ -2,7 +2,7 @@ import { assert, id } from "tsafe";
 import { createUsecaseActions } from "clean-architecture";
 import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
-import type { BucketPolicies } from "core/tools/bucketPolicies";
+import type { BucketPolicies } from "./decoupledLogic/bucketPolicies";
 
 //All explorer paths are expected to be absolute (start with /)
 
