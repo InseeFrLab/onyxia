@@ -205,7 +205,7 @@ export const translations: Translations<"fr"> = {
         "create profile": "Créer un profil",
         back: "Retour",
         upload: "Téléverser",
-        "create new prefix": "Créer un nouveau préfixe"
+        "create new folder": "Créer un nouveau dossier"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Partager l'objet"

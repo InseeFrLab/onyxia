@@ -203,7 +203,7 @@ export const translations: Translations<"nl"> = {
         "create profile": "Profiel maken",
         back: "Terug",
         upload: "Uploaden",
-        "create new prefix": "Nieuwe prefix maken"
+        "create new folder": "Nieuwe map maken"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Object delen"

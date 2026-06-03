@@ -428,7 +428,7 @@ function S3Explorer() {
                                 />
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("CreateNewFolderOutlined")}
-                                    label={t("create new prefix")}
+                                    label={t("create new folder")}
                                     disabled={mainView.directoryCreationButton.isDisabled}
                                     onClick={async () => {
                                         assert(
@@ -598,6 +598,6 @@ function DataExplorer(props: { className?: string }) {
 }
 
 const { i18n } = declareComponentKeys<
-    "page header title" | "create profile" | "back" | "upload" | "create new prefix"
+    "page header title" | "create profile" | "back" | "upload" | "create new folder"
 >()({ S3Explorer });
 export type I18n = typeof i18n;
