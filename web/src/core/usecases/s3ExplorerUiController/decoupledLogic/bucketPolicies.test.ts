@@ -342,6 +342,120 @@ describe("bucketPolicies", () => {
         });
     });
 
+    it("removes redundant nested public prefixes when adding a higher level prefix", () => {
+        const initialBucketPolicies: BucketPolicies = {
+            Version: "2012-10-17",
+            Statement: []
+        };
+
+        const nestedPublicPrefix = parsePrefix("s3://mybucket/foo/bar/baz/");
+        const higherLevelPublicPrefix = parsePrefix("s3://mybucket/foo/bar/");
+
+        const firstUpdate = makePrefixPublic({
+            s3Uri: nestedPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(initialBucketPolicies)
+        }).updatedBucketPolicies;
+
+        const secondUpdate = makePrefixPublic({
+            s3Uri: higherLevelPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(firstUpdate)
+        }).updatedBucketPolicies;
+
+        const statements = secondUpdate.Statement;
+
+        assert(Array.isArray(statements));
+
+        expect(statements).toHaveLength(2);
+        expect(statements[0]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicGetObject",
+            Resource: ["arn:aws:s3:::mybucket/foo/bar/*"]
+        });
+        expect(statements[1]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicListBucket",
+            Condition: {
+                StringLike: {
+                    "s3:prefix": ["foo/bar/*"]
+                }
+            }
+        });
+
+        const bucketPoliciesByBucket = getBucketPoliciesByBucket(secondUpdate);
+
+        expect(
+            getHasPrefixBeMadePublic({
+                s3Uri: nestedPublicPrefix,
+                bucketPoliciesByBucket
+            })
+        ).toBe(false);
+
+        expect(
+            getIsWithinPrefixThatHasBeenMadePublic({
+                s3Uri: parsePrefix("s3://mybucket/foo/bar/baz/"),
+                bucketPoliciesByBucket
+            })
+        ).toStrictEqual({
+            isWithinPrefixThatHasBeenMadePublic: true,
+            s3Uri_publicPrefix: higherLevelPublicPrefix
+        });
+    });
+
+    it("does not add a nested public prefix when a higher level prefix is already public", () => {
+        const initialBucketPolicies: BucketPolicies = {
+            Version: "2012-10-17",
+            Statement: []
+        };
+
+        const higherLevelPublicPrefix = parsePrefix("s3://mybucket/foo/bar/");
+        const nestedPublicPrefix = parsePrefix("s3://mybucket/foo/bar/baz/");
+
+        const firstUpdate = makePrefixPublic({
+            s3Uri: higherLevelPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(initialBucketPolicies)
+        }).updatedBucketPolicies;
+
+        const secondUpdate = makePrefixPublic({
+            s3Uri: nestedPublicPrefix,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket(firstUpdate)
+        }).updatedBucketPolicies;
+
+        const statements = secondUpdate.Statement;
+
+        assert(Array.isArray(statements));
+
+        expect(statements).toHaveLength(2);
+        expect(statements[0]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicGetObject",
+            Resource: ["arn:aws:s3:::mybucket/foo/bar/*"]
+        });
+        expect(statements[1]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicListBucket",
+            Condition: {
+                StringLike: {
+                    "s3:prefix": ["foo/bar/*"]
+                }
+            }
+        });
+
+        const bucketPoliciesByBucket = getBucketPoliciesByBucket(secondUpdate);
+
+        expect(
+            getHasPrefixBeMadePublic({
+                s3Uri: nestedPublicPrefix,
+                bucketPoliciesByBucket
+            })
+        ).toBe(false);
+
+        expect(
+            getIsWithinPrefixThatHasBeenMadePublic({
+                s3Uri: nestedPublicPrefix,
+                bucketPoliciesByBucket
+            })
+        ).toStrictEqual({
+            isWithinPrefixThatHasBeenMadePublic: true,
+            s3Uri_publicPrefix: higherLevelPublicPrefix
+        });
+    });
+
     it("migrates legacy per-prefix managed statements when adding a prefix", () => {
         const bucketPolicies: BucketPolicies = {
             Version: "2012-10-17",

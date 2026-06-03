@@ -141,10 +141,11 @@ export function makePrefixPublic(params: {
             ...createManagedStatements({
                 bucket: s3Uri.bucket,
                 prefixKeysByKind: {
-                    getObject: appendUnique(managedPrefixKeysByKind.getObject, prefixKey),
-                    listBucket: appendUnique(
-                        managedPrefixKeysByKind.listBucket,
-                        prefixKey
+                    getObject: removePrefixKeysWithinHigherLevelPrefix(
+                        appendUnique(managedPrefixKeysByKind.getObject, prefixKey)
+                    ),
+                    listBucket: removePrefixKeysWithinHigherLevelPrefix(
+                        appendUnique(managedPrefixKeysByKind.listBucket, prefixKey)
                     )
                 }
             })
@@ -526,6 +527,19 @@ function appendUnique(values: string[], value: string): string[] {
 
 function getUniqueValues(values: string[]): string[] {
     return values.reduce(appendUnique, []);
+}
+
+function removePrefixKeysWithinHigherLevelPrefix(prefixKeys: string[]): string[] {
+    const uniquePrefixKeys = getUniqueValues(prefixKeys);
+
+    return uniquePrefixKeys.filter(
+        prefixKey =>
+            !uniquePrefixKeys.some(
+                higherLevelPrefixKey =>
+                    higherLevelPrefixKey !== prefixKey &&
+                    prefixKey.startsWith(higherLevelPrefixKey)
+            )
+    );
 }
 
 function createAwsS3CliEmulatedCommand(params: {
