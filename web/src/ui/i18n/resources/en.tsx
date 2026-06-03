@@ -207,19 +207,15 @@ export const translations: Translations<"en"> = {
         "rename bookmark": "Rename bookmark"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Create directory",
-        "dialog subtitle":
-            "Directories are created relative to the prefix currently being listed.",
-        "create prefix dialog title": "Create prefix",
-        "create prefix dialog subtitle":
-            "Create a new prefix inside the current S3 location.",
-        "directoryName textField label": "Directory name",
-        "prefixName textField label": "Prefix name",
-        "directoryName textField empty error": "Directory name can't be empty",
-        "directoryName textField duplicate error": "Directory name already exists",
+        "dialog title": "Create a folder",
+        "dialog subtitle": "Create a folder-like prefix at this location",
+        "dialog body":
+            "S3 does not store folders as real objects. This action only opens a new prefix segment from the current location, so you can upload objects under it. The folder will appear once at least one object exists with that prefix; empty folders do not exist in S3.",
+        "folderName textField label": "Folder name",
+        "folderName textField empty error": "Folder name can't be empty",
+        "folderName textField duplicate error": "Folder name already exists",
         cancel: "Cancel",
-        create: "Create",
-        "create prefix": "Create prefix"
+        "create folder": "Create folder"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Make prefix public",

@@ -310,18 +310,14 @@ export const translations: Translations<"nl"> = {
     },
     DirectoryCreationDialog: {
         "dialog title": "Map aanmaken",
-        "dialog subtitle":
-            "Mappen worden aangemaakt relatief aan het voorvoegsel dat momenteel wordt weergegeven.",
-        "create prefix dialog title": "Prefix aanmaken",
-        "create prefix dialog subtitle":
-            "Maak een nieuwe prefix aan binnen de huidige S3-locatie.",
-        "directoryName textField label": "Mapnaam",
-        "prefixName textField label": "Prefixnaam",
-        "directoryName textField empty error": "De mapnaam mag niet leeg zijn",
-        "directoryName textField duplicate error": "De mapnaam bestaat al",
+        "dialog subtitle": "Maak een mapachtig prefix aan op deze locatie",
+        "dialog body":
+            "S3 slaat mappen niet op als echte objecten. Deze actie opent alleen een nieuw prefixsegment vanaf de huidige locatie, zodat je er objecten onder kunt uploaden. De map verschijnt zodra er minstens één object met dit prefix bestaat; lege mappen bestaan niet in S3.",
+        "folderName textField label": "Mapnaam",
+        "folderName textField empty error": "De mapnaam mag niet leeg zijn",
+        "folderName textField duplicate error": "De mapnaam bestaat al",
         cancel: "Annuleren",
-        create: "Aanmaken",
-        "create prefix": "Prefix aanmaken"
+        "create folder": "Map aanmaken"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Prefix openbaar maken",

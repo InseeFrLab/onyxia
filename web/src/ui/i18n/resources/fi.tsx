@@ -305,18 +305,15 @@ export const translations: Translations<"fi"> = {
         "rename bookmark": "Nimeä kirjanmerkki uudelleen"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Luo hakemisto",
-        "dialog subtitle":
-            "Hakemistot luodaan suhteessa parhaillaan listattuun etuliitteeseen.",
-        "create prefix dialog title": "Luo etuliite",
-        "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",
-        "directoryName textField label": "Hakemiston nimi",
-        "prefixName textField label": "Etuliitteen nimi",
-        "directoryName textField empty error": "Hakemiston nimi ei voi olla tyhjä",
-        "directoryName textField duplicate error": "Hakemiston nimi on jo olemassa",
+        "dialog title": "Luo kansio",
+        "dialog subtitle": "Luo kansiota vastaava etuliite tähän sijaintiin",
+        "dialog body":
+            "S3 ei tallenna kansioita varsinaisina objekteina. Tämä toiminto avaa vain uuden etuliitesegmentin nykyisestä sijainnista, jotta voit ladata objekteja sen alle. Kansio tulee näkyviin, kun vähintään yksi objekti käyttää tätä etuliitettä; tyhjiä kansioita ei ole S3:ssa.",
+        "folderName textField label": "Kansion nimi",
+        "folderName textField empty error": "Kansion nimi ei voi olla tyhjä",
+        "folderName textField duplicate error": "Kansion nimi on jo olemassa",
         cancel: "Peruuta",
-        create: "Luo",
-        "create prefix": "Luo etuliite"
+        "create folder": "Luo kansio"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Tee etuliitteestä julkinen",

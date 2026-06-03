@@ -61,14 +61,14 @@ function getIsValidValue(params: {
     if (normalizedValue === "") {
         return {
             isValidValue: false,
-            message: t("directoryName textField empty error")
+            message: t("folderName textField empty error")
         };
     }
 
     if (exclude.includes(normalizedValue)) {
         return {
             isValidValue: false,
-            message: t("directoryName textField duplicate error")
+            message: t("folderName textField duplicate error")
         };
     }
 
@@ -135,8 +135,8 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
             className={dialogClasses.paper}
             maxWidth={false}
             muiDialogClasses={{ root: dialogClasses.overlayRoot }}
-            title={t("create prefix dialog title")}
-            subtitle={t("create prefix dialog subtitle")}
+            title={t("dialog title")}
+            subtitle={t("dialog subtitle")}
             classes={{
                 title: dialogClasses.title,
                 subtitle: dialogClasses.subtitle,
@@ -146,8 +146,9 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
             body={
                 state !== undefined && (
                     <div className={classes.body}>
+                        <p className={classes.description}>{t("dialog body")}</p>
                         <S3DialogTextInput
-                            label={t("prefixName textField label")}
+                            label={t("folderName textField label")}
                             value={state.prefixSegment}
                             autoFocus={true}
                             isStrong={true}
@@ -199,7 +200,7 @@ export const DirectoryCreationDialog = memo((props: DirectoryCreationDialogProps
                         disabled={!state?.isPrefixSegmentValid}
                         startIcon={getIconUrlByName("CreateNewFolderOutlined")}
                     >
-                        {t("create prefix")}
+                        {t("create folder")}
                     </Button>
                 </>
             }
@@ -216,21 +217,27 @@ DirectoryCreationDialog.displayName = symToStr({
 const { i18n } = declareComponentKeys<
     | "dialog title"
     | "dialog subtitle"
-    | "create prefix dialog title"
-    | "create prefix dialog subtitle"
-    | "directoryName textField label"
-    | "prefixName textField label"
-    | "directoryName textField empty error"
-    | "directoryName textField duplicate error"
+    | "dialog body"
+    | "folderName textField label"
+    | "folderName textField empty error"
+    | "folderName textField duplicate error"
     | "cancel"
-    | "create"
-    | "create prefix"
+    | "create folder"
 >()({ DirectoryCreationDialog });
 export type I18n = typeof i18n;
 
-const useStyles = tss.withName({ DirectoryCreationDialog }).create(() => ({
+const useStyles = tss.withName({ DirectoryCreationDialog }).create(({ theme }) => ({
     body: {
         minWidth: 520,
-        width: "100%"
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(3)
+    },
+    description: {
+        margin: 0,
+        color: theme.colors.useCases.typography.textSecondary,
+        ...theme.typography.variants["body 1"].style,
+        lineHeight: 1.5
     }
 }));

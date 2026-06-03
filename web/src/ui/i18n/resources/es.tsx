@@ -310,20 +310,16 @@ export const translations: Translations<"es"> = {
         "rename bookmark": "Renombrar marcador"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Crear directorio",
-        "dialog subtitle":
-            "Los directorios se crean en relación con el prefijo que se está mostrando.",
-        "create prefix dialog title": "Crear prefijo",
-        "create prefix dialog subtitle":
-            "Crea un nuevo prefijo dentro de la ubicación S3 actual.",
-        "directoryName textField label": "Nombre del directorio",
-        "prefixName textField label": "Nombre del prefijo",
-        "directoryName textField empty error":
-            "El nombre del directorio no puede estar vacío",
-        "directoryName textField duplicate error": "El nombre del directorio ya existe",
+        "dialog title": "Crear una carpeta",
+        "dialog subtitle": "Crear un prefijo similar a una carpeta en esta ubicación",
+        "dialog body":
+            "S3 no almacena las carpetas como objetos reales. Esta acción solo abre un nuevo segmento de prefijo desde la ubicación actual, para que puedas subir objetos allí. La carpeta aparecerá cuando exista al menos un objeto con ese prefijo; las carpetas vacías no existen en S3.",
+        "folderName textField label": "Nombre de la carpeta",
+        "folderName textField empty error":
+            "El nombre de la carpeta no puede estar vacío",
+        "folderName textField duplicate error": "El nombre de la carpeta ya existe",
         cancel: "Cancelar",
-        create: "Crear",
-        "create prefix": "Crear prefijo"
+        "create folder": "Crear carpeta"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Hacer público el prefijo",

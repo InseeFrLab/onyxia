@@ -312,20 +312,15 @@ export const translations: Translations<"fr"> = {
         "rename bookmark": "Renommer le signet"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Créer un répertoire",
-        "dialog subtitle":
-            "Les répertoires sont créés par rapport au préfixe actuellement affiché.",
-        "create prefix dialog title": "Créer un préfixe",
-        "create prefix dialog subtitle":
-            "Créer un nouveau préfixe dans l'emplacement S3 actuel.",
-        "directoryName textField label": "Nom du répertoire",
-        "prefixName textField label": "Nom du préfixe",
-        "directoryName textField empty error":
-            "Le nom du répertoire ne peut pas être vide",
-        "directoryName textField duplicate error": "Le nom du répertoire existe déjà",
+        "dialog title": "Créer un dossier",
+        "dialog subtitle": "Créer un préfixe de type dossier à cet emplacement",
+        "dialog body":
+            "S3 ne stocke pas les dossiers comme de vrais objets. Cette action ouvre seulement un nouveau segment de préfixe depuis l'emplacement actuel, afin que vous puissiez y téléverser des objets. Le dossier apparaîtra dès qu'au moins un objet existera avec ce préfixe ; les dossiers vides n'existent pas dans S3.",
+        "folderName textField label": "Nom du dossier",
+        "folderName textField empty error": "Le nom du dossier ne peut pas être vide",
+        "folderName textField duplicate error": "Le nom du dossier existe déjà",
         cancel: "Annuler",
-        create: "Créer",
-        "create prefix": "Créer le préfixe"
+        "create folder": "Créer le dossier"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Rendre le préfixe public",

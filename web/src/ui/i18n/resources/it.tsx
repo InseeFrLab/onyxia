@@ -310,20 +310,15 @@ export const translations: Translations<"it"> = {
         "rename bookmark": "Rinomina segnalibro"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Crea directory",
-        "dialog subtitle":
-            "Le directory vengono create rispetto al prefisso attualmente visualizzato.",
-        "create prefix dialog title": "Crea prefisso",
-        "create prefix dialog subtitle":
-            "Crea un nuovo prefisso nella posizione S3 corrente.",
-        "directoryName textField label": "Nome della directory",
-        "prefixName textField label": "Nome del prefisso",
-        "directoryName textField empty error":
-            "Il nome della directory non può essere vuoto",
-        "directoryName textField duplicate error": "Il nome della directory esiste già",
+        "dialog title": "Crea una cartella",
+        "dialog subtitle": "Crea un prefisso simile a una cartella in questa posizione",
+        "dialog body":
+            "S3 non archivia le cartelle come oggetti reali. Questa azione apre solo un nuovo segmento di prefisso dalla posizione corrente, così puoi caricare oggetti al suo interno. La cartella apparirà quando esisterà almeno un oggetto con questo prefisso; le cartelle vuote non esistono in S3.",
+        "folderName textField label": "Nome della cartella",
+        "folderName textField empty error": "Il nome della cartella non può essere vuoto",
+        "folderName textField duplicate error": "Il nome della cartella esiste già",
         cancel: "Annulla",
-        create: "Crea",
-        "create prefix": "Crea prefisso"
+        "create folder": "Crea cartella"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Rendi pubblico il prefisso",

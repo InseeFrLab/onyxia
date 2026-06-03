@@ -286,17 +286,15 @@ export const translations: Translations<"zh-CN"> = {
         "rename bookmark": "重命名书签"
     },
     DirectoryCreationDialog: {
-        "dialog title": "创建目录",
-        "dialog subtitle": "目录将相对于当前正在查看的前缀创建。",
-        "create prefix dialog title": "创建前缀",
-        "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",
-        "directoryName textField label": "目录名称",
-        "prefixName textField label": "前缀名称",
-        "directoryName textField empty error": "目录名称不能为空",
-        "directoryName textField duplicate error": "目录名称已存在",
+        "dialog title": "创建文件夹",
+        "dialog subtitle": "在此位置创建一个类似文件夹的前缀",
+        "dialog body":
+            "S3 不会将文件夹存储为真实对象。此操作只会从当前位置打开一个新的前缀片段，以便你在其下上传对象。只有当至少一个对象使用该前缀时，这个文件夹才会显示；空文件夹在 S3 中并不存在。",
+        "folderName textField label": "文件夹名称",
+        "folderName textField empty error": "文件夹名称不能为空",
+        "folderName textField duplicate error": "文件夹名称已存在",
         cancel: "取消",
-        create: "创建",
-        "create prefix": "创建前缀"
+        "create folder": "创建文件夹"
     },
     MakePrefixPublicDialog: {
         "dialog title": "公开前缀",

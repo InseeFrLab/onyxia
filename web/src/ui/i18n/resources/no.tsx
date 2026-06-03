@@ -306,19 +306,15 @@ export const translations: Translations<"no"> = {
         "rename bookmark": "Gi bokmerke nytt navn"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Opprett katalog",
-        "dialog subtitle":
-            "Kataloger opprettes relativt til prefikset som vises akkurat nå.",
-        "create prefix dialog title": "Opprett prefiks",
-        "create prefix dialog subtitle":
-            "Opprett et nytt prefiks i gjeldende S3-plassering.",
-        "directoryName textField label": "Katalognavn",
-        "prefixName textField label": "Prefiksnavn",
-        "directoryName textField empty error": "Katalognavnet kan ikke være tomt",
-        "directoryName textField duplicate error": "Katalognavnet finnes allerede",
+        "dialog title": "Opprett en mappe",
+        "dialog subtitle": "Opprett et mappelignende prefiks på denne plasseringen",
+        "dialog body":
+            "S3 lagrer ikke mapper som ekte objekter. Denne handlingen åpner bare et nytt prefikssegment fra den gjeldende plasseringen, slik at du kan laste opp objekter under det. Mappen vises når det finnes minst ett objekt med dette prefikset; tomme mapper finnes ikke i S3.",
+        "folderName textField label": "Mappenavn",
+        "folderName textField empty error": "Mappenavnet kan ikke være tomt",
+        "folderName textField duplicate error": "Mappenavnet finnes allerede",
         cancel: "Avbryt",
-        create: "Opprett",
-        "create prefix": "Opprett prefiks"
+        "create folder": "Opprett mappe"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Gjør prefikset offentlig",

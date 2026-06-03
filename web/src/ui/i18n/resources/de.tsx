@@ -318,20 +318,15 @@ export const translations: Translations<"de"> = {
         "rename bookmark": "Lesezeichen umbenennen"
     },
     DirectoryCreationDialog: {
-        "dialog title": "Verzeichnis erstellen",
-        "dialog subtitle":
-            "Verzeichnisse werden relativ zum aktuell angezeigten Präfix erstellt.",
-        "create prefix dialog title": "Präfix erstellen",
-        "create prefix dialog subtitle":
-            "Erstelle ein neues Präfix im aktuellen S3-Speicherort.",
-        "directoryName textField label": "Verzeichnisname",
-        "prefixName textField label": "Präfixname",
-        "directoryName textField empty error": "Der Verzeichnisname darf nicht leer sein",
-        "directoryName textField duplicate error":
-            "Der Verzeichnisname existiert bereits",
+        "dialog title": "Ordner erstellen",
+        "dialog subtitle": "Ein ordnerähnliches Präfix an diesem Speicherort erstellen",
+        "dialog body":
+            "S3 speichert Ordner nicht als echte Objekte. Diese Aktion öffnet nur ein neues Präfixsegment vom aktuellen Speicherort aus, damit Sie Objekte darunter hochladen können. Der Ordner erscheint, sobald mindestens ein Objekt mit diesem Präfix existiert; leere Ordner gibt es in S3 nicht.",
+        "folderName textField label": "Ordnername",
+        "folderName textField empty error": "Der Ordnername darf nicht leer sein",
+        "folderName textField duplicate error": "Der Ordnername existiert bereits",
         cancel: "Abbrechen",
-        create: "Erstellen",
-        "create prefix": "Präfix erstellen"
+        "create folder": "Ordner erstellen"
     },
     MakePrefixPublicDialog: {
         "dialog title": "Präfix öffentlich machen",
