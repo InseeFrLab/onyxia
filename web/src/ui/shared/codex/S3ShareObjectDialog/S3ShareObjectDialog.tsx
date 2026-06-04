@@ -54,7 +54,7 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
             <S3DialogItemSummary
                 name={objectBasename}
                 isPublic={isPublic}
-                icon="folder"
+                icon="object"
             />
 
             <Text typo="body 1" className={classes.description}>
