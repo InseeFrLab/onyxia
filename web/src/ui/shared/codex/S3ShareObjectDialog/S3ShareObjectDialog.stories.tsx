@@ -16,14 +16,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 type ValidityDuration = S3ShareObjectDialogProps.ValidityDuration;
 
-const objectBasename = "siren.parquet";
-const publicUrl = "https://s3.example.com/analytics-data/exports/2026/siren.parquet";
+const publicObjectBasename = ".DS_Store";
+const signedObjectBasename = "WhatsApp Image 2026-02-15 at 17.34.19.jpeg";
+const publicUrl = "https://minio.lab.sspcloud.fr/garronej/good_fortnite_game/.DS_Store";
+const signedUrlBase =
+    "https://minio.lab.sspcloud.fr/garronej/WhatsApp%20Image%202026-02-15%20at%2017.34.19.jpeg";
 
 const basePrivateArgs: S3ShareObjectDialogProps.Private = {
-    objectBasename,
+    objectBasename: signedObjectBasename,
     isPublic: false,
-    httpUrl: getSignedUrl({ validityDuration: "one day" }),
-    validityDuration: "one day",
+    httpUrl: getSignedUrl({ validityDuration: "one week" }),
+    validityDuration: "one week",
     changeValidityDuration: action("changeValidityDuration")
 };
 
@@ -82,7 +85,7 @@ export const PrivateSignedUrl: Story = {
 
 export const PublicObject: Story = {
     args: {
-        objectBasename,
+        objectBasename: publicObjectBasename,
         isPublic: true,
         httpUrl: publicUrl
     },
@@ -99,7 +102,7 @@ export const GeneratingSignedUrl: Story = {
 
 export const GeneratingPublicUrl: Story = {
     args: {
-        objectBasename,
+        objectBasename: publicObjectBasename,
         isPublic: true,
         httpUrl: undefined
     },
@@ -134,14 +137,26 @@ function getSignedUrl(params: { validityDuration: ValidityDuration }): string {
     const { validityDuration } = params;
 
     return [
-        "https://s3.example.com/analytics-data/exports/2026/siren.parquet",
+        signedUrlBase,
         "?X-Amz-Algorithm=AWS4-HMAC-SHA256",
-        "&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20260503%2Feu-west-1%2Fs3%2Faws4_request",
-        "&X-Amz-Date=20260503T091100Z",
+        "&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD",
+        "&X-Amz-Credential=X53J0VKTNO4PHEHSO3BG%2F20260604%2Fus-east-1%2Fs3%2Faws4_request",
+        "&X-Amz-Date=20260604T085902Z",
         `&X-Amz-Expires=${getValidityDurationSeconds(validityDuration)}`,
+        `&X-Amz-Security-Token=${getLongSecurityToken()}`,
+        "&X-Amz-Signature=efebd3e43c23cc0d59d39d4554e860dd55bf09c23f815190cf94080fce515faf",
         "&X-Amz-SignedHeaders=host",
-        "&X-Amz-Signature=1b2f9d5c8a1ef63c4e5ad7b9807b39e8b5f73a88d2b55aa0e6f0b4f8363f9f0c"
+        "&x-amz-checksum-mode=ENABLED",
+        "&x-id=GetObject"
     ].join("");
+}
+
+function getLongSecurityToken(): string {
+    return [
+        "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9",
+        "eyJhY2Nlc3NLZXkiOiJYNTNKMFZLVE5PNFBIRUhTTzNCRyIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sImF1ZCI6WyJtaW5pby1kYXRhbm9kZSIsIm9ueXhpYSIsInBvbGFyaXMiLCJhY2NvdW50Il0sImVtYWlsIjoiamFuZS5kb2VAZXhhbXBsZS5vcmciLCJleHAiOjE3ODExNjY2MDksIm5hbWUiOiJKYW5lIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6ImphbmUiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGdyb3VwcyBlbWFpbCIsInR5cCI6IkJlYXJlciJ9",
+        "QptTLB2BwHiYq10nwRlJ4qJpKRrPiTrZKM1kdYw8aEKQ3KKouAWddhlP45LW5reQwMMubHCI8cHwW7MNmblA"
+    ].join(".");
 }
 
 function getValidityDurationSeconds(validityDuration: ValidityDuration): number {

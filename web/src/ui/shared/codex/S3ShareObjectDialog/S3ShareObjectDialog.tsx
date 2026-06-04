@@ -6,7 +6,7 @@ import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { assert, type Equals } from "tsafe";
 import {
-    S3DialogCopyField,
+    S3DialogCopyUrlField,
     S3DialogItemSummary
 } from "ui/shared/codex/S3DialogPrimitives";
 
@@ -62,11 +62,8 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
             </Text>
 
             {isPublic ? (
-                <S3DialogCopyField
+                <S3DialogCopyUrlField
                     value={httpUrl}
-                    displayedValue={
-                        httpUrl === undefined ? undefined : getCollapsedUrl(httpUrl)
-                    }
                     pendingText={t("generating public URL")}
                     ariaLabel={t("copy public URL aria label")}
                 />
@@ -75,49 +72,36 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                     <Text typo="label 1" className={classes.signedLinkLabel}>
                         {t("signed link with time limit")}
                     </Text>
-                    <div className={classes.signedLinkRow}>
-                        <FormControl
-                            variant="standard"
-                            className={classes.validitySelect}
+                    <FormControl variant="standard" className={classes.validitySelect}>
+                        <Select
+                            value={props.validityDuration}
+                            inputProps={{
+                                "aria-label": t("signed link validity aria label")
+                            }}
+                            onChange={event => {
+                                const { value } = event.target;
+
+                                if (!isValidityDuration(value)) {
+                                    return;
+                                }
+
+                                props.changeValidityDuration({
+                                    validityDuration: value
+                                });
+                            }}
                         >
-                            <Select
-                                value={props.validityDuration}
-                                inputProps={{
-                                    "aria-label": t("signed link validity aria label")
-                                }}
-                                onChange={event => {
-                                    const { value } = event.target;
-
-                                    if (!isValidityDuration(value)) {
-                                        return;
-                                    }
-
-                                    props.changeValidityDuration({
-                                        validityDuration: value
-                                    });
-                                }}
-                            >
-                                {validityDurationOptions.map(validityDuration => (
-                                    <MenuItem
-                                        key={validityDuration}
-                                        value={validityDuration}
-                                    >
-                                        {formatValidityDuration(validityDuration, t)}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <S3DialogCopyField
-                            value={httpUrl}
-                            displayedValue={
-                                httpUrl === undefined
-                                    ? undefined
-                                    : getCollapsedUrl(httpUrl)
-                            }
-                            pendingText={t("generating signed URL")}
-                            ariaLabel={t("copy signed URL aria label")}
-                        />
-                    </div>
+                            {validityDurationOptions.map(validityDuration => (
+                                <MenuItem key={validityDuration} value={validityDuration}>
+                                    {formatValidityDuration(validityDuration, t)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <S3DialogCopyUrlField
+                        value={httpUrl}
+                        pendingText={t("generating signed URL")}
+                        ariaLabel={t("copy signed URL aria label")}
+                    />
                 </div>
             )}
         </section>
@@ -162,19 +146,6 @@ function formatValidityDuration(
     }
 }
 
-function getCollapsedUrl(url: string): string {
-    const maxLength = 96;
-
-    if (url.length <= maxLength) {
-        return url;
-    }
-
-    const headLength = 58;
-    const tailLength = 26;
-
-    return `${url.slice(0, headLength)}...${url.slice(-tailLength)}`;
-}
-
 const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
     root: {
         display: "flex",
@@ -197,17 +168,9 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
     signedLinkLabel: {
         color: theme.colors.useCases.typography.textPrimary
     },
-    signedLinkRow: {
-        display: "grid",
-        gridTemplateColumns: "190px minmax(0, 1fr)",
-        gap: theme.spacing(2.5),
-        alignItems: "stretch",
-        minWidth: 0,
-        "@media (max-width: 600px)": {
-            gridTemplateColumns: "1fr"
-        }
-    },
     validitySelect: {
+        width: 220,
+        maxWidth: "100%",
         minWidth: 0,
         "& .MuiInputBase-root": {
             minHeight: 48,

@@ -76,11 +76,55 @@ export function S3DialogCopyField(props: {
     pendingText?: string;
     copyLabel?: string;
     ariaLabel: string;
-    displayedValue?: string;
     onCopied?: () => void;
 }) {
-    const { value, pendingText, copyLabel, ariaLabel, displayedValue, onCopied } = props;
+    return <S3DialogCopyFieldBase {...props} renderValue={value => value} />;
+}
 
+export function S3DialogCopyUrlField(props: {
+    value: string | undefined;
+    pendingText?: string;
+    copyLabel?: string;
+    ariaLabel: string;
+    onCopied?: () => void;
+}) {
+    const formattedUrl =
+        props.value === undefined ? undefined : formatUrlForDisplay(props.value);
+    const isStructuredPreview =
+        formattedUrl !== undefined && formattedUrl.queryParams.length !== 0;
+
+    return (
+        <S3DialogCopyFieldBase
+            {...props}
+            isMultiline={isStructuredPreview}
+            renderValue={value => (
+                <S3DialogFormattedUrl
+                    value={value}
+                    formattedUrl={formattedUrl ?? formatUrlForDisplay(value)}
+                />
+            )}
+        />
+    );
+}
+
+function S3DialogCopyFieldBase(props: {
+    value: string | undefined;
+    pendingText?: string;
+    copyLabel?: string;
+    ariaLabel: string;
+    onCopied?: () => void;
+    renderValue: (value: string) => ReactNode;
+    isMultiline?: boolean;
+}) {
+    const {
+        value,
+        pendingText,
+        copyLabel,
+        ariaLabel,
+        onCopied,
+        renderValue,
+        isMultiline = false
+    } = props;
     const { classes, cx } = useStyles_S3DialogCopyField();
     const { t } = useTranslation({ S3DialogCopyField });
     const [isCopied, setIsCopied] = useState(false);
@@ -110,15 +154,28 @@ export function S3DialogCopyField(props: {
     };
 
     return (
-        <div className={cx(classes.root, isCopied && classes.rootCopied)}>
-            <span className={classes.value} title={value}>
+        <div
+            className={cx(
+                classes.root,
+                isMultiline && classes.rootMultiline,
+                isCopied && classes.rootCopied
+            )}
+        >
+            <span
+                className={cx(classes.value, isMultiline && classes.valueMultiline)}
+                title={isMultiline ? undefined : value}
+            >
                 {value === undefined
                     ? (pendingText ?? t("generating url"))
-                    : (displayedValue ?? value)}
+                    : renderValue(value)}
             </span>
             <Button
                 variant="secondary"
-                className={cx(classes.copyButton, isCopied && classes.copyButtonCopied)}
+                className={cx(
+                    classes.copyButton,
+                    isMultiline && classes.copyButtonMultiline,
+                    isCopied && classes.copyButtonCopied
+                )}
                 startIcon={getIconUrlByName(isCopied ? "Check" : "ContentCopy")}
                 disabled={value === undefined}
                 aria-label={ariaLabel}
@@ -128,6 +185,173 @@ export function S3DialogCopyField(props: {
             </Button>
         </div>
     );
+}
+
+function S3DialogFormattedUrl(props: {
+    value: string;
+    formattedUrl: ReturnType<typeof formatUrlForDisplay>;
+}) {
+    const { value, formattedUrl } = props;
+
+    const { classes } = useStyles_S3DialogCopyField();
+
+    return (
+        <a href={value} target="_blank" rel="noreferrer" className={classes.urlPreview}>
+            <span className={classes.urlLine}>
+                <span className={classes.urlBase}>{formattedUrl.base}</span>
+            </span>
+            {formattedUrl.queryParams.length !== 0 && (
+                <span className={classes.urlLine}>
+                    <span className={classes.urlSyntax}>?</span>
+                </span>
+            )}
+            {formattedUrl.queryParams.map((queryParam, index) => (
+                <span key={index} className={classes.urlLine}>
+                    {index !== 0 && (
+                        <span className={classes.urlSyntax} aria-hidden="true">
+                            &amp;{" "}
+                        </span>
+                    )}
+                    <span className={classes.urlQueryParamName}>{queryParam.name}</span>
+                    {queryParam.value !== undefined && (
+                        <>
+                            <span className={classes.urlSyntax}>=</span>
+                            <span className={classes.urlQueryParamValue}>
+                                {queryParam.value.map((segment, index) => (
+                                    <span
+                                        key={index}
+                                        className={
+                                            segment.isElision
+                                                ? classes.urlQueryParamValueElision
+                                                : undefined
+                                        }
+                                    >
+                                        {segment.text}
+                                    </span>
+                                ))}
+                            </span>
+                        </>
+                    )}
+                </span>
+            ))}
+            {formattedUrl.hash !== undefined && (
+                <span className={classes.urlLine}>
+                    <span className={classes.urlBase}>{formattedUrl.hash}</span>
+                </span>
+            )}
+        </a>
+    );
+}
+
+function formatUrlForDisplay(url: string): {
+    base: string;
+    queryParams: {
+        name: string;
+        value: { text: string; isElision?: true }[] | undefined;
+    }[];
+    hash: string | undefined;
+} {
+    const queryStartIndex = url.indexOf("?");
+
+    if (queryStartIndex === -1) {
+        return {
+            base: url,
+            queryParams: [],
+            hash: undefined
+        };
+    }
+
+    const base = url.slice(0, queryStartIndex);
+    const queryAndHash = url.slice(queryStartIndex + 1);
+    const hashStartIndex = queryAndHash.indexOf("#");
+    const query =
+        hashStartIndex === -1 ? queryAndHash : queryAndHash.slice(0, hashStartIndex);
+    const hash = hashStartIndex === -1 ? undefined : queryAndHash.slice(hashStartIndex);
+
+    return {
+        base: decodeUriComponentForDisplay(base, decodeURI),
+        queryParams:
+            query === ""
+                ? []
+                : query.split("&").map(queryParam => {
+                      const valueStartIndex = queryParam.indexOf("=");
+
+                      if (valueStartIndex === -1) {
+                          return {
+                              name: decodeUriComponentForDisplay(
+                                  queryParam,
+                                  decodeURIComponent
+                              ),
+                              value: undefined
+                          };
+                      }
+
+                      const name = queryParam.slice(0, valueStartIndex);
+                      const value = queryParam.slice(valueStartIndex + 1);
+
+                      return {
+                          name: decodeUriComponentForDisplay(name, decodeURIComponent),
+                          value: getDisplayUrlQueryParamValue({
+                              name,
+                              value: decodeUriComponentForDisplay(
+                                  value,
+                                  decodeURIComponent
+                              )
+                          })
+                      };
+                  }),
+        hash:
+            hash === undefined ? undefined : decodeUriComponentForDisplay(hash, decodeURI)
+    };
+}
+
+function getDisplayUrlQueryParamValue(params: {
+    name: string;
+    value: string;
+}): { text: string; isElision?: true }[] {
+    const { name, value } = params;
+
+    switch (name.toLowerCase()) {
+        case "x-amz-credential":
+            return collapseMiddle({ value, headLength: 6, tailLength: 7 });
+        case "x-amz-security-token":
+            return collapseMiddle({ value, headLength: 6, tailLength: 5 });
+        case "x-amz-signature":
+            return collapseMiddle({ value, headLength: 6, tailLength: 5 });
+        default:
+            return value.length > 72
+                ? collapseMiddle({ value, headLength: 24, tailLength: 16 })
+                : [{ text: value }];
+    }
+}
+
+function decodeUriComponentForDisplay(
+    value: string,
+    decode: (value: string) => string
+): string {
+    try {
+        return decode(value);
+    } catch {
+        return value;
+    }
+}
+
+function collapseMiddle(params: {
+    value: string;
+    headLength: number;
+    tailLength: number;
+}): { text: string; isElision?: true }[] {
+    const { value, headLength, tailLength } = params;
+
+    if (value.length <= headLength + tailLength + 1) {
+        return [{ text: value }];
+    }
+
+    return [
+        { text: value.slice(0, headLength) },
+        { text: "\u2026", isElision: true },
+        { text: value.slice(-tailLength) }
+    ];
 }
 
 export function S3DialogItemSummary(props: {
@@ -290,6 +514,9 @@ const useStyles_S3DialogCopyField = tss
             borderColor: alpha(theme.colors.useCases.alertSeverity.success.main, 0.36),
             backgroundColor: theme.colors.useCases.alertSeverity.success.background
         },
+        rootMultiline: {
+            alignItems: "flex-start"
+        },
         value: {
             minWidth: 0,
             flex: 1,
@@ -298,6 +525,11 @@ const useStyles_S3DialogCopyField = tss
             whiteSpace: "nowrap",
             color: theme.colors.useCases.typography.textPrimary,
             ...theme.typography.variants["body 1"].style
+        },
+        valueMultiline: {
+            overflow: "visible",
+            textOverflow: "clip",
+            whiteSpace: "normal"
         },
         copyButton: {
             ...theme.typography.variants["label 2"].style,
@@ -314,6 +546,9 @@ const useStyles_S3DialogCopyField = tss
                 fontSize: 16
             }
         },
+        copyButtonMultiline: {
+            marginTop: 3
+        },
         copyButtonCopied: {
             "&&": {
                 color: theme.colors.useCases.typography.textPrimary,
@@ -323,6 +558,52 @@ const useStyles_S3DialogCopyField = tss
                     backgroundColor: theme.colors.useCases.alertSeverity.success.main
                 }
             }
+        },
+        urlPreview: {
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            color: "inherit",
+            textDecoration: "none",
+            fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
+            fontSize: 13,
+            lineHeight: 1.35,
+            "&:hover": {
+                textDecoration: "none"
+            },
+            "&:focus-visible": {
+                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
+                outlineOffset: 2,
+                borderRadius: 4
+            }
+        },
+        urlLine: {
+            display: "flex",
+            alignItems: "baseline",
+            minWidth: 0
+        },
+        urlBase: {
+            minWidth: 0,
+            overflowWrap: "anywhere",
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        urlSyntax: {
+            flex: "none",
+            color: theme.colors.useCases.typography.textSecondary
+        },
+        urlQueryParamName: {
+            minWidth: 0,
+            overflowWrap: "anywhere",
+            color: theme.colors.useCases.typography.textPrimary,
+            fontWeight: 700
+        },
+        urlQueryParamValue: {
+            minWidth: 0,
+            overflowWrap: "anywhere",
+            color: theme.colors.useCases.typography.textSecondary
+        },
+        urlQueryParamValueElision: {
+            color: alpha(theme.colors.useCases.typography.textSecondary, 0.58)
         }
     }));
 

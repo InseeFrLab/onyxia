@@ -7,7 +7,7 @@ Despite its name, this component does not render or control a modal dialog. It r
 Its purpose is to:
 
 - identify the shared object
-- display the generated HTTP URL in a compact form
+- display the generated HTTP URL in a URL-aware readable form
 - let the user copy that URL
 - explain whether the URL is public through a public prefix or signed
 - let the user change signed URL validity
@@ -66,7 +66,17 @@ Long names must truncate visually without breaking the layout.
 When defined:
 
 - Render it as a clickable HTTP link.
-- Display it collapsed/truncated because signed URLs can be very long.
+- Display the protocol, domain, and path in full, wrapping onto multiple lines when needed.
+- If the URL has no query string, display the full URL without visual truncation.
+- If the URL has query parameters, render a compact monospace URL preview:
+    - base URL on the first line
+    - `?` on its own line
+    - one query parameter per line
+    - original query parameter order preserved
+    - parameter names fully visible whenever possible
+    - `?`, `&`, and `=` displayed in a muted style
+- Collapse only long query parameter values with a middle ellipsis in the visual display.
+- Do not expose the full URL through a hover tooltip.
 - Preserve the full URL for the href and copy action.
 
 When undefined:
@@ -103,7 +113,7 @@ When `isPublic === false`:
 - Explain that `httpUrl` is a signed URL.
 - Include the selected `validityDuration` in the explanation.
 - Explain that users who need a URL that does not expire should make one of the object's parent prefixes (folders) public.
-- Render a select bound to `validityDuration`.
+- Render a select bound to `validityDuration` above the URL preview.
 - Calling the select must invoke `changeValidityDuration({ validityDuration })`.
 - Do not render a public/private policy toggle.
 
@@ -118,5 +128,7 @@ When `isPublic === false`:
 
 - The component fills the available modal body width.
 - The URL row must not overflow narrow layouts.
-- Long object names and long URLs must truncate.
+- Long object names must truncate visually without breaking the layout.
+- Long URL paths must wrap instead of truncating.
+- Long URL query parameter values may be visually collapsed, but the copied URL remains complete.
 - The component does not impose modal sizing.
