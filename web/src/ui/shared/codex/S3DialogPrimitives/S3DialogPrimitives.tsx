@@ -97,6 +97,7 @@ export function S3DialogCopyUrlField(props: {
         <S3DialogCopyFieldBase
             {...props}
             isMultiline={isStructuredPreview}
+            hasTitle={false}
             renderValue={value => (
                 <S3DialogFormattedUrl
                     value={value}
@@ -115,6 +116,7 @@ function S3DialogCopyFieldBase(props: {
     onCopied?: () => void;
     renderValue: (value: string) => ReactNode;
     isMultiline?: boolean;
+    hasTitle?: boolean;
 }) {
     const {
         value,
@@ -123,7 +125,8 @@ function S3DialogCopyFieldBase(props: {
         ariaLabel,
         onCopied,
         renderValue,
-        isMultiline = false
+        isMultiline = false,
+        hasTitle = true
     } = props;
     const { classes, cx } = useStyles_S3DialogCopyField();
     const { t } = useTranslation({ S3DialogCopyField });
@@ -163,7 +166,7 @@ function S3DialogCopyFieldBase(props: {
         >
             <span
                 className={cx(classes.value, isMultiline && classes.valueMultiline)}
-                title={isMultiline ? undefined : value}
+                title={hasTitle ? value : undefined}
             >
                 {value === undefined
                     ? (pendingText ?? t("generating url"))
@@ -202,16 +205,14 @@ function S3DialogFormattedUrl(props: {
             </span>
             {formattedUrl.queryParams.length !== 0 && (
                 <span className={classes.urlLine}>
-                    <span className={classes.urlSyntax}>?</span>
+                    <span className={classes.urlQuestion}>?</span>
                 </span>
             )}
             {formattedUrl.queryParams.map((queryParam, index) => (
                 <span key={index} className={classes.urlLine}>
-                    {index !== 0 && (
-                        <span className={classes.urlSyntax} aria-hidden="true">
-                            &amp;{" "}
-                        </span>
-                    )}
+                    <span className={classes.urlSyntax} aria-hidden="true">
+                        &amp;{" "}
+                    </span>
                     <span className={classes.urlQueryParamName}>{queryParam.name}</span>
                     {queryParam.value !== undefined && (
                         <>
@@ -269,7 +270,7 @@ function formatUrlForDisplay(url: string): {
     const hash = hashStartIndex === -1 ? undefined : queryAndHash.slice(hashStartIndex);
 
     return {
-        base: decodeUriComponentForDisplay(base, decodeURI),
+        base,
         queryParams:
             query === ""
                 ? []
@@ -355,17 +356,18 @@ function collapseMiddle(params: {
 }
 
 export function S3DialogItemSummary(props: {
+    className?: string;
     name: string;
     isPublic?: boolean;
     icon?: "folder" | "object";
 }) {
-    const { name, isPublic = false, icon = "folder" } = props;
+    const { className, name, isPublic = false, icon = "folder" } = props;
 
-    const { classes } = useStyles_S3DialogItemSummary();
+    const { classes, cx } = useStyles_S3DialogItemSummary();
     const { t } = useTranslation({ S3DialogItemSummary });
 
     return (
-        <div className={classes.root}>
+        <div className={cx(classes.root, className)}>
             <span className={classes.iconSurface} aria-hidden="true">
                 <Icon
                     icon={getIconUrlByName(icon === "folder" ? "Folder" : "Description")}
@@ -515,7 +517,10 @@ const useStyles_S3DialogCopyField = tss
             backgroundColor: theme.colors.useCases.alertSeverity.success.background
         },
         rootMultiline: {
-            alignItems: "flex-start"
+            display: "block",
+            position: "relative",
+            minHeight: 0,
+            padding: `${theme.spacing(3)}px ${theme.spacing(3)}px`
         },
         value: {
             minWidth: 0,
@@ -527,9 +532,11 @@ const useStyles_S3DialogCopyField = tss
             ...theme.typography.variants["body 1"].style
         },
         valueMultiline: {
+            display: "block",
             overflow: "visible",
             textOverflow: "clip",
-            whiteSpace: "normal"
+            whiteSpace: "normal",
+            paddingRight: 150
         },
         copyButton: {
             ...theme.typography.variants["label 2"].style,
@@ -547,7 +554,19 @@ const useStyles_S3DialogCopyField = tss
             }
         },
         copyButtonMultiline: {
-            marginTop: 3
+            position: "absolute",
+            top: theme.spacing(2),
+            right: theme.spacing(2),
+            marginTop: 0,
+            "&&": {
+                color: theme.colors.useCases.typography.textFocus,
+                borderColor: alpha(theme.colors.useCases.typography.textFocus, 0.46),
+                backgroundColor: alpha(theme.colors.useCases.typography.textFocus, 0.08)
+            },
+            "&&:hover": {
+                borderColor: alpha(theme.colors.useCases.typography.textFocus, 0.78),
+                backgroundColor: alpha(theme.colors.useCases.typography.textFocus, 0.14)
+            }
         },
         copyButtonCopied: {
             "&&": {
@@ -562,12 +581,12 @@ const useStyles_S3DialogCopyField = tss
         urlPreview: {
             display: "flex",
             flexDirection: "column",
-            gap: 2,
+            gap: 6,
             color: "inherit",
             textDecoration: "none",
             fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
-            fontSize: 13,
-            lineHeight: 1.35,
+            fontSize: 16,
+            lineHeight: 1.45,
             "&:hover": {
                 textDecoration: "none"
             },
@@ -585,7 +604,10 @@ const useStyles_S3DialogCopyField = tss
         urlBase: {
             minWidth: 0,
             overflowWrap: "anywhere",
-            color: theme.colors.useCases.typography.textPrimary
+            color: theme.colors.useCases.typography.textFocus
+        },
+        urlQuestion: {
+            color: theme.colors.useCases.typography.textFocus
         },
         urlSyntax: {
             flex: "none",

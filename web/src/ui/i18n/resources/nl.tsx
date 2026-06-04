@@ -406,14 +406,16 @@ export const translations: Translations<"nl"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Openbare URL genereren...",
         "copy public URL aria label": "Openbare URL kopiëren",
-        "signed link with time limit": "Ondertekende link met tijdslimiet",
+        "public URL": "Openbare URL",
+        "signed URL with limited validity period":
+            "Ondertekende URL met beperkte geldigheidsduur",
         "signed link validity aria label": "Geldigheidsduur van de ondertekende link",
         "generating signed URL": "Ondertekende URL genereren...",
         "copy signed URL aria label": "Ondertekende URL kopiëren",
-        "public description":
+        "public sharing note":
             "Iedereen met de URL heeft toegang tot dit object. De link verloopt nooit omdat het object in een openbare prefix staat.",
-        "signed description":
-            "Maak een ondertekende URL met een beperkte geldigheidsduur. Maak een bovenliggende prefix van dit object openbaar om een URL te delen die niet verloopt.",
+        "signed URL expiration note":
+            "Maak een bovenliggende prefix van dit object openbaar om een URL te delen die niet verloopt.",
         "validity duration one hour": "1 uur",
         "validity duration one day": "1 dag",
         "validity duration one week": "1 week",

@@ -25,14 +25,14 @@ const signedUrlBase =
 const basePrivateArgs: S3ShareObjectDialogProps.Private = {
     objectBasename: signedObjectBasename,
     isPublic: false,
-    httpUrl: getSignedUrl({ validityDuration: "one week" }),
-    validityDuration: "one week",
+    httpUrl: getSignedUrl({ validityDuration: "one day" }),
+    validityDuration: "one day",
     changeValidityDuration: action("changeValidityDuration")
 };
 
 function renderInModalBody(args: S3ShareObjectDialogProps) {
     return (
-        <div style={{ maxWidth: 680, padding: 24 }}>
+        <div style={{ maxWidth: 760, padding: 32, overflow: "hidden" }}>
             <S3ShareObjectDialog {...args} />
         </div>
     );

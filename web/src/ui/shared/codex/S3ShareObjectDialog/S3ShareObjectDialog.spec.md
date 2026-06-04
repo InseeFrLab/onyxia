@@ -44,10 +44,11 @@ export namespace S3ShareObjectDialogProps {
 
 The component renders a regular box composed of:
 
-1. Header with object name
-2. Policy explanation block
-3. Signed URL validity selector when the link is not public
-4. HTTP URL display and copy action
+1. Object summary row
+2. Link header row
+3. Signed URL validity selector in the header row when the link is not public
+4. HTTP URL preview card with copy action
+5. Bottom informational note
 
 The parent owns modal chrome, title, close button, and lifecycle.
 
@@ -71,10 +72,10 @@ When defined:
 - If the URL has query parameters, render a compact monospace URL preview:
     - base URL on the first line
     - `?` on its own line
-    - one query parameter per line
+    - one query parameter per line, prefixed with `&`
     - original query parameter order preserved
     - parameter names fully visible whenever possible
-    - `?`, `&`, and `=` displayed in a muted style
+    - `?`, `&`, and `=` syntax highlighted subtly
 - Collapse only long query parameter values with a middle ellipsis in the visual display.
 - Do not expose the full URL through a hover tooltip.
 - Preserve the full URL for the href and copy action.
@@ -87,6 +88,8 @@ When undefined:
 ## Copy
 
 The copy action copies the full `httpUrl`.
+
+For structured URL previews, the copy button is positioned inside the URL preview card.
 
 After a successful copy, the component must show clear feedback:
 
@@ -101,8 +104,8 @@ If copy fails, the component should display a failure status.
 
 When `isPublic === true`:
 
-- Explain that anyone with the URL can access the object.
-- Explain that the URL never expires because the object is inside a prefix that has been marked public.
+- Render a public URL header above the URL preview.
+- Show a bottom note explaining that anyone with the URL can access the object and that the link does not expire.
 - Do not render the validity duration selector.
 - Do not render a public/private policy toggle.
 
@@ -110,10 +113,9 @@ When `isPublic === true`:
 
 When `isPublic === false`:
 
-- Explain that `httpUrl` is a signed URL.
-- Include the selected `validityDuration` in the explanation.
-- Explain that users who need a URL that does not expire should make one of the object's parent prefixes (folders) public.
-- Render a select bound to `validityDuration` above the URL preview.
+- Render a signed URL header above the URL preview.
+- Render a select bound to `validityDuration` on the same row as the signed URL header.
+- Show a bottom note explaining that users who need a URL that does not expire should make one of the object's parent prefixes public.
 - Calling the select must invoke `changeValidityDuration({ validityDuration })`.
 - Do not render a public/private policy toggle.
 

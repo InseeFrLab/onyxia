@@ -404,14 +404,16 @@ export const translations: Translations<"no"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Genererer offentlig URL...",
         "copy public URL aria label": "Kopier offentlig URL",
-        "signed link with time limit": "Signert lenke med tidsbegrensning",
+        "public URL": "Offentlig URL",
+        "signed URL with limited validity period":
+            "Signert URL med begrenset gyldighetsperiode",
         "signed link validity aria label": "Gyldighetsperiode for signert lenke",
         "generating signed URL": "Genererer signert URL...",
         "copy signed URL aria label": "Kopier signert URL",
-        "public description":
+        "public sharing note":
             "Alle med URL-en kan få tilgang til dette objektet. Lenken utløper aldri fordi objektet ligger i et offentlig prefiks.",
-        "signed description":
-            "Opprett en signert URL med begrenset gyldighetsperiode. For å dele en URL som ikke utløper, gjør et av de overordnede prefiksene til dette objektet offentlig.",
+        "signed URL expiration note":
+            "For å dele en URL som ikke utløper, gjør et av de overordnede prefiksene til dette objektet offentlig.",
         "validity duration one hour": "1 time",
         "validity duration one day": "1 dag",
         "validity duration one week": "1 uke",

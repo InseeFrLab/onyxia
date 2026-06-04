@@ -412,14 +412,16 @@ export const translations: Translations<"fr"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Génération de l'URL publique...",
         "copy public URL aria label": "Copier l'URL publique",
-        "signed link with time limit": "Lien signé avec durée limitée",
+        "public URL": "URL publique",
+        "signed URL with limited validity period":
+            "URL signée avec durée de validité limitée",
         "signed link validity aria label": "Durée de validité du lien signé",
         "generating signed URL": "Génération de l'URL signée...",
         "copy signed URL aria label": "Copier l'URL signée",
-        "public description":
+        "public sharing note":
             "Toute personne disposant de l'URL peut accéder à cet objet. Le lien n'expire jamais car l'objet se trouve dans un préfixe public.",
-        "signed description":
-            "Créez une URL signée avec une durée de validité limitée. Pour partager une URL qui n'expire pas, rendez public l'un des préfixes parents de cet objet.",
+        "signed URL expiration note":
+            "Pour partager une URL qui n'expire pas, rendez public l'un des préfixes parents de cet objet.",
         "validity duration one hour": "1 heure",
         "validity duration one day": "1 jour",
         "validity duration one week": "1 semaine",

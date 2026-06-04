@@ -377,14 +377,15 @@ export const translations: Translations<"zh-CN"> = {
     S3ShareObjectDialog: {
         "generating public URL": "正在生成公开 URL...",
         "copy public URL aria label": "复制公开 URL",
-        "signed link with time limit": "带时间限制的签名链接",
+        "public URL": "公开 URL",
+        "signed URL with limited validity period": "带有限有效期的签名 URL",
         "signed link validity aria label": "签名链接有效期",
         "generating signed URL": "正在生成签名 URL...",
         "copy signed URL aria label": "复制签名 URL",
-        "public description":
+        "public sharing note":
             "任何拥有该 URL 的人都可以访问此对象。由于该对象位于公开前缀中，因此链接永不过期。",
-        "signed description":
-            "创建一个有效期有限的签名 URL。若要共享永不过期的 URL，请公开此对象的某个上级前缀。",
+        "signed URL expiration note":
+            "若要共享永不过期的 URL，请公开此对象的某个上级前缀。",
         "validity duration one hour": "1 小时",
         "validity duration one day": "1 天",
         "validity duration one week": "1 周",

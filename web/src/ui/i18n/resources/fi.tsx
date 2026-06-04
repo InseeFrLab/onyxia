@@ -401,14 +401,16 @@ export const translations: Translations<"fi"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Luodaan julkista URL-osoitetta...",
         "copy public URL aria label": "Kopioi julkinen URL",
-        "signed link with time limit": "Allekirjoitettu linkki aikarajalla",
+        "public URL": "Julkinen URL",
+        "signed URL with limited validity period":
+            "Allekirjoitettu URL rajatulla voimassaoloajalla",
         "signed link validity aria label": "Allekirjoitetun linkin voimassaoloaika",
         "generating signed URL": "Luodaan allekirjoitettua URL-osoitetta...",
         "copy signed URL aria label": "Kopioi allekirjoitettu URL",
-        "public description":
+        "public sharing note":
             "Kuka tahansa URL-osoitteen saanut voi käyttää tätä objektia. Linkki ei vanhene, koska objekti on julkisessa etuliitteessä.",
-        "signed description":
-            "Luo allekirjoitettu URL, jolla on rajattu voimassaoloaika. Jos haluat jakaa vanhentumattoman URL-osoitteen, tee jokin tämän objektin yläetuliitteistä julkiseksi.",
+        "signed URL expiration note":
+            "Jos haluat jakaa vanhentumattoman URL-osoitteen, tee jokin tämän objektin yläetuliitteistä julkiseksi.",
         "validity duration one hour": "1 tunti",
         "validity duration one day": "1 päivä",
         "validity duration one week": "1 viikko",

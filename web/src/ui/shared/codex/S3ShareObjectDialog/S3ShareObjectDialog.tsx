@@ -1,7 +1,10 @@
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { alpha } from "@mui/material/styles";
 import { Text } from "onyxia-ui/Text";
+import { Icon } from "onyxia-ui/Icon";
+import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { assert, type Equals } from "tsafe";
@@ -51,52 +54,66 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
 
     return (
         <section className={cx(classes.root, className)}>
-            <S3DialogItemSummary
-                name={objectBasename}
-                isPublic={isPublic}
-                icon="object"
-            />
-
-            <Text typo="body 1" className={classes.description}>
-                {getPolicyDescription(props, t)}
-            </Text>
+            <div className={classes.objectSection}>
+                <S3DialogItemSummary
+                    className={classes.objectSummary}
+                    name={objectBasename}
+                    isPublic={isPublic}
+                    icon="object"
+                />
+            </div>
 
             {isPublic ? (
-                <S3DialogCopyUrlField
-                    value={httpUrl}
-                    pendingText={t("generating public URL")}
-                    ariaLabel={t("copy public URL aria label")}
-                />
+                <div className={classes.linkSection}>
+                    <div className={classes.linkHeader}>
+                        <Text typo="label 1" className={classes.linkLabel}>
+                            {t("public URL")}
+                        </Text>
+                    </div>
+                    <S3DialogCopyUrlField
+                        value={httpUrl}
+                        pendingText={t("generating public URL")}
+                        ariaLabel={t("copy public URL aria label")}
+                    />
+                </div>
             ) : (
-                <div className={classes.signedLinkSection}>
-                    <Text typo="label 1" className={classes.signedLinkLabel}>
-                        {t("signed link with time limit")}
-                    </Text>
-                    <FormControl variant="standard" className={classes.validitySelect}>
-                        <Select
-                            value={props.validityDuration}
-                            inputProps={{
-                                "aria-label": t("signed link validity aria label")
-                            }}
-                            onChange={event => {
-                                const { value } = event.target;
-
-                                if (!isValidityDuration(value)) {
-                                    return;
-                                }
-
-                                props.changeValidityDuration({
-                                    validityDuration: value
-                                });
-                            }}
+                <div className={classes.linkSection}>
+                    <div className={classes.linkHeader}>
+                        <Text typo="label 1" className={classes.linkLabel}>
+                            {t("signed URL with limited validity period")}
+                        </Text>
+                        <FormControl
+                            variant="outlined"
+                            className={classes.validitySelect}
                         >
-                            {validityDurationOptions.map(validityDuration => (
-                                <MenuItem key={validityDuration} value={validityDuration}>
-                                    {formatValidityDuration(validityDuration, t)}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                            <Select
+                                value={props.validityDuration}
+                                inputProps={{
+                                    "aria-label": t("signed link validity aria label")
+                                }}
+                                onChange={event => {
+                                    const { value } = event.target;
+
+                                    if (!isValidityDuration(value)) {
+                                        return;
+                                    }
+
+                                    props.changeValidityDuration({
+                                        validityDuration: value
+                                    });
+                                }}
+                            >
+                                {validityDurationOptions.map(validityDuration => (
+                                    <MenuItem
+                                        key={validityDuration}
+                                        value={validityDuration}
+                                    >
+                                        {formatValidityDuration(validityDuration, t)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </div>
                     <S3DialogCopyUrlField
                         value={httpUrl}
                         pendingText={t("generating signed URL")}
@@ -104,21 +121,17 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
                     />
                 </div>
             )}
+
+            <div className={classes.infoSection}>
+                <Icon icon={getIconUrlByName("Info")} size="small" />
+                <Text typo="body 1" className={classes.infoText}>
+                    {isPublic
+                        ? t("public sharing note")
+                        : t("signed URL expiration note")}
+                </Text>
+            </div>
         </section>
     );
-}
-
-function getPolicyDescription(
-    props: S3ShareObjectDialogProps,
-    t: ReturnType<typeof useTranslation>["t"]
-): string {
-    const { isPublic } = props;
-
-    if (isPublic === true) {
-        return t("public description");
-    }
-
-    return t("signed description");
 }
 
 function isValidityDuration(
@@ -150,51 +163,116 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3),
         width: "100%",
         minWidth: 0,
+        margin: `${-theme.spacing(1)}px ${-theme.spacing(4)}px ${-theme.spacing(4)}px`,
         boxSizing: "border-box"
     },
-    description: {
-        color: theme.colors.useCases.typography.textPrimary,
-        lineHeight: 1.5
+    objectSection: {
+        padding: `${theme.spacing(1)}px ${theme.spacing(4)}px ${theme.spacing(4)}px`,
+        borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
     },
-    signedLinkSection: {
+    objectSummary: {
+        minHeight: 56,
+        gap: theme.spacing(2.5),
+        "& > :first-child": {
+            width: 54,
+            height: 54,
+            borderRadius: 10,
+            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+            backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.38)
+        },
+        "& > :nth-child(2)": {
+            whiteSpace: "normal",
+            fontSize: 20,
+            lineHeight: 1.35,
+            fontWeight: 500
+        }
+    },
+    linkSection: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(2),
+        gap: theme.spacing(3),
+        padding: `${theme.spacing(4)}px ${theme.spacing(4)}px`,
         minWidth: 0
     },
-    signedLinkLabel: {
-        color: theme.colors.useCases.typography.textPrimary
+    linkHeader: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: theme.spacing(3),
+        minWidth: 0,
+        "@media (max-width: 600px)": {
+            alignItems: "stretch",
+            flexDirection: "column",
+            gap: theme.spacing(2)
+        }
+    },
+    linkLabel: {
+        color: theme.colors.useCases.typography.textPrimary,
+        fontSize: 20,
+        lineHeight: 1.3,
+        fontWeight: 700
     },
     validitySelect: {
-        width: 220,
+        width: 170,
         maxWidth: "100%",
+        flex: "none",
         minWidth: 0,
         "& .MuiInputBase-root": {
-            minHeight: 48,
-            color: theme.colors.useCases.typography.textPrimary
+            minHeight: 54,
+            borderRadius: 10,
+            color: theme.colors.useCases.typography.textPrimary,
+            backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.18)
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: theme.colors.useCases.surfaces.surface2
+        },
+        "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: alpha(theme.colors.useCases.typography.textFocus, 0.72)
+        },
+        "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: theme.colors.useCases.typography.textFocus
         },
         "& .MuiSelect-select": {
             display: "flex",
             alignItems: "center",
             minHeight: "unset",
             paddingTop: theme.spacing(1.5),
-            paddingBottom: theme.spacing(1.5)
+            paddingBottom: theme.spacing(1.5),
+            paddingLeft: theme.spacing(2),
+            ...theme.typography.variants["body 1"].style
+        },
+        "& .MuiSelect-icon": {
+            color: theme.colors.useCases.typography.textFocus
         }
+    },
+    infoSection: {
+        display: "grid",
+        gridTemplateColumns: "32px minmax(0, 1fr)",
+        gap: theme.spacing(2),
+        alignItems: "start",
+        padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
+        borderTop: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        color: theme.colors.useCases.typography.textFocus
+    },
+    infoText: {
+        color: theme.colors.useCases.typography.textSecondary,
+        lineHeight: 1.55,
+        maxWidth: 720
     }
 }));
 
 const { i18n } = declareComponentKeys<
     | "generating public URL"
     | "copy public URL aria label"
-    | "signed link with time limit"
+    | "public URL"
+    | "signed URL with limited validity period"
     | "signed link validity aria label"
     | "generating signed URL"
     | "copy signed URL aria label"
-    | "public description"
-    | "signed description"
+    | "public sharing note"
+    | "signed URL expiration note"
     | "validity duration one hour"
     | "validity duration one day"
     | "validity duration one week"
