@@ -304,7 +304,6 @@ export const translations: Translations<"en"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Generating public URL...",
         "copy public URL aria label": "Copy public URL",
-        "public URL": "Public URL",
         "signed URL with limited validity period":
             "Signed URL with limited validity period",
         "signed link validity aria label": "Signed link validity duration",

@@ -65,11 +65,6 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
 
             {isPublic ? (
                 <div className={classes.linkSection}>
-                    <div className={classes.linkHeader}>
-                        <Text typo="label 1" className={classes.linkLabel}>
-                            {t("public URL")}
-                        </Text>
-                    </div>
                     <S3DialogCopyUrlField
                         value={httpUrl}
                         pendingText={t("generating public URL")}
@@ -79,7 +74,7 @@ export function S3ShareObjectDialog(props: S3ShareObjectDialogProps) {
             ) : (
                 <div className={classes.linkSection}>
                     <div className={classes.linkHeader}>
-                        <Text typo="label 1" className={classes.linkLabel}>
+                        <Text typo="label 1">
                             {t("signed URL with limited validity period")}
                         </Text>
                         <FormControl
@@ -163,13 +158,11 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        width: "100%",
-        minWidth: 0,
-        margin: `${-theme.spacing(1)}px ${-theme.spacing(4)}px ${-theme.spacing(4)}px`,
+        //width: "100%",
+        //minWidth: 0,
         boxSizing: "border-box"
     },
     objectSection: {
-        padding: `${theme.spacing(1)}px ${theme.spacing(4)}px ${theme.spacing(4)}px`,
         borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
     },
     objectSummary: {
@@ -187,14 +180,15 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
             fontSize: 20,
             lineHeight: 1.35,
             fontWeight: 500
-        }
+        },
+        marginBottom: theme.spacing(3)
     },
     linkSection: {
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(3),
-        padding: `${theme.spacing(4)}px ${theme.spacing(4)}px`,
-        minWidth: 0
+        minWidth: 0,
+        ...theme.spacing.topBottom("padding", 3)
     },
     linkHeader: {
         display: "flex",
@@ -207,12 +201,6 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
             flexDirection: "column",
             gap: theme.spacing(2)
         }
-    },
-    linkLabel: {
-        color: theme.colors.useCases.typography.textPrimary,
-        fontSize: 20,
-        lineHeight: 1.3,
-        fontWeight: 700
     },
     validitySelect: {
         width: 170,
@@ -252,7 +240,7 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
         gridTemplateColumns: "32px minmax(0, 1fr)",
         gap: theme.spacing(2),
         alignItems: "start",
-        padding: `${theme.spacing(3)}px ${theme.spacing(4)}px`,
+        paddingTop: theme.spacing(3),
         borderTop: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
         color: theme.colors.useCases.typography.textFocus
     },
@@ -266,7 +254,6 @@ const useStyles = tss.withName({ S3ShareObjectDialog }).create(({ theme }) => ({
 const { i18n } = declareComponentKeys<
     | "generating public URL"
     | "copy public URL aria label"
-    | "public URL"
     | "signed URL with limited validity period"
     | "signed link validity aria label"
     | "generating signed URL"

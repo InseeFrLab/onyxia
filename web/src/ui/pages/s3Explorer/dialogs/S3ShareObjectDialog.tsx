@@ -6,7 +6,6 @@ import { getCore, useCoreState, getCoreSync } from "core";
 import type { S3Uri } from "core/tools/S3Uri";
 import { Dialog } from "onyxia-ui/Dialog";
 import { S3ShareObjectDialog as S3ShareObjectDialog_headless } from "ui/shared/codex/S3ShareObjectDialog";
-import { useS3DialogClasses } from "ui/shared/codex/S3DialogPrimitives";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type S3ShareObjectDialogProps = {
@@ -33,22 +32,13 @@ function S3ShareObjectDialogContainer(props: S3ShareObjectDialogProps) {
         [evtOpen]
     );
 
-    const dialogClasses = useS3DialogClasses();
     const { t } = useTranslation({ S3ShareObjectDialogContainer });
 
     return (
         <Dialog
-            className={dialogClasses.paper}
-            maxWidth={false}
-            muiDialogClasses={{ root: dialogClasses.overlayRoot }}
+            maxWidth={"xl"}
             title={t("dialog title")}
-            classes={{
-                title: dialogClasses.title,
-                body: dialogClasses.body,
-                buttons: dialogClasses.hiddenButtons
-            }}
             body={state === undefined ? undefined : <Body s3Uri={state.s3Uri} />}
-            buttons={<></>}
             isOpen={state !== undefined}
             onClose={() => setState(undefined)}
             showCloseButton

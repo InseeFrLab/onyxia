@@ -377,7 +377,6 @@ export const translations: Translations<"zh-CN"> = {
     S3ShareObjectDialog: {
         "generating public URL": "正在生成公开 URL...",
         "copy public URL aria label": "复制公开 URL",
-        "public URL": "公开 URL",
         "signed URL with limited validity period": "带有限有效期的签名 URL",
         "signed link validity aria label": "签名链接有效期",
         "generating signed URL": "正在生成签名 URL...",

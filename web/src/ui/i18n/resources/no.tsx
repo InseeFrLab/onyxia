@@ -404,7 +404,6 @@ export const translations: Translations<"no"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Genererer offentlig URL...",
         "copy public URL aria label": "Kopier offentlig URL",
-        "public URL": "Offentlig URL",
         "signed URL with limited validity period":
             "Signert URL med begrenset gyldighetsperiode",
         "signed link validity aria label": "Gyldighetsperiode for signert lenke",

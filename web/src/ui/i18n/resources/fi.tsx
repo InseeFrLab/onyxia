@@ -401,7 +401,6 @@ export const translations: Translations<"fi"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Luodaan julkista URL-osoitetta...",
         "copy public URL aria label": "Kopioi julkinen URL",
-        "public URL": "Julkinen URL",
         "signed URL with limited validity period":
             "Allekirjoitettu URL rajatulla voimassaoloajalla",
         "signed link validity aria label": "Allekirjoitetun linkin voimassaoloaika",

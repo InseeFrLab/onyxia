@@ -406,7 +406,6 @@ export const translations: Translations<"nl"> = {
     S3ShareObjectDialog: {
         "generating public URL": "Openbare URL genereren...",
         "copy public URL aria label": "Openbare URL kopiëren",
-        "public URL": "Openbare URL",
         "signed URL with limited validity period":
             "Ondertekende URL met beperkte geldigheidsduur",
         "signed link validity aria label": "Geldigheidsduur van de ondertekende link",
