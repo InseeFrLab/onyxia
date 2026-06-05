@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { shell } from "@codemirror/legacy-modes/mode/shell";
+import { r } from "@codemirror/legacy-modes/mode/r";
 import { StreamLanguage } from "@codemirror/language";
 import { assert, type Equals } from "tsafe/assert";
-import { TextEditor } from "../TextEditor";
+import { TextEditor } from "../../TextEditor";
 
 export type Props = {
     className?: string;
@@ -15,11 +15,11 @@ export type Props = {
 };
 
 {
-    type Props_Expected = Omit<import("../TextEditor").Props, "extensions">;
+    type Props_Expected = Omit<import("../../TextEditor").Props, "extensions">;
 
     assert<Equals<Props, Props_Expected>>;
 }
 
-export default function ShellCodeTextEditor(props: Props) {
-    return <TextEditor {...props} extensions={[StreamLanguage.define(shell)]} />;
+export default function RLowercaseCodeTextEditor(props: Props) {
+    return <TextEditor {...props} extensions={[StreamLanguage.define(r)]} />;
 }
