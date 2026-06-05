@@ -101,6 +101,44 @@ describe(getObjectRendering.name, () => {
         expect(got).toStrictEqual({ renderAs: "video", url: directUrl });
     });
 
+    it("renders PDF files as PDFs", async () => {
+        const fetchMock = vi.fn(() =>
+            Promise.resolve(
+                createResponse({
+                    headers: { "Content-Type": "application/octet-stream" }
+                })
+            )
+        );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const got = await getObjectRendering({
+            s3Uri: parseObject("s3://mybucket/foo/document.pdf"),
+            getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
+        });
+
+        expect(got).toStrictEqual({ renderAs: "pdf", url: directUrl });
+    });
+
+    it("renders PDF media types as PDFs without relying on the extension", async () => {
+        const fetchMock = vi.fn(() =>
+            Promise.resolve(
+                createResponse({
+                    headers: { "Content-Type": "application/pdf" }
+                })
+            )
+        );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const got = await getObjectRendering({
+            s3Uri: parseObject("s3://mybucket/foo/object-without-extension"),
+            getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
+        });
+
+        expect(got).toStrictEqual({ renderAs: "pdf", url: directUrl });
+    });
+
     it("downloads small textual code and infers the editor language", async () => {
         const fetchMock = vi
             .fn()

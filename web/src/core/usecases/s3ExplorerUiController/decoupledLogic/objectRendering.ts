@@ -20,6 +20,10 @@ export type ObjectRendering =
           code: string;
       }
     | {
+          renderAs: "pdf";
+          url: string;
+      }
+    | {
           renderAs: "download button";
           url: string;
       };
@@ -75,6 +79,10 @@ const videoMediaTypes = new Set([
     "video/webm",
     "video/x-m4v"
 ]);
+
+const pdfExtensions = new Set(["pdf"]);
+
+const pdfMediaTypes = new Set(["application/pdf"]);
 
 const codeTextEditorLanguageByExtension: Partial<Record<string, CodeTextEditorLanguage>> =
     {
@@ -377,6 +385,10 @@ export async function getObjectRendering(params: {
         return { renderAs: "video", url };
     }
 
+    if (getIsPdf({ extension, mediaType })) {
+        return { renderAs: "pdf", url };
+    }
+
     if (
         !getIsTextualObject({
             basename_lowercase,
@@ -564,6 +576,18 @@ function getIsVideo(params: {
     return (
         (extension !== undefined && videoExtensions.has(extension)) ||
         (mediaType !== undefined && videoMediaTypes.has(mediaType))
+    );
+}
+
+function getIsPdf(params: {
+    extension: string | undefined;
+    mediaType: string | undefined;
+}) {
+    const { extension, mediaType } = params;
+
+    return (
+        (extension !== undefined && pdfExtensions.has(extension)) ||
+        (mediaType !== undefined && pdfMediaTypes.has(mediaType))
     );
 }
 
