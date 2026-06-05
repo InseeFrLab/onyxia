@@ -202,7 +202,8 @@ export const translations: Translations<"it"> = {
         "create profile": "Crea profilo",
         back: "Indietro",
         upload: "Carica",
-        "create new folder": "Crea nuova cartella"
+        "create new folder": "Crea nuova cartella",
+        "download file": "scarica file"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Condividi oggetto"

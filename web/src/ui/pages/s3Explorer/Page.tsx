@@ -30,6 +30,8 @@ import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 import { CodeTextEditor } from "ui/shared/textEditor/CodeTextEditor";
+import { Icon } from "onyxia-ui/Icon";
+import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
 
 const Page = withLoader({
     loader,
@@ -144,7 +146,7 @@ function S3Explorer() {
     const { resolveLocalizedString } = useResolveLocalizedString();
     const { t } = useTranslation({ S3Explorer });
 
-    const { css, theme } = useStyles();
+    const { css, cx, theme } = useStyles();
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
 
@@ -223,6 +225,28 @@ function S3Explorer() {
         onDelete: s3ExplorerUiController.deleteBookmark,
         onRename: ({ s3Uri }) => openBookmarkDialog({ s3Uri })
     } satisfies S3BookmarksBarProps;
+
+    const objectPreviewClassName = css({
+        flex: 1,
+        minHeight: 0,
+        minWidth: 0,
+        display: "flex",
+        marginTop: theme.spacing(3),
+        overflow: "hidden"
+    });
+
+    const objectPreviewFrameClassName = cx(
+        objectPreviewClassName,
+        css({
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+            borderRadius: theme.spacing(1)
+        })
+    );
+
+    const objectPreviewMaxHeight = Math.max(rootHeight - 240, 240);
 
     return (
         <>
@@ -548,6 +572,9 @@ function S3Explorer() {
                             {mainView.objectRendering !== undefined &&
                                 (() => {
                                     const { objectRendering } = mainView;
+                                    const objectPreviewFilename =
+                                        mainView.uriBar.s3Uri?.s3Uri.keySegments.at(-1) ??
+                                        "download";
                                     switch (objectRendering.renderAs) {
                                         case "dataset":
                                             return (
@@ -560,38 +587,169 @@ function S3Explorer() {
                                             );
                                         case "code":
                                             return (
-                                                <CodeTextEditor
-                                                    language={objectRendering.language}
-                                                    value={objectRendering.code}
-                                                    onChange={undefined}
-                                                />
+                                                <div className={objectPreviewClassName}>
+                                                    <CodeTextEditor
+                                                        className={css({
+                                                            flex: 1,
+                                                            minWidth: 0,
+                                                            overflow: "hidden"
+                                                        })}
+                                                        maxHeight={objectPreviewMaxHeight}
+                                                        fallback={
+                                                            <div
+                                                                className={css({
+                                                                    flex: 1,
+                                                                    display: "flex",
+                                                                    justifyContent:
+                                                                        "center",
+                                                                    alignItems: "center"
+                                                                })}
+                                                            >
+                                                                <CircularProgress />
+                                                            </div>
+                                                        }
+                                                        language={
+                                                            objectRendering.language
+                                                        }
+                                                        value={objectRendering.code}
+                                                        onChange={undefined}
+                                                    />
+                                                </div>
                                             );
                                         case "image":
                                             return (
-                                                <img
-                                                    className={css({
-                                                        flex: 1,
-                                                        overflow: "hidden"
-                                                    })}
-                                                    src={objectRendering.url}
-                                                />
+                                                <div
+                                                    className={
+                                                        objectPreviewFrameClassName
+                                                    }
+                                                >
+                                                    <img
+                                                        className={css({
+                                                            display: "block",
+                                                            maxWidth: "100%",
+                                                            maxHeight: "100%",
+                                                            width: "auto",
+                                                            height: "auto",
+                                                            objectFit: "contain"
+                                                        })}
+                                                        src={objectRendering.url}
+                                                        alt={objectPreviewFilename}
+                                                    />
+                                                </div>
                                             );
                                         case "video":
                                             return (
-                                                <video
-                                                    className={css({
-                                                        flex: 1,
-                                                        overflow: "hidden"
-                                                    })}
-                                                    autoPlay
-                                                    src={objectRendering.url}
-                                                />
+                                                <div
+                                                    className={
+                                                        objectPreviewFrameClassName
+                                                    }
+                                                >
+                                                    <video
+                                                        className={css({
+                                                            display: "block",
+                                                            maxWidth: "100%",
+                                                            maxHeight: "100%",
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            objectFit: "contain"
+                                                        })}
+                                                        controls
+                                                        playsInline
+                                                        preload="metadata"
+                                                        src={objectRendering.url}
+                                                    />
+                                                </div>
                                             );
                                         case "pdf":
-                                            return <iframe src={objectRendering.url} />;
+                                            return (
+                                                <div className={objectPreviewClassName}>
+                                                    <iframe
+                                                        className={css({
+                                                            flex: 1,
+                                                            minWidth: 0,
+                                                            border: 0
+                                                        })}
+                                                        src={objectRendering.url}
+                                                        title={objectPreviewFilename}
+                                                    />
+                                                </div>
+                                            );
                                         case "download button":
                                             return (
-                                                <a href={objectRendering.url}>Download</a>
+                                                <div
+                                                    className={
+                                                        objectPreviewFrameClassName
+                                                    }
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        className={css({
+                                                            display: "flex",
+                                                            flexDirection: "column",
+                                                            alignItems: "center",
+                                                            gap: theme.spacing(2),
+                                                            maxWidth: "min(100%, 420px)",
+                                                            padding: theme.spacing(5),
+                                                            border: 0,
+                                                            borderRadius:
+                                                                theme.spacing(1),
+                                                            backgroundColor:
+                                                                theme.colors.useCases
+                                                                    .surfaces.surface2,
+                                                            color: theme.colors.useCases
+                                                                .typography.textPrimary,
+                                                            cursor: "pointer",
+                                                            ...theme.typography.variants[
+                                                                "body 1"
+                                                            ].style,
+                                                            "&:hover": {
+                                                                backgroundColor:
+                                                                    theme.colors.useCases
+                                                                        .surfaces
+                                                                        .surface3,
+                                                                color: theme.colors
+                                                                    .useCases.typography
+                                                                    .textFocus
+                                                            },
+                                                            "&:focus-visible": {
+                                                                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
+                                                                outlineOffset: 2
+                                                            }
+                                                        })}
+                                                        onClick={() =>
+                                                            triggerBrowserDownload({
+                                                                url: objectRendering.url,
+                                                                filename:
+                                                                    objectPreviewFilename
+                                                            })
+                                                        }
+                                                        aria-label={t("download file")}
+                                                    >
+                                                        <Icon
+                                                            icon={getIconUrlByName(
+                                                                "FileDownload"
+                                                            )}
+                                                            size="large"
+                                                        />
+                                                        <span>{t("download file")}</span>
+                                                        <span
+                                                            className={css({
+                                                                maxWidth: "100%",
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis",
+                                                                whiteSpace: "nowrap",
+                                                                color: theme.colors
+                                                                    .useCases.typography
+                                                                    .textSecondary,
+                                                                ...theme.typography
+                                                                    .variants["body 2"]
+                                                                    .style
+                                                            })}
+                                                        >
+                                                            {objectPreviewFilename}
+                                                        </span>
+                                                    </button>
+                                                </div>
                                             );
                                         default:
                                             assert<Equals<typeof objectRendering, never>>;
@@ -646,6 +804,11 @@ function DataExplorer(props: { className?: string }) {
 }
 
 const { i18n } = declareComponentKeys<
-    "page header title" | "create profile" | "back" | "upload" | "create new folder"
+    | "page header title"
+    | "create profile"
+    | "back"
+    | "upload"
+    | "create new folder"
+    | "download file"
 >()({ S3Explorer });
 export type I18n = typeof i18n;

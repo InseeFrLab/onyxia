@@ -181,7 +181,8 @@ export const translations: Translations<"zh-CN"> = {
         "create profile": "创建配置文件",
         back: "返回",
         upload: "上传",
-        "create new folder": "创建新文件夹"
+        "create new folder": "创建新文件夹",
+        "download file": "下载文件"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"

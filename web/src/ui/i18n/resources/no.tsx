@@ -199,7 +199,8 @@ export const translations: Translations<"no"> = {
         "create profile": "Opprett profil",
         back: "Tilbake",
         upload: "Last opp",
-        "create new folder": "Opprett ny mappe"
+        "create new folder": "Opprett ny mappe",
+        "download file": "last ned fil"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Del objekt"

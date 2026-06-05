@@ -199,7 +199,8 @@ export const translations: Translations<"fi"> = {
         "create profile": "Luo profiili",
         back: "Takaisin",
         upload: "Lataa palvelimelle",
-        "create new folder": "Luo uusi kansio"
+        "create new folder": "Luo uusi kansio",
+        "download file": "lataa tiedosto"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Jaa objekti"
