@@ -29,6 +29,7 @@ import { customIcons } from "lazy-icons";
 import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
+import { CodeTextEditor } from "ui/shared/textEditor/CodeTextEditor";
 
 const Page = withLoader({
     loader,
@@ -559,13 +560,11 @@ function S3Explorer() {
                                             );
                                         case "code":
                                             return (
-                                                <>
-                                                    TODO: Use
-                                                    web/src/ui/shared/textEditor/CodeTextEditor/index.ts
-                                                    depending of the language (
-                                                    {objectRendering.language})
-                                                    <code>{objectRendering.code}</code>
-                                                </>
+                                                <CodeTextEditor
+                                                    language={objectRendering.language}
+                                                    value={objectRendering.code}
+                                                    onChange={undefined}
+                                                />
                                             );
                                         case "image":
                                             return (
@@ -588,6 +587,8 @@ function S3Explorer() {
                                                     src={objectRendering.url}
                                                 />
                                             );
+                                        case "pdf":
+                                            return <iframe src={objectRendering.url} />;
                                         case "download button":
                                             return (
                                                 <a href={objectRendering.url}>Download</a>
