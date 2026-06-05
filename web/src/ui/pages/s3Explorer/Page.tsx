@@ -226,28 +226,6 @@ function S3Explorer() {
         onRename: ({ s3Uri }) => openBookmarkDialog({ s3Uri })
     } satisfies S3BookmarksBarProps;
 
-    const objectPreviewClassName = css({
-        flex: 1,
-        minHeight: 0,
-        minWidth: 0,
-        display: "flex",
-        marginTop: theme.spacing(3),
-        overflow: "hidden"
-    });
-
-    const objectPreviewFrameClassName = cx(
-        objectPreviewClassName,
-        css({
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: theme.colors.useCases.surfaces.surface1,
-            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            borderRadius: theme.spacing(1)
-        })
-    );
-
-    const objectPreviewMaxHeight = Math.max(rootHeight - 240, 240);
-
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
@@ -572,6 +550,33 @@ function S3Explorer() {
                             {mainView.objectRendering !== undefined &&
                                 (() => {
                                     const { objectRendering } = mainView;
+
+                                    const objectPreviewClassName = css({
+                                        flex: 1,
+                                        minHeight: 0,
+                                        minWidth: 0,
+                                        display: "flex",
+                                        marginTop: theme.spacing(3),
+                                        overflow: "hidden"
+                                    });
+
+                                    const objectPreviewFrameClassName = cx(
+                                        objectPreviewClassName,
+                                        css({
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            backgroundColor:
+                                                theme.colors.useCases.surfaces.surface1,
+                                            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+                                            borderRadius: theme.spacing(1)
+                                        })
+                                    );
+
+                                    const objectPreviewMaxHeight = Math.max(
+                                        rootHeight - 240,
+                                        240
+                                    );
+
                                     switch (objectRendering.renderAs) {
                                         case "dataset":
                                             return (
@@ -654,6 +659,7 @@ function S3Explorer() {
                                                         })}
                                                         controls
                                                         playsInline
+                                                        autoPlay
                                                         preload="metadata"
                                                         src={objectRendering.url}
                                                     />
