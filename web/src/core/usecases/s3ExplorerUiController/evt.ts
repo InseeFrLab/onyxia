@@ -11,6 +11,7 @@ import { actions } from "./state";
 import {
     thunks,
     privateThunks,
+    protectedThunks,
     evtAskOverwriteConfirmation,
     evtDisplayError
 } from "./thunks";
@@ -18,6 +19,8 @@ import { getIsInside } from "core/tools/S3Uri";
 import * as dataExplorer from "core/usecases/dataExplorer";
 import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { S3Uri } from "core/tools/S3Uri";
+import { getObjectRendering } from "./decoupledLogic/objectRendering";
+import { same } from "evt/tools/inDepth/same";
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -89,22 +92,52 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
 
     evtAction
         .pipe(action => action.usecaseName === name)
-        .pipe(() => [privateSelectors.isFullyQualifiedDataFileUri(getState())])
+        .pipe(() => [privateSelectors.objectRendering_computeMaterial(getState())])
         .pipe(onlyIfChanged())
         .attach(
-            isFullyQualifiedDataFileUri => isFullyQualifiedDataFileUri,
-            () => {
-                const s3Uri = privateSelectors.s3Uri(getState());
+            eventData => eventData !== undefined,
+            async ({ profileName, s3Uri }) => {
+                const objectRendering = await getObjectRendering({
+                    s3Uri,
+                    getDirectDownloadHttpUrl: () =>
+                        dispatch(
+                            protectedThunks.getObjectHttpUrl({
+                                s3Uri,
+                                validityDurationSecond_ifNotPublic: 3_600
+                            })
+                        )
+                });
 
-                assert(s3Uri !== undefined);
+                {
+                    const computeMaterial_new =
+                        privateSelectors.objectRendering_computeMaterial(getState());
+
+                    if (computeMaterial_new === undefined) {
+                        return;
+                    }
+
+                    if (!same(computeMaterial_new, { profileName, s3Uri })) {
+                        return;
+                    }
+                }
 
                 dispatch(
-                    dataExplorer.thunks.load({
-                        routeParams: {
-                            source: stringifyS3Uri(s3Uri)
-                        }
+                    actions.objectRenderingSet({
+                        profileName,
+                        s3Uri,
+                        objectRendering
                     })
                 );
+
+                if (objectRendering.renderAs === "dataset") {
+                    dispatch(
+                        dataExplorer.thunks.load({
+                            routeParams: {
+                                source: stringifyS3Uri(s3Uri)
+                            }
+                        })
+                    );
+                }
             }
         );
 

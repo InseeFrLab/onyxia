@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { routes, getRoute, session } from "ui/routes";
 import { routeGroup } from "./route";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
 import { getCore, useCoreState, getCoreSync } from "core";
@@ -485,10 +485,11 @@ function S3Explorer() {
                             {mainView.listedPrefix !== undefined && (
                                 <S3ExplorerMainView
                                     className={css({
-                                        flex: mainView.fullyQualifiedUri
-                                            .isFullyQualifiedUri
-                                            ? undefined
-                                            : 1
+                                        flex:
+                                            mainView.listedPrefix.isErrored ||
+                                            !mainView.listedPrefix.isFullyQualifiedUri
+                                                ? 1
+                                                : undefined
                                     })}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
@@ -543,12 +544,58 @@ function S3Explorer() {
                                     }
                                 />
                             )}
-                            {mainView.fullyQualifiedUri.isFullyQualifiedUri &&
-                                mainView.fullyQualifiedUri.isDataObject && (
-                                    <DataExplorer
-                                        className={css({ flex: 1, overflow: "hidden" })}
-                                    />
-                                )}
+                            {mainView.objectRendering !== undefined &&
+                                (() => {
+                                    const { objectRendering } = mainView;
+                                    switch (objectRendering.renderAs) {
+                                        case "dataset":
+                                            return (
+                                                <DataExplorer
+                                                    className={css({
+                                                        flex: 1,
+                                                        overflow: "hidden"
+                                                    })}
+                                                />
+                                            );
+                                        case "code":
+                                            return (
+                                                <>
+                                                    TODO: Use
+                                                    web/src/ui/shared/textEditor/CodeTextEditor/index.ts
+                                                    depending of the language (
+                                                    {objectRendering.language})
+                                                    <code>{objectRendering.code}</code>
+                                                </>
+                                            );
+                                        case "image":
+                                            return (
+                                                <img
+                                                    className={css({
+                                                        flex: 1,
+                                                        overflow: "hidden"
+                                                    })}
+                                                    src={objectRendering.url}
+                                                />
+                                            );
+                                        case "video":
+                                            return (
+                                                <video
+                                                    className={css({
+                                                        flex: 1,
+                                                        overflow: "hidden"
+                                                    })}
+                                                    autoPlay
+                                                    src={objectRendering.url}
+                                                />
+                                            );
+                                        case "download button":
+                                            return (
+                                                <a href={objectRendering.url}>Download</a>
+                                            );
+                                        default:
+                                            assert<Equals<typeof objectRendering, never>>;
+                                    }
+                                })()}
                         </div>
                     );
                 })()}

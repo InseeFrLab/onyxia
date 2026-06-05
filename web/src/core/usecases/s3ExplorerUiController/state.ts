@@ -3,6 +3,7 @@ import { createUsecaseActions } from "clean-architecture";
 import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import type { BucketPolicies } from "./decoupledLogic/bucketPolicies";
+import type { ObjectRendering } from "./decoupledLogic/objectRendering";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -49,6 +50,7 @@ export namespace State {
             | {
                   s3Uri: S3Uri;
                   items: ListedPrefix.Item[];
+                  objectRendering: undefined | ObjectRendering;
               }
             | undefined;
     };
@@ -284,7 +286,8 @@ export const { reducer, actions } = createUsecaseActions({
 
             listedPrefix.current = {
                 s3Uri,
-                items
+                items,
+                objectRendering: undefined
             };
         },
         listingCompletedSuccessfully_inferFromCurrentState: (
@@ -314,10 +317,34 @@ export const { reducer, actions } = createUsecaseActions({
                 s3Uri,
                 items: items.filter(item =>
                     stringifyS3Uri(item.s3Uri).startsWith(stringifyS3Uri(s3Uri))
-                )
+                ),
+                objectRendering: undefined
             };
         },
+        objectRenderingSet: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    profileName: string;
+                    s3Uri: S3Uri.NonTerminatedByDelimiter;
+                    objectRendering: ObjectRendering;
+                };
+            }
+        ) => {
+            const { profileName, s3Uri, objectRendering } = payload;
 
+            const listedPrefix = state.listedPrefixByProfile[profileName];
+
+            assert(listedPrefix !== undefined);
+
+            assert(listedPrefix.current !== undefined);
+
+            assert(same(listedPrefix.current.s3Uri, s3Uri));
+
+            listedPrefix.current.objectRendering = objectRendering;
+        },
         listingFailed: (
             state,
             {

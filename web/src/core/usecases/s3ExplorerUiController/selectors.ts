@@ -12,6 +12,7 @@ import {
     getHasPrefixBeMadePublic,
     getIsWithinPrefixThatHasBeenMadePublic
 } from "./decoupledLogic/bucketPolicies";
+import { type ObjectRendering } from "./decoupledLogic/objectRendering";
 
 export type RouteParams = {
     profile?: string;
@@ -80,14 +81,7 @@ export type MainView = {
 
     isListing: boolean;
 
-    fullyQualifiedUri:
-        | {
-              isFullyQualifiedUri: false;
-          }
-        | {
-              isFullyQualifiedUri: true;
-              isDataObject: boolean;
-          };
+    objectRendering: undefined | ObjectRendering;
 
     listedPrefix:
         | ({ s3Uri: S3Uri } & (
@@ -98,6 +92,7 @@ export type MainView = {
               | {
                     isErrored: false;
                     items: MainView.Item[];
+                    isFullyQualifiedUri: boolean;
                 }
           ))
         | undefined;
@@ -428,45 +423,55 @@ const listedPrefix = createSelector(
         return {
             s3Uri: listedPrefix_state.current.s3Uri,
             isErrored: false,
-            items
+            items,
+            isFullyQualifiedUri:
+                items.length === 1 &&
+                items[0].type === "object" &&
+                same(items[0].s3Uri, listedPrefix_state.current.s3Uri)
         };
     }
 );
 
-const fullyQualifiedUri = createSelector(
+const objectRendering_computeMaterial = createSelector(
+    listedPrefix,
+    profileName,
+    (listedPrefix, profileName) => {
+        if (listedPrefix === undefined) {
+            return undefined;
+        }
+
+        if (listedPrefix.isErrored) {
+            return undefined;
+        }
+
+        if (!listedPrefix.isFullyQualifiedUri) {
+            return undefined;
+        }
+
+        assert(profileName !== undefined);
+        assert(!listedPrefix.s3Uri.isDelimiterTerminated);
+
+        return {
+            profileName,
+            s3Uri: listedPrefix.s3Uri
+        };
+    }
+);
+
+const objectRendering = createSelector(
     listedPrefix_state,
-    (listedPrefix_state): MainView["fullyQualifiedUri"] => {
+    (listedPrefix_state): MainView["objectRendering"] => {
         if (listedPrefix_state === undefined) {
-            return { isFullyQualifiedUri: false };
+            return undefined;
         }
 
         const { current } = listedPrefix_state;
 
         if (current === undefined) {
-            return { isFullyQualifiedUri: false };
+            return undefined;
         }
 
-        const [item, ...rest] = current.items;
-
-        if (item === undefined || rest.length !== 0) {
-            return { isFullyQualifiedUri: false };
-        }
-
-        if (!same(current.s3Uri, item.s3Uri)) {
-            return { isFullyQualifiedUri: false };
-        }
-
-        const isFullyQualifiedUri = true as const;
-
-        const s3Uri_str = stringifyS3Uri(item.s3Uri);
-
-        return {
-            isFullyQualifiedUri,
-            isDataObject:
-                s3Uri_str.endsWith(".parquet") ||
-                s3Uri_str.endsWith(".csv") ||
-                s3Uri_str.endsWith(".json")
-        };
+        return current.objectRendering;
     }
 );
 
@@ -703,7 +708,7 @@ const mainView = createSelector(
     isBackButtonDisabled,
     directoryCreationButton,
     isUploadButtonDisabled,
-    fullyQualifiedUri,
+    objectRendering,
     isListing,
     listedPrefix,
     commandLogsEntries,
@@ -715,7 +720,7 @@ const mainView = createSelector(
         isBackButtonDisabled,
         directoryCreationButton,
         isUploadButtonDisabled,
-        fullyQualifiedUri,
+        objectRendering,
         isListing,
         listedPrefix,
         commandLogsEntries
@@ -727,7 +732,7 @@ const mainView = createSelector(
         isBackButtonDisabled,
         directoryCreationButton,
         isUploadButtonDisabled,
-        fullyQualifiedUri,
+        objectRendering,
         isListing,
         listedPrefix,
         commandLogsEntries
@@ -774,12 +779,6 @@ const doesListedPrefixHaveOngoingUpload = createSelector(
         ) !== undefined
 );
 
-const isFullyQualifiedDataFileUri = createSelector(
-    fullyQualifiedUri,
-    fullyQualifiedUri =>
-        fullyQualifiedUri.isFullyQualifiedUri && fullyQualifiedUri.isDataObject
-);
-
 export const privateSelectors = {
     routeParams,
     s3Uri,
@@ -788,7 +787,7 @@ export const privateSelectors = {
     doesListedPrefixHaveFinishedUpload,
     doesListedPrefixHaveOngoingUpload,
     listedPrefix_state,
-    isFullyQualifiedDataFileUri,
+    objectRendering_computeMaterial,
     uploads: createSelector(state, state => state.uploads)
 };
 
