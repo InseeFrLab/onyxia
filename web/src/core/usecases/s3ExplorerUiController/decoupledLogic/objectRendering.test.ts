@@ -102,6 +102,38 @@ describe(getObjectRendering.name, () => {
         expect(got).toStrictEqual({ renderAs: "video", url: directUrl });
     });
 
+    it("renders native audio media types as audio", async () => {
+        const fetchMock = vi.fn(() =>
+            Promise.resolve(
+                createResponse({
+                    headers: { "Content-Type": "audio/mpeg" }
+                })
+            )
+        );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const got = await getObjectRendering({
+            s3Uri: parseObject("s3://mybucket/foo/object-without-extension"),
+            getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
+        });
+
+        expect(got).toStrictEqual({ renderAs: "audio", url: directUrl });
+    });
+
+    it("can still infer audio from extension when the HEAD request returns an HTTP error", async () => {
+        const fetchMock = vi.fn(() => Promise.resolve(createResponse({ status: 403 })));
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const got = await getObjectRendering({
+            s3Uri: parseObject("s3://mybucket/foo/sound.mp3"),
+            getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
+        });
+
+        expect(got).toStrictEqual({ renderAs: "audio", url: directUrl });
+    });
+
     it("renders PDF files as PDFs", async () => {
         const fetchMock = vi.fn(() =>
             Promise.resolve(

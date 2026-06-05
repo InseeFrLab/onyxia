@@ -14,6 +14,10 @@ export type ObjectRendering =
           url: string;
       }
     | {
+          renderAs: "audio";
+          url: string;
+      }
+    | {
           // Any non binary file should be rendered as code.
           renderAs: "code";
           language: CodeTextEditorLanguage | undefined;
@@ -78,6 +82,32 @@ const videoMediaTypes = new Set([
     "video/quicktime",
     "video/webm",
     "video/x-m4v"
+]);
+
+const audioExtensions = new Set([
+    "aac",
+    "flac",
+    "m4a",
+    "mp3",
+    "oga",
+    "ogg",
+    "opus",
+    "wav",
+    "weba"
+]);
+
+const audioMediaTypes = new Set([
+    "audio/aac",
+    "audio/flac",
+    "audio/m4a",
+    "audio/mpeg",
+    "audio/mp4",
+    "audio/ogg",
+    "audio/opus",
+    "audio/wav",
+    "audio/webm",
+    "audio/x-m4a",
+    "audio/x-wav"
 ]);
 
 const pdfExtensions = new Set(["pdf"]);
@@ -385,6 +415,10 @@ export async function getObjectRendering(params: {
         return { renderAs: "video", url };
     }
 
+    if (getIsAudio({ extension, mediaType })) {
+        return { renderAs: "audio", url };
+    }
+
     if (getIsPdf({ extension, mediaType })) {
         return { renderAs: "pdf", url };
     }
@@ -576,6 +610,18 @@ function getIsVideo(params: {
     return (
         (extension !== undefined && videoExtensions.has(extension)) ||
         (mediaType !== undefined && videoMediaTypes.has(mediaType))
+    );
+}
+
+function getIsAudio(params: {
+    extension: string | undefined;
+    mediaType: string | undefined;
+}) {
+    const { extension, mediaType } = params;
+
+    return (
+        (extension !== undefined && audioExtensions.has(extension)) ||
+        (mediaType !== undefined && audioMediaTypes.has(mediaType))
     );
 }
 

@@ -665,6 +665,24 @@ function S3Explorer() {
                                                     />
                                                 </div>
                                             );
+                                        case "audio":
+                                            return (
+                                                <div
+                                                    className={
+                                                        objectPreviewFrameClassName
+                                                    }
+                                                >
+                                                    <audio
+                                                        className={css({
+                                                            display: "block",
+                                                            width: "min(100%, 640px)"
+                                                        })}
+                                                        controls
+                                                        preload="metadata"
+                                                        src={objectRendering.url}
+                                                    />
+                                                </div>
+                                            );
                                         case "pdf":
                                             return (
                                                 <div className={objectPreviewClassName}>
