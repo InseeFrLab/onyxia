@@ -34,10 +34,12 @@ export type S3Client = {
     getSignedObjectHttpUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         validityDurationSecond: number;
+        isForDirectDownload: boolean;
     }) => Promise<string>;
 
     getUnsignedObjectHttpUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
+        isForDirectDownload: boolean;
     }) => string;
 
     getObjectContent: (params: {

@@ -25,7 +25,7 @@ export type ObjectRendering =
       }
     | {
           renderAs: "download button";
-          url: string;
+          s3Uri: S3Uri.NonTerminatedByDelimiter;
       };
 
 const maxCodeContentLength = 1_000_000;
@@ -354,13 +354,13 @@ const codeTextEditorLanguageByMediaType: Partial<Record<string, CodeTextEditorLa
     };
 
 export async function getObjectRendering(params: {
-    s3Uri: S3Uri;
+    s3Uri: S3Uri.NonTerminatedByDelimiter;
     getDirectDownloadHttpUrl: () => Promise<string>;
 }): Promise<ObjectRendering> {
     const { s3Uri, getDirectDownloadHttpUrl } = params;
 
     const url = await getDirectDownloadHttpUrl();
-    const downloadButton = { renderAs: "download button", url } as const;
+    const downloadButton = { renderAs: "download button", s3Uri } as const;
 
     const head = await fetchHead(url);
 

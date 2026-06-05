@@ -217,7 +217,7 @@ export function createS3Client(
     })();
 
     const s3Client: S3Client = {
-        getUnsignedObjectHttpUrl: ({ s3Uri }) => {
+        getUnsignedObjectHttpUrl: ({ s3Uri, isForDirectDownload }) => {
             const url = new URL(params.url);
             const pathname = url.pathname.endsWith("/")
                 ? url.pathname.slice(0, -1)
@@ -238,6 +238,10 @@ export function createS3Client(
 
             url.search = "";
             url.hash = "";
+
+            if (isForDirectDownload) {
+                url.searchParams.set("response-content-disposition", "attachment");
+            }
 
             return url.href;
         },
@@ -463,7 +467,11 @@ export function createS3Client(
                 })
             );
         },
-        getSignedObjectHttpUrl: async ({ s3Uri, validityDurationSecond }) => {
+        getSignedObjectHttpUrl: async ({
+            s3Uri,
+            validityDurationSecond,
+            isForDirectDownload
+        }) => {
             const { getAwsS3Client } = await prApi;
 
             const { awsS3Client } = await getAwsS3Client();
@@ -474,7 +482,10 @@ export function createS3Client(
                 awsS3Client,
                 new (await import("@aws-sdk/client-s3")).GetObjectCommand({
                     Bucket: s3Uri.bucket,
-                    Key: getS3UriKey(s3Uri)
+                    Key: getS3UriKey(s3Uri),
+                    ResponseContentDisposition: isForDirectDownload
+                        ? "attachment"
+                        : undefined
                 }),
                 {
                     expiresIn: validityDurationSecond

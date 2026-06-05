@@ -103,7 +103,8 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                         dispatch(
                             protectedThunks.getObjectHttpUrl({
                                 s3Uri,
-                                validityDurationSecond_ifNotPublic: 3_600
+                                validityDurationSecond_ifNotPublic: 3_600,
+                                isForDirectDownload: false
                             })
                         )
                 });

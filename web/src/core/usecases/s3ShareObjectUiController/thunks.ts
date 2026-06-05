@@ -58,7 +58,8 @@ export const privateThunks = {
                             case "one week":
                                 return 60 * 60 * 24 * 7;
                         }
-                    })()
+                    })(),
+                    isForDirectDownload: false
                 })
             );
 

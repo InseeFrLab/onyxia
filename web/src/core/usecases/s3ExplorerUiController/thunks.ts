@@ -24,6 +24,7 @@ import {
     undoMakePrefixPublic,
     getIsWithinPrefixThatHasBeenMadePublic
 } from "./decoupledLogic/bucketPolicies";
+import { triggerBrowserDownload } from "core/tools/triggerBrowserDownload";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -823,11 +824,12 @@ export const thunks = {
             const httpObjectUrl = await dispatch(
                 protectedThunks.getObjectHttpUrl({
                     s3Uri,
-                    validityDurationSecond_ifNotPublic: 20
+                    validityDurationSecond_ifNotPublic: 20,
+                    isForDirectDownload: true
                 })
             );
 
-            window.open(httpObjectUrl, "_blank", "noopener,noreferrer");
+            triggerBrowserDownload({ url: httpObjectUrl, fileBasename: undefined });
         },
     toggleS3UriPublicPrivatePolicy:
         (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
@@ -1120,9 +1122,10 @@ export const privateThunks = {
         (params: {
             s3Uri: S3Uri.NonTerminatedByDelimiter;
             validityDurationSecond: number;
+            isForDirectDownload: boolean;
         }) =>
         async (...args): Promise<string> => {
-            const { s3Uri, validityDurationSecond } = params;
+            const { s3Uri, validityDurationSecond, isForDirectDownload } = params;
 
             const [dispatch, getState] = args;
 
@@ -1148,7 +1151,8 @@ export const privateThunks = {
 
             const downloadUrl = await s3Client.getSignedObjectHttpUrl({
                 s3Uri,
-                validityDurationSecond
+                validityDurationSecond,
+                isForDirectDownload
             });
 
             dispatch(
@@ -1174,9 +1178,11 @@ export const protectedThunks = {
         (params: {
             s3Uri: S3Uri.NonTerminatedByDelimiter;
             validityDurationSecond_ifNotPublic: number;
+            isForDirectDownload: boolean;
         }) =>
         async (...args) => {
-            const { s3Uri, validityDurationSecond_ifNotPublic } = params;
+            const { s3Uri, validityDurationSecond_ifNotPublic, isForDirectDownload } =
+                params;
 
             const [dispatch, getState] = args;
 
@@ -1196,13 +1202,14 @@ export const protectedThunks = {
                     s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
                 );
 
-                return s3Client.getUnsignedObjectHttpUrl({ s3Uri });
+                return s3Client.getUnsignedObjectHttpUrl({ s3Uri, isForDirectDownload });
             }
 
             return dispatch(
                 privateThunks.getSignedObjectHttpUrl({
                     s3Uri,
-                    validityDurationSecond: validityDurationSecond_ifNotPublic
+                    validityDurationSecond: validityDurationSecond_ifNotPublic,
+                    isForDirectDownload
                 })
             );
         }

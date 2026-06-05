@@ -55,17 +55,18 @@ describe(getObjectRendering.name, () => {
 
     it("falls back to the download button when HEAD is blocked", async () => {
         const fetchMock = vi.fn(() => Promise.reject(new TypeError("CORS")));
+        const s3Uri = parseObject("s3://mybucket/foo/image.png");
 
         vi.stubGlobal("fetch", fetchMock);
 
         const got = await getObjectRendering({
-            s3Uri: parseObject("s3://mybucket/foo/image.png"),
+            s3Uri,
             getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
         });
 
         expect(got).toStrictEqual({
             renderAs: "download button",
-            url: directUrl
+            s3Uri
         });
     });
 
@@ -214,17 +215,18 @@ describe(getObjectRendering.name, () => {
                 })
             )
         );
+        const s3Uri = parseObject("s3://mybucket/foo/large.ts");
 
         vi.stubGlobal("fetch", fetchMock);
 
         const got = await getObjectRendering({
-            s3Uri: parseObject("s3://mybucket/foo/large.ts"),
+            s3Uri,
             getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
         });
 
         expect(got).toStrictEqual({
             renderAs: "download button",
-            url: directUrl
+            s3Uri
         });
         expect(fetchMock).toHaveBeenCalledOnce();
     });
@@ -248,17 +250,18 @@ describe(getObjectRendering.name, () => {
                     }
                 })
             );
+        const s3Uri = parseObject("s3://mybucket/foo/large.txt");
 
         vi.stubGlobal("fetch", fetchMock);
 
         const got = await getObjectRendering({
-            s3Uri: parseObject("s3://mybucket/foo/large.txt"),
+            s3Uri,
             getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
         });
 
         expect(got).toStrictEqual({
             renderAs: "download button",
-            url: directUrl
+            s3Uri
         });
     });
 });

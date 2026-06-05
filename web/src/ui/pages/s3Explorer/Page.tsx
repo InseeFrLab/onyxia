@@ -31,7 +31,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 import { CodeTextEditor } from "ui/shared/textEditor/CodeTextEditor";
 import { Icon } from "onyxia-ui/Icon";
-import { triggerBrowserDownload } from "ui/tools/triggerBrowserDonwload";
+import { getFileBasenameFromUrl } from "core/tools/triggerBrowserDownload";
 
 const Page = withLoader({
     loader,
@@ -572,9 +572,6 @@ function S3Explorer() {
                             {mainView.objectRendering !== undefined &&
                                 (() => {
                                     const { objectRendering } = mainView;
-                                    const objectPreviewFilename =
-                                        mainView.uriBar.s3Uri?.s3Uri.keySegments.at(-1) ??
-                                        "download";
                                     switch (objectRendering.renderAs) {
                                         case "dataset":
                                             return (
@@ -633,7 +630,9 @@ function S3Explorer() {
                                                             objectFit: "contain"
                                                         })}
                                                         src={objectRendering.url}
-                                                        alt={objectPreviewFilename}
+                                                        alt={getFileBasenameFromUrl(
+                                                            objectRendering.url
+                                                        )}
                                                     />
                                                 </div>
                                             );
@@ -670,7 +669,9 @@ function S3Explorer() {
                                                             border: 0
                                                         })}
                                                         src={objectRendering.url}
-                                                        title={objectPreviewFilename}
+                                                        title={getFileBasenameFromUrl(
+                                                            objectRendering.url
+                                                        )}
                                                     />
                                                 </div>
                                             );
@@ -717,11 +718,11 @@ function S3Explorer() {
                                                             }
                                                         })}
                                                         onClick={() =>
-                                                            triggerBrowserDownload({
-                                                                url: objectRendering.url,
-                                                                filename:
-                                                                    objectPreviewFilename
-                                                            })
+                                                            s3ExplorerUiController.downloadObject(
+                                                                {
+                                                                    s3Uri: objectRendering.s3Uri
+                                                                }
+                                                            )
                                                         }
                                                         aria-label={t("download file")}
                                                     >
@@ -732,22 +733,6 @@ function S3Explorer() {
                                                             size="large"
                                                         />
                                                         <span>{t("download file")}</span>
-                                                        <span
-                                                            className={css({
-                                                                maxWidth: "100%",
-                                                                overflow: "hidden",
-                                                                textOverflow: "ellipsis",
-                                                                whiteSpace: "nowrap",
-                                                                color: theme.colors
-                                                                    .useCases.typography
-                                                                    .textSecondary,
-                                                                ...theme.typography
-                                                                    .variants["body 2"]
-                                                                    .style
-                                                            })}
-                                                        >
-                                                            {objectPreviewFilename}
-                                                        </span>
                                                     </button>
                                                 </div>
                                             );
