@@ -33,7 +33,7 @@ export type S3ExplorerMainViewProps = {
     className?: string;
 
     isListing: boolean;
-    listedPrefix:
+    listedPrefix: { s3Uri: S3Uri } & (
         | {
               isErrored: true;
               errorCase: "access denied" | "no such bucket";
@@ -41,9 +41,13 @@ export type S3ExplorerMainViewProps = {
         | {
               isErrored: false;
               items: S3ExplorerMainViewProps.Item[];
-          };
+              isFullyQualifiedUri: boolean;
+          }
+    );
 
     onNavigate: (params: { s3Uri: S3Uri }) => void;
+
+    onNavigateBack: () => void;
 
     onPutObjects: (params: {
         files: {
@@ -60,6 +64,12 @@ export type S3ExplorerMainViewProps = {
     onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+
+    onBookmark: (params: { s3Uri: S3Uri }) => void;
+
+    onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
+
+    bookmarkedS3Uris: S3Uri[];
 
     onChangePrefixPolicy: (params: {
         action: "make public" | "undo make public";
@@ -171,6 +181,15 @@ The component manages row selection state in order to drive:
 - `Shift` click → selects a range
 - Header checkbox → selects or clears all visible selectable rows
 
+When `listedPrefix.isErrored === false` and `listedPrefix.isFullyQualifiedUri === true`, the listed location represents exactly one object:
+
+- `listedPrefix.items.length === 1`
+- `listedPrefix.items[0].type === "object"`
+
+In this state, the single object row is automatically selected. The row cannot be unselected through the row click behavior, the row checkbox, the header checkbox, or the selection action bar.
+
+The automatic selection is also persisted into the normal selection state. When the user navigates back from a fully qualified object view to a parent listing that contains the same object, that object remains selected in the parent list.
+
 ### Selection Action Bar integration
 
 When: `selectedItems.length > 0`
@@ -187,6 +206,8 @@ The component renders `S3SelectionActionBar` above the list.
 - `share`
 - `accessPolicy`
 - `onClear`
+
+When `listedPrefix.isFullyQualifiedUri === true`, `onClear` must be passed as `undefined` so the selection action bar does not expose a clear-selection control.
 
 It must pass `undefined` for selection action objects that do not make sense
 for the current selection:

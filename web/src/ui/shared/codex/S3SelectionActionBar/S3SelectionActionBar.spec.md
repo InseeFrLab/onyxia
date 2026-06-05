@@ -14,8 +14,8 @@ type S3SelectionActionBarProps = {
 
     selectionCount: number;
 
-    /** Function to clear the selection and hide the selection action bar */
-    onClear: () => void;
+    /** Function to clear the selection and hide the selection action bar. Undefined when the selection is locked. */
+    onClear: (() => void) | undefined;
 
     download:
         | {
@@ -92,11 +92,13 @@ Examples:
 
 The selection summary is displayed inside a pill container.
 
-A close icon is displayed on the left side of the pill.
+A close icon is displayed on the left side of the pill only when `onClear` is defined.
 
 ### Close interaction
 
-Clicking the close icon triggers: `onClear()`
+When `onClear` is defined, clicking the close icon triggers: `onClear()`
+
+When `onClear` is `undefined`, the selection is locked and the component must not render a clear-selection button or expose any equivalent way to unselect from this bar.
 
 ### Actions rendering
 

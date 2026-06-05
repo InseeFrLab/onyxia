@@ -50,6 +50,7 @@ export type S3ExplorerMainViewProps = {
         | {
               isErrored: false;
               items: S3ExplorerMainViewProps.Item[];
+              isFullyQualifiedUri: boolean;
           }
     );
 
@@ -264,17 +265,53 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
               sortState
           });
 
+    const fullyQualifiedObject =
+        !listedPrefix.isErrored && listedPrefix.isFullyQualifiedUri
+            ? (() => {
+                  assert(items.length === 1);
+
+                  const [item] = items;
+
+                  assert(item.type === "object");
+
+                  return item;
+              })()
+            : undefined;
+    const isSelectionLocked = fullyQualifiedObject !== undefined;
+    const lockedSelectedItemKey =
+        fullyQualifiedObject === undefined ? undefined : getItemKey(fullyQualifiedObject);
+
+    useEffect(() => {
+        if (lockedSelectedItemKey === undefined) {
+            return;
+        }
+
+        setSelectedItemKeys(previouslySelectedItemKeys =>
+            previouslySelectedItemKeys.length === 1 &&
+            previouslySelectedItemKeys[0] === lockedSelectedItemKey
+                ? previouslySelectedItemKeys
+                : [lockedSelectedItemKey]
+        );
+        lastSelectedItemKeyRef.current = lockedSelectedItemKey;
+    }, [lockedSelectedItemKey]);
+
     const selectableItems = items.filter(item => !item.isDeleting);
-    const selectedItemKeySet = new Set(selectedItemKeys);
+    const selectedItemKeySet = new Set(
+        lockedSelectedItemKey === undefined ? selectedItemKeys : [lockedSelectedItemKey]
+    );
     const bookmarkedItemKeySet = new Set(bookmarkedS3Uris.map(stringifyS3Uri));
     const selectedItems = items.filter(item => selectedItemKeySet.has(getItemKey(item)));
     const showRowActions = selectedItems.length <= 1;
 
     const isAllSelected =
-        selectableItems.length > 0 &&
-        selectableItems.every(item => selectedItemKeySet.has(getItemKey(item)));
+        isSelectionLocked ||
+        (selectableItems.length > 0 &&
+            selectableItems.every(item => selectedItemKeySet.has(getItemKey(item))));
     const isSelectionIndeterminate =
-        !isAllSelected && selectedItems.length > 0 && selectableItems.length > 0;
+        !isSelectionLocked &&
+        !isAllSelected &&
+        selectedItems.length > 0 &&
+        selectableItems.length > 0;
 
     const selectedItemForSingleItemAction =
         selectedItems.length === 1 ? selectedItems[0] : undefined;
@@ -343,6 +380,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         const { item, event } = params;
 
         if (item.isDeleting) {
+            return;
+        }
+
+        if (isSelectionLocked) {
             return;
         }
 
@@ -574,7 +615,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     {selectedItems.length > 0 && (
                         <S3SelectionActionBar
                             selectionCount={selectedItems.length}
-                            onClear={clearSelection}
+                            onClear={isSelectionLocked ? undefined : clearSelection}
                             download={
                                 selectedObjectForSingleItemAction === undefined ||
                                 !getIsItemActionAvailable(
@@ -819,7 +860,12 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     indeterminate={
                                                         isSelectionIndeterminate
                                                     }
+                                                    disabled={isSelectionLocked}
                                                     onChange={() => {
+                                                        if (isSelectionLocked) {
+                                                            return;
+                                                        }
+
                                                         if (isAllSelected) {
                                                             clearSelection();
                                                             return;
@@ -940,6 +986,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     )}
                                                     isStriped={index % 2 === 0}
                                                     showRowActions={showRowActions}
+                                                    isSelectionLocked={isSelectionLocked}
                                                     onRowClick={event =>
                                                         handleRowSelection({
                                                             item,
@@ -2177,6 +2224,7 @@ type ItemRowProps = {
     isBookmarked: boolean;
     isStriped: boolean;
     showRowActions: boolean;
+    isSelectionLocked: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
@@ -2195,6 +2243,7 @@ function ItemRow(props: ItemRowProps) {
         isBookmarked,
         isStriped,
         showRowActions,
+        isSelectionLocked,
         onRowClick,
         onNavigate,
         onDelete,
@@ -2264,7 +2313,7 @@ function ItemRow(props: ItemRowProps) {
             <td className={classes.checkboxCell}>
                 <Checkbox
                     checked={isSelected}
-                    disabled={item.isDeleting}
+                    disabled={item.isDeleting || isSelectionLocked}
                     onClick={event => {
                         event.stopPropagation();
                     }}

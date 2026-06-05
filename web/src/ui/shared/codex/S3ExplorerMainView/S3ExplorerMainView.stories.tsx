@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { useEffect, useState } from "react";
 import { Evt } from "evt";
-import { parseS3Uri, type S3Uri } from "core/tools/S3Uri";
+import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3ExplorerMainView, type S3ExplorerMainViewProps } from "./S3ExplorerMainView";
 
 const meta = {
@@ -154,7 +154,8 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     listedPrefix: {
         s3Uri: defaultPrefix,
         isErrored: false,
-        items: []
+        items: [],
+        isFullyQualifiedUri: false
     },
     onNavigate: action("navigate"),
     onNavigateBack: action("navigateBack"),
@@ -211,7 +212,8 @@ function toListedItems(
     return {
         s3Uri: currentPrefix,
         isErrored: false,
-        items
+        items,
+        isFullyQualifiedUri: false
     };
 }
 
@@ -407,7 +409,8 @@ export const EmptyPrefix: Story = {
         listedPrefix: {
             s3Uri: defaultPrefix,
             isErrored: false,
-            items: []
+            items: [],
+            isFullyQualifiedUri: false
         },
         onNavigate: action("navigate"),
         onNavigateBack: action("navigateBack"),
@@ -428,6 +431,79 @@ export const EmptyPrefix: Story = {
             <S3ExplorerMainView {...args} />
         </div>
     )
+};
+
+const fullyQualifiedObject: S3ExplorerMainViewProps.Item.Object = {
+    type: "object",
+    s3Uri: parseObjectOrThrow("s3://analytics-data/README.md"),
+    size: 19_481,
+    lastModified: new Date("2026-03-17T08:45:00Z").getTime(),
+    uploadProgressPercent: undefined,
+    isDeleting: false,
+    displayName: "README.md"
+};
+
+function FullyQualifiedObjectExplorer(props: S3ExplorerMainViewProps) {
+    const [listedPrefix, setListedPrefix] = useState(props.listedPrefix);
+
+    useEffect(() => {
+        setListedPrefix(props.listedPrefix);
+    }, [props.listedPrefix]);
+
+    return (
+        <div style={{ maxWidth: 1200, padding: 24 }}>
+            <S3ExplorerMainView
+                {...props}
+                listedPrefix={listedPrefix}
+                onNavigate={({ s3Uri }) => {
+                    props.onNavigate({ s3Uri });
+
+                    if (
+                        !s3Uri.isDelimiterTerminated &&
+                        stringifyS3Uri(s3Uri) ===
+                            stringifyS3Uri(fullyQualifiedObject.s3Uri)
+                    ) {
+                        setListedPrefix({
+                            s3Uri: fullyQualifiedObject.s3Uri,
+                            isErrored: false,
+                            items: [fullyQualifiedObject],
+                            isFullyQualifiedUri: true
+                        });
+                    }
+                }}
+                onNavigateBack={() => {
+                    props.onNavigateBack();
+                    setListedPrefix(toListedItems(baseNodes, defaultPrefix));
+                }}
+            />
+        </div>
+    );
+}
+
+export const FullyQualifiedObject: Story = {
+    args: {
+        isListing: false,
+        listedPrefix: {
+            s3Uri: fullyQualifiedObject.s3Uri,
+            isErrored: false,
+            items: [fullyQualifiedObject],
+            isFullyQualifiedUri: true
+        },
+        onNavigate: action("navigate"),
+        onNavigateBack: action("navigateBack"),
+        onPutObjects: action("putObjects"),
+        onCreateDirectory: action("createDirectory"),
+        onDelete: action("delete"),
+        onDownload: action("download"),
+        onShareObject: action("shareObject"),
+        onBookmark: action("bookmark"),
+        bookmarkedS3Uris: [],
+        onChangePrefixPolicy: action("changePrefixPolicy"),
+        onDisplayCopyFeedback: action("onDisplayCopyFeedback"),
+        evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
+        isUploadDisabled: false
+    },
+    render: args => <FullyQualifiedObjectExplorer {...args} />
 };
 
 export const AccessDenied: Story = {

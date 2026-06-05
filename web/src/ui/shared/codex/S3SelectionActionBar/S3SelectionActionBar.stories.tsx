@@ -43,6 +43,13 @@ export const SingleObject: Story = {
     }
 };
 
+export const LockedSingleObject: Story = {
+    args: {
+        ...baseArgs,
+        onClear: undefined
+    }
+};
+
 export const SinglePrefix: Story = {
     args: {
         ...baseArgs,

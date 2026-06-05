@@ -10,8 +10,8 @@ import StarIcon from "@mui/icons-material/Star";
 export type S3SelectionActionBarProps = {
     className?: string;
     selectionCount: number;
-    /** Function to clear the selection and hide the selection action bar */
-    onClear: () => void;
+    /** Function to clear the selection and hide the selection action bar. Undefined when the selection is locked. */
+    onClear: (() => void) | undefined;
     download:
         | {
               callback: () => void;
@@ -215,15 +215,22 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div className={classes.summaryPill}>
-                <button
-                    type="button"
-                    className={classes.clearButton}
-                    onClick={onClear}
-                    aria-label={t("clear selection")}
-                >
-                    <Icon icon={getIconUrlByName("Close")} size="extra small" />
-                </button>
+            <div
+                className={cx(
+                    classes.summaryPill,
+                    onClear === undefined && classes.summaryPillWithoutClear
+                )}
+            >
+                {onClear !== undefined && (
+                    <button
+                        type="button"
+                        className={classes.clearButton}
+                        onClick={onClear}
+                        aria-label={t("clear selection")}
+                    >
+                        <Icon icon={getIconUrlByName("Close")} size="extra small" />
+                    </button>
+                )}
                 <span className={classes.summaryLabel}>{selectedLabel}</span>
             </div>
             <div className={classes.actions}>
@@ -309,6 +316,9 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             "&:hover": {
                 backgroundColor: "transparent"
             }
+        },
+        summaryPillWithoutClear: {
+            paddingLeft: theme.spacing(4)
         },
         clearButton: {
             border: "none",
