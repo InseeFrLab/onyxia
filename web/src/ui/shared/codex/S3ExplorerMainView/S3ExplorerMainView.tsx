@@ -987,6 +987,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isStriped={index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     isSelectionLocked={isSelectionLocked}
+                                                    isDisplayNameClickable={
+                                                        !isSelectionLocked
+                                                    }
                                                     onRowClick={event =>
                                                         handleRowSelection({
                                                             item,
@@ -1392,6 +1395,16 @@ const useStyles = tss
                 cursor: "default",
                 opacity: 0.72
             }
+        },
+        itemNameText: {
+            ...theme.typography.variants["label 1"].style,
+            display: "block",
+            color: theme.colors.useCases.typography.textPrimary,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            minWidth: 0,
+            flex: "0 1 auto"
         },
         itemPublicTag: {
             display: "inline-flex",
@@ -2225,6 +2238,7 @@ type ItemRowProps = {
     isStriped: boolean;
     showRowActions: boolean;
     isSelectionLocked: boolean;
+    isDisplayNameClickable: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
@@ -2244,6 +2258,7 @@ function ItemRow(props: ItemRowProps) {
         isStriped,
         showRowActions,
         isSelectionLocked,
+        isDisplayNameClickable,
         onRowClick,
         onNavigate,
         onDelete,
@@ -2276,6 +2291,8 @@ function ItemRow(props: ItemRowProps) {
                 ? t("folder is public")
                 : t("folder is private")
             : itemKindLabelCapitalized;
+    const itemDisplayTitle =
+        item.type === "prefix segment" ? `${item.displayName}/` : item.displayName;
 
     const { classes, cx } = useStyles({
         isDragActive: false
@@ -2349,22 +2366,33 @@ function ItemRow(props: ItemRowProps) {
                         </Tooltip>
                         <div className={classes.itemNameBlock}>
                             <div className={classes.itemPrimaryRow}>
-                                <button
-                                    type="button"
-                                    className={classes.itemNameButton}
-                                    title={
-                                        item.type === "prefix segment"
-                                            ? `${item.displayName}/`
-                                            : item.displayName
-                                    }
-                                    disabled={!canNavigate}
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        onNavigate();
-                                    }}
-                                >
-                                    {item.displayName}
-                                </button>
+                                {isDisplayNameClickable ? (
+                                    <button
+                                        type="button"
+                                        className={classes.itemNameButton}
+                                        title={itemDisplayTitle}
+                                        disabled={!canNavigate}
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            onNavigate();
+                                        }}
+                                    >
+                                        {item.displayName}
+                                    </button>
+                                ) : (
+                                    <span
+                                        className={classes.itemNameText}
+                                        title={itemDisplayTitle}
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                        }}
+                                        onDoubleClick={event => {
+                                            event.stopPropagation();
+                                        }}
+                                    >
+                                        {item.displayName}
+                                    </span>
+                                )}
 
                                 {item.type === "prefix segment" &&
                                     item.policy.isPublic && (
