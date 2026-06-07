@@ -64,32 +64,6 @@ export type S3BookmarkItemProps = {
 export type S3BookmarksBarItemProps = S3BookmarkItemProps;
 export type S3BookmarksBarItem = S3BookmarkItemProps;
 
-const materialSymbolsHref =
-    "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap";
-
-function ensureMaterialSymbols() {
-    if (typeof document === "undefined") {
-        return;
-    }
-
-    const linkId = "material-symbols-outlined-keep";
-
-    const existing = document.getElementById(linkId) as HTMLLinkElement | null;
-
-    if (existing) {
-        if (existing.href !== materialSymbolsHref) {
-            existing.href = materialSymbolsHref;
-        }
-        return;
-    }
-
-    const link = document.createElement("link");
-    link.id = linkId;
-    link.rel = "stylesheet";
-    link.href = materialSymbolsHref;
-    document.head.appendChild(link);
-}
-
 const s3Scheme = "s3://";
 const maxTailSegments = 3;
 
@@ -129,10 +103,6 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
         event.preventDefault();
         event.stopPropagation();
     };
-
-    useEffect(() => {
-        ensureMaterialSymbols();
-    }, []);
 
     useEffect(() => {
         if (!isEntryPointMenuOpen) {
@@ -236,9 +206,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
             )}
             {showPinIcon && !isEntryPoint && (
                 <span className={classes.pinIconWrapper} aria-hidden="true">
-                    <span className={`material-symbols-outlined ${classes.pinIcon}`}>
-                        star
-                    </span>
+                    <Icon
+                        className={classes.pinIcon}
+                        icon={getIconUrlByName(isActive ? "Star" : "StarBorder")}
+                        size="extra small"
+                    />
                 </span>
             )}
             {isEntryPoint && isCustomBookmark && callbacks !== undefined && (
@@ -271,11 +243,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                             setIsEntryPointMenuOpen(isOpen => !isOpen);
                         }}
                     >
-                        <span
-                            className={`material-symbols-outlined ${classes.entryPointMoreIcon}`}
-                        >
-                            more_vert
-                        </span>
+                        <Icon
+                            className={classes.entryPointMoreIcon}
+                            icon={getIconUrlByName("MoreVert")}
+                            size="small"
+                        />
                     </span>
                     {isEntryPointMenuOpen && (
                         <span className={classes.entryPointMenu} role="menu">
@@ -299,11 +271,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                     callbacks.onRename();
                                 }}
                             >
-                                <span
-                                    className={`material-symbols-outlined ${classes.entryPointMenuIcon}`}
-                                >
-                                    edit
-                                </span>
+                                <Icon
+                                    className={classes.entryPointMenuIcon}
+                                    icon={getIconUrlByName("Edit")}
+                                    size="extra small"
+                                />
                                 <span>{t("rename")}</span>
                             </span>
                             <span
@@ -326,11 +298,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                     callbacks.onDelete();
                                 }}
                             >
-                                <span
-                                    className={`material-symbols-outlined ${classes.entryPointMenuIcon}`}
-                                >
-                                    delete
-                                </span>
+                                <Icon
+                                    className={classes.entryPointMenuIcon}
+                                    icon={getIconUrlByName("Delete")}
+                                    size="extra small"
+                                />
                                 <span>{t("delete")}</span>
                             </span>
                         </span>
@@ -371,11 +343,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                     callbacks.onRename();
                                 }}
                             >
-                                <span
-                                    className={`material-symbols-outlined ${classes.inlineActionIcon}`}
-                                >
-                                    edit
-                                </span>
+                                <Icon
+                                    className={classes.inlineActionIcon}
+                                    icon={getIconUrlByName("Edit")}
+                                    size="extra small"
+                                />
                             </span>
                             <span
                                 role="button"
@@ -396,11 +368,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                     callbacks.onDelete();
                                 }}
                             >
-                                <span
-                                    className={`material-symbols-outlined ${classes.inlineActionIcon}`}
-                                >
-                                    delete
-                                </span>
+                                <Icon
+                                    className={classes.inlineActionIcon}
+                                    icon={getIconUrlByName("Delete")}
+                                    size="extra small"
+                                />
                             </span>
                         </span>
                     )}
@@ -448,11 +420,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                 callbacks.onRename();
                             }}
                         >
-                            <span
-                                className={`material-symbols-outlined ${classes.tooltipActionIcon}`}
-                            >
-                                edit
-                            </span>
+                            <Icon
+                                className={classes.tooltipActionIcon}
+                                icon={getIconUrlByName("Edit")}
+                                size="extra small"
+                            />
                         </span>
                         <span
                             role="button"
@@ -473,11 +445,11 @@ export function S3BookmarkItem(props: S3BookmarkItemProps) {
                                 callbacks.onDelete();
                             }}
                         >
-                            <span
-                                className={`material-symbols-outlined ${classes.tooltipActionIcon}`}
-                            >
-                                delete
-                            </span>
+                            <Icon
+                                className={classes.tooltipActionIcon}
+                                icon={getIconUrlByName("Delete")}
+                                size="extra small"
+                            />
                         </span>
                     </div>
                 )}
@@ -690,10 +662,12 @@ const useStyles = tss
                 }
             },
             entryPointMoreIcon: {
-                fontSize: 24,
-                lineHeight: "24px",
-                fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: '"FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24'
+                width: 24,
+                height: 24,
+                "& svg, & img": {
+                    width: 24,
+                    height: 24
+                }
             },
             entryPointMenu: {
                 position: "absolute",
@@ -725,10 +699,12 @@ const useStyles = tss
                 }
             },
             entryPointMenuIcon: {
-                fontSize: 18,
-                lineHeight: "18px",
-                fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: '"FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24'
+                width: 18,
+                height: 18,
+                "& svg, & img": {
+                    width: 18,
+                    height: 18
+                }
             },
             pinIconWrapper: {
                 color: iconColor,
@@ -742,12 +718,12 @@ const useStyles = tss
                 flexShrink: 0
             },
             pinIcon: {
-                fontSize: 16,
-                lineHeight: "16px",
-                fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: `"FILL" ${isActive ? 1 : 0}, "wght" ${
-                    isActive ? 600 : 400
-                }, "GRAD" 0, "opsz" 24`
+                width: 16,
+                height: 16,
+                "& svg, & img": {
+                    width: 16,
+                    height: 16
+                }
             },
             renameButton: {
                 border: "none",
@@ -768,10 +744,12 @@ const useStyles = tss
                 }
             },
             tooltipActionIcon: {
-                fontSize: 12,
-                lineHeight: "12px",
-                fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+                width: 12,
+                height: 12,
+                "& svg, & img": {
+                    width: 12,
+                    height: 12
+                }
             },
             labelWrapper: {
                 flex: "1 1 auto",
@@ -842,10 +820,12 @@ const useStyles = tss
                 }
             },
             inlineActionIcon: {
-                fontSize: 16,
-                lineHeight: "16px",
-                fontFamily: '"Material Symbols Outlined"',
-                fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+                width: 16,
+                height: 16,
+                "& svg, & img": {
+                    width: 16,
+                    height: 16
+                }
             },
             inlinePath: {
                 ...captionStyle,
