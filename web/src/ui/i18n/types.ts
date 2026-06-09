@@ -55,6 +55,7 @@ export type ComponentKey =
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n
     | import("ui/pages/account/AccountVaultTab").I18n
+    | import("ui/pages/account/AccountAiTab").I18n
     | import("ui/App/Footer").I18n
     | import("ui/pages/catalog/Page").I18n
     | import("ui/pages/catalog/CatalogChartCard").I18n
