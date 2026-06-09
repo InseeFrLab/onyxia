@@ -1,6 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { actions } from "./state";
-import type { CustomAiProvider } from "./state";
+import type { AiModel, CustomAiProvider } from "./state";
+import { z } from "zod";
 import { getLocalStorage } from "core/tools/safeLocalStorage";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe";
@@ -38,15 +39,17 @@ function writePersistedProviders(
     localStorage.setItem(CUSTOM_PROVIDERS_STORAGE_KEY, JSON.stringify(providers));
 }
 
-async function fetchModels(apiBase: string, apiKey: string): Promise<string[]> {
+async function fetchModels(apiBase: string, apiKey: string): Promise<AiModel[]> {
     const response = await fetch(`${apiBase}/models`, {
         headers: { Authorization: `Bearer ${apiKey}` }
     });
     if (!response.ok) {
         throw new Error(`Failed to fetch models (${response.status})`);
     }
-    const data = await response.json();
-    return (data.data as { id: string }[]).map(m => m.id);
+    const { data } = z
+        .object({ data: z.array(z.object({ id: z.string(), name: z.string() })) })
+        .parse(await response.json());
+    return data.map(({ id, name }) => ({ id, name }));
 }
 
 export const thunks = {
@@ -144,7 +147,7 @@ export const thunks = {
         },
     testCustomProvider:
         (params: { apiBase: string; apiKey: string }) =>
-        async (..._args): Promise<string[]> => {
+        async (..._args): Promise<AiModel[]> => {
             const { apiBase, apiKey } = params;
             return fetchModels(apiBase, apiKey);
         },
