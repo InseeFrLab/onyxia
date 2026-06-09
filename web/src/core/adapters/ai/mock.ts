@@ -7,6 +7,10 @@ export function createAi(params: { webUiUrl: string }): Ai {
         webUiUrl,
         apiBase: `${webUiUrl}/api`,
         getToken: async () => ({ status: "success" as const, token: "mock-ai-token" }),
-        listModels: async () => ["llama3.2", "mistral-7b", "codestral"]
+        listModels: async () => [
+            { id: "llama3.2", name: "Llama 3.2" },
+            { id: "mistral-7b", name: "Mistral 7B" },
+            { id: "codestral", name: "Codestral" }
+        ]
     };
 }

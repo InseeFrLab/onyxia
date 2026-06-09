@@ -180,9 +180,9 @@ const AccountAiGatewayTab = memo((props: Props) => {
                         onChange={onModelChange}
                         size="small"
                     >
-                        {availableModels.map(model => (
-                            <MenuItem key={model} value={model}>
-                                {model}
+                        {availableModels.map(({ id, name }) => (
+                            <MenuItem key={id} value={id}>
+                                {name}
                             </MenuItem>
                         ))}
                     </Select>
@@ -343,9 +343,9 @@ const CustomProviderCard = memo((props: CustomProviderCardProps) => {
                                 onChange={onModelChange}
                                 size="small"
                             >
-                                {provider.availableModels.map(model => (
-                                    <MenuItem key={model} value={model}>
-                                        {model}
+                                {provider.availableModels.map(({ id, name }) => (
+                                    <MenuItem key={id} value={id}>
+                                        {name}
                                     </MenuItem>
                                 ))}
                             </Select>

@@ -2,7 +2,7 @@ export type Ai = {
     webUiUrl: string;
     apiBase: string;
     getToken: () => Promise<GetTokenResult>;
-    listModels: (token: string) => Promise<string[]>;
+    listModels: (token: string) => Promise<{ id: string; name: string }[]>;
 };
 
 export type GetTokenResult =
