@@ -1,5 +1,6 @@
 import type { Ai, GetTokenResult } from "core/ports/Ai";
 import { oidcTokenExchange, OidcTokenExchangeError } from "core/tools/oidcTokenExchange";
+import { z } from "zod";
 
 export function createAi(params: {
     webUiUrl: string;
@@ -37,9 +38,11 @@ export function createAi(params: {
                 throw new Error(`Failed to list models (${response.status})`);
             }
 
-            const data = await response.json();
+            const { data } = z
+                .object({ data: z.array(z.object({ id: z.string(), name: z.string() })) })
+                .parse(await response.json());
 
-            return (data.data as { id: string }[]).map(m => m.id);
+            return data.map(({ id, name }) => ({ id, name }));
         }
     };
 }

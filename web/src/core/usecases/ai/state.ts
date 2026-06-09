@@ -3,12 +3,14 @@ import { id } from "tsafe/id";
 
 export const name = "ai";
 
+export type AiModel = { id: string; name: string };
+
 export type CustomAiProvider = {
     id: string;
     label: string;
     apiBase: string;
     apiKey: string;
-    availableModels: string[];
+    availableModels: AiModel[];
     selectedModel: string | undefined;
     modelsFetchStatus: "fetching" | "success" | "error";
 };
@@ -26,7 +28,7 @@ export declare namespace State {
         webUiUrl: string;
         apiBase: string;
         token: string | undefined;
-        availableModels: string[];
+        availableModels: AiModel[];
         selectedModel: string | undefined;
         customProviders: CustomAiProvider[];
     };
@@ -59,7 +61,7 @@ export const { reducer, actions } = createUsecaseActions({
                     webUiUrl: string;
                     apiBase: string;
                     token: string;
-                    availableModels: string[];
+                    availableModels: AiModel[];
                     selectedModel: string | undefined;
                     customProviders: CustomAiProvider[];
                 };
@@ -80,7 +82,7 @@ export const { reducer, actions } = createUsecaseActions({
                 apiBase,
                 token,
                 availableModels,
-                selectedModel: selectedModel ?? availableModels[0],
+                selectedModel: selectedModel ?? availableModels[0]?.id,
                 customProviders
             });
         },
@@ -107,7 +109,7 @@ export const { reducer, actions } = createUsecaseActions({
         },
         customProviderModelsLoaded: (
             state,
-            { payload }: { payload: { id: string; models: string[] } }
+            { payload }: { payload: { id: string; models: AiModel[] } }
         ) => {
             if (!state.isEnabled) return;
             const provider = state.customProviders.find(p => p.id === payload.id);
@@ -115,7 +117,7 @@ export const { reducer, actions } = createUsecaseActions({
             provider.availableModels = payload.models;
             provider.modelsFetchStatus = "success";
             if (provider.selectedModel === undefined && payload.models.length > 0) {
-                provider.selectedModel = payload.models[0];
+                provider.selectedModel = payload.models[0].id;
             }
         },
         customProviderModelsFetchFailed: (
