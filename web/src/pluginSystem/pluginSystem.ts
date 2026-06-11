@@ -6,6 +6,9 @@ import { symToStr } from "tsafe/symToStr";
 import type { session as ofTypeSession, routes as ofTypeRoutes } from "ui/routes";
 import type { Param0 } from "tsafe/Param0";
 import type { Core, Context as CoreContext } from "core/bootstrap";
+import React from "react";
+import { Evt } from "evt";
+import { onyxia_import, type OnyxiaImport } from "./onyxia_import";
 
 export type Onyxia = {
     core: Core;
@@ -28,7 +31,18 @@ export type Onyxia = {
         ) => void
     ) => void;
     evtGlobalDialog: typeof import("ui/App/GlobalDialog").evtGlobalDialog;
+    mountComponent: (params: {
+        Component: () => React.ReactNode;
+        container: HTMLElement;
+    }) => void;
+    import: OnyxiaImport;
 };
+
+declare global {
+    interface Window {
+        onyxia?: Onyxia;
+    }
+}
 
 const attachToGlobalIfReady = async () => {
     if (symToStr({ onyxia }) in window) {
@@ -52,6 +66,14 @@ const attachToGlobalIfReady = async () => {
 
 const callbacks: Param0<Onyxia["addEventListener"]>[] = [attachToGlobalIfReady];
 
+export const evtPluginComponent = Evt.create<
+    | {
+          Component: () => React.ReactNode;
+          container: HTMLElement;
+      }
+    | undefined
+>(undefined);
+
 const onyxia: Onyxia = {
     core: undefined as any,
     coreAdapters: undefined as any,
@@ -66,7 +88,11 @@ const onyxia: Onyxia = {
     evtGlobalDialog: undefined as any,
     addEventListener: callback => {
         callbacks.push(callback);
-    }
+    },
+    mountComponent: ({ Component, container }) => {
+        evtPluginComponent.state = { Component, container };
+    },
+    import: onyxia_import
 };
 
 export function pluginSystemInitCore(params: { core: Core; context: CoreContext }) {

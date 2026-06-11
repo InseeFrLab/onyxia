@@ -18,7 +18,11 @@ export const Main = memo((props: Props) => {
     const { classes, cx } = useStyles();
 
     return (
-        <main key={route.name || ""} className={cx(classes.root, className)}>
+        <main
+            id={`page-container-${route.name}`}
+            key={route.name || ""}
+            className={cx(classes.root, className)}
+        >
             <Suspense
                 fallback={
                     <div className={classes.suspenseFallback}>
