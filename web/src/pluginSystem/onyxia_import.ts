@@ -48,6 +48,7 @@ export type OnyxiaImportModules = {
     evt: typeof import("evt");
     "tss-react": typeof import("tss-react");
     "evt/hooks": typeof import("evt/hooks");
+    "evt/tools/Deferred": typeof import("evt/tools/Deferred");
     tsafe: typeof import("tsafe");
     "powerhooks/getScrollableParent": typeof import("powerhooks/getScrollableParent");
     "powerhooks/tools/capitalize": typeof import("powerhooks/tools/capitalize");
@@ -330,9 +331,10 @@ export function onyxia_import(
         | "ui/shared/textEditor/DataTextEditor"
         | "react"
         | "react-dom"
-        | "evt"
         | "tss-react"
+        | "evt"
         | "evt/hooks"
+        | "evt/tools/Deferred"
         | "tsafe"
         | "powerhooks/getScrollableParent"
         | "powerhooks/tools/capitalize"
@@ -619,6 +621,8 @@ export function onyxia_import(
             return import("evt");
         case "evt/hooks":
             return import("evt/hooks");
+        case "evt/tools/Deferred":
+            return import("evt/tools/Deferred");
         case "tsafe":
             return import("tsafe");
         case "powerhooks/getScrollableParent":
