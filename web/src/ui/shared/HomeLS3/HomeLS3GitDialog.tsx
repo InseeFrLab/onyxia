@@ -132,7 +132,7 @@ function Body(props: {
                                 savoir comment l'obtenir, voir{" "}
                                 <Link
                                     target="_blank"
-                                    href={`${PUBLIC_URL}custom-resources-example/ls3/how-to-get-my-gitlab-token.md`}
+                                    href={`${PUBLIC_URL}custom-resources-example/ls3/docs/how-to-get-my-gitlab-token.md`}
                                 >
                                     ce guide
                                 </Link>
