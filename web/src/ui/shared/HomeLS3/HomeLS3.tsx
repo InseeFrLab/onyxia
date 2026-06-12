@@ -6,9 +6,12 @@ import { assert } from "tsafe";
 import { HomeLS3Hero } from "./HomeLS3Hero";
 import { HomeLS3ServiceCard } from "./HomeLS3ServiceCard";
 import { HomeLS3GitDialog, type Props_HomeLS3GitDialog } from "./HomeLS3GitDialog";
+import { HomeLS3InfoCard } from "./HomeLS3InfoCard";
+import Divider from "@mui/material/Divider";
 import { useConst } from "powerhooks/useConst";
 import { Evt, type UnpackEvt } from "evt";
 import { Deferred } from "evt/tools/Deferred";
+import { getIconUrlByName } from "lazy-icons";
 
 const serviceNames = ["RStudio", "Jupyter", "VSCode"] as const;
 
@@ -74,31 +77,63 @@ export function HomeLS3() {
     };
 
     return (
-        <div className={classes.root}>
-            <HomeLS3Hero
-                userDisplayName={user.firstName ?? user.familyName ?? user.username}
-            />
-            <div className={classes.cardsWrapper}>
-                {serviceNames.map(serviceName => (
-                    <HomeLS3ServiceCard
-                        key={serviceName}
-                        coverImageUrl={`${PUBLIC_URL}/custom-resources-example/ls3/assets/${(() => {
-                            switch (serviceName) {
-                                case "Jupyter":
-                                    return "Jupyter.png";
-                                case "RStudio":
-                                    return "RStudio.jpg";
-                                case "VSCode":
-                                    return "VSCode.webp";
-                            }
-                        })()}`}
-                        onClick={() => onServiceClick(serviceName)}
-                        serviceName={serviceName}
+        <>
+            <div className={classes.root}>
+                <HomeLS3Hero
+                    userDisplayName={user.firstName ?? user.familyName ?? user.username}
+                />
+                <Divider />
+                <div className={classes.serviceCardsWrapper}>
+                    {serviceNames.map(serviceName => (
+                        <HomeLS3ServiceCard
+                            key={serviceName}
+                            coverImageUrl={`${PUBLIC_URL}/custom-resources-example/ls3/assets/${(() => {
+                                switch (serviceName) {
+                                    case "Jupyter":
+                                        return "Jupyter.png";
+                                    case "RStudio":
+                                        return "RStudio.jpg";
+                                    case "VSCode":
+                                        return "VSCode.webp";
+                                }
+                            })()}`}
+                            onClick={() => onServiceClick(serviceName)}
+                            serviceName={serviceName}
+                        />
+                    ))}
+                </div>
+                <Divider />
+                <div className={classes.infoCardsWrapper}>
+                    <HomeLS3InfoCard
+                        title="Nouvel utilisateur ?"
+                        body="Prend en main la platforme à travers un guide d'utilisation simple et rapide"
+                        icon={getIconUrlByName("Book")}
+                        link={
+                            routes.document({
+                                source: `${PUBLIC_URL}/custom-resources-example/ls3/docs/new-user.md`
+                            }).link
+                        }
+                        buttonText="Démmarer le guide"
                     />
-                ))}
+                    <HomeLS3InfoCard
+                        title="Besoin d'aide ?"
+                        body={
+                            <>
+                                Une question, un problème ou besoin d'assistance ?<br />
+                                Contactez l'équipe en charge de la platforme.
+                            </>
+                        }
+                        icon={getIconUrlByName("ChatBubble")}
+                        link={{
+                            href: "https://tchap.fr",
+                            onClick: () => {}
+                        }}
+                        buttonText="Démmarer le guide"
+                    />
+                </div>
             </div>
             <HomeLS3GitDialog evtOpen={evtGitDialogOpen} />
-        </div>
+        </>
     );
 }
 
@@ -106,7 +141,10 @@ const useStyles = tss.withName({ HomeLS3 }).create(() => ({
     root: {
         height: "100%"
     },
-    cardsWrapper: {
+    serviceCardsWrapper: {
+        display: "flex"
+    },
+    infoCardsWrapper: {
         display: "flex"
     }
 }));
