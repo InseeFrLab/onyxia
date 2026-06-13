@@ -1,10 +1,12 @@
 export const technologies = [
     "AWS CLI / shared profile",
+    "MinIO Client (bash)",
     "Python (boto3)",
     "Python (s3fs)",
     "Python (polars)",
     "Python (pyarrow)",
     "DuckDB",
+    "R (aws.s3)",
     "R (arrow)",
     "R (paws)",
     "rclone"
@@ -34,6 +36,8 @@ type SnippetContext = {
     endpointScheme: "http" | "https";
     awsConfigSectionName: string;
     awsServiceSectionName: string;
+    minioClientAlias: string;
+    minioClientEnvVarName: string;
     rcloneRemoteName: string;
     accessCredentials: AccessCredentials;
 };
@@ -53,11 +57,13 @@ export function getCodeSnippet(params: {
 
     const snippetFactories = {
         "AWS CLI / shared profile": getAwsCliSnippet,
+        "MinIO Client (bash)": getMinioClientSnippet,
         "Python (boto3)": getBoto3Snippet,
         "Python (s3fs)": getS3fsSnippet,
         "Python (polars)": getPolarsSnippet,
         "Python (pyarrow)": getPyArrowSnippet,
         DuckDB: getDuckDbSnippet,
+        "R (aws.s3)": getRAwsS3Snippet,
         "R (arrow)": getRArrowSnippet,
         "R (paws)": getRPawsSnippet,
         rclone: getRcloneSnippet
@@ -76,6 +82,7 @@ function getSnippetContext(params: {
 
     const normalizedEndpointUrl = normalizeEndpointUrl(endpointUrl);
     const parsedEndpointUrl = new URL(normalizedEndpointUrl);
+    const minioClientAlias = toMinioClientAlias(profileName);
 
     return {
         profileName,
@@ -87,6 +94,8 @@ function getSnippetContext(params: {
         awsConfigSectionName:
             profileName === "default" ? "default" : `profile ${profileName}`,
         awsServiceSectionName: `${toSafeIdentifier(profileName, "-")}-s3`,
+        minioClientAlias,
+        minioClientEnvVarName: `MC_HOST_${minioClientAlias}`,
         rcloneRemoteName: toSafeIdentifier(profileName, "-"),
         accessCredentials
     };
@@ -139,6 +148,58 @@ function getAwsCliSnippet(context: SnippetContext): CodeSnippet {
             export AWS_PROFILE=${context.profileNameForShell}
 
             aws s3 ls --profile ${context.profileNameForShell}
+        `)
+    };
+}
+
+function getMinioClientSnippet(context: SnippetContext): CodeSnippet {
+    const { accessCredentials } = context;
+
+    if (accessCredentials === undefined) {
+        return {
+            fileBasename: "public-bucket-mc.sh",
+            codeSrc: trimCode(`
+                # MinIO Client aliases require access and secret keys.
+                # For anonymous public buckets, use the AWS CLI / shared profile snippet
+                # or select a credentialed profile and regenerate this snippet.
+            `)
+        };
+    }
+
+    const { sessionToken } = accessCredentials;
+
+    if (sessionToken !== undefined) {
+        return {
+            fileBasename: "setup-mc-alias.sh",
+            codeSrc: trimCode(`
+                # Re-run this export when the session token is renewed.
+                export ${context.minioClientEnvVarName}=${shellQuote(
+                    getMinioClientHostUrl({
+                        context,
+                        accessCredentials: {
+                            ...accessCredentials,
+                            sessionToken
+                        }
+                    })
+                )}
+
+                mc ls ${shellQuote(`${context.minioClientAlias}/your-bucket`)}
+            `)
+        };
+    }
+
+    return {
+        fileBasename: "setup-mc-alias.sh",
+        codeSrc: trimCode(`
+            mc alias set \\
+              ${shellQuote(context.minioClientAlias)} \\
+              ${shellQuote(context.endpointOrigin)} \\
+              ${shellQuote(accessCredentials.accessKeyId)} \\
+              ${shellQuote(accessCredentials.secretAccessKey)} \\
+              --api S3v4
+
+            mc ls ${shellQuote(context.minioClientAlias)}
+            mc ls ${shellQuote(`${context.minioClientAlias}/your-bucket`)}
         `)
     };
 }
@@ -340,6 +401,73 @@ function getDuckDbSnippet(context: SnippetContext): CodeSnippet {
     };
 }
 
+function getRAwsS3Snippet(context: SnippetContext): CodeSnippet {
+    const awsS3PackageRegion = getAwsS3PackageRegion(context);
+    const useHttps = toRBoolean(context.endpointScheme === "https");
+
+    return {
+        fileBasename: "example.R",
+        codeSrc:
+            context.accessCredentials === undefined
+                ? trimCode(`
+                    install.packages("aws.s3", repos = "https://cloud.r-project.org")
+
+                    Sys.setenv(
+                      AWS_S3_ENDPOINT = ${JSON.stringify(context.endpointAuthority)}
+                    )
+
+                    library(aws.s3)
+
+                    bucket <- "your-bucket"
+                    objects <- get_bucket(
+                      bucket = bucket,
+                      max = 10,
+                      region = ${JSON.stringify(awsS3PackageRegion)},
+                      use_https = ${useHttps},
+                      key = "",
+                      secret = "",
+                      session_token = ""
+                    )
+
+                    keys <- vapply(objects, function(item) item$Key, character(1))
+                    print(keys)
+                `)
+                : trimCode(`
+                    install.packages("aws.s3", repos = "https://cloud.r-project.org")
+
+                    Sys.setenv(
+                      AWS_S3_ENDPOINT = ${JSON.stringify(context.endpointAuthority)},
+                      AWS_ACCESS_KEY_ID = ${JSON.stringify(
+                          context.accessCredentials.accessKeyId
+                      )},
+                      AWS_SECRET_ACCESS_KEY = ${JSON.stringify(
+                          context.accessCredentials.secretAccessKey
+                      )}${
+                          context.accessCredentials.sessionToken === undefined
+                              ? ""
+                              : `,
+                      AWS_SESSION_TOKEN = ${JSON.stringify(
+                          context.accessCredentials.sessionToken
+                      )}`
+                      }
+                    )
+
+                    library(aws.s3)
+
+                    bucket <- "your-bucket"
+                    objects <- get_bucket(
+                      bucket = bucket,
+                      max = 10,
+                      region = ${JSON.stringify(awsS3PackageRegion)},
+                      use_https = ${useHttps}
+                    )
+
+                    keys <- vapply(objects, function(item) item$Key, character(1))
+                    print(keys)
+                `)
+    };
+}
+
 function getRArrowSnippet(context: SnippetContext): CodeSnippet {
     return {
         fileBasename: "example.R",
@@ -488,8 +616,40 @@ function toSafeIdentifier(value: string, separator: "-" | "_"): string {
     return normalized === "" ? "onyxia" : normalized;
 }
 
+function toMinioClientAlias(value: string): string {
+    const safeIdentifier = toSafeIdentifier(value, "_");
+
+    return /^[a-z]/.test(safeIdentifier) ? safeIdentifier : `onyxia_${safeIdentifier}`;
+}
+
 function toSqlString(value: string): string {
     return `'${value.replace(/'/g, "''")}'`;
+}
+
+function toRBoolean(value: boolean): "TRUE" | "FALSE" {
+    return value ? "TRUE" : "FALSE";
+}
+
+function getAwsS3PackageRegion(context: SnippetContext): string {
+    return context.endpointAuthority === "s3.amazonaws.com" ? context.region : "";
+}
+
+function getMinioClientHostUrl(params: {
+    context: SnippetContext;
+    accessCredentials: {
+        accessKeyId: string;
+        secretAccessKey: string;
+        sessionToken: string;
+    };
+}): string {
+    const { context, accessCredentials } = params;
+    const userInfo = [
+        accessCredentials.accessKeyId,
+        accessCredentials.secretAccessKey,
+        accessCredentials.sessionToken
+    ].join(":");
+
+    return `${context.endpointScheme}://${userInfo}@${context.endpointAuthority}`;
 }
 
 function trimCode(code: string): string {

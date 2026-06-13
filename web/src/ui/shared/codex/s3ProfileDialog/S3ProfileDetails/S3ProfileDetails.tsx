@@ -649,6 +649,7 @@ function isTechnology(
 function getCodeTextEditorLanguage(technology: Technology): CodeTextEditorLanguage {
     switch (technology) {
         case "AWS CLI / shared profile":
+        case "MinIO Client (bash)":
             return "shell";
         case "Python (boto3)":
         case "Python (s3fs)":
@@ -657,6 +658,7 @@ function getCodeTextEditorLanguage(technology: Technology): CodeTextEditorLangua
             return "python";
         case "DuckDB":
             return "SQL";
+        case "R (aws.s3)":
         case "R (arrow)":
         case "R (paws)":
             return "R";
@@ -790,8 +792,9 @@ const useStyles = tss.withName({ S3ProfileDetails }).create(({ theme }) => ({
         flexShrink: 0
     },
     technologySelectControl: {
-        flex: "0 1 220px",
-        minWidth: 148,
+        flex: "0 0 280px",
+        minWidth: 280,
+        maxWidth: "100%",
         "& .MuiInputBase-root": {
             color: theme.colors.useCases.typography.textPrimary
         }
