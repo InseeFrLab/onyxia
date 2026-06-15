@@ -87,7 +87,7 @@ export function HomeLS3() {
                     {serviceNames.map(serviceName => (
                         <HomeLS3ServiceCard
                             key={serviceName}
-                            coverImageUrl={`${PUBLIC_URL}/custom-resources-example/ls3/assets/${(() => {
+                            coverImageUrl={`${PUBLIC_URL}/custom-resources/assets/${(() => {
                                 switch (serviceName) {
                                     case "Jupyter":
                                         return "Jupyter.png";
@@ -110,7 +110,7 @@ export function HomeLS3() {
                         icon={getIconUrlByName("Book")}
                         link={
                             routes.document({
-                                source: `${PUBLIC_URL}/custom-resources-example/ls3/docs/new-user.md`
+                                source: `${PUBLIC_URL}/custom-resources/docs/new-user.md`
                             }).link
                         }
                         buttonText="Démmarer le guide"

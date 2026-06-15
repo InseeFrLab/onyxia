@@ -14,7 +14,10 @@ export function HomeLS3Hero(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <img src={`${PUBLIC_URL}custom-resources-example/ls3/assets/ls3-logo.png`} />
+            <img
+                className={classes.img}
+                src={`${PUBLIC_URL}custom-resources/assets/onyxia-logo-LS3-normal.png`}
+            />
             <div className={classes.textWrap}>
                 <Text typo="object heading">Bienvenu {userDisplayName}</Text>
                 <Text typo="subtitle">
@@ -29,6 +32,9 @@ export function HomeLS3Hero(props: Props) {
 const useStyles = tss.withName({ HomeLS3Hero }).create(() => ({
     root: {
         display: "flex"
+    },
+    img: {
+        height: 200
     },
     textWrap: {
         flex: 1
