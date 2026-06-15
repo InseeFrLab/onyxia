@@ -13,7 +13,7 @@ import { Evt, type UnpackEvt } from "evt";
 import { Deferred } from "evt/tools/Deferred";
 import { getIconUrlByName } from "lazy-icons";
 
-const serviceNames = ["RStudio", "Jupyter", "VSCode"] as const;
+const serviceNames = ["RStudio", "VSCode"] as const;
 
 type ServiceName = (typeof serviceNames)[number];
 
@@ -54,8 +54,6 @@ export function HomeLS3() {
                 catalogId: "ide",
                 chartName: (() => {
                     switch (serviceName) {
-                        case "Jupyter":
-                            return "jupyter-python";
                         case "RStudio":
                             return "rstudio-r-python-julia";
                         case "VSCode":
@@ -90,8 +88,6 @@ export function HomeLS3() {
                             key={serviceName}
                             coverImageUrl={`${PUBLIC_URL}/custom-resources/assets/${(() => {
                                 switch (serviceName) {
-                                    case "Jupyter":
-                                        return "Jupyter.png";
                                     case "RStudio":
                                         return "RStudio.jpg";
                                     case "VSCode":
@@ -138,15 +134,17 @@ export function HomeLS3() {
     );
 }
 
-const useStyles = tss.withName({ HomeLS3 }).create(() => ({
+const useStyles = tss.withName({ HomeLS3 }).create(({ theme }) => ({
     root: {
         height: "100%"
     },
     serviceCardsWrapper: {
-        display: "flex"
+        display: "flex",
+        gap: theme.spacing(3),
+        ...theme.spacing.topBottom("margin", 3)
     },
     serviceCardsWrapperItem: {
-        flex: 1
+        width: 450
     },
     infoCardsWrapper: {
         display: "flex"
