@@ -15,12 +15,15 @@ export function HomeLS3ServiceCard(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <img src={coverImageUrl} />
+            <img className={classes.img} src={coverImageUrl} />
             <Button onClick={onClick}>Demarer un {serviceName}</Button>
         </div>
     );
 }
 
 const useStyles = tss.withName({ HomeLS3ServiceCard }).create(() => ({
-    root: {}
+    root: {},
+    img: {
+        width: 250
+    }
 }));

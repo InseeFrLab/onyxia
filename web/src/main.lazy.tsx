@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Root } from "./Root";
+import { initPluginSystem } from "pluginSystem";
 
 {
     const version = import.meta.env.WEB_VERSION;
@@ -12,6 +13,8 @@ import { Root } from "./Root";
         ].join("\n")
     );
 }
+
+initPluginSystem();
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>

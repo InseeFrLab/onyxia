@@ -18,7 +18,7 @@ import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
 import { Uploads } from "ui/pages/s3Explorer/Uploads";
-import { evtPluginComponent } from "pluginSystem";
+import { evtDeclaredComponents } from "pluginSystem";
 
 triggerCoreBootstrap({
     apiUrl: env.ONYXIA_API_URL,
@@ -54,7 +54,7 @@ export function App() {
         isScreenScalerEnabled: evtIsScreenScalerOutOfBound.state !== undefined
     });
 
-    useRerenderOnStateChange(evtPluginComponent);
+    useRerenderOnStateChange(evtDeclaredComponents);
 
     const { lang } = useLang();
 
@@ -80,14 +80,14 @@ export function App() {
                     <Main className={classes.main} />
                 </section>
                 <Footer className={classes.footer} />
-                <Uploads />
             </div>
-            {evtPluginComponent.state !== undefined &&
-                createPortal(
-                    <evtPluginComponent.state.Component />,
-                    evtPluginComponent.state.container
-                )}
+            <Uploads />
             <AutoLogoutCountdown />
+            {evtDeclaredComponents.state.map(({ Component, containerElement }, i) =>
+                containerElement == null
+                    ? null
+                    : createPortal(<Component />, containerElement, i)
+            )}
         </>
     );
 }
