@@ -19,24 +19,34 @@ export function HomeLS3Hero(props: Props) {
                 src={`${PUBLIC_URL}custom-resources/assets/onyxia-logo-LS3-normal.png`}
             />
             <div className={classes.textWrap}>
-                <Text typo="object heading">Bienvenu {userDisplayName}</Text>
-                <Text typo="subtitle">
-                    Demare ton service en quelque clicks et profite de la puissance de
-                    calcule de nos serveurs.
-                </Text>
+                <div>
+                    <Text typo="page heading">Bienvenu {userDisplayName}</Text>
+                    <Text className={classes.subtitle} typo="label 1">
+                        Demare ton service en quelque clicks et profite de la puissance de
+                        calcule de nos serveurs.
+                    </Text>
+                </div>
             </div>
         </div>
     );
 }
 
-const useStyles = tss.withName({ HomeLS3Hero }).create(() => ({
+const useStyles = tss.withName({ HomeLS3Hero }).create(({ theme }) => ({
     root: {
         display: "flex"
     },
     img: {
-        height: 200
+        height: 110,
+        margin: theme.spacing(4)
     },
     textWrap: {
-        flex: 1
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
+    },
+    subtitle: {
+        maxWidth: 450,
+        color: theme.colors.useCases.typography.textTertiary
     }
 }));

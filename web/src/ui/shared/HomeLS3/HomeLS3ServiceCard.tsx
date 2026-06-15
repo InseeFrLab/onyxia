@@ -22,8 +22,11 @@ export function HomeLS3ServiceCard(props: Props) {
 }
 
 const useStyles = tss.withName({ HomeLS3ServiceCard }).create(() => ({
-    root: {},
+    root: {
+        display: "flex",
+        flexDirection: "column"
+    },
     img: {
-        width: 250
+        width: 400
     }
 }));
