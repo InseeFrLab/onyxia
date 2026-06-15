@@ -1,13 +1,9 @@
-import type { ReactNode } from "react";
 import { onyxia_import, type OnyxiaImport } from "./onyxia_import";
-import { Evt } from "evt";
-import { assert } from "tsafe";
+import { declareComponent, type DeclareComponent } from "./declareComponent";
 
 export type OnyxiaCtx = {
     import: OnyxiaImport;
-    declareComponent: (Component: () => ReactNode) => {
-        mount: (containerElement: HTMLElement | null) => void;
-    };
+    declareComponent: DeclareComponent;
 };
 
 declare global {
@@ -40,33 +36,3 @@ export function initPluginSystem() {
         }
     });
 }
-
-export const evtDeclaredComponents = Evt.create<
-    {
-        Component: () => ReactNode;
-        containerElement: HTMLElement | null;
-    }[]
->([]);
-
-const declareComponent: OnyxiaCtx["declareComponent"] = Component => {
-    evtDeclaredComponents.state.push({
-        Component,
-        containerElement: null
-    });
-
-    return {
-        mount: containerElement => {
-            const declaredComponents = [...evtDeclaredComponents.state];
-
-            const declaredComponent = declaredComponents.find(
-                entry => entry.Component === Component
-            );
-
-            assert(declaredComponent !== undefined);
-
-            declaredComponent.containerElement = containerElement;
-
-            evtDeclaredComponents.state = declaredComponents;
-        }
-    };
-};
