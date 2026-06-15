@@ -96,6 +96,14 @@ export function HomeLS3() {
                             })()}`}
                             onClick={() => onServiceClick(serviceName)}
                             serviceName={serviceName}
+                            title={(() => {
+                                switch (serviceName) {
+                                    case "RStudio":
+                                        return "Pour coder en R";
+                                    case "VSCode":
+                                        return "Pour coder en Python";
+                                }
+                            })()}
                         />
                     ))}
                 </div>
