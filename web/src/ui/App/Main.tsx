@@ -44,8 +44,8 @@ export const Main = memo((props: Props) => {
 
                     return <pages.page404.LazyComponent />;
                 })()}
-                <CustomComponent />
             </Suspense>
+            <CustomComponent />
         </main>
     );
 });
@@ -53,13 +53,27 @@ export const Main = memo((props: Props) => {
 function CustomComponent() {
     useRerenderOnStateChange(evtDeclaredComponents);
 
+    const { classes } = useStyles();
+
     return (
         <>
             {evtDeclaredComponents.state
                 .map(({ Component, containerElement }, i) =>
                     containerElement == null
                         ? null
-                        : createPortal(<Component />, containerElement, i)
+                        : createPortal(
+                              <Suspense
+                                  fallback={
+                                      <div className={classes.suspenseFallback}>
+                                          <CircularProgress />
+                                      </div>
+                                  }
+                              >
+                                  <Component />
+                              </Suspense>,
+                              containerElement,
+                              i
+                          )
                 )
                 .filter(n => n !== null)}
         </>
