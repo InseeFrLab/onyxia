@@ -20,15 +20,43 @@ export function HomeLS3InfoCard(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <Text typo="object heading">{title}</Text>
-            <Text typo="body 1">{body}</Text>
-            <Button startIcon={icon} {...link}>
+            <Text className={classes.title} typo="object heading">
+                {title}
+            </Text>
+            <Text className={classes.body} typo="body 1">
+                {body}
+            </Text>
+            <Button className={classes.button} startIcon={icon} {...link}>
                 {buttonText}
             </Button>
         </div>
     );
 }
 
-const useStyles = tss.withName({ HomeLS3InfoCard }).create(() => ({
-    root: {}
+const useStyles = tss.withName({ HomeLS3InfoCard }).create(({ theme }) => ({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 200,
+        padding: theme.spacing(4),
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        borderRadius: theme.spacing(2),
+        boxShadow: theme.shadows[1],
+        "&:hover": {
+            boxShadow: theme.shadows[6]
+        }
+    },
+    title: {
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    body: {
+        maxWidth: 560,
+        marginTop: theme.spacing(2),
+        color: theme.colors.useCases.typography.textSecondary
+    },
+    button: {
+        alignSelf: "flex-end",
+        marginTop: "auto"
+    }
 }));

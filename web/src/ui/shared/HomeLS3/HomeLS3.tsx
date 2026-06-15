@@ -18,7 +18,7 @@ const serviceNames = ["RStudio", "VSCode"] as const;
 type ServiceName = (typeof serviceNames)[number];
 
 export function HomeLS3() {
-    const { classes } = useStyles();
+    const { classes, css, theme } = useStyles();
 
     const { user } = useCoreState("userAuthentication", "main");
     assert(user !== undefined, "AUTHENTICATION_GLOBALLY_REQUIRED should be set to true");
@@ -110,22 +110,31 @@ export function HomeLS3() {
                 <Divider />
                 <div className={classes.infoCardsWrapper}>
                     <HomeLS3InfoCard
+                        className={css({
+                            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+                        })}
                         title="Nouvel utilisateur ?"
-                        body="Prend en main la platforme à travers un guide d'utilisation simple et rapide"
+                        body={
+                            <>
+                                Prends en main la plateforme à travers
+                                <br />
+                                un guide d'utilisation simple et rapide.
+                            </>
+                        }
                         icon={getIconUrlByName("Book")}
                         link={
                             routes.document({
                                 source: `${PUBLIC_URL}/custom-resources/docs/new-user.md`
                             }).link
                         }
-                        buttonText="Démmarer le guide"
+                        buttonText="Démarrer le guide"
                     />
                     <HomeLS3InfoCard
                         title="Besoin d'aide ?"
                         body={
                             <>
                                 Une question, un problème ou besoin d'assistance ?<br />
-                                Contactez l'équipe en charge de la platforme.
+                                Contactez l'équipe en charge de la plateforme.
                             </>
                         }
                         icon={getIconUrlByName("ChatBubble")}
@@ -133,7 +142,7 @@ export function HomeLS3() {
                             href: "https://tchap.fr",
                             onClick: () => {}
                         }}
-                        buttonText="Démmarer le guide"
+                        buttonText="Contacter le support"
                     />
                 </div>
             </div>
@@ -155,6 +164,8 @@ const useStyles = tss.withName({ HomeLS3 }).create(({ theme }) => ({
         width: 450
     },
     infoCardsWrapper: {
-        display: "flex"
+        display: "flex",
+        gap: theme.spacing(3),
+        ...theme.spacing.topBottom("margin", 3)
     }
 }));
