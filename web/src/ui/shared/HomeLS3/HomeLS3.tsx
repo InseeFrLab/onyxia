@@ -57,9 +57,9 @@ export function HomeLS3() {
                         case "Jupyter":
                             return "jupyter-python";
                         case "RStudio":
-                            return "rstudio";
+                            return "rstudio-r-python-julia";
                         case "VSCode":
-                            return "vscode-python";
+                            return "vscode-r-python-julia";
                     }
                 })(),
                 helmValuesPatch:
@@ -68,7 +68,7 @@ export function HomeLS3() {
                         : [
                               {
                                   path: ["git", "repository"],
-                                  value: "https://github.com/InseeFrLab/onyxia"
+                                  value: gitlabRepoUrl
                               }
                           ],
                 autoLaunch: true
@@ -86,6 +86,7 @@ export function HomeLS3() {
                 <div className={classes.serviceCardsWrapper}>
                     {serviceNames.map(serviceName => (
                         <HomeLS3ServiceCard
+                            className={classes.serviceCardsWrapperItem}
                             key={serviceName}
                             coverImageUrl={`${PUBLIC_URL}/custom-resources/assets/${(() => {
                                 switch (serviceName) {
@@ -143,6 +144,9 @@ const useStyles = tss.withName({ HomeLS3 }).create(() => ({
     },
     serviceCardsWrapper: {
         display: "flex"
+    },
+    serviceCardsWrapperItem: {
+        flex: 1
     },
     infoCardsWrapper: {
         display: "flex"
