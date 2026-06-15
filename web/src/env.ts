@@ -1264,20 +1264,6 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
-        envName: "SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT",
-        isUsedInKeycloakTheme: false,
-        validateAndParseOrGetDefault: ({ envValue, envName }) => {
-            const possibleValues = ["true", "false"];
-
-            assert(
-                possibleValues.indexOf(envValue) >= 0,
-                `${envName} should either be ${possibleValues.join(" or ")}`
-            );
-
-            return envValue === "true";
-        }
-    },
-    {
         envName: "DISABLE_DISPLAY_ALL_CATALOG",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue, envName }) => {
@@ -1289,14 +1275,6 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
             );
 
             return envValue === "true";
-        }
-    },
-    {
-        envName: "S3_DOCUMENTATION_LINK",
-        isUsedInKeycloakTheme: false,
-        validateAndParseOrGetDefault: ({ envValue }) => {
-            assert(envValue !== "", "Should have default in .env");
-            return envValue;
         }
     },
     {
