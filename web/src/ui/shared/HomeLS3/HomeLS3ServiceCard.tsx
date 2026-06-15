@@ -21,12 +21,22 @@ export function HomeLS3ServiceCard(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ HomeLS3ServiceCard }).create(() => ({
+const useStyles = tss.withName({ HomeLS3ServiceCard }).create(({ theme }) => ({
     root: {
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        padding: theme.spacing(3),
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        borderRadius: theme.spacing(2),
+
+        boxShadow: theme.shadows[1],
+        "&:hover": {
+            boxShadow: theme.shadows[6]
+        }
     },
     img: {
-        width: 400
+        height: 120,
+        objectFit: "cover",
+        borderRadius: 3
     }
 }));
