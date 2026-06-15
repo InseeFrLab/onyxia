@@ -6,7 +6,7 @@ import { keyframes } from "tss-react";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
 import CircularProgress from "@mui/material/CircularProgress";
-import { evtDeclaredComponents } from "pluginSystem";
+import { evtDeclaredComponents } from "pluginSystem/declareComponent";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 
 type Props = {
