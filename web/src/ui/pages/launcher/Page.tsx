@@ -10,7 +10,7 @@ import { routeGroup } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
 import { env } from "env";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, type Equals, type Param0, isAmong } from "tsafe";
 import { Deferred } from "evt/tools/Deferred";
 import { Evt, type UnpackEvt } from "evt";
 import { LauncherDialogs, type Props as LauncherDialogsProps } from "./LauncherDialogs";
@@ -23,7 +23,6 @@ import {
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 import type { LabeledHelmChartSourceUrls } from "core/usecases/launcher/selectors";
 import { RootFormComponent } from "./RootFormComponent/RootFormComponent";
-import type { Param0 } from "tsafe";
 import type { FormCallbacks } from "./RootFormComponent/FormCallbacks";
 import { arrRemoveDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { same } from "evt/tools/inDepth/same";
@@ -118,7 +117,7 @@ function Launcher() {
                 break disable_auto_launch;
             }
 
-            if (getPreviousRouteName() === "myServices") {
+            if (isAmong(["myServices", "home"], getPreviousRouteName())) {
                 break disable_auto_launch;
             }
 
