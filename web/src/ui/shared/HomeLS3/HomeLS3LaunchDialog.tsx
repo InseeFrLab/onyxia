@@ -616,10 +616,6 @@ const useStyles_GitLabTokenView = tss
             width: "100%",
             marginBottom: theme.spacing(5)
         },
-        errorText: {
-            gridColumn: "1 / -1",
-            color: theme.colors.useCases.alertSeverity.error.main
-        },
         helpText: {
             gridColumn: "1 / -1",
             color: theme.colors.useCases.typography.textPrimary
@@ -741,7 +737,7 @@ function GitLabRepoView(props: {
 
     const { cx, classes } = useStyles_GitLabRepoView();
 
-    const [gitlabRepoUrl, setGitlabRepoUrl] = useState("");
+    const [gitlabRepoUrl, setGitlabRepoUrl] = useState(gitlabRepoUrlHistory.at(-1) ?? "");
 
     const isUrlValid = useMemo(() => {
         let urlObj: URL;
@@ -768,25 +764,27 @@ function GitLabRepoView(props: {
                 Indique l’URL du projet GitLab à initialiser automatiquement dans{" "}
                 {serviceName}.
             </Text>
-            <input
+            <TextField
                 className={classes.input}
                 disabled={!hasToken}
+                // @ts-expect-error
                 placeholder="Par exemple : https://gitlab.insee.fr/equipe/projet-1"
-                type="text"
-                value={gitlabRepoUrl}
-                onChange={e => {
-                    setGitlabRepoUrl(e.target.value);
+                defaultValue={gitlabRepoUrl}
+                onValueBeingTypedChange={params => {
+                    setGitlabRepoUrl(params.value);
                 }}
+                freeSolo
+                options={gitlabRepoUrlHistory}
+                helperTextError={
+                    !isUrlValid && gitlabRepoUrl !== ""
+                        ? "L’URL doit pointer vers un projet GitLab INSEE."
+                        : undefined
+                }
+                doOnlyShowErrorAfterFirstFocusLost={false}
             />
-            {!isUrlValid && gitlabRepoUrl !== "" && (
-                <Text className={classes.errorText} typo="caption">
-                    L’URL doit pointer vers un projet GitLab INSEE.
-                </Text>
-            )}
             <div className={classes.actionWrapper}>
                 <Button
-                    className={classes.submitButton}
-                    disabled={!isUrlValid}
+                    disabled={!hasToken || !isUrlValid}
                     onClick={() => {
                         setGitlabRepoUrlHistory([...gitlabRepoUrlHistory, gitlabRepoUrl]);
 
@@ -817,70 +815,12 @@ const useStyles_GitLabRepoView = tss.withName({ GitLabRepoView }).create(({ them
         color: theme.colors.useCases.typography.textSecondary
     },
     input: {
-        width: "100%",
-        height: 48,
-        boxSizing: "border-box",
-        marginTop: theme.spacing(3),
-        border: 0,
-        borderRadius: 8,
-        outline: "none",
-        padding: `0 ${theme.spacing(2)}px`,
-        backgroundColor: theme.colors.useCases.surfaces.surface3,
-        color: theme.colors.useCases.typography.textPrimary,
-        ...theme.typography.variants["body 1"].style,
-        "&::placeholder": {
-            color: theme.colors.useCases.typography.textSecondary,
-            opacity: 1
-        },
-        "&:focus": {
-            boxShadow: `0 0 0 2px ${theme.colors.useCases.typography.textFocus}`
-        },
-        "&:disabled": {
-            color: theme.colors.useCases.typography.textDisabled,
-            backgroundColor: alpha(theme.colors.useCases.surfaces.surface3, 0.35),
-            "&::placeholder": {
-                color: theme.colors.useCases.typography.textDisabled
-            }
-        }
-    },
-    errorText: {
-        marginTop: theme.spacing(1),
-        color: theme.colors.useCases.alertSeverity.error.main
+        marginTop: theme.spacing(3)
     },
     actionWrapper: {
         display: "flex",
         justifyContent: "flex-end",
         marginTop: "auto",
-        paddingTop: theme.spacing(4),
-        [theme.muiTheme.breakpoints.down("sm")]: {
-            alignItems: "stretch",
-            flexDirection: "column"
-        }
-    },
-    submitButton: {
-        "&&": {
-            minWidth: 250,
-            borderColor: theme.colors.useCases.typography.textFocus,
-            backgroundColor: theme.colors.useCases.typography.textFocus,
-            color: theme.colors.getUseCases({
-                isDarkModeEnabled: true
-            }).typography.textPrimary,
-            whiteSpace: "nowrap"
-        },
-        "&&:hover": {
-            borderColor: theme.colors.useCases.buttons.actionHoverPrimary,
-            backgroundColor: theme.colors.useCases.buttons.actionHoverPrimary
-        },
-        "&&.Mui-disabled": {
-            borderColor: theme.colors.useCases.buttons.actionDisabledBackground,
-            backgroundColor: theme.colors.useCases.buttons.actionDisabledBackground,
-            color: theme.colors.useCases.surfaces.surface1
-        },
-        [theme.muiTheme.breakpoints.down("sm")]: {
-            "&&": {
-                minWidth: 0,
-                width: "100%"
-            }
-        }
+        paddingTop: theme.spacing(4)
     }
 }));
