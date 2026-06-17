@@ -45,10 +45,10 @@ const useStyles = tss.withName({ HomeLS3ServiceCard }).create(({ theme }) => ({
         height: 120,
         objectFit: "cover",
         borderRadius: 3,
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.spacing(3)
     },
     button: {
         float: "inline-end",
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(5)
     }
 }));

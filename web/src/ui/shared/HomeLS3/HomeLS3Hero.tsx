@@ -21,7 +21,7 @@ export function HomeLS3Hero(props: Props) {
             <div className={classes.textWrap}>
                 <div>
                     <Text typo="page heading">Bienvenu {userDisplayName}</Text>
-                    <Text className={classes.subtitle} typo="label 1">
+                    <Text className={classes.subtitle} typo="navigation label">
                         Demare ton service en quelque clicks et profite de la puissance de
                         calcule de nos serveurs.
                     </Text>
@@ -46,7 +46,7 @@ const useStyles = tss.withName({ HomeLS3Hero }).create(({ theme }) => ({
         justifyContent: "center"
     },
     subtitle: {
-        maxWidth: 450,
+        maxWidth: 500,
         color: theme.colors.useCases.typography.textTertiary
     }
 }));

@@ -130,7 +130,7 @@ function SideDialog(props: {
                     </Text>
                     <IconButton
                         className={classes.closeButton}
-                        size="small"
+                        size="default"
                         icon={getIconUrlByName("Close")}
                         onClick={onClose}
                     />
@@ -147,24 +147,27 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
         position: "fixed",
         inset: 0,
         zIndex: theme.muiTheme.zIndex.modal,
-        marginRight: theme.spacing(3),
         display: "flex",
         justifyContent: "flex-end",
         alignItems: "stretch",
-        padding: `64px ${theme.spacing(2)}px 32px`,
+        padding: `32px ${theme.spacing(3)}px 24px`,
         boxSizing: "border-box",
         backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.72),
-        backdropFilter: "blur(1px)"
+        backdropFilter: "blur(1px)",
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            padding: theme.spacing(2)
+        }
     },
     panel: {
-        width: 650,
+        ...theme.spacing.topBottom("padding", 5),
+        ...theme.spacing.rightLeft("padding", 6),
+        width: 680,
         maxWidth: "100%",
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
         borderRadius: 16,
-        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
         backgroundColor: theme.colors.useCases.surfaces.surface1,
         boxShadow: theme.shadows[4],
         animation: `${keyframes`
@@ -183,8 +186,8 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
         alignItems: "center",
         justifyContent: "space-between",
         gap: theme.spacing(2),
-        padding: `${theme.spacing(4)}px ${theme.spacing(4)}px ${theme.spacing(2)}px`,
-        borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface3}`
+        paddingBottom: theme.spacing(2),
+        borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`
     },
     title: {
         minWidth: 0,
@@ -197,8 +200,12 @@ const useStyles_SideDialog = tss.withName({ SideDialog }).create(({ theme }) => 
         flex: 1,
         minHeight: 0,
         overflow: "auto",
-        padding: `${theme.spacing(3)}px ${theme.spacing(4)}px ${theme.spacing(4)}px`,
-        boxSizing: "border-box"
+        display: "flex",
+        boxSizing: "border-box",
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            paddingRight: theme.spacing(2),
+            paddingLeft: theme.spacing(2)
+        }
     }
 }));
 
@@ -216,11 +223,13 @@ function Body(props: {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div>
-                <img src={serviceIconUrl} />
-                <Text typo="subtitle">{serviceName}</Text>
+            <div className={classes.serviceHeader}>
+                <img className={classes.serviceIcon} src={serviceIconUrl} />
+                <Text className={classes.serviceName} typo="object heading">
+                    {serviceName}
+                </Text>
             </div>
-            <Divider />
+            <Divider className={classes.serviceDivider} />
             {isEntrypoint ? (
                 <BodyEntrypoint
                     serviceName={serviceName}
@@ -248,8 +257,32 @@ function Body(props: {
         </div>
     );
 }
+
 const useStyles_Body = tss.withName({ Body }).create(({ theme }) => ({
-    root: {}
+    root: {
+        flex: 1,
+        minHeight: "100%",
+        display: "flex",
+        flexDirection: "column"
+    },
+    serviceHeader: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(3),
+        padding: `${theme.spacing(4)}px ${theme.spacing(2)}px ${theme.spacing(3)}px`
+    },
+    serviceIcon: {
+        width: 52,
+        height: 52,
+        objectFit: "contain",
+        flex: "none"
+    },
+    serviceName: {
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    serviceDivider: {
+        borderColor: theme.colors.useCases.surfaces.surface2
+    }
 }));
 
 function BodyEntrypoint(props: {
@@ -263,27 +296,49 @@ function BodyEntrypoint(props: {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div>
-                <img src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`} />
-                <Text typo="object heading">Démarrer avec un projet Gitlab</Text>
-                <Text typo="body 1">
-                    Un {serviceName} avec votre projet Gitlab intégré automatiquement.
+            <div className={classes.gitlabCard}>
+                <img
+                    className={classes.gitlabLogo}
+                    src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
+                />
+                <Text className={classes.gitlabTitle} typo="section heading">
+                    Démarrer avec un projet GitLab
                 </Text>
-                <Text typo="caption">Cette option est facultative.</Text>
-                <Button
-                    onClick={() =>
-                        onProceed({
-                            useGitLab: true
-                        })
-                    }
-                >
-                    Démarer avec un projet GitLab
-                </Button>
+                <Text className={classes.description} typo="body 1">
+                    Un {serviceName} avec votre projet GitLab intégré automatiquement.
+                </Text>
+                <div className={classes.gitlabCardFooter}>
+                    <Text className={classes.optionalText} typo="label 1">
+                        Cette option est facultative.
+                    </Text>
+                    <Button
+                        onClick={() =>
+                            onProceed({
+                                useGitLab: true
+                            })
+                        }
+                    >
+                        Démarrer avec un projet GitLab
+                    </Button>
+                </div>
             </div>
-            <Divider>or</Divider>
-            <div>
-                <Text typo="object heading">Démarrer {serviceName} immédiatement.</Text>
-                <Text typo="body 1">Un {serviceName} simple sans projet GitLab.</Text>
+            <Divider
+                className={classes.orDivider}
+                classes={{
+                    wrapper: classes.orDivider_wrapper
+                }}
+            >
+                ou
+            </Divider>
+            <div className={classes.quickStartCard}>
+                <div className={classes.quickStartText}>
+                    <Text className={classes.quickStartTitle} typo="label 1">
+                        Démarrer un {serviceName} immédiatement.
+                    </Text>
+                    <Text className={classes.description} typo="body 1">
+                        Un {serviceName} simple sans projet GitLab.
+                    </Text>
+                </div>
                 <Button
                     variant="secondary"
                     onClick={() =>
@@ -292,7 +347,7 @@ function BodyEntrypoint(props: {
                         })
                     }
                 >
-                    Démarer
+                    Démarrer
                 </Button>
             </div>
         </div>
@@ -300,7 +355,68 @@ function BodyEntrypoint(props: {
 }
 
 const useStyles_BodyEntrypoint = tss.withName({ BodyEntrypoint }).create(({ theme }) => ({
-    root: {}
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: theme.spacing(3)
+    },
+    gitlabCard: {
+        borderRadius: 16,
+        padding: theme.spacing(5),
+        backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+    },
+    gitlabLogo: {
+        width: 58,
+        height: 58,
+        objectFit: "contain",
+        marginBottom: theme.spacing(2)
+    },
+    gitlabTitle: {
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    description: {
+        marginTop: theme.spacing(1),
+        color: theme.colors.useCases.typography.textSecondary
+    },
+    gitlabCardFooter: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: theme.spacing(3),
+        marginTop: theme.spacing(5),
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            alignItems: "stretch",
+            flexDirection: "column"
+        }
+    },
+    optionalText: {
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    orDivider: {
+        color: theme.colors.useCases.typography.textSecondary,
+        "&::before, &::after": {
+            borderColor: theme.colors.useCases.surfaces.surface2
+        },
+        ...theme.spacing.topBottom("margin", 6)
+    },
+    orDivider_wrapper: {
+        ...theme.spacing.rightLeft("padding", 3)
+    },
+    quickStartCard: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: theme.spacing(3),
+        padding: theme.spacing(5),
+        borderRadius: 16,
+        backgroundColor: theme.colors.useCases.surfaces.surface2
+    },
+    quickStartText: {
+        minWidth: 0
+    },
+    quickStartTitle: {
+        color: theme.colors.useCases.typography.textPrimary
+    }
 }));
 
 function BodyGitlab(props: {
@@ -317,9 +433,17 @@ function BodyGitlab(props: {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div>
-                <button onClick={onBack}>{"<"}</button>{" "}
-                <Text typo="object heading">Démarrer avec un projet GitLab</Text>
+            <div className={classes.header}>
+                <IconButton
+                    className={classes.backButton}
+                    icon={getIconUrlByName("ArrowBack")}
+                    size="small"
+                    aria-label="Retour"
+                    onClick={onBack}
+                />
+                <Text className={classes.title} typo="object heading">
+                    Démarrer avec un projet GitLab
+                </Text>
             </div>
 
             {!githubPersonalAccessToken ? <GitLabTokenView /> : <GitLabUsernameView />}
@@ -334,7 +458,26 @@ function BodyGitlab(props: {
 }
 
 const useStyles_BodyGitlab = tss.withName({ BodyGitlab }).create(({ theme }) => ({
-    root: {}
+    root: {
+        flex: 1,
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: theme.spacing(3)
+    },
+    header: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(1),
+        marginBottom: theme.spacing(4)
+    },
+    backButton: {
+        flex: "none",
+        marginLeft: -theme.spacing(2)
+    },
+    title: {
+        color: theme.colors.useCases.typography.textPrimary
+    }
 }));
 
 function GitLabTokenView(props: { className?: string }) {
@@ -345,6 +488,7 @@ function GitLabTokenView(props: { className?: string }) {
     } = getCoreSync();
 
     const [token, setToken] = useState("");
+    const [isTokenVisible, setIsTokenVisible] = useState(false);
 
     const { cx, classes } = useStyles_GitLabTokenView();
 
@@ -358,36 +502,64 @@ function GitLabTokenView(props: { className?: string }) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div>
-                <img src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`} />
-                <Text typo="section heading">Première connexion avec GitLab</Text>
-                <Text typo="body 1">
-                    Pour récupérer automatiquement vos projets GitLab dans RStudio,
-                    renseigne ton jeton d’accès personnel GitLab. Cette opération n’est
-                    nécessaire qu’une seule fois.
-                </Text>
-                <Text typo="body 1">
+            <div className={classes.card}>
+                <img
+                    className={classes.gitlabLogo}
+                    src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
+                />
+                <div className={classes.content}>
+                    <Text className={classes.title} typo="section heading">
+                        Première connexion avec GitLab
+                    </Text>
+                    <Text className={classes.description} typo="body 1">
+                        Pour récupérer automatiquement vos projets GitLab dans RStudio,
+                        renseigne ton jeton d’accès personnel GitLab. Cette opération
+                        n’est nécessaire qu’une seule fois.
+                    </Text>
+                </div>
+                <div className={classes.inputWrapper}>
+                    <input
+                        className={classes.input}
+                        placeholder="Jeton d’accès personnel"
+                        type={isTokenVisible ? "text" : "password"}
+                        value={token}
+                        onChange={e => setToken(e.target.value)}
+                    />
+                    <IconButton
+                        className={classes.visibilityButton}
+                        icon={getIconUrlByName(
+                            isTokenVisible ? "VisibilityOff" : "Visibility"
+                        )}
+                        size="small"
+                        aria-label={
+                            isTokenVisible ? "Masquer le jeton" : "Afficher le jeton"
+                        }
+                        onClick={() => setIsTokenVisible(!isTokenVisible)}
+                    />
+                </div>
+                {!isTokenValid && token !== "" && (
+                    <Text className={classes.errorText} typo="caption">
+                        Le jeton devrait ressembler à glpat-xxxxx.
+                    </Text>
+                )}
+                <Text className={classes.helpText} typo="body 1">
                     En savoir plus sur :{" "}
                     <Link
-                        href={`${PUBLIC_URL}/custom-resources/docs/how-to-get-my-gitlab-token.md`}
+                        className={classes.helpLink}
+                        {...routes.document({
+                            source: `${PUBLIC_URL}/custom-resources/docs/how-to-get-my-gitlab-token.md`
+                        }).link}
                         target="_blank"
                     >
                         Comment trouver son Jeton d’accès personnel ?
                     </Link>
                 </Text>
-                <input
-                    type="password"
-                    value={token}
-                    onChange={e => setToken(e.target.value)}
-                />
-                {!isTokenValid && token !== "" && (
-                    <p>Token invalid, il devrais resembler à glpat_xxxxx</p>
-                )}
-                <Alert severity="info">
+                <Alert className={classes.infoAlert} severity="info">
                     Le jeton sera enregistré dans votre profil pour tes prochaines
                     connexions.
                 </Alert>
                 <Button
+                    className={classes.submitButton}
                     disabled={!isTokenValid}
                     onClick={() => {
                         userConfigs.changeValue({
@@ -396,16 +568,133 @@ function GitLabTokenView(props: { className?: string }) {
                         });
                     }}
                 >
-                    Enregister et continuer
+                    Enregistrer et continuer
                 </Button>
             </div>
         </div>
     );
 }
 
-const useStyles_GitLabTokenView = tss.withName({ BodyGitlab }).create(({ theme }) => ({
-    root: {}
-}));
+const useStyles_GitLabTokenView = tss
+    .withName({ GitLabTokenView })
+    .create(({ theme }) => ({
+        root: {
+            marginBottom: theme.spacing(4)
+        },
+        card: {
+            display: "grid",
+            gridTemplateColumns: "92px 1fr",
+            columnGap: theme.spacing(3),
+            rowGap: theme.spacing(2),
+            padding: theme.spacing(3),
+            borderRadius: 14,
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            [theme.muiTheme.breakpoints.down("sm")]: {
+                display: "flex",
+                flexDirection: "column"
+            }
+        },
+        gitlabLogo: {
+            gridRow: "1 / span 2",
+            width: 74,
+            height: 74,
+            objectFit: "contain",
+            alignSelf: "center",
+            justifySelf: "center",
+            [theme.muiTheme.breakpoints.down("sm")]: {
+                alignSelf: "flex-start"
+            }
+        },
+        content: {
+            minWidth: 0
+        },
+        title: {
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        description: {
+            marginTop: theme.spacing(1),
+            color: theme.colors.useCases.typography.textSecondary
+        },
+        inputWrapper: {
+            gridColumn: "1 / -1",
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            marginTop: theme.spacing(2)
+        },
+        input: {
+            width: "100%",
+            height: 48,
+            boxSizing: "border-box",
+            border: 0,
+            borderRadius: 8,
+            outline: "none",
+            padding: `0 ${theme.spacing(7)}px 0 ${theme.spacing(2)}px`,
+            backgroundColor: theme.colors.useCases.surfaces.surface3,
+            color: theme.colors.useCases.typography.textPrimary,
+            ...theme.typography.variants["body 1"].style,
+            "&::placeholder": {
+                color: theme.colors.useCases.typography.textSecondary,
+                opacity: 1
+            },
+            "&:focus": {
+                boxShadow: `0 0 0 2px ${theme.colors.useCases.typography.textFocus}`
+            }
+        },
+        visibilityButton: {
+            position: "absolute",
+            right: theme.spacing(1),
+            color: theme.colors.useCases.typography.textSecondary
+        },
+        errorText: {
+            gridColumn: "1 / -1",
+            color: theme.colors.useCases.alertSeverity.error.main
+        },
+        helpText: {
+            gridColumn: "1 / -1",
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        helpLink: {
+            color: theme.colors.useCases.typography.textFocus,
+            fontWeight: 700,
+            textDecorationColor: theme.colors.useCases.typography.textFocus
+        },
+        infoAlert: {
+            gridColumn: "1 / -1",
+            borderRadius: 12,
+            padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
+            "& .MuiAlert-message": {
+                padding: `${theme.spacing(1)}px 0`
+            }
+        },
+        submitButton: {
+            "&&": {
+                gridColumn: "1 / -1",
+                justifySelf: "end",
+                borderColor: theme.colors.useCases.typography.textFocus,
+                backgroundColor: theme.colors.useCases.typography.textFocus,
+                color: theme.colors.getUseCases({
+                    isDarkModeEnabled: true
+                }).typography.textPrimary,
+                whiteSpace: "nowrap"
+            },
+            "&&:hover": {
+                borderColor: theme.colors.useCases.buttons.actionHoverPrimary,
+                backgroundColor: theme.colors.useCases.buttons.actionHoverPrimary
+            },
+            "&&.Mui-disabled": {
+                borderColor: theme.colors.useCases.surfaces.surfaceFocus2,
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
+                color: theme.colors.useCases.surfaces.surface1
+            },
+            [theme.muiTheme.breakpoints.down("sm")]: {
+                "&&": {
+                    width: "100%"
+                }
+            }
+        }
+    }));
 
 function GitLabUsernameView(props: { className?: string }) {
     const { className } = props;
@@ -416,9 +705,17 @@ function GitLabUsernameView(props: { className?: string }) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <img src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`} />
-            <Text typo="body 1">{gitName}</Text>
+            <div className={classes.accountSummary}>
+                <img
+                    className={classes.gitlabLogo}
+                    src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
+                />
+                <Text className={classes.username} typo="body 1">
+                    {gitName}
+                </Text>
+            </div>
             <Link
+                className={classes.settingsLink}
                 {...routes.account({
                     tabId: "git"
                 }).link}
@@ -430,7 +727,52 @@ function GitLabUsernameView(props: { className?: string }) {
 }
 
 const useStyles_GitLabUsernameView = tss.withName({ BodyGitlab }).create(({ theme }) => ({
-    root: {}
+    root: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: theme.spacing(2),
+        padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+        marginBottom: theme.spacing(4),
+        borderRadius: 14,
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            alignItems: "flex-start",
+            flexDirection: "column"
+        }
+    },
+    accountSummary: {
+        display: "flex",
+        alignItems: "center",
+        minWidth: 0,
+        gap: theme.spacing(1)
+    },
+    gitlabLogo: {
+        width: 26,
+        height: 26,
+        objectFit: "contain",
+        flex: "none"
+    },
+    username: {
+        color: theme.colors.useCases.typography.textPrimary,
+        fontWeight: 700,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+    },
+    settingsLink: {
+        flex: "none",
+        color: theme.colors.useCases.typography.textPrimary,
+        textDecoration: "none",
+        fontWeight: 700,
+        "&:hover": {
+            color: theme.colors.useCases.typography.textFocus,
+            textDecoration: "none"
+        },
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            flex: "initial"
+        }
+    }
 }));
 
 const { useGitlabRepoUrlHistory } = createUseGlobalState({
@@ -471,43 +813,126 @@ function GitLabRepoView(props: {
 
     return (
         <div className={cx(classes.root, className)}>
-            <Text typo="subtitle">Renseigne ton répertoire GitLab</Text>
-            <Text typo="body 1">
+            <Text className={classes.title} typo="subtitle">
+                Renseigne ton répertoire GitLab
+            </Text>
+            <Text className={classes.description} typo="body 1">
                 Indique l’URL du projet GitLab à initialiser automatiquement dans{" "}
                 {serviceName}.
             </Text>
-            {/* TODO: The input should be a free solo input with auto complete */}
-            <ul>
-                {gitlabRepoUrlHistory.map(url => (
-                    <li>{url}</li>
-                ))}
-            </ul>
             <input
+                className={classes.input}
                 disabled={!hasToken}
-                placeholder="https://gitlab.insee.fr/organization/projet"
+                placeholder="Par exemple : https://gitlab.insee.fr/equipe/projet-1"
                 type="text"
                 value={gitlabRepoUrl}
                 onChange={e => {
                     setGitlabRepoUrl(e.target.value);
                 }}
             />
-            {!isUrlValid && <p>GitLab repo non valid</p>}
-            <Button
-                disabled={!isUrlValid}
-                onClick={() => {
-                    setGitlabRepoUrlHistory([...gitlabRepoUrlHistory, gitlabRepoUrl]);
+            {!isUrlValid && gitlabRepoUrl !== "" && (
+                <Text className={classes.errorText} typo="caption">
+                    L’URL doit pointer vers un projet GitLab INSEE.
+                </Text>
+            )}
+            <div className={classes.actionWrapper}>
+                <Button
+                    className={classes.submitButton}
+                    disabled={!isUrlValid}
+                    onClick={() => {
+                        setGitlabRepoUrlHistory([...gitlabRepoUrlHistory, gitlabRepoUrl]);
 
-                    onProceed({
-                        gitlabRepoUrl
-                    });
-                }}
-            >
-                Démarrer avec ce projet
-            </Button>
+                        onProceed({
+                            gitlabRepoUrl
+                        });
+                    }}
+                >
+                    Démarrer avec ce projet
+                </Button>
+            </div>
         </div>
     );
 }
 
 const useStyles_GitLabRepoView = tss.withName({ GitLabRepoView }).create(({ theme }) => ({
-    root: {}
+    root: {
+        flex: 1,
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column"
+    },
+    title: {
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    description: {
+        marginTop: theme.spacing(1),
+        color: theme.colors.useCases.typography.textSecondary
+    },
+    input: {
+        width: "100%",
+        height: 48,
+        boxSizing: "border-box",
+        marginTop: theme.spacing(3),
+        border: 0,
+        borderRadius: 8,
+        outline: "none",
+        padding: `0 ${theme.spacing(2)}px`,
+        backgroundColor: theme.colors.useCases.surfaces.surface3,
+        color: theme.colors.useCases.typography.textPrimary,
+        ...theme.typography.variants["body 1"].style,
+        "&::placeholder": {
+            color: theme.colors.useCases.typography.textSecondary,
+            opacity: 1
+        },
+        "&:focus": {
+            boxShadow: `0 0 0 2px ${theme.colors.useCases.typography.textFocus}`
+        },
+        "&:disabled": {
+            color: theme.colors.useCases.typography.textDisabled,
+            backgroundColor: alpha(theme.colors.useCases.surfaces.surface3, 0.35),
+            "&::placeholder": {
+                color: theme.colors.useCases.typography.textDisabled
+            }
+        }
+    },
+    errorText: {
+        marginTop: theme.spacing(1),
+        color: theme.colors.useCases.alertSeverity.error.main
+    },
+    actionWrapper: {
+        display: "flex",
+        justifyContent: "flex-end",
+        marginTop: "auto",
+        paddingTop: theme.spacing(4),
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            alignItems: "stretch",
+            flexDirection: "column"
+        }
+    },
+    submitButton: {
+        "&&": {
+            minWidth: 250,
+            borderColor: theme.colors.useCases.typography.textFocus,
+            backgroundColor: theme.colors.useCases.typography.textFocus,
+            color: theme.colors.getUseCases({
+                isDarkModeEnabled: true
+            }).typography.textPrimary,
+            whiteSpace: "nowrap"
+        },
+        "&&:hover": {
+            borderColor: theme.colors.useCases.buttons.actionHoverPrimary,
+            backgroundColor: theme.colors.useCases.buttons.actionHoverPrimary
+        },
+        "&&.Mui-disabled": {
+            borderColor: theme.colors.useCases.buttons.actionDisabledBackground,
+            backgroundColor: theme.colors.useCases.buttons.actionDisabledBackground,
+            color: theme.colors.useCases.surfaces.surface1
+        },
+        [theme.muiTheme.breakpoints.down("sm")]: {
+            "&&": {
+                minWidth: 0,
+                width: "100%"
+            }
+        }
+    }
 }));

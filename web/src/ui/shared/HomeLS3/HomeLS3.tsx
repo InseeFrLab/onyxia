@@ -16,9 +16,9 @@ import { Evt, type UnpackEvt } from "evt";
 import { Deferred } from "evt/tools/Deferred";
 import { getIconUrlByName } from "lazy-icons";
 
-const serviceNames = ["RStudio", "VSCode"] as const;
+type ServiceName = "RStudio" | "VSCode";
 
-type ServiceName = (typeof serviceNames)[number];
+const serviceNames: ServiceName[] = ["RStudio"] as const;
 
 export function HomeLS3() {
     const { classes, css, theme } = useStyles();
@@ -110,9 +110,9 @@ export function HomeLS3() {
                             title={(() => {
                                 switch (serviceName) {
                                     case "RStudio":
-                                        return "Pour coder en R";
+                                        return "Démarrer un RStudio rapidement";
                                     case "VSCode":
-                                        return "Pour coder en Python";
+                                        return "Démarrer un VSCode (Python) rapidement";
                                 }
                             })()}
                         />
@@ -138,7 +138,7 @@ export function HomeLS3() {
                                 source: `${PUBLIC_URL}/custom-resources/docs/new-user.md`
                             }).link
                         }
-                        buttonText="Démarrer le guide"
+                        buttonText="Lire le guide d'utilisation"
                     />
                     <HomeLS3InfoCard
                         title="Besoin d'aide ?"
@@ -150,7 +150,7 @@ export function HomeLS3() {
                         }
                         icon={getIconUrlByName("ChatBubble")}
                         link={{
-                            href: "https://tchap.fr",
+                            href: "https://www.tchap.gouv.fr/#/room/#Insee-DSI-Plateformes-Internes-Datascience-Contactez-Nous:agent.finances.tchap.gouv.fr",
                             onClick: () => {}
                         }}
                         buttonText="Contacter le support"
