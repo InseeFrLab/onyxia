@@ -5,7 +5,10 @@ import { PUBLIC_URL } from "env";
 import { assert } from "tsafe";
 import { HomeLS3Hero } from "./HomeLS3Hero";
 import { HomeLS3ServiceCard } from "./HomeLS3ServiceCard";
-import { HomeLS3GitDialog, type Props_HomeLS3GitDialog } from "./HomeLS3GitDialog";
+import {
+    HomeLS3LaunchDialog,
+    type Props_HomeLS3LaunchDialog
+} from "./HomeLS3LaunchDialog";
 import { HomeLS3InfoCard } from "./HomeLS3InfoCard";
 import Divider from "@mui/material/Divider";
 import { useConst } from "powerhooks/useConst";
@@ -24,7 +27,7 @@ export function HomeLS3() {
     assert(user !== undefined, "AUTHENTICATION_GLOBALLY_REQUIRED should be set to true");
 
     const evtGitDialogOpen = useConst(() =>
-        Evt.create<UnpackEvt<Props_HomeLS3GitDialog["evtOpen"]>>()
+        Evt.create<UnpackEvt<Props_HomeLS3LaunchDialog["evtOpen"]>>()
     );
 
     const onServiceClick = async (serviceName: ServiceName) => {
@@ -32,6 +35,14 @@ export function HomeLS3() {
 
         evtGitDialogOpen.post({
             serviceName,
+            serviceIconUrl: `${PUBLIC_URL}/custom-resources/assets/${(() => {
+                switch (serviceName) {
+                    case "RStudio":
+                        return "rstudio_logo.webp";
+                    case "VSCode":
+                        return "vscode_logo.png";
+                }
+            })()}`,
             onUserResponse: params => {
                 switch (params.response) {
                     case "cancel":
@@ -146,7 +157,7 @@ export function HomeLS3() {
                     />
                 </div>
             </div>
-            <HomeLS3GitDialog evtOpen={evtGitDialogOpen} />
+            <HomeLS3LaunchDialog evtOpen={evtGitDialogOpen} />
         </>
     );
 }
