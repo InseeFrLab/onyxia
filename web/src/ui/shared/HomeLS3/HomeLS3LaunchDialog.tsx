@@ -450,6 +450,7 @@ function BodyGitlab(props: {
             {!githubPersonalAccessToken ? <GitLabTokenView /> : <GitLabUsernameView />}
 
             <GitLabRepoView
+                className={classes.gitlabRepoView}
                 serviceName={serviceName}
                 hasToken={!!githubPersonalAccessToken}
                 onProceed={onProceed}
@@ -478,6 +479,9 @@ const useStyles_BodyGitlab = tss.withName({ BodyGitlab }).create(({ theme }) => 
     },
     title: {
         color: theme.colors.useCases.typography.textPrimary
+    },
+    gitlabRepoView: {
+        marginTop: theme.spacing(5)
     }
 }));
 
@@ -502,71 +506,68 @@ function GitLabTokenView(props: { className?: string }) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div className={classes.card}>
-                <img
-                    className={classes.gitlabLogo}
-                    src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
-                />
-                <div className={classes.content}>
-                    <Text typo="object heading">Première connexion avec GitLab</Text>
-                    <Text className={classes.description} typo="body 1">
-                        Pour récupérer automatiquement vos projets GitLab dans RStudio,
-                        renseigne ton jeton d’accès personnel GitLab. Cette opération
-                        n’est nécessaire qu’une seule fois.
-                    </Text>
-                </div>
-                <div className={classes.inputWrapper}>
-                    <TextField
-                        className={classes.input}
-                        type="sensitive"
-                        // @ts-expect-error: Trust me bro
-                        placeholder="Jeton d’accès personnel"
-                        defaultValue={token}
-                        onValueBeingTypedChange={({ value }) => {
-                            setToken(value);
-                        }}
-                        helperTextError={
-                            !isTokenValid && token !== ""
-                                ? "Le jeton devrait ressembler à glpat-xxxxx."
-                                : undefined
-                        }
-                        doOnlyShowErrorAfterFirstFocusLost={false}
-                    />
-                </div>
-                <Text className={classes.helpText} typo="label 1">
-                    En savoir plus sur :{" "}
-                    <Link
-                        {...routes.document({
-                            source: `${PUBLIC_URL}/custom-resources/docs/how-to-get-my-gitlab-token.md`
-                        }).link}
-                        target="_blank"
-                    >
-                        Comment trouver son Jeton d’accès personnel ?
-                    </Link>
+            <img
+                className={classes.gitlabLogo}
+                src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
+            />
+            <div className={classes.content}>
+                <Text typo="object heading">Première connexion avec GitLab</Text>
+                <Text className={classes.description} typo="body 1">
+                    Pour récupérer automatiquement vos projets GitLab dans RStudio,
+                    renseigne ton jeton d’accès personnel GitLab. Cette opération n’est
+                    nécessaire qu’une seule fois.
                 </Text>
-                <Alert
-                    className={classes.infoAlert}
-                    severity="info"
-                    classes={{
-                        icon: classes.infoAlert_icon
-                    }}
-                >
-                    Le jeton sera enregistré dans votre profil pour tes prochaines
-                    connexions.
-                </Alert>
-                <Button
-                    className={classes.submitButton}
-                    disabled={!isTokenValid}
-                    onClick={() => {
-                        userConfigs.changeValue({
-                            key: "githubPersonalAccessToken",
-                            value: token
-                        });
-                    }}
-                >
-                    Enregistrer et continuer
-                </Button>
             </div>
+            <div className={classes.inputWrapper}>
+                <TextField
+                    className={classes.input}
+                    type="sensitive"
+                    // @ts-expect-error: Trust me bro
+                    placeholder="Jeton d’accès personnel"
+                    defaultValue={token}
+                    onValueBeingTypedChange={({ value }) => {
+                        setToken(value);
+                    }}
+                    helperTextError={
+                        !isTokenValid && token !== ""
+                            ? "Le jeton devrait ressembler à glpat-xxxxx."
+                            : undefined
+                    }
+                    doOnlyShowErrorAfterFirstFocusLost={false}
+                />
+            </div>
+            <Text className={classes.helpText} typo="label 1">
+                En savoir plus sur :{" "}
+                <Link
+                    {...routes.document({
+                        source: `${PUBLIC_URL}/custom-resources/docs/how-to-get-my-gitlab-token.md`
+                    }).link}
+                    target="_blank"
+                >
+                    Comment trouver son Jeton d’accès personnel ?
+                </Link>
+            </Text>
+            <Alert
+                className={classes.infoAlert}
+                severity="info"
+                classes={{
+                    icon: classes.infoAlert_icon
+                }}
+            >
+                Le jeton sera enregistré dans votre profil pour tes prochaines connexions.
+            </Alert>
+            <Button
+                className={classes.submitButton}
+                disabled={!isTokenValid}
+                onClick={() => {
+                    userConfigs.changeValue({
+                        key: "githubPersonalAccessToken",
+                        value: token
+                    });
+                }}
+            >
+                Enregistrer et continuer
+            </Button>
         </div>
     );
 }
@@ -575,9 +576,6 @@ const useStyles_GitLabTokenView = tss
     .withName({ GitLabTokenView })
     .create(({ theme }) => ({
         root: {
-            marginBottom: theme.spacing(4)
-        },
-        card: {
             display: "grid",
             gridTemplateColumns: "92px 1fr",
             columnGap: theme.spacing(3),
@@ -654,18 +652,20 @@ function GitLabUsernameView(props: { className?: string }) {
                     className={classes.gitlabLogo}
                     src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
                 />
-                <Text className={classes.username} typo="body 1">
+                <Text className={classes.username} typo="label 1">
                     {gitName}
                 </Text>
             </div>
-            <Link
-                className={classes.settingsLink}
+            <Button
+                className={classes.accountLinkButton}
+                variant="ternary"
+                endIcon={getIconUrlByName("KeyboardArrowRight")}
                 {...routes.account({
                     tabId: "git"
                 }).link}
             >
-                Voir les paramètres de connexion {">"}
-            </Link>
+                Voir les paramètres d'identification
+            </Button>
         </div>
     );
 }
@@ -676,8 +676,7 @@ const useStyles_GitLabUsernameView = tss.withName({ BodyGitlab }).create(({ them
         alignItems: "center",
         justifyContent: "space-between",
         gap: theme.spacing(2),
-        padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
-        marginBottom: theme.spacing(4),
+        padding: theme.spacing(3),
         borderRadius: 14,
         backgroundColor: theme.colors.useCases.surfaces.surface2,
         [theme.muiTheme.breakpoints.down("sm")]: {
@@ -695,28 +694,16 @@ const useStyles_GitLabUsernameView = tss.withName({ BodyGitlab }).create(({ them
         width: 26,
         height: 26,
         objectFit: "contain",
-        flex: "none"
+        flex: "none",
+        marginRight: theme.spacing(2)
     },
     username: {
         color: theme.colors.useCases.typography.textPrimary,
-        fontWeight: 700,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
     },
-    settingsLink: {
-        flex: "none",
-        color: theme.colors.useCases.typography.textPrimary,
-        textDecoration: "none",
-        fontWeight: 700,
-        "&:hover": {
-            color: theme.colors.useCases.typography.textFocus,
-            textDecoration: "none"
-        },
-        [theme.muiTheme.breakpoints.down("sm")]: {
-            flex: "initial"
-        }
-    }
+    accountLinkButton: {}
 }));
 
 const { useGitlabRepoUrlHistory } = createUseGlobalState({
