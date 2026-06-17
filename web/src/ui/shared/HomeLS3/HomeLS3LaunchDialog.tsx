@@ -16,6 +16,7 @@ import { createUseGlobalState } from "powerhooks/useGlobalState";
 import Link from "@mui/material/Link";
 import { Alert } from "onyxia-ui/Alert";
 import { routes } from "ui/routes";
+import { TextField } from "onyxia-ui/TextField";
 
 export type Props_HomeLS3LaunchDialog = {
     evtOpen: Evt<{
@@ -436,12 +437,12 @@ function BodyGitlab(props: {
             <div className={classes.header}>
                 <IconButton
                     className={classes.backButton}
-                    icon={getIconUrlByName("ArrowBack")}
-                    size="small"
+                    icon={getIconUrlByName("KeyboardArrowLeft")}
+                    size="default"
                     aria-label="Retour"
                     onClick={onBack}
                 />
-                <Text className={classes.title} typo="object heading">
+                <Text className={classes.title} typo="section heading">
                     Démarrer avec un projet GitLab
                 </Text>
             </div>
@@ -488,7 +489,6 @@ function GitLabTokenView(props: { className?: string }) {
     } = getCoreSync();
 
     const [token, setToken] = useState("");
-    const [isTokenVisible, setIsTokenVisible] = useState(false);
 
     const { cx, classes } = useStyles_GitLabTokenView();
 
@@ -508,9 +508,7 @@ function GitLabTokenView(props: { className?: string }) {
                     src={`${PUBLIC_URL}/custom-resources/assets/gitlab_logo.svg`}
                 />
                 <div className={classes.content}>
-                    <Text className={classes.title} typo="section heading">
-                        Première connexion avec GitLab
-                    </Text>
+                    <Text typo="object heading">Première connexion avec GitLab</Text>
                     <Text className={classes.description} typo="body 1">
                         Pour récupérer automatiquement vos projets GitLab dans RStudio,
                         renseigne ton jeton d’accès personnel GitLab. Cette opération
@@ -518,34 +516,26 @@ function GitLabTokenView(props: { className?: string }) {
                     </Text>
                 </div>
                 <div className={classes.inputWrapper}>
-                    <input
+                    <TextField
                         className={classes.input}
+                        type="sensitive"
+                        // @ts-expect-error: Trust me bro
                         placeholder="Jeton d’accès personnel"
-                        type={isTokenVisible ? "text" : "password"}
-                        value={token}
-                        onChange={e => setToken(e.target.value)}
-                    />
-                    <IconButton
-                        className={classes.visibilityButton}
-                        icon={getIconUrlByName(
-                            isTokenVisible ? "VisibilityOff" : "Visibility"
-                        )}
-                        size="small"
-                        aria-label={
-                            isTokenVisible ? "Masquer le jeton" : "Afficher le jeton"
+                        defaultValue={token}
+                        onValueBeingTypedChange={({ value }) => {
+                            setToken(value);
+                        }}
+                        helperTextError={
+                            !isTokenValid && token !== ""
+                                ? "Le jeton devrait ressembler à glpat-xxxxx."
+                                : undefined
                         }
-                        onClick={() => setIsTokenVisible(!isTokenVisible)}
+                        doOnlyShowErrorAfterFirstFocusLost={false}
                     />
                 </div>
-                {!isTokenValid && token !== "" && (
-                    <Text className={classes.errorText} typo="caption">
-                        Le jeton devrait ressembler à glpat-xxxxx.
-                    </Text>
-                )}
-                <Text className={classes.helpText} typo="body 1">
+                <Text className={classes.helpText} typo="label 1">
                     En savoir plus sur :{" "}
                     <Link
-                        className={classes.helpLink}
                         {...routes.document({
                             source: `${PUBLIC_URL}/custom-resources/docs/how-to-get-my-gitlab-token.md`
                         }).link}
@@ -554,7 +544,13 @@ function GitLabTokenView(props: { className?: string }) {
                         Comment trouver son Jeton d’accès personnel ?
                     </Link>
                 </Text>
-                <Alert className={classes.infoAlert} severity="info">
+                <Alert
+                    className={classes.infoAlert}
+                    severity="info"
+                    classes={{
+                        icon: classes.infoAlert_icon
+                    }}
+                >
                     Le jeton sera enregistré dans votre profil pour tes prochaines
                     connexions.
                 </Alert>
@@ -586,13 +582,10 @@ const useStyles_GitLabTokenView = tss
             gridTemplateColumns: "92px 1fr",
             columnGap: theme.spacing(3),
             rowGap: theme.spacing(2),
-            padding: theme.spacing(3),
-            borderRadius: 14,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            [theme.muiTheme.breakpoints.down("sm")]: {
-                display: "flex",
-                flexDirection: "column"
-            }
+            ...theme.spacing.topBottom("padding", 6),
+            ...theme.spacing.rightLeft("padding", 3),
+            borderRadius: 16,
+            backgroundColor: theme.colors.useCases.surfaces.surface2
         },
         gitlabLogo: {
             gridRow: "1 / span 2",
@@ -608,9 +601,6 @@ const useStyles_GitLabTokenView = tss
         content: {
             minWidth: 0
         },
-        title: {
-            color: theme.colors.useCases.typography.textPrimary
-        },
         description: {
             marginTop: theme.spacing(1),
             color: theme.colors.useCases.typography.textSecondary
@@ -624,27 +614,7 @@ const useStyles_GitLabTokenView = tss
         },
         input: {
             width: "100%",
-            height: 48,
-            boxSizing: "border-box",
-            border: 0,
-            borderRadius: 8,
-            outline: "none",
-            padding: `0 ${theme.spacing(7)}px 0 ${theme.spacing(2)}px`,
-            backgroundColor: theme.colors.useCases.surfaces.surface3,
-            color: theme.colors.useCases.typography.textPrimary,
-            ...theme.typography.variants["body 1"].style,
-            "&::placeholder": {
-                color: theme.colors.useCases.typography.textSecondary,
-                opacity: 1
-            },
-            "&:focus": {
-                boxShadow: `0 0 0 2px ${theme.colors.useCases.typography.textFocus}`
-            }
-        },
-        visibilityButton: {
-            position: "absolute",
-            right: theme.spacing(1),
-            color: theme.colors.useCases.typography.textSecondary
+            marginBottom: theme.spacing(5)
         },
         errorText: {
             gridColumn: "1 / -1",
@@ -654,44 +624,22 @@ const useStyles_GitLabTokenView = tss
             gridColumn: "1 / -1",
             color: theme.colors.useCases.typography.textPrimary
         },
-        helpLink: {
-            color: theme.colors.useCases.typography.textFocus,
-            fontWeight: 700,
-            textDecorationColor: theme.colors.useCases.typography.textFocus
-        },
         infoAlert: {
             gridColumn: "1 / -1",
-            borderRadius: 12,
-            padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
-            "& .MuiAlert-message": {
-                padding: `${theme.spacing(1)}px 0`
+            borderRadius: 16,
+            ...theme.spacing.topBottom("margin", 3)
+        },
+        infoAlert_icon: {
+            "& > svg": {
+                color: theme.colors.useCases.typography.textFocus
             }
         },
         submitButton: {
             "&&": {
                 gridColumn: "1 / -1",
                 justifySelf: "end",
-                borderColor: theme.colors.useCases.typography.textFocus,
-                backgroundColor: theme.colors.useCases.typography.textFocus,
-                color: theme.colors.getUseCases({
-                    isDarkModeEnabled: true
-                }).typography.textPrimary,
                 whiteSpace: "nowrap"
-            },
-            "&&:hover": {
-                borderColor: theme.colors.useCases.buttons.actionHoverPrimary,
-                backgroundColor: theme.colors.useCases.buttons.actionHoverPrimary
-            },
-            "&&.Mui-disabled": {
-                borderColor: theme.colors.useCases.surfaces.surfaceFocus2,
-                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2,
-                color: theme.colors.useCases.surfaces.surface1
-            },
-            [theme.muiTheme.breakpoints.down("sm")]: {
-                "&&": {
-                    width: "100%"
-                }
             }
         }
     }));
@@ -813,7 +761,7 @@ function GitLabRepoView(props: {
 
     return (
         <div className={cx(classes.root, className)}>
-            <Text className={classes.title} typo="subtitle">
+            <Text className={classes.title} typo="object heading">
                 Renseigne ton répertoire GitLab
             </Text>
             <Text className={classes.description} typo="body 1">
