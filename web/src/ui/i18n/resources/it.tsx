@@ -109,9 +109,13 @@ export const translations: Translations<"it"> = {
         "api base url": "URL base dell'API",
         token: "Token",
         "model label": "Modello",
+        "embeddings model label": "Modello di embedding",
+        "gateway error": "Impossibile inizializzare il gateway IA.",
+        "use in services": "Usa nei tuoi servizi",
         "custom providers section title": "Provider IA personalizzati",
         "custom providers section helper":
-            "Aggiungi i tuoi provider IA con un URL base e una chiave API.",
+            "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
+        "edit custom provider title": "Modifica provider IA",
         "custom provider label field": "Etichetta",
         "custom provider api base field": "URL base API",
         "custom provider api key field": "Chiave API",
@@ -120,6 +124,7 @@ export const translations: Translations<"it"> = {
         "provider test error":
             "Impossibile connettersi — controlla l'URL e la chiave API.",
         "provider save": "Aggiungi",
+        "provider update": "Salva",
         "provider cancel": "Annulla",
         "models fetch error":
             "Impossibile recuperare i modelli — controlla l'URL e la chiave API.",
@@ -548,9 +553,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

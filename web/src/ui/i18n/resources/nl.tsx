@@ -110,9 +110,13 @@ export const translations: Translations<"nl"> = {
         "api base url": "API-basis-URL",
         token: "Token",
         "model label": "Model",
+        "embeddings model label": "Embeddings-model",
+        "gateway error": "Kan de AI-gateway niet initialiseren.",
+        "use in services": "Gebruiken in uw services",
         "custom providers section title": "Aangepaste AI-providers",
         "custom providers section helper":
-            "Voeg uw eigen AI-providers toe met een basis-URL en API-sleutel.",
+            "Voeg uw eigen OpenAI-compatibele AI-providers toe. Inloggegevens worden in uw browser opgeslagen.",
+        "edit custom provider title": "AI-provider bewerken",
         "custom provider label field": "Label",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-sleutel",
@@ -121,6 +125,7 @@ export const translations: Translations<"nl"> = {
         "provider test error":
             "Kan geen verbinding maken — controleer URL en API-sleutel.",
         "provider save": "Toevoegen",
+        "provider update": "Opslaan",
         "provider cancel": "Annuleren",
         "models fetch error":
             "Kan modellen niet ophalen — controleer uw URL en API-sleutel.",

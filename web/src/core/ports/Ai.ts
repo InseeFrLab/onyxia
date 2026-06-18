@@ -1,4 +1,6 @@
 export type Ai = {
+    id: string;
+    name: string;
     webUiUrl: string;
     apiBase: string;
     getToken: () => Promise<GetTokenResult>;

@@ -184,10 +184,12 @@ export type XOnyxiaContext = {
     };
     ai:
         | {
-              enabled: true;
-              token: string;
+              enabled: boolean;
+              apiKey: string;
               apiBase: string;
               model: string;
+              provider: string;
+              embeddingsModel: string;
           }
         | undefined;
     proxyInjection:

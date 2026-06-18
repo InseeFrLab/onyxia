@@ -435,17 +435,27 @@ export function createOnyxiaApi(params: {
                                                   apiRegion.vault.oidcConfiguration
                                               )
                                       },
-                            ai:
-                                apiRegion.data?.ai === undefined
-                                    ? undefined
-                                    : {
-                                          url: apiRegion.data.ai.URL,
-                                          oauthProvider: apiRegion.data.ai.oauthProvider,
-                                          oidcParams:
-                                              apiTypesOidcConfigurationToOidcParams_Partial(
-                                                  apiRegion.data.ai.oidcConfiguration
-                                              )
-                                      },
+                            ai: (() => {
+                                const value = apiRegion.data?.ai;
+
+                                const aiConfigs_api =
+                                    value === undefined
+                                        ? []
+                                        : value instanceof Array
+                                          ? value
+                                          : [value];
+
+                                return aiConfigs_api.map(aiConfig_api => ({
+                                    id: aiConfig_api.id ?? aiConfig_api.URL,
+                                    url: aiConfig_api.URL,
+                                    name: aiConfig_api.name,
+                                    oauthProvider: aiConfig_api.oauthProvider,
+                                    oidcParams:
+                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                            aiConfig_api.oidcConfiguration
+                                        )
+                                }));
+                            })(),
                             proxyInjection:
                                 apiRegion.proxyInjection === undefined
                                     ? undefined
