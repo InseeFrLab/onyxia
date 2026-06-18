@@ -41,7 +41,6 @@ export type OnyxiaImportModules = {
     "ui/routes": typeof import("ui/routes");
     "ui/i18n": typeof import("ui/i18n");
     "lazy-icons": typeof import("lazy-icons");
-    "ui/shared/HomeLS3": typeof import("ui/shared/HomeLS3");
     "ui/shared/textEditor/CodeTextEditor": typeof import("ui/shared/textEditor/CodeTextEditor");
     "ui/shared/textEditor/DataTextEditor": typeof import("ui/shared/textEditor/DataTextEditor");
     react: typeof import("react");
@@ -328,7 +327,6 @@ export function onyxia_import(
         | "ui/routes"
         | "ui/i18n"
         | "lazy-icons"
-        | "ui/shared/HomeLS3"
         | "ui/shared/textEditor/CodeTextEditor"
         | "ui/shared/textEditor/DataTextEditor"
         | "react"
@@ -609,8 +607,6 @@ export function onyxia_import(
             return import("ui/i18n");
         case "lazy-icons":
             return import("lazy-icons");
-        case "ui/shared/HomeLS3":
-            return import("ui/shared/HomeLS3");
         case "ui/shared/textEditor/CodeTextEditor":
             return import("ui/shared/textEditor/CodeTextEditor");
         case "ui/shared/textEditor/DataTextEditor":
