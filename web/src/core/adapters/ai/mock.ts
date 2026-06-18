@@ -1,9 +1,11 @@
 import type { Ai } from "core/ports/Ai";
 
-export function createAi(params: { webUiUrl: string }): Ai {
-    const { webUiUrl } = params;
+export function createAi(params: { id: string; name: string; webUiUrl: string }): Ai {
+    const { id, name, webUiUrl } = params;
 
     return {
+        id,
+        name,
         webUiUrl,
         apiBase: `${webUiUrl}/api`,
         getToken: async () => ({ status: "success" as const, token: "mock-ai-token" }),

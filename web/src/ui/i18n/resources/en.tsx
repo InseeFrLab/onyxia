@@ -109,9 +109,13 @@ export const translations: Translations<"en"> = {
         "api base url": "API base URL",
         token: "Token",
         "model label": "Model",
+        "embeddings model label": "Embeddings model",
+        "gateway error": "Unable to initialize the AI gateway.",
+        "use in services": "Use in your services",
         "custom providers section title": "Custom AI providers",
         "custom providers section helper":
-            "Add your own AI providers (OpenAI, Anthropic, or any OpenAI-compatible endpoint). Credentials are stored in your browser.",
+            "Add your own OpenAI-compatible AI providers. Credentials are stored in your browser.",
+        "edit custom provider title": "Edit AI provider",
         "custom provider label field": "Label",
         "custom provider api base field": "API base URL",
         "custom provider api key field": "API key",
@@ -119,6 +123,7 @@ export const translations: Translations<"en"> = {
         "provider test success": "Connection successful",
         "provider test error": "Unable to connect — check URL and API key.",
         "provider save": "Add",
+        "provider update": "Save changes",
         "provider cancel": "Cancel",
         "models fetch error": "Unable to fetch models — check your URL and API key.",
         "no account": ({ webUiUrl }) => (

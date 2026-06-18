@@ -110,9 +110,13 @@ export const translations: Translations<"fi"> = {
         "api base url": "API-perus-URL",
         token: "Token",
         "model label": "Malli",
+        "embeddings model label": "Upotusmalli",
+        "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
+        "use in services": "Käytä palveluissasi",
         "custom providers section title": "Mukautetut tekoälyntarjoajat",
         "custom providers section helper":
-            "Lisää omat tekoälyntarjoajasi perus-URL:lla ja API-avaimella.",
+            "Lisää omia OpenAI-yhteensopivia tekoälypalveluntarjoajia. Tunnukset tallennetaan selaimeesi.",
+        "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider label field": "Tunniste",
         "custom provider api base field": "API-perus-URL",
         "custom provider api key field": "API-avain",
@@ -120,6 +124,7 @@ export const translations: Translations<"fi"> = {
         "provider test success": "Yhteys onnistui",
         "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
         "provider save": "Lisää",
+        "provider update": "Tallenna",
         "provider cancel": "Peruuta",
         "models fetch error": "Mallien haku epäonnistui — tarkista URL ja API-avain.",
         "no account": ({ webUiUrl }) => (

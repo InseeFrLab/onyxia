@@ -39,7 +39,7 @@ export type Context = {
     onyxiaApi: OnyxiaApi;
     secretsManager: SecretsManager;
     sqlOlap: SqlOlap;
-    ai: Ai | undefined;
+    ai: Ai[];
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -177,7 +177,7 @@ export async function bootstrapCore(
                 };
             }
         }),
-        ai: undefined
+        ai: []
     };
 
     const { core, dispatch, getState } = createCore({
@@ -285,7 +285,7 @@ export async function bootstrapCore(
                 getState()
             );
 
-        if (deploymentRegion.ai === undefined) {
+        if (deploymentRegion.ai.length === 0) {
             break init_ai;
         }
 
@@ -298,22 +298,45 @@ export async function bootstrapCore(
 
         assert(oidcParams !== undefined);
 
-        const oidc_ai = await createOidc({
-            ...mergeOidcParams({
-                oidcParams,
-                oidcParams_partial: deploymentRegion.ai.oidcParams
-            }),
-            transformBeforeRedirectForKeycloakTheme,
-            getCurrentLang,
-            autoLogin: true,
-            enableDebugLogs: enableOidcDebugLogs
-        });
+        // One Ai adapter per region-provided provider, but providers may share the
+        // same OIDC client: oidc-spa identifies a client by issuerUri + clientId, so
+        // creating it twice would collide. Create each distinct client only once.
+        const getOidcAccessTokenByOidcKey = new Map<string, () => Promise<string>>();
 
-        context.ai = createAi({
-            webUiUrl: deploymentRegion.ai.url,
-            oauthProvider: deploymentRegion.ai.oauthProvider,
-            getOidcAccessToken: async () => (await oidc_ai.getTokens()).accessToken
-        });
+        for (const aiConfig of deploymentRegion.ai) {
+            const oidcParams_ai = mergeOidcParams({
+                oidcParams,
+                oidcParams_partial: aiConfig.oidcParams
+            });
+
+            const oidcKey = `${oidcParams_ai.issuerUri} ${oidcParams_ai.clientId}`;
+
+            let getOidcAccessToken = getOidcAccessTokenByOidcKey.get(oidcKey);
+
+            if (getOidcAccessToken === undefined) {
+                const oidc_ai = await createOidc({
+                    ...oidcParams_ai,
+                    transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang,
+                    autoLogin: true,
+                    enableDebugLogs: enableOidcDebugLogs
+                });
+
+                getOidcAccessToken = async () => (await oidc_ai.getTokens()).accessToken;
+
+                getOidcAccessTokenByOidcKey.set(oidcKey, getOidcAccessToken);
+            }
+
+            context.ai.push(
+                createAi({
+                    id: aiConfig.id,
+                    name: aiConfig.name ?? new URL(aiConfig.url).hostname,
+                    webUiUrl: aiConfig.url,
+                    oauthProvider: aiConfig.oauthProvider,
+                    getOidcAccessToken
+                })
+            );
+        }
 
         await dispatch(usecases.ai.protectedThunks.initialize());
     }

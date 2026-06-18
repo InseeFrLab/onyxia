@@ -769,20 +769,7 @@ export const protectedThunks = {
                     useCertManager: region.certManager?.useCertManager,
                     certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
-                ai: (() => {
-                    const aiState = aiUsecase.selectors.main(getState());
-
-                    if (!aiState.isEnabled || aiState.token === undefined) {
-                        return undefined;
-                    }
-
-                    return {
-                        enabled: true as const,
-                        token: aiState.token,
-                        apiBase: aiState.apiBase,
-                        model: aiState.selectedModel ?? ""
-                    };
-                })(),
+                ai: aiUsecase.selectors.activeProvider(getState()),
                 proxyInjection: region.proxyInjection,
                 packageRepositoryInjection: region.packageRepositoryInjection,
                 certificateAuthorityInjection: region.certificateAuthorityInjection
