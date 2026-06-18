@@ -111,9 +111,13 @@ export const translations: Translations<"fr"> = {
         "api base url": "URL de base de l'API",
         token: "Jeton",
         "model label": "Modèles",
+        "embeddings model label": "Modèle d'embeddings",
+        "gateway error": "Impossible d'initialiser la passerelle IA.",
+        "use in services": "Utiliser dans vos services",
         "custom providers section title": "Providers IA personnalisés",
         "custom providers section helper":
-            "Ajoutez vos propres providers IA (OpenAI, Anthropic, ou tout endpoint compatible OpenAI). Les identifiants sont stockés dans votre navigateur.",
+            "Ajoutez vos propres providers IA compatibles OpenAI. Les identifiants sont stockés dans votre navigateur.",
+        "edit custom provider title": "Modifier le provider IA",
         "custom provider label field": "Nom",
         "custom provider api base field": "URL de base de l'API",
         "custom provider api key field": "Clé API",
@@ -122,6 +126,7 @@ export const translations: Translations<"fr"> = {
         "provider test error":
             "Impossible de se connecter — vérifiez l'URL et la clé API.",
         "provider save": "Ajouter",
+        "provider update": "Enregistrer",
         "provider cancel": "Annuler",
         "models fetch error":
             "Impossible de récupérer les modèles — vérifiez l'URL et la clé API.",

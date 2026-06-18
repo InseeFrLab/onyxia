@@ -3,15 +3,19 @@ import { oidcTokenExchange, OidcTokenExchangeError } from "core/tools/oidcTokenE
 import { z } from "zod";
 
 export function createAi(params: {
+    id: string;
+    name: string;
     webUiUrl: string;
     oauthProvider: string;
     getOidcAccessToken: () => Promise<string>;
 }): Ai {
-    const { webUiUrl, oauthProvider, getOidcAccessToken } = params;
+    const { id, name, webUiUrl, oauthProvider, getOidcAccessToken } = params;
 
     const apiBase = `${webUiUrl}/api`;
 
     return {
+        id,
+        name,
         webUiUrl,
         apiBase,
         getToken: async (): Promise<GetTokenResult> => {

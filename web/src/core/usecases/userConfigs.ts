@@ -34,6 +34,7 @@ export type UserConfigs = Id<
         isCommandBarEnabled: boolean;
         userProfileStr: string | null;
         s3BookmarksStr: string | null;
+        aiConfigStr: string | null;
     }
 >;
 
@@ -172,7 +173,8 @@ export const protectedThunks = {
                 selectedProjectId: null,
                 isCommandBarEnabled: paramsOfBootstrapCore.isCommandBarEnabledByDefault,
                 userProfileStr: null,
-                s3BookmarksStr: null
+                s3BookmarksStr: null,
+                aiConfigStr: null
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());

@@ -110,9 +110,13 @@ export const translations: Translations<"no"> = {
         "api base url": "API-basis-URL",
         token: "Token",
         "model label": "Modell",
+        "embeddings model label": "Embeddings-modell",
+        "gateway error": "Kunne ikke initialisere AI-gatewayen.",
+        "use in services": "Bruk i tjenestene dine",
         "custom providers section title": "Tilpassede AI-leverandører",
         "custom providers section helper":
-            "Legg til dine egne AI-leverandører med en basis-URL og API-nøkkel.",
+            "Legg til dine egne OpenAI-kompatible AI-leverandører. Påloggingsinformasjonen lagres i nettleseren din.",
+        "edit custom provider title": "Rediger AI-leverandør",
         "custom provider label field": "Etikett",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-nøkkel",
@@ -120,6 +124,7 @@ export const translations: Translations<"no"> = {
         "provider test success": "Tilkobling vellykket",
         "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
         "provider save": "Legg til",
+        "provider update": "Lagre",
         "provider cancel": "Avbryt",
         "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen.",
         "no account": ({ webUiUrl }) => (

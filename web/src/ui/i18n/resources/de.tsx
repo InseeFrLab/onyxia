@@ -111,9 +111,13 @@ export const translations: Translations<"de"> = {
         "api base url": "API-Basis-URL",
         token: "Token",
         "model label": "Modell",
+        "embeddings model label": "Embedding-Modell",
+        "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
+        "use in services": "In Ihren Diensten verwenden",
         "custom providers section title": "Benutzerdefinierte KI-Anbieter",
         "custom providers section helper":
-            "Fügen Sie Ihre eigenen KI-Anbieter hinzu (OpenAI, Anthropic oder jeden OpenAI-kompatiblen Endpunkt). Die Anmeldedaten werden in Ihrem Browser gespeichert.",
+            "Fügen Sie Ihre eigenen OpenAI-kompatiblen KI-Anbieter hinzu. Die Anmeldedaten werden in Ihrem Browser gespeichert.",
+        "edit custom provider title": "KI-Anbieter bearbeiten",
         "custom provider label field": "Name",
         "custom provider api base field": "API-Basis-URL",
         "custom provider api key field": "API-Schlüssel",
@@ -122,6 +126,7 @@ export const translations: Translations<"de"> = {
         "provider test error":
             "Verbindung fehlgeschlagen — URL und API-Schlüssel prüfen.",
         "provider save": "Hinzufügen",
+        "provider update": "Speichern",
         "provider cancel": "Abbrechen",
         "models fetch error":
             "Modelle konnten nicht abgerufen werden — überprüfen Sie URL und API-Schlüssel.",

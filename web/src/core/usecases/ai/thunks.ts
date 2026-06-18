@@ -1,42 +1,31 @@
 import type { Thunks } from "core/bootstrap";
-import { actions } from "./state";
-import type { AiModel, CustomAiProvider } from "./state";
+import { actions, name } from "./state";
+import type { AiModel, ActiveProvider, ModelSelection, Provider } from "./state";
+import {
+    parseAiConfigStr,
+    serializeAiConfig,
+    type PersistedAiConfig,
+    type PersistedModelSelection
+} from "./decoupledLogic/persistedAiConfig";
 import { z } from "zod";
-import { getLocalStorage } from "core/tools/safeLocalStorage";
+import * as userConfigs from "core/usecases/userConfigs";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe";
-import { id } from "tsafe/id";
 
-const SELECTED_MODEL_STORAGE_KEY = "onyxia:ai:selectedModel";
-const CUSTOM_PROVIDERS_STORAGE_KEY = "onyxia:ai:customProviders";
-
-type PersistedCustomProvider = {
-    id: string;
-    label: string;
-    apiBase: string;
-    apiKey: string;
-    selectedModel: string | undefined;
-};
-
-type LocalStorageLike = Pick<Storage, "getItem" | "setItem">;
-
-function readPersistedProviders(
-    localStorage: LocalStorageLike
-): PersistedCustomProvider[] {
-    const raw = localStorage.getItem(CUSTOM_PROVIDERS_STORAGE_KEY);
-    if (raw === null) return [];
-    try {
-        return JSON.parse(raw) as PersistedCustomProvider[];
-    } catch {
-        return [];
-    }
+function toPersistedSelection(selection: ModelSelection): PersistedModelSelection {
+    return {
+        modelId: selection.modelId ?? null,
+        embeddingsModelId: selection.embeddingsModelId ?? null
+    };
 }
 
-function writePersistedProviders(
-    localStorage: LocalStorageLike,
-    providers: PersistedCustomProvider[]
-): void {
-    localStorage.setItem(CUSTOM_PROVIDERS_STORAGE_KEY, JSON.stringify(providers));
+function fromPersistedSelection(
+    selection: PersistedModelSelection | undefined
+): ModelSelection {
+    return {
+        modelId: selection?.modelId ?? undefined,
+        embeddingsModelId: selection?.embeddingsModelId ?? undefined
+    };
 }
 
 async function fetchModels(apiBase: string, apiKey: string): Promise<AiModel[]> {
@@ -59,35 +48,53 @@ export const thunks = {
             const [, getState] = args;
             const region =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
-            return region.ai !== undefined;
+            return region.ai.length > 0;
         },
     refreshToken:
-        () =>
+        (params: { providerId: string }) =>
         async (...args) => {
+            const { providerId } = params;
             const [dispatch, , { ai }] = args;
 
-            assert(ai !== undefined);
+            const aiProvider = ai.find(aiProvider => aiProvider.id === providerId);
 
-            const result = await ai.getToken();
+            assert(aiProvider !== undefined);
 
-            if (result.status !== "success") {
-                dispatch(actions.tokenRefreshFailed());
-                return;
-            }
+            const result = await aiProvider.getToken();
 
-            dispatch(actions.tokenRefreshed({ token: result.token }));
+            dispatch(
+                actions.regionTokenRefreshed({
+                    providerId,
+                    token: result.status === "success" ? result.token : undefined
+                })
+            );
         },
-    setSelectedModel:
-        (params: { model: string }) =>
-        (...args) => {
-            const { model } = params;
+    setActiveProvider:
+        (params: { activeProvider: ActiveProvider }) =>
+        async (...args) => {
+            const { activeProvider } = params;
             const [dispatch] = args;
 
-            const { localStorage } = getLocalStorage();
+            dispatch(actions.activeProviderChanged({ activeProvider }));
+            await dispatch(privateThunks.persistConfig());
+        },
+    setSelectedModel:
+        (params: { providerId: string; modelId: string }) =>
+        async (...args) => {
+            const { providerId, modelId } = params;
+            const [dispatch] = args;
 
-            localStorage.setItem(SELECTED_MODEL_STORAGE_KEY, model);
+            dispatch(actions.modelSelected({ providerId, modelId }));
+            await dispatch(privateThunks.persistConfig());
+        },
+    setSelectedEmbeddingsModel:
+        (params: { providerId: string; modelId: string }) =>
+        async (...args) => {
+            const { providerId, modelId } = params;
+            const [dispatch] = args;
 
-            dispatch(actions.selectedModelSet({ model }));
+            dispatch(actions.embeddingsModelSelected({ providerId, modelId }));
+            await dispatch(privateThunks.persistConfig());
         },
     addCustomProvider:
         (params: { label: string; apiBase: string; apiKey: string }) =>
@@ -95,78 +102,96 @@ export const thunks = {
             const { label, apiBase, apiKey } = params;
             const [dispatch] = args;
 
-            const { localStorage } = getLocalStorage();
-
             const providerId = crypto.randomUUID();
 
             dispatch(
-                actions.customProviderAdded(
-                    id<CustomAiProvider>({
+                actions.customProviderAdded({
+                    provider: {
+                        kind: "custom",
                         id: providerId,
                         label,
                         apiBase,
                         apiKey,
-                        availableModels: [],
-                        selectedModel: undefined,
-                        modelsFetchStatus: "fetching"
-                    })
-                )
+                        modelCatalog: { stateDescription: "fetching" },
+                        selection: { modelId: undefined, embeddingsModelId: undefined }
+                    }
+                })
             );
+            dispatch(
+                actions.activeProviderChanged({
+                    activeProvider: { kind: "provider", providerId }
+                })
+            );
+            await dispatch(privateThunks.persistConfig());
 
-            const persisted = readPersistedProviders(localStorage);
-            persisted.push({
-                id: providerId,
-                label,
-                apiBase,
-                apiKey,
-                selectedModel: undefined
-            });
-            writePersistedProviders(localStorage, persisted);
-
-            try {
-                const models = await fetchModels(apiBase, apiKey);
-                dispatch(actions.customProviderModelsLoaded({ id: providerId, models }));
-            } catch {
-                dispatch(actions.customProviderModelsFetchFailed({ id: providerId }));
-            }
+            await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
         },
-    deleteCustomProvider:
-        (params: { id: string }) =>
-        (...args) => {
-            const { id } = params;
+    editCustomProvider:
+        (params: {
+            providerId: string;
+            label: string;
+            apiBase: string;
+            apiKey: string;
+        }) =>
+        async (...args) => {
+            const { providerId, label, apiBase, apiKey } = params;
             const [dispatch] = args;
 
-            const { localStorage } = getLocalStorage();
-
-            dispatch(actions.customProviderDeleted({ id }));
-
-            const persisted = readPersistedProviders(localStorage).filter(
-                p => p.id !== id
+            dispatch(
+                actions.customProviderEdited({ providerId, label, apiBase, apiKey })
             );
-            writePersistedProviders(localStorage, persisted);
+            await dispatch(privateThunks.persistConfig());
+
+            await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
+        },
+    deleteCustomProvider:
+        (params: { providerId: string }) =>
+        async (...args) => {
+            const { providerId } = params;
+            const [dispatch] = args;
+
+            dispatch(actions.customProviderDeleted({ providerId }));
+            await dispatch(privateThunks.persistConfig());
         },
     testCustomProvider:
         (params: { apiBase: string; apiKey: string }) =>
         async (..._args): Promise<AiModel[]> => {
             const { apiBase, apiKey } = params;
             return fetchModels(apiBase, apiKey);
-        },
-    setCustomProviderSelectedModel:
-        (params: { id: string; model: string }) =>
-        (...args) => {
-            const { id, model } = params;
-            const [dispatch] = args;
+        }
+} satisfies Thunks;
 
-            const { localStorage } = getLocalStorage();
+const privateThunks = {
+    persistConfig:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
 
-            dispatch(actions.customProviderSelectedModelSet({ id, model }));
+            const state = getState()[name];
 
-            const persisted = readPersistedProviders(localStorage);
-            const entry = persisted.find(p => p.id === id);
-            if (entry !== undefined) {
-                entry.selectedModel = model;
-                writePersistedProviders(localStorage, persisted);
-            }
+            if (!state.isInitialized) return;
+
+            const aiConfig: PersistedAiConfig = {
+                customProviders: state.providers
+                    .filter((p): p is Provider.Custom => p.kind === "custom")
+                    .map(({ id, label, apiBase, apiKey }) => ({
+                        id,
+                        label,
+                        apiBase,
+                        apiKey
+                    })),
+                selections: Object.fromEntries(
+                    state.providers.map(p => [p.id, toPersistedSelection(p.selection)])
+                ),
+                activeProvider: state.activeProvider
+            };
+
+            await dispatch(
+                userConfigs.thunks.changeValue({
+                    key: "aiConfigStr",
+                    value: serializeAiConfig({ aiConfig })
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -174,63 +199,142 @@ export const protectedThunks = {
     initialize:
         () =>
         async (...args) => {
-            const [dispatch, , { ai }] = args;
+            const [dispatch, getState, { ai }] = args;
 
-            if (ai === undefined) {
+            if (ai.length === 0) {
                 return;
             }
 
-            const { localStorage } = getLocalStorage();
+            dispatch(actions.initializeStarted());
 
-            dispatch(actions.initializeStart());
+            const persisted = parseAiConfigStr({
+                aiConfigStr: userConfigs.selectors.userConfigs(getState()).aiConfigStr
+            });
 
-            const tokenResult = await ai.getToken();
+            // Build one region provider per region-provided endpoint, keeping a handle
+            // on its adapter + token result for the post-init model fetch.
+            const regionEntries = await Promise.all(
+                ai.map(async aiProvider => {
+                    const tokenResult = await aiProvider.getToken();
 
-            if (tokenResult.status !== "success") {
-                dispatch(actions.initializeFailed({ cause: tokenResult.status }));
-                return;
-            }
+                    const provider: Provider.Region = {
+                        kind: "region",
+                        id: aiProvider.id,
+                        name: aiProvider.name,
+                        webUiUrl: aiProvider.webUiUrl,
+                        apiBase: aiProvider.apiBase,
+                        auth: (() => {
+                            switch (tokenResult.status) {
+                                case "no-account":
+                                    return { stateDescription: "no account" };
+                                case "error":
+                                    return { stateDescription: "error" };
+                                case "success":
+                                    return {
+                                        stateDescription: "authenticated",
+                                        token: tokenResult.token
+                                    };
+                            }
+                        })(),
+                        modelCatalog: {
+                            stateDescription:
+                                tokenResult.status === "success"
+                                    ? "fetching"
+                                    : "not fetched"
+                        },
+                        selection: fromPersistedSelection(
+                            persisted?.selections[aiProvider.id]
+                        )
+                    };
 
-            const { token } = tokenResult;
-            const availableModels = await ai.listModels(token);
-
-            const persisted = readPersistedProviders(localStorage);
-
-            const customProviders: CustomAiProvider[] = persisted.map(p =>
-                id<CustomAiProvider>({
-                    id: p.id,
-                    label: p.label,
-                    apiBase: p.apiBase,
-                    apiKey: p.apiKey,
-                    availableModels: [],
-                    selectedModel: p.selectedModel,
-                    modelsFetchStatus: "fetching"
+                    return { provider, aiProvider, tokenResult };
                 })
             );
 
-            dispatch(
-                actions.initializeSucceed({
-                    webUiUrl: ai.webUiUrl,
-                    apiBase: ai.apiBase,
-                    token,
-                    availableModels,
-                    selectedModel:
-                        localStorage.getItem(SELECTED_MODEL_STORAGE_KEY) ?? undefined,
-                    customProviders
-                })
-            );
+            const regionProviders = regionEntries.map(({ provider }) => provider);
 
-            await Promise.all(
-                persisted.map(async p => {
+            const customProviders: Provider.Custom[] = (
+                persisted?.customProviders ?? []
+            ).map(p => ({
+                kind: "custom",
+                id: p.id,
+                label: p.label,
+                apiBase: p.apiBase,
+                apiKey: p.apiKey,
+                modelCatalog: { stateDescription: "fetching" },
+                selection: fromPersistedSelection(persisted?.selections[p.id])
+            }));
+
+            const providers = [...regionProviders, ...customProviders];
+
+            const activeProvider = ((): ActiveProvider => {
+                const stored = persisted?.activeProvider;
+
+                // Never saved a preference → default to the first region provider.
+                if (stored === undefined) {
+                    const [firstRegionProvider] = regionProviders;
+                    return firstRegionProvider === undefined
+                        ? { kind: "none" }
+                        : { kind: "provider", providerId: firstRegionProvider.id };
+                }
+
+                // Stored selection points at a provider that no longer exists.
+                if (
+                    stored.kind === "provider" &&
+                    !providers.some(p => p.id === stored.providerId)
+                ) {
+                    return { kind: "none" };
+                }
+
+                return stored;
+            })();
+
+            dispatch(actions.initialized({ providers, activeProvider }));
+
+            await Promise.all([
+                ...regionEntries.map(async ({ provider, aiProvider, tokenResult }) => {
+                    if (tokenResult.status !== "success") return;
                     try {
-                        const models = await fetchModels(p.apiBase, p.apiKey);
+                        const models = await aiProvider.listModels(tokenResult.token);
                         dispatch(
-                            actions.customProviderModelsLoaded({ id: p.id, models })
+                            actions.modelCatalogLoaded({
+                                providerId: provider.id,
+                                models
+                            })
                         );
                     } catch {
-                        dispatch(actions.customProviderModelsFetchFailed({ id: p.id }));
+                        dispatch(
+                            actions.modelCatalogFetchFailed({ providerId: provider.id })
+                        );
                     }
-                })
-            );
+                }),
+                ...customProviders.map(p =>
+                    dispatchFetchedModels({
+                        dispatch,
+                        providerId: p.id,
+                        apiBase: p.apiBase,
+                        apiKey: p.apiKey
+                    })
+                )
+            ]);
         }
 } satisfies Thunks;
+
+async function dispatchFetchedModels(params: {
+    dispatch: (
+        action:
+            | ReturnType<typeof actions.modelCatalogLoaded>
+            | ReturnType<typeof actions.modelCatalogFetchFailed>
+    ) => void;
+    providerId: string;
+    apiBase: string;
+    apiKey: string;
+}): Promise<void> {
+    const { dispatch, providerId, apiBase, apiKey } = params;
+    try {
+        const models = await fetchModels(apiBase, apiKey);
+        dispatch(actions.modelCatalogLoaded({ providerId, models }));
+    } catch {
+        dispatch(actions.modelCatalogFetchFailed({ providerId }));
+    }
+}

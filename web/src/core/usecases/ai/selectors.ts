@@ -1,53 +1,62 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { name } from "./state";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
-import { assert } from "tsafe";
+import type { Provider } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
 
-const main = createSelector(
-    state,
-    deploymentRegionManagement.selectors.currentDeploymentRegion,
-    (state, region) => {
-        if (!state.isEnabled) {
-            const { initializationStatus } = state;
-
-            if (initializationStatus === "no-account") {
-                assert(
-                    region.ai !== undefined,
-                    "region.ai should exists in case of no-account status"
-                );
-
-                return {
-                    isEnabled: false as const,
-                    initializationStatus,
-                    webUiUrl: region.ai.url
-                };
-            }
-
-            return { isEnabled: false as const, initializationStatus };
-        }
-
-        const {
-            webUiUrl,
-            apiBase,
-            token,
-            availableModels,
-            selectedModel,
-            customProviders
-        } = state;
-
+const main = createSelector(state, state => {
+    if (!state.isInitialized) {
         return {
-            isEnabled: true as const,
-            webUiUrl,
-            apiBase,
-            token,
-            availableModels,
-            selectedModel,
-            customProviders
+            isInitialized: false as const,
+            isInitializing: state.isInitializing
         };
     }
-);
 
-export const selectors = { main };
+    return {
+        isInitialized: true as const,
+        providers: state.providers,
+        activeProvider: state.activeProvider
+    };
+});
+
+/** Display name of a provider, whatever its kind. */
+function getProviderName(provider: Provider): string {
+    return provider.kind === "region" ? provider.name : provider.label;
+}
+
+/** Credentials usable to call a provider, or undefined when it isn't ready. */
+function getProviderApiKey(provider: Provider): string | undefined {
+    if (provider.kind === "custom") return provider.apiKey;
+    if (provider.auth.stateDescription !== "authenticated") return undefined;
+    return provider.auth.token;
+}
+
+const activeProvider = createSelector(state, (state): XOnyxiaContext["ai"] => {
+    if (!state.isInitialized) return undefined;
+
+    const { providers, activeProvider } = state;
+
+    if (activeProvider.kind === "none") return undefined;
+
+    const provider = providers.find(p => p.id === activeProvider.providerId);
+
+    if (provider === undefined) return undefined;
+    if (provider.modelCatalog.stateDescription !== "loaded") return undefined;
+
+    const apiKey = getProviderApiKey(provider);
+
+    if (apiKey === undefined) return undefined;
+
+    return {
+        enabled: true,
+        apiKey,
+        apiBase: provider.apiBase,
+        model: provider.selection.modelId ?? "",
+        embeddingsModel: provider.selection.embeddingsModelId ?? "",
+        provider: getProviderName(provider)
+    };
+});
+
+export const selectors = { main, activeProvider };

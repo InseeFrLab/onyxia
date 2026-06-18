@@ -110,9 +110,13 @@ export const translations: Translations<"es"> = {
         "api base url": "URL base de la API",
         token: "Token",
         "model label": "Modelo",
+        "embeddings model label": "Modelo de embeddings",
+        "gateway error": "No se pudo inicializar la pasarela de IA.",
+        "use in services": "Usar en sus servicios",
         "custom providers section title": "Proveedores de IA personalizados",
         "custom providers section helper":
-            "Añade tus propios proveedores de IA con una URL base y clave API.",
+            "Añade tus propios proveedores de IA compatibles con OpenAI. Las credenciales se almacenan en tu navegador.",
+        "edit custom provider title": "Editar proveedor de IA",
         "custom provider label field": "Etiqueta",
         "custom provider api base field": "URL base de la API",
         "custom provider api key field": "Clave API",
@@ -120,6 +124,7 @@ export const translations: Translations<"es"> = {
         "provider test success": "Conexión exitosa",
         "provider test error": "No se puede conectar — compruebe la URL y la clave API.",
         "provider save": "Añadir",
+        "provider update": "Guardar",
         "provider cancel": "Cancelar",
         "models fetch error":
             "No se pueden obtener los modelos — compruebe la URL y la clave API.",

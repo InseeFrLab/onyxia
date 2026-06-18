@@ -14,12 +14,18 @@ import { Button } from "onyxia-ui/Button";
 import { useCoreState, getCoreSync } from "core";
 import { smartTrim } from "ui/tools/smartTrim";
 import { getIconUrlByName } from "lazy-icons";
-import Divider from "@mui/material/Divider";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { Text } from "onyxia-ui/Text";
-import type { CustomAiProvider } from "core/usecases/ai/state";
+import type {
+    AiModel,
+    ModelCatalog,
+    ModelSelection,
+    Provider
+} from "core/usecases/ai/state";
 
 export type Props = {
     className?: string;
@@ -37,9 +43,17 @@ const AccountAiGatewayTab = memo((props: Props) => {
     const uiState = useCoreState("ai", "main");
 
     useEffect(() => {
-        if (uiState.isEnabled && uiState.token === undefined) {
-            ai.refreshToken();
-        }
+        if (!uiState.isInitialized) return;
+
+        uiState.providers.forEach(provider => {
+            if (
+                provider.kind === "region" &&
+                provider.auth.stateDescription === "authenticated" &&
+                provider.auth.token === undefined
+            ) {
+                ai.refreshToken({ providerId: provider.id });
+            }
+        });
     }, []);
 
     const { t } = useTranslation({ AccountAiGatewayTab });
@@ -48,22 +62,27 @@ const AccountAiGatewayTab = memo((props: Props) => {
         copyToClipboard(text)
     );
 
-    const onRefreshClick = useConstCallback(() => ai.refreshToken());
-
-    const onModelChange = useConstCallback((event: { target: { value: string } }) =>
-        ai.setSelectedModel({ model: event.target.value })
+    const onRefreshClickFactory = useCallbackFactory(([providerId]: [string]) =>
+        ai.refreshToken({ providerId })
     );
 
-    const onCustomProviderModelChangeFactory = useCallbackFactory(
-        ([id]: [string], [event]: [{ target: { value: string } }]) =>
-            ai.setCustomProviderSelectedModel({ id, model: event.target.value })
+    const onToggleProviderFactory = useCallbackFactory(
+        ([providerId]: [string], [, checked]: [unknown, boolean]) =>
+            ai.setActiveProvider({
+                activeProvider: checked
+                    ? { kind: "provider", providerId }
+                    : { kind: "none" }
+            })
     );
 
-    const onDeleteCustomProviderFactory = useCallbackFactory(([id]: [string]) =>
-        ai.deleteCustomProvider({ id })
+    const onDeleteCustomProviderFactory = useCallbackFactory(([providerId]: [string]) =>
+        ai.deleteCustomProvider({ providerId })
     );
 
     const [addFormOpen, setAddFormOpen] = useState(false);
+    const [editingProviderId, setEditingProviderId] = useState<string | undefined>(
+        undefined
+    );
     const [pendingLabel, setPendingLabel] = useState("");
     const [pendingApiBase, setPendingApiBase] = useState("");
     const [pendingApiKey, setPendingApiKey] = useState("");
@@ -72,10 +91,36 @@ const AccountAiGatewayTab = memo((props: Props) => {
     >("idle");
     const [testModelCount, setTestModelCount] = useState(0);
 
-    const onAddClick = useConstCallback(() => setAddFormOpen(true));
+    const onAddClick = useConstCallback(() => {
+        setEditingProviderId(undefined);
+        setPendingLabel("");
+        setPendingApiBase("");
+        setPendingApiKey("");
+        setTestStatus("idle");
+        setTestModelCount(0);
+        setAddFormOpen(true);
+    });
+
+    const onEditClickFactory = useCallbackFactory(([providerId]: [string]) => {
+        if (!uiState.isInitialized) return;
+
+        const provider = uiState.providers.find(
+            (p): p is Provider.Custom => p.kind === "custom" && p.id === providerId
+        );
+        if (provider === undefined) return;
+
+        setEditingProviderId(providerId);
+        setPendingLabel(provider.label);
+        setPendingApiBase(provider.apiBase);
+        setPendingApiKey(provider.apiKey);
+        setTestStatus("idle");
+        setTestModelCount(0);
+        setAddFormOpen(true);
+    });
 
     const onCancelAdd = useConstCallback(() => {
         setAddFormOpen(false);
+        setEditingProviderId(undefined);
         setPendingLabel("");
         setPendingApiBase("");
         setPendingApiKey("");
@@ -98,12 +143,22 @@ const AccountAiGatewayTab = memo((props: Props) => {
     });
 
     const onSaveProvider = useConstCallback(async () => {
-        await ai.addCustomProvider({
-            label: pendingLabel,
-            apiBase: pendingApiBase,
-            apiKey: pendingApiKey
-        });
+        if (editingProviderId === undefined) {
+            await ai.addCustomProvider({
+                label: pendingLabel,
+                apiBase: pendingApiBase,
+                apiKey: pendingApiKey
+            });
+        } else {
+            await ai.editCustomProvider({
+                providerId: editingProviderId,
+                label: pendingLabel,
+                apiBase: pendingApiBase,
+                apiKey: pendingApiKey
+            });
+        }
         setAddFormOpen(false);
+        setEditingProviderId(undefined);
         setPendingLabel("");
         setPendingApiBase("");
         setPendingApiKey("");
@@ -111,85 +166,117 @@ const AccountAiGatewayTab = memo((props: Props) => {
         setTestModelCount(0);
     });
 
-    if (!uiState.isEnabled) {
-        const { initializationStatus } = uiState;
-
-        if (initializationStatus === "pending") {
-            return <CircularProgress />;
-        }
-
-        if (
-            initializationStatus === "no-account" &&
-            "webUiUrl" in uiState &&
-            uiState.webUiUrl !== undefined
-        ) {
-            return (
-                <Text typo="body 1">
-                    {t("no account", { webUiUrl: uiState.webUiUrl })}
-                </Text>
-            );
-        }
-
-        return null;
+    if (!uiState.isInitialized) {
+        return uiState.isInitializing ? <CircularProgress /> : null;
     }
 
-    if (uiState.token === undefined) {
-        return <CircularProgress />;
-    }
+    const { providers, activeProvider } = uiState;
 
-    const { token, apiBase, webUiUrl, availableModels, selectedModel, customProviders } =
-        uiState;
+    const regionProviders = providers.filter(
+        (p): p is Provider.Region => p.kind === "region"
+    );
+    const customProviders = providers.filter(
+        (p): p is Provider.Custom => p.kind === "custom"
+    );
+
+    const isActive = (providerId: string) =>
+        activeProvider.kind === "provider" && activeProvider.providerId === providerId;
 
     return (
         <div className={className}>
-            <SettingSectionHeader
-                title={t("credentials section title")}
-                helperText={
-                    <>
-                        {t("credentials section helper", { webUiUrl })}
-                        &nbsp;
-                        <IconButton
-                            size="extra small"
-                            icon={getIconUrlByName("Refresh")}
-                            onClick={onRefreshClick}
+            {regionProviders.map(regionProvider => (
+                <div key={regionProvider.id} className={classes.providerCard}>
+                    <div className={classes.providerCardHeader}>
+                        <Text typo="label 1">{regionProvider.name}</Text>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={isActive(regionProvider.id)}
+                                    onChange={onToggleProviderFactory(regionProvider.id)}
+                                    disabled={
+                                        regionProvider.modelCatalog.stateDescription !==
+                                        "loaded"
+                                    }
+                                    size="small"
+                                />
+                            }
+                            label={<Text typo="body 2">{t("use in services")}</Text>}
                         />
-                    </>
-                }
-            />
-            <SettingField
-                type="text"
-                title={t("api base url")}
-                text={smartTrim({ maxLength: 60, minCharAtTheEnd: 20, text: apiBase })}
-                onRequestCopy={onFieldRequestCopyFactory(apiBase)}
-                isSensitiveInformation={false}
-            />
-            <SettingField
-                type="text"
-                title={t("token")}
-                text={smartTrim({ maxLength: 50, minCharAtTheEnd: 20, text: token })}
-                onRequestCopy={onFieldRequestCopyFactory(token)}
-                isSensitiveInformation={true}
-            />
-            <div className={classes.modelRow}>
-                <div className={classes.modelRowTitle}>
-                    <Text typo="label 1">{t("model label")}</Text>
-                </div>
-                <div className={classes.modelRowControl}>
-                    <Select
-                        value={selectedModel ?? ""}
-                        onChange={onModelChange}
-                        size="small"
-                    >
-                        {availableModels.map(({ id, name }) => (
-                            <MenuItem key={id} value={id}>
-                                {name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </div>
-            </div>
+                    </div>
 
-            <Divider className={classes.divider} variant="middle" />
+                    {regionProvider.auth.stateDescription === "no account" && (
+                        <Text typo="body 1">
+                            {t("no account", { webUiUrl: regionProvider.webUiUrl })}
+                        </Text>
+                    )}
+
+                    {regionProvider.auth.stateDescription === "error" && (
+                        <Text typo="body 1" className={classes.errorText}>
+                            {t("gateway error")}
+                        </Text>
+                    )}
+
+                    {regionProvider.auth.stateDescription === "authenticated" && (
+                        <>
+                            <SettingSectionHeader
+                                title={t("credentials section title")}
+                                helperText={
+                                    <>
+                                        {t("credentials section helper", {
+                                            webUiUrl: regionProvider.webUiUrl
+                                        })}
+                                        &nbsp;
+                                        <IconButton
+                                            size="extra small"
+                                            icon={getIconUrlByName("Refresh")}
+                                            onClick={onRefreshClickFactory(
+                                                regionProvider.id
+                                            )}
+                                        />
+                                    </>
+                                }
+                            />
+                            {regionProvider.auth.token === undefined ? (
+                                <CircularProgress />
+                            ) : (
+                                <>
+                                    <SettingField
+                                        type="text"
+                                        title={t("api base url")}
+                                        text={smartTrim({
+                                            maxLength: 60,
+                                            minCharAtTheEnd: 20,
+                                            text: regionProvider.apiBase
+                                        })}
+                                        onRequestCopy={onFieldRequestCopyFactory(
+                                            regionProvider.apiBase
+                                        )}
+                                        isSensitiveInformation={false}
+                                    />
+                                    <SettingField
+                                        type="text"
+                                        title={t("token")}
+                                        text={smartTrim({
+                                            maxLength: 50,
+                                            minCharAtTheEnd: 20,
+                                            text: regionProvider.auth.token
+                                        })}
+                                        onRequestCopy={onFieldRequestCopyFactory(
+                                            regionProvider.auth.token
+                                        )}
+                                        isSensitiveInformation={true}
+                                    />
+                                </>
+                            )}
+                            <ModelCatalogSection
+                                providerId={regionProvider.id}
+                                modelCatalog={regionProvider.modelCatalog}
+                                selection={regionProvider.selection}
+                            />
+                        </>
+                    )}
+                </div>
+            ))}
 
             <div className={classes.customProvidersSectionHeader}>
                 <SettingSectionHeader
@@ -204,18 +291,72 @@ const AccountAiGatewayTab = memo((props: Props) => {
             </div>
 
             {customProviders.map(provider => (
-                <CustomProviderCard
-                    key={provider.id}
-                    provider={provider}
-                    onModelChange={onCustomProviderModelChangeFactory(provider.id)}
-                    onDelete={onDeleteCustomProviderFactory(provider.id)}
-                    modelLabel={t("model label")}
-                    modelsErrorLabel={t("models fetch error")}
-                />
+                <div key={provider.id} className={classes.providerCard}>
+                    <div className={classes.providerCardHeader}>
+                        <Text typo="label 1">{provider.label}</Text>
+                        <div className={classes.providerCardActions}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={isActive(provider.id)}
+                                        onChange={onToggleProviderFactory(provider.id)}
+                                        disabled={
+                                            provider.modelCatalog.stateDescription !==
+                                            "loaded"
+                                        }
+                                        size="small"
+                                    />
+                                }
+                                label={<Text typo="body 2">{t("use in services")}</Text>}
+                            />
+                            <IconButton
+                                icon={getIconUrlByName("Edit")}
+                                onClick={onEditClickFactory(provider.id)}
+                                size="small"
+                            />
+                            <IconButton
+                                icon={getIconUrlByName("Delete")}
+                                onClick={onDeleteCustomProviderFactory(provider.id)}
+                                size="small"
+                            />
+                        </div>
+                    </div>
+                    <SettingField
+                        type="text"
+                        title={t("custom provider api base field")}
+                        text={smartTrim({
+                            maxLength: 60,
+                            minCharAtTheEnd: 20,
+                            text: provider.apiBase
+                        })}
+                        onRequestCopy={onFieldRequestCopyFactory(provider.apiBase)}
+                        isSensitiveInformation={false}
+                    />
+                    <SettingField
+                        type="text"
+                        title={t("custom provider api key field")}
+                        text={smartTrim({
+                            maxLength: 50,
+                            minCharAtTheEnd: 20,
+                            text: provider.apiKey
+                        })}
+                        onRequestCopy={onFieldRequestCopyFactory(provider.apiKey)}
+                        isSensitiveInformation={true}
+                    />
+                    <ModelCatalogSection
+                        providerId={provider.id}
+                        modelCatalog={provider.modelCatalog}
+                        selection={provider.selection}
+                    />
+                </div>
             ))}
 
             <Dialog
-                title={t("custom providers section title")}
+                title={t(
+                    editingProviderId === undefined
+                        ? "custom providers section title"
+                        : "edit custom provider title"
+                )}
                 isOpen={addFormOpen}
                 onClose={onCancelAdd}
                 body={
@@ -271,7 +412,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
                                 </Text>
                             )}
                             {testStatus === "error" && (
-                                <Text typo="body 2" className={classes.testError}>
+                                <Text typo="body 2" className={classes.errorText}>
                                     {t("provider test error")}
                                 </Text>
                             )}
@@ -291,7 +432,11 @@ const AccountAiGatewayTab = memo((props: Props) => {
                                 pendingApiKey === ""
                             }
                         >
-                            {t("provider save")}
+                            {t(
+                                editingProviderId === undefined
+                                    ? "provider save"
+                                    : "provider update"
+                            )}
                         </Button>
                     </>
                 }
@@ -300,57 +445,86 @@ const AccountAiGatewayTab = memo((props: Props) => {
     );
 });
 
-type CustomProviderCardProps = {
-    provider: CustomAiProvider;
-    onModelChange: (event: { target: { value: string } }) => void;
-    onDelete: () => void;
-    modelLabel: string;
-    modelsErrorLabel: string;
+type ModelCatalogSectionProps = {
+    providerId: string;
+    modelCatalog: ModelCatalog;
+    selection: ModelSelection;
 };
 
-const CustomProviderCard = memo((props: CustomProviderCardProps) => {
-    const { provider, onModelChange, onDelete, modelLabel, modelsErrorLabel } = props;
+const ModelCatalogSection = memo((props: ModelCatalogSectionProps) => {
+    const { providerId, modelCatalog, selection } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ AccountAiGatewayTab });
+    const {
+        functions: { ai }
+    } = getCoreSync();
+
+    const onModelChange = useConstCallback((event: { target: { value: string } }) =>
+        ai.setSelectedModel({ providerId, modelId: event.target.value })
+    );
+
+    const onEmbeddingsModelChange = useConstCallback(
+        (event: { target: { value: string } }) =>
+            ai.setSelectedEmbeddingsModel({ providerId, modelId: event.target.value })
+    );
+
+    switch (modelCatalog.stateDescription) {
+        case "not fetched":
+            return null;
+        case "fetching":
+            return <CircularProgress size={20} />;
+        case "error":
+            return (
+                <Text typo="body 2" className={classes.errorText}>
+                    {t("models fetch error")}
+                </Text>
+            );
+        case "loaded":
+            return (
+                <>
+                    <ModelSelectRow
+                        label={t("model label")}
+                        models={modelCatalog.availableModels}
+                        selectedModel={selection.modelId}
+                        onChange={onModelChange}
+                    />
+                    <ModelSelectRow
+                        label={t("embeddings model label")}
+                        models={modelCatalog.availableModels}
+                        selectedModel={selection.embeddingsModelId}
+                        onChange={onEmbeddingsModelChange}
+                    />
+                </>
+            );
+    }
+});
+
+type ModelSelectRowProps = {
+    label: string;
+    models: AiModel[];
+    selectedModel: string | undefined;
+    onChange: (event: { target: { value: string } }) => void;
+};
+
+const ModelSelectRow = memo((props: ModelSelectRowProps) => {
+    const { label, models, selectedModel, onChange } = props;
 
     const { classes } = useStyles();
 
     return (
-        <div className={classes.providerCard}>
-            <div className={classes.providerCardHeader}>
-                <Text typo="label 1">{provider.label}</Text>
-                <IconButton
-                    icon={getIconUrlByName("Delete")}
-                    onClick={onDelete}
-                    size="small"
-                />
+        <div className={classes.modelRow}>
+            <div className={classes.modelRowTitle}>
+                <Text typo="label 1">{label}</Text>
             </div>
-            <div className={classes.modelRow}>
-                <div className={classes.modelRowTitle}>
-                    <Text typo="label 1">{modelLabel}</Text>
-                </div>
-                <div className={classes.modelRowControl}>
-                    {provider.modelsFetchStatus === "fetching" && (
-                        <CircularProgress size={20} />
-                    )}
-                    {provider.modelsFetchStatus === "error" && (
-                        <Text typo="body 2" className={classes.modelsError}>
-                            {modelsErrorLabel}
-                        </Text>
-                    )}
-                    {provider.modelsFetchStatus === "success" &&
-                        provider.availableModels.length > 0 && (
-                            <Select
-                                value={provider.selectedModel ?? ""}
-                                onChange={onModelChange}
-                                size="small"
-                            >
-                                {provider.availableModels.map(({ id, name }) => (
-                                    <MenuItem key={id} value={id}>
-                                        {name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        )}
-                </div>
+            <div className={classes.modelRowControl}>
+                <Select value={selectedModel ?? ""} onChange={onChange} size="small">
+                    {models.map(({ id, name }) => (
+                        <MenuItem key={id} value={id}>
+                            {name}
+                        </MenuItem>
+                    ))}
+                </Select>
             </div>
         </div>
     );
@@ -359,13 +533,17 @@ const CustomProviderCard = memo((props: CustomProviderCardProps) => {
 export default AccountAiGatewayTab;
 
 const { i18n } = declareComponentKeys<
+    | "use in services"
     | "credentials section title"
     | { K: "credentials section helper"; P: { webUiUrl: string }; R: JSX.Element }
     | "api base url"
     | "token"
     | "model label"
+    | "embeddings model label"
+    | "gateway error"
     | "custom providers section title"
     | "custom providers section helper"
+    | "edit custom provider title"
     | "custom provider label field"
     | "custom provider api base field"
     | "custom provider api key field"
@@ -373,6 +551,7 @@ const { i18n } = declareComponentKeys<
     | "provider test success"
     | "provider test error"
     | "provider save"
+    | "provider update"
     | "provider cancel"
     | "models fetch error"
     | { K: "no account"; P: { webUiUrl: string }; R: JSX.Element }
@@ -380,9 +559,6 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountAiGatewayTab }).create(({ theme }) => ({
-    divider: {
-        ...theme.spacing.topBottom("margin", 4)
-    },
     modelRow: {
         display: "flex",
         alignItems: "center",
@@ -401,7 +577,8 @@ const useStyles = tss.withName({ AccountAiGatewayTab }).create(({ theme }) => ({
     customProvidersSectionHeader: {
         display: "flex",
         alignItems: "flex-start",
-        gap: theme.spacing(1)
+        gap: theme.spacing(1),
+        marginTop: theme.spacing(4)
     },
     providerCard: {
         border: `1px solid ${theme.colors.useCases.typography.textDisabled}`,
@@ -415,7 +592,12 @@ const useStyles = tss.withName({ AccountAiGatewayTab }).create(({ theme }) => ({
         alignItems: "center",
         marginBottom: theme.spacing(2)
     },
-    modelsError: {
+    providerCardActions: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(2)
+    },
+    errorText: {
         color: theme.colors.useCases.alertSeverity.error.main
     },
     addFormFields: {
@@ -430,8 +612,5 @@ const useStyles = tss.withName({ AccountAiGatewayTab }).create(({ theme }) => ({
     },
     testSuccess: {
         color: theme.colors.useCases.alertSeverity.success.main
-    },
-    testError: {
-        color: theme.colors.useCases.alertSeverity.error.main
     }
 }));

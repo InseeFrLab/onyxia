@@ -101,9 +101,13 @@ export const translations: Translations<"zh-CN"> = {
         "api base url": "API 基础 URL",
         token: "令牌",
         "model label": "模型",
+        "embeddings model label": "嵌入模型",
+        "gateway error": "无法初始化 AI 网关。",
+        "use in services": "在服务中使用",
         "custom providers section title": "自定义 AI 提供商",
         "custom providers section helper":
-            "使用基础 URL 和 API 密钥添加您自己的 AI 提供商。",
+            "添加您自己的兼容 OpenAI 的 AI 提供商。凭据存储在您的浏览器中。",
+        "edit custom provider title": "编辑 AI 提供商",
         "custom provider label field": "标签",
         "custom provider api base field": "API 基础 URL",
         "custom provider api key field": "API 密钥",
@@ -111,6 +115,7 @@ export const translations: Translations<"zh-CN"> = {
         "provider test success": "连接成功",
         "provider test error": "无法连接 — 请检查 URL 和 API 密钥。",
         "provider save": "添加",
+        "provider update": "保存",
         "provider cancel": "取消",
         "models fetch error": "无法获取模型 — 请检查您的 URL 和 API 密钥。",
         "no account": ({ webUiUrl }) => (
