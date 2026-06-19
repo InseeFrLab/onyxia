@@ -61,7 +61,7 @@ export type S3ExplorerMainViewProps = {
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
 
-    onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+    onDownload: (params: { s3Uris: S3Uri[] }) => void;
 
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
@@ -212,7 +212,9 @@ When `listedPrefix.isFullyQualifiedUri === true`, `onClear` must be passed as `u
 It must pass `undefined` for selection action objects that do not make sense
 for the current selection:
 
-- download and share are available only for one selected object
+- download is available when every selected item is not deleting and does not
+  have an unfinished upload progress state
+- share is available only for one selected object
 - make public is available only for one selected private prefix whose
   `policy.canBeMadePublic === true`
 - make private is available only for one selected public prefix
@@ -311,13 +313,13 @@ The resulting UI or side effect is owned by the caller.
 
 ### Download
 
-Download is available for object rows when the item is not deleting and does not
-have an unfinished upload progress state.
+Download is available for object and folder rows when the item is not deleting and
+does not have an unfinished upload progress state.
 
 Clicking Download triggers:
 
 ```ts
-onDownload({ s3Uri: item.s3Uri });
+onDownload({ s3Uris: [item.s3Uri] });
 ```
 
 The component must not create or open the HTTP object URL itself.

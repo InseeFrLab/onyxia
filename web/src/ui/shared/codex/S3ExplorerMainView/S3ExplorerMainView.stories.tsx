@@ -334,8 +334,8 @@ function StatefulExplorer(
                         })
                     ]);
                 }}
-                onDownload={({ s3Uri }) => {
-                    action("download")(s3Uri);
+                onDownload={({ s3Uris }) => {
+                    action("download")(s3Uris);
                 }}
                 onShareObject={({ s3Uri }) => {
                     action("shareObject")(s3Uri);

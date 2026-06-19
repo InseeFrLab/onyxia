@@ -226,6 +226,25 @@ function S3Explorer() {
         onRename: ({ s3Uri }) => openBookmarkDialog({ s3Uri })
     } satisfies S3BookmarksBarProps;
 
+    const onDownload = (params: { s3Uris: S3Uri[] }) => {
+        const { s3Uris } = params;
+
+        const [s3Uri, ...rest] = s3Uris;
+
+        assert(s3Uri !== undefined);
+
+        if (rest.length === 0 && !s3Uri.isDelimiterTerminated) {
+            s3ExplorerUiController.downloadObject({
+                s3Uri
+            });
+            return;
+        }
+
+        s3ExplorerUiController.downloadAsZip({
+            s3Uris
+        });
+    };
+
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
@@ -508,7 +527,7 @@ function S3Explorer() {
                                         s3ExplorerUiController.createDirectory
                                     }
                                     onDelete={s3ExplorerUiController.delete}
-                                    onDownload={s3ExplorerUiController.downloadObject}
+                                    onDownload={onDownload}
                                     onChangePrefixPolicy={async ({ action, s3Uri }) => {
                                         const dDoProceed = new Deferred<boolean>();
 
