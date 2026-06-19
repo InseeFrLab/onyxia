@@ -464,11 +464,6 @@ const ModelCatalogSection = memo((props: ModelCatalogSectionProps) => {
         ai.setSelectedModel({ providerId, modelId: event.target.value })
     );
 
-    const onEmbeddingsModelChange = useConstCallback(
-        (event: { target: { value: string } }) =>
-            ai.setSelectedEmbeddingsModel({ providerId, modelId: event.target.value })
-    );
-
     switch (modelCatalog.stateDescription) {
         case "not fetched":
             return null;
@@ -488,12 +483,6 @@ const ModelCatalogSection = memo((props: ModelCatalogSectionProps) => {
                         models={modelCatalog.availableModels}
                         selectedModel={selection.modelId}
                         onChange={onModelChange}
-                    />
-                    <ModelSelectRow
-                        label={t("embeddings model label")}
-                        models={modelCatalog.availableModels}
-                        selectedModel={selection.embeddingsModelId}
-                        onChange={onEmbeddingsModelChange}
                     />
                 </>
             );
@@ -539,7 +528,6 @@ const { i18n } = declareComponentKeys<
     | "api base url"
     | "token"
     | "model label"
-    | "embeddings model label"
     | "gateway error"
     | "custom providers section title"
     | "custom providers section helper"

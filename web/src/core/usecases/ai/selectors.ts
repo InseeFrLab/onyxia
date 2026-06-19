@@ -54,7 +54,6 @@ const activeProvider = createSelector(state, (state): XOnyxiaContext["ai"] => {
         apiKey,
         apiBase: provider.apiBase,
         model: provider.selection.modelId ?? "",
-        embeddingsModel: provider.selection.embeddingsModelId ?? "",
         provider: getProviderName(provider)
     };
 });

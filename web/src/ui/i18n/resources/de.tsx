@@ -111,7 +111,6 @@ export const translations: Translations<"de"> = {
         "api base url": "API-Basis-URL",
         token: "Token",
         "model label": "Modell",
-        "embeddings model label": "Embedding-Modell",
         "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
         "use in services": "In Ihren Diensten verwenden",
         "custom providers section title": "Benutzerdefinierte KI-Anbieter",
