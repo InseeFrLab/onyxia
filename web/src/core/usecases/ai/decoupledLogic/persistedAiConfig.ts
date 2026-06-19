@@ -4,7 +4,6 @@ import { assert, is } from "tsafe";
 // undefined isn't representable in JSON, so absent selections are stored as null.
 export type PersistedModelSelection = {
     modelId: string | null;
-    embeddingsModelId: string | null;
 };
 
 export type PersistedCustomProvider = {
@@ -42,8 +41,7 @@ const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
     selections: z.record(
         z.string(),
         z.object({
-            modelId: z.string().nullable(),
-            embeddingsModelId: z.string().nullable()
+            modelId: z.string().nullable()
         })
     ),
     activeProvider: z.union([

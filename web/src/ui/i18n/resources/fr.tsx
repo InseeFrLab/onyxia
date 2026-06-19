@@ -111,7 +111,6 @@ export const translations: Translations<"fr"> = {
         "api base url": "URL de base de l'API",
         token: "Jeton",
         "model label": "Modèles",
-        "embeddings model label": "Modèle d'embeddings",
         "gateway error": "Impossible d'initialiser la passerelle IA.",
         "use in services": "Utiliser dans vos services",
         "custom providers section title": "Providers IA personnalisés",

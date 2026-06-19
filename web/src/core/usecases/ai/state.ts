@@ -7,12 +7,11 @@ export const name = "ai";
 export type AiModel = { id: string; name: string };
 
 /**
- * The chat/embeddings models the user picked on a provider.
+ * The chat model the user picked on a provider.
  * Kept independently of the catalog so a selection survives a refetch.
  */
 export type ModelSelection = {
     modelId: string | undefined;
-    embeddingsModelId: string | undefined;
 };
 
 /** Lifecycle of fetching the provider's `/models` list. */
@@ -154,15 +153,6 @@ export const { reducer, actions } = createUsecaseActions({
             const provider = state.providers.find(p => p.id === payload.providerId);
             assert(provider !== undefined, "Provider should not be undefined");
             provider.selection.modelId = payload.modelId;
-        },
-        embeddingsModelSelected: (
-            state,
-            { payload }: { payload: { providerId: string; modelId: string } }
-        ) => {
-            if (!state.isInitialized) return;
-            const provider = state.providers.find(p => p.id === payload.providerId);
-            assert(provider !== undefined, "Provider should not be undefined");
-            provider.selection.embeddingsModelId = payload.modelId;
         },
         customProviderAdded: (
             state,

@@ -14,8 +14,7 @@ import { assert } from "tsafe";
 
 function toPersistedSelection(selection: ModelSelection): PersistedModelSelection {
     return {
-        modelId: selection.modelId ?? null,
-        embeddingsModelId: selection.embeddingsModelId ?? null
+        modelId: selection.modelId ?? null
     };
 }
 
@@ -23,8 +22,7 @@ function fromPersistedSelection(
     selection: PersistedModelSelection | undefined
 ): ModelSelection {
     return {
-        modelId: selection?.modelId ?? undefined,
-        embeddingsModelId: selection?.embeddingsModelId ?? undefined
+        modelId: selection?.modelId ?? undefined
     };
 }
 
@@ -87,15 +85,6 @@ export const thunks = {
             dispatch(actions.modelSelected({ providerId, modelId }));
             await dispatch(privateThunks.persistConfig());
         },
-    setSelectedEmbeddingsModel:
-        (params: { providerId: string; modelId: string }) =>
-        async (...args) => {
-            const { providerId, modelId } = params;
-            const [dispatch] = args;
-
-            dispatch(actions.embeddingsModelSelected({ providerId, modelId }));
-            await dispatch(privateThunks.persistConfig());
-        },
     addCustomProvider:
         (params: { label: string; apiBase: string; apiKey: string }) =>
         async (...args) => {
@@ -113,7 +102,7 @@ export const thunks = {
                         apiBase,
                         apiKey,
                         modelCatalog: { stateDescription: "fetching" },
-                        selection: { modelId: undefined, embeddingsModelId: undefined }
+                        selection: { modelId: undefined }
                     }
                 })
             );
