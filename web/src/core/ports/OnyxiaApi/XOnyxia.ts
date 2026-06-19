@@ -189,7 +189,6 @@ export type XOnyxiaContext = {
               apiBase: string;
               model: string;
               provider: string;
-              embeddingsModel: string;
           }
         | undefined;
     proxyInjection:

@@ -101,7 +101,6 @@ export const translations: Translations<"zh-CN"> = {
         "api base url": "API 基础 URL",
         token: "令牌",
         "model label": "模型",
-        "embeddings model label": "嵌入模型",
         "gateway error": "无法初始化 AI 网关。",
         "use in services": "在服务中使用",
         "custom providers section title": "自定义 AI 提供商",

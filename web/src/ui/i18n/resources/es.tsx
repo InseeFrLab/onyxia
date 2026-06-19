@@ -110,7 +110,6 @@ export const translations: Translations<"es"> = {
         "api base url": "URL base de la API",
         token: "Token",
         "model label": "Modelo",
-        "embeddings model label": "Modelo de embeddings",
         "gateway error": "No se pudo inicializar la pasarela de IA.",
         "use in services": "Usar en sus servicios",
         "custom providers section title": "Proveedores de IA personalizados",

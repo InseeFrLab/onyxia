@@ -110,7 +110,6 @@ export const translations: Translations<"fi"> = {
         "api base url": "API-perus-URL",
         token: "Token",
         "model label": "Malli",
-        "embeddings model label": "Upotusmalli",
         "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
         "use in services": "Käytä palveluissasi",
         "custom providers section title": "Mukautetut tekoälyntarjoajat",

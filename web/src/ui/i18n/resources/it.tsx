@@ -109,7 +109,6 @@ export const translations: Translations<"it"> = {
         "api base url": "URL base dell'API",
         token: "Token",
         "model label": "Modello",
-        "embeddings model label": "Modello di embedding",
         "gateway error": "Impossibile inizializzare il gateway IA.",
         "use in services": "Usa nei tuoi servizi",
         "custom providers section title": "Provider IA personalizzati",
@@ -553,8 +552,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

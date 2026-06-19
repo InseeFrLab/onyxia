@@ -110,7 +110,6 @@ export const translations: Translations<"nl"> = {
         "api base url": "API-basis-URL",
         token: "Token",
         "model label": "Model",
-        "embeddings model label": "Embeddings-model",
         "gateway error": "Kan de AI-gateway niet initialiseren.",
         "use in services": "Gebruiken in uw services",
         "custom providers section title": "Aangepaste AI-providers",
