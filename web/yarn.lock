@@ -4063,6 +4063,11 @@
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
 
+"@zip.js/zip.js@^2.8.26":
+  version "2.8.26"
+  resolved "https://registry.yarnpkg.com/@zip.js/zip.js/-/zip.js-2.8.26.tgz#826a819f673e8284d0de785551ac37e9972ee794"
+  integrity sha512-RQ4h9F6DOiHxpdocUDrOl6xBM+yOtz+LkUol47AVWcfebGBDpZ7w7Xvz9PS24JgXvLGiXXzSAfdCdVy1tPlaFA==
+
 abort-controller@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
@@ -7846,6 +7851,11 @@ stream-browserify@3.0.0:
   dependencies:
     inherits "~2.0.4"
     readable-stream "^3.5.0"
+
+streamsaver@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/streamsaver/-/streamsaver-2.0.6.tgz#869d2347dd70191e0ac888d52296956a8cba2ed9"
+  integrity sha512-LK4e7TfCV8HzuM0PKXuVUfKyCB1FtT9L0EGxsFk5Up8njj0bXK8pJM9+Wq2Nya7/jslmCQwRK39LFm55h7NBTw==
 
 string-argv@~0.3.2:
   version "0.3.2"

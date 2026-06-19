@@ -24,6 +24,7 @@ import {
     undoMakePrefixPublic,
     getIsWithinPrefixThatHasBeenMadePublic
 } from "./decoupledLogic/bucketPolicies";
+import { downloadS3UrisAsZip } from "./decoupledLogic/downloadAsZip";
 import { triggerBrowserDownload } from "core/tools/triggerBrowserDownload";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
@@ -909,6 +910,49 @@ export const thunks = {
                     profileName
                 })
             );
+        },
+    downloadAsZip:
+        (params: { s3Uris: S3Uri[] }) =>
+        async (...args) => {
+            const { s3Uris } = params;
+
+            const [dispatch, getState] = args;
+
+            if (s3Uris.length === 0) {
+                return;
+            }
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const s3Uri = privateSelectors.s3Uri(getState());
+
+            assert(s3Uri !== undefined);
+
+            try {
+                await downloadS3UrisAsZip({
+                    s3Uris,
+                    currentS3Uri: s3Uri,
+                    getS3Client: () =>
+                        dispatch(
+                            s3ProfilesManagement.protectedThunks.getS3Client({
+                                profileName
+                            })
+                        )
+                });
+            } catch (error) {
+                if (error instanceof DOMException && error.name === "AbortError") {
+                    return;
+                }
+
+                evtDisplayError.post({
+                    errorMessage:
+                        error instanceof Error
+                            ? error.message
+                            : "An unknown error occurred while downloading the ZIP file."
+                });
+            }
         }
 } satisfies Thunks;
 

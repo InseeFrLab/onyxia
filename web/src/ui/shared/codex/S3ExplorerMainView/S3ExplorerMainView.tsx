@@ -70,7 +70,7 @@ export type S3ExplorerMainViewProps = {
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
 
-    onDownload: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
+    onDownload: (params: { s3Uris: S3Uri[] }) => void;
 
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
@@ -500,25 +500,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     };
 
     const requestDownloadForItems = (itemsToDownload: S3ExplorerMainViewProps.Item[]) => {
-        const downloadableObjects = itemsToDownload.filter(
-            (item): item is S3ExplorerMainViewProps.Item.Object => {
-                if (item.type !== "object") {
-                    return false;
-                }
+        const downloadableItems = itemsToDownload.filter(getIsItemActionAvailable);
 
-                if (item.isDeleting) {
-                    return false;
-                }
-
-                return getProgressPercent(item) === undefined;
-            }
-        );
-
-        if (downloadableObjects.length === 0) {
+        if (downloadableItems.length === 0) {
             return;
         }
 
-        downloadableObjects.forEach(item => onDownload({ s3Uri: item.s3Uri }));
+        onDownload({
+            s3Uris: downloadableItems.map(item => item.s3Uri)
+        });
     };
 
     const requestDeletionForItems = (itemsToDelete: S3ExplorerMainViewProps.Item[]) => {
@@ -617,16 +607,11 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             selectionCount={selectedItems.length}
                             onClear={isSelectionLocked ? undefined : clearSelection}
                             download={
-                                selectedObjectForSingleItemAction === undefined ||
-                                !getIsItemActionAvailable(
-                                    selectedObjectForSingleItemAction
-                                )
+                                !selectedItems.every(getIsItemActionAvailable)
                                     ? undefined
                                     : {
                                           callback: () =>
-                                              requestDownloadForItems([
-                                                  selectedObjectForSingleItemAction
-                                              ])
+                                              requestDownloadForItems(selectedItems)
                                       }
                             }
                             delete={{
@@ -1023,13 +1008,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                                   )
                                                             : undefined
                                                     }
-                                                    onDownload={
-                                                        item.type === "object"
-                                                            ? () =>
-                                                                  requestDownloadForItems(
-                                                                      [item]
-                                                                  )
-                                                            : undefined
+                                                    onDownload={() =>
+                                                        requestDownloadForItems([item])
                                                     }
                                                     onBookmark={
                                                         getIsItemActionAvailable(item)
