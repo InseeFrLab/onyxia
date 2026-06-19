@@ -319,7 +319,12 @@ export async function bootstrapCore(
                     transformBeforeRedirectForKeycloakTheme,
                     getCurrentLang,
                     autoLogin: true,
-                    enableDebugLogs: enableOidcDebugLogs
+                    enableDebugLogs: enableOidcDebugLogs,
+                    // The access token is handed over to OpenWebUI's token exchange
+                    // endpoint, which validates it server-side and cannot present a
+                    // DPoP proof. It must therefore be a plain bearer token, never
+                    // sender-constrained, even when DPoP is globally enabled.
+                    disableDPoP: true
                 });
 
                 getOidcAccessToken = async () => (await oidc_ai.getTokens()).accessToken;
