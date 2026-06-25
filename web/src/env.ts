@@ -1292,6 +1292,20 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
+        envName: "ENABLED_AI",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+        }
+    },
+    {
         envName: "S3_DOCUMENTATION_LINK",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue }) => {

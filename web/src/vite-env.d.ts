@@ -62,6 +62,7 @@ type ImportMetaEnv = {
   VAULT_DOCUMENTATION_LINK: string
   ONYXIA_API_URL: string
   DISABLE_DISPLAY_ALL_CATALOG: string
+  ENABLED_AI: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
   SCREEN_SCALER: string

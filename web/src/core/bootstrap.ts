@@ -30,6 +30,7 @@ export type ParamsOfBootstrapCore = {
     isAuthGloballyRequired: boolean;
     enableOidcDebugLogs: boolean;
     disableDisplayAllCatalog: boolean;
+    isAiEnabled: boolean;
     getIsDarkModeEnabled: () => boolean;
 };
 
@@ -52,7 +53,8 @@ export async function bootstrapCore(
         transformBeforeRedirectForKeycloakTheme,
         getCurrentLang,
         isAuthGloballyRequired,
-        enableOidcDebugLogs
+        enableOidcDebugLogs,
+        isAiEnabled
     } = params;
 
     let isCoreCreated = false;
@@ -276,6 +278,10 @@ export async function bootstrapCore(
     }
 
     init_ai: {
+        if (!isAiEnabled) {
+            break init_ai;
+        }
+
         if (!oidc.isUserLoggedIn) {
             break init_ai;
         }
@@ -286,6 +292,7 @@ export async function bootstrapCore(
             );
 
         if (deploymentRegion.ai.length === 0) {
+            dispatch(usecases.ai.protectedThunks.initialize());
             break init_ai;
         }
 

@@ -37,6 +37,7 @@ triggerCoreBootstrap({
     isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED,
     enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
+    isAiEnabled: env.ENABLED_AI,
     getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled
 });
 
