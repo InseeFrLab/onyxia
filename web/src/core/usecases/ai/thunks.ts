@@ -10,7 +10,6 @@ import {
 import { fetchAiModels } from "core/tools/fetchAiModels";
 import type { GetTokenResult } from "core/ports/Ai";
 import * as userConfigs from "core/usecases/userConfigs";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe";
 
 function getTokenResultToAuth(result: GetTokenResult): State.Provider.Region["auth"] {
@@ -42,10 +41,9 @@ export const thunks = {
     isAvailable:
         () =>
         (...args): boolean => {
-            const [, getState] = args;
-            const region =
-                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
-            return region.ai.length > 0;
+            const [, , { paramsOfBootstrapCore }] = args;
+
+            return paramsOfBootstrapCore.isAiEnabled;
         },
     refreshToken:
         (params: { providerId: string }) =>
@@ -190,10 +188,8 @@ export const protectedThunks = {
         async (...args) => {
             const [dispatch, getState, { ai }] = args;
 
-            if (ai.length === 0) {
-                return;
-            }
-
+            // `ai` (region-provided adapters) may be empty: the feature can be enabled
+            // with no region gateway, in which case only custom providers are loaded.
             // Build one region provider per region-provided endpoint, keeping a handle
             // on its adapter + token result for the post-init model fetch.
             let regionEntries;
