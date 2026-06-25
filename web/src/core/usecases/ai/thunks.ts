@@ -1,42 +1,41 @@
 import type { Thunks } from "core/bootstrap";
 import { actions, name } from "./state";
-import type { AiModel, ActiveProvider, ModelSelection, Provider } from "./state";
+import type { State } from "./state";
 import {
     parseAiConfigStr,
     serializeAiConfig,
     type PersistedAiConfig,
     type PersistedModelSelection
 } from "./decoupledLogic/persistedAiConfig";
-import { z } from "zod";
+import { fetchAiModels } from "core/tools/fetchAiModels";
+import type { GetTokenResult } from "core/ports/Ai";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe";
 
-function toPersistedSelection(selection: ModelSelection): PersistedModelSelection {
+function getTokenResultToAuth(result: GetTokenResult): State.Provider.Region["auth"] {
+    switch (result.status) {
+        case "no-account":
+            return { stateDescription: "no account" };
+        case "error":
+            return { stateDescription: "error" };
+        case "success":
+            return { stateDescription: "authenticated", token: result.token };
+    }
+}
+
+function toPersistedSelection(
+    selectedModel: string | undefined
+): PersistedModelSelection {
     return {
-        modelId: selection.modelId ?? null
+        modelId: selectedModel ?? null
     };
 }
 
 function fromPersistedSelection(
     selection: PersistedModelSelection | undefined
-): ModelSelection {
-    return {
-        modelId: selection?.modelId ?? undefined
-    };
-}
-
-async function fetchModels(apiBase: string, apiKey: string): Promise<AiModel[]> {
-    const response = await fetch(`${apiBase}/models`, {
-        headers: { Authorization: `Bearer ${apiKey}` }
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to fetch models (${response.status})`);
-    }
-    const { data } = z
-        .object({ data: z.array(z.object({ id: z.string(), name: z.string() })) })
-        .parse(await response.json());
-    return data.map(({ id, name }) => ({ id, name }));
+): string | undefined {
+    return selection?.modelId ?? undefined;
 }
 
 export const thunks = {
@@ -61,19 +60,19 @@ export const thunks = {
             const result = await aiProvider.getToken();
 
             dispatch(
-                actions.regionTokenRefreshed({
+                actions.regionAuthRefreshed({
                     providerId,
-                    token: result.status === "success" ? result.token : undefined
+                    auth: getTokenResultToAuth(result)
                 })
             );
         },
     setActiveProvider:
-        (params: { activeProvider: ActiveProvider }) =>
+        (params: { activeProviderId: string | undefined }) =>
         async (...args) => {
-            const { activeProvider } = params;
+            const { activeProviderId } = params;
             const [dispatch] = args;
 
-            dispatch(actions.activeProviderChanged({ activeProvider }));
+            dispatch(actions.activeProviderChanged({ activeProviderId }));
             await dispatch(privateThunks.persistConfig());
         },
     setSelectedModel:
@@ -85,6 +84,17 @@ export const thunks = {
             dispatch(actions.modelSelected({ providerId, modelId }));
             await dispatch(privateThunks.persistConfig());
         },
+    deleteCustomProvider:
+        (params: { providerId: string }) =>
+        async (...args) => {
+            const { providerId } = params;
+            const [dispatch] = args;
+
+            dispatch(actions.deleteCustomProvider({ providerId }));
+            await dispatch(privateThunks.persistConfig());
+        },
+    // The add/edit form (values, validation, connection-test result, open state) is
+    // owned by the UI. The core only exposes the resulting operations on the state.
     addCustomProvider:
         (params: { label: string; apiBase: string; apiKey: string }) =>
         async (...args) => {
@@ -94,25 +104,20 @@ export const thunks = {
             const providerId = crypto.randomUUID();
 
             dispatch(
-                actions.customProviderAdded({
+                actions.addCustomProvider({
                     provider: {
                         kind: "custom",
                         id: providerId,
                         label,
                         apiBase,
                         apiKey,
-                        modelCatalog: { stateDescription: "fetching" },
-                        selection: { modelId: undefined }
+                        models: { stateDescription: "fetching" },
+                        selectedModelId: undefined
                     }
                 })
             );
-            dispatch(
-                actions.activeProviderChanged({
-                    activeProvider: { kind: "provider", providerId }
-                })
-            );
-            await dispatch(privateThunks.persistConfig());
 
+            await dispatch(privateThunks.persistConfig());
             await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
         },
     editCustomProvider:
@@ -126,27 +131,19 @@ export const thunks = {
             const { providerId, label, apiBase, apiKey } = params;
             const [dispatch] = args;
 
-            dispatch(
-                actions.customProviderEdited({ providerId, label, apiBase, apiKey })
-            );
-            await dispatch(privateThunks.persistConfig());
+            dispatch(actions.editCustomProvider({ providerId, label, apiBase, apiKey }));
 
+            await dispatch(privateThunks.persistConfig());
             await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
         },
-    deleteCustomProvider:
-        (params: { providerId: string }) =>
-        async (...args) => {
-            const { providerId } = params;
-            const [dispatch] = args;
-
-            dispatch(actions.customProviderDeleted({ providerId }));
-            await dispatch(privateThunks.persistConfig());
-        },
-    testCustomProvider:
+    // Command-query thunk: the connection-test result is purely UI-local (it never
+    // touches the persisted state), so returning it here is intentional.
+    testCustomProviderConnection:
         (params: { apiBase: string; apiKey: string }) =>
-        async (..._args): Promise<AiModel[]> => {
+        async (): Promise<{ modelCount: number }> => {
             const { apiBase, apiKey } = params;
-            return fetchModels(apiBase, apiKey);
+            const models = await fetchAiModels({ apiBase, token: apiKey });
+            return { modelCount: models.length };
         }
 } satisfies Thunks;
 
@@ -158,11 +155,11 @@ const privateThunks = {
 
             const state = getState()[name];
 
-            if (!state.isInitialized) return;
+            if (state.stateDescription !== "initialized") return;
 
             const aiConfig: PersistedAiConfig = {
                 customProviders: state.providers
-                    .filter((p): p is Provider.Custom => p.kind === "custom")
+                    .filter((p): p is State.Provider.Custom => p.kind === "custom")
                     .map(({ id, label, apiBase, apiKey }) => ({
                         id,
                         label,
@@ -170,9 +167,12 @@ const privateThunks = {
                         apiKey
                     })),
                 selections: Object.fromEntries(
-                    state.providers.map(p => [p.id, toPersistedSelection(p.selection)])
+                    state.providers.map(p => [
+                        p.id,
+                        toPersistedSelection(p.selectedModelId)
+                    ])
                 ),
-                activeProvider: state.activeProvider
+                activeProviderId: state.activeProviderId ?? null
             };
 
             await dispatch(
@@ -194,91 +194,75 @@ export const protectedThunks = {
                 return;
             }
 
-            dispatch(actions.initializeStarted());
-
-            const persisted = parseAiConfigStr({
-                aiConfigStr: userConfigs.selectors.userConfigs(getState()).aiConfigStr
-            });
-
             // Build one region provider per region-provided endpoint, keeping a handle
             // on its adapter + token result for the post-init model fetch.
-            const regionEntries = await Promise.all(
-                ai.map(async aiProvider => {
-                    const tokenResult = await aiProvider.getToken();
+            let regionEntries;
+            let customProviders: State.Provider.Custom[];
 
-                    const provider: Provider.Region = {
-                        kind: "region",
-                        id: aiProvider.id,
-                        name: aiProvider.name,
-                        webUiUrl: aiProvider.webUiUrl,
-                        apiBase: aiProvider.apiBase,
-                        auth: (() => {
-                            switch (tokenResult.status) {
-                                case "no-account":
-                                    return { stateDescription: "no account" };
-                                case "error":
-                                    return { stateDescription: "error" };
-                                case "success":
-                                    return {
-                                        stateDescription: "authenticated",
-                                        token: tokenResult.token
-                                    };
-                            }
-                        })(),
-                        modelCatalog: {
-                            stateDescription:
+            try {
+                const persisted = parseAiConfigStr({
+                    aiConfigStr: userConfigs.selectors.userConfigs(getState()).aiConfigStr
+                });
+
+                regionEntries = await Promise.all(
+                    ai.map(async aiProvider => {
+                        const tokenResult = await aiProvider.getToken();
+
+                        const provider: State.Provider.Region = {
+                            kind: "region",
+                            id: aiProvider.id,
+                            name: aiProvider.name,
+                            webUiUrl: aiProvider.webUiUrl,
+                            apiBase: aiProvider.apiBase,
+                            auth: getTokenResultToAuth(tokenResult),
+                            models:
                                 tokenResult.status === "success"
-                                    ? "fetching"
-                                    : "not fetched"
-                        },
-                        selection: fromPersistedSelection(
-                            persisted?.selections[aiProvider.id]
-                        )
-                    };
+                                    ? { stateDescription: "fetching" }
+                                    : undefined,
+                            selectedModelId: fromPersistedSelection(
+                                persisted?.selections[aiProvider.id]
+                            )
+                        };
 
-                    return { provider, aiProvider, tokenResult };
-                })
-            );
+                        return { provider, aiProvider, tokenResult };
+                    })
+                );
 
-            const regionProviders = regionEntries.map(({ provider }) => provider);
+                const regionProviders = regionEntries.map(({ provider }) => provider);
 
-            const customProviders: Provider.Custom[] = (
-                persisted?.customProviders ?? []
-            ).map(p => ({
-                kind: "custom",
-                id: p.id,
-                label: p.label,
-                apiBase: p.apiBase,
-                apiKey: p.apiKey,
-                modelCatalog: { stateDescription: "fetching" },
-                selection: fromPersistedSelection(persisted?.selections[p.id])
-            }));
+                customProviders = (persisted?.customProviders ?? []).map(p => ({
+                    kind: "custom",
+                    id: p.id,
+                    label: p.label,
+                    apiBase: p.apiBase,
+                    apiKey: p.apiKey,
+                    models: { stateDescription: "fetching" },
+                    selectedModelId: fromPersistedSelection(persisted?.selections[p.id])
+                }));
 
-            const providers = [...regionProviders, ...customProviders];
+                const providers = [...regionProviders, ...customProviders];
 
-            const activeProvider = ((): ActiveProvider => {
-                const stored = persisted?.activeProvider;
+                const activeProviderId = ((): string | undefined => {
+                    // Never saved a preference → default to the first region provider.
+                    if (persisted === null) {
+                        return regionProviders[0]?.id;
+                    }
 
-                // Never saved a preference → default to the first region provider.
-                if (stored === undefined) {
-                    const [firstRegionProvider] = regionProviders;
-                    return firstRegionProvider === undefined
-                        ? { kind: "none" }
-                        : { kind: "provider", providerId: firstRegionProvider.id };
-                }
+                    const stored = persisted.activeProviderId ?? undefined;
 
-                // Stored selection points at a provider that no longer exists.
-                if (
-                    stored.kind === "provider" &&
-                    !providers.some(p => p.id === stored.providerId)
-                ) {
-                    return { kind: "none" };
-                }
+                    // Stored selection points at a provider that no longer exists.
+                    if (stored !== undefined && !providers.some(p => p.id === stored)) {
+                        return undefined;
+                    }
 
-                return stored;
-            })();
+                    return stored;
+                })();
 
-            dispatch(actions.initialized({ providers, activeProvider }));
+                dispatch(actions.initialized({ providers, activeProviderId }));
+            } catch {
+                dispatch(actions.initializationFailed());
+                return;
+            }
 
             await Promise.all([
                 ...regionEntries.map(async ({ provider, aiProvider, tokenResult }) => {
@@ -286,15 +270,13 @@ export const protectedThunks = {
                     try {
                         const models = await aiProvider.listModels(tokenResult.token);
                         dispatch(
-                            actions.modelCatalogLoaded({
+                            actions.modelsLoaded({
                                 providerId: provider.id,
                                 models
                             })
                         );
                     } catch {
-                        dispatch(
-                            actions.modelCatalogFetchFailed({ providerId: provider.id })
-                        );
+                        dispatch(actions.modelsFetchFailed({ providerId: provider.id }));
                     }
                 }),
                 ...customProviders.map(p =>
@@ -312,8 +294,8 @@ export const protectedThunks = {
 async function dispatchFetchedModels(params: {
     dispatch: (
         action:
-            | ReturnType<typeof actions.modelCatalogLoaded>
-            | ReturnType<typeof actions.modelCatalogFetchFailed>
+            | ReturnType<typeof actions.modelsLoaded>
+            | ReturnType<typeof actions.modelsFetchFailed>
     ) => void;
     providerId: string;
     apiBase: string;
@@ -321,9 +303,9 @@ async function dispatchFetchedModels(params: {
 }): Promise<void> {
     const { dispatch, providerId, apiBase, apiKey } = params;
     try {
-        const models = await fetchModels(apiBase, apiKey);
-        dispatch(actions.modelCatalogLoaded({ providerId, models }));
+        const models = await fetchAiModels({ apiBase, token: apiKey });
+        dispatch(actions.modelsLoaded({ providerId, models }));
     } catch {
-        dispatch(actions.modelCatalogFetchFailed({ providerId }));
+        dispatch(actions.modelsFetchFailed({ providerId }));
     }
 }

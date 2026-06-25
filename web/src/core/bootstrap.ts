@@ -343,7 +343,7 @@ export async function bootstrapCore(
             );
         }
 
-        await dispatch(usecases.ai.protectedThunks.initialize());
+        dispatch(usecases.ai.protectedThunks.initialize());
     }
 
     pluginSystemInitCore({ core, context });

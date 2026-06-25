@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export class OidcTokenExchangeError extends Error {
     constructor(
         public readonly status: number,
@@ -26,11 +28,24 @@ export async function oidcTokenExchange(params: {
         );
     }
 
-    const data = await response.json();
+    const json = await response.json();
 
-    const token: string = data.token ?? data.access_token;
+    let token: string | undefined;
 
-    if (!token) {
+    try {
+        const data = z
+            .object({
+                token: z.string().optional(),
+                access_token: z.string().optional()
+            })
+            .parse(json);
+
+        token = data.token ?? data.access_token;
+    } catch {
+        throw new Error("Unexpected token exchange response shape");
+    }
+
+    if (token === undefined || token === "") {
         throw new Error("Token exchange response contained no token");
     }
 
