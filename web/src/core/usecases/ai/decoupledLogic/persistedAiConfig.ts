@@ -13,20 +13,17 @@ export type PersistedCustomProvider = {
     apiKey: string;
 };
 
-export type PersistedActiveProvider =
-    | { kind: "none" }
-    | { kind: "provider"; providerId: string };
-
 /**
  * The whole AI configuration, serialized into the single `aiConfigStr` user config
  * entry (persisted in the secret manager — i.e. Vault). Only durable data lives here:
- * runtime-only fields (model catalog, OIDC token) are recomputed on init.
+ * runtime-only fields (model list, OIDC token) are recomputed on init.
  */
 export type PersistedAiConfig = {
     customProviders: PersistedCustomProvider[];
     /** Model selection per provider id (region providers included). */
     selections: Record<string, PersistedModelSelection>;
-    activeProvider: PersistedActiveProvider;
+    // null (not undefined) because absent selections must round-trip through JSON.
+    activeProviderId: string | null;
 };
 
 const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
@@ -44,10 +41,7 @@ const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
             modelId: z.string().nullable()
         })
     ),
-    activeProvider: z.union([
-        z.object({ kind: z.literal("none") }),
-        z.object({ kind: z.literal("provider"), providerId: z.string() })
-    ])
+    activeProviderId: z.string().nullable()
 });
 
 /** Returns null when nothing usable is stored (never saved or corrupted). */
