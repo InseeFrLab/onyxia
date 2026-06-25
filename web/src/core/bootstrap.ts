@@ -32,6 +32,7 @@ export type ParamsOfBootstrapCore = {
     isAuthGloballyRequired: boolean;
     enableOidcDebugLogs: boolean;
     disableDisplayAllCatalog: boolean;
+    isAiEnabled: boolean;
     getIsDarkModeEnabled: () => boolean;
     S3_envValue: string;
 };
@@ -55,7 +56,8 @@ export async function bootstrapCore(
         onyxiaApiUrl,
         transformBeforeRedirectForKeycloakTheme,
         getCurrentLang,
-        enableOidcDebugLogs
+        enableOidcDebugLogs,
+        isAiEnabled
     } = params;
 
     const isAuthGloballyRequired =
@@ -322,6 +324,10 @@ export async function bootstrapCore(
     await dispatch(usecases.s3ProfilesManagement.protectedThunks.initialize());
 
     init_ai: {
+        if (!isAiEnabled) {
+            break init_ai;
+        }
+
         if (!oidc.isUserLoggedIn) {
             break init_ai;
         }
@@ -332,6 +338,7 @@ export async function bootstrapCore(
             );
 
         if (deploymentRegion.ai.length === 0) {
+            dispatch(usecases.ai.protectedThunks.initialize());
             break init_ai;
         }
 
