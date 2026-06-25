@@ -8,6 +8,7 @@ import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import type { SqlOlap } from "core/ports/SqlOlap";
 import { usecases } from "./usecases";
 import type { SecretsManager } from "core/ports/SecretsManager";
+import type { Ai } from "core/ports/Ai";
 import type { Oidc } from "core/ports/Oidc";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
@@ -38,6 +39,7 @@ export type Context = {
     onyxiaApi: OnyxiaApi;
     secretsManager: SecretsManager;
     sqlOlap: SqlOlap;
+    ai: Ai[];
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -83,7 +85,6 @@ export async function bootstrapCore(
                     );
             } catch (error) {
                 if (error instanceof AccessError) {
-                    // NOTE: Not initialized yet, it's not a bug.
                     return undefined;
                 }
                 throw error;
@@ -105,7 +106,6 @@ export async function bootstrapCore(
                     );
             } catch (error) {
                 if (error instanceof AccessError) {
-                    // NOTE: Not initialized yet, it's not a bug.
                     return undefined;
                 }
                 throw error;
@@ -137,7 +137,6 @@ export async function bootstrapCore(
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
-        // NOTE: Never reached
     }
 
     const context: Context = {
@@ -177,7 +176,8 @@ export async function bootstrapCore(
                     s3_region: s3Profile.paramsOfCreateS3Client.region
                 };
             }
-        })
+        }),
+        ai: []
     };
 
     const { core, dispatch, getState } = createCore({
@@ -273,6 +273,77 @@ export async function bootstrapCore(
 
     if (oidc.isUserLoggedIn) {
         await dispatch(usecases.s3ProfilesManagement.protectedThunks.initialize());
+    }
+
+    init_ai: {
+        if (!oidc.isUserLoggedIn) {
+            break init_ai;
+        }
+
+        const deploymentRegion =
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                getState()
+            );
+
+        if (deploymentRegion.ai.length === 0) {
+            break init_ai;
+        }
+
+        const [{ createAi }, { createOidc, mergeOidcParams }, { oidcParams }] =
+            await Promise.all([
+                import("core/adapters/ai"),
+                import("core/adapters/oidc"),
+                onyxiaApi.getAvailableRegionsAndOidcParams()
+            ]);
+
+        assert(oidcParams !== undefined);
+
+        // One Ai adapter per region-provided provider, but providers may share the
+        // same OIDC client: oidc-spa identifies a client by issuerUri + clientId, so
+        // creating it twice would collide. Create each distinct client only once.
+        const getOidcAccessTokenByOidcKey = new Map<string, () => Promise<string>>();
+
+        for (const aiConfig of deploymentRegion.ai) {
+            const oidcParams_ai = mergeOidcParams({
+                oidcParams,
+                oidcParams_partial: aiConfig.oidcParams
+            });
+
+            const oidcKey = `${oidcParams_ai.issuerUri} ${oidcParams_ai.clientId}`;
+
+            let getOidcAccessToken = getOidcAccessTokenByOidcKey.get(oidcKey);
+
+            if (getOidcAccessToken === undefined) {
+                const oidc_ai = await createOidc({
+                    ...oidcParams_ai,
+                    transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang,
+                    autoLogin: true,
+                    enableDebugLogs: enableOidcDebugLogs,
+                    // The access token is handed over to OpenWebUI's token exchange
+                    // endpoint, which validates it server-side and cannot present a
+                    // DPoP proof. It must therefore be a plain bearer token, never
+                    // sender-constrained, even when DPoP is globally enabled.
+                    disableDPoP: true
+                });
+
+                getOidcAccessToken = async () => (await oidc_ai.getTokens()).accessToken;
+
+                getOidcAccessTokenByOidcKey.set(oidcKey, getOidcAccessToken);
+            }
+
+            context.ai.push(
+                createAi({
+                    id: aiConfig.id,
+                    name: aiConfig.name ?? new URL(aiConfig.url).hostname,
+                    webUiUrl: aiConfig.url,
+                    oauthProvider: aiConfig.oauthProvider,
+                    getOidcAccessToken
+                })
+            );
+        }
+
+        dispatch(usecases.ai.protectedThunks.initialize());
     }
 
     pluginSystemInitCore({ core, context });

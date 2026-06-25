@@ -17,7 +17,8 @@ export const translations: Translations<"it"> = {
         text2: "Accedi alle diverse informazioni del tuo account.",
         text3: "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
         "personal tokens tooltip": 'O in inglese solo "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificatore dell'account",
@@ -94,6 +95,47 @@ export const translations: Translations<"it"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "Credenziali del gateway IA",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                La tua sessione OIDC ti dà accesso senza interruzioni al gateway IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Apri gateway IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL base dell'API",
+        token: "Token",
+        "model label": "Modello",
+        "gateway error": "Impossibile inizializzare il gateway IA.",
+        "use in services": "Usa nei tuoi servizi",
+        "custom providers section title": "Provider IA personalizzati",
+        "custom providers section helper":
+            "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
+        "edit custom provider title": "Modifica provider IA",
+        "custom provider label field": "Etichetta",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "provider test": "Testa connessione",
+        "provider test success": "Connessione riuscita",
+        "provider test error":
+            "Impossibile connettersi — controlla l'URL e la chiave API.",
+        "provider save": "Aggiungi",
+        "provider update": "Salva",
+        "provider cancel": "Annulla",
+        "models fetch error":
+            "Impossibile recuperare i modelli — controlla l'URL e la chiave API.",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                per creare il tuo account.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",
@@ -509,9 +551,10 @@ export const translations: Translations<"it"> = {
                 <MuiLink href={docHref} target="_blank">
                     la nostra documentazione
                 </MuiLink>
-                {". \u00a0"}
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                {"."}
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

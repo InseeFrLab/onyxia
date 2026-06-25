@@ -17,7 +17,8 @@ export const translations: Translations<"de"> = {
         text2: "Greifen Sie auf Ihre verschiedenen Kontoinformationen zu.",
         text3: "Konfigurieren Sie Ihre persönlichen Logins, E-Mails, Passwörter und persönlichen Zugriffstoken, die direkt mit Ihren Diensten verbunden sind.",
         "personal tokens tooltip": 'Oder auf Englisch "Token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -96,6 +97,48 @@ export const translations: Translations<"de"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
+    },
+    AccountAiGatewayTab: {
+        "credentials section title": "KI-Gateway-Anmeldedaten",
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Ihre OIDC-Sitzung gibt Ihnen nahtlosen Zugriff auf das KI-Gateway.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    KI-Gateway öffnen
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-Basis-URL",
+        token: "Token",
+        "model label": "Modell",
+        "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
+        "use in services": "In Ihren Diensten verwenden",
+        "custom providers section title": "Benutzerdefinierte KI-Anbieter",
+        "custom providers section helper":
+            "Fügen Sie Ihre eigenen OpenAI-kompatiblen KI-Anbieter hinzu. Die Anmeldedaten werden in Ihrem Browser gespeichert.",
+        "edit custom provider title": "KI-Anbieter bearbeiten",
+        "custom provider label field": "Name",
+        "custom provider api base field": "API-Basis-URL",
+        "custom provider api key field": "API-Schlüssel",
+        "provider test": "Verbindung testen",
+        "provider test success": "Verbindung erfolgreich",
+        "provider test error":
+            "Verbindung fehlgeschlagen — URL und API-Schlüssel prüfen.",
+        "provider save": "Hinzufügen",
+        "provider update": "Speichern",
+        "provider cancel": "Abbrechen",
+        "models fetch error":
+            "Modelle konnten nicht abgerufen werden — überprüfen Sie URL und API-Schlüssel.",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Sie haben noch kein Konto beim KI-Gateway. Bitte melden Sie sich zuerst an
+                bei{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                um Ihr Konto zu erstellen.
+            </>
+        )
     },
     AccountVaultTab: {
         "credentials section title": "Vault-Anmeldeinformationen",

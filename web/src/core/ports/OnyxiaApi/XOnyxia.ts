@@ -182,6 +182,15 @@ export type XOnyxiaContext = {
         useCertManager: boolean;
         certManagerClusterIssuer: string | undefined;
     };
+    ai:
+        | {
+              enabled: boolean;
+              apiKey: string;
+              apiBase: string;
+              model: string;
+              provider: string;
+          }
+        | undefined;
     proxyInjection:
         | {
               enabled: boolean | undefined;
