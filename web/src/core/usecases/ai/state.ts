@@ -4,164 +4,140 @@ import { id } from "tsafe/id";
 
 export const name = "ai";
 
-export type AiModel = { id: string; name: string };
-
-/**
- * The chat model the user picked on a provider.
- * Kept independently of the catalog so a selection survives a refetch.
- */
-export type ModelSelection = {
-    modelId: string | undefined;
-};
-
-/** Lifecycle of fetching the provider's `/models` list. */
-export type ModelCatalog =
-    | { stateDescription: "not fetched" }
-    | { stateDescription: "fetching" }
-    | { stateDescription: "error" }
-    | { stateDescription: "loaded"; availableModels: AiModel[] };
-
-export type Provider = Provider.Region | Provider.Custom;
-
-export declare namespace Provider {
-    /** Provisioned by the deployment region, authenticated via the OIDC token. */
-    export type Region = {
-        kind: "region";
-        id: string;
-        name: string;
-        webUiUrl: string;
-        apiBase: string;
-        auth:
-            | { stateDescription: "no account" }
-            | { stateDescription: "error" }
-            | {
-                  stateDescription: "authenticated";
-                  /** undefined only while a refresh is in flight. */
-                  token: string | undefined;
-              };
-        modelCatalog: ModelCatalog;
-        selection: ModelSelection;
-    };
-
-    /** Added by the user, authenticated via a static API key. */
-    export type Custom = {
-        kind: "custom";
-        id: string;
-        label: string;
-        apiBase: string;
-        apiKey: string;
-        modelCatalog: ModelCatalog;
-        selection: ModelSelection;
-    };
-}
-
-/** Which provider, if any, is wired into the user's services. */
-export type ActiveProvider = { kind: "none" } | { kind: "provider"; providerId: string };
-
-type State = State.NotInitialized | State.Initialized;
+type State = State.NotInitialized | State.Error | State.Initialized;
 
 export declare namespace State {
-    export type NotInitialized = {
-        isInitialized: false;
-        isInitializing: boolean;
-    };
+    export type NotInitialized = { stateDescription: "not initialized" };
+
+    export type Error = { stateDescription: "error" };
 
     export type Initialized = {
-        isInitialized: true;
+        stateDescription: "initialized";
         providers: Provider[];
-        activeProvider: ActiveProvider;
+        activeProviderId: string | undefined;
     };
+
+    // --- Providers ---
+
+    export type Provider = Provider.Region | Provider.Custom;
+
+    export namespace Provider {
+        export type Common = {
+            id: string;
+            apiBase: string;
+            models: Models | undefined;
+            selectedModelId: string | undefined;
+        };
+
+        /** Provisioned by the deployment region, authenticated via the OIDC token. */
+        export type Region = Common & {
+            kind: "region";
+            name: string;
+            webUiUrl: string;
+            auth:
+                | { stateDescription: "no account" }
+                | { stateDescription: "error" }
+                | { stateDescription: "authenticated"; token: string };
+        };
+
+        /** Added by the user, authenticated via a static API key. */
+        export type Custom = Common & {
+            kind: "custom";
+            label: string;
+            apiKey: string;
+        };
+    }
+
+    /** Lifecycle of fetching a provider's `/models` list (undefined = not fetched). */
+    export type Models =
+        | { stateDescription: "fetching" }
+        | { stateDescription: "error" }
+        | { stateDescription: "loaded"; availableModels: AiModel[] };
+
+    export type AiModel = { id: string; name: string };
 }
 
 export const { reducer, actions } = createUsecaseActions({
     name,
     initialState: id<State>(
-        id<State.NotInitialized>({ isInitialized: false, isInitializing: false })
+        id<State.NotInitialized>({ stateDescription: "not initialized" })
     ),
     reducers: {
-        initializeStarted: () =>
-            id<State.NotInitialized>({ isInitialized: false, isInitializing: true }),
+        initializationFailed: () => id<State.Error>({ stateDescription: "error" }),
         initialized: (
             _,
             {
                 payload
             }: {
-                payload: { providers: Provider[]; activeProvider: ActiveProvider };
+                payload: {
+                    providers: State.Provider[];
+                    activeProviderId: string | undefined;
+                };
             }
         ) =>
             id<State.Initialized>({
-                isInitialized: true,
+                stateDescription: "initialized",
                 providers: payload.providers,
-                activeProvider: payload.activeProvider
+                activeProviderId: payload.activeProviderId
             }),
         activeProviderChanged: (
             state,
-            { payload }: { payload: { activeProvider: ActiveProvider } }
+            { payload }: { payload: { activeProviderId: string | undefined } }
         ) => {
-            if (!state.isInitialized) return;
-            state.activeProvider = payload.activeProvider;
+            if (state.stateDescription !== "initialized") return;
+            state.activeProviderId = payload.activeProviderId;
         },
-        regionTokenRefreshed: (
+        regionAuthRefreshed: (
             state,
-            { payload }: { payload: { providerId: string; token: string | undefined } }
+            {
+                payload
+            }: { payload: { providerId: string; auth: State.Provider.Region["auth"] } }
         ) => {
-            if (!state.isInitialized) return;
+            assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
-            if (provider?.kind !== "region") return;
-            if (provider.auth.stateDescription !== "authenticated") return;
-            provider.auth.token = payload.token;
+            if (provider === undefined || provider.kind !== "region") return;
+            provider.auth = payload.auth;
         },
-        modelCatalogFetchStarted: (
+        modelsLoaded: (
             state,
-            { payload }: { payload: { providerId: string } }
+            { payload }: { payload: { providerId: string; models: State.AiModel[] } }
         ) => {
-            if (!state.isInitialized) return;
-            const provider = state.providers.find(p => p.id === payload.providerId);
-            if (provider === undefined) return;
-            provider.modelCatalog = { stateDescription: "fetching" };
-        },
-        modelCatalogLoaded: (
-            state,
-            { payload }: { payload: { providerId: string; models: AiModel[] } }
-        ) => {
-            if (!state.isInitialized) return;
+            assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
             if (provider === undefined) return;
-            provider.modelCatalog = {
+            provider.models = {
                 stateDescription: "loaded",
                 availableModels: payload.models
             };
             // Default the chat model to the first available one if none is set.
-            if (provider.selection.modelId === undefined && payload.models.length > 0) {
-                provider.selection.modelId = payload.models[0].id;
+            if (provider.selectedModelId === undefined && payload.models.length > 0) {
+                provider.selectedModelId = payload.models[0].id;
             }
         },
-        modelCatalogFetchFailed: (
-            state,
-            { payload }: { payload: { providerId: string } }
-        ) => {
-            if (!state.isInitialized) return;
+        modelsFetchFailed: (state, { payload }: { payload: { providerId: string } }) => {
+            assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
-            assert(provider !== undefined, "Provider should not be undefined");
-            provider.modelCatalog = { stateDescription: "error" };
+            if (provider === undefined) return;
+            provider.models = { stateDescription: "error" };
         },
         modelSelected: (
             state,
             { payload }: { payload: { providerId: string; modelId: string } }
         ) => {
-            if (!state.isInitialized) return;
+            assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
-            assert(provider !== undefined, "Provider should not be undefined");
-            provider.selection.modelId = payload.modelId;
+            // Synchronous user action on a displayed provider: it must exist.
+            assert(provider !== undefined);
+            provider.selectedModelId = payload.modelId;
         },
-        customProviderAdded: (
+        addCustomProvider: (
             state,
-            { payload }: { payload: { provider: Provider.Custom } }
+            { payload }: { payload: { provider: State.Provider.Custom } }
         ) => {
-            if (!state.isInitialized) return;
+            assert(state.stateDescription === "initialized");
             state.providers.push(payload.provider);
         },
-        customProviderEdited: (
+        editCustomProvider: (
             state,
             {
                 payload
@@ -174,28 +150,27 @@ export const { reducer, actions } = createUsecaseActions({
                 };
             }
         ) => {
-            if (!state.isInitialized) return;
+            assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
-            assert(provider !== undefined, "Provider should not be undefined");
-            assert(provider.kind === "custom", "Provider should be custom");
+            // Editing an existing custom provider from its dialog: it must exist.
+            assert(provider !== undefined);
+            assert(provider.kind === "custom");
             provider.label = payload.label;
             provider.apiBase = payload.apiBase;
             provider.apiKey = payload.apiKey;
-            // Credentials changed → the previous catalog no longer applies.
-            provider.modelCatalog = { stateDescription: "fetching" };
+            // Credentials changed → the previous models list no longer applies.
+            provider.models = { stateDescription: "fetching" };
         },
-        customProviderDeleted: (
+        deleteCustomProvider: (
             state,
             { payload }: { payload: { providerId: string } }
         ) => {
-            assert(state.isInitialized, "state should be initialized");
+            // Deleting is only reachable from the initialized UI.
+            assert(state.stateDescription === "initialized");
 
             state.providers = state.providers.filter(p => p.id !== payload.providerId);
-            if (
-                state.activeProvider.kind === "provider" &&
-                state.activeProvider.providerId === payload.providerId
-            ) {
-                state.activeProvider = { kind: "none" };
+            if (state.activeProviderId === payload.providerId) {
+                state.activeProviderId = undefined;
             }
         }
     }
