@@ -118,6 +118,7 @@ export const translations: Translations<"fr"> = {
             "Ajoutez vos propres providers IA compatibles OpenAI. Les identifiants sont stockés dans votre navigateur.",
         "edit custom provider title": "Modifier le provider IA",
         "custom provider label field": "Nom",
+        "custom provider type field": "Type de provider",
         "custom provider api base field": "URL de base de l'API",
         "custom provider api key field": "Clé API",
         "provider test": "Tester la connexion",

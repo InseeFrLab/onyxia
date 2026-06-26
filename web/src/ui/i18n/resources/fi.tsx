@@ -117,6 +117,7 @@ export const translations: Translations<"fi"> = {
             "Lisää omia OpenAI-yhteensopivia tekoälypalveluntarjoajia. Tunnukset tallennetaan selaimeesi.",
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider label field": "Tunniste",
+        "custom provider type field": "Palveluntarjoajan tyyppi",
         "custom provider api base field": "API-perus-URL",
         "custom provider api key field": "API-avain",
         "provider test": "Testaa yhteys",

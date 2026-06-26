@@ -108,6 +108,7 @@ export const translations: Translations<"zh-CN"> = {
             "添加您自己的兼容 OpenAI 的 AI 提供商。凭据存储在您的浏览器中。",
         "edit custom provider title": "编辑 AI 提供商",
         "custom provider label field": "标签",
+        "custom provider type field": "提供商类型",
         "custom provider api base field": "API 基础 URL",
         "custom provider api key field": "API 密钥",
         "provider test": "测试连接",

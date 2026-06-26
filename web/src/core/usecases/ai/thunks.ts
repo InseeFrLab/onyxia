@@ -94,9 +94,9 @@ export const thunks = {
     // The add/edit form (values, validation, connection-test result, open state) is
     // owned by the UI. The core only exposes the resulting operations on the state.
     addCustomProvider:
-        (params: { label: string; apiBase: string; apiKey: string }) =>
+        (params: { label: string; provider: string; apiBase: string; apiKey: string }) =>
         async (...args) => {
-            const { label, apiBase, apiKey } = params;
+            const { label, provider, apiBase, apiKey } = params;
             const [dispatch] = args;
 
             const providerId = crypto.randomUUID();
@@ -107,6 +107,7 @@ export const thunks = {
                         kind: "custom",
                         id: providerId,
                         label,
+                        provider,
                         apiBase,
                         apiKey,
                         models: { stateDescription: "fetching" },
@@ -122,14 +123,23 @@ export const thunks = {
         (params: {
             providerId: string;
             label: string;
+            provider: string;
             apiBase: string;
             apiKey: string;
         }) =>
         async (...args) => {
-            const { providerId, label, apiBase, apiKey } = params;
+            const { providerId, label, provider, apiBase, apiKey } = params;
             const [dispatch] = args;
 
-            dispatch(actions.editCustomProvider({ providerId, label, apiBase, apiKey }));
+            dispatch(
+                actions.editCustomProvider({
+                    providerId,
+                    label,
+                    provider,
+                    apiBase,
+                    apiKey
+                })
+            );
 
             await dispatch(privateThunks.persistConfig());
             await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
@@ -158,9 +168,10 @@ const privateThunks = {
             const aiConfig: PersistedAiConfig = {
                 customProviders: state.providers
                     .filter((p): p is State.Provider.Custom => p.kind === "custom")
-                    .map(({ id, label, apiBase, apiKey }) => ({
+                    .map(({ id, label, provider, apiBase, apiKey }) => ({
                         id,
                         label,
+                        provider,
                         apiBase,
                         apiKey
                     })),
@@ -208,6 +219,7 @@ export const protectedThunks = {
                             kind: "region",
                             id: aiProvider.id,
                             name: aiProvider.name,
+                            provider: aiProvider.provider,
                             webUiUrl: aiProvider.webUiUrl,
                             apiBase: aiProvider.apiBase,
                             auth: getTokenResultToAuth(tokenResult),
@@ -230,6 +242,8 @@ export const protectedThunks = {
                     kind: "custom",
                     id: p.id,
                     label: p.label,
+                    // Configs persisted before the field existed default to "openai".
+                    provider: p.provider ?? "openai",
                     apiBase: p.apiBase,
                     apiKey: p.apiKey,
                     models: { stateDescription: "fetching" },

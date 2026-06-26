@@ -86,6 +86,7 @@ export type ApiTypes = {
                     id?: string;
                     URL: string;
                     name?: string;
+                    provider?: string;
                     oauthProvider: string;
                     oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                 }>;

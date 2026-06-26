@@ -118,6 +118,7 @@ export const translations: Translations<"de"> = {
             "Fügen Sie Ihre eigenen OpenAI-kompatiblen KI-Anbieter hinzu. Die Anmeldedaten werden in Ihrem Browser gespeichert.",
         "edit custom provider title": "KI-Anbieter bearbeiten",
         "custom provider label field": "Name",
+        "custom provider type field": "Provider-Typ",
         "custom provider api base field": "API-Basis-URL",
         "custom provider api key field": "API-Schlüssel",
         "provider test": "Verbindung testen",

@@ -13,6 +13,7 @@ const main = createSelector(state, state => {
 
     const toCommonView = (provider: State.Provider) => ({
         id: provider.id,
+        provider: provider.provider,
         apiBase: provider.apiBase,
         isActive: provider.id === activeProviderId,
         // A provider can only be wired into services once its models are listed.
@@ -40,11 +41,6 @@ const main = createSelector(state, state => {
             }))
     };
 });
-
-/** Display name of a provider, whatever its kind. */
-function getProviderName(provider: State.Provider): string {
-    return provider.kind === "region" ? provider.name : provider.label;
-}
 
 /** Credentials usable to call a provider, or undefined when it isn't ready. */
 function getProviderApiKey(provider: State.Provider): string | undefined {
@@ -89,7 +85,7 @@ const activeProvider = createSelector(
             apiKey,
             apiBase: provider.apiBase,
             model: selectedModel,
-            provider: getProviderName(provider)
+            provider: provider.provider
         };
     }
 );

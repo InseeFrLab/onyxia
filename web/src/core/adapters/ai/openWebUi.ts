@@ -5,17 +5,19 @@ import { z } from "zod";
 export function createAi(params: {
     id: string;
     name: string;
+    provider: string;
     webUiUrl: string;
     oauthProvider: string;
     getOidcAccessToken: () => Promise<string>;
 }): Ai {
-    const { id, name, webUiUrl, oauthProvider, getOidcAccessToken } = params;
+    const { id, name, provider, webUiUrl, oauthProvider, getOidcAccessToken } = params;
 
     const apiBase = `${webUiUrl}/api`;
 
     return {
         id,
         name,
+        provider,
         webUiUrl,
         apiBase,
         getToken: async (): Promise<GetTokenResult> => {
