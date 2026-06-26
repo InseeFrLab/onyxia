@@ -33,7 +33,12 @@ type Models =
     | { stateDescription: "loaded"; availableModels: AiModel[] }
     | undefined;
 
-type FormValues = { label: string; apiBase: string; apiKey: string };
+type FormValues = {
+    label: string;
+    provider: string;
+    apiBase: string;
+    apiKey: string;
+};
 
 type FormTest =
     | { stateDescription: "idle" }
@@ -85,13 +90,18 @@ const AccountAiGatewayTab = memo((props: Props) => {
     );
     const [values, setValues] = useState<FormValues>({
         label: "",
+        provider: "openai",
         apiBase: "",
         apiKey: ""
     });
     const [test, setTest] = useState<FormTest>({ stateDescription: "idle" });
 
     const isEditing = editedProviderId !== undefined;
-    const canSave = values.label !== "" && values.apiBase !== "" && values.apiKey !== "";
+    const canSave =
+        values.label !== "" &&
+        values.provider !== "" &&
+        values.apiBase !== "" &&
+        values.apiKey !== "";
     const canTest =
         values.apiBase !== "" &&
         values.apiKey !== "" &&
@@ -99,7 +109,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
 
     const onAddClick = useConstCallback(() => {
         setEditedProviderId(undefined);
-        setValues({ label: "", apiBase: "", apiKey: "" });
+        setValues({ label: "", provider: "openai", apiBase: "", apiKey: "" });
         setTest({ stateDescription: "idle" });
         setIsFormOpen(true);
     });
@@ -110,6 +120,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
         setEditedProviderId(providerId);
         setValues({
             label: provider.label,
+            provider: provider.provider,
             apiBase: provider.apiBase,
             apiKey: provider.apiKey
         });
@@ -123,8 +134,9 @@ const AccountAiGatewayTab = memo((props: Props) => {
         ([key]: [keyof FormValues], [event]: [{ target: { value: string } }]) => {
             const { value } = event.target;
             setValues(values => ({ ...values, [key]: value }));
-            // Credentials changed → a previous test result no longer applies.
-            if (key !== "label") {
+            // Only credential changes invalidate a previous connection-test result;
+            // the display label and provider type don't affect connectivity.
+            if (key !== "label" && key !== "provider") {
                 setTest({ stateDescription: "idle" });
             }
         }
@@ -337,6 +349,14 @@ const AccountAiGatewayTab = memo((props: Props) => {
                             fullWidth
                         />
                         <TextField
+                            label={t("custom provider type field")}
+                            value={values.provider}
+                            onChange={onFieldChangeFactory("provider")}
+                            size="small"
+                            fullWidth
+                            placeholder="openai"
+                        />
+                        <TextField
                             label={t("custom provider api base field")}
                             value={values.apiBase}
                             onChange={onFieldChangeFactory("apiBase")}
@@ -480,6 +500,7 @@ const { i18n } = declareComponentKeys<
     | "custom providers section helper"
     | "edit custom provider title"
     | "custom provider label field"
+    | "custom provider type field"
     | "custom provider api base field"
     | "custom provider api key field"
     | "provider test"

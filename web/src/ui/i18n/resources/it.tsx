@@ -116,6 +116,7 @@ export const translations: Translations<"it"> = {
             "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
         "edit custom provider title": "Modifica provider IA",
         "custom provider label field": "Etichetta",
+        "custom provider type field": "Tipo di provider",
         "custom provider api base field": "URL base API",
         "custom provider api key field": "Chiave API",
         "provider test": "Testa connessione",
@@ -552,9 +553,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

@@ -25,6 +25,12 @@ export declare namespace State {
         export type Common = {
             id: string;
             apiBase: string;
+            /**
+             * LLM provider family (e.g. "openai", "anthropic", "gemini"), injected as
+             * `ai.provider` in the service launch context. For region providers it
+             * comes from the deployment region config; for custom ones the user sets it.
+             */
+            provider: string;
             models: Models | undefined;
             selectedModelId: string | undefined;
         };
@@ -145,6 +151,7 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     providerId: string;
                     label: string;
+                    provider: string;
                     apiBase: string;
                     apiKey: string;
                 };
@@ -156,6 +163,7 @@ export const { reducer, actions } = createUsecaseActions({
             assert(provider !== undefined);
             assert(provider.kind === "custom");
             provider.label = payload.label;
+            provider.provider = payload.provider;
             provider.apiBase = payload.apiBase;
             provider.apiKey = payload.apiKey;
             // Credentials changed → the previous models list no longer applies.
