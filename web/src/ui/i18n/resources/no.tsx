@@ -117,6 +117,7 @@ export const translations: Translations<"no"> = {
             "Legg til dine egne OpenAI-kompatible AI-leverandører. Påloggingsinformasjonen lagres i nettleseren din.",
         "edit custom provider title": "Rediger AI-leverandør",
         "custom provider label field": "Etikett",
+        "custom provider type field": "Leverandørtype",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-nøkkel",
         "provider test": "Test tilkobling",

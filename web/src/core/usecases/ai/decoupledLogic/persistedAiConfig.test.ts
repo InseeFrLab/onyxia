@@ -11,6 +11,7 @@ const sampleConfig: PersistedAiConfig = {
         {
             id: "p1",
             label: "My provider",
+            provider: "openai",
             apiBase: "https://api.openai.com/v1",
             apiKey: "sk-secret"
         }

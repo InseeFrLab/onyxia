@@ -48,6 +48,11 @@ export type DeploymentRegion = {
         id: string;
         url: string;
         name: string | undefined;
+        /**
+         * LLM provider family the gateway speaks (e.g. "openai", "anthropic",
+         * "gemini"). Defaults to "openai" since the gateway is OpenAI-compatible.
+         */
+        provider: string;
         oauthProvider: string;
         oidcParams: OidcParams_Partial;
     }[];
