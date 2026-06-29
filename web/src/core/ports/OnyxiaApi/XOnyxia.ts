@@ -201,10 +201,13 @@ export type XOnyxiaContext = {
     ai:
         | {
               enabled: boolean;
+              id: string;
               apiKey: string;
               apiBase: string;
-              model: string;
               provider: string;
+              name: string;
+              selectedModel: string | undefined;
+              models: string[];
           }
         | undefined;
     proxyInjection:
