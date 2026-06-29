@@ -343,7 +343,6 @@ export async function bootstrapCore(
                 createAi({
                     id: aiConfig.id,
                     name: aiConfig.name ?? new URL(aiConfig.url).hostname,
-                    provider: aiConfig.provider,
                     webUiUrl: aiConfig.url,
                     oauthProvider: aiConfig.oauthProvider,
                     getOidcAccessToken

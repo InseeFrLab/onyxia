@@ -449,7 +449,6 @@ export function createOnyxiaApi(params: {
                                     id: aiConfig_api.id ?? aiConfig_api.URL,
                                     url: aiConfig_api.URL,
                                     name: aiConfig_api.name,
-                                    provider: aiConfig_api.provider ?? "openai",
                                     oauthProvider: aiConfig_api.oauthProvider,
                                     oidcParams:
                                         apiTypesOidcConfigurationToOidcParams_Partial(
