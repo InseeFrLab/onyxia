@@ -1291,15 +1291,36 @@ const useStyles = tss
             marginTop: theme.spacing(1)
         },
         tableScrollArea: {
-            overflowY: "auto",
-            overflowX: "hidden",
-            width: "100%"
+            overflow: "hidden",
+            width: "100%",
+            flex: "1 1 auto",
+            minHeight: 0,
+            display: "flex"
         },
         table: {
             width: "100%",
+            height: "100%",
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
             tableLayout: "fixed",
             borderCollapse: "separate",
-            borderSpacing: 0
+            borderSpacing: 0,
+            "& colgroup": {
+                display: "none"
+            },
+            "& thead": {
+                display: "block",
+                flexShrink: 0
+            },
+            "& tbody": {
+                display: "block",
+                flex: "1 1 auto",
+                minHeight: 0,
+                overflowY: "auto",
+                overflowX: "hidden",
+                scrollbarGutter: "stable"
+            }
         },
         checkboxColumn: {
             width: 68
@@ -1312,14 +1333,13 @@ const useStyles = tss
             width: 200
         },
         headerRow: {
-            position: "sticky",
-            top: 0,
-            zIndex: 1,
+            display: "grid",
+            gridTemplateColumns: "68px minmax(0, 1fr) 200px 140px",
+            width: "100%",
             backgroundColor: theme.colors.useCases.surfaces.background,
             "& th:last-of-type": {
                 paddingRight: theme.spacing(3)
-            },
-            outline: `1px solid ${theme.colors.useCases.surfaces.background}`
+            }
         },
         checkboxHeaderCell: {
             width: 68,
@@ -1363,6 +1383,9 @@ const useStyles = tss
             color: theme.colors.useCases.typography.textFocus
         },
         tableRow: {
+            display: "grid",
+            gridTemplateColumns: "68px minmax(0, 1fr) 200px 140px",
+            width: "100%",
             backgroundColor: "transparent",
             "& td": {
                 borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
@@ -1407,23 +1430,33 @@ const useStyles = tss
         checkboxCell: {
             width: 68,
             padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
-            verticalAlign: "middle"
+            display: "flex",
+            alignItems: "center",
+            verticalAlign: "middle",
+            boxSizing: "border-box"
         },
         nameCell: {
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
-            minWidth: 240
+            minWidth: 240,
+            display: "flex",
+            alignItems: "center",
+            boxSizing: "border-box"
         },
         nameCellContent: {
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(2),
-            minWidth: 0
+            minWidth: 0,
+            width: "100%"
         },
         metaCell: {
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             color: theme.colors.useCases.typography.textSecondary,
             whiteSpace: "nowrap",
+            display: "flex",
+            alignItems: "center",
             verticalAlign: "middle",
+            boxSizing: "border-box",
             ...theme.typography.variants["body 2"].style
         },
         sizeCell: {},
