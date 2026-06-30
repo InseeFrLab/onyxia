@@ -291,65 +291,72 @@ export async function bootstrapCore(
                 getState()
             );
 
-        if (deploymentRegion.ai.length === 0) {
-            dispatch(usecases.ai.protectedThunks.initialize());
-            break init_ai;
-        }
-
-        const [{ createAi }, { createOidc, mergeOidcParams }, { oidcParams }] =
-            await Promise.all([
-                import("core/adapters/ai"),
-                import("core/adapters/oidc"),
-                onyxiaApi.getAvailableRegionsAndOidcParams()
-            ]);
-
-        assert(oidcParams !== undefined);
-
-        // One Ai adapter per region-provided provider, but providers may share the
-        // same OIDC client: oidc-spa identifies a client by issuerUri + clientId, so
-        // creating it twice would collide. Create each distinct client only once.
-        const getOidcAccessTokenByOidcKey = new Map<string, () => Promise<string>>();
-
-        for (const aiConfig of deploymentRegion.ai) {
-            const oidcParams_ai = mergeOidcParams({
-                oidcParams,
-                oidcParams_partial: aiConfig.oidcParams
-            });
-
-            const oidcKey = `${oidcParams_ai.issuerUri} ${oidcParams_ai.clientId}`;
-
-            let getOidcAccessToken = getOidcAccessTokenByOidcKey.get(oidcKey);
-
-            if (getOidcAccessToken === undefined) {
-                const oidc_ai = await createOidc({
-                    ...oidcParams_ai,
-                    transformBeforeRedirectForKeycloakTheme,
-                    getCurrentLang,
-                    autoLogin: true,
-                    enableDebugLogs: enableOidcDebugLogs,
-                    // The access token is handed over to OpenWebUI's token exchange
-                    // endpoint, which validates it server-side and cannot present a
-                    // DPoP proof. It must therefore be a plain bearer token, never
-                    // sender-constrained, even when DPoP is globally enabled.
-                    disableDPoP: true
-                });
-
-                getOidcAccessToken = async () => (await oidc_ai.getTokens()).accessToken;
-
-                getOidcAccessTokenByOidcKey.set(oidcKey, getOidcAccessToken);
+        // Wire one Ai adapter per region-provided gateway into `context.ai` (none if
+        // the region exposes no AI: only custom providers will then be loaded).
+        region_ai: {
+            if (deploymentRegion.ai.length === 0) {
+                break region_ai;
             }
 
-            context.ai.push(
-                createAi({
-                    id: aiConfig.id,
-                    name: aiConfig.name ?? new URL(aiConfig.url).hostname,
-                    webUiUrl: aiConfig.url,
-                    oauthProvider: aiConfig.oauthProvider,
-                    getOidcAccessToken
-                })
-            );
+            const [{ createAi }, { createOidc, mergeOidcParams }, { oidcParams }] =
+                await Promise.all([
+                    import("core/adapters/ai"),
+                    import("core/adapters/oidc"),
+                    onyxiaApi.getAvailableRegionsAndOidcParams()
+                ]);
+
+            assert(oidcParams !== undefined);
+
+            // Providers may share the same OIDC client: oidc-spa identifies a client by
+            // issuerUri + clientId, so creating it twice would collide. Create each
+            // distinct client only once.
+            const getOidcAccessTokenByOidcKey = new Map<string, () => Promise<string>>();
+
+            for (const aiConfig of deploymentRegion.ai) {
+                const oidcParams_ai = mergeOidcParams({
+                    oidcParams,
+                    oidcParams_partial: aiConfig.oidcParams
+                });
+
+                const oidcKey = `${oidcParams_ai.issuerUri} ${oidcParams_ai.clientId}`;
+
+                let getOidcAccessToken = getOidcAccessTokenByOidcKey.get(oidcKey);
+
+                if (getOidcAccessToken === undefined) {
+                    const oidc_ai = await createOidc({
+                        ...oidcParams_ai,
+                        transformBeforeRedirectForKeycloakTheme,
+                        getCurrentLang,
+                        autoLogin: true,
+                        enableDebugLogs: enableOidcDebugLogs,
+                        // The access token is handed over to OpenWebUI's token exchange
+                        // endpoint, which validates it server-side and cannot present a
+                        // DPoP proof. It must therefore be a plain bearer token, never
+                        // sender-constrained, even when DPoP is globally enabled.
+                        disableDPoP: true
+                    });
+
+                    getOidcAccessToken = async () =>
+                        (await oidc_ai.getTokens()).accessToken;
+
+                    getOidcAccessTokenByOidcKey.set(oidcKey, getOidcAccessToken);
+                }
+
+                context.ai.push(
+                    createAi({
+                        id: aiConfig.id,
+                        name: aiConfig.name ?? new URL(aiConfig.url).hostname,
+                        webUiUrl: aiConfig.url,
+                        oauthProvider: aiConfig.oauthProvider,
+                        getOidcAccessToken
+                    })
+                );
+            }
         }
 
+        // Sole initiator of the AI use-case, dispatched only now that any region
+        // adapters are wired into `context.ai`. Fire-and-forget so app start isn't
+        // blocked; consumers await readiness via `ai...waitForInitialization`.
         dispatch(usecases.ai.protectedThunks.initialize());
     }
 
