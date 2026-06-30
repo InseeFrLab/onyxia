@@ -50,41 +50,50 @@ const main = createSelector(
     }
 );
 
-const resolvedActiveProvider = createSelector(
-    activeProviderId,
+const aiOnyxiaContext = createSelector(
     providers,
-    (activeProviderId, providers) => {
-        if (activeProviderId === undefined || providers === undefined) return undefined;
-        return providers.find(p => p.id === activeProviderId);
+    activeProviderId,
+    (providers, activeProviderId) => {
+        const toProviderView = (provider: State.Provider) => {
+            // Region providers authenticate via an OIDC-exchanged token; until that
+            // exchange succeeds there is no usable key, so the provider isn't ready.
+            const apiKey = (() => {
+                if (provider.kind === "custom") return provider.apiKey;
+                if (provider.auth.stateDescription !== "authenticated") return undefined;
+                return provider.auth.token;
+            })();
+
+            // A provider is only usable once authenticated. Its models may not be
+            // listed yet (fetch still pending or failed) — that's fine, `models` is
+            // left undefined in that case.
+            if (apiKey === undefined) return undefined;
+
+            const models =
+                provider.models?.stateDescription === "loaded"
+                    ? provider.models.availableModels.map(({ id }) => id)
+                    : undefined;
+
+            return {
+                id: provider.id,
+                name: provider.kind === "region" ? provider.name : provider.label,
+                provider: provider.provider,
+                apiBase: provider.apiBase,
+                apiKey,
+                models,
+                selectedModel: provider.selectedModelId
+            };
+        };
+
+        const providerViews = (providers ?? [])
+            .map(toProviderView)
+            .filter(view => view !== undefined);
+
+        return {
+            enabled: providerViews.length > 0,
+            activeProvider: providerViews.find(p => p.id === activeProviderId),
+            providers: providerViews.filter(p => p.id !== activeProviderId)
+        };
     }
 );
-
-const aiOnyxiaContext = createSelector(resolvedActiveProvider, provider => {
-    if (provider === undefined) return undefined;
-    if (provider.models?.stateDescription !== "loaded") return undefined;
-
-    const apiKey = (() => {
-        if (provider.kind === "custom") return provider.apiKey;
-        if (provider.auth.stateDescription !== "authenticated") return undefined;
-        return provider.auth.token;
-    })();
-
-    if (apiKey === undefined) return undefined;
-
-    const models = provider.models.availableModels.map(m => m.id);
-
-    const selectedModel = provider.selectedModelId;
-
-    return {
-        enabled: true,
-        id: provider.id,
-        apiKey,
-        apiBase: provider.apiBase,
-        provider: provider.provider,
-        name: provider.kind === "region" ? provider.name : provider.label,
-        selectedModel,
-        models
-    };
-});
 
 export const selectors = { main, aiOnyxiaContext };

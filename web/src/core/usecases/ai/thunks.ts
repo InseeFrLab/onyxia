@@ -1,4 +1,5 @@
 import type { Thunks } from "core/bootstrap";
+import { createUsecaseContextApi } from "clean-architecture";
 import { actions, name } from "./state";
 import type { State } from "./state";
 import {
@@ -190,10 +191,7 @@ const privateThunks = {
                     value: serializeAiConfig({ aiConfig })
                 })
             );
-        }
-} satisfies Thunks;
-
-export const protectedThunks = {
+        },
     initialize:
         () =>
         async (...args) => {
@@ -274,6 +272,10 @@ export const protectedThunks = {
                 return;
             }
 
+            // Awaited so the whole AI context (providers + their model lists) is
+            // ready before `initialize` resolves. Bootstrap awaits this thunk, and
+            // `getCoreSync` suspends until bootstrap resolves, so the launcher's
+            // one-shot read of `aiOnyxiaContext` always sees the loaded models.
             await Promise.all([
                 ...regionEntries.map(async ({ provider, aiProvider, tokenResult }) => {
                     if (tokenResult.status !== "success") return;
@@ -298,6 +300,51 @@ export const protectedThunks = {
                     })
                 )
             ]);
+        }
+} satisfies Thunks;
+
+const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
+    prInitialized: Promise<void>;
+}>();
+
+export const protectedThunks = {
+    // Initiates the AI use-case. Dispatched once by bootstrap, *after* the region AI
+    // adapters have been wired into `context.ai`. Idempotent: a second dispatch
+    // returns the same in-flight promise. This is the ONLY place that starts the
+    // work — consumers must use `waitForInitialization`, never call this, so they
+    // can't lock the context before `context.ai` is populated.
+    initialize:
+        () =>
+        (...args): Promise<void> => {
+            const [dispatch, , rootContext] = args;
+
+            if (getIsContextSet(rootContext)) {
+                return getContext(rootContext).prInitialized;
+            }
+
+            const prInitialized = dispatch(privateThunks.initialize());
+
+            setContext(rootContext, { prInitialized });
+
+            return prInitialized;
+        },
+    // Awaits the in-flight initialization if it has started, otherwise resolves
+    // immediately. Crucially it never triggers the init itself: callers like the
+    // launcher's `getXOnyxiaContext` can run very early (restorable-config
+    // autocomplete, before bootstrap has wired up the region adapters), and a
+    // premature init would build the providers from an empty `context.ai` and
+    // freeze that wrong state. Early callers simply see the AI context as
+    // not-yet-available; the real init happens later in bootstrap.
+    waitForInitialization:
+        () =>
+        async (...args): Promise<void> => {
+            const [, , rootContext] = args;
+
+            if (!getIsContextSet(rootContext)) {
+                return;
+            }
+
+            await getContext(rootContext).prInitialized;
         }
 } satisfies Thunks;
 
