@@ -10,6 +10,7 @@ import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { id } from "tsafe/id";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { useConst } from "powerhooks/useConst";
 
 export function DataGrid(params: { className?: string }) {
     const { className } = params;
@@ -93,15 +94,32 @@ export function DataGrid(params: { className?: string }) {
             className: classes.dataGridPanel
         });
 
-    // NOTE: Here it's important to have useConstCallback, MUI do not
-    // always call the last reference of the callback.
-    const getRowId = useConstCallback((row: Record<string, unknown>) => {
-        const rowIndex = rows.indexOf(row);
-        assert(rowIndex !== -1);
-        const rowId = rowIdByRowIndex[rowIndex];
-        assert(rowId !== undefined);
-        return rowId;
-    });
+    const { getRowId } = (function useClosure() {
+        const rowIdByRow = useConst(() => new WeakMap<Record<string, unknown>, string>());
+
+        // NOTE: Here it's important to have useConstCallback, MUI do not
+        // always call the last reference of the callback.
+        const getRowId = useConstCallback((row: Record<string, unknown>) => {
+            {
+                const rowId = rowIdByRow.get(row);
+
+                if (rowId !== undefined) {
+                    return rowId;
+                }
+            }
+
+            const rowIndex = rows.indexOf(row);
+            assert(rowIndex !== -1);
+            const rowId = rowIdByRowIndex[rowIndex];
+            assert(rowId !== undefined);
+
+            rowIdByRow.set(row, rowId);
+
+            return rowId;
+        });
+
+        return { getRowId };
+    })();
 
     return (
         <CustomDataGrid
