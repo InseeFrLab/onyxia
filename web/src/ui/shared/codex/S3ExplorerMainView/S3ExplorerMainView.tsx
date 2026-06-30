@@ -1,5 +1,7 @@
 import {
+    memo,
     useEffect,
+    useMemo,
     useRef,
     useState,
     type ChangeEvent,
@@ -9,6 +11,8 @@ import {
     type MutableRefObject,
     type SetStateAction
 } from "react";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { useConstCallback } from "powerhooks/useConstCallback";
 import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
@@ -156,12 +160,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const { classes, cx } = useStyles({ isDragActive });
     const { t } = useTranslation({ S3ExplorerMainView });
 
+    const listedPrefixItems = listedPrefix.isErrored ? undefined : listedPrefix.items;
+    const isListedPrefixFullyQualifiedUri =
+        !listedPrefix.isErrored && listedPrefix.isFullyQualifiedUri;
+
     const isUploadToListedPrefixDisabled =
         isUploadDisabled ||
         listedPrefix.isErrored ||
         !listedPrefix.s3Uri.isDelimiterTerminated;
 
-    const openFilePicker = () => {
+    const openFilePicker = useConstCallback(() => {
         if (isUploadToListedPrefixDisabled) {
             return;
         }
@@ -180,7 +188,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         }
 
         input.click();
-    };
+    });
 
     useEvt(
         ctx =>
@@ -190,18 +198,18 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     openFilePicker();
                 }
             ),
-        [evtAction, isUploadToListedPrefixDisabled]
+        [evtAction, openFilePicker]
     );
 
     useEffect(() => {
-        if (listedPrefix.isErrored) {
+        if (listedPrefixItems === undefined) {
             setSelectedItemKeys([]);
             lastSelectedItemKeyRef.current = undefined;
             return;
         }
 
         const availableItemKeys = new Set(
-            listedPrefix.items
+            listedPrefixItems
                 .filter(item => !item.isDeleting)
                 .map(item => getItemKey(item))
         );
@@ -216,7 +224,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         ) {
             lastSelectedItemKeyRef.current = undefined;
         }
-    }, [listedPrefix]);
+    }, [listedPrefixItems]);
 
     useEvt(
         ctx =>
@@ -258,25 +266,36 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         setIsDragActive(false);
     }, [isUploadToListedPrefixDisabled]);
 
-    const items = listedPrefix.isErrored
-        ? []
-        : getSortedItems({
-              items: listedPrefix.items,
-              sortState
-          });
+    const items = useMemo(
+        () =>
+            listedPrefixItems === undefined
+                ? []
+                : getSortedItems({
+                      items: listedPrefixItems,
+                      sortState
+                  }),
+        [listedPrefixItems, sortState]
+    );
 
-    const fullyQualifiedObject =
-        !listedPrefix.isErrored && listedPrefix.isFullyQualifiedUri
-            ? (() => {
-                  assert(items.length === 1);
+    const itemByKey = useMemo(
+        () => new Map(items.map(item => [getItemKey(item), item] as const)),
+        [items]
+    );
 
-                  const [item] = items;
+    const fullyQualifiedObject = useMemo(() => {
+        if (!isListedPrefixFullyQualifiedUri) {
+            return undefined;
+        }
 
-                  assert(item.type === "object");
+        assert(items.length === 1);
 
-                  return item;
-              })()
-            : undefined;
+        const [item] = items;
+
+        assert(item.type === "object");
+
+        return item;
+    }, [isListedPrefixFullyQualifiedUri, items]);
+
     const isSelectionLocked = fullyQualifiedObject !== undefined;
     const lockedSelectedItemKey =
         fullyQualifiedObject === undefined ? undefined : getItemKey(fullyQualifiedObject);
@@ -295,18 +314,40 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         lastSelectedItemKeyRef.current = lockedSelectedItemKey;
     }, [lockedSelectedItemKey]);
 
-    const selectableItems = items.filter(item => !item.isDeleting);
-    const selectedItemKeySet = new Set(
-        lockedSelectedItemKey === undefined ? selectedItemKeys : [lockedSelectedItemKey]
+    const selectableItems = useMemo(
+        () => items.filter(item => !item.isDeleting),
+        [items]
     );
-    const bookmarkedItemKeySet = new Set(bookmarkedS3Uris.map(stringifyS3Uri));
-    const selectedItems = items.filter(item => selectedItemKeySet.has(getItemKey(item)));
+    const selectableItemKeys = useMemo(
+        () => selectableItems.map(item => getItemKey(item)),
+        [selectableItems]
+    );
+    const selectedItemKeySet = useMemo(
+        () =>
+            new Set(
+                lockedSelectedItemKey === undefined
+                    ? selectedItemKeys
+                    : [lockedSelectedItemKey]
+            ),
+        [lockedSelectedItemKey, selectedItemKeys]
+    );
+    const bookmarkedItemKeySet = useMemo(
+        () => new Set(bookmarkedS3Uris.map(stringifyS3Uri)),
+        [bookmarkedS3Uris]
+    );
+    const selectedItems = useMemo(
+        () => items.filter(item => selectedItemKeySet.has(getItemKey(item))),
+        [items, selectedItemKeySet]
+    );
     const showRowActions = selectedItems.length <= 1;
 
-    const isAllSelected =
-        isSelectionLocked ||
-        (selectableItems.length > 0 &&
-            selectableItems.every(item => selectedItemKeySet.has(getItemKey(item))));
+    const isAllSelected = useMemo(
+        () =>
+            isSelectionLocked ||
+            (selectableItemKeys.length > 0 &&
+                selectableItemKeys.every(itemKey => selectedItemKeySet.has(itemKey))),
+        [isSelectionLocked, selectableItemKeys, selectedItemKeySet]
+    );
     const isSelectionIndeterminate =
         !isSelectionLocked &&
         !isAllSelected &&
@@ -329,12 +370,12 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             ? getPrefixPolicyAction(selectedPrefixForSingleItemAction)
             : undefined;
 
-    const setSelectionToSingleItem = (itemKey: string) => {
+    const setSelectionToSingleItem = useConstCallback((itemKey: string) => {
         setSelectedItemKeys([itemKey]);
         lastSelectedItemKeyRef.current = itemKey;
-    };
+    });
 
-    const toggleSelectionForItem = (itemKey: string) => {
+    const toggleSelectionForItem = useConstCallback((itemKey: string) => {
         setSelectedItemKeys(previouslySelectedItemKeys => {
             const nextSelectedItemKeys = previouslySelectedItemKeys.includes(itemKey)
                 ? previouslySelectedItemKeys.filter(
@@ -346,10 +387,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         });
 
         lastSelectedItemKeyRef.current = itemKey;
-    };
+    });
 
-    const selectItemRange = (itemKey: string) => {
-        const selectableItemKeys = selectableItems.map(item => getItemKey(item));
+    const selectItemRange = useConstCallback((itemKey: string) => {
         const anchorItemKey = lastSelectedItemKeyRef.current;
 
         if (anchorItemKey === undefined) {
@@ -371,38 +411,31 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 : [targetIndex, anchorIndex];
 
         setSelectedItemKeys(selectableItemKeys.slice(startIndex, endIndex + 1));
-    };
+    });
 
-    const handleRowSelection = (params: {
-        item: S3ExplorerMainViewProps.Item;
-        event: MouseEvent<HTMLTableRowElement>;
-    }) => {
-        const { item, event } = params;
+    const onRowClickFactory = useCallbackFactory(
+        ([itemKey]: [string], [event]: [MouseEvent<HTMLTableRowElement>]) => {
+            const item = itemByKey.get(itemKey);
 
-        if (item.isDeleting) {
-            return;
+            if (item === undefined || item.isDeleting || isSelectionLocked) {
+                return;
+            }
+
+            if (event.shiftKey) {
+                selectItemRange(itemKey);
+                return;
+            }
+
+            if (event.metaKey || event.ctrlKey) {
+                toggleSelectionForItem(itemKey);
+                return;
+            }
+
+            setSelectionToSingleItem(itemKey);
         }
+    );
 
-        if (isSelectionLocked) {
-            return;
-        }
-
-        const itemKey = getItemKey(item);
-
-        if (event.shiftKey) {
-            selectItemRange(itemKey);
-            return;
-        }
-
-        if (event.metaKey || event.ctrlKey) {
-            toggleSelectionForItem(itemKey);
-            return;
-        }
-
-        setSelectionToSingleItem(itemKey);
-    };
-
-    const handleSortToggle = (key: SortState["key"]) => {
+    const handleSortToggle = useConstCallback((key: SortState["key"]) => {
         setSortState(previousSortState => {
             if (previousSortState.key === key) {
                 return {
@@ -416,9 +449,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 direction: key === "name" ? "asc" : "desc"
             };
         });
-    };
+    });
 
-    const handleUploadFiles = (files: readonly File[]) => {
+    const handleUploadFiles = useConstCallback((files: readonly File[]) => {
         if (isUploadToListedPrefixDisabled) {
             return;
         }
@@ -430,9 +463,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects({
             files: getObjectsToUploadFromFiles(files)
         });
-    };
+    });
 
-    const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
+    const handleDrop = useConstCallback(async (event: DragEvent<HTMLDivElement>) => {
         if (!getHasDraggedFiles(event.dataTransfer)) {
             return;
         }
@@ -460,86 +493,175 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects({
             files: objectsToUpload
         });
-    };
+    });
 
-    const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(event.target.files ?? []);
+    const handleFileInputChange = useConstCallback(
+        (event: ChangeEvent<HTMLInputElement>) => {
+            const files = Array.from(event.target.files ?? []);
 
-        handleUploadFiles(files);
+            handleUploadFiles(files);
 
-        event.target.value = "";
-    };
-
-    const requestShareForObject = (item: S3ExplorerMainViewProps.Item.Object) => {
-        if (!getIsItemActionAvailable(item)) {
-            return;
+            event.target.value = "";
         }
+    );
 
-        onShareObject({
-            s3Uri: item.s3Uri
-        });
-    };
+    const requestShareForObject = useConstCallback(
+        (item: S3ExplorerMainViewProps.Item.Object) => {
+            if (!getIsItemActionAvailable(item)) {
+                return;
+            }
 
-    const requestPrefixPolicyChangeForItem = (
-        item: S3ExplorerMainViewProps.Item.PrefixSegment
-    ) => {
-        if (!getIsItemActionAvailable(item)) {
-            return;
+            onShareObject({
+                s3Uri: item.s3Uri
+            });
         }
+    );
 
-        const action = getPrefixPolicyAction(item);
+    const requestPrefixPolicyChangeForItem = useConstCallback(
+        (item: S3ExplorerMainViewProps.Item.PrefixSegment) => {
+            if (!getIsItemActionAvailable(item)) {
+                return;
+            }
 
-        if (action === undefined) {
-            return;
+            const action = getPrefixPolicyAction(item);
+
+            if (action === undefined) {
+                return;
+            }
+
+            onChangePrefixPolicy({
+                action,
+                s3Uri: item.s3Uri
+            });
         }
+    );
 
-        onChangePrefixPolicy({
-            action,
-            s3Uri: item.s3Uri
-        });
-    };
+    const requestDownloadForItems = useConstCallback(
+        (itemsToDownload: S3ExplorerMainViewProps.Item[]) => {
+            const downloadableItems = itemsToDownload.filter(getIsItemActionAvailable);
 
-    const requestDownloadForItems = (itemsToDownload: S3ExplorerMainViewProps.Item[]) => {
-        const downloadableItems = itemsToDownload.filter(getIsItemActionAvailable);
+            if (downloadableItems.length === 0) {
+                return;
+            }
 
-        if (downloadableItems.length === 0) {
-            return;
+            onDownload({
+                s3Uris: downloadableItems.map(item => item.s3Uri)
+            });
         }
+    );
 
-        onDownload({
-            s3Uris: downloadableItems.map(item => item.s3Uri)
-        });
-    };
+    const requestDeletionForItems = useConstCallback(
+        (itemsToDelete: S3ExplorerMainViewProps.Item[]) => {
+            if (itemsToDelete.length === 0) {
+                return;
+            }
 
-    const requestDeletionForItems = (itemsToDelete: S3ExplorerMainViewProps.Item[]) => {
-        if (itemsToDelete.length === 0) {
-            return;
+            setDeleteDialogState({
+                items: itemsToDelete
+            });
         }
+    );
 
-        setDeleteDialogState({
-            items: itemsToDelete
-        });
-    };
+    const requestBookmarkForItem = useConstCallback(
+        (item: S3ExplorerMainViewProps.Item) => {
+            if (!getIsItemActionAvailable(item)) {
+                return;
+            }
 
-    const requestBookmarkForItem = (item: S3ExplorerMainViewProps.Item) => {
-        if (!getIsItemActionAvailable(item)) {
-            return;
+            onBookmark({
+                s3Uri: item.s3Uri
+            });
         }
+    );
 
-        onBookmark({
-            s3Uri: item.s3Uri
-        });
-    };
-
-    const clearSelection = () => {
+    const clearSelection = useConstCallback(() => {
         setSelectedItemKeys([]);
         lastSelectedItemKeyRef.current = undefined;
-    };
+    });
 
-    const handleNavigate = (s3Uri: S3Uri) => {
+    const handleNavigate = useConstCallback((s3Uri: S3Uri) => {
         clearSelection();
         onNavigate({ s3Uri });
-    };
+    });
+
+    const onCheckboxChangeFactory = useCallbackFactory(([itemKey]: [string]) =>
+        toggleSelectionForItem(itemKey)
+    );
+
+    const onNavigateFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined) {
+            return;
+        }
+
+        handleNavigate(item.s3Uri);
+    });
+
+    const onDeleteFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined) {
+            return;
+        }
+
+        requestDeletionForItems([item]);
+    });
+
+    const onShareObjectFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined || item.type !== "object") {
+            return;
+        }
+
+        requestShareForObject(item);
+    });
+
+    const onChangePrefixPolicyFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined || item.type !== "prefix segment") {
+            return;
+        }
+
+        requestPrefixPolicyChangeForItem(item);
+    });
+
+    const onDownloadFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined) {
+            return;
+        }
+
+        requestDownloadForItems([item]);
+    });
+
+    const onBookmarkFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined) {
+            return;
+        }
+
+        requestBookmarkForItem(item);
+    });
+
+    const onDisplayCopyFeedbackConst = useConstCallback(onDisplayCopyFeedback);
+
+    const selectAllVisibleItems = useConstCallback(() => {
+        if (isSelectionLocked) {
+            return;
+        }
+
+        if (isAllSelected) {
+            clearSelection();
+            return;
+        }
+
+        setSelectedItemKeys(selectableItemKeys);
+    });
 
     const nameSortIndicator = getSortIndicatorProps({
         sortState,
@@ -846,22 +968,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         isSelectionIndeterminate
                                                     }
                                                     disabled={isSelectionLocked}
-                                                    onChange={() => {
-                                                        if (isSelectionLocked) {
-                                                            return;
-                                                        }
-
-                                                        if (isAllSelected) {
-                                                            clearSelection();
-                                                            return;
-                                                        }
-
-                                                        setSelectedItemKeys(
-                                                            selectableItems.map(item =>
-                                                                getItemKey(item)
-                                                            )
-                                                        );
-                                                    }}
+                                                    onChange={selectAllVisibleItems}
                                                     inputProps={{
                                                         "aria-label":
                                                             t("select all items")
@@ -975,52 +1082,42 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isDisplayNameClickable={
                                                         !isSelectionLocked
                                                     }
-                                                    onRowClick={event =>
-                                                        handleRowSelection({
-                                                            item,
-                                                            event
-                                                        })
-                                                    }
-                                                    onCheckboxChange={() =>
-                                                        toggleSelectionForItem(itemKey)
-                                                    }
-                                                    onNavigate={() =>
-                                                        handleNavigate(item.s3Uri)
-                                                    }
-                                                    onDelete={() =>
-                                                        requestDeletionForItems([item])
-                                                    }
+                                                    onRowClick={onRowClickFactory(
+                                                        itemKey
+                                                    )}
+                                                    onCheckboxChange={onCheckboxChangeFactory(
+                                                        itemKey
+                                                    )}
+                                                    onNavigate={onNavigateFactory(
+                                                        itemKey
+                                                    )}
+                                                    onDelete={onDeleteFactory(itemKey)}
                                                     onShareObject={
                                                         item.type === "object"
-                                                            ? () =>
-                                                                  requestShareForObject(
-                                                                      item
-                                                                  )
+                                                            ? onShareObjectFactory(
+                                                                  itemKey
+                                                              )
                                                             : undefined
                                                     }
                                                     onChangePrefixPolicy={
                                                         item.type === "prefix segment" &&
                                                         getPrefixPolicyAction(item) !==
                                                             undefined
-                                                            ? () =>
-                                                                  requestPrefixPolicyChangeForItem(
-                                                                      item
-                                                                  )
+                                                            ? onChangePrefixPolicyFactory(
+                                                                  itemKey
+                                                              )
                                                             : undefined
                                                     }
-                                                    onDownload={() =>
-                                                        requestDownloadForItems([item])
-                                                    }
+                                                    onDownload={onDownloadFactory(
+                                                        itemKey
+                                                    )}
                                                     onBookmark={
                                                         getIsItemActionAvailable(item)
-                                                            ? () =>
-                                                                  requestBookmarkForItem(
-                                                                      item
-                                                                  )
+                                                            ? onBookmarkFactory(itemKey)
                                                             : undefined
                                                     }
                                                     onDisplayCopyFeedback={
-                                                        onDisplayCopyFeedback
+                                                        onDisplayCopyFeedbackConst
                                                     }
                                                 />
                                             );
@@ -2230,7 +2327,7 @@ type ItemRowProps = {
     onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
 };
 
-function ItemRow(props: ItemRowProps) {
+const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const {
         item,
         isSelected,
@@ -2654,4 +2751,79 @@ function ItemRow(props: ItemRowProps) {
             </td>
         </tr>
     );
+}, areItemRowPropsEqual);
+
+function areItemRowPropsEqual(
+    previousProps: ItemRowProps,
+    nextProps: ItemRowProps
+): boolean {
+    return (
+        previousProps.isSelected === nextProps.isSelected &&
+        previousProps.isBookmarked === nextProps.isBookmarked &&
+        previousProps.isStriped === nextProps.isStriped &&
+        previousProps.showRowActions === nextProps.showRowActions &&
+        previousProps.isSelectionLocked === nextProps.isSelectionLocked &&
+        previousProps.isDisplayNameClickable === nextProps.isDisplayNameClickable &&
+        previousProps.onRowClick === nextProps.onRowClick &&
+        previousProps.onNavigate === nextProps.onNavigate &&
+        previousProps.onDelete === nextProps.onDelete &&
+        previousProps.onShareObject === nextProps.onShareObject &&
+        previousProps.onChangePrefixPolicy === nextProps.onChangePrefixPolicy &&
+        previousProps.onDownload === nextProps.onDownload &&
+        previousProps.onBookmark === nextProps.onBookmark &&
+        previousProps.onCheckboxChange === nextProps.onCheckboxChange &&
+        previousProps.onDisplayCopyFeedback === nextProps.onDisplayCopyFeedback &&
+        areItemsRenderEqual(previousProps.item, nextProps.item)
+    );
+}
+
+function areItemsRenderEqual(
+    previousItem: S3ExplorerMainViewProps.Item,
+    nextItem: S3ExplorerMainViewProps.Item
+): boolean {
+    if (previousItem === nextItem) {
+        return true;
+    }
+
+    if (
+        previousItem.type !== nextItem.type ||
+        previousItem.displayName !== nextItem.displayName ||
+        previousItem.isDeleting !== nextItem.isDeleting ||
+        previousItem.uploadProgressPercent !== nextItem.uploadProgressPercent ||
+        getItemKey(previousItem) !== getItemKey(nextItem)
+    ) {
+        return false;
+    }
+
+    if (previousItem.type === "object") {
+        return (
+            nextItem.type === "object" &&
+            previousItem.size === nextItem.size &&
+            previousItem.lastModified === nextItem.lastModified
+        );
+    }
+
+    return (
+        nextItem.type === "prefix segment" &&
+        arePrefixPoliciesEqual(previousItem.policy, nextItem.policy)
+    );
+}
+
+function arePrefixPoliciesEqual(
+    previousPolicy: S3ExplorerMainViewProps.Item.PrefixSegment["policy"],
+    nextPolicy: S3ExplorerMainViewProps.Item.PrefixSegment["policy"]
+): boolean {
+    if (previousPolicy.isPublic !== nextPolicy.isPublic) {
+        return false;
+    }
+
+    if (previousPolicy.isPublic) {
+        return true;
+    }
+
+    if (nextPolicy.isPublic) {
+        return false;
+    }
+
+    return previousPolicy.canBeMadePublic === nextPolicy.canBeMadePublic;
 }
