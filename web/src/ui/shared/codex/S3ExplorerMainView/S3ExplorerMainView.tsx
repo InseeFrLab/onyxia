@@ -1312,7 +1312,11 @@ const useStyles = tss
             },
             "& thead": {
                 display: "block",
-                flexShrink: 0
+                flexShrink: 0,
+                overflowY: "auto",
+                overflowX: "hidden",
+                scrollbarGutter: "stable",
+                backgroundColor: theme.colors.useCases.surfaces.background
             },
             "& tbody": {
                 display: "block",
@@ -1346,6 +1350,9 @@ const useStyles = tss
             width: 68,
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             textAlign: "left",
+            display: "flex",
+            alignItems: "center",
+            boxSizing: "border-box",
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             backgroundColor: theme.colors.useCases.surfaces.background,
             ...theme.typography.variants["label 1"].style,
@@ -1354,6 +1361,10 @@ const useStyles = tss
         headerCell: {
             padding: `${theme.spacing(1.25)} ${theme.spacing(1.5)}`,
             textAlign: "left",
+            display: "flex",
+            alignItems: "center",
+            minWidth: 0,
+            boxSizing: "border-box",
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             backgroundColor: theme.colors.useCases.surfaces.background,
             ...theme.typography.variants["label 1"].style,
