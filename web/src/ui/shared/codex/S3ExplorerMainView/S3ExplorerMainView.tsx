@@ -1318,7 +1318,8 @@ const useStyles = tss
             backgroundColor: theme.colors.useCases.surfaces.background,
             "& th:last-of-type": {
                 paddingRight: theme.spacing(3)
-            }
+            },
+            outline: `1px solid ${theme.colors.useCases.surfaces.background}`
         },
         checkboxHeaderCell: {
             width: 68,
