@@ -78,7 +78,7 @@
         "react-code-blocks": "^0.1.6",
         "react-dom": "^18.3.1",
         "run-exclusive": "^2.2.19",
-        "screen-scaler": "^2.0.0",
+        "screen-scaler": "^2.0.1",
         "streamsaver": "^2.0.6",
         "tsafe": "^1.8.12",
         "tss-react": "^4.9.18",

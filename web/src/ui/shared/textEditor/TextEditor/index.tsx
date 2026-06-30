@@ -1,11 +1,8 @@
 import { Suspense, lazy, type ReactNode } from "react";
-import { evtIsScreenScalerOutOfBound } from "screen-scaler";
-import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import type { Extension } from "@uiw/react-codemirror";
 import { assert, type Equals } from "tsafe/assert";
 
-const TextEditorWithoutScreenScaler = lazy(() => import("./TextEditor"));
-const TextEditorWithScreenScaler = lazy(() => import("./TextEditorWithScreenScaler"));
+const TextEditorImpl = lazy(() => import("./TextEditor"));
 
 export type Props = {
     className?: string;
@@ -27,17 +24,9 @@ export type Props = {
 export function TextEditor(props: Props) {
     const { fallback, ...rest } = props;
 
-    useRerenderOnStateChange(evtIsScreenScalerOutOfBound);
-
-    const isScreenScalerEnabled = evtIsScreenScalerOutOfBound.state !== undefined;
-
     return (
-        <Suspense>
-            {isScreenScalerEnabled ? (
-                <TextEditorWithScreenScaler {...rest} />
-            ) : (
-                <TextEditorWithoutScreenScaler {...rest} />
-            )}
+        <Suspense fallback={fallback}>
+            <TextEditorImpl {...rest} />
         </Suspense>
     );
 }

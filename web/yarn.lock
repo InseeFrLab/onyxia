@@ -7687,10 +7687,10 @@ scheduler@^0.25.0:
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.25.0.tgz#336cd9768e8cceebf52d3c80e3dcf5de23e7e015"
   integrity sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==
 
-screen-scaler@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-2.0.0.tgz#4a929ef157c0500a81beebad29c87281723ebc24"
-  integrity sha512-1dhkDmcRvMHu8AwugbIy5pBJSYalsbcma9zujf2ENr9P2Hx7XrpC+pel87u+pkWJCTuq5x8BdwxTL3C6PMdwaQ==
+screen-scaler@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-2.0.1.tgz#223901aefdca855a15afe1ec2c2949c37b04bb87"
+  integrity sha512-IyQGlgwmV/MA5e2uhrGeMPGM3gNvkru8A07Y/oZySTPig1wNJ5VhKnili4Jb7dpk8hyhme7nuzC0Cp18mJBEUQ==
   dependencies:
     tsafe "^1.8.10"
 
