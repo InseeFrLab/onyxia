@@ -415,6 +415,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const onRowClickFactory = useCallbackFactory(
         ([itemKey]: [string], [event]: [MouseEvent<HTMLTableRowElement>]) => {
+            if (getIsEventFromInteractiveRowElement(event)) {
+                return;
+            }
+
             const item = itemByKey.get(itemKey);
 
             if (item === undefined || item.isDeleting || isSelectionLocked) {
@@ -1079,9 +1083,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isStriped={index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     isSelectionLocked={isSelectionLocked}
-                                                    isDisplayNameClickable={
-                                                        !isSelectionLocked
-                                                    }
                                                     onRowClick={onRowClickFactory(
                                                         itemKey
                                                     )}
@@ -1387,6 +1388,7 @@ const useStyles = tss
             gridTemplateColumns: "68px minmax(0, 1fr) 200px 140px",
             width: "100%",
             backgroundColor: "transparent",
+            userSelect: "none",
             "& td": {
                 borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
             },
@@ -1497,25 +1499,22 @@ const useStyles = tss
             cursor: "pointer",
             color: theme.colors.useCases.typography.textPrimary,
             textAlign: "left",
+            textDecoration: "none",
+            textUnderlineOffset: 2,
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             minWidth: 0,
             flex: "0 1 auto",
+            userSelect: "none",
+            "&:hover:not(:disabled), &:focus-visible:not(:disabled)": {
+                textDecoration: "underline"
+            },
             "&:disabled": {
                 cursor: "default",
-                opacity: 0.72
+                opacity: 0.72,
+                textDecoration: "none"
             }
-        },
-        itemNameText: {
-            ...theme.typography.variants["label 1"].style,
-            display: "block",
-            color: theme.colors.useCases.typography.textPrimary,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            minWidth: 0,
-            flex: "0 1 auto"
         },
         itemPublicTag: {
             display: "inline-flex",
@@ -2349,7 +2348,6 @@ type ItemRowProps = {
     isStriped: boolean;
     showRowActions: boolean;
     isSelectionLocked: boolean;
-    isDisplayNameClickable: boolean;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
@@ -2369,7 +2367,6 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         isStriped,
         showRowActions,
         isSelectionLocked,
-        isDisplayNameClickable,
         onRowClick,
         onNavigate,
         onDelete,
@@ -2432,7 +2429,11 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                 item.isDeleting && classes.tableRowBusy
             )}
             onClick={onRowClick}
-            onDoubleClick={() => {
+            onDoubleClick={event => {
+                if (getIsEventFromInteractiveRowElement(event)) {
+                    return;
+                }
+
                 if (canNavigate) {
                     onNavigate();
                 }
@@ -2443,6 +2444,9 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                     checked={isSelected}
                     disabled={item.isDeleting || isSelectionLocked}
                     onClick={event => {
+                        event.stopPropagation();
+                    }}
+                    onDoubleClick={event => {
                         event.stopPropagation();
                     }}
                     onChange={event => {
@@ -2477,33 +2481,27 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                         </Tooltip>
                         <div className={classes.itemNameBlock}>
                             <div className={classes.itemPrimaryRow}>
-                                {isDisplayNameClickable ? (
-                                    <button
-                                        type="button"
-                                        className={classes.itemNameButton}
-                                        title={itemDisplayTitle}
-                                        disabled={!canNavigate}
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            onNavigate();
-                                        }}
-                                    >
-                                        {item.displayName}
-                                    </button>
-                                ) : (
-                                    <span
-                                        className={classes.itemNameText}
-                                        title={itemDisplayTitle}
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                        }}
-                                        onDoubleClick={event => {
-                                            event.stopPropagation();
-                                        }}
-                                    >
-                                        {item.displayName}
-                                    </span>
-                                )}
+                                <button
+                                    type="button"
+                                    className={classes.itemNameButton}
+                                    title={itemDisplayTitle}
+                                    disabled={!canNavigate}
+                                    data-s3-row-interactive="true"
+                                    onClick={event => {
+                                        event.stopPropagation();
+
+                                        if (!canNavigate) {
+                                            return;
+                                        }
+
+                                        onNavigate();
+                                    }}
+                                    onDoubleClick={event => {
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    {item.displayName}
+                                </button>
 
                                 {item.type === "prefix segment" &&
                                     item.policy.isPublic && (
@@ -2577,7 +2575,10 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                             <>
                                 {onDownload !== undefined && (
                                     <Tooltip title={t("download")}>
-                                        <span className={classes.inlineActionWrapper}>
+                                        <span
+                                            className={classes.inlineActionWrapper}
+                                            data-s3-row-interactive="true"
+                                        >
                                             <IconButton
                                                 className={classes.rowActionButton}
                                                 icon={getIconUrlByName("FileDownload")}
@@ -2600,7 +2601,10 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                     </Tooltip>
                                 )}
                                 <Tooltip title={t("delete")}>
-                                    <span className={classes.inlineActionWrapper}>
+                                    <span
+                                        className={classes.inlineActionWrapper}
+                                        data-s3-row-interactive="true"
+                                    >
                                         <IconButton
                                             className={classes.rowActionButton}
                                             icon={getIconUrlByName("Delete")}
@@ -2643,7 +2647,10 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                         )
                                     }}
                                 >
-                                    <span className={classes.inlineActionWrapper}>
+                                    <span
+                                        className={classes.inlineActionWrapper}
+                                        data-s3-row-interactive="true"
+                                    >
                                         <IconButton
                                             className={classes.rowActionButton}
                                             icon={getIconUrlByName("ContentCopy")}
@@ -2673,7 +2680,10 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                                 : t("add to bookmarks")
                                         }
                                     >
-                                        <span className={classes.inlineActionWrapper}>
+                                        <span
+                                            className={classes.inlineActionWrapper}
+                                            data-s3-row-interactive="true"
+                                        >
                                             <button
                                                 type="button"
                                                 className={cx(
@@ -2708,7 +2718,10 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                 )}
                                 {onShareObject !== undefined && (
                                     <Tooltip title={t("share")}>
-                                        <span className={classes.inlineActionWrapper}>
+                                        <span
+                                            className={classes.inlineActionWrapper}
+                                            data-s3-row-interactive="true"
+                                        >
                                             <IconButton
                                                 className={classes.rowActionButton}
                                                 icon={getIconUrlByName("Share")}
@@ -2738,7 +2751,10 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                                 t
                                             )}
                                         >
-                                            <span className={classes.inlineActionWrapper}>
+                                            <span
+                                                className={classes.inlineActionWrapper}
+                                                data-s3-row-interactive="true"
+                                            >
                                                 <IconButton
                                                     className={classes.rowActionButton}
                                                     icon={getIconUrlByName(
@@ -2787,6 +2803,26 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     );
 }, areItemRowPropsEqual);
 
+const interactiveRowElementSelector = [
+    "button",
+    "input",
+    "select",
+    "textarea",
+    "a",
+    "[role='button']",
+    "[role='checkbox']",
+    "[data-s3-row-interactive='true']"
+].join(",");
+
+function getIsEventFromInteractiveRowElement(event: MouseEvent<HTMLElement>): boolean {
+    const { target } = event;
+
+    return (
+        target instanceof Element &&
+        target.closest(interactiveRowElementSelector) !== null
+    );
+}
+
 function areItemRowPropsEqual(
     previousProps: ItemRowProps,
     nextProps: ItemRowProps
@@ -2797,7 +2833,6 @@ function areItemRowPropsEqual(
         previousProps.isStriped === nextProps.isStriped &&
         previousProps.showRowActions === nextProps.showRowActions &&
         previousProps.isSelectionLocked === nextProps.isSelectionLocked &&
-        previousProps.isDisplayNameClickable === nextProps.isDisplayNameClickable &&
         previousProps.onRowClick === nextProps.onRowClick &&
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
