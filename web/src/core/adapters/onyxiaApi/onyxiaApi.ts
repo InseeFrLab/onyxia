@@ -445,8 +445,8 @@ export function createOnyxiaApi(params: {
                                           ? value
                                           : [value];
 
-                                return aiConfigs_api.map(aiConfig_api => ({
-                                    id: aiConfig_api.id ?? aiConfig_api.URL,
+                                return aiConfigs_api.map((aiConfig_api, i) => ({
+                                    id: aiConfig_api.id ?? `onyxia-${i}`,
                                     url: aiConfig_api.URL,
                                     name: aiConfig_api.name,
                                     oauthProvider: aiConfig_api.oauthProvider,
