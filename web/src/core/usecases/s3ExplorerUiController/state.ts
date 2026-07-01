@@ -280,15 +280,17 @@ export const { reducer, actions } = createUsecaseActions({
                     listedPrefix.next.errorCase === undefined
             );
 
-            const { s3Uri } = listedPrefix.next;
+            listedPrefix.current = {
+                s3Uri: listedPrefix.next.s3Uri,
+                items,
+                objectRendering:
+                    listedPrefix.current !== undefined &&
+                    same(listedPrefix.current.s3Uri, listedPrefix.next.s3Uri)
+                        ? listedPrefix.current.objectRendering
+                        : undefined
+            };
 
             listedPrefix.next = undefined;
-
-            listedPrefix.current = {
-                s3Uri,
-                items,
-                objectRendering: undefined
-            };
         },
         listingCompletedSuccessfully_inferFromCurrentState: (
             state,
