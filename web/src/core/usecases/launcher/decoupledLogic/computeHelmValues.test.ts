@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeHelmValues } from "./computeHelmValues";
+import { computeHelmValues, type JSONSchemaLike } from "./computeHelmValues";
 import YAML from "yaml";
 import { symToStr } from "tsafe/symToStr";
 
@@ -77,6 +77,71 @@ describe(symToStr({ computeHelmValues }), () => {
         };
 
         expect(got).toStrictEqual(expected);
+    });
+
+    it("Use x-onyxia on object with properties", () => {
+        const activeProvider = {
+            id: "openai",
+            name: "OpenAI",
+            provider: "openai",
+            apiBase: "https://api.openai.com/v1",
+            apiKey: "sk-test",
+            selectedModel: "gpt-4.1",
+            models: ["gpt-4.1", "gpt-4.1-mini"]
+        };
+
+        const xOnyxiaContext = {
+            ai: {
+                activeProvider,
+                providers: [activeProvider]
+            },
+            s3: undefined
+        };
+
+        const providerProperties: Record<string, JSONSchemaLike> = {
+            id: { type: "string", default: "" },
+            name: { type: "string", default: "" },
+            provider: { type: "string", default: "" },
+            apiBase: { type: "string", default: "" },
+            apiKey: { type: "string", default: "" },
+            selectedModel: { type: "string", default: "" },
+            models: { type: "array", default: [], items: { type: "string" } }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    activeProvider: {
+                        type: "object",
+                        default: {},
+                        properties: providerProperties,
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{ai.activeProvider}}"
+                        }
+                    },
+                    providers: {
+                        type: "array",
+                        default: [],
+                        items: {
+                            type: "object",
+                            properties: providerProperties
+                        },
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{ai.providers}}"
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        expect(got.helmValues).toStrictEqual({
+            activeProvider,
+            providers: [activeProvider]
+        });
     });
 
     it("Use default", () => {
