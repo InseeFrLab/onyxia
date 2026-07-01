@@ -1,24 +1,21 @@
 import { memo, useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
-import { SettingField } from "ui/shared/SettingField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "onyxia-ui/IconButton";
+import { Icon } from "onyxia-ui/Icon";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { useCoreState, getCoreSync } from "core";
-import { smartTrim } from "ui/tools/smartTrim";
 import { getIconUrlByName } from "lazy-icons";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import { Text } from "onyxia-ui/Text";
 
 export type Props = {
@@ -34,7 +31,7 @@ type Models =
     | undefined;
 
 type FormValues = {
-    label: string;
+    name: string;
     provider: string;
     apiBase: string;
     apiKey: string;
@@ -70,11 +67,10 @@ const AccountAiGatewayTab = memo((props: Props) => {
         ai.refreshToken({ providerId })
     );
 
-    const onToggleProviderFactory = useCallbackFactory(
-        ([providerId]: [string], [, checked]: [unknown, boolean]) =>
-            ai.setActiveProvider({
-                activeProviderId: checked ? providerId : undefined
-            })
+    const onSetDefaultProviderFactory = useCallbackFactory(([providerId]: [string]) =>
+        ai.setActiveProvider({
+            activeProviderId: providerId
+        })
     );
 
     const onDeleteCustomProviderFactory = useCallbackFactory(([providerId]: [string]) =>
@@ -89,7 +85,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
         undefined
     );
     const [values, setValues] = useState<FormValues>({
-        label: "",
+        name: "",
         provider: "openai",
         apiBase: "",
         apiKey: ""
@@ -98,7 +94,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
 
     const isEditing = editedProviderId !== undefined;
     const canSave =
-        values.label !== "" &&
+        values.name !== "" &&
         values.provider !== "" &&
         values.apiBase !== "" &&
         values.apiKey !== "";
@@ -109,7 +105,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
 
     const onAddClick = useConstCallback(() => {
         setEditedProviderId(undefined);
-        setValues({ label: "", provider: "openai", apiBase: "", apiKey: "" });
+        setValues({ name: "", provider: "openai", apiBase: "", apiKey: "" });
         setTest({ stateDescription: "idle" });
         setIsFormOpen(true);
     });
@@ -119,7 +115,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
         if (provider === undefined) return;
         setEditedProviderId(providerId);
         setValues({
-            label: provider.label,
+            name: provider.name,
             provider: provider.provider,
             apiBase: provider.apiBase,
             apiKey: provider.apiKey
@@ -136,7 +132,7 @@ const AccountAiGatewayTab = memo((props: Props) => {
             setValues(values => ({ ...values, [key]: value }));
             // Only credential changes invalidate a previous connection-test result;
             // the display label and provider type don't affect connectivity.
-            if (key !== "label" && key !== "provider") {
+            if (key !== "name" && key !== "provider") {
                 setTest({ stateDescription: "idle" });
             }
         }
@@ -174,23 +170,55 @@ const AccountAiGatewayTab = memo((props: Props) => {
         );
     }
 
+    const renderDefaultProviderAction = (params: {
+        providerId: string;
+        isDefault: boolean;
+    }) =>
+        params.isDefault ? (
+            <div className={classes.defaultProviderBadge}>
+                <Icon
+                    icon={getIconUrlByName("Check")}
+                    size="extra small"
+                    className={classes.defaultProviderBadgeIcon}
+                />
+                <Text typo="label 2" className={classes.defaultProviderBadgeText}>
+                    {t("default provider")}
+                </Text>
+            </div>
+        ) : (
+            <Button
+                variant="secondary"
+                onClick={onSetDefaultProviderFactory(params.providerId)}
+                className={classes.compactActionButton}
+            >
+                {t("set default provider")}
+            </Button>
+        );
+
     return (
         <div className={className}>
             {regionProviders.map(regionProvider => (
                 <div key={regionProvider.id} className={classes.providerCard}>
                     <div className={classes.providerCardHeader}>
                         <Text typo="label 1">{regionProvider.name}</Text>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={regionProvider.isActive}
-                                    onChange={onToggleProviderFactory(regionProvider.id)}
-                                    disabled={!regionProvider.canBeActivated}
-                                    size="small"
-                                />
-                            }
-                            label={<Text typo="body 2">{t("use in services")}</Text>}
-                        />
+                        <div className={classes.providerCardActions}>
+                            {regionProvider.auth.stateDescription === "authenticated" && (
+                                <>
+                                    <Button
+                                        variant="ternary"
+                                        startIcon={getIconUrlByName("Refresh")}
+                                        onClick={onRefreshClickFactory(regionProvider.id)}
+                                        className={classes.compactActionButton}
+                                    >
+                                        {t("refresh credentials")}
+                                    </Button>
+                                    {renderDefaultProviderAction({
+                                        providerId: regionProvider.id,
+                                        isDefault: regionProvider.isDefault
+                                    })}
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     {regionProvider.auth.stateDescription === "no account" && (
@@ -209,53 +237,32 @@ const AccountAiGatewayTab = memo((props: Props) => {
                         <>
                             <SettingSectionHeader
                                 title={t("credentials section title")}
-                                helperText={
-                                    <>
-                                        {t("credentials section helper", {
-                                            webUiUrl: regionProvider.webUiUrl
-                                        })}
-                                        &nbsp;
-                                        <IconButton
-                                            size="extra small"
-                                            icon={getIconUrlByName("Refresh")}
-                                            onClick={onRefreshClickFactory(
-                                                regionProvider.id
-                                            )}
-                                        />
-                                    </>
-                                }
-                            />
-                            <SettingField
-                                type="text"
-                                title={t("api base url")}
-                                text={smartTrim({
-                                    maxLength: 60,
-                                    minCharAtTheEnd: 20,
-                                    text: regionProvider.apiBase
+                                helperText={t("credentials section helper", {
+                                    webUiUrl: regionProvider.webUiUrl
                                 })}
-                                onRequestCopy={onFieldRequestCopyFactory(
-                                    regionProvider.apiBase
-                                )}
-                                isSensitiveInformation={false}
                             />
-                            <SettingField
-                                type="text"
-                                title={t("token")}
-                                text={smartTrim({
-                                    maxLength: 50,
-                                    minCharAtTheEnd: 20,
-                                    text: regionProvider.auth.token
-                                })}
-                                onRequestCopy={onFieldRequestCopyFactory(
-                                    regionProvider.auth.token
-                                )}
-                                isSensitiveInformation={true}
-                            />
-                            <ModelsSection
-                                providerId={regionProvider.id}
-                                models={regionProvider.models}
-                                selectedModel={regionProvider.selectedModelId}
-                            />
+                            <div className={classes.providerFields}>
+                                <ProviderValueField
+                                    label={t("api base url")}
+                                    value={regionProvider.apiBase}
+                                    onRequestCopy={onFieldRequestCopyFactory(
+                                        regionProvider.apiBase
+                                    )}
+                                />
+                                <ProviderValueField
+                                    label={t("token")}
+                                    value={regionProvider.auth.token}
+                                    onRequestCopy={onFieldRequestCopyFactory(
+                                        regionProvider.auth.token
+                                    )}
+                                    isSensitiveInformation={true}
+                                />
+                                <ModelsSection
+                                    providerId={regionProvider.id}
+                                    models={regionProvider.models}
+                                    selectedModel={regionProvider.selectedModelId}
+                                />
+                            </div>
                         </>
                     )}
                 </div>
@@ -276,58 +283,48 @@ const AccountAiGatewayTab = memo((props: Props) => {
             {customProviders.map(provider => (
                 <div key={provider.id} className={classes.providerCard}>
                     <div className={classes.providerCardHeader}>
-                        <Text typo="label 1">{provider.label}</Text>
+                        <Text typo="label 1">{provider.name}</Text>
                         <div className={classes.providerCardActions}>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={provider.isActive}
-                                        onChange={onToggleProviderFactory(provider.id)}
-                                        disabled={!provider.canBeActivated}
-                                        size="small"
-                                    />
-                                }
-                                label={<Text typo="body 2">{t("use in services")}</Text>}
-                            />
-                            <IconButton
-                                icon={getIconUrlByName("Edit")}
-                                onClick={onEditClickFactory(provider.id)}
-                                size="small"
-                            />
-                            <IconButton
-                                icon={getIconUrlByName("Delete")}
+                            <Button
+                                variant="ternary"
+                                startIcon={getIconUrlByName("Delete")}
                                 onClick={onDeleteCustomProviderFactory(provider.id)}
-                                size="small"
-                            />
+                                className={classes.compactActionButton}
+                            >
+                                {t("delete provider")}
+                            </Button>
+                            <Button
+                                variant="ternary"
+                                startIcon={getIconUrlByName("Edit")}
+                                onClick={onEditClickFactory(provider.id)}
+                                className={classes.compactActionButton}
+                            >
+                                {t("edit provider")}
+                            </Button>
+                            {renderDefaultProviderAction({
+                                providerId: provider.id,
+                                isDefault: provider.isDefault
+                            })}
                         </div>
                     </div>
-                    <SettingField
-                        type="text"
-                        title={t("custom provider api base field")}
-                        text={smartTrim({
-                            maxLength: 60,
-                            minCharAtTheEnd: 20,
-                            text: provider.apiBase
-                        })}
-                        onRequestCopy={onFieldRequestCopyFactory(provider.apiBase)}
-                        isSensitiveInformation={false}
-                    />
-                    <SettingField
-                        type="text"
-                        title={t("custom provider api key field")}
-                        text={smartTrim({
-                            maxLength: 50,
-                            minCharAtTheEnd: 20,
-                            text: provider.apiKey
-                        })}
-                        onRequestCopy={onFieldRequestCopyFactory(provider.apiKey)}
-                        isSensitiveInformation={true}
-                    />
-                    <ModelsSection
-                        providerId={provider.id}
-                        models={provider.models}
-                        selectedModel={provider.selectedModelId}
-                    />
+                    <div className={classes.providerFields}>
+                        <ProviderValueField
+                            label={t("custom provider api base field")}
+                            value={provider.apiBase}
+                            onRequestCopy={onFieldRequestCopyFactory(provider.apiBase)}
+                        />
+                        <ProviderValueField
+                            label={t("custom provider api key field")}
+                            value={provider.apiKey}
+                            onRequestCopy={onFieldRequestCopyFactory(provider.apiKey)}
+                            isSensitiveInformation={true}
+                        />
+                        <ModelsSection
+                            providerId={provider.id}
+                            models={provider.models}
+                            selectedModel={provider.selectedModelId}
+                        />
+                    </div>
                 </div>
             ))}
 
@@ -343,8 +340,8 @@ const AccountAiGatewayTab = memo((props: Props) => {
                     <div className={classes.addFormFields}>
                         <TextField
                             label={t("custom provider label field")}
-                            value={values.label}
-                            onChange={onFieldChangeFactory("label")}
+                            value={values.name}
+                            onChange={onFieldChangeFactory("name")}
                             size="small"
                             fullWidth
                         />
@@ -412,6 +409,49 @@ const AccountAiGatewayTab = memo((props: Props) => {
     );
 });
 
+type ProviderValueFieldProps = {
+    label: string;
+    value: string;
+    onRequestCopy: () => void;
+    isSensitiveInformation?: boolean;
+};
+
+const ProviderValueField = memo((props: ProviderValueFieldProps) => {
+    const { label, value, onRequestCopy, isSensitiveInformation = false } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ AccountAiGatewayTab });
+    const [isHidden, setIsHidden] = useState(isSensitiveInformation);
+
+    const onToggleHidden = useConstCallback(() => setIsHidden(isHidden => !isHidden));
+
+    return (
+        <div className={classes.providerField}>
+            <Text typo="label 1">{label}</Text>
+            <div className={classes.codeFrame}>
+                <Text typo="body 1" className={classes.codeFrameValue}>
+                    {isHidden ? "•".repeat(Math.max(value.length, 30)) : value}
+                </Text>
+                {isSensitiveInformation && (
+                    <IconButton
+                        icon={getIconUrlByName(isHidden ? "Visibility" : "VisibilityOff")}
+                        onClick={onToggleHidden}
+                        size="small"
+                    />
+                )}
+                <Button
+                    variant="secondary"
+                    startIcon={getIconUrlByName("ContentCopy")}
+                    onClick={onRequestCopy}
+                    className={classes.codeFrameButton}
+                >
+                    {t("copy")}
+                </Button>
+            </div>
+        </div>
+    );
+});
+
 type ModelsSectionProps = {
     providerId: string;
     models: Models;
@@ -467,14 +507,22 @@ const ModelSelectRow = memo((props: ModelSelectRowProps) => {
     const { label, models, selectedModel, onChange } = props;
 
     const { classes } = useStyles();
+    const { t } = useTranslation({ AccountAiGatewayTab });
 
     return (
-        <div className={classes.modelRow}>
-            <div className={classes.modelRowTitle}>
-                <Text typo="label 1">{label}</Text>
-            </div>
-            <div className={classes.modelRowControl}>
-                <Select value={selectedModel ?? ""} onChange={onChange} size="small">
+        <div className={classes.providerField}>
+            <Text typo="label 1">{label}</Text>
+            <div className={classes.codeFrame}>
+                <Select
+                    value={selectedModel ?? ""}
+                    onChange={onChange}
+                    size="small"
+                    className={classes.modelSelect}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>
+                        {t("not defined")}
+                    </MenuItem>
                     {models.map(({ id, name }) => (
                         <MenuItem key={id} value={id}>
                             {name}
@@ -489,7 +537,13 @@ const ModelSelectRow = memo((props: ModelSelectRowProps) => {
 export default AccountAiGatewayTab;
 
 const { i18n } = declareComponentKeys<
-    | "use in services"
+    | "default provider"
+    | "set default provider"
+    | "refresh credentials"
+    | "delete provider"
+    | "edit provider"
+    | "copy"
+    | "not defined"
     | "credentials section title"
     | { K: "credentials section helper"; P: { webUiUrl: string }; R: JSX.Element }
     | "api base url"
@@ -515,21 +569,6 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountAiGatewayTab }).create(({ theme }) => ({
-    modelRow: {
-        display: "flex",
-        alignItems: "center",
-        marginBottom: theme.spacing(3)
-    },
-    modelRowTitle: {
-        width: 360,
-        display: "flex",
-        alignItems: "center"
-    },
-    modelRowControl: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center"
-    },
     customProvidersSectionHeader: {
         display: "flex",
         alignItems: "flex-start",
@@ -551,7 +590,76 @@ const useStyles = tss.withName({ AccountAiGatewayTab }).create(({ theme }) => ({
     providerCardActions: {
         display: "flex",
         alignItems: "center",
-        gap: theme.spacing(2)
+        gap: theme.spacing(1),
+        flexWrap: "wrap",
+        justifyContent: "flex-end"
+    },
+    compactActionButton: {
+        minHeight: 28,
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5)
+    },
+    defaultProviderBadge: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: theme.spacing(1),
+        minHeight: 28,
+        borderRadius: 9999,
+        backgroundColor: theme.colors.useCases.alertSeverity.success.background
+    },
+    defaultProviderBadgeIcon: {
+        color: theme.colors.useCases.alertSeverity.success.main
+    },
+    defaultProviderBadgeText: {
+        color: theme.colors.useCases.alertSeverity.success.main
+    },
+    providerFields: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(2),
+        marginTop: theme.spacing(2),
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3)
+    },
+    providerField: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(0.5)
+    },
+    codeFrame: {
+        minHeight: 45,
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(1.5),
+        padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
+        borderRadius: theme.spacing(1),
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        minWidth: 0
+    },
+    codeFrameValue: {
+        flex: 1,
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        fontFamily: "monospace"
+    },
+    codeFrameButton: {
+        minHeight: 28,
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
+        flexShrink: 0
+    },
+    modelSelect: {
+        flex: 1,
+        minWidth: 0,
+        "& .MuiOutlinedInput-notchedOutline": {
+            border: "none"
+        },
+        "& .MuiSelect-select": {
+            paddingLeft: 0
+        }
     },
     errorText: {
         color: theme.colors.useCases.alertSeverity.error.main

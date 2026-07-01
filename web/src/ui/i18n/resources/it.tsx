@@ -110,7 +110,13 @@ export const translations: Translations<"it"> = {
         token: "Token",
         "model label": "Modello",
         "gateway error": "Impossibile inizializzare il gateway IA.",
-        "use in services": "Usa nei tuoi servizi",
+        "default provider": "Provider predefinito",
+        "set default provider": "Imposta come predefinito",
+        "refresh credentials": "Aggiorna credenziali",
+        "delete provider": "Elimina",
+        "edit provider": "Modifica",
+        copy: "Copia",
+        "not defined": "Non definito",
         "custom providers section title": "Provider IA personalizzati",
         "custom providers section helper":
             "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
@@ -553,8 +559,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

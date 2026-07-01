@@ -66,7 +66,7 @@ export const thunks = {
             );
         },
     setActiveProvider:
-        (params: { activeProviderId: string | undefined }) =>
+        (params: { activeProviderId: string }) =>
         async (...args) => {
             const { activeProviderId } = params;
             const [dispatch] = args;
@@ -95,9 +95,9 @@ export const thunks = {
     // The add/edit form (values, validation, connection-test result, open state) is
     // owned by the UI. The core only exposes the resulting operations on the state.
     addCustomProvider:
-        (params: { label: string; provider: string; apiBase: string; apiKey: string }) =>
+        (params: { name: string; provider: string; apiBase: string; apiKey: string }) =>
         async (...args) => {
-            const { label, provider, apiBase, apiKey } = params;
+            const { name, provider, apiBase, apiKey } = params;
             const [dispatch] = args;
 
             const providerId = crypto.randomUUID();
@@ -107,7 +107,7 @@ export const thunks = {
                     provider: {
                         kind: "custom",
                         id: providerId,
-                        label,
+                        name,
                         provider,
                         apiBase,
                         apiKey,
@@ -123,19 +123,19 @@ export const thunks = {
     editCustomProvider:
         (params: {
             providerId: string;
-            label: string;
+            name: string;
             provider: string;
             apiBase: string;
             apiKey: string;
         }) =>
         async (...args) => {
-            const { providerId, label, provider, apiBase, apiKey } = params;
+            const { providerId, name, provider, apiBase, apiKey } = params;
             const [dispatch] = args;
 
             dispatch(
                 actions.editCustomProvider({
                     providerId,
-                    label,
+                    name: name,
                     provider,
                     apiBase,
                     apiKey
@@ -169,9 +169,9 @@ const privateThunks = {
             const aiConfig: PersistedAiConfig = {
                 customProviders: state.providers
                     .filter((p): p is State.Provider.Custom => p.kind === "custom")
-                    .map(({ id, label, provider, apiBase, apiKey }) => ({
+                    .map(({ id, name, provider, apiBase, apiKey }) => ({
                         id,
-                        label,
+                        name,
                         provider,
                         apiBase,
                         apiKey
@@ -239,7 +239,7 @@ const privateThunks = {
                 customProviders = (persisted?.customProviders ?? []).map(p => ({
                     kind: "custom",
                     id: p.id,
-                    label: p.label,
+                    name: p.name,
                     // Configs persisted before the field existed default to "openai".
                     provider: p.provider ?? "openai",
                     apiBase: p.apiBase,
@@ -249,21 +249,26 @@ const privateThunks = {
                 }));
 
                 const providers = [...regionProviders, ...customProviders];
+                const defaultableProviderIds = [
+                    ...regionEntries
+                        .filter(({ tokenResult }) => tokenResult.status === "success")
+                        .map(({ provider }) => provider.id),
+                    ...customProviders.map(provider => provider.id)
+                ];
 
                 const activeProviderId = ((): string | undefined => {
-                    // Never saved a preference → default to the first region provider.
+                    // Never saved a preference → default to the first usable provider.
                     if (persisted === null) {
-                        return regionProviders[0]?.id;
+                        return defaultableProviderIds[0];
                     }
 
                     const stored = persisted.activeProviderId ?? undefined;
 
-                    // Stored selection points at a provider that no longer exists.
-                    if (stored !== undefined && !providers.some(p => p.id === stored)) {
-                        return undefined;
+                    if (stored !== undefined && defaultableProviderIds.includes(stored)) {
+                        return stored;
                     }
 
-                    return stored;
+                    return defaultableProviderIds[0];
                 })();
 
                 dispatch(actions.initialized({ providers, activeProviderId }));

@@ -219,7 +219,6 @@ type AiProvider = {
     apiBase: string;
     name: string;
     selectedModel: string | undefined;
-    // undefined while the provider's model list is still being fetched (or failed).
     models: string[] | undefined;
     // openai / anthropic / cohere / azure-openai / google-palm / ai21 ...
     provider: string;
