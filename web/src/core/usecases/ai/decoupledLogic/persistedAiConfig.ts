@@ -8,7 +8,7 @@ export type PersistedModelSelection = {
 
 export type PersistedCustomProvider = {
     id: string;
-    label: string;
+    name: string;
     // Optional for backward compatibility with configs persisted before the field
     // existed; defaulted to "openai" when read back.
     provider?: string;
@@ -33,7 +33,7 @@ const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
     customProviders: z.array(
         z.object({
             id: z.string(),
-            label: z.string(),
+            name: z.string(),
             provider: z.string().optional(),
             apiBase: z.string(),
             apiKey: z.string()

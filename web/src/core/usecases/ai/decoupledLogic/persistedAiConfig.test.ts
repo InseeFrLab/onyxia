@@ -10,7 +10,7 @@ const sampleConfig: PersistedAiConfig = {
     customProviders: [
         {
             id: "p1",
-            label: "My provider",
+            name: "My provider",
             provider: "openai",
             apiBase: "https://api.openai.com/v1",
             apiKey: "sk-secret"

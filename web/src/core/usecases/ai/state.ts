@@ -24,6 +24,7 @@ export declare namespace State {
     export namespace Provider {
         export type Common = {
             id: string;
+            name: string;
             apiBase: string;
             /**
              * LLM provider family (e.g. "openai", "anthropic", "gemini"), injected as
@@ -38,7 +39,6 @@ export declare namespace State {
         /** Provisioned by the deployment region, authenticated via the OIDC token. */
         export type Region = Common & {
             kind: "region";
-            name: string;
             webUiUrl: string;
             auth:
                 | { stateDescription: "no account" }
@@ -49,7 +49,6 @@ export declare namespace State {
         /** Added by the user, authenticated via a static API key. */
         export type Custom = Common & {
             kind: "custom";
-            label: string;
             apiKey: string;
         };
     }
@@ -142,6 +141,7 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             assert(state.stateDescription === "initialized");
             state.providers.push(payload.provider);
+            state.activeProviderId ??= payload.provider.id;
         },
         editCustomProvider: (
             state,
@@ -150,7 +150,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     providerId: string;
-                    label: string;
+                    name: string;
                     provider: string;
                     apiBase: string;
                     apiKey: string;
@@ -162,7 +162,7 @@ export const { reducer, actions } = createUsecaseActions({
             // Editing an existing custom provider from its dialog: it must exist.
             assert(provider !== undefined);
             assert(provider.kind === "custom");
-            provider.label = payload.label;
+            provider.name = payload.name;
             provider.provider = payload.provider;
             provider.apiBase = payload.apiBase;
             provider.apiKey = payload.apiKey;
@@ -178,7 +178,11 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.providers = state.providers.filter(p => p.id !== payload.providerId);
             if (state.activeProviderId === payload.providerId) {
-                state.activeProviderId = undefined;
+                state.activeProviderId = state.providers.find(
+                    provider =>
+                        provider.kind === "custom" ||
+                        provider.auth.stateDescription === "authenticated"
+                )?.id;
             }
         }
     }

@@ -22,11 +22,10 @@ const main = createSelector(
             id: provider.id,
             provider: provider.provider,
             apiBase: provider.apiBase,
-            isActive: provider.id === activeProviderId,
-            // A provider can only be wired into services once its models are listed.
-            canBeActivated: provider.models?.stateDescription === "loaded",
+            isDefault: provider.id === activeProviderId,
             models: provider.models,
-            selectedModelId: provider.selectedModelId
+            selectedModelId: provider.selectedModelId,
+            name: provider.name
         });
 
         return {
@@ -35,7 +34,6 @@ const main = createSelector(
                 .filter((p): p is State.Provider.Region => p.kind === "region")
                 .map(p => ({
                     ...toCommonView(p),
-                    name: p.name,
                     webUiUrl: p.webUiUrl,
                     auth: p.auth
                 })),
@@ -43,7 +41,6 @@ const main = createSelector(
                 .filter((p): p is State.Provider.Custom => p.kind === "custom")
                 .map(p => ({
                     ...toCommonView(p),
-                    label: p.label,
                     apiKey: p.apiKey
                 }))
         };
@@ -55,8 +52,6 @@ const aiOnyxiaContext = createSelector(
     activeProviderId,
     (providers, activeProviderId) => {
         const toProviderView = (provider: State.Provider) => {
-            // Region providers authenticate via an OIDC-exchanged token; until that
-            // exchange succeeds there is no usable key, so the provider isn't ready.
             const apiKey = (() => {
                 if (provider.kind === "custom") return provider.apiKey;
                 if (provider.auth.stateDescription !== "authenticated") return undefined;
@@ -75,7 +70,7 @@ const aiOnyxiaContext = createSelector(
 
             return {
                 id: provider.id,
-                name: provider.kind === "region" ? provider.name : provider.label,
+                name: provider.name,
                 provider: provider.provider,
                 apiBase: provider.apiBase,
                 apiKey,
