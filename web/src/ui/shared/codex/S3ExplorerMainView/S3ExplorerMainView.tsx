@@ -11,6 +11,7 @@ import {
     type MutableRefObject,
     type SetStateAction
 } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import bytes from "bytes";
@@ -119,6 +120,8 @@ export namespace S3ExplorerMainViewProps {
     }
 }
 
+const S3_EXPLORER_ROW_ESTIMATED_HEIGHT = 58;
+
 export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const {
         className,
@@ -156,6 +159,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     );
     const dragDepthRef = useRef(0);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const tableBodyRef = useRef<HTMLTableSectionElement | null>(null);
 
     const { classes, cx } = useStyles({ isDragActive });
     const { t } = useTranslation({ S3ExplorerMainView });
@@ -281,6 +285,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         () => new Map(items.map(item => [getItemKey(item), item] as const)),
         [items]
     );
+    const itemVirtualizer = useVirtualizer<HTMLTableSectionElement, HTMLTableRowElement>({
+        count: items.length,
+        getScrollElement: () => tableBodyRef.current,
+        estimateSize: () => S3_EXPLORER_ROW_ESTIMATED_HEIGHT,
+        getItemKey: index => getItemKey(items[index]),
+        overscan: 12,
+        useAnimationFrameWithResizeObserver: true
+    });
+    const virtualRows = itemVirtualizer.getVirtualItems();
 
     const fullyQualifiedObject = useMemo(() => {
         if (!isListedPrefixFullyQualifiedUri) {
@@ -1066,21 +1079,36 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {items.map((item, index) => {
+                                    <tbody ref={tableBodyRef}>
+                                        <tr
+                                            className={classes.virtualSpacerRow}
+                                            aria-hidden={true}
+                                            style={{
+                                                height: itemVirtualizer.getTotalSize()
+                                            }}
+                                        >
+                                            <td colSpan={4} />
+                                        </tr>
+                                        {virtualRows.map(virtualRow => {
+                                            const item = items[virtualRow.index];
                                             const itemKey = getItemKey(item);
 
                                             return (
                                                 <ItemRow
-                                                    key={itemKey}
+                                                    key={virtualRow.key}
                                                     item={item}
+                                                    virtualIndex={virtualRow.index}
+                                                    virtualStart={virtualRow.start}
+                                                    measureElement={
+                                                        itemVirtualizer.measureElement
+                                                    }
                                                     isSelected={selectedItemKeySet.has(
                                                         itemKey
                                                     )}
                                                     isBookmarked={bookmarkedItemKeySet.has(
                                                         itemKey
                                                     )}
-                                                    isStriped={index % 2 === 0}
+                                                    isStriped={virtualRow.index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     isSelectionLocked={isSelectionLocked}
                                                     onRowClick={onRowClickFactory(
@@ -1322,9 +1350,21 @@ const useStyles = tss
                 display: "block",
                 flex: "1 1 auto",
                 minHeight: 0,
+                position: "relative",
                 overflowY: "auto",
                 overflowX: "hidden",
                 scrollbarGutter: "stable"
+            }
+        },
+        virtualSpacerRow: {
+            display: "block",
+            width: "100%",
+            pointerEvents: "none",
+            "& td": {
+                display: "block",
+                height: "100%",
+                padding: 0,
+                border: 0
             }
         },
         checkboxColumn: {
@@ -1397,9 +1437,14 @@ const useStyles = tss
         tableRow: {
             display: "grid",
             gridTemplateColumns: "68px minmax(0, 1fr) 200px 140px",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
             width: "100%",
             backgroundColor: "transparent",
             userSelect: "none",
+            willChange: "transform",
             "& td": {
                 borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`
             },
@@ -2354,6 +2399,9 @@ const useStyles_DeleteSelectionDialog = tss
 
 type ItemRowProps = {
     item: S3ExplorerMainViewProps.Item;
+    virtualIndex: number;
+    virtualStart: number;
+    measureElement: (node: HTMLTableRowElement | null) => void;
     isSelected: boolean;
     isBookmarked: boolean;
     isStriped: boolean;
@@ -2373,6 +2421,9 @@ type ItemRowProps = {
 const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const {
         item,
+        virtualIndex,
+        virtualStart,
+        measureElement,
         isSelected,
         isBookmarked,
         isStriped,
@@ -2433,6 +2484,11 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
 
     return (
         <tr
+            ref={measureElement}
+            data-index={virtualIndex}
+            style={{
+                transform: `translateY(${virtualStart}px)`
+            }}
             className={cx(
                 classes.tableRow,
                 isStriped && classes.tableRowStriped,
@@ -2840,6 +2896,9 @@ function areItemRowPropsEqual(
 ): boolean {
     return (
         previousProps.isSelected === nextProps.isSelected &&
+        previousProps.virtualIndex === nextProps.virtualIndex &&
+        previousProps.virtualStart === nextProps.virtualStart &&
+        previousProps.measureElement === nextProps.measureElement &&
         previousProps.isBookmarked === nextProps.isBookmarked &&
         previousProps.isStriped === nextProps.isStriped &&
         previousProps.showRowActions === nextProps.showRowActions &&

@@ -262,19 +262,45 @@ export function createS3Client(
             const Bucket = s3Uri.bucket;
             const Delimiter = s3Uri.delimiter;
 
-            const listObjectsV2Command = new (
-                await import("@aws-sdk/client-s3")
-            ).ListObjectsV2Command({
-                Bucket,
-                Prefix: getS3UriKey(s3Uri),
-                Delimiter,
-                MaxKeys: 1_000
-            });
+            const { ListObjectsV2Command } = await import("@aws-sdk/client-s3");
 
-            let resp: import("@aws-sdk/client-s3").ListObjectsV2CommandOutput;
+            const contents: NonNullable<
+                import("@aws-sdk/client-s3").ListObjectsV2CommandOutput["Contents"]
+            > = [];
+            const commonPrefixes: NonNullable<
+                import("@aws-sdk/client-s3").ListObjectsV2CommandOutput["CommonPrefixes"]
+            > = [];
 
             try {
-                resp = await awsS3Client.send(listObjectsV2Command);
+                let ContinuationToken: string | undefined = undefined;
+
+                while (true) {
+                    const resp: import("@aws-sdk/client-s3").ListObjectsV2CommandOutput =
+                        await awsS3Client.send(
+                            new ListObjectsV2Command({
+                                Bucket,
+                                Prefix: getS3UriKey(s3Uri),
+                                Delimiter,
+                                MaxKeys: 1_000,
+                                ContinuationToken
+                            })
+                        );
+
+                    contents.push(...(resp.Contents ?? []));
+                    commonPrefixes.push(...(resp.CommonPrefixes ?? []));
+
+                    if (!resp.IsTruncated) {
+                        break;
+                    }
+
+                    ContinuationToken = resp.NextContinuationToken;
+
+                    if (ContinuationToken === undefined) {
+                        throw new Error(
+                            "Missing NextContinuationToken in truncated ListObjectsV2 response"
+                        );
+                    }
+                }
             } catch (error) {
                 const { NoSuchBucket, S3ServiceException } = await import(
                     "@aws-sdk/client-s3"
@@ -302,7 +328,7 @@ export function createS3Client(
 
             return id<S3Client.ListObjectsReturn.Success>({
                 isSuccess: true,
-                objects: (resp.Contents ?? [])
+                objects: contents
                     .map(({ Key, LastModified, Size }) =>
                         Key === undefined
                             ? undefined
@@ -337,7 +363,7 @@ export function createS3Client(
                     })
                     .filter(exclude(undefined)),
 
-                prefixes: (resp.CommonPrefixes ?? [])
+                prefixes: commonPrefixes
                     .map(({ Prefix }) => Prefix)
                     .filter(prefix => prefix !== undefined)
                     .map(prefix => {
