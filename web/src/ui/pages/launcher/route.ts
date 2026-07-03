@@ -8,6 +8,8 @@ import { type StringifyableAtomic } from "core/tools/Stringifyable";
 
 const { helmValuesPatchWrap, queryStringSerializer } = (() => {
     const helmValuesPatch_key = "helmValuesPatch";
+    const escapedDotInHelmValuesPath = "%5C.";
+    const escapedDotInHelmValuesPathPattern = /(?:\\|%5c)\./gi;
 
     type HelmValuesPatchEntry = {
         path: (string | number)[];
@@ -45,7 +47,10 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                         const arrayIndexPrefix = "arrayIndexPrefix_xKdMzIdVmT_";
 
                         return queryParamKey
-                            .replace(/\\\./g, escapedDotsPlaceholder)
+                            .replace(
+                                escapedDotInHelmValuesPathPattern,
+                                escapedDotsPlaceholder
+                            )
                             .replace(
                                 /\[(\d+)\]/g,
                                 (...[, x]) => `.${arrayIndexPrefix}${x}`
@@ -122,7 +127,10 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                                     .map(part =>
                                         typeof part === "number"
                                             ? part
-                                            : part.replace(/\./g, "\\.")
+                                            : part.replace(
+                                                  /\./g,
+                                                  escapedDotInHelmValuesPath
+                                              )
                                     )
                                     .reduce<string>((prev, curr) => {
                                         if (typeof curr === "number") {
