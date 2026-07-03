@@ -1,7 +1,5 @@
 export function generateRandomPassword() {
-    return Array(2)
-        .fill("")
-        .map(() => Math.random().toString(36).slice(-10))
-        .join("")
-        .replace(/\./g, "");
+    const array = new Uint8Array(20);
+    crypto.getRandomValues(array);
+    return Array.from(array, byte => (byte % 36).toString(36)).join("");
 }
