@@ -6,7 +6,6 @@ export function getFormattedDate(params: { time: number; lang: string }): string
     const isSameYear = date.getFullYear() === new Date().getFullYear();
 
     const formattedDate = new Intl.DateTimeFormat(lang, {
-        weekday: "long",
         day: "numeric",
         month: "long",
         year: isSameYear ? undefined : "numeric",
@@ -61,7 +60,6 @@ function getFormattedTimeSuffix(params: { date: Date; lang: string }): string {
     const { date, lang } = params;
 
     const parts = new Intl.DateTimeFormat(lang, {
-        weekday: "long",
         day: "numeric",
         month: "long",
         hour: "numeric",
