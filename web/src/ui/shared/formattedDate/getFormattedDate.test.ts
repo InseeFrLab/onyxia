@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
-import { getFormattedDate } from "./getFormattedDate";
+import { getFormattedDate, getFormattedRelativeDate } from "./getFormattedDate";
 
 describe("getFormattedDate", () => {
     // Mock `Intl.DateTimeFormat` to always use UTC
@@ -41,5 +41,23 @@ describe("getFormattedDate", () => {
 
         // cspell: disable-next-line
         expect(formattedDate).toBe("samedi 25 novembre 2023 à 15:20");
+    });
+
+    it("formats today's date relative to now", () => {
+        const now = new Date(Date.UTC(2026, 6, 3, 12, 0)).getTime();
+        const time = new Date(Date.UTC(2026, 6, 3, 10, 25)).getTime();
+
+        const formattedDate = getFormattedRelativeDate({ time, lang: "en", now });
+
+        expect(formattedDate).toBe("Today at 10:25\u202fAM");
+    });
+
+    it("formats yesterday's date relative to now", () => {
+        const now = new Date(Date.UTC(2026, 6, 3, 12, 0)).getTime();
+        const time = new Date(Date.UTC(2026, 6, 2, 12, 0)).getTime();
+
+        const formattedDate = getFormattedRelativeDate({ time, lang: "fr", now });
+
+        expect(formattedDate).toBe("Hier à 12:00");
     });
 });

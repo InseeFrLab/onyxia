@@ -41,6 +41,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
 import { evtS3Uri_preSelected } from "./preSelectedS3Uri";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
+import { useFormattedRelativeDate } from "ui/shared/formattedDate";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -2050,37 +2051,6 @@ function getFormattedSize(size: number): string {
     return bytes(size) ?? `${size}B`;
 }
 
-function getDayStamp(date: Date): number {
-    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getFormattedLastModified(params: {
-    time: number;
-    t: ReturnType<typeof useTranslation>["t"];
-}): string {
-    const { time, t } = params;
-
-    const date = new Date(time);
-    const today = new Date();
-    const diffDays = Math.floor(
-        (getDayStamp(today) - getDayStamp(date)) / (24 * 60 * 60 * 1000)
-    );
-
-    if (diffDays === 0) {
-        return t("today");
-    }
-
-    if (diffDays === 1) {
-        return t("yesterday");
-    }
-
-    return new Intl.DateTimeFormat(undefined, {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    }).format(date);
-}
-
 function getProgressPercent(item: S3ExplorerMainViewProps.Item): number | undefined {
     if (item.uploadProgressPercent === undefined) {
         return undefined;
@@ -2859,9 +2829,11 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                 </div>
             </td>
             <td className={classes.metaCell}>
-                {item.type === "object"
-                    ? getFormattedLastModified({ time: item.lastModified, t })
-                    : "\u00A0"}
+                {item.type === "object" ? (
+                    <FormattedLastModified time={item.lastModified} />
+                ) : (
+                    "\u00A0"
+                )}
             </td>
             <td className={cx(classes.metaCell, classes.sizeCell)}>
                 {item.type === "object" ? getFormattedSize(item.size) : t("folder")}
@@ -2869,6 +2841,15 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         </tr>
     );
 }, areItemRowPropsEqual);
+
+const FormattedLastModified = memo(function FormattedLastModified(props: {
+    time: number;
+}) {
+    const { time } = props;
+    const formattedLastModified = useFormattedRelativeDate({ time });
+
+    return <>{formattedLastModified}</>;
+});
 
 const interactiveRowElementSelector = [
     "button",
