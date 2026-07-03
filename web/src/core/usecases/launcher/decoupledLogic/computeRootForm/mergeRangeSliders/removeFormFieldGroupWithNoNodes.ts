@@ -38,16 +38,18 @@ function removeFormFieldGroupLeafWithNoNodes_rec(params: {
 
     let hasRemoved = false;
 
-    nodes.forEach(node => {
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        const node = nodes[i];
+
         if (node.type === "field") {
-            return;
+            continue;
         }
 
         if (node.nodes.length === 0) {
             if (node.canAdd) {
-                return;
+                continue;
             }
-            nodes.splice(nodes.indexOf(node), 1);
+            nodes.splice(i, 1);
             hasRemoved = true;
         } else {
             const { hasRemoved: hasRemoved_i } = removeFormFieldGroupLeafWithNoNodes_rec({
@@ -58,7 +60,7 @@ function removeFormFieldGroupLeafWithNoNodes_rec(params: {
                 hasRemoved = true;
             }
         }
-    });
+    }
 
     return { hasRemoved };
 }
