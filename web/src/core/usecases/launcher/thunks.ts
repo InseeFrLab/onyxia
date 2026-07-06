@@ -616,6 +616,105 @@ export const protectedThunks = {
                 return `${user.familyName} ${user.firstName}`;
             })();
 
+            const s3_array: XOnyxiaContext["s3_array"] =
+                s3ProfileName === undefined
+                    ? []
+                    : (
+                          await (() =>
+                              Promise.all(
+                                  s3ProfilesManagement.selectors
+                                      .s3Profiles(getState())
+                                      .map(
+                                          async (
+                                              s3Profile
+                                          ): Promise<
+                                              XOnyxiaContext["s3_array"][number]
+                                          > => {
+                                              const { host = "", port = 443 } =
+                                                  s3Profile.paramsOfCreateS3Client.url !==
+                                                  ""
+                                                      ? parseUrl(
+                                                            s3Profile
+                                                                .paramsOfCreateS3Client
+                                                                .url
+                                                        )
+                                                      : {};
+
+                                              const s3: XOnyxiaContext["s3"] = {
+                                                  profileName: s3Profile.profileName,
+                                                  AWS_ACCESS_KEY_ID: undefined,
+                                                  AWS_SECRET_ACCESS_KEY: undefined,
+                                                  AWS_SESSION_TOKEN: undefined,
+                                                  AWS_DEFAULT_REGION:
+                                                      s3Profile.paramsOfCreateS3Client
+                                                          .region ?? "us-east-1",
+                                                  AWS_S3_ENDPOINT: host,
+                                                  port,
+                                                  pathStyleAccess:
+                                                      s3Profile.paramsOfCreateS3Client
+                                                          .pathStyleAccess,
+                                                  isAnonymous: true
+                                              };
+
+                                              if (
+                                                  s3Profile.paramsOfCreateS3Client
+                                                      .isStsEnabled
+                                              ) {
+                                                  const s3Client = await dispatch(
+                                                      s3ProfilesManagement.protectedThunks.getS3Client(
+                                                          {
+                                                              profileName:
+                                                                  s3Profile.profileName
+                                                          }
+                                                      )
+                                                  );
+
+                                                  const tokens = await s3Client.getToken({
+                                                      doForceRenew: false
+                                                  });
+
+                                                  assert(tokens !== undefined);
+
+                                                  s3.AWS_ACCESS_KEY_ID =
+                                                      tokens.accessKeyId;
+                                                  s3.AWS_SECRET_ACCESS_KEY =
+                                                      tokens.secretAccessKey;
+                                                  s3.AWS_SESSION_TOKEN =
+                                                      tokens.sessionToken;
+                                                  s3.isAnonymous = false;
+                                              } else if (
+                                                  s3Profile.paramsOfCreateS3Client
+                                                      .credentials !== undefined
+                                              ) {
+                                                  s3.AWS_ACCESS_KEY_ID =
+                                                      s3Profile.paramsOfCreateS3Client.credentials.accessKeyId;
+                                                  s3.AWS_SECRET_ACCESS_KEY =
+                                                      s3Profile.paramsOfCreateS3Client.credentials.secretAccessKey;
+                                                  s3.AWS_SESSION_TOKEN =
+                                                      s3Profile.paramsOfCreateS3Client.credentials.sessionToken;
+                                                  s3.isAnonymous = false;
+                                              }
+
+                                              return s3;
+                                          }
+                                      )
+                              ))()
+                      ).sort((a, b) => {
+                          if (a.profileName === b.profileName) {
+                              return 0;
+                          }
+
+                          if (a.profileName === "default") {
+                              return -1;
+                          }
+
+                          if (b.profileName === "default") {
+                              return 1;
+                          }
+
+                          return 0;
+                      });
+
             const xOnyxiaContext: XOnyxiaContext = {
                 user: {
                     idep: user.username,
@@ -676,73 +775,17 @@ export const protectedThunks = {
                         )
                     };
                 })(),
-                s3: await (async () => {
-                    const s3Profile = (() => {
-                        if (s3ProfileName === undefined) {
-                            return undefined;
-                        }
-
-                        const s3Profiles =
-                            s3ProfilesManagement.selectors.s3Profiles(getState());
-
-                        const s3Config = s3Profiles.find(
-                            s3Profile => s3Profile.profileName === s3ProfileName
-                        );
-
-                        assert(s3Config !== undefined);
-
-                        return s3Config;
-                    })();
-
-                    if (s3Profile === undefined) {
-                        return undefined;
-                    }
-
-                    const { host = "", port = 443 } =
-                        s3Profile.paramsOfCreateS3Client.url !== ""
-                            ? parseUrl(s3Profile.paramsOfCreateS3Client.url)
-                            : {};
-
-                    const s3: XOnyxiaContext["s3"] = {
-                        isEnabled: true,
-                        AWS_ACCESS_KEY_ID: undefined,
-                        AWS_SECRET_ACCESS_KEY: undefined,
-                        AWS_SESSION_TOKEN: undefined,
-                        AWS_DEFAULT_REGION:
-                            s3Profile.paramsOfCreateS3Client.region ?? "us-east-1",
-                        AWS_S3_ENDPOINT: host,
-                        port,
-                        pathStyleAccess: s3Profile.paramsOfCreateS3Client.pathStyleAccess,
-                        isAnonymous: false
-                    };
-
-                    if (s3Profile.paramsOfCreateS3Client.isStsEnabled) {
-                        const s3Client = await dispatch(
-                            s3ProfilesManagement.protectedThunks.getS3Client({
-                                profileName: s3Profile.profileName
-                            })
-                        );
-
-                        const tokens = await s3Client.getToken({ doForceRenew: false });
-
-                        assert(tokens !== undefined);
-
-                        s3.AWS_ACCESS_KEY_ID = tokens.accessKeyId;
-                        s3.AWS_SECRET_ACCESS_KEY = tokens.secretAccessKey;
-                        s3.AWS_SESSION_TOKEN = tokens.sessionToken;
-                    } else if (
-                        s3Profile.paramsOfCreateS3Client.credentials !== undefined
-                    ) {
-                        s3.AWS_ACCESS_KEY_ID =
-                            s3Profile.paramsOfCreateS3Client.credentials.accessKeyId;
-                        s3.AWS_SECRET_ACCESS_KEY =
-                            s3Profile.paramsOfCreateS3Client.credentials.secretAccessKey;
-                        s3.AWS_SESSION_TOKEN =
-                            s3Profile.paramsOfCreateS3Client.credentials.sessionToken;
-                    }
-
-                    return s3;
-                })(),
+                s3:
+                    s3ProfileName === undefined
+                        ? undefined
+                        : (() => {
+                              const s3 = s3_array.find(
+                                  s3 => s3.profileName === s3ProfileName
+                              );
+                              assert(s3 !== undefined);
+                              return s3;
+                          })(),
+                s3_array,
                 region: {
                     defaultIpProtection: region.defaultIpProtection,
                     defaultNetworkPolicy: region.defaultNetworkPolicy,

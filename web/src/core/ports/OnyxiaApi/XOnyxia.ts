@@ -109,7 +109,7 @@ export type XOnyxiaContext = {
         | undefined;
     s3:
         | {
-              isEnabled: true;
+              profileName: string;
               AWS_ACCESS_KEY_ID: string | undefined;
               AWS_SECRET_ACCESS_KEY: string | undefined;
               AWS_SESSION_TOKEN: string | undefined;
@@ -120,11 +120,27 @@ export type XOnyxiaContext = {
               /**
                * If true the bucket's (directory) should be accessible without any credentials.
                * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN
-               * will be empty strings.
+               * are undefined.
                */
               isAnonymous: boolean;
           }
         | undefined;
+    s3_array: {
+        profileName: string;
+        AWS_ACCESS_KEY_ID: string | undefined;
+        AWS_SECRET_ACCESS_KEY: string | undefined;
+        AWS_SESSION_TOKEN: string | undefined;
+        AWS_DEFAULT_REGION: string;
+        AWS_S3_ENDPOINT: string;
+        port: number;
+        pathStyleAccess: boolean;
+        /**
+         * If true the bucket's (directory) should be accessible without any credentials.
+         * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN
+         * are undefined.
+         */
+        isAnonymous: boolean;
+    }[];
     region: {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
