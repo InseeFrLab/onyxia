@@ -1076,4 +1076,91 @@ describe(symToStr({ computeHelmValues }), () => {
 
         expect(got).toStrictEqual(expected);
     });
+
+    it("array mapping with overwriteListEnumWith", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            a: {
+                b: [
+                    { p: "foo", q_x: "xxx_1", q_options: ["xxx_1", "yyy_1"] },
+                    { p: "bar", q_x: "xxx_2", q_options: ["xxx_2", "yyy_2"] },
+                    { p: "baz", q_x: "xxx_3", q_options: ["xxx_3", "yyy_3"] }
+                ]
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{a.b}}"
+                        },
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                },
+                                q: {
+                                    type: "string",
+                                    listEnum: [],
+                                    "x-onyxia": {
+                                        overwriteDefaultWith: "{{q_x}}",
+                                        overwriteListEnumWith: "{{q_options}}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        const expected = {
+            helmValues: {
+                r: [
+                    { p: "foo", q: "xxx_1" },
+                    { p: "bar", q: "xxx_2" },
+                    { p: "baz", q: "xxx_3" }
+                ]
+            },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [
+                            { p: "foo", q: "xxx_1" },
+                            { p: "bar", q: "xxx_2" },
+                            { p: "baz", q: "xxx_3" }
+                        ],
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                },
+                                q: {
+                                    type: "string"
+                                }
+                            },
+                            required: ["p", "q"],
+                            additionalProperties: false
+                        }
+                    }
+                },
+                required: ["r"],
+                additionalProperties: false
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
 });
