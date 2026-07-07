@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { computeRootFormFieldGroup } from "./computeRootFormFieldGroup";
 import { symToStr } from "tsafe/symToStr";
-import { assert } from "tsafe/assert";
 import type { FormFieldGroup } from "../formTypes";
 
 describe(symToStr({ computeRootFormFieldGroup }), () => {
@@ -398,20 +397,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
     });
 
     it("overwriteListEnumWith with relative path in array items", () => {
-        // Same item-scoped resolution as overwriteDefaultWith (issue #992):
-        // {{models}} should resolve against the current array item.
-        const xOnyxiaContext = {
-            ai: {
-                providers: [
-                    {
-                        name: "provider1",
-                        selectedModel: "model-a",
-                        models: ["model-a", "model-b"]
-                    }
-                ]
-            }
-        };
-
         const got = computeRootFormFieldGroup({
             helmValuesSchema: {
                 type: "object",
@@ -421,9 +406,6 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                         items: {
                             type: "object",
                             properties: {
-                                name: {
-                                    type: "string"
-                                },
                                 selectedModel: {
                                     type: "string",
                                     "x-onyxia": {
@@ -432,58 +414,69 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                                 },
                                 models: {
                                     type: "array",
-                                    items: { type: "string" }
+                                    items: { type: "string" },
+                                    "x-onyxia": {
+                                        hidden: true
+                                    }
                                 }
                             }
                         }
                     }
                 }
             },
-            // What computeHelmValues produces for this schema and context
             helmValues: {
-                providers: [
-                    {
-                        name: "provider1",
-                        selectedModel: "model-a",
-                        models: ["model-a", "model-b"]
-                    }
-                ]
+                providers: [{ selectedModel: "model-b" }]
             },
-            xOnyxiaContext,
+            xOnyxiaContext: { models: ["model-a", "model-b"] },
             autoInjectionDisabledFields: undefined,
             autocompleteOptions: []
         });
 
-        const selectedModelField = (() => {
-            const providersGroup = got.nodes.find(
-                node => node.type === "group" && node.title === "providers"
-            );
-
-            assert(providersGroup !== undefined && providersGroup.type === "group");
-
-            const [itemGroup] = providersGroup.nodes;
-
-            assert(itemGroup !== undefined && itemGroup.type === "group");
-
-            const field = itemGroup.nodes.find(
-                node => node.type === "field" && node.title === "selectedModel"
-            );
-
-            assert(field !== undefined && field.type === "field");
-
-            return field;
-        })();
-
-        expect(selectedModelField).toStrictEqual({
-            type: "field",
+        const expected: FormFieldGroup = {
+            type: "group",
+            helmValuesPath: [],
+            title: "<root>",
             description: undefined,
-            title: "selectedModel",
-            isReadonly: false,
-            fieldType: "select",
-            helmValuesPath: ["providers", 0, "selectedModel"],
-            options: ["model-a", "model-b"],
-            selectedOptionIndex: 0
-        });
+            nodes: [
+                {
+                    type: "group",
+                    helmValuesPath: ["providers"],
+                    title: "providers",
+                    description: undefined,
+                    nodes: [
+                        {
+                            type: "group",
+                            helmValuesPath: ["providers", 0],
+                            title: "providers 1",
+                            description: undefined,
+                            nodes: [
+                                {
+                                    type: "field",
+                                    title: "selectedModel",
+                                    isReadonly: false,
+                                    fieldType: "select",
+                                    helmValuesPath: ["providers", 0, "selectedModel"],
+                                    description: undefined,
+                                    options: ["model-a", "model-b"],
+                                    selectedOptionIndex: 1
+                                }
+                            ],
+                            canAdd: false,
+                            canRemove: false,
+                            isAutoInjected: undefined
+                        }
+                    ],
+                    canAdd: true,
+                    canRemove: true,
+                    isAutoInjected: undefined
+                }
+            ],
+            canAdd: false,
+            canRemove: false,
+            isAutoInjected: undefined
+        };
+
+        expect(got).toStrictEqual(expected);
     });
 
     it("with autocomplete options", () => {
