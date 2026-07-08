@@ -109,18 +109,38 @@ export const translations: Translations<"nl"> = {
         ),
         "api base url": "API-basis-URL",
         token: "Token",
-        "model label": "Model",
         "gateway error": "Kan de AI-gateway niet initialiseren.",
         "default provider": "Standaardprovider",
         "set default provider": "Als standaard instellen",
         "refresh credentials": "Referenties vernieuwen",
         "delete provider": "Verwijderen",
         "edit provider": "Bewerken",
-        copy: "Kopiëren",
-        "not defined": "Niet gedefinieerd",
         "custom providers section title": "Aangepaste AI-providers",
         "custom providers section helper":
             "Voeg uw eigen OpenAI-compatibele AI-providers toe. Inloggegevens worden in uw browser opgeslagen.",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-sleutel",
+        "no account": ({ webUiUrl }) => (
+            <>
+                U heeft nog geen account bij de AI-gateway. Meld u eerst aan bij{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                om uw account aan te maken.
+            </>
+        )
+    },
+    ProviderValueField: {
+        copy: "Kopiëren"
+    },
+    ModelsSection: {
+        "model label": "Model",
+        "not defined": "Niet gedefinieerd",
+        "models fetch error":
+            "Kan modellen niet ophalen — controleer uw URL en API-sleutel."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Aangepaste AI-providers",
         "edit custom provider title": "AI-provider bewerken",
         "custom provider label field": "Label",
         "custom provider type field": "Providertype",
@@ -132,18 +152,7 @@ export const translations: Translations<"nl"> = {
             "Kan geen verbinding maken — controleer URL en API-sleutel.",
         "provider save": "Toevoegen",
         "provider update": "Opslaan",
-        "provider cancel": "Annuleren",
-        "models fetch error":
-            "Kan modellen niet ophalen — controleer uw URL en API-sleutel.",
-        "no account": ({ webUiUrl }) => (
-            <>
-                U heeft nog geen account bij de AI-gateway. Meld u eerst aan bij{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                om uw account aan te maken.
-            </>
-        )
+        "provider cancel": "Annuleren"
     },
     AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",

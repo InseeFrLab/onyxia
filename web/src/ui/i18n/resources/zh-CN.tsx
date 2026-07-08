@@ -100,18 +100,37 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "api base url": "API 基础 URL",
         token: "令牌",
-        "model label": "模型",
         "gateway error": "无法初始化 AI 网关。",
         "default provider": "默认提供商",
         "set default provider": "设为默认提供商",
         "refresh credentials": "刷新凭据",
         "delete provider": "删除",
         "edit provider": "编辑",
-        copy: "复制",
-        "not defined": "未定义",
         "custom providers section title": "自定义 AI 提供商",
         "custom providers section helper":
             "添加您自己的兼容 OpenAI 的 AI 提供商。凭据存储在您的浏览器中。",
+        "custom provider api base field": "API 基础 URL",
+        "custom provider api key field": "API 密钥",
+        "no account": ({ webUiUrl }) => (
+            <>
+                您还没有 AI 网关账户。请先登录{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                以创建您的账户。
+            </>
+        )
+    },
+    ProviderValueField: {
+        copy: "复制"
+    },
+    ModelsSection: {
+        "model label": "模型",
+        "not defined": "未定义",
+        "models fetch error": "无法获取模型 — 请检查您的 URL 和 API 密钥。"
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",
         "custom provider label field": "标签",
         "custom provider type field": "提供商类型",
@@ -122,17 +141,7 @@ export const translations: Translations<"zh-CN"> = {
         "provider test error": "无法连接 — 请检查 URL 和 API 密钥。",
         "provider save": "添加",
         "provider update": "保存",
-        "provider cancel": "取消",
-        "models fetch error": "无法获取模型 — 请检查您的 URL 和 API 密钥。",
-        "no account": ({ webUiUrl }) => (
-            <>
-                您还没有 AI 网关账户。请先登录{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                以创建您的账户。
-            </>
-        )
+        "provider cancel": "取消"
     },
     AccountVaultTab: {
         "credentials section title": "保险库凭证",

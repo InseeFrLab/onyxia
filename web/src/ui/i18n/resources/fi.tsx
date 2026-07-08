@@ -109,30 +109,17 @@ export const translations: Translations<"fi"> = {
         ),
         "api base url": "API-perus-URL",
         token: "Token",
-        "model label": "Malli",
         "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
         "default provider": "Oletustarjoaja",
         "set default provider": "Aseta oletukseksi",
         "refresh credentials": "Päivitä tunnistetiedot",
         "delete provider": "Poista",
         "edit provider": "Muokkaa",
-        copy: "Kopioi",
-        "not defined": "Ei määritetty",
         "custom providers section title": "Mukautetut tekoälyntarjoajat",
         "custom providers section helper":
             "Lisää omia OpenAI-yhteensopivia tekoälypalveluntarjoajia. Tunnukset tallennetaan selaimeesi.",
-        "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
-        "custom provider label field": "Tunniste",
-        "custom provider type field": "Palveluntarjoajan tyyppi",
         "custom provider api base field": "API-perus-URL",
         "custom provider api key field": "API-avain",
-        "provider test": "Testaa yhteys",
-        "provider test success": "Yhteys onnistui",
-        "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
-        "provider save": "Lisää",
-        "provider update": "Tallenna",
-        "provider cancel": "Peruuta",
-        "models fetch error": "Mallien haku epäonnistui — tarkista URL ja API-avain.",
         "no account": ({ webUiUrl }) => (
             <>
                 Sinulla ei vielä ole tiliä tekoälyyhdyskäytävässä. Kirjaudu ensin sisään
@@ -143,6 +130,28 @@ export const translations: Translations<"fi"> = {
                 luodaksesi tilisi.
             </>
         )
+    },
+    ProviderValueField: {
+        copy: "Kopioi"
+    },
+    ModelsSection: {
+        "model label": "Malli",
+        "not defined": "Ei määritetty",
+        "models fetch error": "Mallien haku epäonnistui — tarkista URL ja API-avain."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Mukautetut tekoälyntarjoajat",
+        "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
+        "custom provider label field": "Tunniste",
+        "custom provider type field": "Palveluntarjoajan tyyppi",
+        "custom provider api base field": "API-perus-URL",
+        "custom provider api key field": "API-avain",
+        "provider test": "Testaa yhteys",
+        "provider test success": "Yhteys onnistui",
+        "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
+        "provider save": "Lisää",
+        "provider update": "Tallenna",
+        "provider cancel": "Peruuta"
     },
     AccountVaultTab: {
         "credentials section title": "Vault-todennustiedot",

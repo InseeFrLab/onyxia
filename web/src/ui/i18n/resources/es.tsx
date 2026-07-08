@@ -109,31 +109,17 @@ export const translations: Translations<"es"> = {
         ),
         "api base url": "URL base de la API",
         token: "Token",
-        "model label": "Modelo",
         "gateway error": "No se pudo inicializar la pasarela de IA.",
         "default provider": "Proveedor predeterminado",
         "set default provider": "Definir como predeterminado",
         "refresh credentials": "Actualizar credenciales",
         "delete provider": "Eliminar",
         "edit provider": "Editar",
-        copy: "Copiar",
-        "not defined": "No definido",
         "custom providers section title": "Proveedores de IA personalizados",
         "custom providers section helper":
             "Añade tus propios proveedores de IA compatibles con OpenAI. Las credenciales se almacenan en tu navegador.",
-        "edit custom provider title": "Editar proveedor de IA",
-        "custom provider label field": "Etiqueta",
-        "custom provider type field": "Tipo de proveedor",
         "custom provider api base field": "URL base de la API",
         "custom provider api key field": "Clave API",
-        "provider test": "Probar conexión",
-        "provider test success": "Conexión exitosa",
-        "provider test error": "No se puede conectar — compruebe la URL y la clave API.",
-        "provider save": "Añadir",
-        "provider update": "Guardar",
-        "provider cancel": "Cancelar",
-        "models fetch error":
-            "No se pueden obtener los modelos — compruebe la URL y la clave API.",
         "no account": ({ webUiUrl }) => (
             <>
                 Aún no tiene una cuenta en la pasarela de IA. Por favor, inicie sesión
@@ -144,6 +130,29 @@ export const translations: Translations<"es"> = {
                 para crear su cuenta.
             </>
         )
+    },
+    ProviderValueField: {
+        copy: "Copiar"
+    },
+    ModelsSection: {
+        "model label": "Modelo",
+        "not defined": "No definido",
+        "models fetch error":
+            "No se pueden obtener los modelos — compruebe la URL y la clave API."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Proveedores de IA personalizados",
+        "edit custom provider title": "Editar proveedor de IA",
+        "custom provider label field": "Etiqueta",
+        "custom provider type field": "Tipo de proveedor",
+        "custom provider api base field": "URL base de la API",
+        "custom provider api key field": "Clave API",
+        "provider test": "Probar conexión",
+        "provider test success": "Conexión exitosa",
+        "provider test error": "No se puede conectar — compruebe la URL y la clave API.",
+        "provider save": "Añadir",
+        "provider update": "Guardar",
+        "provider cancel": "Cancelar"
     },
     AccountVaultTab: {
         "credentials section title": "Credenciales de Vault",
