@@ -17,7 +17,7 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with .Values.web.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
@@ -35,16 +35,12 @@ spec:
               value: "{{ .Chart.Version }}"
             - name: ONYXIA_VERSION_URL
               value: "https://github.com/InseeFrLab/onyxia/releases/tag/v{{ .Chart.Version }}"
-           {{- if .Values.web.env }}
+            {{- if .Values.web.env }}
             {{- range $key, $value := .Values.web.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-            {{- end -}}
             {{- end }}
-          {{- if .Values.onboarding.enabled }}
-            - name: OIDC_DISABLE_DPOP
-              value: "true"
-          {{- end }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.web.containerPort }}

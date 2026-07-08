@@ -46,6 +46,8 @@ web:
     tag: 5.4.6
     pullPolicy: IfNotPresent
 
+  imagePullSecrets: []
+
   ## Pod priority settings
   ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
   ##
@@ -332,7 +334,7 @@ onboarding:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-onboarding
-    tag: "0.1.19"
+    tag: "0.1.21"
     pullPolicy: IfNotPresent
 
   hostAliases: []
