@@ -108,18 +108,38 @@ export const translations: Translations<"it"> = {
         ),
         "api base url": "URL base dell'API",
         token: "Token",
-        "model label": "Modello",
         "gateway error": "Impossibile inizializzare il gateway IA.",
         "default provider": "Provider predefinito",
         "set default provider": "Imposta come predefinito",
         "refresh credentials": "Aggiorna credenziali",
         "delete provider": "Elimina",
         "edit provider": "Modifica",
-        copy: "Copia",
-        "not defined": "Non definito",
         "custom providers section title": "Provider IA personalizzati",
         "custom providers section helper":
             "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                per creare il tuo account.
+            </>
+        )
+    },
+    ProviderValueField: {
+        copy: "Copia"
+    },
+    ModelsSection: {
+        "model label": "Modello",
+        "not defined": "Non definito",
+        "models fetch error":
+            "Impossibile recuperare i modelli — controlla l'URL e la chiave API."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Provider IA personalizzati",
         "edit custom provider title": "Modifica provider IA",
         "custom provider label field": "Etichetta",
         "custom provider type field": "Tipo di provider",
@@ -131,18 +151,7 @@ export const translations: Translations<"it"> = {
             "Impossibile connettersi — controlla l'URL e la chiave API.",
         "provider save": "Aggiungi",
         "provider update": "Salva",
-        "provider cancel": "Annulla",
-        "models fetch error":
-            "Impossibile recuperare i modelli — controlla l'URL e la chiave API.",
-        "no account": ({ webUiUrl }) => (
-            <>
-                Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                per creare il tuo account.
-            </>
-        )
+        "provider cancel": "Annulla"
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",

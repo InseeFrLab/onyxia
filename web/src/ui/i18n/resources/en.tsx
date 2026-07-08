@@ -108,18 +108,37 @@ export const translations: Translations<"en"> = {
         ),
         "api base url": "API base URL",
         token: "Token",
-        "model label": "Model",
         "gateway error": "Unable to initialize the AI gateway.",
         "default provider": "Default provider",
         "set default provider": "Set default provider",
         "refresh credentials": "Refresh credentials",
         "delete provider": "Delete",
         "edit provider": "Edit",
-        copy: "Copy",
-        "not defined": "Not defined",
         "custom providers section title": "Custom AI providers",
         "custom providers section helper":
             "Add your own OpenAI-compatible AI providers. Credentials are stored in your browser.",
+        "custom provider api base field": "API base URL",
+        "custom provider api key field": "API key",
+        "no account": ({ webUiUrl }) => (
+            <>
+                You don&apos;t have an AI gateway account yet. Please log in to{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                first to create your account.
+            </>
+        )
+    },
+    ProviderValueField: {
+        copy: "Copy"
+    },
+    ModelsSection: {
+        "model label": "Model",
+        "not defined": "Not defined",
+        "models fetch error": "Unable to fetch models — check your URL and API key."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Custom AI providers",
         "edit custom provider title": "Edit AI provider",
         "custom provider label field": "Label",
         "custom provider type field": "Provider type",
@@ -130,17 +149,7 @@ export const translations: Translations<"en"> = {
         "provider test error": "Unable to connect — check URL and API key.",
         "provider save": "Add",
         "provider update": "Save changes",
-        "provider cancel": "Cancel",
-        "models fetch error": "Unable to fetch models — check your URL and API key.",
-        "no account": ({ webUiUrl }) => (
-            <>
-                You don&apos;t have an AI gateway account yet. Please log in to{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                first to create your account.
-            </>
-        )
+        "provider cancel": "Cancel"
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

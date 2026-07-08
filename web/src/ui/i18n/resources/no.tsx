@@ -109,18 +109,37 @@ export const translations: Translations<"no"> = {
         ),
         "api base url": "API-basis-URL",
         token: "Token",
-        "model label": "Modell",
         "gateway error": "Kunne ikke initialisere AI-gatewayen.",
         "default provider": "Standardleverandør",
         "set default provider": "Angi som standard",
         "refresh credentials": "Oppdater legitimasjon",
         "delete provider": "Slett",
         "edit provider": "Rediger",
-        copy: "Kopier",
-        "not defined": "Ikke definert",
         "custom providers section title": "Tilpassede AI-leverandører",
         "custom providers section helper":
             "Legg til dine egne OpenAI-kompatible AI-leverandører. Påloggingsinformasjonen lagres i nettleseren din.",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-nøkkel",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                for å opprette kontoen din.
+            </>
+        )
+    },
+    ProviderValueField: {
+        copy: "Kopier"
+    },
+    ModelsSection: {
+        "model label": "Modell",
+        "not defined": "Ikke definert",
+        "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Tilpassede AI-leverandører",
         "edit custom provider title": "Rediger AI-leverandør",
         "custom provider label field": "Etikett",
         "custom provider type field": "Leverandørtype",
@@ -131,17 +150,7 @@ export const translations: Translations<"no"> = {
         "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
         "provider save": "Legg til",
         "provider update": "Lagre",
-        "provider cancel": "Avbryt",
-        "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen.",
-        "no account": ({ webUiUrl }) => (
-            <>
-                Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                for å opprette kontoen din.
-            </>
-        )
+        "provider cancel": "Avbryt"
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",
