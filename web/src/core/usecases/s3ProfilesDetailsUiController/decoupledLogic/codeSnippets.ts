@@ -19,13 +19,11 @@ export type CodeSnippet = {
     codeSrc: string;
 };
 
-type AccessCredentials =
-    | {
-          accessKeyId: string;
-          secretAccessKey: string;
-          sessionToken: string | undefined;
-      }
-    | undefined;
+type AccessCredentials = {
+    accessKeyId: string;
+    secretAccessKey: string;
+    sessionToken: string | undefined;
+};
 
 type SnippetContext = {
     profileName: string;
@@ -39,7 +37,7 @@ type SnippetContext = {
     minioClientAlias: string;
     minioClientEnvVarName: string;
     rcloneRemoteName: string;
-    accessCredentials: AccessCredentials;
+    accessCredentials: AccessCredentials | undefined;
 };
 
 const defaultRegionFallback = "us-east-1";
@@ -49,7 +47,7 @@ export function getCodeSnippet(params: {
     profileName: string;
     endpointUrl: string;
     defaultRegion: string | undefined;
-    accessCredentials: AccessCredentials;
+    accessCredentials: AccessCredentials | undefined;
 }): CodeSnippet {
     const { technology } = params;
 
@@ -76,7 +74,7 @@ function getSnippetContext(params: {
     profileName: string;
     endpointUrl: string;
     defaultRegion: string | undefined;
-    accessCredentials: AccessCredentials;
+    accessCredentials: AccessCredentials | undefined;
 }): SnippetContext {
     const { profileName, endpointUrl, defaultRegion, accessCredentials } = params;
 
