@@ -1,3 +1,5 @@
+import type { DeploymentRegion, LocalizedString } from "./OnyxiaApi";
+
 export type Ai = {
     id: string;
     name: string;
@@ -7,6 +9,8 @@ export type Ai = {
      * API dialect to use. Defaults to "openai" (OpenAI-compatible) for region gateways.
      */
     provider: string;
+    description: LocalizedString | undefined;
+    accountCreation: DeploymentRegion.AiAccountCreation | undefined;
     webUiUrl: string;
     apiBase: string;
     getToken: () => Promise<GetTokenResult>;

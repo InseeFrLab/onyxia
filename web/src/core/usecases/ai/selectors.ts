@@ -35,6 +35,8 @@ const main = createSelector(
                 .map(p => ({
                     ...toCommonView(p),
                     webUiUrl: p.webUiUrl,
+                    description: p.description,
+                    accountCreation: p.accountCreation,
                     auth: p.auth
                 })),
             customProviders: (providers ?? [])
@@ -70,6 +72,7 @@ const aiOnyxiaContext = createSelector(
 
             return {
                 id: provider.id,
+                isDefault: provider.id === activeProviderId,
                 name: provider.name,
                 provider: provider.provider,
                 apiBase: provider.apiBase,

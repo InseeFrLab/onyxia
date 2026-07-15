@@ -215,6 +215,7 @@ assert<Equals<XOnyxiaContext["user"]["lang"], Language>>();
 
 type AiProvider = {
     id: string;
+    isDefault: boolean;
     apiKey: string;
     apiBase: string;
     name: string;

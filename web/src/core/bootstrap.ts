@@ -318,7 +318,7 @@ export async function bootstrapCore(
                     oidcParams_partial: aiConfig.oidcParams
                 });
 
-                const oidcKey = `${oidcParams_ai.issuerUri} ${oidcParams_ai.clientId}`;
+                const oidcKey = `${oidcParams_ai.issuerUri}\0${oidcParams_ai.clientId}`;
 
                 let getOidcAccessToken = getOidcAccessTokenByOidcKey.get(oidcKey);
 
@@ -346,6 +346,9 @@ export async function bootstrapCore(
                     createAi({
                         id: aiConfig.id,
                         name: aiConfig.name ?? new URL(aiConfig.url).hostname,
+                        provider: aiConfig.provider,
+                        description: aiConfig.description,
+                        accountCreation: aiConfig.accountCreation,
                         webUiUrl: aiConfig.url,
                         oauthProvider: aiConfig.oauthProvider,
                         getOidcAccessToken

@@ -97,7 +97,6 @@ export const translations: Translations<"en"> = {
             `These credentials are valid for the next ${howMuchTime}`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "AI Gateway credentials",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Your OIDC session gives you seamless access to the AI gateway.{" "}
@@ -117,6 +116,7 @@ export const translations: Translations<"en"> = {
         "custom providers section title": "Custom AI providers",
         "custom providers section helper":
             "Add your own OpenAI-compatible AI providers. Credentials are stored in your browser.",
+        "add custom provider": "Add custom provider",
         "custom provider api base field": "API base URL",
         "custom provider api key field": "API key",
         "no account": ({ webUiUrl }) => (
@@ -130,7 +130,8 @@ export const translations: Translations<"en"> = {
         )
     },
     ProviderValueField: {
-        copy: "Copy"
+        copy: "Copy",
+        copied: "Copied"
     },
     ModelsSection: {
         "model label": "Model",
@@ -138,18 +139,33 @@ export const translations: Translations<"en"> = {
         "models fetch error": "Unable to fetch models — check your URL and API key."
     },
     CustomProviderFormDialog: {
-        "add custom provider title": "Custom AI providers",
+        "add custom provider title": "Add Custom AI Providers",
         "edit custom provider title": "Edit AI provider",
-        "custom provider label field": "Label",
-        "custom provider type field": "Provider type",
-        "custom provider api base field": "API base URL",
-        "custom provider api key field": "API key",
+        "custom provider section title": "Custom AI Providers",
+        "custom provider section subtitle":
+            "Add your own OpenAI-compatible AI providers.",
+        "custom provider label field": "Define a custom name",
+        "custom provider type field": "Provider Type",
+        "openai provider option": "Open AI",
+        "credentials section title": "Providers Credentials",
+        "credentials section subtitle":
+            "Enter your credentials. They will be stored in your browser.",
+        "custom provider api base field": "API Base URL",
+        "custom provider api key field": "API Key",
+        "verification section title": "Verify & Load Models",
+        "verification section subtitle":
+            "Verify your credentials and automatically discover the available models.",
+        "custom provider model field": "Model Type",
         "provider test": "Test connection",
-        "provider test success": "Connection successful",
-        "provider test error": "Unable to connect — check URL and API key.",
-        "provider save": "Add",
+        "provider testing": "Testing connection...",
+        "provider test success": "Connection successful. Your provider is ready to use.",
+        "provider test error":
+            "Connection failed. Please check your credentials or endpoint.",
+        "set as default provider": "Set as default provider",
+        "provider save": "Add Custom AI Providers",
         "provider update": "Save changes",
-        "provider cancel": "Cancel"
+        "provider cancel": "Cancel",
+        "close aria label": "Close"
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",
