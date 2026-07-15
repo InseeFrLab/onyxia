@@ -99,7 +99,6 @@ export const translations: Translations<"de"> = {
             `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "KI-Gateway-Anmeldedaten",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Ihre OIDC-Sitzung gibt Ihnen nahtlosen Zugriff auf das KI-Gateway.{" "}
@@ -119,6 +118,7 @@ export const translations: Translations<"de"> = {
         "custom providers section title": "Benutzerdefinierte KI-Anbieter",
         "custom providers section helper":
             "Fügen Sie Ihre eigenen OpenAI-kompatiblen KI-Anbieter hinzu. Die Anmeldedaten werden in Ihrem Browser gespeichert.",
+        "add custom provider": "Benutzerdefinierten Anbieter hinzufügen",
         "custom provider api base field": "API-Basis-URL",
         "custom provider api key field": "API-Schlüssel",
         "no account": ({ webUiUrl }) => (
@@ -133,7 +133,8 @@ export const translations: Translations<"de"> = {
         )
     },
     ProviderValueField: {
-        copy: "Kopieren"
+        copy: "Kopieren",
+        copied: "Kopiert"
     },
     ModelsSection: {
         "model label": "Modell",
@@ -144,17 +145,32 @@ export const translations: Translations<"de"> = {
     CustomProviderFormDialog: {
         "add custom provider title": "Benutzerdefinierte KI-Anbieter",
         "edit custom provider title": "KI-Anbieter bearbeiten",
+        "custom provider section title": "Benutzerdefinierte KI-Anbieter",
+        "custom provider section subtitle":
+            "Fügen Sie eigene OpenAI-kompatible KI-Anbieter hinzu.",
         "custom provider label field": "Name",
         "custom provider type field": "Provider-Typ",
+        "openai provider option": "Open AI",
+        "credentials section title": "Anmeldedaten des Anbieters",
+        "credentials section subtitle":
+            "Geben Sie Ihre Anmeldedaten ein. Sie werden in Ihrem Browser gespeichert.",
         "custom provider api base field": "API-Basis-URL",
         "custom provider api key field": "API-Schlüssel",
+        "verification section title": "Modelle prüfen und laden",
+        "verification section subtitle":
+            "Prüfen Sie Ihre Anmeldedaten und laden Sie automatisch die verfügbaren Modelle.",
+        "custom provider model field": "Modelltyp",
         "provider test": "Verbindung testen",
-        "provider test success": "Verbindung erfolgreich",
+        "provider testing": "Verbindung wird getestet...",
+        "provider test success":
+            "Verbindung erfolgreich. Der Anbieter ist einsatzbereit.",
         "provider test error":
             "Verbindung fehlgeschlagen — URL und API-Schlüssel prüfen.",
+        "set as default provider": "Als Standardanbieter festlegen",
         "provider save": "Hinzufügen",
         "provider update": "Speichern",
-        "provider cancel": "Abbrechen"
+        "provider cancel": "Abbrechen",
+        "close aria label": "Schließen"
     },
     AccountVaultTab: {
         "credentials section title": "Vault-Anmeldeinformationen",

@@ -1,4 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
+import type { Ai } from "core/ports/Ai";
 import { assert } from "tsafe";
 import { id } from "tsafe/id";
 
@@ -40,6 +41,8 @@ export declare namespace State {
         export type Region = Common & {
             kind: "region";
             webUiUrl: string;
+            description: Ai["description"];
+            accountCreation: Ai["accountCreation"];
             auth:
                 | { stateDescription: "no account" }
                 | { stateDescription: "error" }
@@ -154,6 +157,8 @@ export const { reducer, actions } = createUsecaseActions({
                     provider: string;
                     apiBase: string;
                     apiKey: string;
+                    models: State.AiModel[];
+                    selectedModelId: string;
                 };
             }
         ) => {
@@ -166,8 +171,11 @@ export const { reducer, actions } = createUsecaseActions({
             provider.provider = payload.provider;
             provider.apiBase = payload.apiBase;
             provider.apiKey = payload.apiKey;
-            // Credentials changed → the previous models list no longer applies.
-            provider.models = { stateDescription: "fetching" };
+            provider.models = {
+                stateDescription: "loaded",
+                availableModels: payload.models
+            };
+            provider.selectedModelId = payload.selectedModelId;
         },
         deleteCustomProvider: (
             state,

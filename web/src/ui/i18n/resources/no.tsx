@@ -98,7 +98,6 @@ export const translations: Translations<"no"> = {
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "AI-gateway-legitimasjon",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Din OIDC-økt gir deg sømløs tilgang til AI-gatewayen.{" "}
@@ -118,6 +117,7 @@ export const translations: Translations<"no"> = {
         "custom providers section title": "Tilpassede AI-leverandører",
         "custom providers section helper":
             "Legg til dine egne OpenAI-kompatible AI-leverandører. Påloggingsinformasjonen lagres i nettleseren din.",
+        "add custom provider": "Legg til tilpasset leverandør",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-nøkkel",
         "no account": ({ webUiUrl }) => (
@@ -131,7 +131,8 @@ export const translations: Translations<"no"> = {
         )
     },
     ProviderValueField: {
-        copy: "Kopier"
+        copy: "Kopier",
+        copied: "Kopiert"
     },
     ModelsSection: {
         "model label": "Modell",
@@ -141,16 +142,30 @@ export const translations: Translations<"no"> = {
     CustomProviderFormDialog: {
         "add custom provider title": "Tilpassede AI-leverandører",
         "edit custom provider title": "Rediger AI-leverandør",
+        "custom provider section title": "Tilpassede AI-leverandører",
+        "custom provider section subtitle":
+            "Legg til dine egne OpenAI-kompatible AI-leverandører.",
         "custom provider label field": "Etikett",
         "custom provider type field": "Leverandørtype",
+        "openai provider option": "Open AI",
+        "credentials section title": "Leverandørlegitimasjon",
+        "credentials section subtitle":
+            "Skriv inn legitimasjonen din. Den lagres i nettleseren.",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-nøkkel",
+        "verification section title": "Bekreft og last inn modeller",
+        "verification section subtitle":
+            "Bekreft legitimasjonen og finn tilgjengelige modeller automatisk.",
+        "custom provider model field": "Modelltype",
         "provider test": "Test tilkobling",
-        "provider test success": "Tilkobling vellykket",
+        "provider testing": "Tester tilkobling...",
+        "provider test success": "Tilkobling vellykket. Leverandøren er klar til bruk.",
         "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
+        "set as default provider": "Angi som standardleverandør",
         "provider save": "Legg til",
         "provider update": "Lagre",
-        "provider cancel": "Avbryt"
+        "provider cancel": "Avbryt",
+        "close aria label": "Lukk"
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

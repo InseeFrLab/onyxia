@@ -86,6 +86,13 @@ export type ApiTypes = {
                     id?: string;
                     URL: string;
                     name?: string;
+                    provider?: string;
+                    description?: LocalizedString;
+                    accountCreation?: {
+                        title?: LocalizedString;
+                        description?: LocalizedString;
+                        buttonLabel?: LocalizedString;
+                    };
                     oauthProvider: string;
                     oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
                 }>;

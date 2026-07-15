@@ -89,7 +89,6 @@ export const translations: Translations<"zh-CN"> = {
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "AI 网关凭据",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 您的 OIDC 会话使您可以无缝访问 AI 网关。{" "}
@@ -109,6 +108,7 @@ export const translations: Translations<"zh-CN"> = {
         "custom providers section title": "自定义 AI 提供商",
         "custom providers section helper":
             "添加您自己的兼容 OpenAI 的 AI 提供商。凭据存储在您的浏览器中。",
+        "add custom provider": "添加自定义提供商",
         "custom provider api base field": "API 基础 URL",
         "custom provider api key field": "API 密钥",
         "no account": ({ webUiUrl }) => (
@@ -122,7 +122,8 @@ export const translations: Translations<"zh-CN"> = {
         )
     },
     ProviderValueField: {
-        copy: "复制"
+        copy: "复制",
+        copied: "已复制"
     },
     ModelsSection: {
         "model label": "模型",
@@ -132,16 +133,27 @@ export const translations: Translations<"zh-CN"> = {
     CustomProviderFormDialog: {
         "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",
+        "custom provider section title": "自定义 AI 提供商",
+        "custom provider section subtitle": "添加兼容 OpenAI 的自定义 AI 提供商。",
         "custom provider label field": "标签",
         "custom provider type field": "提供商类型",
+        "openai provider option": "Open AI",
+        "credentials section title": "提供商凭证",
+        "credentials section subtitle": "请输入凭证。凭证将存储在您的浏览器中。",
         "custom provider api base field": "API 基础 URL",
         "custom provider api key field": "API 密钥",
+        "verification section title": "验证并加载模型",
+        "verification section subtitle": "验证凭证并自动发现可用模型。",
+        "custom provider model field": "模型类型",
         "provider test": "测试连接",
-        "provider test success": "连接成功",
+        "provider testing": "正在测试连接...",
+        "provider test success": "连接成功。提供商已准备就绪。",
         "provider test error": "无法连接 — 请检查 URL 和 API 密钥。",
+        "set as default provider": "设为默认提供商",
         "provider save": "添加",
         "provider update": "保存",
-        "provider cancel": "取消"
+        "provider cancel": "取消",
+        "close aria label": "关闭"
     },
     AccountVaultTab: {
         "credentials section title": "保险库凭证",

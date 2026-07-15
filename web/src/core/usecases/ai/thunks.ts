@@ -95,9 +95,25 @@ export const thunks = {
     // The add/edit form (values, validation, connection-test result, open state) is
     // owned by the UI. The core only exposes the resulting operations on the state.
     addCustomProvider:
-        (params: { name: string; provider: string; apiBase: string; apiKey: string }) =>
+        (params: {
+            name: string;
+            provider: string;
+            apiBase: string;
+            apiKey: string;
+            models: State.AiModel[];
+            selectedModelId: string;
+            doSetAsDefault: boolean;
+        }) =>
         async (...args) => {
-            const { name, provider, apiBase, apiKey } = params;
+            const {
+                name,
+                provider,
+                apiBase,
+                apiKey,
+                models,
+                selectedModelId,
+                doSetAsDefault
+            } = params;
             const [dispatch] = args;
 
             const providerId = crypto.randomUUID();
@@ -111,14 +127,17 @@ export const thunks = {
                         provider,
                         apiBase,
                         apiKey,
-                        models: { stateDescription: "fetching" },
-                        selectedModelId: undefined
+                        models: { stateDescription: "loaded", availableModels: models },
+                        selectedModelId
                     }
                 })
             );
 
+            if (doSetAsDefault) {
+                dispatch(actions.activeProviderChanged({ activeProviderId: providerId }));
+            }
+
             await dispatch(privateThunks.persistConfig());
-            await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
         },
     editCustomProvider:
         (params: {
@@ -127,9 +146,21 @@ export const thunks = {
             provider: string;
             apiBase: string;
             apiKey: string;
+            models: State.AiModel[];
+            selectedModelId: string;
+            doSetAsDefault: boolean;
         }) =>
         async (...args) => {
-            const { providerId, name, provider, apiBase, apiKey } = params;
+            const {
+                providerId,
+                name,
+                provider,
+                apiBase,
+                apiKey,
+                models,
+                selectedModelId,
+                doSetAsDefault
+            } = params;
             const [dispatch] = args;
 
             dispatch(
@@ -138,21 +169,26 @@ export const thunks = {
                     name: name,
                     provider,
                     apiBase,
-                    apiKey
+                    apiKey,
+                    models,
+                    selectedModelId
                 })
             );
 
+            if (doSetAsDefault) {
+                dispatch(actions.activeProviderChanged({ activeProviderId: providerId }));
+            }
+
             await dispatch(privateThunks.persistConfig());
-            await dispatchFetchedModels({ dispatch, providerId, apiBase, apiKey });
         },
     // Command-query thunk: the connection-test result is purely UI-local (it never
     // touches the persisted state), so returning it here is intentional.
     testCustomProviderConnection:
         (params: { apiBase: string; apiKey: string }) =>
-        async (): Promise<{ modelCount: number }> => {
+        async (): Promise<{ models: State.AiModel[] }> => {
             const { apiBase, apiKey } = params;
             const models = await fetchAiModels({ apiBase, token: apiKey });
-            return { modelCount: models.length };
+            return { models };
         }
 } satisfies Thunks;
 
@@ -218,6 +254,8 @@ const privateThunks = {
                             id: aiProvider.id,
                             name: aiProvider.name,
                             provider: aiProvider.provider,
+                            description: aiProvider.description,
+                            accountCreation: aiProvider.accountCreation,
                             webUiUrl: aiProvider.webUiUrl,
                             apiBase: aiProvider.apiBase,
                             auth: getTokenResultToAuth(tokenResult),

@@ -98,7 +98,6 @@ export const translations: Translations<"nl"> = {
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "AI-gateway-inloggegevens",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Uw OIDC-sessie geeft u naadloze toegang tot de AI-gateway.{" "}
@@ -118,6 +117,7 @@ export const translations: Translations<"nl"> = {
         "custom providers section title": "Aangepaste AI-providers",
         "custom providers section helper":
             "Voeg uw eigen OpenAI-compatibele AI-providers toe. Inloggegevens worden in uw browser opgeslagen.",
+        "add custom provider": "Aangepaste provider toevoegen",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-sleutel",
         "no account": ({ webUiUrl }) => (
@@ -131,7 +131,8 @@ export const translations: Translations<"nl"> = {
         )
     },
     ProviderValueField: {
-        copy: "Kopiëren"
+        copy: "Kopiëren",
+        copied: "Gekopieerd"
     },
     ModelsSection: {
         "model label": "Model",
@@ -142,17 +143,32 @@ export const translations: Translations<"nl"> = {
     CustomProviderFormDialog: {
         "add custom provider title": "Aangepaste AI-providers",
         "edit custom provider title": "AI-provider bewerken",
+        "custom provider section title": "Aangepaste AI-providers",
+        "custom provider section subtitle":
+            "Voeg uw eigen OpenAI-compatibele AI-providers toe.",
         "custom provider label field": "Label",
         "custom provider type field": "Providertype",
+        "openai provider option": "Open AI",
+        "credentials section title": "Providerreferenties",
+        "credentials section subtitle":
+            "Voer uw referenties in. Ze worden in uw browser opgeslagen.",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-sleutel",
+        "verification section title": "Modellen verifiëren en laden",
+        "verification section subtitle":
+            "Verifieer uw referenties en ontdek automatisch de beschikbare modellen.",
+        "custom provider model field": "Modeltype",
         "provider test": "Verbinding testen",
-        "provider test success": "Verbinding geslaagd",
+        "provider testing": "Verbinding testen...",
+        "provider test success":
+            "Verbinding geslaagd. De provider is klaar voor gebruik.",
         "provider test error":
             "Kan geen verbinding maken — controleer URL en API-sleutel.",
+        "set as default provider": "Instellen als standaardprovider",
         "provider save": "Toevoegen",
         "provider update": "Opslaan",
-        "provider cancel": "Annuleren"
+        "provider cancel": "Annuleren",
+        "close aria label": "Sluiten"
     },
     AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",

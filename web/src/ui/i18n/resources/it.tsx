@@ -97,7 +97,6 @@ export const translations: Translations<"it"> = {
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "Credenziali del gateway IA",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 La tua sessione OIDC ti dà accesso senza interruzioni al gateway IA.{" "}
@@ -117,6 +116,7 @@ export const translations: Translations<"it"> = {
         "custom providers section title": "Provider IA personalizzati",
         "custom providers section helper":
             "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
+        "add custom provider": "Aggiungi provider personalizzato",
         "custom provider api base field": "URL base API",
         "custom provider api key field": "Chiave API",
         "no account": ({ webUiUrl }) => (
@@ -130,7 +130,8 @@ export const translations: Translations<"it"> = {
         )
     },
     ProviderValueField: {
-        copy: "Copia"
+        copy: "Copia",
+        copied: "Copiato"
     },
     ModelsSection: {
         "model label": "Modello",
@@ -141,17 +142,31 @@ export const translations: Translations<"it"> = {
     CustomProviderFormDialog: {
         "add custom provider title": "Provider IA personalizzati",
         "edit custom provider title": "Modifica provider IA",
+        "custom provider section title": "Provider IA personalizzati",
+        "custom provider section subtitle":
+            "Aggiungi i tuoi provider IA compatibili con OpenAI.",
         "custom provider label field": "Etichetta",
         "custom provider type field": "Tipo di provider",
+        "openai provider option": "Open AI",
+        "credentials section title": "Credenziali del provider",
+        "credentials section subtitle":
+            "Inserisci le credenziali. Verranno memorizzate nel browser.",
         "custom provider api base field": "URL base API",
         "custom provider api key field": "Chiave API",
+        "verification section title": "Verifica e carica i modelli",
+        "verification section subtitle":
+            "Verifica le credenziali e individua automaticamente i modelli disponibili.",
+        "custom provider model field": "Tipo di modello",
         "provider test": "Testa connessione",
-        "provider test success": "Connessione riuscita",
+        "provider testing": "Test della connessione...",
+        "provider test success": "Connessione riuscita. Il provider è pronto all'uso.",
         "provider test error":
             "Impossibile connettersi — controlla l'URL e la chiave API.",
+        "set as default provider": "Imposta come provider predefinito",
         "provider save": "Aggiungi",
         "provider update": "Salva",
-        "provider cancel": "Annulla"
+        "provider cancel": "Annulla",
+        "close aria label": "Chiudi"
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",

@@ -98,7 +98,6 @@ export const translations: Translations<"fi"> = {
             `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
     },
     AccountAiGatewayTab: {
-        "credentials section title": "Tekoälyyhdyskäytävän tunnistetiedot",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 OIDC-istuntosi antaa sinulle saumattoman pääsyn tekoälyyhdyskäytävään.{" "}
@@ -118,6 +117,7 @@ export const translations: Translations<"fi"> = {
         "custom providers section title": "Mukautetut tekoälyntarjoajat",
         "custom providers section helper":
             "Lisää omia OpenAI-yhteensopivia tekoälypalveluntarjoajia. Tunnukset tallennetaan selaimeesi.",
+        "add custom provider": "Lisää mukautettu tarjoaja",
         "custom provider api base field": "API-perus-URL",
         "custom provider api key field": "API-avain",
         "no account": ({ webUiUrl }) => (
@@ -132,7 +132,8 @@ export const translations: Translations<"fi"> = {
         )
     },
     ProviderValueField: {
-        copy: "Kopioi"
+        copy: "Kopioi",
+        copied: "Kopioitu"
     },
     ModelsSection: {
         "model label": "Malli",
@@ -142,16 +143,30 @@ export const translations: Translations<"fi"> = {
     CustomProviderFormDialog: {
         "add custom provider title": "Mukautetut tekoälyntarjoajat",
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
+        "custom provider section title": "Mukautetut tekoälyntarjoajat",
+        "custom provider section subtitle":
+            "Lisää omia OpenAI-yhteensopivia tekoälyntarjoajia.",
         "custom provider label field": "Tunniste",
         "custom provider type field": "Palveluntarjoajan tyyppi",
+        "openai provider option": "Open AI",
+        "credentials section title": "Palveluntarjoajan tunnistetiedot",
+        "credentials section subtitle":
+            "Anna tunnistetietosi. Ne tallennetaan selaimeesi.",
         "custom provider api base field": "API-perus-URL",
         "custom provider api key field": "API-avain",
+        "verification section title": "Vahvista ja lataa mallit",
+        "verification section subtitle":
+            "Vahvista tunnistetietosi ja etsi käytettävissä olevat mallit automaattisesti.",
+        "custom provider model field": "Mallin tyyppi",
         "provider test": "Testaa yhteys",
-        "provider test success": "Yhteys onnistui",
+        "provider testing": "Testataan yhteyttä...",
+        "provider test success": "Yhteys onnistui. Palveluntarjoaja on käyttövalmis.",
         "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
+        "set as default provider": "Aseta oletuspalveluntarjoajaksi",
         "provider save": "Lisää",
         "provider update": "Tallenna",
-        "provider cancel": "Peruuta"
+        "provider cancel": "Peruuta",
+        "close aria label": "Sulje"
     },
     AccountVaultTab: {
         "credentials section title": "Vault-todennustiedot",
