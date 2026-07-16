@@ -121,6 +121,12 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "删除此自定义 AI 提供商",
+        "dialog body": "这将永久删除该提供商及浏览器中存储的凭据。此操作无法撤销。",
+        cancel: "取消",
+        "delete provider": "删除提供商"
+    },
     ProviderValueField: {
         copy: "复制",
         copied: "已复制"
@@ -134,10 +140,13 @@ export const translations: Translations<"zh-CN"> = {
         "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",
         "custom provider section title": "自定义 AI 提供商",
-        "custom provider section subtitle": "添加兼容 OpenAI 的自定义 AI 提供商。",
+        "custom provider section subtitle": "根据 AI 提供商使用的 API 协议进行配置。",
         "custom provider label field": "标签",
-        "custom provider type field": "提供商类型",
-        "openai provider option": "Open AI",
+        "custom provider type field": "API 协议",
+        "openai provider option": "OpenAI（原生）",
+        "openai compatible provider option": "兼容 OpenAI",
+        "mistral provider option": "Mistral（原生）",
+        "anthropic provider option": "Anthropic（原生）",
         "credentials section title": "提供商凭证",
         "credentials section subtitle": "请输入凭证。凭证将存储在您的浏览器中。",
         "custom provider api base field": "API 基础 URL",

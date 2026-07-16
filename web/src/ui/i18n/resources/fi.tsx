@@ -131,6 +131,13 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Poista tämä mukautettu tekoälypalveluntarjoaja",
+        "dialog body":
+            "Tämä poistaa palveluntarjoajan ja selaimeen tallennetut tunnistetiedot pysyvästi. Toimintoa ei voi kumota.",
+        cancel: "Peruuta",
+        "delete provider": "Poista palveluntarjoaja"
+    },
     ProviderValueField: {
         copy: "Kopioi",
         copied: "Kopioitu"
@@ -145,10 +152,13 @@ export const translations: Translations<"fi"> = {
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider section title": "Mukautetut tekoälyntarjoajat",
         "custom provider section subtitle":
-            "Lisää omia OpenAI-yhteensopivia tekoälyntarjoajia.",
+            "Määritä tekoälypalveluntarjoajat niiden käyttämän API-protokollan mukaan.",
         "custom provider label field": "Tunniste",
-        "custom provider type field": "Palveluntarjoajan tyyppi",
-        "openai provider option": "Open AI",
+        "custom provider type field": "API-protokolla",
+        "openai provider option": "OpenAI (natiivi)",
+        "openai compatible provider option": "OpenAI-yhteensopiva",
+        "mistral provider option": "Mistral (natiivi)",
+        "anthropic provider option": "Anthropic (natiivi)",
         "credentials section title": "Palveluntarjoajan tunnistetiedot",
         "credentials section subtitle":
             "Anna tunnistetietosi. Ne tallennetaan selaimeesi.",

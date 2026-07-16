@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useTranslation } from "ui/i18n";
 import openWebUiIconUrl from "ui/assets/img/openWebUiIcon.png";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
@@ -24,6 +24,7 @@ import {
     type Props as CustomProviderFormDialogProps
 } from "./CustomProviderFormDialog";
 import { assert } from "tsafe";
+import { ConfirmCustomProviderDeletionDialog } from "./ConfirmCustomProviderDeletionDialog";
 
 export type Props = {
     className?: string;
@@ -49,6 +50,10 @@ export const AccountAiTab = memo((props: Props) => {
         Evt.create<UnpackEvt<CustomProviderFormDialogProps["evtOpen"]>>()
     );
 
+    const [providerIdPendingDeletion, setProviderIdPendingDeletion] = useState<
+        string | undefined
+    >(undefined);
+
     const onFieldRequestCopyFactory = useCallbackFactory(([text]: [string]) =>
         copyToClipboard(text)
     );
@@ -64,8 +69,17 @@ export const AccountAiTab = memo((props: Props) => {
     );
 
     const onDeleteCustomProviderFactory = useCallbackFactory(([providerId]: [string]) =>
-        ai.deleteCustomProvider({ providerId })
+        setProviderIdPendingDeletion(providerId)
     );
+
+    const onConfirmCustomProviderDeletion = useConstCallback(() => {
+        assert(providerIdPendingDeletion !== undefined);
+
+        const providerId = providerIdPendingDeletion;
+
+        setProviderIdPendingDeletion(undefined);
+        void ai.deleteCustomProvider({ providerId });
+    });
 
     const onAddClick = useConstCallback(() =>
         evtCustomProviderFormDialogOpen.post({ editedProvider: undefined })
@@ -351,6 +365,11 @@ export const AccountAiTab = memo((props: Props) => {
             </div>
 
             <CustomProviderFormDialog evtOpen={evtCustomProviderFormDialogOpen} />
+            <ConfirmCustomProviderDeletionDialog
+                isOpen={providerIdPendingDeletion !== undefined}
+                onClose={() => setProviderIdPendingDeletion(undefined)}
+                onConfirm={onConfirmCustomProviderDeletion}
+            />
         </div>
     );
 });

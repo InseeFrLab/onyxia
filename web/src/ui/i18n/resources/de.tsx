@@ -132,6 +132,13 @@ export const translations: Translations<"de"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Diesen benutzerdefinierten KI-Anbieter löschen",
+        "dialog body":
+            "Dadurch werden der Anbieter und die im Browser gespeicherten Zugangsdaten dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+        cancel: "Abbrechen",
+        "delete provider": "Anbieter löschen"
+    },
     ProviderValueField: {
         copy: "Kopieren",
         copied: "Kopiert"
@@ -147,10 +154,13 @@ export const translations: Translations<"de"> = {
         "edit custom provider title": "KI-Anbieter bearbeiten",
         "custom provider section title": "Benutzerdefinierte KI-Anbieter",
         "custom provider section subtitle":
-            "Fügen Sie eigene OpenAI-kompatible KI-Anbieter hinzu.",
+            "Konfigurieren Sie Ihre KI-Anbieter entsprechend dem verwendeten API-Protokoll.",
         "custom provider label field": "Name",
-        "custom provider type field": "Provider-Typ",
-        "openai provider option": "Open AI",
+        "custom provider type field": "API-Protokoll",
+        "openai provider option": "OpenAI (nativ)",
+        "openai compatible provider option": "OpenAI-kompatibel",
+        "mistral provider option": "Mistral (nativ)",
+        "anthropic provider option": "Anthropic (nativ)",
         "credentials section title": "Anmeldedaten des Anbieters",
         "credentials section subtitle":
             "Geben Sie Ihre Anmeldedaten ein. Sie werden in Ihrem Browser gespeichert.",

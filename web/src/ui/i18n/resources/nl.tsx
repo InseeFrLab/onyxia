@@ -130,6 +130,13 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Deze aangepaste AI-provider verwijderen",
+        "dialog body":
+            "Hiermee worden de provider en de in je browser opgeslagen inloggegevens permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+        cancel: "Annuleren",
+        "delete provider": "Provider verwijderen"
+    },
     ProviderValueField: {
         copy: "Kopiëren",
         copied: "Gekopieerd"
@@ -145,10 +152,13 @@ export const translations: Translations<"nl"> = {
         "edit custom provider title": "AI-provider bewerken",
         "custom provider section title": "Aangepaste AI-providers",
         "custom provider section subtitle":
-            "Voeg uw eigen OpenAI-compatibele AI-providers toe.",
+            "Configureer AI-providers op basis van het API-protocol dat ze gebruiken.",
         "custom provider label field": "Label",
-        "custom provider type field": "Providertype",
-        "openai provider option": "Open AI",
+        "custom provider type field": "API-protocol",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-compatibel",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
         "credentials section title": "Providerreferenties",
         "credentials section subtitle":
             "Voer uw referenties in. Ze worden in uw browser opgeslagen.",

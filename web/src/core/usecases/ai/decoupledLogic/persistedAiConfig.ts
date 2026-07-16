@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { assert, is } from "tsafe";
 
 // undefined isn't representable in JSON, so absent selections are stored as null.
 export type PersistedModelSelection = {
@@ -9,9 +8,7 @@ export type PersistedModelSelection = {
 export type PersistedCustomProvider = {
     id: string;
     name: string;
-    // Optional for backward compatibility with configs persisted before the field
-    // existed; defaulted to "openai" when read back.
-    provider?: string;
+    provider: string;
     apiBase: string;
     apiKey: string;
 };
@@ -34,7 +31,7 @@ const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
         z.object({
             id: z.string(),
             name: z.string(),
-            provider: z.string().optional(),
+            provider: z.string(),
             apiBase: z.string(),
             apiKey: z.string()
         })
@@ -68,15 +65,11 @@ export function parseAiConfigStr(params: {
     }
 
     try {
-        zPersistedAiConfig.parse(aiConfig);
+        return zPersistedAiConfig.parse(aiConfig);
     } catch {
         console.warn("Stored AI config does not match the expected shape, ignoring it.");
         return null;
     }
-
-    assert(is<PersistedAiConfig>(aiConfig));
-
-    return aiConfig;
 }
 
 export function serializeAiConfig(params: { aiConfig: PersistedAiConfig }): string {
