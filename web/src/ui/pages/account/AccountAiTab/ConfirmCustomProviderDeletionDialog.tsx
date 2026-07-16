@@ -1,39 +1,59 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
 import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
+import type { NonPostableEvt, UnpackEvt } from "evt";
+import { useEvt } from "evt/hooks";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { assert } from "tsafe/assert";
 
 export type Props = {
-    isOpen: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
+    evtOpen: NonPostableEvt<{
+        resolveDoProceed: (doProceed: boolean) => void;
+    }>;
 };
 
 export const ConfirmCustomProviderDeletionDialog = memo((props: Props) => {
-    const { isOpen, onClose, onConfirm } = props;
+    const { evtOpen } = props;
 
     const { t } = useTranslation({ ConfirmCustomProviderDeletionDialog });
     const { classes } = useStyles();
+
+    const [state, setState] = useState<UnpackEvt<typeof evtOpen> | undefined>(undefined);
+
+    useEvt(ctx => evtOpen.attach(ctx, setState), [evtOpen]);
+
+    const onCloseFactory = useCallbackFactory(([doProceed]: [boolean]) => {
+        assert(state !== undefined);
+
+        state.resolveDoProceed(doProceed);
+        setState(undefined);
+    });
+
     return (
         <Dialog
-            isOpen={isOpen}
-            onClose={onClose}
+            isOpen={state !== undefined}
+            onClose={onCloseFactory(false)}
             maxWidth={false}
             className={classes.paper}
             title={t("dialog title")}
             body={t("dialog body")}
             buttons={
                 <>
-                    <Button variant="secondary" autoFocus={true} onClick={onClose}>
+                    <Button
+                        variant="secondary"
+                        autoFocus={true}
+                        onClick={onCloseFactory(false)}
+                    >
                         {t("cancel")}
                     </Button>
                     <Button
                         startIcon={getIconUrlByName("Delete")}
                         variant="primary"
-                        onClick={onConfirm}
+                        onClick={onCloseFactory(true)}
                     >
                         {t("delete provider")}
                     </Button>

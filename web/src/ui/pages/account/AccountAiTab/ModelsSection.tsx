@@ -2,10 +2,8 @@ import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
-import { useConstCallback } from "powerhooks/useConstCallback";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Text } from "onyxia-ui/Text";
-import { getCoreSync } from "core";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -18,23 +16,16 @@ export type Models =
     | undefined;
 
 export type Props = {
-    providerId: string;
     models: Models;
     selectedModel: string | undefined;
+    onSelectedModelChange: (modelId: string) => void | Promise<void>;
 };
 
 export const ModelsSection = memo((props: Props) => {
-    const { providerId, models, selectedModel } = props;
+    const { models, selectedModel, onSelectedModelChange } = props;
 
     const { classes } = useStyles();
     const { t } = useTranslation({ ModelsSection });
-    const {
-        functions: { ai }
-    } = getCoreSync();
-
-    const onModelChange = useConstCallback((event: { target: { value: string } }) =>
-        ai.setSelectedModel({ providerId, modelId: event.target.value })
-    );
 
     if (models === undefined) {
         return null;
@@ -56,7 +47,7 @@ export const ModelsSection = memo((props: Props) => {
                     <div className={classes.codeFrame}>
                         <Select
                             value={selectedModel ?? ""}
-                            onChange={onModelChange}
+                            onChange={event => onSelectedModelChange(event.target.value)}
                             size="small"
                             className={classes.modelSelect}
                             displayEmpty
