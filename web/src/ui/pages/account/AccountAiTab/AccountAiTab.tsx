@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import openWebUiIconUrl from "ui/assets/img/openWebUiIcon.png";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
@@ -8,9 +8,11 @@ import { useConst } from "powerhooks/useConst";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { tss } from "tss";
 import { alpha } from "@mui/material/styles";
+import ButtonBase from "@mui/material/ButtonBase";
 import { declareComponentKeys } from "i18nifty";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import { Deferred } from "evt/tools/Deferred";
 import { Icon } from "onyxia-ui/Icon";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Button } from "onyxia-ui/Button";
@@ -19,12 +21,12 @@ import { useCoreState, getCoreSync } from "core";
 import { getIconUrlByName } from "lazy-icons";
 import { ProviderValueField } from "./ProviderValueField";
 import { ModelsSection } from "./ModelsSection";
+import { CustomProviderFormDialog } from "./CustomProviderFormDialog";
 import {
-    CustomProviderFormDialog,
-    type Props as CustomProviderFormDialogProps
-} from "./CustomProviderFormDialog";
-import { assert } from "tsafe";
-import { ConfirmCustomProviderDeletionDialog } from "./ConfirmCustomProviderDeletionDialog";
+    ConfirmCustomProviderDeletionDialog,
+    type Props as ConfirmCustomProviderDeletionDialogProps
+} from "./ConfirmCustomProviderDeletionDialog";
+import { Divider } from "@mui/material";
 
 export type Props = {
     className?: string;
@@ -36,7 +38,7 @@ export const AccountAiTab = memo((props: Props) => {
     const { classes } = useStyles();
 
     const {
-        functions: { ai }
+        functions: { ai, aiCustomProviderFormUiController }
     } = getCoreSync();
 
     const { stateDescription, regionProviders, customProviders } = useCoreState(
@@ -46,13 +48,9 @@ export const AccountAiTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountAiGatewayTab: AccountAiTab });
 
-    const evtCustomProviderFormDialogOpen = useConst(() =>
-        Evt.create<UnpackEvt<CustomProviderFormDialogProps["evtOpen"]>>()
+    const evtConfirmDeleteDialogOpen = useConst(() =>
+        Evt.create<UnpackEvt<ConfirmCustomProviderDeletionDialogProps["evtOpen"]>>()
     );
-
-    const [providerIdPendingDeletion, setProviderIdPendingDeletion] = useState<
-        string | undefined
-    >(undefined);
 
     const onFieldRequestCopyFactory = useCallbackFactory(([text]: [string]) =>
         copyToClipboard(text)
@@ -68,42 +66,29 @@ export const AccountAiTab = memo((props: Props) => {
         })
     );
 
-    const onDeleteCustomProviderFactory = useCallbackFactory(([providerId]: [string]) =>
-        setProviderIdPendingDeletion(providerId)
+    const onDeleteCustomProviderFactory = useCallbackFactory(
+        async ([providerId]: [string]) => {
+            const dDoProceed = new Deferred<boolean>();
+
+            evtConfirmDeleteDialogOpen.post({
+                resolveDoProceed: dDoProceed.resolve
+            });
+
+            if (!(await dDoProceed.pr)) {
+                return;
+            }
+
+            await ai.deleteCustomProvider({ providerId });
+        }
     );
-
-    const onConfirmCustomProviderDeletion = useConstCallback(() => {
-        assert(providerIdPendingDeletion !== undefined);
-
-        const providerId = providerIdPendingDeletion;
-
-        setProviderIdPendingDeletion(undefined);
-        void ai.deleteCustomProvider({ providerId });
-    });
 
     const onAddClick = useConstCallback(() =>
-        evtCustomProviderFormDialogOpen.post({ editedProvider: undefined })
+        aiCustomProviderFormUiController.open({ providerId: undefined })
     );
 
-    const onEditClickFactory = useCallbackFactory(([providerId]: [string]) => {
-        const provider = customProviders.find(p => p.id === providerId);
-        assert(provider !== undefined);
-        evtCustomProviderFormDialogOpen.post({
-            editedProvider: {
-                id: provider.id,
-                name: provider.name,
-                provider: provider.provider,
-                apiBase: provider.apiBase,
-                apiKey: provider.apiKey,
-                availableModels:
-                    provider.models?.stateDescription === "loaded"
-                        ? provider.models.availableModels
-                        : undefined,
-                selectedModelId: provider.selectedModelId,
-                isDefault: provider.isDefault
-            }
-        });
-    });
+    const onEditClickFactory = useCallbackFactory(([providerId]: [string]) =>
+        aiCustomProviderFormUiController.open({ providerId })
+    );
 
     if (stateDescription !== "initialized") {
         return stateDescription === "error" ? (
@@ -274,9 +259,14 @@ export const AccountAiTab = memo((props: Props) => {
                                 isSensitiveInformation={true}
                             />
                             <ModelsSection
-                                providerId={regionProvider.id}
                                 models={regionProvider.models}
                                 selectedModel={regionProvider.selectedModelId}
+                                onSelectedModelChange={modelId =>
+                                    ai.setSelectedModel({
+                                        providerId: regionProvider.id,
+                                        modelId
+                                    })
+                                }
                             />
                         </div>
                     )}
@@ -284,7 +274,7 @@ export const AccountAiTab = memo((props: Props) => {
             ))}
 
             <div className={classes.customProvidersSection}>
-                <div className={classes.customProvidersDivider} />
+                <Divider className={classes.customProvidersDivider} />
                 <div className={classes.customProvidersHeader}>
                     <Text typo="object heading">
                         {t("custom providers section title")}
@@ -336,40 +326,33 @@ export const AccountAiTab = memo((props: Props) => {
                                 isSensitiveInformation={true}
                             />
                             <ModelsSection
-                                providerId={provider.id}
                                 models={provider.models}
                                 selectedModel={provider.selectedModelId}
+                                onSelectedModelChange={modelId =>
+                                    ai.setSelectedModel({
+                                        providerId: provider.id,
+                                        modelId
+                                    })
+                                }
                             />
                         </div>
                     </div>
                 ))}
 
-                <button
+                <ButtonBase
                     type="button"
                     className={classes.addCustomProviderAction}
                     onClick={onAddClick}
                 >
-                    <Icon
-                        icon={getIconUrlByName("Add")}
-                        size="default"
-                        className={classes.addCustomProviderIcon}
-                    />
-                    <Text
-                        typo="object heading"
-                        htmlComponent="span"
-                        className={classes.addCustomProviderLabel}
-                    >
+                    <Icon icon={getIconUrlByName("Add")} size="default" />
+                    <Text typo="object heading" htmlComponent="span">
                         {t("add custom provider")}
                     </Text>
-                </button>
+                </ButtonBase>
             </div>
 
-            <CustomProviderFormDialog evtOpen={evtCustomProviderFormDialogOpen} />
-            <ConfirmCustomProviderDeletionDialog
-                isOpen={providerIdPendingDeletion !== undefined}
-                onClose={() => setProviderIdPendingDeletion(undefined)}
-                onConfirm={onConfirmCustomProviderDeletion}
-            />
+            <CustomProviderFormDialog />
+            <ConfirmCustomProviderDeletionDialog evtOpen={evtConfirmDeleteDialogOpen} />
         </div>
     );
 });
@@ -426,8 +409,6 @@ const useStyles = tss
             flexDirection: "column"
         },
         customProvidersDivider: {
-            height: 1,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
             marginBottom: theme.spacing(3)
         },
         customProvidersHeader: {
@@ -440,7 +421,7 @@ const useStyles = tss
         },
         providerCard: {
             border: `1px solid ${theme.colors.useCases.typography.textDisabled}`,
-            borderRadius: theme.spacing(1),
+            borderRadius: theme.spacing(3),
             padding: theme.spacing(3),
             marginTop: theme.spacing(3)
         },
@@ -488,42 +469,25 @@ const useStyles = tss
             paddingRight: theme.spacing(3)
         },
         addCustomProviderAction: {
-            width: "100%",
-            minHeight: 76,
-            display: "flex",
-            alignItems: "center",
-            gap: 24,
-            marginTop: 24,
-            padding: 24,
-            boxSizing: "border-box",
-            appearance: "none",
-            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            borderRadius: 16,
-            backgroundColor: "transparent",
-            color: theme.colors.useCases.typography.textPrimary,
-            font: "inherit",
+            justifyContent: "flex-start",
+            gap: theme.spacing(3),
+            marginTop: theme.spacing(3),
+            padding: theme.spacing(3),
+            borderWidth: theme.spacing(0.5),
+            borderStyle: "solid",
+            borderColor: theme.colors.useCases.surfaces.surface2,
+            borderRadius: theme.spacing(2),
             textAlign: "left",
-            cursor: "pointer",
-            transition: "background-color 120ms ease, border-color 120ms ease",
+            transition: theme.muiTheme.transitions.create("background-color"),
             "&:hover": {
                 backgroundColor: alpha(theme.colors.useCases.surfaces.surface2, 0.4)
             },
-            "&:active": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
-            },
             "&:focus-visible": {
-                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
-                outlineOffset: 2
+                outlineWidth: theme.spacing(0.5),
+                outlineStyle: "solid",
+                outlineColor: theme.colors.useCases.typography.textFocus,
+                outlineOffset: theme.spacing(0.5)
             }
-        },
-        addCustomProviderIcon: {
-            flexShrink: 0,
-            width: 24,
-            height: 24
-        },
-        addCustomProviderLabel: {
-            flex: 1,
-            minWidth: 0
         },
         noAccountCard: {
             maxWidth: 759,

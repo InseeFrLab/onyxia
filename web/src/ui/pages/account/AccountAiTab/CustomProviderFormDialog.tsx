@@ -4,8 +4,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Checkbox from "@mui/material/Checkbox";
 import { alpha } from "@mui/material/styles";
-import type { NonPostableEvt, UnpackEvt } from "evt";
-import { useEvt } from "evt/hooks";
 import { declareComponentKeys } from "i18nifty";
 import { getIconUrlByName } from "lazy-icons";
 import { Button } from "onyxia-ui/Button";
@@ -13,42 +11,13 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Icon } from "onyxia-ui/Icon";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Text } from "onyxia-ui/Text";
-import { useConstCallback } from "powerhooks/useConstCallback";
-import {
-    memo,
-    useEffect,
-    useId,
-    useRef,
-    useState,
-    type MouseEvent,
-    type ReactNode
-} from "react";
-import { assert } from "tsafe/assert";
+import { memo, useEffect, useId, type MouseEvent, type ReactNode } from "react";
 import { keyframes } from "tss-react";
-import { getCoreSync } from "core";
+import { getCoreSync, useCoreState } from "core";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 
 type AiModel = { id: string; name: string };
-
-export type Props = {
-    evtOpen: NonPostableEvt<{
-        editedProvider:
-            | {
-                  id: string;
-                  name: string;
-                  provider: string;
-                  apiBase: string;
-                  apiKey: string;
-                  availableModels: AiModel[] | undefined;
-                  selectedModelId: string | undefined;
-                  isDefault: boolean;
-              }
-            | undefined;
-    }>;
-};
-
-type OpenParams = UnpackEvt<Props["evtOpen"]>;
 
 type FormValues = {
     name: string;
@@ -58,229 +27,90 @@ type FormValues = {
     selectedModelId: string;
 };
 
-const providerProtocolDefaultApiBase = {
-    openai: "https://api.openai.com/v1",
-    "openai-compatible": "",
-    mistral: "https://api.mistral.ai/v1",
-    anthropic: "https://api.anthropic.com/v1"
-} as const;
-
-type ProviderProtocol = keyof typeof providerProtocolDefaultApiBase;
-
 type FormTest =
     | { stateDescription: "idle" }
     | { stateDescription: "testing" }
     | { stateDescription: "success"; models: AiModel[] }
     | { stateDescription: "error" };
 
-const defaultFormValues: FormValues = {
-    name: "",
-    provider: "",
-    apiBase: "",
-    apiKey: "",
-    selectedModelId: ""
+export type ViewProps = {
+    isEditing: boolean;
+    isAlreadyDefault: boolean;
+    values: FormValues;
+    test: FormTest;
+    doSetAsDefault: boolean;
+    canSave: boolean;
+    canTest: boolean;
+    supportedProtocols: readonly string[];
+    onClose: () => void;
+    onFieldChange: (key: keyof FormValues, value: string) => void;
+    onProviderChange: (provider: string) => void;
+    onTest: () => void;
+    onSave: () => void;
+    onDoSetAsDefaultChange: (doSetAsDefault: boolean) => void;
 };
 
-export const CustomProviderFormDialog = memo((props: Props) => {
-    const { evtOpen } = props;
+export const CustomProviderFormDialog = memo(() => {
+    const form = useCoreState("aiCustomProviderFormUiController", "main");
+
+    const {
+        functions: { aiCustomProviderFormUiController }
+    } = getCoreSync();
+
+    if (!form.isOpen) {
+        return null;
+    }
+
+    return (
+        <CustomProviderFormDialogView
+            isEditing={form.isEditing}
+            isAlreadyDefault={form.isAlreadyDefault}
+            values={form.formValues}
+            test={form.connectionTest}
+            doSetAsDefault={form.doSetAsDefault}
+            canSave={form.canSubmit}
+            canTest={form.canTest}
+            supportedProtocols={form.supportedProtocols}
+            onClose={() => aiCustomProviderFormUiController.close()}
+            onFieldChange={(key, value) =>
+                aiCustomProviderFormUiController.changeValue({ key, value })
+            }
+            onProviderChange={provider =>
+                aiCustomProviderFormUiController.changeProvider({ provider })
+            }
+            onTest={() => void aiCustomProviderFormUiController.testConnection()}
+            onSave={() => void aiCustomProviderFormUiController.submit()}
+            onDoSetAsDefaultChange={doSetAsDefault =>
+                aiCustomProviderFormUiController.changeDoSetAsDefault({
+                    doSetAsDefault
+                })
+            }
+        />
+    );
+});
+
+export const CustomProviderFormDialogView = memo((props: ViewProps) => {
+    const {
+        isEditing,
+        isAlreadyDefault,
+        values,
+        test,
+        doSetAsDefault,
+        canSave,
+        canTest,
+        supportedProtocols,
+        onClose,
+        onFieldChange,
+        onProviderChange,
+        onTest,
+        onSave,
+        onDoSetAsDefaultChange
+    } = props;
 
     const { classes } = useStyles();
     const { t } = useTranslation({ CustomProviderFormDialog });
 
-    const [openState, setOpenState] = useState<
-        | {
-              editedProviderId: string | undefined;
-              isAlreadyDefault: boolean;
-          }
-        | undefined
-    >(undefined);
-    const [values, setValues] = useState<FormValues>(defaultFormValues);
-    const [test, setTest] = useState<FormTest>({ stateDescription: "idle" });
-    const [doSetAsDefault, setDoSetAsDefault] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const testRequestIdRef = useRef(0);
-
-    useEvt(
-        ctx => {
-            evtOpen.attach(ctx, ({ editedProvider }: OpenParams) => {
-                testRequestIdRef.current++;
-
-                if (editedProvider === undefined) {
-                    setValues(defaultFormValues);
-                    setTest({ stateDescription: "idle" });
-                    setDoSetAsDefault(false);
-                    setOpenState({
-                        editedProviderId: undefined,
-                        isAlreadyDefault: false
-                    });
-                } else {
-                    const selectedModelId =
-                        editedProvider.availableModels?.some(
-                            model => model.id === editedProvider.selectedModelId
-                        ) === true
-                            ? editedProvider.selectedModelId
-                            : undefined;
-
-                    setValues({
-                        name: editedProvider.name,
-                        provider: editedProvider.provider,
-                        apiBase: editedProvider.apiBase,
-                        apiKey: editedProvider.apiKey,
-                        selectedModelId: selectedModelId ?? ""
-                    });
-                    setTest(
-                        editedProvider.availableModels === undefined
-                            ? { stateDescription: "idle" }
-                            : {
-                                  stateDescription: "success",
-                                  models: editedProvider.availableModels
-                              }
-                    );
-                    setDoSetAsDefault(editedProvider.isDefault);
-                    setOpenState({
-                        editedProviderId: editedProvider.id,
-                        isAlreadyDefault: editedProvider.isDefault
-                    });
-                }
-
-                setIsSaving(false);
-            });
-        },
-        [evtOpen]
-    );
-
-    const isEditing = openState?.editedProviderId !== undefined;
     const testedModels = test.stateDescription === "success" ? test.models : undefined;
-    const canSave =
-        values.name.trim() !== "" &&
-        values.provider !== "" &&
-        values.apiBase.trim() !== "" &&
-        values.apiKey.trim() !== "" &&
-        values.selectedModelId !== "" &&
-        testedModels?.some(model => model.id === values.selectedModelId) === true &&
-        !isSaving;
-    const canTest =
-        values.provider !== "" &&
-        values.apiBase.trim() !== "" &&
-        values.apiKey.trim() !== "" &&
-        !isSaving;
-
-    const onClose = useConstCallback(() => {
-        testRequestIdRef.current++;
-        setOpenState(undefined);
-    });
-
-    const onFieldChange = useConstCallback((key: keyof FormValues, value: string) => {
-        setValues(values => ({ ...values, [key]: value }));
-
-        if (key === "apiBase" || key === "apiKey") {
-            testRequestIdRef.current++;
-            setValues(values => ({ ...values, selectedModelId: "" }));
-            setTest({ stateDescription: "idle" });
-        }
-    });
-
-    const onProviderChange = useConstCallback((provider: ProviderProtocol) => {
-        testRequestIdRef.current++;
-        setValues(values => {
-            const apiBase = values.apiBase.trim();
-            const isUsingProviderDefaultApiBase = Object.values(
-                providerProtocolDefaultApiBase
-            ).some(defaultApiBase => defaultApiBase === apiBase);
-
-            return {
-                ...values,
-                provider,
-                apiBase:
-                    apiBase === "" || isUsingProviderDefaultApiBase
-                        ? providerProtocolDefaultApiBase[provider]
-                        : values.apiBase,
-                selectedModelId: ""
-            };
-        });
-        setTest({ stateDescription: "idle" });
-    });
-
-    const onTest = useConstCallback(async () => {
-        if (!canTest || test.stateDescription === "testing") {
-            return;
-        }
-
-        const {
-            functions: { ai }
-        } = getCoreSync();
-
-        const testRequestId = ++testRequestIdRef.current;
-        setTest({ stateDescription: "testing" });
-
-        try {
-            const { models } = await ai.testCustomProviderConnection({
-                provider: values.provider,
-                apiBase: values.apiBase,
-                apiKey: values.apiKey
-            });
-
-            if (testRequestId !== testRequestIdRef.current) {
-                return;
-            }
-
-            setValues(values => ({
-                ...values,
-                selectedModelId: models.some(model => model.id === values.selectedModelId)
-                    ? values.selectedModelId
-                    : ""
-            }));
-            setTest({ stateDescription: "success", models });
-        } catch {
-            if (testRequestId !== testRequestIdRef.current) {
-                return;
-            }
-
-            setValues(values => ({ ...values, selectedModelId: "" }));
-            setTest({ stateDescription: "error" });
-        }
-    });
-
-    const onSave = useConstCallback(async () => {
-        assert(openState !== undefined);
-        assert(test.stateDescription === "success");
-        assert(values.selectedModelId !== "");
-
-        const {
-            functions: { ai }
-        } = getCoreSync();
-
-        setIsSaving(true);
-
-        const params = {
-            name: values.name.trim(),
-            provider: values.provider,
-            apiBase: values.apiBase.trim(),
-            apiKey: values.apiKey.trim(),
-            models: test.models,
-            selectedModelId: values.selectedModelId,
-            doSetAsDefault
-        };
-
-        try {
-            if (openState.editedProviderId === undefined) {
-                await ai.addCustomProvider(params);
-            } else {
-                await ai.editCustomProvider({
-                    providerId: openState.editedProviderId,
-                    ...params
-                });
-            }
-
-            onClose();
-        } catch {
-            setIsSaving(false);
-        }
-    });
-
-    if (openState === undefined) {
-        return null;
-    }
 
     return (
         <SideDialog
@@ -298,7 +128,7 @@ export const CustomProviderFormDialog = memo((props: Props) => {
                         return;
                     }
 
-                    void onSave();
+                    onSave();
                 }}
                 noValidate={true}
             >
@@ -319,9 +149,7 @@ export const CustomProviderFormDialog = memo((props: Props) => {
                             <FormSelectField
                                 label={t("custom provider type field")}
                                 value={values.provider}
-                                onChange={value =>
-                                    onProviderChange(value as ProviderProtocol)
-                                }
+                                onChange={onProviderChange}
                                 options={[
                                     {
                                         value: "openai",
@@ -339,7 +167,9 @@ export const CustomProviderFormDialog = memo((props: Props) => {
                                         value: "anthropic",
                                         label: t("anthropic provider option")
                                     }
-                                ]}
+                                ].filter(({ value }) =>
+                                    supportedProtocols.includes(value)
+                                )}
                             />
                         </div>
                     </section>
@@ -378,7 +208,7 @@ export const CustomProviderFormDialog = memo((props: Props) => {
                                 className={classes.testButton}
                                 startIcon={getIconUrlByName("SatelliteAlt")}
                                 disabled={!canTest}
-                                onClick={() => void onTest()}
+                                onClick={onTest}
                             >
                                 {t("provider test")}
                             </Button>
@@ -418,8 +248,10 @@ export const CustomProviderFormDialog = memo((props: Props) => {
                         <Checkbox
                             className={classes.checkbox}
                             checked={doSetAsDefault}
-                            disabled={openState.isAlreadyDefault}
-                            onChange={event => setDoSetAsDefault(event.target.checked)}
+                            disabled={isAlreadyDefault}
+                            onChange={event =>
+                                onDoSetAsDefaultChange(event.target.checked)
+                            }
                             size="small"
                         />
                         <Text typo="body 2">{t("set as default provider")}</Text>
