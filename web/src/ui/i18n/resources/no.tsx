@@ -130,6 +130,13 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Slett denne egendefinerte KI-leverandøren",
+        "dialog body":
+            "Dette fjerner leverandøren og den lagrede påloggingsinformasjonen permanent fra nettleseren. Handlingen kan ikke angres.",
+        cancel: "Avbryt",
+        "delete provider": "Slett leverandør"
+    },
     ProviderValueField: {
         copy: "Kopier",
         copied: "Kopiert"
@@ -144,10 +151,13 @@ export const translations: Translations<"no"> = {
         "edit custom provider title": "Rediger AI-leverandør",
         "custom provider section title": "Tilpassede AI-leverandører",
         "custom provider section subtitle":
-            "Legg til dine egne OpenAI-kompatible AI-leverandører.",
+            "Konfigurer AI-leverandører etter API-protokollen de bruker.",
         "custom provider label field": "Etikett",
-        "custom provider type field": "Leverandørtype",
-        "openai provider option": "Open AI",
+        "custom provider type field": "API-protokoll",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-kompatibel",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
         "credentials section title": "Leverandørlegitimasjon",
         "credentials section subtitle":
             "Skriv inn legitimasjonen din. Den lagres i nettleseren.",

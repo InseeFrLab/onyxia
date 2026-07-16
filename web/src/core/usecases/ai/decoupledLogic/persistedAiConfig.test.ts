@@ -14,10 +14,26 @@ const sampleConfig: PersistedAiConfig = {
             provider: "openai",
             apiBase: "https://api.openai.com/v1",
             apiKey: "sk-secret"
+        },
+        {
+            id: "p2",
+            name: "Mistral AI",
+            provider: "mistral",
+            apiBase: "https://api.mistral.ai/v1",
+            apiKey: "mistral-secret"
+        },
+        {
+            id: "p3",
+            name: "Anthropic",
+            provider: "anthropic",
+            apiBase: "https://api.anthropic.com/v1",
+            apiKey: "anthropic-secret"
         }
     ],
     selections: {
         p1: { modelId: "gpt-4" },
+        p2: { modelId: "devstral-small-latest" },
+        p3: { modelId: "claude-sonnet-4-6" },
         region1: { modelId: null }
     },
     activeProviderId: "p1"

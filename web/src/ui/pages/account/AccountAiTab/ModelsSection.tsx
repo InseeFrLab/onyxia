@@ -56,15 +56,11 @@ export const ModelsSection = memo((props: Props) => {
                     <div className={classes.codeFrame}>
                         <Select
                             value={selectedModel ?? ""}
-                            label={t("model label")}
                             onChange={onModelChange}
                             size="small"
                             className={classes.modelSelect}
                             displayEmpty
                         >
-                            <MenuItem value="" disabled>
-                                {t("not defined")}
-                            </MenuItem>
                             {models.availableModels.map(({ id, name }) => (
                                 <MenuItem key={id} value={id}>
                                     {name}

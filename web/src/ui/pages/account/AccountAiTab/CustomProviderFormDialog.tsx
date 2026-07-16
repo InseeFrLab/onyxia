@@ -58,6 +58,15 @@ type FormValues = {
     selectedModelId: string;
 };
 
+const providerProtocolDefaultApiBase = {
+    openai: "https://api.openai.com/v1",
+    "openai-compatible": "",
+    mistral: "https://api.mistral.ai/v1",
+    anthropic: "https://api.anthropic.com/v1"
+} as const;
+
+type ProviderProtocol = keyof typeof providerProtocolDefaultApiBase;
+
 type FormTest =
     | { stateDescription: "idle" }
     | { stateDescription: "testing" }
@@ -151,7 +160,10 @@ export const CustomProviderFormDialog = memo((props: Props) => {
         testedModels?.some(model => model.id === values.selectedModelId) === true &&
         !isSaving;
     const canTest =
-        values.apiBase.trim() !== "" && values.apiKey.trim() !== "" && !isSaving;
+        values.provider !== "" &&
+        values.apiBase.trim() !== "" &&
+        values.apiKey.trim() !== "" &&
+        !isSaving;
 
     const onClose = useConstCallback(() => {
         testRequestIdRef.current++;
@@ -168,6 +180,27 @@ export const CustomProviderFormDialog = memo((props: Props) => {
         }
     });
 
+    const onProviderChange = useConstCallback((provider: ProviderProtocol) => {
+        testRequestIdRef.current++;
+        setValues(values => {
+            const apiBase = values.apiBase.trim();
+            const isUsingProviderDefaultApiBase = Object.values(
+                providerProtocolDefaultApiBase
+            ).some(defaultApiBase => defaultApiBase === apiBase);
+
+            return {
+                ...values,
+                provider,
+                apiBase:
+                    apiBase === "" || isUsingProviderDefaultApiBase
+                        ? providerProtocolDefaultApiBase[provider]
+                        : values.apiBase,
+                selectedModelId: ""
+            };
+        });
+        setTest({ stateDescription: "idle" });
+    });
+
     const onTest = useConstCallback(async () => {
         if (!canTest || test.stateDescription === "testing") {
             return;
@@ -182,6 +215,7 @@ export const CustomProviderFormDialog = memo((props: Props) => {
 
         try {
             const { models } = await ai.testCustomProviderConnection({
+                provider: values.provider,
                 apiBase: values.apiBase,
                 apiKey: values.apiKey
             });
@@ -285,11 +319,25 @@ export const CustomProviderFormDialog = memo((props: Props) => {
                             <FormSelectField
                                 label={t("custom provider type field")}
                                 value={values.provider}
-                                onChange={value => onFieldChange("provider", value)}
+                                onChange={value =>
+                                    onProviderChange(value as ProviderProtocol)
+                                }
                                 options={[
                                     {
                                         value: "openai",
                                         label: t("openai provider option")
+                                    },
+                                    {
+                                        value: "openai-compatible",
+                                        label: t("openai compatible provider option")
+                                    },
+                                    {
+                                        value: "mistral",
+                                        label: t("mistral provider option")
+                                    },
+                                    {
+                                        value: "anthropic",
+                                        label: t("anthropic provider option")
                                     }
                                 ]}
                             />
@@ -620,6 +668,9 @@ const { i18n } = declareComponentKeys<
     | "custom provider label field"
     | "custom provider type field"
     | "openai provider option"
+    | "openai compatible provider option"
+    | "mistral provider option"
+    | "anthropic provider option"
     | "credentials section title"
     | "credentials section subtitle"
     | "custom provider api base field"

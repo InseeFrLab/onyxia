@@ -129,6 +129,13 @@ export const translations: Translations<"it"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Elimina questo provider IA personalizzato",
+        "dialog body":
+            "Il provider e le credenziali memorizzate nel browser verranno eliminati definitivamente. Questa azione non può essere annullata.",
+        cancel: "Annulla",
+        "delete provider": "Elimina provider"
+    },
     ProviderValueField: {
         copy: "Copia",
         copied: "Copiato"
@@ -144,10 +151,13 @@ export const translations: Translations<"it"> = {
         "edit custom provider title": "Modifica provider IA",
         "custom provider section title": "Provider IA personalizzati",
         "custom provider section subtitle":
-            "Aggiungi i tuoi provider IA compatibili con OpenAI.",
+            "Configura i provider IA in base al protocollo API utilizzato.",
         "custom provider label field": "Etichetta",
-        "custom provider type field": "Tipo di provider",
-        "openai provider option": "Open AI",
+        "custom provider type field": "Protocollo API",
+        "openai provider option": "OpenAI (nativo)",
+        "openai compatible provider option": "Compatibile con OpenAI",
+        "mistral provider option": "Mistral (nativo)",
+        "anthropic provider option": "Anthropic (nativo)",
         "credentials section title": "Credenziali del provider",
         "credentials section subtitle":
             "Inserisci le credenziali. Verranno memorizzate nel browser.",
@@ -583,9 +593,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

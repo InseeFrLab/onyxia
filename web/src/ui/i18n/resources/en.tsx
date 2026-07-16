@@ -129,6 +129,13 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Delete this Custom AI Provider",
+        "dialog body":
+            "This will permanently remove the provider and its stored credentials from your browser. This action cannot be undone.",
+        cancel: "Cancel",
+        "delete provider": "Delete provider"
+    },
     ProviderValueField: {
         copy: "Copy",
         copied: "Copied"
@@ -143,10 +150,13 @@ export const translations: Translations<"en"> = {
         "edit custom provider title": "Edit AI provider",
         "custom provider section title": "Custom AI Providers",
         "custom provider section subtitle":
-            "Add your own OpenAI-compatible AI providers.",
+            "Configure AI providers according to the API protocol they expose.",
         "custom provider label field": "Define a custom name",
-        "custom provider type field": "Provider Type",
-        "openai provider option": "Open AI",
+        "custom provider type field": "API protocol",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-compatible",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
         "credentials section title": "Providers Credentials",
         "credentials section subtitle":
             "Enter your credentials. They will be stored in your browser.",

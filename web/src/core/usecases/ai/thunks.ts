@@ -184,10 +184,14 @@ export const thunks = {
     // Command-query thunk: the connection-test result is purely UI-local (it never
     // touches the persisted state), so returning it here is intentional.
     testCustomProviderConnection:
-        (params: { apiBase: string; apiKey: string }) =>
+        (params: { provider: string; apiBase: string; apiKey: string }) =>
         async (): Promise<{ models: State.AiModel[] }> => {
-            const { apiBase, apiKey } = params;
-            const models = await fetchAiModels({ apiBase, token: apiKey });
+            const { provider, apiBase, apiKey } = params;
+            const models = await fetchAiModels({
+                provider,
+                apiBase,
+                token: apiKey
+            });
             return { models };
         }
 } satisfies Thunks;
@@ -278,8 +282,7 @@ const privateThunks = {
                     kind: "custom",
                     id: p.id,
                     name: p.name,
-                    // Configs persisted before the field existed default to "openai".
-                    provider: p.provider ?? "openai",
+                    provider: p.provider,
                     apiBase: p.apiBase,
                     apiKey: p.apiKey,
                     models: { stateDescription: "fetching" },
@@ -338,6 +341,7 @@ const privateThunks = {
                     dispatchFetchedModels({
                         dispatch,
                         providerId: p.id,
+                        provider: p.provider,
                         apiBase: p.apiBase,
                         apiKey: p.apiKey
                     })
@@ -398,12 +402,13 @@ async function dispatchFetchedModels(params: {
             | ReturnType<typeof actions.modelsFetchFailed>
     ) => void;
     providerId: string;
+    provider: string;
     apiBase: string;
     apiKey: string;
 }): Promise<void> {
-    const { dispatch, providerId, apiBase, apiKey } = params;
+    const { dispatch, providerId, provider, apiBase, apiKey } = params;
     try {
-        const models = await fetchAiModels({ apiBase, token: apiKey });
+        const models = await fetchAiModels({ provider, apiBase, token: apiKey });
         dispatch(actions.modelsLoaded({ providerId, models }));
     } catch {
         dispatch(actions.modelsFetchFailed({ providerId }));
