@@ -439,18 +439,27 @@ const useStyles = tss
             justifyContent: "flex-end"
         },
         compactActionButton: {
-            minHeight: 28,
-            paddingTop: theme.spacing(0.5),
-            paddingBottom: theme.spacing(0.5)
+            ...theme.typography.variants["label 2"].style,
+            boxSizing: "border-box",
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
+            paddingLeft: theme.spacing(2.5),
+            paddingRight: theme.spacing(2.5),
+            "& .MuiButton-startIcon": {
+                marginLeft: 0,
+                marginRight: theme.spacing(1)
+            },
+            "& .MuiButton-startIcon > *": {
+                fontSize: theme.iconSizesInPxByName["extra small"]
+            }
         },
         defaultProviderBadge: {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: theme.spacing(1),
-            minHeight: 28,
-            paddingLeft: theme.spacing(1.5),
-            paddingRight: theme.spacing(1.5),
+            boxSizing: "border-box",
+            padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
             borderRadius: 9999,
             backgroundColor: alpha(theme.colors.useCases.typography.textFocus, 0.1)
         },
