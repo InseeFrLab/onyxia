@@ -29,6 +29,7 @@ import s3UriHomeSvgUrl from "ui/assets/svg/S3UriHome.svg";
 import { assert } from "tsafe";
 import { type NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
 
 export type S3UriBarProps = {
     className?: string;
@@ -1529,7 +1530,15 @@ export function S3UriBar(props: S3UriBarProps) {
                                             <Icon
                                                 className={classes.hintTypeAssetIcon}
                                                 size="extra small"
-                                                icon={getHintTypeIcon(hint.type)}
+                                                icon={getHintTypeIcon({
+                                                    type:
+                                                        hint.type === "bookmark-admin"
+                                                            ? "bookmark-admin"
+                                                            : "object",
+                                                    objectBasename:
+                                                        hint.s3Uri.keySegments.at(-1) ??
+                                                        hint.text
+                                                })}
                                             />
                                         )}
                                     </span>
@@ -2109,14 +2118,17 @@ function getHintTypeLabel(
     }
 }
 
-function getHintTypeIcon(
-    type: Exclude<HintType, "bookmark-user" | "key-segment">
-): string {
+function getHintTypeIcon(params: {
+    type: "bookmark-admin" | "object";
+    objectBasename: string;
+}): string {
+    const { type, objectBasename } = params;
+
     switch (type) {
         case "bookmark-admin":
             return getIconUrlByName("Domain");
         case "object":
-            return getIconUrlByName("Description");
+            return getS3ObjectIconUrl(objectBasename);
     }
 }
 

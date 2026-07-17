@@ -8,6 +8,7 @@ import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { Link } from "type-route";
 import { ConfirmAbortUploadDialog } from "./ConfirmAbortUploadDialog";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
 
 export type S3UploadsProps = {
     className?: string;
@@ -142,6 +143,7 @@ export function S3Uploads(props: S3UploadsProps) {
             {!internalCollapsed && (
                 <div className={classes.list}>
                     {uploads.map(upload => {
+                        const fileBasename = getFileName(upload.s3Uri);
                         const percent = Math.max(
                             0,
                             Math.min(100, upload.completionPercent)
@@ -196,16 +198,16 @@ export function S3Uploads(props: S3UploadsProps) {
                                         )}
                                     >
                                         <Icon
-                                            icon={getIconUrlByName("Description")}
+                                            icon={getS3ObjectIconUrl(fileBasename)}
                                             size="small"
                                         />
                                     </div>
                                     <div className={classes.itemText}>
                                         <div
                                             className={classes.fileName}
-                                            title={getFileName(upload.s3Uri)}
+                                            title={fileBasename}
                                         >
-                                            {getFileName(upload.s3Uri)}
+                                            {fileBasename}
                                         </div>
                                         <div className={classes.meta} title={metaLabel}>
                                             {isUploading ? (

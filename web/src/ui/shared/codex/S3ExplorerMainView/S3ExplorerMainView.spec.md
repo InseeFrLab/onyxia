@@ -140,10 +140,10 @@ These two item types are displayed in the same list.
 
 ### Visual distinction
 
-| Type   | Icon                | Meaning             |
-| :----- | :------------------ | :------------------ |
-| Prefix | Folder              | Navigable container |
-| Object | File or object icon | Stored file/data    |
+| Type   | Icon                                      | Meaning             |
+| :----- | :---------------------------------------- | :------------------ |
+| Prefix | Folder                                    | Navigable container |
+| Object | Icon selected from the basename extension | Stored file/data    |
 
 # Rendering rules
 
@@ -462,7 +462,7 @@ Rules:
 - Border radius: `8px`
 - Fixed square size
 - Icon centered inside
-- Folder / object icon
+- Folder icon / extension-specific object icon
 - Size: `32px`
 - Color: `theme.colors.useCases.typography.primary`
 

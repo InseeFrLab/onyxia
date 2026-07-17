@@ -42,6 +42,7 @@ import { useEvt } from "evt/hooks/useEvt";
 import { evtS3Uri_preSelected } from "./preSelectedS3Uri";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useFormattedRelativeDate } from "ui/shared/formattedDate";
+import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -887,7 +888,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 <div className={classes.dropOverlayCard}>
                                     <div className={classes.dropOverlayIcon}>
                                         <Icon
-                                            icon={getIconUrlByName("Description")}
+                                            icon={getS3ObjectIconUrl("")}
                                             size="large"
                                         />
                                     </div>
@@ -905,7 +906,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 <div className={classes.emptyState}>
                                     <div className={classes.emptyStateIcon}>
                                         <Icon
-                                            icon={getIconUrlByName("Description")}
+                                            icon={getS3ObjectIconUrl("")}
                                             size="large"
                                         />
                                     </div>
@@ -2507,11 +2508,11 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                 aria-label={itemIconLabel}
                             >
                                 <Icon
-                                    icon={getIconUrlByName(
+                                    icon={
                                         item.type === "prefix segment"
-                                            ? "Folder"
-                                            : "Description"
-                                    )}
+                                            ? getIconUrlByName("Folder")
+                                            : getS3ObjectIconUrl(item.displayName)
+                                    }
                                     size="small"
                                 />
                             </div>

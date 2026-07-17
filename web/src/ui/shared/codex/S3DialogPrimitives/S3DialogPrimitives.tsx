@@ -9,6 +9,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useS3DialogClasses() {
@@ -370,7 +371,11 @@ export function S3DialogItemSummary(props: {
         <div className={cx(classes.root, className)}>
             <span className={classes.iconSurface} aria-hidden="true">
                 <Icon
-                    icon={getIconUrlByName(icon === "folder" ? "Folder" : "Description")}
+                    icon={
+                        icon === "folder"
+                            ? getIconUrlByName("Folder")
+                            : getS3ObjectIconUrl(name)
+                    }
                     size="small"
                 />
             </span>
