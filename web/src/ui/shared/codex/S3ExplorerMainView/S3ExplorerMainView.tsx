@@ -123,6 +123,7 @@ export namespace S3ExplorerMainViewProps {
 }
 
 const S3_EXPLORER_ROW_ESTIMATED_HEIGHT = 58;
+const S3_EXPLORER_ITEM_ICON_SIZE_FACTOR = 4 / 3;
 
 export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
     const {
@@ -1536,7 +1537,11 @@ const useStyles = tss
             justifyContent: "center",
             backgroundColor: theme.colors.useCases.surfaces.surface2,
             color: theme.colors.useCases.typography.textPrimary,
-            flexShrink: 0
+            flexShrink: 0,
+            "& > svg": {
+                width: `${S3_EXPLORER_ITEM_ICON_SIZE_FACTOR}em`,
+                height: `${S3_EXPLORER_ITEM_ICON_SIZE_FACTOR}em`
+            }
         },
         itemIconFolder: {
             color: theme.colors.useCases.typography.textFocus

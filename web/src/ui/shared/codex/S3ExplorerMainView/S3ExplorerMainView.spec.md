@@ -463,7 +463,8 @@ Rules:
 - Fixed square size
 - Icon centered inside
 - Folder icon / extension-specific object icon
-- Size: `32px`
+- Size: `4/3em` relative to the standard small icon size (`24px` to `32px` at
+  the default scale)
 - Folder color: `theme.colors.useCases.typography.textFocus`
 - Object color: `theme.colors.useCases.typography.textPrimary`
 
