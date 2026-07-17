@@ -1538,6 +1538,9 @@ const useStyles = tss
             color: theme.colors.useCases.typography.textPrimary,
             flexShrink: 0
         },
+        itemIconFolder: {
+            color: theme.colors.useCases.typography.textFocus
+        },
         itemNameBlock: {
             minWidth: 0,
             flex: 1
@@ -2503,7 +2506,11 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                     <div className={classes.itemIdentity}>
                         <Tooltip title={itemIconLabel}>
                             <div
-                                className={classes.itemIconWrapper}
+                                className={cx(
+                                    classes.itemIconWrapper,
+                                    item.type === "prefix segment" &&
+                                        classes.itemIconFolder
+                                )}
                                 role="img"
                                 aria-label={itemIconLabel}
                             >

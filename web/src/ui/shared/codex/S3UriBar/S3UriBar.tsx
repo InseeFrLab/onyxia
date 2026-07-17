@@ -1511,7 +1511,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                             hint.type === "bookmark-admin" &&
                                                 classes.hintTypeBucket,
                                             hint.type === "key-segment" &&
-                                                classes.hintTypeBucket,
+                                                classes.hintTypeFolder,
                                             hint.type === "object" &&
                                                 classes.hintTypeObject
                                         )}
@@ -1968,6 +1968,9 @@ const useStyles = tss
             },
             hintTypeBucket: {
                 color: theme.colors.useCases.typography.textPrimary
+            },
+            hintTypeFolder: {
+                color: theme.colors.useCases.typography.textFocus
             },
             hintTypeObject: {
                 color: theme.colors.useCases.typography.textSecondary

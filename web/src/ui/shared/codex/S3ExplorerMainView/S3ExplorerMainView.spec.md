@@ -464,7 +464,8 @@ Rules:
 - Icon centered inside
 - Folder icon / extension-specific object icon
 - Size: `32px`
-- Color: `theme.colors.useCases.typography.primary`
+- Folder color: `theme.colors.useCases.typography.textFocus`
+- Object color: `theme.colors.useCases.typography.textPrimary`
 
 ### Typography
 

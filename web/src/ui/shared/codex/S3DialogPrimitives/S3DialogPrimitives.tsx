@@ -369,7 +369,13 @@ export function S3DialogItemSummary(props: {
 
     return (
         <div className={cx(classes.root, className)}>
-            <span className={classes.iconSurface} aria-hidden="true">
+            <span
+                className={cx(
+                    classes.iconSurface,
+                    icon === "folder" && classes.iconSurfaceFolder
+                )}
+                aria-hidden="true"
+            >
                 <Icon
                     icon={
                         icon === "folder"
@@ -654,6 +660,9 @@ const useStyles_S3DialogItemSummary = tss
             flex: "none",
             color: theme.colors.useCases.typography.textPrimary,
             backgroundColor: theme.colors.useCases.surfaces.surface2
+        },
+        iconSurfaceFolder: {
+            color: theme.colors.useCases.typography.textFocus
         },
         name: {
             minWidth: 0,
