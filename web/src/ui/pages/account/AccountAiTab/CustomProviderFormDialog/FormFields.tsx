@@ -179,15 +179,11 @@ const useStyles = tss
             modelMenu: {
                 marginTop: theme.spacing(0.5),
                 padding: theme.spacing(0.5),
-                borderRadius: 8,
-                backgroundColor: theme.colors.useCases.surfaces.surface1
+                borderRadius: 8
             },
             modelMenuItem: {
                 minHeight: 32,
-                borderRadius: 6,
-                "&.Mui-selected": {
-                    backgroundColor: theme.colors.useCases.surfaces.surface2
-                }
+                borderRadius: 6
             }
         };
     });
