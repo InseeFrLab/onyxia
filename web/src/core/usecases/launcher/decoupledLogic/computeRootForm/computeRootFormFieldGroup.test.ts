@@ -396,6 +396,89 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("overwriteListEnumWith with relative path in array items", () => {
+        const got = computeRootFormFieldGroup({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    providers: {
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                selectedModel: {
+                                    type: "string",
+                                    "x-onyxia": {
+                                        overwriteListEnumWith: "{{models}}"
+                                    }
+                                },
+                                models: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    "x-onyxia": {
+                                        hidden: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValues: {
+                providers: [{ selectedModel: "model-b" }]
+            },
+            xOnyxiaContext: { models: ["model-a", "model-b"] },
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
+        });
+
+        const expected: FormFieldGroup = {
+            type: "group",
+            helmValuesPath: [],
+            title: "<root>",
+            description: undefined,
+            nodes: [
+                {
+                    type: "group",
+                    helmValuesPath: ["providers"],
+                    title: "providers",
+                    description: undefined,
+                    nodes: [
+                        {
+                            type: "group",
+                            helmValuesPath: ["providers", 0],
+                            title: "providers 1",
+                            description: undefined,
+                            nodes: [
+                                {
+                                    type: "field",
+                                    title: "selectedModel",
+                                    isReadonly: false,
+                                    fieldType: "select",
+                                    helmValuesPath: ["providers", 0, "selectedModel"],
+                                    description: undefined,
+                                    options: ["model-a", "model-b"],
+                                    selectedOptionIndex: 1
+                                }
+                            ],
+                            canAdd: false,
+                            canRemove: false,
+                            isAutoInjected: undefined
+                        }
+                    ],
+                    canAdd: true,
+                    canRemove: true,
+                    isAutoInjected: undefined
+                }
+            ],
+            canAdd: false,
+            canRemove: false,
+            isAutoInjected: undefined
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
     it("with autocomplete options", () => {
         const xOnyxiaContext = {
             r: [1, 2, 3]

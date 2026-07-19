@@ -190,49 +190,6 @@ export function computeHelmValues_rec(params: {
         return constValue;
     }
 
-    schema_is_object_with_known_properties: {
-        if (helmValuesSchemaType !== "object") {
-            break schema_is_object_with_known_properties;
-        }
-
-        const { properties } = helmValuesSchema;
-
-        if (properties === undefined) {
-            break schema_is_object_with_known_properties;
-        }
-
-        return Object.fromEntries(
-            Object.entries(properties).map(([propertyName, propertySchema]) => [
-                propertyName,
-                computeHelmValues_rec({
-                    helmValuesSchema: propertySchema,
-                    helmValuesYaml_parsed:
-                        helmValuesYaml_parsed instanceof Object &&
-                        !(helmValuesYaml_parsed instanceof Array)
-                            ? helmValuesYaml_parsed[propertyName]
-                            : undefined,
-                    xOnyxiaContext,
-                    helmValuesSchema_forDataTextEditor: (() => {
-                        if (helmValuesSchema_forDataTextEditor === undefined) {
-                            return undefined;
-                        }
-
-                        const { properties: property_forDataTextEditor } =
-                            helmValuesSchema_forDataTextEditor;
-
-                        assert(property_forDataTextEditor !== undefined);
-
-                        const out = property_forDataTextEditor[propertyName];
-
-                        assert(out !== undefined, "crash");
-
-                        return out;
-                    })()
-                })
-            ])
-        );
-    }
-
     use_x_onyxia_overwriteDefaultWith: {
         const { overwriteDefaultWith } = helmValuesSchema["x-onyxia"] ?? {};
 
@@ -342,6 +299,49 @@ export function computeHelmValues_rec(params: {
         }
 
         return resolvedValue;
+    }
+
+    schema_is_object_with_known_properties: {
+        if (helmValuesSchemaType !== "object") {
+            break schema_is_object_with_known_properties;
+        }
+
+        const { properties } = helmValuesSchema;
+
+        if (properties === undefined) {
+            break schema_is_object_with_known_properties;
+        }
+
+        return Object.fromEntries(
+            Object.entries(properties).map(([propertyName, propertySchema]) => [
+                propertyName,
+                computeHelmValues_rec({
+                    helmValuesSchema: propertySchema,
+                    helmValuesYaml_parsed:
+                        helmValuesYaml_parsed instanceof Object &&
+                        !(helmValuesYaml_parsed instanceof Array)
+                            ? helmValuesYaml_parsed[propertyName]
+                            : undefined,
+                    xOnyxiaContext,
+                    helmValuesSchema_forDataTextEditor: (() => {
+                        if (helmValuesSchema_forDataTextEditor === undefined) {
+                            return undefined;
+                        }
+
+                        const { properties: property_forDataTextEditor } =
+                            helmValuesSchema_forDataTextEditor;
+
+                        assert(property_forDataTextEditor !== undefined);
+
+                        const out = property_forDataTextEditor[propertyName];
+
+                        assert(out !== undefined, "crash");
+
+                        return out;
+                    })()
+                })
+            ])
+        );
     }
 
     use_default: {

@@ -17,7 +17,8 @@ export const translations: Translations<"de"> = {
         text2: "Greifen Sie auf Ihre verschiedenen Kontoinformationen zu.",
         text3: "Konfigurieren Sie Ihre persönlichen Logins, E-Mails, Passwörter und persönlichen Zugriffstoken, die direkt mit Ihren Diensten verbunden sind.",
         "personal tokens tooltip": 'Oder auf Englisch "Token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -96,6 +97,90 @@ export const translations: Translations<"de"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
+    },
+    AccountAiGatewayTab: {
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Ihre OIDC-Sitzung gibt Ihnen nahtlosen Zugriff auf das KI-Gateway.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    KI-Gateway öffnen
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-Basis-URL",
+        token: "Token",
+        "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
+        "default provider": "Standardanbieter",
+        "set default provider": "Als Standard festlegen",
+        "refresh credentials": "Anmeldedaten aktualisieren",
+        "delete provider": "Löschen",
+        "edit provider": "Bearbeiten",
+        "custom providers section title": "Benutzerdefinierte KI-Anbieter",
+        "custom providers section helper":
+            "Fügen Sie Ihre eigenen OpenAI-kompatiblen KI-Anbieter hinzu. Die Anmeldedaten werden in Ihrem Browser gespeichert.",
+        "add custom provider": "Benutzerdefinierten Anbieter hinzufügen",
+        "custom provider api base field": "API-Basis-URL",
+        "custom provider api key field": "API-Schlüssel",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Sie haben noch kein Konto beim KI-Gateway. Bitte melden Sie sich zuerst an
+                bei{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                um Ihr Konto zu erstellen.
+            </>
+        )
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Diesen benutzerdefinierten KI-Anbieter löschen",
+        "dialog body":
+            "Dadurch werden der Anbieter und die im Browser gespeicherten Zugangsdaten dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+        cancel: "Abbrechen",
+        "delete provider": "Anbieter löschen"
+    },
+    ProviderValueField: {
+        copy: "Kopieren",
+        copied: "Kopiert"
+    },
+    ModelsSection: {
+        "model label": "Modell",
+        "not defined": "Nicht definiert",
+        "models fetch error":
+            "Modelle konnten nicht abgerufen werden — überprüfen Sie URL und API-Schlüssel."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Benutzerdefinierte KI-Anbieter",
+        "edit custom provider title": "KI-Anbieter bearbeiten",
+        "custom provider section title": "Benutzerdefinierte KI-Anbieter",
+        "custom provider section subtitle":
+            "Konfigurieren Sie Ihre KI-Anbieter entsprechend dem verwendeten API-Protokoll.",
+        "custom provider label field": "Name",
+        "custom provider type field": "API-Protokoll",
+        "openai provider option": "OpenAI (nativ)",
+        "openai compatible provider option": "OpenAI-kompatibel",
+        "mistral provider option": "Mistral (nativ)",
+        "anthropic provider option": "Anthropic (nativ)",
+        "credentials section title": "Anmeldedaten des Anbieters",
+        "credentials section subtitle":
+            "Geben Sie Ihre Anmeldedaten ein. Sie werden in Ihrem Browser gespeichert.",
+        "custom provider api base field": "API-Basis-URL",
+        "custom provider api key field": "API-Schlüssel",
+        "verification section title": "Modelle prüfen und laden",
+        "verification section subtitle":
+            "Prüfen Sie Ihre Anmeldedaten und laden Sie automatisch die verfügbaren Modelle.",
+        "custom provider model field": "Modelltyp",
+        "provider test": "Verbindung testen",
+        "provider testing": "Verbindung wird getestet...",
+        "provider test success":
+            "Verbindung erfolgreich. Der Anbieter ist einsatzbereit.",
+        "provider test error":
+            "Verbindung fehlgeschlagen — URL und API-Schlüssel prüfen.",
+        "set as default provider": "Als Standardanbieter festlegen",
+        "provider save": "Hinzufügen",
+        "provider update": "Speichern",
+        "provider cancel": "Abbrechen",
+        "close aria label": "Schließen"
     },
     AccountVaultTab: {
         "credentials section title": "Vault-Anmeldeinformationen",

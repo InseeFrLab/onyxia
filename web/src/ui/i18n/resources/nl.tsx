@@ -17,7 +17,8 @@ export const translations: Translations<"nl"> = {
         text2: "Toegang tot uw accountgegevens.",
         text3: "Uw gebruikersnamen, e-mails, wachtwoorden en persoonlijke toegangstokens die direct verbonden zijn aan uw diensten configureren.",
         "personal tokens tooltip": 'Of "token" in het Engels.',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "Account-ID",
@@ -95,6 +96,89 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Uw OIDC-sessie geeft u naadloze toegang tot de AI-gateway.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    AI-gateway openen
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-basis-URL",
+        token: "Token",
+        "gateway error": "Kan de AI-gateway niet initialiseren.",
+        "default provider": "Standaardprovider",
+        "set default provider": "Als standaard instellen",
+        "refresh credentials": "Referenties vernieuwen",
+        "delete provider": "Verwijderen",
+        "edit provider": "Bewerken",
+        "custom providers section title": "Aangepaste AI-providers",
+        "custom providers section helper":
+            "Voeg uw eigen OpenAI-compatibele AI-providers toe. Inloggegevens worden in uw browser opgeslagen.",
+        "add custom provider": "Aangepaste provider toevoegen",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-sleutel",
+        "no account": ({ webUiUrl }) => (
+            <>
+                U heeft nog geen account bij de AI-gateway. Meld u eerst aan bij{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                om uw account aan te maken.
+            </>
+        )
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Deze aangepaste AI-provider verwijderen",
+        "dialog body":
+            "Hiermee worden de provider en de in je browser opgeslagen inloggegevens permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+        cancel: "Annuleren",
+        "delete provider": "Provider verwijderen"
+    },
+    ProviderValueField: {
+        copy: "Kopiëren",
+        copied: "Gekopieerd"
+    },
+    ModelsSection: {
+        "model label": "Model",
+        "not defined": "Niet gedefinieerd",
+        "models fetch error":
+            "Kan modellen niet ophalen — controleer uw URL en API-sleutel."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Aangepaste AI-providers",
+        "edit custom provider title": "AI-provider bewerken",
+        "custom provider section title": "Aangepaste AI-providers",
+        "custom provider section subtitle":
+            "Configureer AI-providers op basis van het API-protocol dat ze gebruiken.",
+        "custom provider label field": "Label",
+        "custom provider type field": "API-protocol",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-compatibel",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
+        "credentials section title": "Providerreferenties",
+        "credentials section subtitle":
+            "Voer uw referenties in. Ze worden in uw browser opgeslagen.",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-sleutel",
+        "verification section title": "Modellen verifiëren en laden",
+        "verification section subtitle":
+            "Verifieer uw referenties en ontdek automatisch de beschikbare modellen.",
+        "custom provider model field": "Modeltype",
+        "provider test": "Verbinding testen",
+        "provider testing": "Verbinding testen...",
+        "provider test success":
+            "Verbinding geslaagd. De provider is klaar voor gebruik.",
+        "provider test error":
+            "Kan geen verbinding maken — controleer URL en API-sleutel.",
+        "set as default provider": "Instellen als standaardprovider",
+        "provider save": "Toevoegen",
+        "provider update": "Opslaan",
+        "provider cancel": "Annuleren",
+        "close aria label": "Sluiten"
     },
     AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",

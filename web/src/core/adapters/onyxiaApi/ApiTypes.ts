@@ -82,6 +82,20 @@ export type ApiTypes = {
                 };
             };
             data?: {
+                ai?: ArrayOrNot<{
+                    id?: string;
+                    URL: string;
+                    name?: string;
+                    provider?: string;
+                    description?: LocalizedString;
+                    accountCreation?: {
+                        title?: LocalizedString;
+                        description?: LocalizedString;
+                        buttonLabel?: LocalizedString;
+                    };
+                    oauthProvider: string;
+                    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
+                }>;
                 S3?: ArrayOrNot<{
                     URL: string;
                     pathStyleAccess?: true;

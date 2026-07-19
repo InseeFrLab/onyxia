@@ -198,6 +198,11 @@ export type XOnyxiaContext = {
         useCertManager: boolean;
         certManagerClusterIssuer: string | undefined;
     };
+    ai: {
+        enabled: boolean;
+        activeProvider: AiProvider | undefined;
+        providers: AiProvider[];
+    };
     proxyInjection:
         | {
               enabled: boolean | undefined;
@@ -223,3 +228,15 @@ export type XOnyxiaContext = {
 };
 
 assert<Equals<XOnyxiaContext["user"]["lang"], Language>>();
+
+type AiProvider = {
+    id: string;
+    isDefault: boolean;
+    apiKey: string;
+    apiBase: string;
+    name: string;
+    selectedModel: string | undefined;
+    models: string[] | undefined;
+    // openai / anthropic / cohere / azure-openai / google-palm / ai21 ...
+    provider: string;
+};

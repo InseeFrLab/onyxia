@@ -435,6 +435,42 @@ export function createOnyxiaApi(params: {
                                                   apiRegion.vault.oidcConfiguration
                                               )
                                       },
+                            ai: (() => {
+                                const value = apiRegion.data?.ai;
+
+                                const aiConfigs_api =
+                                    value === undefined
+                                        ? []
+                                        : value instanceof Array
+                                          ? value
+                                          : [value];
+
+                                return aiConfigs_api.map((aiConfig_api, i) => ({
+                                    id: aiConfig_api.id ?? `onyxia-${i}`,
+                                    url: aiConfig_api.URL,
+                                    name: aiConfig_api.name,
+                                    provider: aiConfig_api.provider ?? "openai",
+                                    description: aiConfig_api.description,
+                                    accountCreation:
+                                        aiConfig_api.accountCreation === undefined
+                                            ? undefined
+                                            : {
+                                                  title: aiConfig_api.accountCreation
+                                                      .title,
+                                                  description:
+                                                      aiConfig_api.accountCreation
+                                                          .description,
+                                                  buttonLabel:
+                                                      aiConfig_api.accountCreation
+                                                          .buttonLabel
+                                              },
+                                    oauthProvider: aiConfig_api.oauthProvider,
+                                    oidcParams:
+                                        apiTypesOidcConfigurationToOidcParams_Partial(
+                                            aiConfig_api.oidcConfiguration
+                                        )
+                                }));
+                            })(),
                             proxyInjection:
                                 apiRegion.proxyInjection === undefined
                                     ? undefined

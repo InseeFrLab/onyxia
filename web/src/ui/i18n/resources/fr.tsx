@@ -17,7 +17,8 @@ export const translations: Translations<"fr"> = {
         text2: "Accédez à vos différentes informations de compte.",
         text3: "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
         "personal tokens tooltip": 'Ou en anglais "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identifiant de compte",
@@ -96,6 +97,89 @@ export const translations: Translations<"fr"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
+    },
+    AccountAiGatewayTab: {
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Votre session OIDC vous donne accès à la passerelle IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Ouvrir la passerelle IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL de base de l'API",
+        token: "Jeton",
+        "gateway error": "Impossible d'initialiser la passerelle IA.",
+        "default provider": "Provider par défaut",
+        "set default provider": "Définir par défaut",
+        "refresh credentials": "Rafraîchir les identifiants",
+        "delete provider": "Supprimer",
+        "edit provider": "Modifier",
+        "custom providers section title": "Providers IA personnalisés",
+        "custom providers section helper":
+            "Ajoutez vos propres providers IA compatibles OpenAI. Les identifiants sont stockés dans votre navigateur.",
+        "add custom provider": "Ajouter un provider personnalisé",
+        "custom provider api base field": "URL de base de l'API",
+        "custom provider api key field": "Clé API",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Vous n&apos;avez pas encore de compte sur la passerelle IA. Veuillez
+                d&apos;abord vous connecter sur{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                pour créer votre compte.
+            </>
+        )
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Supprimer ce fournisseur d’IA personnalisé",
+        "dialog body":
+            "Cette action supprimera définitivement le fournisseur et les identifiants enregistrés dans votre navigateur. Cette action est irréversible.",
+        cancel: "Annuler",
+        "delete provider": "Supprimer le fournisseur"
+    },
+    ProviderValueField: {
+        copy: "Copier",
+        copied: "Copié"
+    },
+    ModelsSection: {
+        "model label": "Modèles",
+        "not defined": "Non défini",
+        "models fetch error":
+            "Impossible de récupérer les modèles — vérifiez l'URL et la clé API."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Providers IA personnalisés",
+        "edit custom provider title": "Modifier le provider IA",
+        "custom provider section title": "Providers IA personnalisés",
+        "custom provider section subtitle":
+            "Configurez vos providers IA selon le protocole d’API qu’ils exposent.",
+        "custom provider label field": "Nom",
+        "custom provider type field": "Protocole API",
+        "openai provider option": "OpenAI (natif)",
+        "openai compatible provider option": "Compatible OpenAI",
+        "mistral provider option": "Mistral (natif)",
+        "anthropic provider option": "Anthropic (natif)",
+        "credentials section title": "Identifiants du provider",
+        "credentials section subtitle":
+            "Saisissez vos identifiants. Ils seront stockés dans votre navigateur.",
+        "custom provider api base field": "URL de base de l'API",
+        "custom provider api key field": "Clé API",
+        "verification section title": "Vérifier et charger les modèles",
+        "verification section subtitle":
+            "Vérifiez vos identifiants et découvrez automatiquement les modèles disponibles.",
+        "custom provider model field": "Type de modèle",
+        "provider test": "Tester la connexion",
+        "provider testing": "Test de la connexion...",
+        "provider test success": "Connexion réussie. Votre provider est prêt à l'emploi.",
+        "provider test error":
+            "Impossible de se connecter — vérifiez l'URL et la clé API.",
+        "set as default provider": "Définir comme provider par défaut",
+        "provider save": "Ajouter",
+        "provider update": "Enregistrer",
+        "provider cancel": "Annuler",
+        "close aria label": "Fermer"
     },
     AccountVaultTab: {
         "credentials section title": "Identifiants Vault",

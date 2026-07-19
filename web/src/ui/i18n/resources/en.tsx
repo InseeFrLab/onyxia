@@ -17,7 +17,8 @@ export const translations: Translations<"en"> = {
         text3: "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
         "personal tokens tooltip":
             "Password that are generated for you and that have a given validity period",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "Account identifier",
@@ -94,6 +95,87 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `These credentials are valid for the next ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Your OIDC session gives you seamless access to the AI gateway.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Open AI gateway
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API base URL",
+        token: "Token",
+        "gateway error": "Unable to initialize the AI gateway.",
+        "default provider": "Default provider",
+        "set default provider": "Set default provider",
+        "refresh credentials": "Refresh credentials",
+        "delete provider": "Delete",
+        "edit provider": "Edit",
+        "custom providers section title": "Custom AI providers",
+        "custom providers section helper":
+            "Add your own OpenAI-compatible AI providers. Credentials are stored in your browser.",
+        "add custom provider": "Add custom provider",
+        "custom provider api base field": "API base URL",
+        "custom provider api key field": "API key",
+        "no account": ({ webUiUrl }) => (
+            <>
+                You don&apos;t have an AI gateway account yet. Please log in to{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                first to create your account.
+            </>
+        )
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Delete this Custom AI Provider",
+        "dialog body":
+            "This will permanently remove the provider and its stored credentials from your browser. This action cannot be undone.",
+        cancel: "Cancel",
+        "delete provider": "Delete provider"
+    },
+    ProviderValueField: {
+        copy: "Copy",
+        copied: "Copied"
+    },
+    ModelsSection: {
+        "model label": "Model",
+        "not defined": "Not defined",
+        "models fetch error": "Unable to fetch models — check your URL and API key."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Add Custom AI Providers",
+        "edit custom provider title": "Edit AI provider",
+        "custom provider section title": "Custom AI Providers",
+        "custom provider section subtitle":
+            "Configure AI providers according to the API protocol they expose.",
+        "custom provider label field": "Define a custom name",
+        "custom provider type field": "API protocol",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-compatible",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
+        "credentials section title": "Providers Credentials",
+        "credentials section subtitle":
+            "Enter your credentials. They will be stored in your browser.",
+        "custom provider api base field": "API Base URL",
+        "custom provider api key field": "API Key",
+        "verification section title": "Verify & Load Models",
+        "verification section subtitle":
+            "Verify your credentials and automatically discover the available models.",
+        "custom provider model field": "Model Type",
+        "provider test": "Test connection",
+        "provider testing": "Testing connection...",
+        "provider test success": "Connection successful. Your provider is ready to use.",
+        "provider test error":
+            "Connection failed. Please check your credentials or endpoint.",
+        "set as default provider": "Set as default provider",
+        "provider save": "Add Custom AI Providers",
+        "provider update": "Save changes",
+        "provider cancel": "Cancel",
+        "close aria label": "Close"
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",
