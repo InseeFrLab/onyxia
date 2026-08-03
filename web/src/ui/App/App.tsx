@@ -37,7 +37,8 @@ triggerCoreBootstrap({
     isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED,
     enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
-    getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled
+    getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled,
+    s3Config: env.S3
 });
 
 export function App() {

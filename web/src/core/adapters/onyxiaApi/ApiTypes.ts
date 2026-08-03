@@ -1,5 +1,4 @@
 import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
-import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 
 export type ApiTypes = {
     "/public/ip": {
@@ -80,45 +79,6 @@ export type ApiTypes = {
                     scc: string;
                     enabled: boolean;
                 };
-            };
-            data?: {
-                S3?: ArrayOrNot<{
-                    URL: string;
-                    pathStyleAccess?: true;
-
-                    region?: string;
-                    sts?: {
-                        URL?: string;
-                        durationSeconds?: number;
-                        role: ArrayOrNot<
-                            {
-                                profileName: string;
-                                roleARN: string;
-                                roleSessionName: string;
-                            } & (
-                                | { claimName?: undefined }
-                                | {
-                                      claimName: string;
-                                      includedClaimPattern?: string;
-                                      excludedClaimPattern?: string;
-                                  }
-                            )
-                        >;
-                        oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
-                    };
-                    bookmarks?: ({
-                        s3Uri: string;
-                        title: LocalizedString;
-                        forProfileName?: string | string[];
-                    } & (
-                        | { claimName?: undefined }
-                        | {
-                              claimName: string;
-                              includedClaimPattern?: string;
-                              excludedClaimPattern?: string;
-                          }
-                    ))[];
-                }>;
             };
             vault?: {
                 URL: string;

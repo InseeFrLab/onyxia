@@ -1,5 +1,4 @@
 import type { OidcParams_Partial } from "./OidcParams";
-import type { LocalizedString } from "./Language";
 
 export type DeploymentRegion = {
     id: string;
@@ -19,10 +18,6 @@ export type DeploymentRegion = {
           }
         | undefined;
     initScriptUrl: string;
-    s3Profiles: DeploymentRegion.S3Profile[];
-    s3Profiles_defaultValuesOfCreationForm:
-        | Pick<DeploymentRegion.S3Profile, "url" | "pathStyleAccess" | "region">
-        | undefined;
 
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
@@ -103,53 +98,3 @@ export type DeploymentRegion = {
           }
         | undefined;
 };
-export namespace DeploymentRegion {
-    export type S3Profile = {
-        url: string;
-        pathStyleAccess: boolean;
-        region: string | undefined;
-        sts: {
-            url: string | undefined;
-            durationSeconds: number | undefined;
-            roles: S3Profile.StsRole[];
-            oidcParams: OidcParams_Partial;
-        };
-        bookmarks: S3Profile.Bookmark[];
-    };
-
-    export namespace S3Profile {
-        export type StsRole = {
-            roleARN: string;
-            roleSessionName: string;
-            profileName: string;
-        } & (
-            | {
-                  claimName: undefined;
-                  includedClaimPattern?: never;
-                  excludedClaimPattern?: never;
-              }
-            | {
-                  claimName: string;
-                  includedClaimPattern: string | undefined;
-                  excludedClaimPattern: string | undefined;
-              }
-        );
-
-        export type Bookmark = {
-            s3UriStr_templated: string;
-            title: LocalizedString;
-            forProfileNames: string[];
-        } & (
-            | {
-                  claimName: undefined;
-                  includedClaimPattern?: never;
-                  excludedClaimPattern?: never;
-              }
-            | {
-                  claimName: string;
-                  includedClaimPattern: string | undefined;
-                  excludedClaimPattern: string | undefined;
-              }
-        );
-    }
-}

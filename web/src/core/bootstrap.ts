@@ -15,6 +15,8 @@ import { pluginSystemInitCore } from "pluginSystem";
 import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import type { S3Config_Parsed } from "core/ports/OnyxiaApi/S3Config";
+import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
     apiUrl: string;
@@ -30,6 +32,7 @@ export type ParamsOfBootstrapCore = {
     enableOidcDebugLogs: boolean;
     disableDisplayAllCatalog: boolean;
     getIsDarkModeEnabled: () => boolean;
+    s3Config: S3Config_Parsed;
 };
 
 export type Context = {
@@ -179,6 +182,8 @@ export async function bootstrapCore(
             }
         })
     };
+
+    setRootContext(context);
 
     const { core, dispatch, getState } = createCore({
         context,

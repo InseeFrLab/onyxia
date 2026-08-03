@@ -1,5 +1,5 @@
 import * as projectManagement from "core/usecases/projectManagement";
-import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
+import type { S3Config_Parsed } from "core/ports/OnyxiaApi/S3Config";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import { assert } from "tsafe";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
@@ -39,25 +39,25 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
         s3Profiles: projectManagement.ProjectConfigs.S3Profile[];
         userConfigs_s3BookmarksStr: string | null;
     };
-    fromRegion: {
-        s3Profiles: DeploymentRegion.S3Profile[];
+    fromAdminConfig: {
+        entries: S3Config_Parsed.Entry[];
         // NOTE: The resolvedXXX can be undefined only when the function is used to
         // the stablish the default profiles (for explorer and services)
         resolvedTemplatedBookmarks:
             | {
-                  correspondingS3ConfigIndexInRegion: number;
+                  correspondingS3ConfigEntryIndex: number;
                   bookmarks: ResolvedTemplateBookmark[];
               }[]
             | undefined;
         resolvedTemplatedStsRoles:
             | {
-                  correspondingS3ConfigIndexInRegion: number;
+                  correspondingS3ConfigEntryIndex: number;
                   stsRoles: ResolvedTemplateStsRole[];
               }[]
             | undefined;
     };
 }): S3Profile[] {
-    const { fromVault, fromRegion } = params;
+    const { fromVault, fromAdminConfig } = params;
 
     const s3Profiles: S3Profile[] = [
         ...fromVault.s3Profiles
@@ -87,15 +87,15 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                 };
             })
             .sort((a, b) => b.creationTime - a.creationTime),
-        ...fromRegion.s3Profiles
+        ...fromAdminConfig.entries
             .map((c, index): S3Profile.DefinedInRegion[] => {
                 const resolvedTemplatedBookmarks_forThisProfile = (() => {
-                    if (fromRegion.resolvedTemplatedBookmarks === undefined) {
+                    if (fromAdminConfig.resolvedTemplatedBookmarks === undefined) {
                         return [];
                     }
 
-                    const entry = fromRegion.resolvedTemplatedBookmarks.find(
-                        e => e.correspondingS3ConfigIndexInRegion === index
+                    const entry = fromAdminConfig.resolvedTemplatedBookmarks.find(
+                        e => e.correspondingS3ConfigEntryIndex === index
                     );
 
                     assert(entry !== undefined);
@@ -185,12 +185,12 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                 };
 
                 const resolvedTemplatedStsRoles_forThisProfile = (() => {
-                    if (fromRegion.resolvedTemplatedStsRoles === undefined) {
+                    if (fromAdminConfig.resolvedTemplatedStsRoles === undefined) {
                         return [];
                     }
 
-                    const entry = fromRegion.resolvedTemplatedStsRoles.find(
-                        e => e.correspondingS3ConfigIndexInRegion === index
+                    const entry = fromAdminConfig.resolvedTemplatedStsRoles.find(
+                        e => e.correspondingS3ConfigEntryIndex === index
                     );
 
                     assert(entry !== undefined);
