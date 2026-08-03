@@ -25,6 +25,12 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
+import {
+    type S3Config_UserProvided,
+    type S3Config_Parsed,
+    zS3Config_UserProvided,
+    s3Config_userProvidedToParsed
+} from "core/ports/OnyxiaApi/S3Config";
 
 //NOTE: Initially we where in CRA so we used PUBLIC_URL,
 // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
@@ -1367,6 +1373,39 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
             );
 
             return envValue === "true";
+        }
+    },
+    {
+        envName: "S3",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }): S3Config_Parsed => {
+            if (envValue === "") {
+                return {
+                    entries: [],
+                    defaultValuesOfCreationForm: undefined
+                };
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON5.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            type ParsedValue = S3Config_UserProvided;
+
+            try {
+                zS3Config_UserProvided.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return s3Config_userProvidedToParsed(parsedValue);
         }
     }
 ]);

@@ -1,10 +1,9 @@
 import type { Thunks } from "core/bootstrap";
-import { selectors, protectedSelectors } from "./selectors";
+import { selectors, privateSelectors } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
 import { assert } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 import structuredClone from "@ungap/structured-clone";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { resolveTemplatedBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
 import { resolveTemplatedStsRole } from "./decoupledLogic/resolveTemplatedStsRole";
@@ -103,7 +102,7 @@ export const protectedThunks = {
                         const doClearCachedS3Token_s3BookmarkClaimValue: boolean =
                             (() => {
                                 const resolvedTemplatedBookmarks =
-                                    protectedSelectors.resolvedTemplatedBookmarks(
+                                    privateSelectors.resolvedTemplatedBookmarks(
                                         getState()
                                     );
 
@@ -376,10 +375,7 @@ export const protectedThunks = {
     initialize:
         () =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
-
-            const deploymentRegion =
-                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
+            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore }] = args;
 
             const getDecodedIdToken = async (params: {
                 oidcParams_partial: OidcParams_Partial;
@@ -412,11 +408,11 @@ export const protectedThunks = {
             };
 
             const resolvedTemplatedBookmarks = await Promise.all(
-                deploymentRegion.s3Profiles.map(async (s3Config, s3ConfigIndex) => {
-                    const { bookmarks: bookmarks_region, sts } = s3Config;
+                paramsOfBootstrapCore.s3Config.entries.map(async (entry, entryIndex) => {
+                    const { bookmarks: bookmarks_region, sts } = entry;
 
                     return {
-                        correspondingS3ConfigIndexInRegion: s3ConfigIndex,
+                        correspondingS3ConfigEntryIndex: entryIndex,
                         bookmarks: (
                             await Promise.all(
                                 bookmarks_region.map(bookmark =>
@@ -435,11 +431,11 @@ export const protectedThunks = {
             );
 
             const resolvedTemplatedStsRoles = await Promise.all(
-                deploymentRegion.s3Profiles.map(async (s3Config, s3ConfigIndex) => {
-                    const { sts } = s3Config;
+                paramsOfBootstrapCore.s3Config.entries.map(async (entry, entryIndex) => {
+                    const { sts } = entry;
 
                     return {
-                        correspondingS3ConfigIndexInRegion: s3ConfigIndex,
+                        correspondingS3ConfigEntryIndex: entryIndex,
                         stsRoles: (
                             await Promise.all(
                                 sts.roles.map(stsRole_region =>

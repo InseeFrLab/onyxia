@@ -21,14 +21,10 @@ export const LeftBar = memo((props: Props) => {
     const { className } = props;
 
     const {
-        functions: { secretExplorer }
+        functions: { secretExplorer, s3ExplorerUiController }
     } = getCoreSync();
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
-    const isS3ExplorerEnabled = useCoreState(
-        "s3ProfilesManagement",
-        "isS3ExplorerEnabled"
-    );
 
     const route = useRoute();
 
@@ -95,14 +91,18 @@ export const LeftBar = memo((props: Props) => {
                     icon: customIcons.filesSvgUrl,
                     label: t("s3Explorer"),
                     link: routes.s3Explorer_root().link,
-                    availability: isS3ExplorerEnabled ? "available" : "not visible"
+                    availability: s3ExplorerUiController.getIsS3ExplorerEnabled()
+                        ? "available"
+                        : "not visible"
                 },
                 {
                     itemId: "dataExplorer",
                     icon: getIconUrlByName("DocumentScanner"),
                     label: t("dataExplorer"),
                     link: routes.dataExplorer().link,
-                    availability: isS3ExplorerEnabled ? "available" : "not visible"
+                    availability: s3ExplorerUiController.getIsS3ExplorerEnabled()
+                        ? "available"
+                        : "not visible"
                 },
                 {
                     itemId: "dataCollection",

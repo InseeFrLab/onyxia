@@ -13,7 +13,7 @@ import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
 import { id } from "tsafe/id";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
-import { useCoreState } from "core";
+import { useCoreState, getCoreSync } from "core";
 
 const Page = Home;
 export default Page;
@@ -33,10 +33,6 @@ function Home() {
     });
 
     const { isUserLoggedIn, user } = useCoreState("userAuthentication", "main");
-    const isS3ExplorerEnabled = useCoreState(
-        "s3ProfilesManagement",
-        "isS3ExplorerEnabled"
-    );
 
     const { t } = useTranslation({ Home });
 
@@ -148,7 +144,7 @@ function Home() {
                         url: "https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                     }
                 },
-                ...(!isS3ExplorerEnabled
+                ...(!getCoreSync().functions.s3ExplorerUiController.getIsS3ExplorerEnabled()
                     ? []
                     : [
                           {
@@ -165,7 +161,7 @@ function Home() {
         }
 
         return env.HOMEPAGE_CARDS;
-    }, [t, isS3ExplorerEnabled]);
+    }, [t]);
 
     return (
         <div className={classes.root}>

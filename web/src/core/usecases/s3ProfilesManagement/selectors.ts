@@ -1,5 +1,4 @@
 import { createSelector } from "clean-architecture";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import {
@@ -8,7 +7,7 @@ import {
 } from "./decoupledLogic/s3Profiles";
 import { name } from "./state";
 import type { State as RootState } from "core/bootstrap";
-import * as userAuthentication from "core/usecases/userAuthentication";
+import { getRootContext } from "core/rootContext";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -32,16 +31,11 @@ const s3Profiles = createSelector(
         projectManagement.protectedSelectors.projectConfig,
         projectConfig => projectConfig.s3Profiles
     ),
-    createSelector(
-        deploymentRegionManagement.selectors.currentDeploymentRegion,
-        deploymentRegion => deploymentRegion.s3Profiles
-    ),
     resolvedTemplatedBookmarks,
     resolvedTemplatedStsRoles,
     userConfigs_s3BookmarksStr,
     (
         s3Profiles_vault,
-        s3Profiles_region,
         resolvedTemplatedBookmarks,
         resolvedTemplatedStsRoles,
         userConfigs_s3BookmarksStr
@@ -51,27 +45,13 @@ const s3Profiles = createSelector(
                 s3Profiles: s3Profiles_vault,
                 userConfigs_s3BookmarksStr
             },
-            fromRegion: {
-                s3Profiles: s3Profiles_region,
+            fromAdminConfig: {
+                entries: getRootContext().paramsOfBootstrapCore.s3Config.entries,
                 resolvedTemplatedBookmarks,
                 resolvedTemplatedStsRoles
             }
         })
 );
-
-/** Can be used even when not authenticated */
-const isS3ExplorerEnabled = (rootState: RootState) => {
-    const { isUserLoggedIn } = userAuthentication.selectors.main(rootState);
-
-    if (!isUserLoggedIn) {
-        return (
-            deploymentRegionManagement.selectors.currentDeploymentRegion(rootState)
-                .s3Profiles.length !== 0
-        );
-    }
-
-    return s3Profiles(rootState).length !== 0;
-};
 
 const ambientS3Profile = createSelector(
     s3Profiles,
@@ -90,12 +70,11 @@ const ambientS3Profile = createSelector(
     }
 );
 
-export const protectedSelectors = {
+export const privateSelectors = {
     resolvedTemplatedBookmarks
 };
 
 export const selectors = {
-    isS3ExplorerEnabled,
     s3Profiles,
     ambientS3Profile
 };

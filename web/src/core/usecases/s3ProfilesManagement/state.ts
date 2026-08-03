@@ -8,11 +8,11 @@ import type { ResolvedTemplateStsRole } from "./decoupledLogic/resolveTemplatedS
 type State = {
     ambientProfileName: string | undefined;
     resolvedTemplatedBookmarks: {
-        correspondingS3ConfigIndexInRegion: number;
+        correspondingS3ConfigEntryIndex: number;
         bookmarks: ResolvedTemplateBookmark[];
     }[];
     resolvedTemplatedStsRoles: {
-        correspondingS3ConfigIndexInRegion: number;
+        correspondingS3ConfigEntryIndex: number;
         stsRoles: ResolvedTemplateStsRole[];
     }[];
 };

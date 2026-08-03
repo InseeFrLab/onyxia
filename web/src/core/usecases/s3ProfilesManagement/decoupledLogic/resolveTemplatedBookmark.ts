@@ -1,4 +1,4 @@
-import type { DeploymentRegion } from "core/ports/OnyxiaApi";
+import type { S3Config_Parsed } from "core/ports/OnyxiaApi/S3Config";
 import { id } from "tsafe/id";
 import type { LocalizedString } from "ui/i18n";
 import { z } from "zod";
@@ -12,7 +12,7 @@ export type ResolvedTemplateBookmark = {
 };
 
 export async function resolveTemplatedBookmark(params: {
-    bookmark_region: DeploymentRegion.S3Profile.Bookmark;
+    bookmark_region: S3Config_Parsed.Entry.Bookmark;
     getDecodedIdToken: () => Promise<Record<string, unknown>>;
 }): Promise<ResolvedTemplateBookmark[]> {
     const { bookmark_region, getDecodedIdToken } = params;

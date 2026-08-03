@@ -52,6 +52,14 @@ export const evtDisplayError = Evt.create<{
 }>();
 
 export const thunks = {
+    getIsS3ExplorerEnabled:
+        () =>
+        (...args) => {
+            const [, , { paramsOfBootstrapCore }] = args;
+            return (
+                paramsOfBootstrapCore.s3Config.defaultValuesOfCreationForm !== undefined
+            );
+        },
     load:
         (params: { routeParams: RouteParams }) =>
         (...args): { routeParams_toSet: RouteParams } => {

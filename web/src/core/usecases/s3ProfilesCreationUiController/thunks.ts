@@ -3,7 +3,6 @@ import { actions, type State, type ChangeValueParams } from "./state";
 import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 export const thunks = {
     load:
@@ -11,7 +10,13 @@ export const thunks = {
         (...args) => {
             const { isEdit } = params;
 
-            const [dispatch, getState] = args;
+            const [
+                dispatch,
+                getState,
+                {
+                    paramsOfBootstrapCore: { s3Config }
+                }
+            ] = args;
 
             update_existing_profile: {
                 if (!isEdit) {
@@ -66,10 +71,7 @@ export const thunks = {
                 return;
             }
 
-            const { s3Profiles_defaultValuesOfCreationForm } =
-                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
-
-            if (s3Profiles_defaultValuesOfCreationForm === undefined) {
+            if (s3Config.defaultValuesOfCreationForm === undefined) {
                 dispatch(
                     actions.loaded({
                         creationTimeOfProfileToEdit: undefined,
@@ -93,11 +95,10 @@ export const thunks = {
                     creationTimeOfProfileToEdit: undefined,
                     initialFormValues: {
                         profileName: "",
-                        url: s3Profiles_defaultValuesOfCreationForm.url,
-                        region: s3Profiles_defaultValuesOfCreationForm.region,
+                        url: s3Config.defaultValuesOfCreationForm.url,
+                        region: s3Config.defaultValuesOfCreationForm.region,
                         pathStyleAccess:
-                            s3Profiles_defaultValuesOfCreationForm.pathStyleAccess ??
-                            false,
+                            s3Config.defaultValuesOfCreationForm.pathStyleAccess ?? false,
                         isAnonymous: false,
                         accessKeyId: undefined,
                         secretAccessKey: undefined,

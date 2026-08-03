@@ -1,4 +1,4 @@
-import type { DeploymentRegion } from "core/ports/OnyxiaApi";
+import type { S3Config_Parsed } from "core/ports/OnyxiaApi/S3Config";
 import { id } from "tsafe/id";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
@@ -10,7 +10,7 @@ export type ResolvedTemplateStsRole = {
 };
 
 export async function resolveTemplatedStsRole(params: {
-    stsRole_region: DeploymentRegion.S3Profile.StsRole;
+    stsRole_region: S3Config_Parsed.Entry.StsRole;
     getDecodedIdToken: () => Promise<Record<string, unknown>>;
 }): Promise<ResolvedTemplateStsRole[]> {
     const { stsRole_region, getDecodedIdToken } = params;
