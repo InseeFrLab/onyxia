@@ -79,8 +79,8 @@ spec:
             {{- toYaml .Values.onboarding.resources | nindent 12 }}
           volumeMounts:
             - name: config-volume
-              mountPath: /env.yaml
-              subPath: env.yaml
+              mountPath: /env.onboarding.yaml
+              subPath: env.onboarding.yaml
               readOnly: true
             {{- if .Values.onboarding.extraVolumeMounts }}
             {{ toYaml .Values.onboarding.extraVolumeMounts | nindent 12 }}
@@ -103,7 +103,7 @@ spec:
             name: {{ template "onyxia.onboarding.name" . }}
             items:
               - key: env.yaml
-                path: env.yaml
+                path: env.onboarding.yaml
         {{- if .Values.onboarding.extraVolumes }}
         {{ toYaml .Values.onboarding.extraVolumes | nindent 8 }}
         {{- end }}
