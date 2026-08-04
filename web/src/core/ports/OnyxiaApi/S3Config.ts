@@ -1,6 +1,7 @@
 import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 import { type LocalizedString, zLocalizedString } from "core/ports/OnyxiaApi";
 import type { OidcParams_Partial } from "./OidcParams";
+import type { ApiTypes } from "core/adapters/onyxiaApi/ApiTypes";
 import { z } from "zod";
 import { assert, type Equals, id } from "tsafe";
 
@@ -26,7 +27,7 @@ export type S3Config_UserProvided = ArrayOrNot<{
                   }
             )
         >;
-        oidcConfiguration?: OidcParams_Partial;
+        oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
     };
     bookmarks?: ({
         s3Uri: string;
@@ -57,14 +58,14 @@ export const zS3Config_UserProvided = (() => {
     ]);
 
     const zOidcConfigurationShape = z.object({
-        issuerUri: z.string().optional(),
-        clientId: z.string().optional(),
-        extraQueryParams_raw: z.string().optional(),
-        scope_spaceSeparated: z.string().optional(),
-        idleSessionLifetimeInSeconds: z.number().optional()
+        issuerURI: z.string().optional(),
+        clientID: z.string().optional(),
+        extraQueryParams: z.string().optional(),
+        scope: z.string().optional(),
+        idleSessionLifetimeInSeconds: z.union([z.number(), z.string()]).optional()
     });
 
-    const zOidcConfiguration = z.custom<OidcParams_Partial>(
+    const zOidcConfiguration = z.custom<Partial<ApiTypes.OidcConfiguration>>(
         value => zOidcConfigurationShape.safeParse(value).success
     );
 
@@ -204,12 +205,25 @@ export function s3Config_userProvidedToParsed(
                         })
                     ),
                     oidcParams: {
-                        issuerUri: sts.oidcConfiguration?.issuerUri,
-                        clientId: sts.oidcConfiguration?.clientId,
-                        extraQueryParams_raw: sts.oidcConfiguration?.extraQueryParams_raw,
-                        scope_spaceSeparated: sts.oidcConfiguration?.scope_spaceSeparated,
-                        idleSessionLifetimeInSeconds:
-                            sts.oidcConfiguration?.idleSessionLifetimeInSeconds
+                        issuerUri: sts.oidcConfiguration?.issuerURI || undefined,
+                        clientId: sts.oidcConfiguration?.clientID || undefined,
+                        extraQueryParams_raw:
+                            sts.oidcConfiguration?.extraQueryParams || undefined,
+                        scope_spaceSeparated: sts.oidcConfiguration?.scope || undefined,
+                        idleSessionLifetimeInSeconds: (() => {
+                            const value =
+                                sts.oidcConfiguration?.idleSessionLifetimeInSeconds;
+
+                            if (value === "" || value === undefined) {
+                                return undefined;
+                            }
+
+                            if (typeof value === "number") {
+                                return value;
+                            }
+
+                            return parseInt(value);
+                        })()
                     }
                 },
                 bookmarks: (s3Config.bookmarks ?? []).map(
