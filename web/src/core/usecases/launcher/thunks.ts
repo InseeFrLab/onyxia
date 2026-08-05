@@ -1,6 +1,5 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
-import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
@@ -583,7 +582,7 @@ export const protectedThunks = {
             const [
                 dispatch,
                 getState,
-                { paramsOfBootstrapCore, secretsManager, onyxiaApi }
+                { paramsOfBootstrapCore, secretsManager, onyxiaApi, oidc }
             ] = args;
 
             const { user } = await onyxiaApi.getUserAndProjects();
@@ -599,9 +598,9 @@ export const protectedThunks = {
             const project =
                 projectManagement.protectedSelectors.currentProject(getState());
 
-            const { decodedIdToken, accessToken, refreshToken } = await dispatch(
-                userAuthentication.protectedThunks.getTokens()
-            );
+            assert(oidc.isUserLoggedIn);
+
+            const { decodedIdToken, accessToken, refreshToken } = await oidc.getTokens();
 
             const name = (() => {
                 if (user.familyName === undefined && user.firstName === undefined) {

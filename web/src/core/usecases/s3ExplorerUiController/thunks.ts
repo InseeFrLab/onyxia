@@ -55,10 +55,13 @@ export const thunks = {
     getIsS3ExplorerEnabled:
         () =>
         (...args) => {
-            const [, , { paramsOfBootstrapCore }] = args;
-            return (
-                paramsOfBootstrapCore.s3Config.defaultValuesOfCreationForm !== undefined
-            );
+            const [, , { paramsOfBootstrapCore, s3Config }] = args;
+
+            if (paramsOfBootstrapCore.onyxiaApiUrl === undefined) {
+                return true;
+            }
+
+            return s3Config.defaultValuesOfCreationForm !== undefined;
         },
     load:
         (params: { routeParams: RouteParams }) =>

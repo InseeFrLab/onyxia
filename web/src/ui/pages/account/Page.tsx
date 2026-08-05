@@ -14,6 +14,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
+import { env } from "env";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -48,6 +49,13 @@ function Account() {
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
+                .filter(accountTabId => {
+                    if (env.ONYXIA_API_URL !== undefined) {
+                        return true;
+                    }
+
+                    return accountTabId === "user-interface";
+                })
                 .map(id => ({ id, title: t(id) })),
         [t]
     );

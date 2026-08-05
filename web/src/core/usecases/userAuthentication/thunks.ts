@@ -67,16 +67,5 @@ export const protectedThunks = {
                           }
                 )
             );
-        },
-    getTokens:
-        () =>
-        async (...args) => {
-            const [, , { oidc }] = args;
-
-            assert(oidc.isUserLoggedIn);
-
-            const { decodedIdToken, accessToken, refreshToken } = await oidc.getTokens();
-
-            return { decodedIdToken, accessToken, refreshToken };
         }
 } satisfies Thunks;

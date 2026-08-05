@@ -45,8 +45,8 @@ const s3Profiles = createSelector(
                 s3Profiles: s3Profiles_vault,
                 userConfigs_s3BookmarksStr
             },
-            fromAdminConfig: {
-                entries: getRootContext().paramsOfBootstrapCore.s3Config.entries,
+            fromConfig: {
+                entries: getRootContext().s3Config.entries,
                 resolvedTemplatedBookmarks,
                 resolvedTemplatedStsRoles
             }

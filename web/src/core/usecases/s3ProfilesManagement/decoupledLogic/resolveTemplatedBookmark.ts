@@ -1,4 +1,4 @@
-import type { S3Config_Parsed } from "core/ports/OnyxiaApi/S3Config";
+import type { S3Config } from "core/ports/OnyxiaApi/S3Config";
 import { id } from "tsafe/id";
 import type { LocalizedString } from "ui/i18n";
 import { z } from "zod";
@@ -12,25 +12,25 @@ export type ResolvedTemplateBookmark = {
 };
 
 export async function resolveTemplatedBookmark(params: {
-    bookmark_region: S3Config_Parsed.Entry.Bookmark;
+    bookmark_fromConfig: S3Config.Entry.Bookmark;
     getDecodedIdToken: () => Promise<Record<string, unknown>>;
 }): Promise<ResolvedTemplateBookmark[]> {
-    const { bookmark_region, getDecodedIdToken } = params;
+    const { bookmark_fromConfig, getDecodedIdToken } = params;
 
-    if (bookmark_region.claimName === undefined) {
+    if (bookmark_fromConfig.claimName === undefined) {
         return [
             id<ResolvedTemplateBookmark>({
                 s3Uri: parseS3Uri({
-                    value: bookmark_region.s3UriStr_templated,
+                    value: bookmark_fromConfig.s3UriStr_templated,
                     delimiter: "/"
                 }),
-                title: bookmark_region.title,
-                forProfileNames: bookmark_region.forProfileNames
+                title: bookmark_fromConfig.title,
+                forProfileNames: bookmark_fromConfig.forProfileNames
             })
         ];
     }
 
-    const { claimName, excludedClaimPattern, includedClaimPattern } = bookmark_region;
+    const { claimName, excludedClaimPattern, includedClaimPattern } = bookmark_fromConfig;
 
     const decodedIdToken = await getDecodedIdToken();
 
@@ -117,11 +117,13 @@ export async function resolveTemplatedBookmark(params: {
 
             return id<ResolvedTemplateBookmark>({
                 s3Uri: parseS3Uri({
-                    value: substituteTemplateString(bookmark_region.s3UriStr_templated),
+                    value: substituteTemplateString(
+                        bookmark_fromConfig.s3UriStr_templated
+                    ),
                     delimiter: "/"
                 }),
-                title: substituteLocalizedString(bookmark_region.title),
-                forProfileNames: bookmark_region.forProfileNames.map(profileName =>
+                title: substituteLocalizedString(bookmark_fromConfig.title),
+                forProfileNames: bookmark_fromConfig.forProfileNames.map(profileName =>
                     substituteTemplateString(profileName)
                 )
             });

@@ -375,7 +375,7 @@ export const protectedThunks = {
     initialize:
         () =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore }] = args;
+            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore, s3Config }] = args;
 
             const getDecodedIdToken = async (params: {
                 oidcParams_partial: OidcParams_Partial;
@@ -408,7 +408,7 @@ export const protectedThunks = {
             };
 
             const resolvedTemplatedBookmarks = await Promise.all(
-                paramsOfBootstrapCore.s3Config.entries.map(async (entry, entryIndex) => {
+                s3Config.entries.map(async (entry, entryIndex) => {
                     const { bookmarks: bookmarks_region, sts } = entry;
 
                     return {
@@ -417,7 +417,7 @@ export const protectedThunks = {
                             await Promise.all(
                                 bookmarks_region.map(bookmark =>
                                     resolveTemplatedBookmark({
-                                        bookmark_region: bookmark,
+                                        bookmark_fromConfig: bookmark,
                                         getDecodedIdToken: () =>
                                             getDecodedIdToken({
                                                 oidcParams_partial: sts.oidcParams
@@ -431,16 +431,16 @@ export const protectedThunks = {
             );
 
             const resolvedTemplatedStsRoles = await Promise.all(
-                paramsOfBootstrapCore.s3Config.entries.map(async (entry, entryIndex) => {
+                s3Config.entries.map(async (entry, entryIndex) => {
                     const { sts } = entry;
 
                     return {
                         correspondingS3ConfigEntryIndex: entryIndex,
                         stsRoles: (
                             await Promise.all(
-                                sts.roles.map(stsRole_region =>
+                                sts.roles.map(role =>
                                     resolveTemplatedStsRole({
-                                        stsRole_region,
+                                        stsRole_fromConfig: role,
                                         getDecodedIdToken: () =>
                                             getDecodedIdToken({
                                                 oidcParams_partial: sts.oidcParams
