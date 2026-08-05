@@ -58,9 +58,9 @@ type ImportMetaEnv = {
   QUOTA_CRITICAL_THRESHOLD: string
   RUNNING_TIME_THRESHOLD_HOURS: string
   VAULT_DOCUMENTATION_LINK: string
-  ONYXIA_API_URL: string
   DISABLE_DISPLAY_ALL_CATALOG: string
   S3: string
+  ONYXIA_API_URL: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
   SCREEN_SCALER: string

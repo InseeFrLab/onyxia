@@ -10,13 +10,7 @@ export const thunks = {
         (...args) => {
             const { isEdit } = params;
 
-            const [
-                dispatch,
-                getState,
-                {
-                    paramsOfBootstrapCore: { s3Config }
-                }
-            ] = args;
+            const [dispatch, getState, { s3Config }] = args;
 
             update_existing_profile: {
                 if (!isEdit) {

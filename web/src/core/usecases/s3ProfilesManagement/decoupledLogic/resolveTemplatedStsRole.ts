@@ -1,4 +1,4 @@
-import type { S3Config_Parsed } from "core/ports/OnyxiaApi/S3Config";
+import type { S3Config } from "core/ports/OnyxiaApi/S3Config";
 import { id } from "tsafe/id";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
@@ -10,22 +10,22 @@ export type ResolvedTemplateStsRole = {
 };
 
 export async function resolveTemplatedStsRole(params: {
-    stsRole_region: S3Config_Parsed.Entry.StsRole;
+    stsRole_fromConfig: S3Config.Entry.StsRole;
     getDecodedIdToken: () => Promise<Record<string, unknown>>;
 }): Promise<ResolvedTemplateStsRole[]> {
-    const { stsRole_region, getDecodedIdToken } = params;
+    const { stsRole_fromConfig, getDecodedIdToken } = params;
 
-    if (stsRole_region.claimName === undefined) {
+    if (stsRole_fromConfig.claimName === undefined) {
         return [
             id<ResolvedTemplateStsRole>({
-                roleARN: stsRole_region.roleARN,
-                roleSessionName: stsRole_region.roleSessionName,
-                profileName: stsRole_region.profileName
+                roleARN: stsRole_fromConfig.roleARN,
+                roleSessionName: stsRole_fromConfig.roleSessionName,
+                profileName: stsRole_fromConfig.profileName
             })
         ];
     }
 
-    const { claimName, excludedClaimPattern, includedClaimPattern } = stsRole_region;
+    const { claimName, excludedClaimPattern, includedClaimPattern } = stsRole_fromConfig;
 
     const decodedIdToken = await getDecodedIdToken();
 
@@ -98,9 +98,11 @@ export async function resolveTemplatedStsRole(params: {
                 str.replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "");
 
             return id<ResolvedTemplateStsRole>({
-                roleARN: substituteTemplateString(stsRole_region.roleARN),
-                roleSessionName: substituteTemplateString(stsRole_region.roleSessionName),
-                profileName: substituteTemplateString(stsRole_region.profileName)
+                roleARN: substituteTemplateString(stsRole_fromConfig.roleARN),
+                roleSessionName: substituteTemplateString(
+                    stsRole_fromConfig.roleSessionName
+                ),
+                profileName: substituteTemplateString(stsRole_fromConfig.profileName)
             });
         })
         .filter(x => x !== undefined);

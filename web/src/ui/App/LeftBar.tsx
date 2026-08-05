@@ -40,7 +40,12 @@ export const LeftBar = memo((props: Props) => {
         <OnyxiaUiLeftBar
             className={cx(classes.root, className)}
             doPersistIsPanelOpen={true}
-            defaultIsPanelOpen={true}
+            defaultIsPanelOpen={(() => {
+                if (env.ONYXIA_API_URL === undefined) {
+                    return false;
+                }
+                return false;
+            })()}
             collapsedWidth={logoContainerWidth}
             reduceText={t("reduce")}
             items={[
@@ -49,7 +54,10 @@ export const LeftBar = memo((props: Props) => {
                     icon: customIcons.homeSvgUrl,
                     label: t("home"),
                     link: routes.home().link,
-                    availability: env.DISABLE_HOMEPAGE ? "not visible" : "available"
+                    availability:
+                        env.DISABLE_HOMEPAGE || env.ONYXIA_API_URL === undefined
+                            ? "not visible"
+                            : "available"
                 },
                 {
                     itemId: "account",
@@ -59,19 +67,25 @@ export const LeftBar = memo((props: Props) => {
                 },
                 {
                     groupId: "services",
-                    label: t("divider: services features")
+                    label: t("divider: services features"),
+                    availability:
+                        env.ONYXIA_API_URL === undefined ? "not visible" : "available"
                 },
                 {
                     itemId: "catalog",
                     icon: customIcons.catalogSvgUrl,
                     label: t("catalog"),
-                    link: routes.catalog().link
+                    link: routes.catalog().link,
+                    availability:
+                        env.ONYXIA_API_URL === undefined ? "not visible" : "available"
                 },
                 {
                     itemId: "myServices",
                     icon: customIcons.servicesSvgUrl,
                     label: t("myServices"),
-                    link: routes.myServices().link
+                    link: routes.myServices().link,
+                    availability:
+                        env.ONYXIA_API_URL === undefined ? "not visible" : "available"
                 },
                 {
                     groupId: "external-services",
@@ -109,7 +123,13 @@ export const LeftBar = memo((props: Props) => {
                     icon: getIconUrlByName("FolderSpecial"),
                     label: t("dataCollection"),
                     link: routes.dataCollection().link,
-                    availability: isDevModeEnabled ? "available" : "not visible"
+                    availability: (() => {
+                        if (env.ONYXIA_API_URL === undefined) {
+                            return "not visible";
+                        }
+
+                        return isDevModeEnabled ? "available" : "not visible";
+                    })()
                 },
                 {
                     itemId: "sqlOlapShell",

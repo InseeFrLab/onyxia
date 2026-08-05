@@ -3,9 +3,10 @@ import { type LocalizedString, zLocalizedString } from "core/ports/OnyxiaApi";
 import type { OidcParams_Partial } from "./OidcParams";
 import type { ApiTypes } from "core/adapters/onyxiaApi/ApiTypes";
 import { z } from "zod";
-import { assert, type Equals, id } from "tsafe";
+import { assert, type Equals, id, is } from "tsafe";
+import JSON5 from "json5";
 
-export type S3Config_UserProvided = ArrayOrNot<{
+type S3Config_S3_EnvValue_ExpectedShape = ArrayOrNot<{
     URL: string;
     pathStyleAccess?: true;
 
@@ -43,8 +44,8 @@ export type S3Config_UserProvided = ArrayOrNot<{
     ))[];
 }>;
 
-export const zS3Config_UserProvided = (() => {
-    type TargetType = S3Config_UserProvided;
+const zS3Config_S3_EnvValue_ExpectedShape = (() => {
+    type TargetType = S3Config_S3_EnvValue_ExpectedShape;
 
     const zClaimFilter = z.union([
         z.object({
@@ -109,14 +110,14 @@ export const zS3Config_UserProvided = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
-export type S3Config_Parsed = {
-    entries: S3Config_Parsed.Entry[];
+export type S3Config = {
+    entries: S3Config.Entry[];
     defaultValuesOfCreationForm:
-        | Pick<S3Config_Parsed.Entry, "url" | "pathStyleAccess" | "region">
+        | Pick<S3Config.Entry, "url" | "pathStyleAccess" | "region">
         | undefined;
 };
 
-export namespace S3Config_Parsed {
+export namespace S3Config {
     export type Entry = {
         url: string;
         pathStyleAccess: boolean;
@@ -167,16 +168,38 @@ export namespace S3Config_Parsed {
     }
 }
 
-export function s3Config_userProvidedToParsed(
-    s3Config_userProvided: S3Config_UserProvided
-): S3Config_Parsed {
-    const s3Configs = Array.isArray(s3Config_userProvided)
-        ? s3Config_userProvided
-        : [s3Config_userProvided];
+export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Config {
+    const { envValue } = params;
 
-    const entries = s3Configs
+    if (envValue === "") {
+        return {
+            entries: [],
+            defaultValuesOfCreationForm: undefined
+        };
+    }
+
+    let parsedValue: unknown;
+
+    try {
+        parsedValue = JSON5.parse(envValue);
+    } catch {
+        throw new Error(`The S3 env is not a valid JSON5`);
+    }
+
+    type ParsedValue = S3Config_S3_EnvValue_ExpectedShape;
+
+    try {
+        zS3Config_S3_EnvValue_ExpectedShape.parse(parsedValue);
+    } catch (error) {
+        throw new Error(`The format of the S3 env is not valid: ${String(error)}`);
+    }
+    assert(is<ParsedValue>(parsedValue));
+
+    const parsedValue_arr = parsedValue instanceof Array ? parsedValue : [parsedValue];
+
+    const entries = parsedValue_arr
         .filter(s3Config => s3Config.sts !== undefined)
-        .map((s3Config): S3Config_Parsed.Entry => {
+        .map((s3Config): S3Config.Entry => {
             const { sts } = s3Config;
 
             assert(sts !== undefined);
@@ -191,7 +214,7 @@ export function s3Config_userProvidedToParsed(
                     url: sts.URL,
                     durationSeconds: sts.durationSeconds,
                     roles: roles.map(
-                        (role): S3Config_Parsed.Entry.StsRole => ({
+                        (role): S3Config.Entry.StsRole => ({
                             roleARN: role.roleARN,
                             roleSessionName: role.roleSessionName,
                             profileName: role.profileName,
@@ -227,7 +250,7 @@ export function s3Config_userProvidedToParsed(
                     }
                 },
                 bookmarks: (s3Config.bookmarks ?? []).map(
-                    (bookmark): S3Config_Parsed.Entry.Bookmark => ({
+                    (bookmark): S3Config.Entry.Bookmark => ({
                         s3UriStr_templated: bookmark.s3Uri,
                         title: bookmark.title,
                         forProfileNames:
@@ -249,7 +272,8 @@ export function s3Config_userProvidedToParsed(
         });
 
     const s3ConfigForCreationForm =
-        s3Configs.find(s3Config => s3Config.sts === undefined) ?? s3Configs[0];
+        parsedValue_arr.find(s3Config => s3Config.sts === undefined) ??
+        parsedValue_arr[0];
 
     return {
         entries,

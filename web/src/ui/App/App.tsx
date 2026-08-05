@@ -19,7 +19,7 @@ import { evtTheme } from "ui/theme";
 import { Uploads } from "ui/pages/s3Explorer/Uploads";
 
 triggerCoreBootstrap({
-    apiUrl: env.ONYXIA_API_URL,
+    onyxiaApiUrl: env.ONYXIA_API_URL,
     getCurrentLang: () => evtLang.state,
     transformBeforeRedirectForKeycloakTheme: ({ authorizationUrl }) => {
         authorizationUrl = injectOnyxiaInstancePublicUrl({
@@ -38,7 +38,7 @@ triggerCoreBootstrap({
     enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
     getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled,
-    s3Config: env.S3
+    S3_envValue: env.S3
 });
 
 export function App() {

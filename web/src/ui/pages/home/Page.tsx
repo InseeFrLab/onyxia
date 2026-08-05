@@ -22,6 +22,11 @@ function Home() {
     useConst(() => {
         if (env.DISABLE_HOMEPAGE) {
             routes.catalog().replace();
+            return;
+        }
+        if (env.ONYXIA_API_URL === undefined) {
+            routes.s3Explorer_root().replace();
+            return;
         }
     });
 
