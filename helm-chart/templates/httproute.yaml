@@ -7,6 +7,7 @@
 {{- $svcPortWeb := .Values.web.service.port -}}
 {{- $svcPortOnboarding := .Values.onboarding.service.port -}}
 {{- $onboardingEnabled := .Values.onboarding.enabled -}}
+{{- $apiEnabled := .Values.api.enabled -}}
 {{- $parentRefs := .Values.httpRoute.parentRefs -}}
 {{- if or (not $parentRefs) (eq (len $parentRefs) 0) -}}
 {{- fail "httpRoute.parentRefs must contain at least one Gateway reference when httpRoute.enabled=true" -}}
@@ -51,6 +52,7 @@ spec:
         - name: {{ $fullNameOnboarding }}
           port: {{ $svcPortOnboarding }}
     {{- end }}
+    {{- if $apiEnabled }}
     - matches:
         - path:
             type: PathPrefix
@@ -58,6 +60,7 @@ spec:
       backendRefs:
         - name: {{ $fullNameApi }}
           port: {{ $svcPortApi }}
+    {{- end }}
     - matches:
         - path:
             type: PathPrefix

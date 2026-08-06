@@ -1,3 +1,4 @@
+{{- if .Values.api.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -156,3 +157,4 @@ spec:
     {{- if .Values.api.priorityClassName }}
       priorityClassName: "{{ .Values.api.priorityClassName }}"
     {{- end }}
+{{- end }}

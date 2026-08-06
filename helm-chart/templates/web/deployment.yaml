@@ -35,6 +35,10 @@ spec:
               value: "{{ .Chart.Version }}"
             - name: ONYXIA_VERSION_URL
               value: "https://github.com/InseeFrLab/onyxia/releases/tag/v{{ .Chart.Version }}"
+            {{- if and .Values.api.enabled (not (hasKey (.Values.web.env | default dict) "ONYXIA_API_URL")) }}
+            - name: ONYXIA_API_URL
+              value: "/api"
+            {{- end }}
             {{- if .Values.web.env }}
             {{- range $key, $value := .Values.web.env }}
             - name: {{ $key }}

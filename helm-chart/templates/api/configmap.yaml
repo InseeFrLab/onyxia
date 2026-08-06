@@ -26,4 +26,6 @@ data:
   role.schema.directory: {{ printf "%s%s/" .Values.api.schemas.rootPath .Values.api.schemas.subPathRole | quote }}
 {{- end}}
 {{- end }}
+{{- if .Values.api.enabled }}
 {{- include "onyxia.api.configmap" . }}
+{{- end }}
