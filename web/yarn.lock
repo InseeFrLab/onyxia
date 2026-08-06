@@ -4447,10 +4447,10 @@ ci-info@^3.7.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.9.0.tgz#4279a62028a7b1f262f3473fc9605f5e218c59b4"
   integrity sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==
 
-clean-architecture@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-6.1.1.tgz#68122b078be7ed9319e77bd17ea83b178428b77d"
-  integrity sha512-KDiZcG8Rqf/en2qUykrDjLAA8XcDZTzLB4dc1mHdn0AwIxVU8O4jMvbYoyhOklnuv3frzR8HYFjKsKQ23B510A==
+clean-architecture@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-6.2.1.tgz#2b7224522cb774d21c17cfac1fddb8d0fe52fa07"
+  integrity sha512-aGbjyIcuNT0VRTGme9bkafbIXm+TPBO5I+Rjp0KcPxHsGQTKsZOEZKbRKllZMc/5pt8SeI9p76VnMDK+9ZL7BA==
   dependencies:
     "@reduxjs/toolkit" "1.9.7"
     minimal-polyfills "^2.2.3"
