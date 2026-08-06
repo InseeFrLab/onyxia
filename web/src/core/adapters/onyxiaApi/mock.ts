@@ -39,6 +39,7 @@ export function createOnyxiaApi(params: {
                 {
                     id: "virtual",
                     vault: undefined,
+                    kubernetes: undefined,
                     allowedURIPatternForUserDefinedInitScript: THROW_IF_ACCESSED,
                     certificateAuthorityInjection: THROW_IF_ACCESSED,
                     certManager: THROW_IF_ACCESSED,
@@ -51,7 +52,6 @@ export function createOnyxiaApi(params: {
                     initScriptUrl: THROW_IF_ACCESSED,
                     istio: THROW_IF_ACCESSED,
                     kafka: THROW_IF_ACCESSED,
-                    kubernetes: THROW_IF_ACCESSED,
                     kubernetesClusterDomain: THROW_IF_ACCESSED,
                     kubernetesClusterIngressPort: THROW_IF_ACCESSED,
                     nodeSelector: THROW_IF_ACCESSED,
