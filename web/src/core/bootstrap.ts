@@ -295,23 +295,48 @@ export async function bootstrapCore(
         });
     }
 
-    if (oidc.isUserLoggedIn) {
+    init_userConfigs: {
+        if (!oidc.isUserLoggedIn) {
+            break init_userConfigs;
+        }
+
         await dispatch(usecases.userConfigs.protectedThunks.initialize());
     }
 
-    if (oidc.isUserLoggedIn) {
+    init_projectManagement: {
+        if (!oidc.isUserLoggedIn) {
+            break init_projectManagement;
+        }
         await dispatch(usecases.projectManagement.protectedThunks.initialize());
     }
 
-    if (oidc.isUserLoggedIn) {
+    init_restorableConfigManagement: {
+        if (!oidc.isUserLoggedIn) {
+            break init_restorableConfigManagement;
+        }
+        if (onyxiaApiUrl === undefined) {
+            break init_restorableConfigManagement;
+        }
+
         dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
     }
 
-    if (oidc.isUserLoggedIn) {
+    init_userProfileForm: {
+        if (!oidc.isUserLoggedIn) {
+            break init_userProfileForm;
+        }
+        if (onyxiaApiUrl === undefined) {
+            break init_userProfileForm;
+        }
+
         await dispatch(usecases.userProfileForm.protectedThunks.initialize());
     }
 
-    if (oidc.isUserLoggedIn) {
+    init_s3ProfilesManagement: {
+        if (!oidc.isUserLoggedIn) {
+            break init_s3ProfilesManagement;
+        }
+
         await dispatch(usecases.s3ProfilesManagement.protectedThunks.initialize());
     }
 

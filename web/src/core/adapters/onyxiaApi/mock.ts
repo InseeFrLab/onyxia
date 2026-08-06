@@ -8,7 +8,7 @@ import {
     createObjectThatThrowsIfAccessed,
     createObjectWithSomePropertiesThatThrowIfAccessed,
     THROW_IF_ACCESSED
-} from "clean-architecture/tools/createObjectThatThrowsIfAccessed";
+} from "clean-architecture";
 
 export function createOnyxiaApi(params: {
     oidcParams: OidcParams | undefined;
@@ -23,7 +23,7 @@ export function createOnyxiaApi(params: {
             createObjectWithSomePropertiesThatThrowIfAccessed<Project>({
                 id: "virtual",
                 group: undefined,
-                name: THROW_IF_ACCESSED,
+                name: "virtual",
                 namespace: THROW_IF_ACCESSED,
                 vaultTopDir: "user"
             })
@@ -35,35 +35,38 @@ export function createOnyxiaApi(params: {
     > = {
         oidcParams,
         regions: [
-            createObjectWithSomePropertiesThatThrowIfAccessed<DeploymentRegion>({
-                id: "virtual",
-                vault: undefined,
-                allowedURIPatternForUserDefinedInitScript: THROW_IF_ACCESSED,
-                certificateAuthorityInjection: THROW_IF_ACCESSED,
-                certManager: THROW_IF_ACCESSED,
-                customValues: THROW_IF_ACCESSED,
-                defaultIpProtection: THROW_IF_ACCESSED,
-                defaultNetworkPolicy: THROW_IF_ACCESSED,
-                from: THROW_IF_ACCESSED,
-                ingress: THROW_IF_ACCESSED,
-                ingressClassName: THROW_IF_ACCESSED,
-                initScriptUrl: THROW_IF_ACCESSED,
-                istio: THROW_IF_ACCESSED,
-                kafka: THROW_IF_ACCESSED,
-                kubernetes: THROW_IF_ACCESSED,
-                kubernetesClusterDomain: THROW_IF_ACCESSED,
-                kubernetesClusterIngressPort: THROW_IF_ACCESSED,
-                nodeSelector: THROW_IF_ACCESSED,
-                openshiftSCC: THROW_IF_ACCESSED,
-                packageRepositoryInjection: THROW_IF_ACCESSED,
-                proxyInjection: THROW_IF_ACCESSED,
-                resources: THROW_IF_ACCESSED,
-                route: THROW_IF_ACCESSED,
-                servicesMonitoringUrlPattern: THROW_IF_ACCESSED,
-                sliders: THROW_IF_ACCESSED,
-                startupProbe: THROW_IF_ACCESSED,
-                tolerations: THROW_IF_ACCESSED
-            })
+            createObjectWithSomePropertiesThatThrowIfAccessed<DeploymentRegion>(
+                {
+                    id: "virtual",
+                    vault: undefined,
+                    allowedURIPatternForUserDefinedInitScript: THROW_IF_ACCESSED,
+                    certificateAuthorityInjection: THROW_IF_ACCESSED,
+                    certManager: THROW_IF_ACCESSED,
+                    customValues: THROW_IF_ACCESSED,
+                    defaultIpProtection: THROW_IF_ACCESSED,
+                    defaultNetworkPolicy: THROW_IF_ACCESSED,
+                    from: THROW_IF_ACCESSED,
+                    ingress: THROW_IF_ACCESSED,
+                    ingressClassName: THROW_IF_ACCESSED,
+                    initScriptUrl: THROW_IF_ACCESSED,
+                    istio: THROW_IF_ACCESSED,
+                    kafka: THROW_IF_ACCESSED,
+                    kubernetes: THROW_IF_ACCESSED,
+                    kubernetesClusterDomain: THROW_IF_ACCESSED,
+                    kubernetesClusterIngressPort: THROW_IF_ACCESSED,
+                    nodeSelector: THROW_IF_ACCESSED,
+                    openshiftSCC: THROW_IF_ACCESSED,
+                    packageRepositoryInjection: THROW_IF_ACCESSED,
+                    proxyInjection: THROW_IF_ACCESSED,
+                    resources: THROW_IF_ACCESSED,
+                    route: THROW_IF_ACCESSED,
+                    servicesMonitoringUrlPattern: THROW_IF_ACCESSED,
+                    sliders: THROW_IF_ACCESSED,
+                    startupProbe: THROW_IF_ACCESSED,
+                    tolerations: THROW_IF_ACCESSED
+                },
+                "Mock deployment region used beyond it's intended scope"
+            )
         ]
     };
 
@@ -71,9 +74,10 @@ export function createOnyxiaApi(params: {
         getUserAndProjects: () => Promise.resolve(userAndProjects),
         getAvailableRegionsAndOidcParams: () =>
             Promise.resolve(availableRegionsAndOidcParams),
+        onboard: async () => {},
+        getCatalogsAndCharts: THROW_IF_ACCESSED,
         changeHelmReleaseFriendlyName: THROW_IF_ACCESSED,
         changeHelmReleaseSharedStatus: THROW_IF_ACCESSED,
-        getCatalogsAndCharts: THROW_IF_ACCESSED,
         getChartAvailableVersions: THROW_IF_ACCESSED,
         getHelmChartDetails: THROW_IF_ACCESSED,
         getIp: THROW_IF_ACCESSED,
@@ -84,7 +88,6 @@ export function createOnyxiaApi(params: {
         helmUpgradeGlobalSuspend: THROW_IF_ACCESSED,
         kubectlLogs: THROW_IF_ACCESSED,
         listHelmReleases: THROW_IF_ACCESSED,
-        onboard: THROW_IF_ACCESSED,
         subscribeToClusterEvents: THROW_IF_ACCESSED
     });
 }
