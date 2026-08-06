@@ -66,6 +66,14 @@ function Account() {
 
     const { classes } = useStyles();
 
+    const activeTabId =
+        route.params.tabId ??
+        (() => {
+            const tab = tabs.at(0);
+            assert(tab !== undefined);
+            return tab.id;
+        })();
+
     return (
         <div className={classes.root}>
             <PageHeader
@@ -79,13 +87,13 @@ function Account() {
                 className={classes.tabs}
                 size="big"
                 tabs={tabs}
-                activeTabId={route.params.tabId}
+                activeTabId={activeTabId}
                 maxTabCount={5}
                 onRequestChangeActiveTab={onRequestChangeActiveTab}
             >
                 <Suspense>
                     {(() => {
-                        switch (route.params.tabId) {
+                        switch (activeTabId) {
                             case "profile":
                                 return <AccountProfileTab />;
                             case "git":
@@ -96,8 +104,9 @@ function Account() {
                                 return <AccountKubernetesTab />;
                             case "vault":
                                 return <AccountVaultTab />;
+                            default:
+                                assert<Equals<typeof activeTabId, never>>(false);
                         }
-                        assert<Equals<typeof route.params.tabId, never>>(false);
                     })()}
                 </Suspense>
             </Tabs>
