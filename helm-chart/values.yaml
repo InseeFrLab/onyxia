@@ -110,6 +110,8 @@ web:
     timeoutSeconds: 1
 
 api:
+  # Deploy the Onyxia API and configure the web application to use it.
+  enabled: true
   name: api
   replicaCount: 1
   image:

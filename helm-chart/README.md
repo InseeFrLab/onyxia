@@ -88,6 +88,14 @@ After that, you should be able to select *onyxia* as *Login Theme*.
 
 Documentation reference for the available configuration parameter of the Onyxia Helm Chart.
 
+The chart deploys the API by default and configures the web application to reach it at `/api`.
+To deploy the web application without a backend (for S3 standalone mode), disable the API:
+
+```yaml
+api:
+  enabled: false
+```
+
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v4.12.0/README.md#configuration)
 -   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.5.2/web/.env)
 
