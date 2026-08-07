@@ -1,3 +1,14 @@
+{{- $webEnv := deepCopy (.Values.web.env | default dict) -}}
+{{- if and .Values.api.enabled (not (hasKey $webEnv "S3")) -}}
+  {{- $regions := .Values.api.regions | default list -}}
+  {{- if gt (len $regions) 0 -}}
+    {{- $firstRegion := index $regions 0 -}}
+    {{- $data := get $firstRegion "data" | default dict -}}
+    {{- if hasKey $data "S3" -}}
+      {{- $_ := set $webEnv "S3" (get $data "S3" | toJson) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,15 +46,13 @@ spec:
               value: "{{ .Chart.Version }}"
             - name: ONYXIA_VERSION_URL
               value: "https://github.com/InseeFrLab/onyxia/releases/tag/v{{ .Chart.Version }}"
-            {{- if and .Values.api.enabled (not (hasKey (.Values.web.env | default dict) "ONYXIA_API_URL")) }}
+            {{- if and .Values.api.enabled (not (hasKey $webEnv "ONYXIA_API_URL")) }}
             - name: ONYXIA_API_URL
               value: "/api"
             {{- end }}
-            {{- if .Values.web.env }}
-            {{- range $key, $value := .Values.web.env }}
+            {{- range $key, $value := $webEnv }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-            {{- end }}
             {{- end }}
           ports:
             - name: http
