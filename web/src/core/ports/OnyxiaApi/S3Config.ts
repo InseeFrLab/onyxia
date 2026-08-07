@@ -8,7 +8,7 @@ import JSON5 from "json5";
 
 type S3Config_S3_EnvValue_ExpectedShape = ArrayOrNot<{
     URL: string;
-    pathStyleAccess?: true;
+    pathStyleAccess?: boolean;
 
     region?: string;
     sts?: {
@@ -88,7 +88,7 @@ const zS3Config_S3_EnvValue_ExpectedShape = (() => {
 
     const zS3Config = z.object({
         URL: z.string(),
-        pathStyleAccess: z.literal(true).optional(),
+        pathStyleAccess: z.boolean().optional(),
         region: z.string().optional(),
         sts: z
             .object({
