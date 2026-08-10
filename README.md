@@ -16,6 +16,31 @@ yarn install
 yarn build
 ```
 
+## Release candidates
+
+An open pull request to `main` from a branch in the Onyxia repository can
+publish a release candidate. Fork pull requests and bot pull requests remain
+read-only.
+
+- For a web release candidate, set `web/package.json` to a version such as
+  `5.6.0-rc.1`. The action derives the corresponding chart version (for
+  example, `11.6.0-rc.1`) and updates the chart files on the PR branch.
+- For a chart-only release candidate, set `helm-chart/Chart.yaml` directly to
+  the next prerelease version, such as `11.5.2-rc.1`.
+- Increment the RC number before publishing a new candidate. The highest RC
+  number in the web, API, and chart versions is used for the generated chart.
+
+Release candidates are added to the Helm repository and can be installed with
+an explicit version, for example:
+
+```bash
+helm upgrade --install onyxia onyxia/onyxia --version 11.6.0-rc.1
+```
+
+The Docker `latest` tag is not updated, the GitHub release is marked as a
+prerelease, and Helm does not select prerelease chart versions unless a user
+passes `--devel` or `--version`.
+
 ## Usage  
 
 This might not be up to date. It's just to give you the idea.  
@@ -155,5 +180,3 @@ jobs:
           # NOTE: We can't use github.token because it would not trigger the dispatch workflow.
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_TOKEN}}
 ```
-
-

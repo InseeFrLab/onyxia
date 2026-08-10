@@ -9,7 +9,11 @@ import YAML from "yaml";
 import { gitClone } from "../../tools/gitClone";
 import { id } from "tsafe/id";
 import { helmChartDirBasename } from "../release_helm_chart";
-import { determineTargetChartVersion } from "./determineTargetChartVersion";
+import {
+    determineReleaseCandidateChartVersion,
+    determineStableTargetChartVersion,
+    isReleaseCandidateRequested
+} from "./determineTargetChartVersion";
 import { generateReleaseMessageBody, getWebTagName } from "./generateReleaseMessageBody";
 import { getShaBranchName } from "../../tools/getShaBranchName";
 import { getWebDockerhubRepository } from "./getWebDockerhubRepository";
@@ -163,38 +167,82 @@ export async function _run(
         sha
     });
 
+    const isWebVersionChanged =
+        SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) !== 0;
+
+    let isReleaseCandidate = false;
+    let pullRequestBranchName: string | undefined = undefined;
+
     if (is_pr === "true") {
 
-        const branchName = await getShaBranchName({
+        pullRequestBranchName = await getShaBranchName({
             repository,
             github_token,
             sha,
             log
         });
 
-        const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName.replace(/\/g/, "_")}`.toLowerCase();
+        isReleaseCandidate = isReleaseCandidateRequested({
+            previousReleaseVersions,
+            currentVersions
+        });
 
-        log([
-            "We are not on the default branch, not releasing.",
-            `Pushing docker image: ${new_web_docker_image_tags}`
-        ].join(" "));
+        if (!isReleaseCandidate) {
 
+            const new_web_docker_image_tags = `${webDockerhubRepository}:${pullRequestBranchName.replace(/\/g/, "_")}`.toLowerCase();
+
+            log([
+                "No release candidate version found, not releasing.",
+                `Pushing docker image: ${new_web_docker_image_tags}`
+            ].join(" "));
+
+            return {
+                new_web_docker_image_tags,
+                "new_chart_version": "",
+                "release_name": "",
+                "release_body": "",
+                "release_tag_name": "",
+                "target_commit": sha,
+                "web_tag_name": ""
+            };
+
+        }
+
+        log("Release candidate version found on an internal pull request.");
+
+    } else if (
+        currentVersions.webVersion.rc !== undefined ||
+        currentVersions.apiVersion.rc !== undefined
+    ) {
+
+        log("Application release candidates are only published from internal pull requests, not releasing.");
 
         return {
-            new_web_docker_image_tags,
+            "new_web_docker_image_tags": "",
             "new_chart_version": "",
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commit": sha,
+            "target_commit": "",
             "web_tag_name": ""
         };
+
     }
 
-    const targetChartVersion = determineTargetChartVersion({
-        previousReleaseVersions,
-        currentVersions
-    });
+    const targetChartVersion = (() => {
+
+        const params = {
+            previousReleaseVersions,
+            currentVersions
+        };
+
+        if (isReleaseCandidate) {
+            return determineReleaseCandidateChartVersion(params);
+        }
+
+        return determineStableTargetChartVersion(params);
+
+    })();
 
     if (SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) === 0) {
 
@@ -214,7 +262,7 @@ export async function _run(
 
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
-    const { sha: target_commit } = await gitClone({
+    const { sha: newCommitSha } = await gitClone({
         "ref": sha,
         repository,
         "token": github_token,
@@ -287,23 +335,30 @@ export async function _run(
                     "versionAhead": targetChartVersion
                 })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
                 "commitAuthorEmail": automatic_commit_author_email,
-                "assertRefHeadOfBranchName": branch_name
+                "assertRefHeadOfBranchName": pullRequestBranchName ?? branch_name
             };
         }
     });
 
-    // NOTE: We must have made a commit.
-    assert(target_commit !== undefined);
+    // Stable releases are expected to update at least one generated chart file.
+    // A PR may already contain every generated candidate change, in which case
+    // the release can safely target the original PR commit.
+    if (!isReleaseCandidate) {
+        assert(newCommitSha !== undefined);
+    }
+
+    const target_commit = newCommitSha ?? sha;
 
     return {
         "new_chart_version": SemVer.stringify(targetChartVersion),
         "new_web_docker_image_tags":
-            SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+            !isWebVersionChanged ?
                 "" :
-                [
-                    SemVer.stringify(currentVersions.webVersion),
-                    "latest"
-                ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
+                (
+                    isReleaseCandidate ?
+                        [SemVer.stringify(currentVersions.webVersion)] :
+                        [SemVer.stringify(currentVersions.webVersion), "latest"]
+                ).map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
         "release_name": `v${SemVer.stringify(targetChartVersion)}`,
         "release_tag_name": `v${SemVer.stringify(targetChartVersion)}`,
         "release_body": generateReleaseMessageBody({
@@ -321,7 +376,7 @@ export async function _run(
             },
         }),
         "target_commit": target_commit,
-        "web_tag_name": SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+        "web_tag_name": !isWebVersionChanged ?
             "":
             getWebTagName(currentVersions.webVersion)
     };
@@ -342,6 +397,3 @@ export async function run() {
     setOutput(outputs);
 
 }
-
-
-

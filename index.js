@@ -178,7 +178,7 @@ const actionNames = (0, objectKeys_1.objectKeys)(exports.actions);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.determineTargetChartVersion = void 0;
+exports.isReleaseCandidateRequested = exports.determineStableTargetChartVersion = exports.determineReleaseCandidateChartVersion = exports.determineTargetChartVersion = void 0;
 const SemVer_1 = __nccwpck_require__(5078);
 const assert_1 = __nccwpck_require__(8078);
 function determineTargetChartVersion(params) {
@@ -241,6 +241,39 @@ function determineTargetChartVersion(params) {
     }
 }
 exports.determineTargetChartVersion = determineTargetChartVersion;
+function determineReleaseCandidateChartVersion(params) {
+    const { currentVersions } = params;
+    const rcNumbers = [
+        currentVersions.webVersion.rc,
+        currentVersions.apiVersion.rc,
+        currentVersions.chartVersion.rc
+    ].filter((rc) => rc !== undefined);
+    (0, assert_1.assert)(rcNumbers.length !== 0);
+    return Object.assign(Object.assign({}, determineTargetChartVersion(params)), { "rc": Math.max(...rcNumbers) });
+}
+exports.determineReleaseCandidateChartVersion = determineReleaseCandidateChartVersion;
+function determineStableTargetChartVersion(params) {
+    const version = determineTargetChartVersion(params);
+    // A chart release candidate can be merged before its stable release.
+    // Stable releases from the main branch must never retain that suffix.
+    delete version.rc;
+    return version;
+}
+exports.determineStableTargetChartVersion = determineStableTargetChartVersion;
+function isReleaseCandidateRequested(params) {
+    const { previousReleaseVersions, currentVersions } = params;
+    if (currentVersions.webVersion.rc !== undefined ||
+        currentVersions.apiVersion.rc !== undefined) {
+        return true;
+    }
+    const isApplicationVersionChanged = SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) !== 0 ||
+        SemVer_1.SemVer.compare(previousReleaseVersions.apiVersion, currentVersions.apiVersion) !== 0;
+    // A chart RC also opts in when the application versions are unchanged. If
+    // the web or API version has been stabilized while Chart.yaml still contains
+    // an RC left by the candidate build, this PR is preparing the stable release.
+    return !isApplicationVersionChanged && currentVersions.chartVersion.rc !== undefined;
+}
+exports.isReleaseCandidateRequested = isReleaseCandidateRequested;
 
 
 /***/ }),
@@ -538,32 +571,61 @@ function _run(params) {
             github_token,
             sha
         });
+        const isWebVersionChanged = SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) !== 0;
+        let isReleaseCandidate = false;
+        let pullRequestBranchName = undefined;
         if (is_pr === "true") {
-            const branchName = yield (0, getShaBranchName_1.getShaBranchName)({
+            pullRequestBranchName = yield (0, getShaBranchName_1.getShaBranchName)({
                 repository,
                 github_token,
                 sha,
                 log
             });
-            const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName.replace(/\/g/, "_")}`.toLowerCase();
-            log([
-                "We are not on the default branch, not releasing.",
-                `Pushing docker image: ${new_web_docker_image_tags}`
-            ].join(" "));
+            isReleaseCandidate = (0, determineTargetChartVersion_1.isReleaseCandidateRequested)({
+                previousReleaseVersions,
+                currentVersions
+            });
+            if (!isReleaseCandidate) {
+                const new_web_docker_image_tags = `${webDockerhubRepository}:${pullRequestBranchName.replace(/\/g/, "_")}`.toLowerCase();
+                log([
+                    "No release candidate version found, not releasing.",
+                    `Pushing docker image: ${new_web_docker_image_tags}`
+                ].join(" "));
+                return {
+                    new_web_docker_image_tags,
+                    "new_chart_version": "",
+                    "release_name": "",
+                    "release_body": "",
+                    "release_tag_name": "",
+                    "target_commit": sha,
+                    "web_tag_name": ""
+                };
+            }
+            log("Release candidate version found on an internal pull request.");
+        }
+        else if (currentVersions.webVersion.rc !== undefined ||
+            currentVersions.apiVersion.rc !== undefined) {
+            log("Application release candidates are only published from internal pull requests, not releasing.");
             return {
-                new_web_docker_image_tags,
+                "new_web_docker_image_tags": "",
                 "new_chart_version": "",
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commit": sha,
+                "target_commit": "",
                 "web_tag_name": ""
             };
         }
-        const targetChartVersion = (0, determineTargetChartVersion_1.determineTargetChartVersion)({
-            previousReleaseVersions,
-            currentVersions
-        });
+        const targetChartVersion = (() => {
+            const params = {
+                previousReleaseVersions,
+                currentVersions
+            };
+            if (isReleaseCandidate) {
+                return (0, determineTargetChartVersion_1.determineReleaseCandidateChartVersion)(params);
+            }
+            return (0, determineTargetChartVersion_1.determineStableTargetChartVersion)(params);
+        })();
         if (SemVer_1.SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) === 0) {
             log("No need to release");
             return {
@@ -577,7 +639,7 @@ function _run(params) {
             };
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
-        const { sha: target_commit } = yield (0, gitClone_1.gitClone)({
+        const { sha: newCommitSha } = yield (0, gitClone_1.gitClone)({
             "ref": sha,
             repository,
             "token": github_token,
@@ -616,20 +678,24 @@ function _run(params) {
                         "versionAhead": targetChartVersion
                     })} bump of chart version to ${SemVer_1.SemVer.stringify(targetChartVersion)}`,
                     "commitAuthorEmail": automatic_commit_author_email,
-                    "assertRefHeadOfBranchName": branch_name
+                    "assertRefHeadOfBranchName": pullRequestBranchName !== null && pullRequestBranchName !== void 0 ? pullRequestBranchName : branch_name
                 };
             })
         });
-        // NOTE: We must have made a commit.
-        (0, assert_1.assert)(target_commit !== undefined);
+        // Stable releases are expected to update at least one generated chart file.
+        // A PR may already contain every generated candidate change, in which case
+        // the release can safely target the original PR commit.
+        if (!isReleaseCandidate) {
+            (0, assert_1.assert)(newCommitSha !== undefined);
+        }
+        const target_commit = newCommitSha !== null && newCommitSha !== void 0 ? newCommitSha : sha;
         return {
             "new_chart_version": SemVer_1.SemVer.stringify(targetChartVersion),
-            "new_web_docker_image_tags": SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+            "new_web_docker_image_tags": !isWebVersionChanged ?
                 "" :
-                [
-                    SemVer_1.SemVer.stringify(currentVersions.webVersion),
-                    "latest"
-                ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
+                (isReleaseCandidate ?
+                    [SemVer_1.SemVer.stringify(currentVersions.webVersion)] :
+                    [SemVer_1.SemVer.stringify(currentVersions.webVersion), "latest"]).map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
             "release_name": `v${SemVer_1.SemVer.stringify(targetChartVersion)}`,
             "release_tag_name": `v${SemVer_1.SemVer.stringify(targetChartVersion)}`,
             "release_body": (0, generateReleaseMessageBody_1.generateReleaseMessageBody)({
@@ -647,7 +713,7 @@ function _run(params) {
                 },
             }),
             "target_commit": target_commit,
-            "web_tag_name": SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+            "web_tag_name": !isWebVersionChanged ?
                 "" :
                 (0, generateReleaseMessageBody_1.getWebTagName)(currentVersions.webVersion)
         };

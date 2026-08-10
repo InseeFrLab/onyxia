@@ -5,7 +5,8 @@
   "description": "Github Actions for the CI workflow of Onyxia",
   "main": "./index.js",
   "scripts": {
-    "build": "tsx scripts/generate-action-yaml.ts && tsc && ncc build dist/index.js -o . && rm -rf dist"
+    "build": "tsx scripts/generate-action-yaml.ts && tsc && ncc build dist/index.js -o . && rm -rf dist",
+    "test": "tsx test/release_versions.ts"
   },
   "repository": {
     "type": "git",
