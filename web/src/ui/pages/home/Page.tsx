@@ -6,7 +6,6 @@ import { Button } from "onyxia-ui/Button";
 import { useTranslation } from "ui/i18n";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import { env } from "env";
-import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
@@ -14,22 +13,24 @@ import { LinkFromConfigButton } from "./LinkFromConfigButton";
 import { id } from "tsafe/id";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 import { useCoreState, getCoreSync } from "core";
+import { withLoader } from "ui/tools/withLoader";
 
-const Page = Home;
-export default Page;
-
-function Home() {
-    useConst(() => {
+const Page = withLoader({
+    loader: async () => {
         if (env.ONYXIA_API_URL === undefined) {
             routes.s3Explorer_root().replace();
-            return;
+            return new Promise<never>(() => {});
         }
         if (env.DISABLE_HOMEPAGE) {
             routes.catalog().replace();
-            return;
+            return new Promise<never>(() => {});
         }
-    });
+    },
+    Component: Home
+});
+export default Page;
 
+function Home() {
     const backgroundUrl = useThemedImageUrl(env.BACKGROUND_ASSET);
 
     const { classes } = useStyles({
