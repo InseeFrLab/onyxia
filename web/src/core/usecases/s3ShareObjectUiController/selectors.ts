@@ -4,6 +4,7 @@ import { createSelector } from "clean-architecture";
 import { assert, id } from "tsafe";
 import * as s3ExplorerUiController from "core/usecases/s3ExplorerUiController";
 import { getIsWithinPrefixThatHasBeenMadePublic } from "core/usecases/s3ExplorerUiController/decoupledLogic/bucketPolicies";
+import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -30,7 +31,19 @@ const s3Uri = createSelector(state, state => state.s3Uri);
 const isPublic = createSelector(
     s3Uri,
     s3ExplorerUiController.protectedSelectors.bucketPoliciesByBucket,
-    (s3Uri, bucketPoliciesByBucket) => {
+    createSelector(s3ProfilesManagement.selectors.ambientS3Profile, s3Profile => {
+        assert(s3Profile !== undefined);
+        const { paramsOfCreateS3Client } = s3Profile;
+        const isAnonymousS3Profile = paramsOfCreateS3Client.isStsEnabled
+            ? false
+            : paramsOfCreateS3Client.credentials === undefined;
+        return isAnonymousS3Profile;
+    }),
+    (s3Uri, bucketPoliciesByBucket, isAnonymousProfile) => {
+        if (isAnonymousProfile) {
+            return true;
+        }
+
         const { isWithinPrefixThatHasBeenMadePublic } =
             getIsWithinPrefixThatHasBeenMadePublic({
                 s3Uri,

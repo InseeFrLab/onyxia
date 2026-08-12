@@ -463,22 +463,44 @@ async function fetchHead(
 ): Promise<
     { contentType: string | undefined; contentLength: number | undefined } | undefined
 > {
-    let response: Response;
+    let headResponse: Response | undefined;
 
     try {
-        response = await fetch(url, {
+        headResponse = await fetch(url, {
             method: "HEAD",
             redirect: "follow"
         });
+    } catch {}
+
+    if (headResponse !== undefined && headResponse.type !== "opaque" && headResponse.ok) {
+        return {
+            contentType: getMediaType(headResponse.headers.get("Content-Type")),
+            contentLength: getContentLength(headResponse.headers.get("Content-Length"))
+        };
+    }
+
+    let rangeResponse: Response;
+
+    try {
+        rangeResponse = await fetch(url, {
+            headers: { Range: "bytes=0-0" },
+            redirect: "follow"
+        });
     } catch {
-        return undefined;
+        return headResponse === undefined || headResponse.type === "opaque"
+            ? undefined
+            : { contentType: undefined, contentLength: undefined };
     }
 
-    if (response.type === "opaque") {
-        return undefined;
+    if (rangeResponse.type === "opaque") {
+        return headResponse === undefined || headResponse.type === "opaque"
+            ? undefined
+            : { contentType: undefined, contentLength: undefined };
     }
 
-    if (!response.ok) {
+    await rangeResponse.body?.cancel().catch(() => {});
+
+    if (!rangeResponse.ok) {
         return {
             contentType: undefined,
             contentLength: undefined
@@ -486,8 +508,14 @@ async function fetchHead(
     }
 
     return {
-        contentType: getMediaType(response.headers.get("Content-Type")),
-        contentLength: getContentLength(response.headers.get("Content-Length"))
+        contentType: getMediaType(rangeResponse.headers.get("Content-Type")),
+        contentLength:
+            getContentLengthFromContentRange(
+                rangeResponse.headers.get("Content-Range")
+            ) ??
+            (rangeResponse.status === 206
+                ? undefined
+                : getContentLength(rangeResponse.headers.get("Content-Length")))
     };
 }
 
@@ -556,6 +584,16 @@ function getContentLength(contentLength: string | null): number | undefined {
     const parsed = Number(contentLength);
 
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
+function getContentLengthFromContentRange(contentRange: string | null) {
+    if (contentRange === null) {
+        return undefined;
+    }
+
+    const match = /^bytes \d+-\d+\/(\d+)$/.exec(contentRange.trim().toLowerCase());
+
+    return match === null ? undefined : getContentLength(match[1]);
 }
 
 function getIsDataset(params: {

@@ -1241,31 +1241,41 @@ export const protectedThunks = {
 
             const [dispatch, getState] = args;
 
-            const { isWithinPrefixThatHasBeenMadePublic } =
-                getIsWithinPrefixThatHasBeenMadePublic({
-                    s3Uri,
-                    bucketPoliciesByBucket:
-                        protectedSelectors.bucketPoliciesByBucket(getState())
-                });
+            const profileName = privateSelectors.profileName(getState());
 
-            if (isWithinPrefixThatHasBeenMadePublic) {
-                const profileName = privateSelectors.profileName(getState());
+            assert(profileName !== undefined);
 
-                assert(profileName !== undefined);
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
 
-                const s3Client = await dispatch(
-                    s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            with_signature: {
+                const tokens = await s3Client.getToken({ doForceRenew: false });
+
+                if (tokens === undefined) {
+                    break with_signature;
+                }
+
+                const { isWithinPrefixThatHasBeenMadePublic } =
+                    getIsWithinPrefixThatHasBeenMadePublic({
+                        s3Uri,
+                        bucketPoliciesByBucket:
+                            protectedSelectors.bucketPoliciesByBucket(getState())
+                    });
+
+                if (isWithinPrefixThatHasBeenMadePublic) {
+                    break with_signature;
+                }
+
+                return dispatch(
+                    privateThunks.getSignedObjectHttpUrl({
+                        s3Uri,
+                        validityDurationSecond: validityDurationSecond_ifNotPublic,
+                        isForDirectDownload
+                    })
                 );
-
-                return s3Client.getUnsignedObjectHttpUrl({ s3Uri, isForDirectDownload });
             }
 
-            return dispatch(
-                privateThunks.getSignedObjectHttpUrl({
-                    s3Uri,
-                    validityDurationSecond: validityDurationSecond_ifNotPublic,
-                    isForDirectDownload
-                })
-            );
+            return s3Client.getUnsignedObjectHttpUrl({ s3Uri, isForDirectDownload });
         }
 } satisfies Thunks;

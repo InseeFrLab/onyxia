@@ -53,7 +53,68 @@ describe(getObjectRendering.name, () => {
         });
     });
 
-    it("falls back to the download button when HEAD is blocked", async () => {
+    it("falls back to a ranged GET when HEAD is blocked", async () => {
+        const fetchMock = vi
+            .fn()
+            .mockRejectedValueOnce(new TypeError("CORS"))
+            .mockResolvedValueOnce(
+                createResponse({
+                    body: "x",
+                    status: 206,
+                    headers: {
+                        "Content-Type": "image/png",
+                        "Content-Length": "1",
+                        "Content-Range": "bytes 0-0/1234"
+                    }
+                })
+            );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const got = await getObjectRendering({
+            s3Uri: parseObject("s3://mybucket/foo/object-without-extension"),
+            getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
+        });
+
+        expect(got).toStrictEqual({ renderAs: "image", url: directUrl });
+        expect(fetchMock).toHaveBeenNthCalledWith(2, directUrl, {
+            headers: { Range: "bytes=0-0" },
+            redirect: "follow"
+        });
+    });
+
+    it("uses the full size from the ranged GET response", async () => {
+        const fetchMock = vi
+            .fn()
+            .mockRejectedValueOnce(new TypeError("CORS"))
+            .mockResolvedValueOnce(
+                createResponse({
+                    body: "x",
+                    status: 206,
+                    headers: {
+                        "Content-Type": "text/plain",
+                        "Content-Length": "1",
+                        "Content-Range": "bytes 0-0/1000001"
+                    }
+                })
+            );
+        const s3Uri = parseObject("s3://mybucket/foo/large.txt");
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const got = await getObjectRendering({
+            s3Uri,
+            getDirectDownloadHttpUrl: () => Promise.resolve(directUrl)
+        });
+
+        expect(got).toStrictEqual({
+            renderAs: "download button",
+            s3Uri
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("falls back to the download button when HEAD and ranged GET are blocked", async () => {
         const fetchMock = vi.fn(() => Promise.reject(new TypeError("CORS")));
         const s3Uri = parseObject("s3://mybucket/foo/image.png");
 
