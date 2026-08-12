@@ -9,23 +9,27 @@ import {
     createObjectWithSomePropertiesThatThrowIfAccessed,
     THROW_IF_ACCESSED
 } from "clean-architecture";
+import { id } from "tsafe";
 
 export function createOnyxiaApi(params: {
     oidcParams: OidcParams | undefined;
+    getDecodedIdTokenSub: () => string;
 }): OnyxiaApi {
-    const { oidcParams } = params;
+    const { oidcParams, getDecodedIdTokenSub } = params;
 
     const userAndProjects: Awaited<ReturnType<OnyxiaApi["getUserAndProjects"]>> = {
         user: createObjectThatThrowsIfAccessed({
             debugMessage: "Can't access User provided from the API, No Onyxia API"
         }),
         projects: [
-            createObjectWithSomePropertiesThatThrowIfAccessed<Project>({
+            id<Project>({
                 id: "virtual",
                 group: undefined,
                 name: "virtual",
-                namespace: THROW_IF_ACCESSED,
-                vaultTopDir: "user"
+                get vaultTopDir() {
+                    return getDecodedIdTokenSub();
+                },
+                namespace: "virtual"
             })
         ]
     };

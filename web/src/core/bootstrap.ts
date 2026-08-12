@@ -90,7 +90,14 @@ export async function bootstrapCore(
                 };
             })();
 
-            return createOnyxiaApi({ oidcParams });
+            return createOnyxiaApi({
+                oidcParams,
+                getDecodedIdTokenSub: () => {
+                    assert(oidc !== undefined);
+                    assert(oidc.isUserLoggedIn);
+                    return oidc.getDecodedIdToken().sub;
+                }
+            });
         }
 
         return createOnyxiaApi({
