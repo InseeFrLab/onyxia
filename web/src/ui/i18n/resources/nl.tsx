@@ -200,6 +200,9 @@ export const translations: Translations<"nl"> = {
     },
     S3Explorer: {
         "page header title": "Gegevensopslag",
+        "no profile title": "Verbind je objectopslag",
+        "no profile description":
+            "Maak een S3-profiel om verbinding te maken met je opslag en je bestanden te verkennen.",
         "create profile": "Profiel maken",
         back: "Terug",
         upload: "Uploaden",

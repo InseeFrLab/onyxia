@@ -31,6 +31,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 import { CodeTextEditor } from "ui/shared/textEditor/CodeTextEditor";
 import { Icon } from "onyxia-ui/Icon";
+import { Button } from "onyxia-ui/Button";
 import { getFileBasenameFromUrl } from "core/tools/triggerBrowserDownload";
 
 const Page = withLoader({
@@ -329,13 +330,65 @@ function S3Explorer() {
                 {(() => {
                     if (mainView.profileSelect === undefined) {
                         return (
-                            <button
-                                onClick={() =>
-                                    dialogProps.evtS3ProfileDialogOpen.post("create")
-                                }
+                            <div
+                                className={css({
+                                    flex: 1,
+                                    minHeight: 320,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: theme.spacing(1.5),
+                                    padding: theme.spacing(4),
+                                    textAlign: "center"
+                                })}
                             >
-                                {t("create profile")}
-                            </button>
+                                <div
+                                    className={css({
+                                        width: 56,
+                                        height: 56,
+                                        borderRadius: 8,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        backgroundColor:
+                                            theme.colors.useCases.surfaces.surface2
+                                    })}
+                                >
+                                    <Icon
+                                        icon={getIconUrlByName("Storage")}
+                                        size="large"
+                                    />
+                                </div>
+                                <div
+                                    className={css({
+                                        ...theme.typography.variants["label 1"].style,
+                                        color: theme.colors.useCases.typography
+                                            .textPrimary
+                                    })}
+                                >
+                                    {t("no profile title")}
+                                </div>
+                                <div
+                                    className={css({
+                                        maxWidth: 520,
+                                        color: theme.colors.useCases.typography
+                                            .textSecondary,
+                                        lineHeight: 1.6
+                                    })}
+                                >
+                                    {t("no profile description")}
+                                </div>
+                                <Button
+                                    className={css({ marginTop: theme.spacing(1) })}
+                                    startIcon={getIconUrlByName("Add")}
+                                    onClick={() =>
+                                        dialogProps.evtS3ProfileDialogOpen.post("create")
+                                    }
+                                >
+                                    {t("create profile")}
+                                </Button>
+                            </div>
                         );
                     }
 
@@ -833,6 +886,8 @@ function DataExplorer(props: { className?: string }) {
 
 const { i18n } = declareComponentKeys<
     | "page header title"
+    | "no profile title"
+    | "no profile description"
     | "create profile"
     | "back"
     | "upload"

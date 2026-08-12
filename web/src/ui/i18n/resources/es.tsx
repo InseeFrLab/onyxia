@@ -199,6 +199,9 @@ export const translations: Translations<"es"> = {
     },
     S3Explorer: {
         "page header title": "Almacenamiento de datos",
+        "no profile title": "Conecta tu almacenamiento de objetos",
+        "no profile description":
+            "Crea un perfil S3 para conectarte a tu almacenamiento y explorar tus archivos.",
         "create profile": "Crear perfil",
         back: "Atrás",
         upload: "Subir",

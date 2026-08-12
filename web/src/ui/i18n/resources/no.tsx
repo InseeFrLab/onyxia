@@ -196,6 +196,9 @@ export const translations: Translations<"no"> = {
     },
     S3Explorer: {
         "page header title": "Datalagring",
+        "no profile title": "Koble til objektlagringen din",
+        "no profile description":
+            "Opprett en S3-profil for å koble til lagringen og utforske filene dine.",
         "create profile": "Opprett profil",
         back: "Tilbake",
         upload: "Last opp",
