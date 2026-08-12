@@ -216,6 +216,10 @@ export function createS3Client(
         return { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client };
     })();
 
+    const isAnonymousProfile = params.isStsEnabled
+        ? false
+        : params.credentials === undefined;
+
     const s3Client: S3Client = {
         getUnsignedObjectHttpUrl: ({ s3Uri, isForDirectDownload }) => {
             const url = new URL(params.url);
@@ -239,7 +243,7 @@ export function createS3Client(
             url.search = "";
             url.hash = "";
 
-            if (isForDirectDownload) {
+            if (isForDirectDownload && !isAnonymousProfile) {
                 url.searchParams.set("response-content-disposition", "attachment");
             }
 
@@ -498,6 +502,11 @@ export function createS3Client(
             validityDurationSecond,
             isForDirectDownload
         }) => {
+            assert(
+                !isAnonymousProfile,
+                "Trying to generate signed url with public client"
+            );
+
             const { getAwsS3Client } = await prApi;
 
             const { awsS3Client } = await getAwsS3Client();

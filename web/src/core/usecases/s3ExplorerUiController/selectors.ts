@@ -276,11 +276,20 @@ const items = createSelector(
     uploads_profile,
     deletions_profile,
     createSelector(state, state => state.bucketPoliciesByBucket),
+    createSelector(s3ProfilesManagement.selectors.ambientS3Profile, s3Profile => {
+        assert(s3Profile !== undefined);
+        const { paramsOfCreateS3Client } = s3Profile;
+        const isAnonymousS3Profile = paramsOfCreateS3Client.isStsEnabled
+            ? false
+            : paramsOfCreateS3Client.credentials === undefined;
+        return isAnonymousS3Profile;
+    }),
     (
         listedPrefix_state,
         uploads_profile,
         deletions_profile,
-        bucketPoliciesByBucket
+        bucketPoliciesByBucket,
+        isAnonymousS3Profile
     ): MainView.Item[] | undefined => {
         if (listedPrefix_state === undefined) {
             return undefined;
@@ -327,21 +336,24 @@ const items = createSelector(
                             s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            policy: getHasPrefixBeMadePublic({
-                                s3Uri: item.s3Uri,
-                                bucketPoliciesByBucket
-                            })
-                                ? {
-                                      isPublic: true
-                                  }
-                                : {
-                                      isPublic: false,
-                                      canBeMadePublic:
-                                          !getIsWithinPrefixThatHasBeenMadePublic({
-                                              s3Uri: item.s3Uri,
-                                              bucketPoliciesByBucket
-                                          }).isWithinPrefixThatHasBeenMadePublic
-                                  }
+                            policy: isAnonymousS3Profile
+                                ? // NOTE: Semantically false but yield the intended result.
+                                  { isPublic: false, canBeMadePublic: false }
+                                : getHasPrefixBeMadePublic({
+                                        s3Uri: item.s3Uri,
+                                        bucketPoliciesByBucket
+                                    })
+                                  ? {
+                                        isPublic: true
+                                    }
+                                  : {
+                                        isPublic: false,
+                                        canBeMadePublic:
+                                            !getIsWithinPrefixThatHasBeenMadePublic({
+                                                s3Uri: item.s3Uri,
+                                                bucketPoliciesByBucket
+                                            }).isWithinPrefixThatHasBeenMadePublic
+                                    }
                         });
                 }
             }
