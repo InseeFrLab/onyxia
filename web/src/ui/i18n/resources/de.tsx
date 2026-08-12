@@ -204,6 +204,9 @@ export const translations: Translations<"de"> = {
     },
     S3Explorer: {
         "page header title": "Datenspeicher",
+        "no profile title": "Objektspeicher verbinden",
+        "no profile description":
+            "Erstellen Sie ein S3-Profil, um Ihren Speicher zu verbinden und Ihre Dateien zu durchsuchen.",
         "create profile": "Profil erstellen",
         back: "Zurück",
         upload: "Hochladen",

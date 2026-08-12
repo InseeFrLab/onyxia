@@ -178,6 +178,8 @@ export const translations: Translations<"zh-CN"> = {
     },
     S3Explorer: {
         "page header title": "数据存储",
+        "no profile title": "连接您的对象存储",
+        "no profile description": "创建 S3 配置文件以连接存储并开始浏览文件。",
         "create profile": "创建配置文件",
         back: "返回",
         upload: "上传",

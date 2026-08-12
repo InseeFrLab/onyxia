@@ -196,6 +196,9 @@ export const translations: Translations<"fi"> = {
     },
     S3Explorer: {
         "page header title": "Tietojen tallennus",
+        "no profile title": "Yhdistä objektitallennustilasi",
+        "no profile description":
+            "Luo S3-profiili, jotta voit yhdistää tallennustilasi ja selata tiedostojasi.",
         "create profile": "Luo profiili",
         back: "Takaisin",
         upload: "Lataa palvelimelle",

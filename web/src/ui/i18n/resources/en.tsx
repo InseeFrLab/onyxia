@@ -320,6 +320,9 @@ export const translations: Translations<"en"> = {
     },
     S3Explorer: {
         "page header title": "Data Storage",
+        "no profile title": "Connect your object storage",
+        "no profile description":
+            "Create an S3 profile to connect to your storage and start exploring your files.",
         "create profile": "Create Profile",
         back: "Back",
         upload: "Upload",
