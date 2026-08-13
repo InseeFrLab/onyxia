@@ -469,5 +469,7 @@ function formatListObjectsErrorCase(
             return "access denied";
         case "no such bucket":
             return "bucket not found";
+        case "CORS error":
+            return "CORS error";
     }
 }

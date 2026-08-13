@@ -377,10 +377,13 @@ export const translations: Translations<"no"> = {
         yesterday: "I går",
         "access denied": "Tilgang nektet",
         "bucket not found": "Bucket ikke funnet",
+        "CORS error": "CORS-feil",
         "access denied description":
             "Du har ikke tillatelse til å vise denne S3-plasseringen.",
         "bucket not found description":
             "Den forespurte bucket-en finnes ikke eller er ikke tilgjengelig med gjeldende profil.",
+        "CORS error description": ({ bucket, origin }) =>
+            `Kan ikke få tilgang til bucketen «${bucket}» fra ${origin}. Bucketens CORS-policy tillater kanskje ikke forespørsler fra dette nettstedet. Oppdater S3 CORS-konfigurasjonen for å tillate denne opprinnelsen, og prøv på nytt.`,
         "select item": ({ itemName }) => `Velg ${itemName}`,
         "select all items": "Velg alle elementer",
         public: "Offentlig",

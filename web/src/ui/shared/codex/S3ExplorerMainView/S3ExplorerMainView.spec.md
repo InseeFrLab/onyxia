@@ -36,7 +36,7 @@ export type S3ExplorerMainViewProps = {
     listedPrefix: { s3Uri: S3Uri } & (
         | {
               isErrored: true;
-              errorCase: "access denied" | "no such bucket";
+              errorCase: "access denied" | "no such bucket" | "CORS error";
           }
         | {
               isErrored: false;
@@ -382,6 +382,7 @@ Supported error cases:
 
 - access denied
 - no such bucket
+- CORS error
 
 No rows should be displayed in this state.
 

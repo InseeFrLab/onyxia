@@ -327,6 +327,20 @@ export function createS3Client(
                     });
                 }
 
+                if (
+                    error instanceof TypeError &&
+                    error.message === "Failed to fetch" &&
+                    (await fetch(params.url, { mode: "no-cors" }).then(
+                        () => true,
+                        () => false
+                    ))
+                ) {
+                    return id<S3Client.ListObjectsReturn.Error>({
+                        isSuccess: false,
+                        errorCase: "CORS error"
+                    });
+                }
+
                 throw error;
             }
 

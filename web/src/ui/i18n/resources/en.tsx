@@ -274,10 +274,13 @@ export const translations: Translations<"en"> = {
         yesterday: "Yesterday",
         "access denied": "Access denied",
         "bucket not found": "Bucket not found",
+        "CORS error": "CORS error",
         "access denied description":
             "You do not have permission to list this S3 location.",
         "bucket not found description":
             "The requested bucket does not exist or is not reachable with the current profile.",
+        "CORS error description": ({ bucket, origin }) =>
+            `Cannot access bucket "${bucket}" from ${origin}. The bucket’s CORS policy may not allow requests from this website. Update the S3 CORS configuration to allow this origin, then try again.`,
         "select item": ({ itemName }) => `Select ${itemName}`,
         "select all items": "Select all items",
         public: "Public",

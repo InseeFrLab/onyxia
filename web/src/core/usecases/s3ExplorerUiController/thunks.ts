@@ -426,6 +426,8 @@ export const thunks = {
                                 return "Access Denied";
                             case "no such bucket":
                                 return "No Such Bucket";
+                            case "CORS error":
+                                return "CORS Error";
                             default:
                                 assert<Equals<typeof listObjectResult.errorCase, never>>(
                                     false

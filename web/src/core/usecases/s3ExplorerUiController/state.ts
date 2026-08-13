@@ -56,7 +56,7 @@ export namespace State {
     };
 
     export namespace ListedPrefix {
-        export type ErrorCase = "access denied" | "no such bucket";
+        export type ErrorCase = "access denied" | "no such bucket" | "CORS error";
 
         export type Item = Item.Prefix | Item.Object;
 
