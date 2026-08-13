@@ -277,7 +277,9 @@ const items = createSelector(
     deletions_profile,
     createSelector(state, state => state.bucketPoliciesByBucket),
     createSelector(s3ProfilesManagement.selectors.ambientS3Profile, s3Profile => {
-        assert(s3Profile !== undefined);
+        if (s3Profile === undefined) {
+            return true;
+        }
         const { paramsOfCreateS3Client } = s3Profile;
         const isAnonymousS3Profile = paramsOfCreateS3Client.isStsEnabled
             ? false
