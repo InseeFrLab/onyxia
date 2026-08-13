@@ -381,10 +381,13 @@ export const translations: Translations<"it"> = {
         yesterday: "Ieri",
         "access denied": "Accesso negato",
         "bucket not found": "Bucket non trovato",
+        "CORS error": "Errore CORS",
         "access denied description":
             "Non hai il permesso di elencare questa posizione S3.",
         "bucket not found description":
             "Il bucket richiesto non esiste o non è raggiungibile con il profilo corrente.",
+        "CORS error description": ({ bucket, origin }) =>
+            `Impossibile accedere al bucket «${bucket}» da ${origin}. La policy CORS del bucket potrebbe non consentire richieste da questo sito web. Aggiorna la configurazione CORS di S3 per consentire questa origine, quindi riprova.`,
         "select item": ({ itemName }) => `Seleziona ${itemName}`,
         "select all items": "Seleziona tutti gli elementi",
         public: "Pubblico",

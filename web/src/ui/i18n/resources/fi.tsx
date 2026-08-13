@@ -375,9 +375,12 @@ export const translations: Translations<"fi"> = {
         yesterday: "Eilen",
         "access denied": "Pääsy evätty",
         "bucket not found": "Bucketia ei löydy",
+        "CORS error": "CORS-virhe",
         "access denied description": "Sinulla ei ole oikeutta listata tätä S3-sijaintia.",
         "bucket not found description":
             "Pyydettyä bucketia ei ole olemassa tai sitä ei voi käyttää nykyisellä profiililla.",
+        "CORS error description": ({ bucket, origin }) =>
+            `Bucketiin ”${bucket}” ei voi muodostaa yhteyttä alkuperästä ${origin}. Bucketin CORS-käytäntö ei ehkä salli pyyntöjä tältä verkkosivustolta. Salli tämä alkuperä S3:n CORS-määrityksissä ja yritä uudelleen.`,
         "select item": ({ itemName }) => `Valitse ${itemName}`,
         "select all items": "Valitse kaikki kohteet",
         public: "Julkinen",

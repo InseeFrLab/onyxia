@@ -100,7 +100,7 @@ export namespace S3Client {
 
         export type Error = {
             isSuccess: false;
-            errorCase: "access denied" | "no such bucket";
+            errorCase: "access denied" | "no such bucket" | "CORS error";
         };
     }
 }

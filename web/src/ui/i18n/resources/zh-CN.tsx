@@ -353,9 +353,12 @@ export const translations: Translations<"zh-CN"> = {
         yesterday: "昨天",
         "access denied": "访问被拒绝",
         "bucket not found": "未找到存储桶",
+        "CORS error": "CORS 错误",
         "access denied description": "你没有权限列出此 S3 位置。",
         "bucket not found description":
             "请求的存储桶不存在，或无法使用当前配置文件访问。",
+        "CORS error description": ({ bucket, origin }) =>
+            `无法从 ${origin} 访问存储桶“${bucket}”。该存储桶的 CORS 策略可能不允许来自此网站的请求。请更新 S3 CORS 配置以允许此来源，然后重试。`,
         "select item": ({ itemName }) => `选择 ${itemName}`,
         "select all items": "选择所有项目",
         public: "公开",

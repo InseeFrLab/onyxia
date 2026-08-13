@@ -21,7 +21,7 @@ import MuiTooltip from "@mui/material/Tooltip";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { alpha } from "@mui/material/styles";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Dialog } from "onyxia-ui/Dialog";
@@ -52,7 +52,7 @@ export type S3ExplorerMainViewProps = {
     listedPrefix: { s3Uri: S3Uri } & (
         | {
               isErrored: true;
-              errorCase: "access denied" | "no such bucket";
+              errorCase: "access denied" | "no such bucket" | "CORS error";
           }
         | {
               isErrored: false;
@@ -702,7 +702,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         return (
             <div className={cx(classes.root, className)}>
                 <div className={classes.surface}>
-                    <ErrorState errorCase={listedPrefix.errorCase} />
+                    <ErrorState
+                        errorCase={listedPrefix.errorCase}
+                        bucket={listedPrefix.s3Uri.bucket}
+                    />
                 </div>
             </div>
         );
@@ -1800,8 +1803,14 @@ const { i18n } = declareComponentKeys<
     | "yesterday"
     | "access denied"
     | "bucket not found"
+    | "CORS error"
     | "access denied description"
     | "bucket not found description"
+    | {
+          K: "CORS error description";
+          P: { bucket: string; origin: string };
+          R: string;
+      }
     | { K: "select item"; P: { itemName: string }; R: string }
     | "select all items"
     | "public"
@@ -2327,28 +2336,46 @@ function ErrorState(props: {
         S3ExplorerMainViewProps["listedPrefix"],
         { isErrored: true }
     >["errorCase"];
+    bucket: string;
 }) {
-    const { errorCase } = props;
+    const { errorCase, bucket } = props;
     const { classes } = useStyles({
         isDragActive: false
     });
     const { t } = useTranslation({ S3ExplorerMainView });
+
+    const { title, description } = (() => {
+        switch (errorCase) {
+            case "access denied":
+                return {
+                    title: t("access denied"),
+                    description: t("access denied description")
+                };
+            case "no such bucket":
+                return {
+                    title: t("bucket not found"),
+                    description: t("bucket not found description")
+                };
+            case "CORS error":
+                return {
+                    title: t("CORS error"),
+                    description: t("CORS error description", {
+                        bucket,
+                        origin: location.origin
+                    })
+                };
+            default:
+                assert<Equals<typeof errorCase, never>>(false);
+        }
+    })();
 
     return (
         <div className={classes.errorState}>
             <div className={classes.errorIcon}>
                 <Icon icon={getIconUrlByName("ErrorOutline")} size="large" />
             </div>
-            <div className={classes.errorTitle}>
-                {errorCase === "access denied"
-                    ? t("access denied")
-                    : t("bucket not found")}
-            </div>
-            <div className={classes.errorDescription}>
-                {errorCase === "access denied"
-                    ? t("access denied description")
-                    : t("bucket not found description")}
-            </div>
+            <div className={classes.errorTitle}>{title}</div>
+            <div className={classes.errorDescription}>{description}</div>
         </div>
     );
 }

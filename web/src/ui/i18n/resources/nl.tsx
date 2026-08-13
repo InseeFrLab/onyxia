@@ -380,10 +380,13 @@ export const translations: Translations<"nl"> = {
         yesterday: "Gisteren",
         "access denied": "Toegang geweigerd",
         "bucket not found": "Bucket niet gevonden",
+        "CORS error": "CORS-fout",
         "access denied description":
             "Je hebt geen toestemming om deze S3-locatie weer te geven.",
         "bucket not found description":
             "De gevraagde bucket bestaat niet of is niet bereikbaar met het huidige profiel.",
+        "CORS error description": ({ bucket, origin }) =>
+            `Bucket '${bucket}' is niet toegankelijk vanaf ${origin}. Het CORS-beleid van de bucket staat mogelijk geen verzoeken van deze website toe. Werk de S3-CORS-configuratie bij om deze oorsprong toe te staan en probeer het opnieuw.`,
         "select item": ({ itemName }) => `Selecteer ${itemName}`,
         "select all items": "Alle items selecteren",
         public: "Openbaar",
