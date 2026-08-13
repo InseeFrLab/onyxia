@@ -407,15 +407,28 @@ function FormTextField(props: {
     const helperTextId = useId();
     const { classes } = useStyles_FormTextField();
     const errorToDisplay = isErrorVisible ? error : undefined;
+    const [valueBeingTyped, setValueBeingTyped] = useState(value);
+
+    useEffect(() => {
+        setValueBeingTyped(value);
+    }, [value]);
 
     return (
         <div className={classes.root}>
             <Input
                 id={inputId}
                 className={classes.input}
-                value={value}
+                value={valueBeingTyped}
                 placeholder={label}
-                onChange={event => onChange(event.target.value)}
+                onChange={event => {
+                    const newValue = event.target.value;
+
+                    // Keep the input in sync during the current event. Consumers backed by
+                    // useCoreState publish their new value on the next animation frame; using
+                    // that delayed value directly makes React move the caret to the end.
+                    setValueBeingTyped(newValue);
+                    onChange(newValue);
+                }}
                 onBlur={onBlur}
                 error={errorToDisplay !== undefined}
                 type={isSensitive ? "password" : "text"}
