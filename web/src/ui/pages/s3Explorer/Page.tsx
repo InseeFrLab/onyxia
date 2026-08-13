@@ -557,6 +557,20 @@ function S3Explorer() {
                                 />
                             )}
 
+                            {mainView.isListing &&
+                                mainView.listedPrefix === undefined && (
+                                    <div
+                                        className={css({
+                                            flex: 1,
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center"
+                                        })}
+                                    >
+                                        <CircularProgress />
+                                    </div>
+                                )}
+
                             {mainView.listedPrefix !== undefined && (
                                 <S3ExplorerMainView
                                     className={css({
