@@ -421,6 +421,10 @@ export const thunks = {
                             ].join("\n");
                         }
 
+                        if (!listObjectResult.isKnownError) {
+                            return listObjectResult.errorMessage;
+                        }
+
                         switch (listObjectResult.errorCase) {
                             case "access denied":
                                 return "Access Denied";
@@ -442,7 +446,7 @@ export const thunks = {
                     actions.listingFailed({
                         profileName,
                         s3Uri,
-                        errorCase: listObjectResult.errorCase
+                        error: listObjectResult
                     })
                 );
                 return;

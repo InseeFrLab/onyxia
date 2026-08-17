@@ -294,7 +294,7 @@ async function crawlPrefix(params: {
     if (!result.isSuccess) {
         throw new Error(
             `Unable to list ${stringifyS3Uri(s3UriPrefix)}: ${formatListObjectsErrorCase(
-                result.errorCase
+                result
             )}`
         );
     }
@@ -461,10 +461,12 @@ function sanitizeFileBasename(basename: string): string {
     return sanitizedBasename === "" ? "s3-download" : sanitizedBasename;
 }
 
-function formatListObjectsErrorCase(
-    errorCase: S3Client.ListObjectsReturn.Error["errorCase"]
-): string {
-    switch (errorCase) {
+function formatListObjectsErrorCase(error: S3Client.ListObjectsReturn.Error): string {
+    if (!error.isKnownError) {
+        return error.errorMessage;
+    }
+
+    switch (error.errorCase) {
         case "access denied":
             return "access denied";
         case "no such bucket":

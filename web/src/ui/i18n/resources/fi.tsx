@@ -376,6 +376,7 @@ export const translations: Translations<"fi"> = {
         "access denied": "Pääsy evätty",
         "bucket not found": "Bucketia ei löydy",
         "CORS error": "CORS-virhe",
+        error: "Virhe",
         "access denied description": "Sinulla ei ole oikeutta listata tätä S3-sijaintia.",
         "bucket not found description":
             "Pyydettyä bucketia ei ole olemassa tai sitä ei voi käyttää nykyisellä profiililla.",

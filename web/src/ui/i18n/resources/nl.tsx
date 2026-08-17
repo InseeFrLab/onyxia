@@ -381,6 +381,7 @@ export const translations: Translations<"nl"> = {
         "access denied": "Toegang geweigerd",
         "bucket not found": "Bucket niet gevonden",
         "CORS error": "CORS-fout",
+        error: "Fout",
         "access denied description":
             "Je hebt geen toestemming om deze S3-locatie weer te geven.",
         "bucket not found description":

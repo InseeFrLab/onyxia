@@ -87,7 +87,7 @@ export type MainView = {
         | ({ s3Uri: S3Uri } & (
               | {
                     isErrored: true;
-                    errorCase: State.ListedPrefix.ErrorCase;
+                    error: State.ListedPrefix.Error;
                 }
               | {
                     isErrored: false;
@@ -239,7 +239,7 @@ const isListing = createSelector(
             return false;
         }
 
-        if (listedPrefix_state.next.errorCase !== undefined) {
+        if (listedPrefix_state.next.error !== undefined) {
             return false;
         }
 
@@ -418,12 +418,12 @@ const listedPrefix = createSelector(
 
         if (
             listedPrefix_state.next !== undefined &&
-            listedPrefix_state.next.errorCase !== undefined
+            listedPrefix_state.next.error !== undefined
         ) {
             return {
                 s3Uri: listedPrefix_state.next.s3Uri,
                 isErrored: true,
-                errorCase: listedPrefix_state.next.errorCase
+                error: listedPrefix_state.next.error
             };
         }
 
@@ -766,7 +766,7 @@ const s3Uri_currentlyListing = createSelector(listedPrefix_state, listedPrefix_s
         return undefined;
     }
 
-    if (listedPrefix_state.next.errorCase !== undefined) {
+    if (listedPrefix_state.next.error !== undefined) {
         return undefined;
     }
 

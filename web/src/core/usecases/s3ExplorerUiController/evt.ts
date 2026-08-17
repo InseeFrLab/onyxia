@@ -244,7 +244,10 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                 return null;
             }
 
-            if (action.payload.errorCase !== "no such bucket") {
+            if (
+                !action.payload.error.isKnownError ||
+                action.payload.error.errorCase !== "no such bucket"
+            ) {
                 return null;
             }
 

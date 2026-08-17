@@ -378,6 +378,7 @@ export const translations: Translations<"no"> = {
         "access denied": "Tilgang nektet",
         "bucket not found": "Bucket ikke funnet",
         "CORS error": "CORS-feil",
+        error: "Feil",
         "access denied description":
             "Du har ikke tillatelse til å vise denne S3-plasseringen.",
         "bucket not found description":
