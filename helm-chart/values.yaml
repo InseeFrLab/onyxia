@@ -43,7 +43,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 5.6.0-rc.7
+    tag: 5.6.0
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []
