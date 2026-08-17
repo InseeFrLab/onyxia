@@ -4,6 +4,7 @@ import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import { same } from "evt/tools/inDepth/same";
 import type { BucketPolicies } from "./decoupledLogic/bucketPolicies";
 import type { ObjectRendering } from "./decoupledLogic/objectRendering";
+import type { S3Client } from "core/ports/S3Client";
 
 //All explorer paths are expected to be absolute (start with /)
 
@@ -43,7 +44,7 @@ export namespace State {
         next:
             | {
                   s3Uri: S3Uri;
-                  errorCase: ListedPrefix.ErrorCase | undefined;
+                  error: ListedPrefix.Error | undefined;
               }
             | undefined;
         current:
@@ -56,7 +57,7 @@ export namespace State {
     };
 
     export namespace ListedPrefix {
-        export type ErrorCase = "access denied" | "no such bucket" | "CORS error";
+        export type Error = S3Client.ListObjectsReturn.Error;
 
         export type Item = Item.Prefix | Item.Object;
 
@@ -255,7 +256,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             listedPrefix.next = {
                 s3Uri,
-                errorCase: undefined
+                error: undefined
             };
         },
         listingCompletedSuccessfully: (
@@ -276,8 +277,7 @@ export const { reducer, actions } = createUsecaseActions({
             assert(listedPrefix !== undefined);
 
             assert(
-                listedPrefix.next !== undefined &&
-                    listedPrefix.next.errorCase === undefined
+                listedPrefix.next !== undefined && listedPrefix.next.error === undefined
             );
 
             listedPrefix.current = {
@@ -355,11 +355,11 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     profileName: string;
                     s3Uri: S3Uri;
-                    errorCase: State.ListedPrefix.ErrorCase;
+                    error: State.ListedPrefix.Error;
                 };
             }
         ) => {
-            const { profileName, s3Uri, errorCase } = payload;
+            const { profileName, s3Uri, error } = payload;
 
             const listedPrefix = state.listedPrefixByProfile[profileName];
 
@@ -367,11 +367,11 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(
                 listedPrefix.next !== undefined &&
-                    listedPrefix.next.errorCase === undefined &&
+                    listedPrefix.next.error === undefined &&
                     same(listedPrefix.next.s3Uri, s3Uri)
             );
 
-            listedPrefix.next.errorCase = errorCase;
+            listedPrefix.next.error = error;
         },
         commandLogIssued: (
             state,

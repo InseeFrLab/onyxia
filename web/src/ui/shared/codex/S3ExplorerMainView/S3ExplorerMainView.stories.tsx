@@ -512,7 +512,11 @@ export const AccessDenied: Story = {
         listedPrefix: {
             s3Uri: defaultPrefix,
             isErrored: true,
-            errorCase: "access denied"
+            error: {
+                isSuccess: false,
+                isKnownError: true,
+                errorCase: "access denied"
+            }
         },
         onNavigate: action("navigate"),
         onNavigateBack: action("navigateBack"),

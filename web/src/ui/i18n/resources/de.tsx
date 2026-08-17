@@ -391,6 +391,7 @@ export const translations: Translations<"de"> = {
         "access denied": "Zugriff verweigert",
         "bucket not found": "Bucket nicht gefunden",
         "CORS error": "CORS-Fehler",
+        error: "Fehler",
         "access denied description":
             "Du hast keine Berechtigung, diesen S3-Speicherort aufzulisten.",
         "bucket not found description":

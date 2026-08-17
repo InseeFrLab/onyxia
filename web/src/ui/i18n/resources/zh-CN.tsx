@@ -354,6 +354,7 @@ export const translations: Translations<"zh-CN"> = {
         "access denied": "访问被拒绝",
         "bucket not found": "未找到存储桶",
         "CORS error": "CORS 错误",
+        error: "错误",
         "access denied description": "你没有权限列出此 S3 位置。",
         "bucket not found description":
             "请求的存储桶不存在，或无法使用当前配置文件访问。",

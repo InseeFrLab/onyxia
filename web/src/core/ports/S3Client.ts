@@ -98,9 +98,22 @@ export namespace S3Client {
             };
         }
 
-        export type Error = {
-            isSuccess: false;
-            errorCase: "access denied" | "no such bucket" | "CORS error";
-        };
+        export type Error = Error.Known | Error.Unknown;
+
+        export namespace Error {
+            type Common = {
+                isSuccess: false;
+            };
+
+            export type Known = Common & {
+                isKnownError: true;
+                errorCase: "access denied" | "no such bucket" | "CORS error";
+            };
+
+            export type Unknown = Common & {
+                isKnownError: false;
+                errorMessage: string;
+            };
+        }
     }
 }

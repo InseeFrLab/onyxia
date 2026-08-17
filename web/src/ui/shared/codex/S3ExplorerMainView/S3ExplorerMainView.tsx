@@ -43,6 +43,7 @@ import { evtS3Uri_preSelected } from "./preSelectedS3Uri";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useFormattedRelativeDate } from "ui/shared/formattedDate";
 import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
+import type { S3Client } from "core/ports/S3Client";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -52,7 +53,7 @@ export type S3ExplorerMainViewProps = {
     listedPrefix: { s3Uri: S3Uri } & (
         | {
               isErrored: true;
-              errorCase: "access denied" | "no such bucket" | "CORS error";
+              error: S3Client.ListObjectsReturn.Error;
           }
         | {
               isErrored: false;
@@ -703,7 +704,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             <div className={cx(classes.root, className)}>
                 <div className={classes.surface}>
                     <ErrorState
-                        errorCase={listedPrefix.errorCase}
+                        error={listedPrefix.error}
                         bucket={listedPrefix.s3Uri.bucket}
                     />
                 </div>
@@ -1804,6 +1805,7 @@ const { i18n } = declareComponentKeys<
     | "access denied"
     | "bucket not found"
     | "CORS error"
+    | "error"
     | "access denied description"
     | "bucket not found description"
     | {
@@ -2332,20 +2334,24 @@ export function DeleteSelectionDialog(props: {
 }
 
 function ErrorState(props: {
-    errorCase: Extract<
-        S3ExplorerMainViewProps["listedPrefix"],
-        { isErrored: true }
-    >["errorCase"];
+    error: Extract<S3ExplorerMainViewProps["listedPrefix"], { isErrored: true }>["error"];
     bucket: string;
 }) {
-    const { errorCase, bucket } = props;
+    const { error, bucket } = props;
     const { classes } = useStyles({
         isDragActive: false
     });
     const { t } = useTranslation({ S3ExplorerMainView });
 
     const { title, description } = (() => {
-        switch (errorCase) {
+        if (!error.isKnownError) {
+            return {
+                title: t("error"),
+                description: error.errorMessage
+            };
+        }
+
+        switch (error.errorCase) {
             case "access denied":
                 return {
                     title: t("access denied"),
@@ -2365,7 +2371,7 @@ function ErrorState(props: {
                     })
                 };
             default:
-                assert<Equals<typeof errorCase, never>>(false);
+                assert<Equals<typeof error.errorCase, never>>(false);
         }
     })();
 

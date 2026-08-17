@@ -313,6 +313,7 @@ export function createS3Client(
                 if (error instanceof NoSuchBucket) {
                     return id<S3Client.ListObjectsReturn.Error>({
                         isSuccess: false,
+                        isKnownError: true,
                         errorCase: "no such bucket"
                     });
                 }
@@ -323,6 +324,7 @@ export function createS3Client(
                 ) {
                     return id<S3Client.ListObjectsReturn.Error>({
                         isSuccess: false,
+                        isKnownError: true,
                         errorCase: "access denied"
                     });
                 }
@@ -337,11 +339,16 @@ export function createS3Client(
                 ) {
                     return id<S3Client.ListObjectsReturn.Error>({
                         isSuccess: false,
+                        isKnownError: true,
                         errorCase: "CORS error"
                     });
                 }
 
-                throw error;
+                return id<S3Client.ListObjectsReturn.Error>({
+                    isSuccess: false,
+                    isKnownError: false,
+                    errorMessage: error instanceof Error ? error.message : String(error)
+                });
             }
 
             return id<S3Client.ListObjectsReturn.Success>({
