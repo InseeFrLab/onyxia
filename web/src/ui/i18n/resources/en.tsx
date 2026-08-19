@@ -322,6 +322,11 @@ export const translations: Translations<"en"> = {
         "validity duration one week": "1 week",
         "selected duration": "the selected duration"
     },
+    S3SharePrefixDialog: {
+        "copy folder URL aria label": "Copy folder URL",
+        "public sharing note":
+            "Anyone with this link can open this folder, even without an account. This link is available because this folder or one of its descendants has been made public."
+    },
     S3Explorer: {
         "page header title": "Data Storage",
         "no profile title": "Connect your object storage",
@@ -335,6 +340,9 @@ export const translations: Translations<"en"> = {
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Share object"
+    },
+    S3SharePrefixDialogContainer: {
+        "dialog title": "Share folder"
     },
     S3BookmarksBar: {
         "s3 bookmarks aria label": "S3 bookmarks",

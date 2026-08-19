@@ -30,6 +30,7 @@ type S3Config_S3_EnvValue_ExpectedShape = ArrayOrNot<{
         >;
         oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
     };
+    anonymousProfileName?: string;
     bookmarks?: ({
         s3Uri: string;
         title: LocalizedString;
@@ -98,6 +99,7 @@ const zS3Config_S3_EnvValue_ExpectedShape = (() => {
                 oidcConfiguration: zOidcConfiguration.optional()
             })
             .optional(),
+        anonymousProfileName: z.string().optional(),
         bookmarks: z.array(zBookmark).optional()
     });
 
@@ -128,6 +130,7 @@ export namespace S3Config {
             roles: Entry.StsRole[];
             oidcParams: OidcParams_Partial;
         };
+        anonymousProfileName: string | undefined;
         bookmarks: Entry.Bookmark[];
     };
 
@@ -249,6 +252,7 @@ export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Confi
                         })()
                     }
                 },
+                anonymousProfileName: s3Config.anonymousProfileName,
                 bookmarks: (s3Config.bookmarks ?? []).map(
                     (bookmark): S3Config.Entry.Bookmark => ({
                         s3UriStr_templated: bookmark.s3Uri,

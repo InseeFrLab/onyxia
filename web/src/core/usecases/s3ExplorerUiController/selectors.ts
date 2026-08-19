@@ -114,6 +114,12 @@ export namespace MainView {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
             policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
+            routeParamsForSharing:
+                | {
+                      profile: string;
+                      s3UriWithoutScheme: string;
+                  }
+                | undefined;
         };
 
         export type Object = Common & {
@@ -134,6 +140,42 @@ const profileName = createSelector(
             return undefined;
         }
         return ambientS3Profile.profileName;
+    }
+);
+
+const profileName_anonymous = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    s3ProfilesManagement.selectors.s3Profiles,
+    (ambientS3Profile, s3Profiles) => {
+        if (ambientS3Profile === undefined) {
+            return undefined;
+        }
+        if (ambientS3Profile.origin !== "defined in region") {
+            return undefined;
+        }
+        if (
+            !ambientS3Profile.paramsOfCreateS3Client.isStsEnabled &&
+            ambientS3Profile.paramsOfCreateS3Client.credentials === undefined
+        ) {
+            return ambientS3Profile.profileName;
+        }
+
+        const s3Profile_anonymous = s3Profiles.find(
+            s3Profile =>
+                s3Profile.origin === "defined in region" &&
+                !s3Profile.paramsOfCreateS3Client.isStsEnabled &&
+                s3Profile.paramsOfCreateS3Client.credentials === undefined &&
+                s3Profile.paramsOfCreateS3Client.url ===
+                    ambientS3Profile.paramsOfCreateS3Client.url &&
+                s3Profile.paramsOfCreateS3Client.region ===
+                    ambientS3Profile.paramsOfCreateS3Client.region
+        );
+
+        if (s3Profile_anonymous === undefined) {
+            return undefined;
+        }
+
+        return s3Profile_anonymous.profileName;
     }
 );
 
@@ -286,12 +328,14 @@ const items = createSelector(
             : paramsOfCreateS3Client.credentials === undefined;
         return isAnonymousS3Profile;
     }),
+    profileName_anonymous,
     (
         listedPrefix_state,
         uploads_profile,
         deletions_profile,
         bucketPoliciesByBucket,
-        isAnonymousS3Profile
+        isAnonymousS3Profile,
+        profileName_anonymous
     ): MainView.Item[] | undefined => {
         if (listedPrefix_state === undefined) {
             return undefined;
@@ -325,20 +369,9 @@ const items = createSelector(
                             lastModified: item.lastModified,
                             size: item.size
                         });
-                    case "prefix":
-                        return id<MainView.Item.PrefixSegment>({
-                            type: "prefix segment",
-                            displayName: (() => {
-                                const lastSegment = item.s3Uri.keySegments.at(-1);
-
-                                assert(lastSegment !== undefined);
-
-                                return lastSegment;
-                            })(),
-                            s3Uri: item.s3Uri,
-                            uploadProgressPercent: undefined,
-                            isDeleting: false,
-                            policy: isAnonymousS3Profile
+                    case "prefix": {
+                        const policy: MainView.Item.PrefixSegment["policy"] =
+                            isAnonymousS3Profile
                                 ? // NOTE: Semantically false but yield the intended result.
                                   { isPublic: false, canBeMadePublic: false }
                                 : getHasPrefixBeMadePublic({
@@ -355,8 +388,55 @@ const items = createSelector(
                                                 s3Uri: item.s3Uri,
                                                 bucketPoliciesByBucket
                                             }).isWithinPrefixThatHasBeenMadePublic
-                                    }
+                                    };
+
+                        return id<MainView.Item.PrefixSegment>({
+                            type: "prefix segment",
+                            displayName: (() => {
+                                const lastSegment = item.s3Uri.keySegments.at(-1);
+
+                                assert(lastSegment !== undefined);
+
+                                return lastSegment;
+                            })(),
+                            s3Uri: item.s3Uri,
+                            uploadProgressPercent: undefined,
+                            isDeleting: false,
+                            routeParamsForSharing: (() => {
+                                if (profileName_anonymous === undefined) {
+                                    return undefined;
+                                }
+
+                                const routeParamsForSharing = {
+                                    profile: profileName_anonymous,
+                                    s3UriWithoutScheme: stringifyS3Uri(item.s3Uri).slice(
+                                        "s3://".length
+                                    )
+                                };
+
+                                if (isAnonymousS3Profile) {
+                                    return routeParamsForSharing;
+                                }
+
+                                if (policy.isPublic) {
+                                    return routeParamsForSharing;
+                                }
+
+                                // NOTE: Semantically, this is wrong, it's sharable
+                                // if it's within a prefix that has been made public
+                                // but since we already compute that for canBeMadePublic
+                                // we reuse the value here.
+                                if (policy.canBeMadePublic) {
+                                    return undefined;
+                                }
+
+                                return routeParamsForSharing;
+                            })(),
+                            policy
                         });
+                    }
+                    default:
+                        assert<Equals<typeof item, never>>(false);
                 }
             }
         );

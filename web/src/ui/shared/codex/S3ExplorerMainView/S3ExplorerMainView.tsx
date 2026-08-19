@@ -82,6 +82,14 @@ export type S3ExplorerMainViewProps = {
 
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
+    onSharePrefix: (params: {
+        prefixName: string;
+        routeParamsForSharing: {
+            profile: string;
+            s3UriWithoutScheme: string;
+        };
+    }) => void;
+
     onBookmark: (params: { s3Uri: S3Uri }) => void;
 
     onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
@@ -112,6 +120,12 @@ export namespace S3ExplorerMainViewProps {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
             policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
+            routeParamsForSharing:
+                | {
+                      profile: string;
+                      s3UriWithoutScheme: string;
+                  }
+                | undefined;
         };
 
         export type Object = Common & {
@@ -138,6 +152,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onDelete,
         onDownload,
         onShareObject,
+        onSharePrefix,
         onBookmark,
         bookmarkedS3Uris,
         onChangePrefixPolicy,
@@ -373,10 +388,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const selectedItemForSingleItemAction =
         selectedItems.length === 1 ? selectedItems[0] : undefined;
-    const selectedObjectForSingleItemAction =
-        selectedItemForSingleItemAction?.type === "object"
-            ? selectedItemForSingleItemAction
-            : undefined;
     const selectedPrefixForSingleItemAction =
         selectedItemForSingleItemAction?.type === "prefix segment"
             ? selectedItemForSingleItemAction
@@ -526,17 +537,29 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         }
     );
 
-    const requestShareForObject = useConstCallback(
-        (item: S3ExplorerMainViewProps.Item.Object) => {
-            if (!getIsItemActionAvailable(item)) {
-                return;
-            }
-
-            onShareObject({
-                s3Uri: item.s3Uri
-            });
+    const requestShareForItem = useConstCallback((item: S3ExplorerMainViewProps.Item) => {
+        if (!getIsItemActionAvailable(item)) {
+            return;
         }
-    );
+
+        switch (item.type) {
+            case "object":
+                onShareObject({
+                    s3Uri: item.s3Uri
+                });
+                return;
+            case "prefix segment":
+                if (item.routeParamsForSharing === undefined) {
+                    return;
+                }
+
+                onSharePrefix({
+                    prefixName: item.displayName,
+                    routeParamsForSharing: item.routeParamsForSharing
+                });
+                return;
+        }
+    });
 
     const requestPrefixPolicyChangeForItem = useConstCallback(
         (item: S3ExplorerMainViewProps.Item.PrefixSegment) => {
@@ -629,14 +652,14 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         requestDeletionForItems([item]);
     });
 
-    const onShareObjectFactory = useCallbackFactory(([itemKey]: [string]) => {
+    const onShareFactory = useCallbackFactory(([itemKey]: [string]) => {
         const item = itemByKey.get(itemKey);
 
-        if (item === undefined || item.type !== "object") {
+        if (item === undefined) {
             return;
         }
 
-        requestShareForObject(item);
+        requestShareForItem(item);
     });
 
     const onChangePrefixPolicyFactory = useCallbackFactory(([itemKey]: [string]) => {
@@ -800,15 +823,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                       }
                             }
                             share={
-                                selectedObjectForSingleItemAction === undefined ||
+                                selectedItemForSingleItemAction === undefined ||
                                 !getIsItemActionAvailable(
-                                    selectedObjectForSingleItemAction
-                                )
+                                    selectedItemForSingleItemAction
+                                ) ||
+                                (selectedItemForSingleItemAction.type ===
+                                    "prefix segment" &&
+                                    selectedItemForSingleItemAction.routeParamsForSharing ===
+                                        undefined)
                                     ? undefined
                                     : {
                                           callback: () =>
-                                              requestShareForObject(
-                                                  selectedObjectForSingleItemAction
+                                              requestShareForItem(
+                                                  selectedItemForSingleItemAction
                                               )
                                       }
                             }
@@ -1128,11 +1155,11 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         itemKey
                                                     )}
                                                     onDelete={onDeleteFactory(itemKey)}
-                                                    onShareObject={
-                                                        item.type === "object"
-                                                            ? onShareObjectFactory(
-                                                                  itemKey
-                                                              )
+                                                    onShare={
+                                                        item.type === "object" ||
+                                                        item.routeParamsForSharing !==
+                                                            undefined
+                                                            ? onShareFactory(itemKey)
                                                             : undefined
                                                     }
                                                     onChangePrefixPolicy={
@@ -2422,7 +2449,7 @@ type ItemRowProps = {
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
-    onShareObject: (() => void) | undefined;
+    onShare: (() => void) | undefined;
     onChangePrefixPolicy: (() => void) | undefined;
     onDownload: (() => void) | undefined;
     onBookmark: (() => void) | undefined;
@@ -2444,7 +2471,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         onRowClick,
         onNavigate,
         onDelete,
-        onShareObject,
+        onShare,
         onChangePrefixPolicy,
         onDownload,
         onBookmark,
@@ -2457,7 +2484,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const canNavigate = !item.isDeleting && !(item.type === "object" && isUploading);
     const isItemActionAvailable = getIsItemActionAvailable(item);
     const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
-    const isShareAvailable = onShareObject !== undefined && isItemActionAvailable;
+    const isShareAvailable = onShare !== undefined && isItemActionAvailable;
     const prefixPolicyAction = getPrefixPolicyAction(item);
     const isPrefixPolicyActionAvailable =
         onChangePrefixPolicy !== undefined && isItemActionAvailable;
@@ -2799,7 +2826,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                         </span>
                                     </Tooltip>
                                 )}
-                                {onShareObject !== undefined && (
+                                {onShare !== undefined && (
                                     <Tooltip title={t("share")}>
                                         <span
                                             className={classes.inlineActionWrapper}
@@ -2815,12 +2842,12 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
 
                                                     if (
                                                         !isShareAvailable ||
-                                                        onShareObject === undefined
+                                                        onShare === undefined
                                                     ) {
                                                         return;
                                                     }
 
-                                                    onShareObject();
+                                                    onShare();
                                                 }}
                                             />
                                         </span>
@@ -2933,7 +2960,7 @@ function areItemRowPropsEqual(
         previousProps.onRowClick === nextProps.onRowClick &&
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
-        previousProps.onShareObject === nextProps.onShareObject &&
+        previousProps.onShare === nextProps.onShare &&
         previousProps.onChangePrefixPolicy === nextProps.onChangePrefixPolicy &&
         previousProps.onDownload === nextProps.onDownload &&
         previousProps.onBookmark === nextProps.onBookmark &&

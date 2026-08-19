@@ -73,6 +73,7 @@ export function computeUploadStatusAtPrefix(params: {
                 s3Uri: s3Uri_newItem,
                 isDeleting: false,
                 policy: { isPublic: false, canBeMadePublic: false },
+                routeParamsForSharing: undefined,
                 uploadProgressPercent: NaN
             });
         }
