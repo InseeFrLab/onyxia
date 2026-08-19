@@ -100,7 +100,8 @@ export const DeleteSelection: Story = {
                         displayName: "prefix-name",
                         uploadProgressPercent: undefined,
                         isDeleting: false,
-                        policy: { isPublic: true }
+                        policy: { isPublic: true },
+                        routeParamsForSharing: undefined
                     },
                     {
                         type: "object",

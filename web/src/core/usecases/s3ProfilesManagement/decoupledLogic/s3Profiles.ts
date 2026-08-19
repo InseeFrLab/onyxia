@@ -1,7 +1,7 @@
 import * as projectManagement from "core/usecases/projectManagement";
 import type { S3Config } from "core/ports/OnyxiaApi/S3Config";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
-import { assert } from "tsafe";
+import { assert, id } from "tsafe";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
 import type { ResolvedTemplateStsRole } from "./resolveTemplatedStsRole";
@@ -18,7 +18,7 @@ export namespace S3Profile {
 
     export type DefinedInRegion = Common & {
         origin: "defined in region";
-        paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts;
+        paramsOfCreateS3Client: ParamsOfCreateS3Client;
     };
 
     export type CreatedByUser = Common & {
@@ -103,6 +103,10 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     return entry.bookmarks;
                 })();
 
+                const userConfigs_s3Bookmarks = parseUserConfigsS3BookmarksStr({
+                    userConfigs_s3BookmarksStr: fromVault.userConfigs_s3BookmarksStr
+                });
+
                 const buildFromRole = (params: {
                     resolvedTemplatedStsRole: ResolvedTemplateStsRole;
                 }): S3Profile.DefinedInRegion => {
@@ -165,10 +169,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                                     displayName: title,
                                     s3Uri
                                 })),
-                            ...parseUserConfigsS3BookmarksStr({
-                                userConfigs_s3BookmarksStr:
-                                    fromVault.userConfigs_s3BookmarksStr
-                            })
+                            ...userConfigs_s3Bookmarks
                                 .filter(
                                     entry =>
                                         entry.profileName ===
@@ -198,12 +199,37 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     return entry.stsRoles;
                 })();
 
-                assert(resolvedTemplatedStsRoles_forThisProfile.length !== 0);
-
-                return resolvedTemplatedStsRoles_forThisProfile.map(
+                const s3Profiles = resolvedTemplatedStsRoles_forThisProfile.map(
                     resolvedTemplatedStsRole =>
                         buildFromRole({ resolvedTemplatedStsRole })
                 );
+
+                if (c.anonymousProfileName !== undefined) {
+                    const profileName = c.anonymousProfileName;
+
+                    s3Profiles.push(
+                        id<S3Profile.DefinedInRegion>({
+                            origin: "defined in region",
+                            bookmarks: userConfigs_s3Bookmarks
+                                .filter(entry => entry.profileName === profileName)
+                                .map(entry => ({
+                                    isReadonly: false,
+                                    displayName: entry.displayName ?? undefined,
+                                    s3Uri: entry.s3Uri
+                                })),
+                            profileName,
+                            paramsOfCreateS3Client: id<ParamsOfCreateS3Client.NoSts>({
+                                url: c.url,
+                                isStsEnabled: false,
+                                credentials: undefined,
+                                pathStyleAccess: c.pathStyleAccess,
+                                region: c.region
+                            })
+                        })
+                    );
+                }
+
+                return s3Profiles;
             })
             .flat()
     ];

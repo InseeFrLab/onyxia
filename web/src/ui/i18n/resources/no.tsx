@@ -208,6 +208,9 @@ export const translations: Translations<"no"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Del objekt"
     },
+    S3SharePrefixDialogContainer: {
+        "dialog title": "Del mappe"
+    },
     S3BookmarksBar: {
         "s3 bookmarks aria label": "S3-bokmerker",
         "show more bookmarks": "Vis flere bokmerker"
@@ -425,6 +428,11 @@ export const translations: Translations<"no"> = {
         "validity duration one day": "1 dag",
         "validity duration one week": "1 uke",
         "selected duration": "den valgte varigheten"
+    },
+    S3SharePrefixDialog: {
+        "copy folder URL aria label": "Kopier mappe-URL",
+        "public sharing note":
+            "Alle med denne lenken kan åpne mappen, også uten en konto. Lenken er tilgjengelig fordi mappen eller et av elementene under den er gjort offentlig."
     },
     S3ProfileDialog: {
         "detail title": "S3-profildetaljer",

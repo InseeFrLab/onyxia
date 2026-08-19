@@ -212,6 +212,9 @@ export const translations: Translations<"nl"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Object delen"
     },
+    S3SharePrefixDialogContainer: {
+        "dialog title": "Map delen"
+    },
     S3BookmarksBar: {
         "s3 bookmarks aria label": "S3-bladwijzers",
         "show more bookmarks": "Meer bladwijzers tonen"
@@ -427,6 +430,11 @@ export const translations: Translations<"nl"> = {
         "validity duration one day": "1 dag",
         "validity duration one week": "1 week",
         "selected duration": "de geselecteerde duur"
+    },
+    S3SharePrefixDialog: {
+        "copy folder URL aria label": "Map-URL kopiëren",
+        "public sharing note":
+            "Iedereen met deze link kan deze map openen, ook zonder account. Deze link is beschikbaar omdat deze map of een onderliggend item openbaar is gemaakt."
     },
     S3ProfileDialog: {
         "detail title": "S3-profielgegevens",

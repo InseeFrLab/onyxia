@@ -26,6 +26,8 @@ export type ComponentKey =
     | import("ui/shared/codex/S3ExplorerMainView/S3ExplorerMainView").I18n
     | import("ui/shared/codex/S3ShareObjectDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/S3ShareObjectDialog").I18n
+    | import("ui/shared/codex/S3SharePrefixDialog").I18n
+    | import("ui/pages/s3Explorer/dialogs/S3SharePrefixDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/S3ProfileDialog").I18n
     | import("ui/pages/s3Explorer/Page").I18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksBar").I18n

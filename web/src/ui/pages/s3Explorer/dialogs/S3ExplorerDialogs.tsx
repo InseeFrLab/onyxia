@@ -29,6 +29,10 @@ import {
     type S3ShareObjectDialogProps
 } from "./S3ShareObjectDialog";
 import {
+    S3SharePrefixDialog,
+    type S3SharePrefixDialogProps
+} from "./S3SharePrefixDialog";
+import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
@@ -43,6 +47,7 @@ export type S3ExplorerDialogsProps = {
     evtMakePrefixPublicDialogOpen: MakePrefixPublicDialogProps["evtOpen"];
     evtDisplayErrorDialogOpen: DisplayErrorDialogProps["evtOpen"];
     evtS3ShareObjectDialogOpen: S3ShareObjectDialogProps["evtOpen"];
+    evtS3SharePrefixDialogOpen: S3SharePrefixDialogProps["evtOpen"];
     evtMaybeAcknowledgeConfigVolatilityDialogOpen: MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"];
 };
 
@@ -57,6 +62,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
         evtMakePrefixPublicDialogOpen,
         evtDisplayErrorDialogOpen,
         evtS3ShareObjectDialogOpen,
+        evtS3SharePrefixDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = props;
 
@@ -75,6 +81,7 @@ export function S3ExplorerDialogs(props: S3ExplorerDialogsProps) {
             <MakePrefixPublicDialog evtOpen={evtMakePrefixPublicDialogOpen} />
             <DisplayErrorDialog evtOpen={evtDisplayErrorDialogOpen} />
             <S3ShareObjectDialog evtOpen={evtS3ShareObjectDialogOpen} />
+            <S3SharePrefixDialog evtOpen={evtS3SharePrefixDialogOpen} />
             <MaybeAcknowledgeConfigVolatilityDialog
                 evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
             />

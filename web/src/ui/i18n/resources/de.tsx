@@ -216,6 +216,9 @@ export const translations: Translations<"de"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Objekt teilen"
     },
+    S3SharePrefixDialogContainer: {
+        "dialog title": "Ordner teilen"
+    },
     S3BookmarksBar: {
         "s3 bookmarks aria label": "S3-Lesezeichen",
         "show more bookmarks": "Weitere Lesezeichen anzeigen"
@@ -438,6 +441,11 @@ export const translations: Translations<"de"> = {
         "validity duration one day": "1 Tag",
         "validity duration one week": "1 Woche",
         "selected duration": "die ausgewählte Dauer"
+    },
+    S3SharePrefixDialog: {
+        "copy folder URL aria label": "Ordner-URL kopieren",
+        "public sharing note":
+            "Jede Person mit diesem Link kann diesen Ordner auch ohne Konto öffnen. Dieser Link ist verfügbar, weil dieser Ordner oder eines seiner untergeordneten Elemente öffentlich gemacht wurde."
     },
     S3ProfileDialog: {
         "detail title": "S3-Profildetails",

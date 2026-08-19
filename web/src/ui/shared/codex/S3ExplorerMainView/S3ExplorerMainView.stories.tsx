@@ -21,6 +21,12 @@ type MockNode =
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
           policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
+          routeParamsForSharing:
+              | {
+                    profile: string;
+                    s3UriWithoutScheme: string;
+                }
+              | undefined;
       }
     | {
           type: "object";
@@ -68,27 +74,39 @@ function getDisplayName(s3Uri: S3Uri): string {
     return s3Uri.keySegments.at(-1) ?? s3Uri.bucket;
 }
 
+function getRouteParamsForSharing(s3Uri: S3Uri.TerminatedByDelimiter) {
+    return {
+        profile: "anonymous",
+        s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice("s3://".length)
+    };
+}
+
 const baseNodes: MockNode[] = [
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: true }
+        policy: { isPublic: true },
+        routeParamsForSharing: getRouteParamsForSharing(
+            parsePrefixOrThrow("s3://analytics-data/exports/")
+        )
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/raw/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: false, canBeMadePublic: true }
+        policy: { isPublic: false, canBeMadePublic: true },
+        routeParamsForSharing: undefined
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/tmp/"),
         uploadProgressPercent: 42,
         isDeleting: false,
-        policy: { isPublic: false, canBeMadePublic: false }
+        policy: { isPublic: false, canBeMadePublic: false },
+        routeParamsForSharing: undefined
     },
     {
         type: "object",
@@ -122,14 +140,18 @@ const nestedNodes: MockNode[] = [
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: false, canBeMadePublic: true }
+        policy: { isPublic: false, canBeMadePublic: true },
+        routeParamsForSharing: undefined
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2025/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: true }
+        policy: { isPublic: true },
+        routeParamsForSharing: getRouteParamsForSharing(
+            parsePrefixOrThrow("s3://analytics-data/exports/2025/")
+        )
     },
     {
         type: "object",
@@ -164,6 +186,7 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onDelete: action("delete"),
     onDownload: action("download"),
     onShareObject: action("shareObject"),
+    onSharePrefix: action("sharePrefix"),
     onBookmark: action("bookmark"),
     bookmarkedS3Uris: [],
     onChangePrefixPolicy: action("changePrefixPolicy"),
@@ -228,6 +251,7 @@ function StatefulExplorer(
         | "onPutObjects"
         | "onDownload"
         | "onShareObject"
+        | "onSharePrefix"
         | "onBookmark"
         | "bookmarkedS3Uris"
         | "onChangePrefixPolicy"
@@ -283,7 +307,8 @@ function StatefulExplorer(
                             },
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            policy: { isPublic: false, canBeMadePublic: true }
+                            policy: { isPublic: false, canBeMadePublic: true },
+                            routeParamsForSharing: undefined
                         }
                     ]);
                 }}
@@ -339,6 +364,9 @@ function StatefulExplorer(
                 }}
                 onShareObject={({ s3Uri }) => {
                     action("shareObject")(s3Uri);
+                }}
+                onSharePrefix={params => {
+                    action("sharePrefix")(params);
                 }}
                 onBookmark={({ s3Uri }) => {
                     action("bookmark")(s3Uri);
@@ -419,6 +447,7 @@ export const EmptyPrefix: Story = {
         onDelete: action("delete"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
+        onSharePrefix: action("sharePrefix"),
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
@@ -496,6 +525,7 @@ export const FullyQualifiedObject: Story = {
         onDelete: action("delete"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
+        onSharePrefix: action("sharePrefix"),
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
@@ -525,6 +555,7 @@ export const AccessDenied: Story = {
         onDelete: action("delete"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
+        onSharePrefix: action("sharePrefix"),
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),

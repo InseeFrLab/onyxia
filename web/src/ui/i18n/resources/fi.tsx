@@ -208,6 +208,9 @@ export const translations: Translations<"fi"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Jaa objekti"
     },
+    S3SharePrefixDialogContainer: {
+        "dialog title": "Jaa kansio"
+    },
     S3BookmarksBar: {
         "s3 bookmarks aria label": "S3-kirjanmerkit",
         "show more bookmarks": "Näytä lisää kirjanmerkkejä"
@@ -422,6 +425,11 @@ export const translations: Translations<"fi"> = {
         "validity duration one day": "1 päivä",
         "validity duration one week": "1 viikko",
         "selected duration": "valittu kesto"
+    },
+    S3SharePrefixDialog: {
+        "copy folder URL aria label": "Kopioi kansion URL",
+        "public sharing note":
+            "Kuka tahansa linkin saanut voi avata tämän kansion myös ilman käyttäjätiliä. Linkki on käytettävissä, koska tämä kansio tai jokin sen alikohteista on asetettu julkiseksi."
     },
     S3ProfileDialog: {
         "detail title": "S3-profiilin tiedot",

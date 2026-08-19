@@ -189,6 +189,9 @@ export const translations: Translations<"zh-CN"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"
     },
+    S3SharePrefixDialogContainer: {
+        "dialog title": "共享文件夹"
+    },
     S3BookmarksBar: {
         "s3 bookmarks aria label": "S3 书签",
         "show more bookmarks": "显示更多书签"
@@ -396,6 +399,11 @@ export const translations: Translations<"zh-CN"> = {
         "validity duration one day": "1 天",
         "validity duration one week": "1 周",
         "selected duration": "所选时长"
+    },
+    S3SharePrefixDialog: {
+        "copy folder URL aria label": "复制文件夹 URL",
+        "public sharing note":
+            "任何拥有此链接的人都可以打开此文件夹，即使没有帐户。此链接可用，是因为此文件夹或其后代之一已设为公开。"
     },
     S3ProfileDialog: {
         "detail title": "S3 配置文件详情",

@@ -95,6 +95,7 @@ function S3Explorer() {
             evtDisplayErrorDialogOpen: new Evt(),
             evtS3ProfileDialogOpen: new Evt(),
             evtS3ShareObjectDialogOpen: new Evt(),
+            evtS3SharePrefixDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
     );
@@ -617,6 +618,16 @@ function S3Explorer() {
                                     onShareObject={({ s3Uri }) => {
                                         dialogProps.evtS3ShareObjectDialogOpen.post({
                                             s3Uri
+                                        });
+                                    }}
+                                    onSharePrefix={params => {
+                                        const { prefixName, routeParamsForSharing } =
+                                            params;
+
+                                        dialogProps.evtS3SharePrefixDialogOpen.post({
+                                            prefixName,
+                                            link: routes.s3Explorer(routeParamsForSharing)
+                                                .link
                                         });
                                     }}
                                     onBookmark={toggleBookmarkFromDataView}
