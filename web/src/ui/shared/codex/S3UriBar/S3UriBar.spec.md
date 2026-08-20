@@ -197,7 +197,7 @@ export type S3UriBarProps = {
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
     - Segment short click => request navigation (`onS3UriChange`).
-    - Segment long press (`>= 100ms`) => enter edit mode (internal state).
+    - Segment long press (`>= 270ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.
     - If the parent updates `s3Uri` externally while edit mode is open, the input draft must resync to that external value.

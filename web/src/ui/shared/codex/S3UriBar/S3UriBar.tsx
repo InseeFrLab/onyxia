@@ -2075,7 +2075,7 @@ type NavigationCrumbItem = {
     isPublicStart: boolean;
 };
 
-const longPressDelayMs = 200;
+const longPressDelayMs = 270;
 const hintsPanelHorizontalEdgePaddingPx = 8;
 const hintsPanelVerticalOffsetPx = 6;
 const hintsPanelFallbackWidthPx = 280;
