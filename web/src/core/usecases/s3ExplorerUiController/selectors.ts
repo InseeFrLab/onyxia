@@ -114,12 +114,7 @@ export namespace MainView {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
             policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            routeParamsForSharing:
-                | {
-                      profile: string;
-                      s3UriWithoutScheme: string;
-                  }
-                | undefined;
+            profileNameForSharing: string | undefined;
         };
 
         export type Object = Common & {
@@ -402,24 +397,17 @@ const items = createSelector(
                             s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            routeParamsForSharing: (() => {
+                            profileNameForSharing: (() => {
                                 if (profileName_anonymous === undefined) {
                                     return undefined;
                                 }
 
-                                const routeParamsForSharing = {
-                                    profile: profileName_anonymous,
-                                    s3UriWithoutScheme: stringifyS3Uri(item.s3Uri).slice(
-                                        "s3://".length
-                                    )
-                                };
-
                                 if (isAnonymousS3Profile) {
-                                    return routeParamsForSharing;
+                                    return profileName_anonymous;
                                 }
 
                                 if (policy.isPublic) {
-                                    return routeParamsForSharing;
+                                    return profileName_anonymous;
                                 }
 
                                 // NOTE: Semantically, this is wrong, it's sharable
@@ -430,7 +418,7 @@ const items = createSelector(
                                     return undefined;
                                 }
 
-                                return routeParamsForSharing;
+                                return profileName_anonymous;
                             })(),
                             policy
                         });

@@ -620,16 +620,12 @@ function S3Explorer() {
                                             s3Uri
                                         });
                                     }}
-                                    onSharePrefix={params => {
-                                        const { prefixName, routeParamsForSharing } =
-                                            params;
-
+                                    onSharePrefix={({ s3Uri, anonymousProfileName }) =>
                                         dialogProps.evtS3SharePrefixDialogOpen.post({
-                                            prefixName,
-                                            link: routes.s3Explorer(routeParamsForSharing)
-                                                .link
-                                        });
-                                    }}
+                                            s3Uri,
+                                            anonymousProfileName
+                                        })
+                                    }
                                     onBookmark={toggleBookmarkFromDataView}
                                     bookmarkedS3Uris={mainView.bookmarks.items.map(
                                         item => item.s3Uri
