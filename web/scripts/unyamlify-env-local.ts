@@ -54,6 +54,7 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `              roleSessionName: ""`,
                 `            }`,
                 `          },`,
+                `          anonymousProfileName: "anonymous",`,
                 `          bookmarks: [`,
                 `            {`,
                 `              s3Uri: "s3://$1/",`,
