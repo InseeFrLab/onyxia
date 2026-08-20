@@ -4,12 +4,14 @@ import { useState } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { S3SharePrefixDialog as S3SharePrefixDialog_headless } from "ui/shared/codex/S3SharePrefixDialog";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
-import type { Link } from "type-route";
+import { routes } from "ui/routes";
+import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
+import { assert } from "tsafe";
 
 export type S3SharePrefixDialogProps = {
     evtOpen: Evt<{
-        prefixName: string;
-        link: Link;
+        s3Uri: S3Uri.TerminatedByDelimiter;
+        anonymousProfileName: string;
     }>;
 };
 
@@ -33,18 +35,35 @@ function S3SharePrefixDialogContainer(props: S3SharePrefixDialogProps) {
 
     const { t } = useTranslation({ S3SharePrefixDialogContainer });
 
+    const body = (() => {
+        if (state === undefined) {
+            return undefined;
+        }
+
+        const prefixBasename = state.s3Uri.keySegments.at(-1);
+
+        assert(prefixBasename !== undefined);
+
+        const onyxiaUrl =
+            window.location.origin +
+            routes.s3Explorer({
+                s3UriWithoutScheme: stringifyS3Uri(state.s3Uri).slice("s3://".length),
+                profile: state.anonymousProfileName
+            }).link.href;
+
+        return (
+            <S3SharePrefixDialog_headless
+                prefixBasename={prefixBasename}
+                onyxiaUrl={onyxiaUrl}
+            />
+        );
+    })();
+
     return (
         <Dialog
             maxWidth="xl"
             title={t("dialog title")}
-            body={
-                state === undefined ? undefined : (
-                    <S3SharePrefixDialog_headless
-                        prefixName={state.prefixName}
-                        url={state.link.href}
-                    />
-                )
-            }
+            body={body}
             isOpen={state !== undefined}
             onClose={() => setState(undefined)}
             showCloseButton

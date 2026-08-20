@@ -109,6 +109,33 @@ export function S3DialogCopyUrlField(props: {
     );
 }
 
+export function S3DialogCopyPlainUrlField(props: {
+    value: string;
+    copyLabel?: string;
+    ariaLabel: string;
+    onCopied?: () => void;
+}) {
+    const { classes } = useStyles_S3DialogCopyField();
+
+    return (
+        <S3DialogCopyFieldBase
+            {...props}
+            isMultiline={true}
+            hasTitle={false}
+            renderValue={value => (
+                <a
+                    href={value}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={classes.plainUrlPreview}
+                >
+                    {value}
+                </a>
+            )}
+        />
+    );
+}
+
 function S3DialogCopyFieldBase(props: {
     value: string | undefined;
     pendingText?: string;
@@ -600,6 +627,23 @@ const useStyles_S3DialogCopyField = tss
             lineHeight: 1.45,
             "&:hover": {
                 textDecoration: "none"
+            },
+            "&:focus-visible": {
+                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
+                outlineOffset: 2,
+                borderRadius: 4
+            }
+        },
+        plainUrlPreview: {
+            display: "block",
+            minWidth: 0,
+            color: theme.colors.useCases.typography.textFocus,
+            textDecoration: "none",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+            "&:hover": {
+                textDecoration: "underline"
             },
             "&:focus-visible": {
                 outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,

@@ -21,12 +21,7 @@ type MockNode =
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
           policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-          routeParamsForSharing:
-              | {
-                    profile: string;
-                    s3UriWithoutScheme: string;
-                }
-              | undefined;
+          profileNameForSharing: string | undefined;
       }
     | {
           type: "object";
@@ -74,13 +69,6 @@ function getDisplayName(s3Uri: S3Uri): string {
     return s3Uri.keySegments.at(-1) ?? s3Uri.bucket;
 }
 
-function getRouteParamsForSharing(s3Uri: S3Uri.TerminatedByDelimiter) {
-    return {
-        profile: "anonymous",
-        s3UriWithoutScheme: stringifyS3Uri(s3Uri).slice("s3://".length)
-    };
-}
-
 const baseNodes: MockNode[] = [
     {
         type: "prefix segment",
@@ -88,9 +76,7 @@ const baseNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         policy: { isPublic: true },
-        routeParamsForSharing: getRouteParamsForSharing(
-            parsePrefixOrThrow("s3://analytics-data/exports/")
-        )
+        profileNameForSharing: "anonymous"
     },
     {
         type: "prefix segment",
@@ -98,7 +84,7 @@ const baseNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         policy: { isPublic: false, canBeMadePublic: true },
-        routeParamsForSharing: undefined
+        profileNameForSharing: undefined
     },
     {
         type: "prefix segment",
@@ -106,7 +92,7 @@ const baseNodes: MockNode[] = [
         uploadProgressPercent: 42,
         isDeleting: false,
         policy: { isPublic: false, canBeMadePublic: false },
-        routeParamsForSharing: undefined
+        profileNameForSharing: undefined
     },
     {
         type: "object",
@@ -141,7 +127,7 @@ const nestedNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         policy: { isPublic: false, canBeMadePublic: true },
-        routeParamsForSharing: undefined
+        profileNameForSharing: undefined
     },
     {
         type: "prefix segment",
@@ -149,9 +135,7 @@ const nestedNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         policy: { isPublic: true },
-        routeParamsForSharing: getRouteParamsForSharing(
-            parsePrefixOrThrow("s3://analytics-data/exports/2025/")
-        )
+        profileNameForSharing: "anonymous"
     },
     {
         type: "object",
@@ -308,7 +292,7 @@ function StatefulExplorer(
                             uploadProgressPercent: undefined,
                             isDeleting: false,
                             policy: { isPublic: false, canBeMadePublic: true },
-                            routeParamsForSharing: undefined
+                            profileNameForSharing: undefined
                         }
                     ]);
                 }}

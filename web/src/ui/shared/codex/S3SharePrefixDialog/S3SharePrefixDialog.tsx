@@ -5,36 +5,38 @@ import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import {
-    S3DialogCopyUrlField,
+    S3DialogCopyPlainUrlField,
     S3DialogItemSummary
 } from "ui/shared/codex/S3DialogPrimitives";
 
 export type S3SharePrefixDialogProps = {
     className?: string;
-    prefixName: string;
-    url: string;
+    prefixBasename?: string;
+    onyxiaUrl: string;
 };
 
 export function S3SharePrefixDialog(props: S3SharePrefixDialogProps) {
-    const { className, prefixName, url } = props;
+    const { className, prefixBasename, onyxiaUrl } = props;
 
     const { t } = useTranslation({ S3SharePrefixDialog });
     const { classes, cx } = useStyles();
 
     return (
         <section className={cx(classes.root, className)}>
-            <div className={classes.prefixSection}>
-                <S3DialogItemSummary
-                    className={classes.prefixSummary}
-                    name={prefixName}
-                    isPublic={true}
-                    icon="folder"
-                />
-            </div>
+            {prefixBasename !== undefined && (
+                <div className={classes.prefixSection}>
+                    <S3DialogItemSummary
+                        className={classes.prefixSummary}
+                        name={prefixBasename}
+                        isPublic={true}
+                        icon="folder"
+                    />
+                </div>
+            )}
 
             <div className={classes.linkSection}>
-                <S3DialogCopyUrlField
-                    value={url}
+                <S3DialogCopyPlainUrlField
+                    value={onyxiaUrl}
                     ariaLabel={t("copy folder URL aria label")}
                 />
             </div>

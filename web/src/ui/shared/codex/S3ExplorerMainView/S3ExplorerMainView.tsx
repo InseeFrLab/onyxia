@@ -83,11 +83,8 @@ export type S3ExplorerMainViewProps = {
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
     onSharePrefix: (params: {
-        prefixName: string;
-        routeParamsForSharing: {
-            profile: string;
-            s3UriWithoutScheme: string;
-        };
+        s3Uri: S3Uri.TerminatedByDelimiter;
+        anonymousProfileName: string;
     }) => void;
 
     onBookmark: (params: { s3Uri: S3Uri }) => void;
@@ -120,12 +117,7 @@ export namespace S3ExplorerMainViewProps {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
             policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            routeParamsForSharing:
-                | {
-                      profile: string;
-                      s3UriWithoutScheme: string;
-                  }
-                | undefined;
+            profileNameForSharing: string | undefined;
         };
 
         export type Object = Common & {
@@ -549,13 +541,13 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 });
                 return;
             case "prefix segment":
-                if (item.routeParamsForSharing === undefined) {
+                if (item.profileNameForSharing === undefined) {
                     return;
                 }
 
                 onSharePrefix({
-                    prefixName: item.displayName,
-                    routeParamsForSharing: item.routeParamsForSharing
+                    s3Uri: item.s3Uri,
+                    anonymousProfileName: item.profileNameForSharing
                 });
                 return;
         }
@@ -829,7 +821,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 ) ||
                                 (selectedItemForSingleItemAction.type ===
                                     "prefix segment" &&
-                                    selectedItemForSingleItemAction.routeParamsForSharing ===
+                                    selectedItemForSingleItemAction.profileNameForSharing ===
                                         undefined)
                                     ? undefined
                                     : {
@@ -1157,7 +1149,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     onDelete={onDeleteFactory(itemKey)}
                                                     onShare={
                                                         item.type === "object" ||
-                                                        item.routeParamsForSharing !==
+                                                        item.profileNameForSharing !==
                                                             undefined
                                                             ? onShareFactory(itemKey)
                                                             : undefined

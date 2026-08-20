@@ -66,11 +66,8 @@ export type S3ExplorerMainViewProps = {
     onShareObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => void;
 
     onSharePrefix: (params: {
-        prefixName: string;
-        routeParamsForSharing: {
-            profile: string;
-            s3UriWithoutScheme: string;
-        };
+        s3Uri: S3Uri.TerminatedByDelimiter;
+        anonymousProfileName: string;
     }) => void;
 
     onBookmark: (params: { s3Uri: S3Uri }) => void;
@@ -103,12 +100,7 @@ export namespace S3ExplorerMainViewProps {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
             policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            routeParamsForSharing:
-                | {
-                      profile: string;
-                      s3UriWithoutScheme: string;
-                  }
-                | undefined;
+            profileNameForSharing: string | undefined;
         };
 
         export type Object = Common & {
@@ -229,7 +221,7 @@ for the current selection:
 - download is available when every selected item is not deleting and does not
   have an unfinished upload progress state
 - share is available for one selected object or one prefix whose
-  `routeParamsForSharing` is defined
+  `profileNameForSharing` is defined
 - make public is available only for one selected private prefix whose
   `policy.canBeMadePublic === true`
 - make private is available only for one selected public prefix
@@ -316,7 +308,7 @@ onChangePrefixPolicy({
 ### Share
 
 Share is available as a row action for object rows and prefix rows whose
-`routeParamsForSharing` is defined, provided that the item is not deleting and does
+`profileNameForSharing` is defined, provided that the item is not deleting and does
 not have an unfinished upload progress state.
 
 Clicking Share triggers:
@@ -325,8 +317,8 @@ Clicking Share triggers:
 onShareObject({ s3Uri: item.s3Uri });
 
 onSharePrefix({
-    prefixName: item.displayName,
-    routeParamsForSharing: item.routeParamsForSharing
+    s3Uri: item.s3Uri,
+    anonymousProfileName: item.profileNameForSharing
 });
 ```
 
