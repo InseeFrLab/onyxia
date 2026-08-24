@@ -135,39 +135,46 @@ export namespace S3Config {
     };
 
     export namespace Entry {
-        export type StsRole = {
-            roleARN: string;
-            roleSessionName: string;
-            profileName: string;
-        } & (
-            | {
-                  claimName: undefined;
-                  includedClaimPattern?: never;
-                  excludedClaimPattern?: never;
-              }
-            | {
-                  claimName: string;
-                  includedClaimPattern: string | undefined;
-                  excludedClaimPattern: string | undefined;
-              }
-        );
+        export type StsRole = StsRole.NonTemplated | StsRole.Templated;
 
-        export type Bookmark = {
-            s3UriStr_templated: string;
-            title: LocalizedString;
-            forProfileNames: string[];
-        } & (
-            | {
-                  claimName: undefined;
-                  includedClaimPattern?: never;
-                  excludedClaimPattern?: never;
-              }
-            | {
-                  claimName: string;
-                  includedClaimPattern: string | undefined;
-                  excludedClaimPattern: string | undefined;
-              }
-        );
+        export namespace StsRole {
+            type Common = {
+                roleARN: string;
+                roleSessionName: string;
+                profileName: string;
+            };
+
+            export type NonTemplated = Common & {
+                isTemplated: false;
+            };
+
+            export type Templated = Common & {
+                isTemplated: true;
+                claimName: string;
+                includedClaimPattern: string | undefined;
+                excludedClaimPattern: string | undefined;
+            };
+        }
+
+        export type Bookmark = Bookmark.NonTemplated | Bookmark.Templated;
+        export namespace Bookmark {
+            type Common = {
+                s3UriStr: string;
+                title: LocalizedString;
+                forProfileNames: string[];
+            };
+
+            export type NonTemplated = Common & {
+                isTemplated: false;
+            };
+
+            export type Templated = Common & {
+                isTemplated: true;
+                claimName: string;
+                includedClaimPattern: string | undefined;
+                excludedClaimPattern: string | undefined;
+            };
+        }
     }
 }
 
@@ -222,8 +229,9 @@ export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Confi
                             roleSessionName: role.roleSessionName,
                             profileName: role.profileName,
                             ...(role.claimName === undefined
-                                ? { claimName: undefined }
+                                ? { isTemplated: false }
                                 : {
+                                      isTemplated: true,
                                       claimName: role.claimName,
                                       includedClaimPattern: role.includedClaimPattern,
                                       excludedClaimPattern: role.excludedClaimPattern
@@ -255,7 +263,7 @@ export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Confi
                 anonymousProfileName: s3Config.anonymousProfileName,
                 bookmarks: (s3Config.bookmarks ?? []).map(
                     (bookmark): S3Config.Entry.Bookmark => ({
-                        s3UriStr_templated: bookmark.s3Uri,
+                        s3UriStr: bookmark.s3Uri,
                         title: bookmark.title,
                         forProfileNames:
                             bookmark.forProfileName === undefined
@@ -264,8 +272,9 @@ export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Confi
                                   ? [bookmark.forProfileName]
                                   : bookmark.forProfileName,
                         ...(bookmark.claimName === undefined
-                            ? { claimName: undefined }
+                            ? { isTemplated: false }
                             : {
+                                  isTemplated: true,
                                   claimName: bookmark.claimName,
                                   includedClaimPattern: bookmark.includedClaimPattern,
                                   excludedClaimPattern: bookmark.excludedClaimPattern

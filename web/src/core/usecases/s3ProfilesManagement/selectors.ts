@@ -1,55 +1,35 @@
 import { createSelector } from "clean-architecture";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
-import {
-    type S3Profile,
-    aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet
-} from "./decoupledLogic/s3Profiles";
+import { type S3Profile, createS3Profiles } from "./decoupledLogic/s3Profiles";
 import { name } from "./state";
 import type { State as RootState } from "core/bootstrap";
 import { getRootContext } from "core/rootContext";
 
 const state = (rootState: RootState) => rootState[name];
 
-const resolvedTemplatedBookmarks = createSelector(
-    state,
-    state => state.resolvedTemplatedBookmarks
-);
-
-const resolvedTemplatedStsRoles = createSelector(
-    state,
-    state => state.resolvedTemplatedStsRoles
-);
-
-const userConfigs_s3BookmarksStr = createSelector(
-    userConfigs.selectors.userConfigs,
-    userConfigs => userConfigs.s3BookmarksStr
-);
-
 const s3Profiles = createSelector(
     createSelector(
         projectManagement.protectedSelectors.projectConfig,
         projectConfig => projectConfig.s3Profiles
     ),
-    resolvedTemplatedBookmarks,
-    resolvedTemplatedStsRoles,
-    userConfigs_s3BookmarksStr,
+    createSelector(
+        userConfigs.selectors.userConfigs,
+        userConfigs => userConfigs.s3BookmarksStr
+    ),
+    createSelector(state, state => state.decodedIdTokens),
     (
-        s3Profiles_vault,
-        resolvedTemplatedBookmarks,
-        resolvedTemplatedStsRoles,
-        userConfigs_s3BookmarksStr
+        s3Profiles_persistenceLayer,
+        userConfigs_s3BookmarksStr,
+        decodedIdTokens
     ): S3Profile[] =>
-        aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet({
-            fromVault: {
-                s3Profiles: s3Profiles_vault,
+        createS3Profiles({
+            persistenceLayerData: {
+                s3Profiles: s3Profiles_persistenceLayer,
                 userConfigs_s3BookmarksStr
             },
-            fromConfig: {
-                entries: getRootContext().s3Config.entries,
-                resolvedTemplatedBookmarks,
-                resolvedTemplatedStsRoles
-            }
+            onyxiaInstanceS3ConfigEntries: getRootContext().s3Config.entries,
+            decodedIdTokens
         })
 );
 
@@ -69,10 +49,6 @@ const ambientS3Profile = createSelector(
         );
     }
 );
-
-export const privateSelectors = {
-    resolvedTemplatedBookmarks
-};
 
 export const selectors = {
     s3Profiles,

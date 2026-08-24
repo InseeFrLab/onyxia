@@ -27,13 +27,9 @@ const zUserProfileS3Bookmark = (() => {
 })();
 
 export function parseUserConfigsS3BookmarksStr(params: {
-    userConfigs_s3BookmarksStr: string | null;
+    userConfigs_s3BookmarksStr: string;
 }): UserConfigs_S3Bookmark[] {
     const { userConfigs_s3BookmarksStr } = params;
-
-    if (userConfigs_s3BookmarksStr === null) {
-        return [];
-    }
 
     const userProfileS3Bookmarks: unknown = JSON.parse(userConfigs_s3BookmarksStr);
 

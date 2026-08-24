@@ -3,31 +3,19 @@ import { id } from "tsafe/id";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
 
-export type ResolvedTemplateStsRole = {
+export type StsRole = {
     roleARN: string;
     roleSessionName: string;
     profileName: string;
 };
 
-export async function resolveTemplatedStsRole(params: {
-    stsRole_fromConfig: S3Config.Entry.StsRole;
-    getDecodedIdToken: () => Promise<Record<string, unknown>>;
-}): Promise<ResolvedTemplateStsRole[]> {
-    const { stsRole_fromConfig, getDecodedIdToken } = params;
-
-    if (stsRole_fromConfig.claimName === undefined) {
-        return [
-            id<ResolvedTemplateStsRole>({
-                roleARN: stsRole_fromConfig.roleARN,
-                roleSessionName: stsRole_fromConfig.roleSessionName,
-                profileName: stsRole_fromConfig.profileName
-            })
-        ];
-    }
+export function resolveTemplatedStsRole(params: {
+    stsRole_fromConfig: S3Config.Entry.StsRole.Templated;
+    decodedIdToken: Record<string, unknown>;
+}): StsRole[] {
+    const { stsRole_fromConfig, decodedIdToken } = params;
 
     const { claimName, excludedClaimPattern, includedClaimPattern } = stsRole_fromConfig;
-
-    const decodedIdToken = await getDecodedIdToken();
 
     const claimValue_arr: string[] = (() => {
         let claimValue_untrusted: unknown = (() => {
@@ -97,7 +85,7 @@ export async function resolveTemplatedStsRole(params: {
             const substituteTemplateString = (str: string) =>
                 str.replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "");
 
-            return id<ResolvedTemplateStsRole>({
+            return id<StsRole>({
                 roleARN: substituteTemplateString(stsRole_fromConfig.roleARN),
                 roleSessionName: substituteTemplateString(
                     stsRole_fromConfig.roleSessionName

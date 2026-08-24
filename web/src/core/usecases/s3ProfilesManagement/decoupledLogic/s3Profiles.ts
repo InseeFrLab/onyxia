@@ -3,10 +3,13 @@ import type { S3Config } from "core/ports/OnyxiaApi/S3Config";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import { assert, id } from "tsafe";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
-import type { ResolvedTemplateBookmark } from "./resolveTemplatedBookmark";
-import type { ResolvedTemplateStsRole } from "./resolveTemplatedStsRole";
+import { resolveTemplatedBookmark } from "./resolveTemplatedBookmark";
+import { resolveTemplatedStsRole, type StsRole } from "./resolveTemplatedStsRole";
 import type { S3Uri } from "core/tools/S3Uri";
 import { parseUserConfigsS3BookmarksStr } from "./userConfigsS3Bookmarks";
+import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
+import { parseS3Uri } from "core/tools/S3Uri";
+import { same } from "evt/tools/inDepth/same";
 
 export type S3Profile = S3Profile.DefinedInRegion | S3Profile.CreatedByUser;
 
@@ -34,33 +37,34 @@ export namespace S3Profile {
     };
 }
 
-export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
-    fromVault: {
+export function createS3Profiles(params: {
+    onyxiaInstanceS3ConfigEntries: S3Config.Entry[];
+    persistenceLayerData: {
         s3Profiles: projectManagement.ProjectConfigs.S3Profile[];
         userConfigs_s3BookmarksStr: string | null;
     };
-    fromConfig: {
-        entries: S3Config.Entry[];
-        // NOTE: The resolvedXXX can be undefined only when the function is used to
-        // the stablish the default profiles (for explorer and services)
-        resolvedTemplatedBookmarks:
-            | {
-                  correspondingS3ConfigEntryIndex: number;
-                  bookmarks: ResolvedTemplateBookmark[];
-              }[]
-            | undefined;
-        resolvedTemplatedStsRoles:
-            | {
-                  correspondingS3ConfigEntryIndex: number;
-                  stsRoles: ResolvedTemplateStsRole[];
-              }[]
-            | undefined;
-    };
+    decodedIdTokens: {
+        oidcParams: OidcParams_Partial;
+        decodedIdToken: Record<string, unknown>;
+    }[];
 }): S3Profile[] {
-    const { fromVault, fromConfig } = params;
+    const { onyxiaInstanceS3ConfigEntries, persistenceLayerData, decodedIdTokens } =
+        params;
+
+    const bookmarks_user: {
+        displayName: string | undefined;
+        s3Uri: S3Uri;
+        profileName: string;
+    }[] =
+        persistenceLayerData.userConfigs_s3BookmarksStr === null
+            ? []
+            : parseUserConfigsS3BookmarksStr({
+                  userConfigs_s3BookmarksStr:
+                      persistenceLayerData.userConfigs_s3BookmarksStr
+              });
 
     const s3Profiles: S3Profile[] = [
-        ...fromVault.s3Profiles
+        ...persistenceLayerData.s3Profiles
             .map((c): S3Profile.CreatedByUser => {
                 const url = c.url;
                 const pathStyleAccess = c.pathStyleAccess;
@@ -87,30 +91,102 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                 };
             })
             .sort((a, b) => b.creationTime - a.creationTime),
-        ...fromConfig.entries
-            .map((c, index): S3Profile.DefinedInRegion[] => {
-                const resolvedTemplatedBookmarks_forThisProfile = (() => {
-                    if (fromConfig.resolvedTemplatedBookmarks === undefined) {
-                        return [];
-                    }
-
-                    const entry = fromConfig.resolvedTemplatedBookmarks.find(
-                        e => e.correspondingS3ConfigEntryIndex === index
+        ...onyxiaInstanceS3ConfigEntries
+            .map((c): S3Profile.DefinedInRegion[] => {
+                const decodedIdToken = (() => {
+                    const wrap = decodedIdTokens.find(wrap =>
+                        same(wrap.oidcParams, c.sts.oidcParams)
                     );
 
-                    assert(entry !== undefined);
+                    assert(wrap !== undefined);
 
-                    return entry.bookmarks;
+                    return wrap.decodedIdToken;
                 })();
 
-                const userConfigs_s3Bookmarks = parseUserConfigsS3BookmarksStr({
-                    userConfigs_s3BookmarksStr: fromVault.userConfigs_s3BookmarksStr
-                });
+                const bookmarks_admin: {
+                    title: LocalizedString;
+                    s3Uri: S3Uri;
+                    forProfileNames: string[];
+                }[] = c.bookmarks
+                    .map(bookmark_fromConfig => {
+                        if (!bookmark_fromConfig.isTemplated) {
+                            return [
+                                {
+                                    s3Uri: parseS3Uri({
+                                        value: bookmark_fromConfig.s3UriStr,
+                                        delimiter: "/"
+                                    }),
+                                    title: bookmark_fromConfig.title,
+                                    forProfileNames: bookmark_fromConfig.forProfileNames
+                                }
+                            ];
+                        }
+
+                        const bookmarks = resolveTemplatedBookmark({
+                            bookmark_fromConfig,
+                            decodedIdToken
+                        });
+
+                        return bookmarks;
+                    })
+                    .flat();
+
+                const getBookmarksForProfileName = (params: {
+                    profileName: string;
+                }): S3Profile.Bookmark[] => {
+                    const { profileName } = params;
+                    return [
+                        ...bookmarks_admin
+                            .filter(({ forProfileNames }) => {
+                                if (forProfileNames.length === 0) {
+                                    return true;
+                                }
+
+                                const getDoMatch = (params: {
+                                    stringWithWildcards: string;
+                                    candidate: string;
+                                }): boolean => {
+                                    const { stringWithWildcards, candidate } = params;
+
+                                    if (!stringWithWildcards.includes("*")) {
+                                        return stringWithWildcards === candidate;
+                                    }
+
+                                    const escapedRegex = stringWithWildcards
+                                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+                                        .replace(/\\\*/g, ".*");
+
+                                    return new RegExp(`^${escapedRegex}$`).test(
+                                        candidate
+                                    );
+                                };
+
+                                return forProfileNames.some(profileName_withWildcards =>
+                                    getDoMatch({
+                                        stringWithWildcards: profileName_withWildcards,
+                                        candidate: profileName
+                                    })
+                                );
+                            })
+                            .map(({ title, s3Uri }) => ({
+                                isReadonly: true,
+                                displayName: title,
+                                s3Uri
+                            })),
+                        ...bookmarks_user
+                            .filter(bookmark => bookmark.profileName === profileName)
+                            .map(bookmark => ({
+                                isReadonly: false,
+                                displayName: bookmark.displayName || undefined,
+                                s3Uri: bookmark.s3Uri
+                            }))
+                    ];
+                };
 
                 const buildFromRole = (params: {
-                    resolvedTemplatedStsRole: ResolvedTemplateStsRole;
+                    stsRole: StsRole;
                 }): S3Profile.DefinedInRegion => {
-                    const { resolvedTemplatedStsRole } = params;
+                    const { stsRole } = params;
 
                     const paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts = {
                         url: c.url,
@@ -120,88 +196,42 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                         region: c.region,
                         oidcParams: c.sts.oidcParams,
                         durationSeconds: c.sts.durationSeconds,
-                        role: resolvedTemplatedStsRole
+                        role: stsRole
                     };
+
+                    const { profileName } = stsRole;
 
                     return {
                         origin: "onyxia instance config",
-                        profileName: resolvedTemplatedStsRole.profileName,
-                        bookmarks: [
-                            ...resolvedTemplatedBookmarks_forThisProfile
-                                .filter(({ forProfileNames }) => {
-                                    if (forProfileNames.length === 0) {
-                                        return true;
-                                    }
-
-                                    if (resolvedTemplatedStsRole === undefined) {
-                                        return false;
-                                    }
-
-                                    const getDoMatch = (params: {
-                                        stringWithWildcards: string;
-                                        candidate: string;
-                                    }): boolean => {
-                                        const { stringWithWildcards, candidate } = params;
-
-                                        if (!stringWithWildcards.includes("*")) {
-                                            return stringWithWildcards === candidate;
-                                        }
-
-                                        const escapedRegex = stringWithWildcards
-                                            .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-                                            .replace(/\\\*/g, ".*");
-
-                                        return new RegExp(`^${escapedRegex}$`).test(
-                                            candidate
-                                        );
-                                    };
-
-                                    return forProfileNames.some(profileName =>
-                                        getDoMatch({
-                                            stringWithWildcards: profileName,
-                                            candidate:
-                                                resolvedTemplatedStsRole.profileName
-                                        })
-                                    );
-                                })
-                                .map(({ title, s3Uri }) => ({
-                                    isReadonly: true,
-                                    displayName: title,
-                                    s3Uri
-                                })),
-                            ...userConfigs_s3Bookmarks
-                                .filter(
-                                    entry =>
-                                        entry.profileName ===
-                                        resolvedTemplatedStsRole.profileName
-                                )
-                                .map(entry => ({
-                                    isReadonly: false,
-                                    displayName: entry.displayName ?? undefined,
-                                    s3Uri: entry.s3Uri
-                                }))
-                        ],
+                        profileName,
+                        bookmarks: getBookmarksForProfileName({ profileName }),
                         paramsOfCreateS3Client
                     };
                 };
 
-                const resolvedTemplatedStsRoles_forThisProfile = (() => {
-                    if (fromConfig.resolvedTemplatedStsRoles === undefined) {
-                        return [];
-                    }
+                const stsRoles: StsRole[] = c.sts.roles
+                    .map(stsRole_fromConfig => {
+                        if (!stsRole_fromConfig.isTemplated) {
+                            return [
+                                {
+                                    roleARN: stsRole_fromConfig.roleARN,
+                                    roleSessionName: stsRole_fromConfig.roleSessionName,
+                                    profileName: stsRole_fromConfig.profileName
+                                }
+                            ];
+                        }
 
-                    const entry = fromConfig.resolvedTemplatedStsRoles.find(
-                        e => e.correspondingS3ConfigEntryIndex === index
-                    );
+                        const stsRoles = resolveTemplatedStsRole({
+                            stsRole_fromConfig: stsRole_fromConfig,
+                            decodedIdToken
+                        });
 
-                    assert(entry !== undefined);
+                        return stsRoles;
+                    })
+                    .flat();
 
-                    return entry.stsRoles;
-                })();
-
-                const s3Profiles = resolvedTemplatedStsRoles_forThisProfile.map(
-                    resolvedTemplatedStsRole =>
-                        buildFromRole({ resolvedTemplatedStsRole })
+                const s3Profiles: S3Profile.DefinedInRegion[] = stsRoles.map(stsRole =>
+                    buildFromRole({ stsRole })
                 );
 
                 if (c.anonymousProfileName !== undefined) {
@@ -210,13 +240,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     s3Profiles.push(
                         id<S3Profile.DefinedInRegion>({
                             origin: "onyxia instance config",
-                            bookmarks: userConfigs_s3Bookmarks
-                                .filter(entry => entry.profileName === profileName)
-                                .map(entry => ({
-                                    isReadonly: false,
-                                    displayName: entry.displayName ?? undefined,
-                                    s3Uri: entry.s3Uri
-                                })),
+                            bookmarks: getBookmarksForProfileName({ profileName }),
                             profileName,
                             paramsOfCreateS3Client: id<ParamsOfCreateS3Client.NoSts>({
                                 url: c.url,

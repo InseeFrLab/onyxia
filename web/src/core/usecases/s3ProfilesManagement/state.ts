@@ -2,18 +2,13 @@ import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
-import type { ResolvedTemplateBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
-import type { ResolvedTemplateStsRole } from "./decoupledLogic/resolveTemplatedStsRole";
+import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
 
-type State = {
+export type State = {
     ambientProfileName: string | undefined;
-    resolvedTemplatedBookmarks: {
-        correspondingS3ConfigEntryIndex: number;
-        bookmarks: ResolvedTemplateBookmark[];
-    }[];
-    resolvedTemplatedStsRoles: {
-        correspondingS3ConfigEntryIndex: number;
-        stsRoles: ResolvedTemplateStsRole[];
+    decodedIdTokens: {
+        oidcParams: OidcParams_Partial;
+        decodedIdToken: Record<string, unknown>;
     }[];
 };
 
@@ -29,17 +24,15 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    resolvedTemplatedBookmarks: State["resolvedTemplatedBookmarks"];
-                    resolvedTemplatedStsRoles: State["resolvedTemplatedStsRoles"];
+                    decodedIdTokens: State["decodedIdTokens"];
                 };
             }
         ) => {
-            const { resolvedTemplatedBookmarks, resolvedTemplatedStsRoles } = payload;
+            const { decodedIdTokens } = payload;
 
             const state: State = {
                 ambientProfileName: undefined,
-                resolvedTemplatedBookmarks,
-                resolvedTemplatedStsRoles
+                decodedIdTokens
             };
 
             return state;
