@@ -5,34 +5,19 @@ import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
 import { type S3Uri, parseS3Uri } from "core/tools/S3Uri";
 
-export type ResolvedTemplateBookmark = {
+export type ResolvedTemplatedBookmark = {
     title: LocalizedString;
     s3Uri: S3Uri;
     forProfileNames: string[];
 };
 
-export async function resolveTemplatedBookmark(params: {
-    bookmark_fromConfig: S3Config.Entry.Bookmark;
-    getDecodedIdToken: () => Promise<Record<string, unknown>>;
-}): Promise<ResolvedTemplateBookmark[]> {
-    const { bookmark_fromConfig, getDecodedIdToken } = params;
-
-    if (bookmark_fromConfig.claimName === undefined) {
-        return [
-            id<ResolvedTemplateBookmark>({
-                s3Uri: parseS3Uri({
-                    value: bookmark_fromConfig.s3UriStr_templated,
-                    delimiter: "/"
-                }),
-                title: bookmark_fromConfig.title,
-                forProfileNames: bookmark_fromConfig.forProfileNames
-            })
-        ];
-    }
+export function resolveTemplatedBookmark(params: {
+    bookmark_fromConfig: S3Config.Entry.Bookmark.Templated;
+    decodedIdToken: Record<string, unknown>;
+}): ResolvedTemplatedBookmark[] {
+    const { bookmark_fromConfig, decodedIdToken } = params;
 
     const { claimName, excludedClaimPattern, includedClaimPattern } = bookmark_fromConfig;
-
-    const decodedIdToken = await getDecodedIdToken();
 
     const claimValue_arr: string[] = (() => {
         let claimValue_untrusted: unknown = (() => {
@@ -115,11 +100,9 @@ export async function resolveTemplatedBookmark(params: {
                 );
             };
 
-            return id<ResolvedTemplateBookmark>({
+            return id<ResolvedTemplatedBookmark>({
                 s3Uri: parseS3Uri({
-                    value: substituteTemplateString(
-                        bookmark_fromConfig.s3UriStr_templated
-                    ),
+                    value: substituteTemplateString(bookmark_fromConfig.s3UriStr),
                     delimiter: "/"
                 }),
                 title: substituteLocalizedString(bookmark_fromConfig.title),

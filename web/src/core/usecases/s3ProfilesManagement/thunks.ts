@@ -1,13 +1,11 @@
 import type { Thunks } from "core/bootstrap";
-import { selectors, privateSelectors } from "./selectors";
+import { selectors } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
 import { assert } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 import structuredClone from "@ungap/structured-clone";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
-import { resolveTemplatedBookmark } from "./decoupledLogic/resolveTemplatedBookmark";
-import { resolveTemplatedStsRole } from "./decoupledLogic/resolveTemplatedStsRole";
-import { actions } from "./state";
+import { actions, type State } from "./state";
 import type { S3Profile } from "./decoupledLogic/s3Profiles";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
 import type { S3Uri } from "core/tools/S3Uri";
@@ -101,15 +99,20 @@ export const protectedThunks = {
 
                         const doClearCachedS3Token_s3BookmarkClaimValue: boolean =
                             (() => {
-                                const resolvedTemplatedBookmarks =
-                                    privateSelectors.resolvedTemplatedBookmarks(
-                                        getState()
-                                    );
+                                const admin_bookmarks = selectors
+                                    .s3Profiles(getState())
+                                    .filter(
+                                        s3Profile =>
+                                            s3Profile.origin === "onyxia instance config"
+                                    )
+                                    .map(s3Profile => s3Profile.bookmarks)
+                                    .flat()
+                                    .filter(bookmark => bookmark.isReadonly);
 
                                 const KEY = "onyxia:s3:resolvedAdminBookmarks-hash";
 
                                 const hash = fnv1aHashToHex(
-                                    JSON.stringify(resolvedTemplatedBookmarks)
+                                    JSON.stringify(admin_bookmarks)
                                 );
 
                                 if (
@@ -304,9 +307,12 @@ export const protectedThunks = {
                         const { s3BookmarksStr } =
                             userConfigs.selectors.userConfigs(getState());
 
-                        const userConfigs_s3Bookmarks = parseUserConfigsS3BookmarksStr({
-                            userConfigs_s3BookmarksStr: s3BookmarksStr
-                        });
+                        const userConfigs_s3Bookmarks =
+                            s3BookmarksStr === null
+                                ? []
+                                : parseUserConfigsS3BookmarksStr({
+                                      userConfigs_s3BookmarksStr: s3BookmarksStr
+                                  });
 
                         const index = userConfigs_s3Bookmarks.findIndex(
                             entry =>
@@ -407,56 +413,22 @@ export const protectedThunks = {
                 return decodedIdToken;
             };
 
-            const resolvedTemplatedBookmarks = await Promise.all(
-                s3Config.entries.map(async (entry, entryIndex) => {
-                    const { bookmarks: bookmarks_region, sts } = entry;
+            const oidcParams_arr = s3Config.entries
+                .map(entry => entry.sts.oidcParams)
+                .reduce(...removeDuplicates<OidcParams_Partial>(same));
 
-                    return {
-                        correspondingS3ConfigEntryIndex: entryIndex,
-                        bookmarks: (
-                            await Promise.all(
-                                bookmarks_region.map(bookmark =>
-                                    resolveTemplatedBookmark({
-                                        bookmark_fromConfig: bookmark,
-                                        getDecodedIdToken: () =>
-                                            getDecodedIdToken({
-                                                oidcParams_partial: sts.oidcParams
-                                            })
-                                    })
-                                )
-                            )
-                        ).flat()
-                    };
-                })
-            );
-
-            const resolvedTemplatedStsRoles = await Promise.all(
-                s3Config.entries.map(async (entry, entryIndex) => {
-                    const { sts } = entry;
-
-                    return {
-                        correspondingS3ConfigEntryIndex: entryIndex,
-                        stsRoles: (
-                            await Promise.all(
-                                sts.roles.map(role =>
-                                    resolveTemplatedStsRole({
-                                        stsRole_fromConfig: role,
-                                        getDecodedIdToken: () =>
-                                            getDecodedIdToken({
-                                                oidcParams_partial: sts.oidcParams
-                                            })
-                                    })
-                                )
-                            )
-                        ).flat()
-                    };
-                })
+            const decodedIdTokens: State["decodedIdTokens"] = await Promise.all(
+                oidcParams_arr.map(async oidcParams => ({
+                    oidcParams,
+                    decodedIdToken: await getDecodedIdToken({
+                        oidcParams_partial: oidcParams
+                    })
+                }))
             );
 
             dispatch(
                 actions.initialized({
-                    resolvedTemplatedBookmarks,
-                    resolvedTemplatedStsRoles
+                    decodedIdTokens
                 })
             );
         }
