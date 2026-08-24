@@ -64,7 +64,7 @@ const ambientS3Profile = createSelector(
                     : s3Profiles => s3Profiles.profileName === ambientProfileName
             ) ??
             s3Profiles.find(s3Profile => s3Profile.profileName === "default") ??
-            s3Profiles.find(s3Profile => s3Profile.origin === "defined in region") ??
+            s3Profiles.find(s3Profile => s3Profile.origin === "onyxia instance config") ??
             s3Profiles.find(() => true)
         );
     }

@@ -64,7 +64,7 @@ const mainView = createSelector(
                 switch (s3Profile.origin) {
                     case "created by user (or group project member)":
                         return false;
-                    case "defined in region":
+                    case "onyxia instance config":
                         return true;
                 }
             })(),

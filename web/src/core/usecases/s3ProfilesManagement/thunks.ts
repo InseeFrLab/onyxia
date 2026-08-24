@@ -299,7 +299,7 @@ export const protectedThunks = {
                         );
                     }
                     break;
-                case "defined in region":
+                case "onyxia instance config":
                     {
                         const { s3BookmarksStr } =
                             userConfigs.selectors.userConfigs(getState());
