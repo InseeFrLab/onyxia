@@ -17,7 +17,7 @@ export namespace S3Profile {
     };
 
     export type DefinedInRegion = Common & {
-        origin: "defined in region";
+        origin: "onyxia instance config";
         paramsOfCreateS3Client: ParamsOfCreateS3Client;
     };
 
@@ -124,7 +124,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
                     };
 
                     return {
-                        origin: "defined in region",
+                        origin: "onyxia instance config",
                         profileName: resolvedTemplatedStsRole.profileName,
                         bookmarks: [
                             ...resolvedTemplatedBookmarks_forThisProfile
@@ -209,7 +209,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
 
                     s3Profiles.push(
                         id<S3Profile.DefinedInRegion>({
-                            origin: "defined in region",
+                            origin: "onyxia instance config",
                             bookmarks: userConfigs_s3Bookmarks
                                 .filter(entry => entry.profileName === profileName)
                                 .map(entry => ({
@@ -239,7 +239,7 @@ export function aggregateS3ProfilesFromVaultAndRegionIntoAnUnifiedSet(params: {
             return 0;
         }
 
-        return a.origin === "defined in region" ? -1 : 1;
+        return a.origin === "onyxia instance config" ? -1 : 1;
     })) {
         const s3Profiles_conflicting = s3Profiles.filter(
             s3Profile_i =>
