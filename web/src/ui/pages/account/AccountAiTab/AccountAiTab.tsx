@@ -127,230 +127,248 @@ export const AccountAiTab = memo((props: Props) => {
 
     return (
         <div className={className}>
-            {regionProviders.map(regionProvider => (
-                <div key={regionProvider.id} className={classes.regionProviderSection}>
-                    <div className={classes.regionProviderHeader}>
-                        <Text typo="object heading">{regionProvider.name}</Text>
-                        <div className={classes.regionProviderSubtitleRow}>
-                            <Text
-                                typo="body 2"
-                                className={classes.regionProviderDescription}
-                            >
-                                {regionProvider.description === undefined ? (
-                                    t("credentials section helper", {
-                                        webUiUrl: regionProvider.webUiUrl
-                                    })
-                                ) : (
-                                    <LocalizedMarkdown inline>
-                                        {regionProvider.description}
-                                    </LocalizedMarkdown>
+            <div className={classes.accountAiTabContent}>
+                {regionProviders.map(regionProvider => (
+                    <div
+                        key={regionProvider.id}
+                        className={classes.regionProviderSection}
+                    >
+                        <div className={classes.regionProviderHeader}>
+                            <Text typo="section heading">{regionProvider.name}</Text>
+                            <div className={classes.regionProviderSubtitleRow}>
+                                <Text
+                                    typo="body 2"
+                                    className={classes.regionProviderDescription}
+                                >
+                                    {regionProvider.description === undefined ? (
+                                        t("credentials section helper", {
+                                            webUiUrl: regionProvider.webUiUrl
+                                        })
+                                    ) : (
+                                        <LocalizedMarkdown inline>
+                                            {regionProvider.description}
+                                        </LocalizedMarkdown>
+                                    )}
+                                </Text>
+                                {regionProvider.auth.stateDescription ===
+                                    "authenticated" && (
+                                    <div className={classes.providerCardActions}>
+                                        <Button
+                                            variant="ternary"
+                                            startIcon={getIconUrlByName("Refresh")}
+                                            onClick={onRefreshClickFactory(
+                                                regionProvider.id
+                                            )}
+                                            className={classes.compactActionButton}
+                                        >
+                                            {t("refresh credentials")}
+                                        </Button>
+                                        {renderDefaultProviderAction({
+                                            providerId: regionProvider.id,
+                                            isDefault: regionProvider.isDefault
+                                        })}
+                                    </div>
                                 )}
+                            </div>
+                        </div>
+
+                        {regionProvider.auth.stateDescription === "no account" &&
+                            (() => {
+                                const { accountCreation } = regionProvider;
+
+                                if (
+                                    accountCreation === undefined ||
+                                    (accountCreation.title === undefined &&
+                                        accountCreation.description === undefined &&
+                                        accountCreation.buttonLabel === undefined)
+                                ) {
+                                    return (
+                                        <Text typo="body 1">
+                                            {t("no account", {
+                                                webUiUrl: regionProvider.webUiUrl
+                                            })}
+                                        </Text>
+                                    );
+                                }
+                                return (
+                                    <div className={classes.noAccountCard}>
+                                        <div className={classes.noAccountText}>
+                                            <div className={classes.noAccountTitle}>
+                                                <img
+                                                    src={openWebUiIconUrl}
+                                                    alt=""
+                                                    width={32}
+                                                    height={32}
+                                                    className={classes.noAccountLogo}
+                                                />
+                                                {accountCreation.title !== undefined && (
+                                                    <Text
+                                                        typo="body 1"
+                                                        className={
+                                                            classes.noAccountTitleText
+                                                        }
+                                                    >
+                                                        <LocalizedMarkdown inline>
+                                                            {accountCreation.title}
+                                                        </LocalizedMarkdown>
+                                                    </Text>
+                                                )}
+                                            </div>
+                                            <Text
+                                                typo="body 2"
+                                                className={classes.noAccountDescription}
+                                            >
+                                                {accountCreation.description ===
+                                                undefined ? (
+                                                    t("no account", {
+                                                        webUiUrl: regionProvider.webUiUrl
+                                                    })
+                                                ) : (
+                                                    <LocalizedMarkdown inline>
+                                                        {accountCreation.description}
+                                                    </LocalizedMarkdown>
+                                                )}
+                                            </Text>
+                                        </div>
+                                        {accountCreation.buttonLabel !== undefined && (
+                                            <Button
+                                                href={regionProvider.webUiUrl}
+                                                doOpenNewTabIfHref={true}
+                                                className={classes.noAccountButton}
+                                            >
+                                                <LocalizedMarkdown inline>
+                                                    {accountCreation.buttonLabel}
+                                                </LocalizedMarkdown>
+                                            </Button>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+
+                        {regionProvider.auth.stateDescription === "error" && (
+                            <Text typo="body 1" className={classes.errorText}>
+                                {t("gateway error")}
                             </Text>
-                            {regionProvider.auth.stateDescription === "authenticated" && (
+                        )}
+
+                        {regionProvider.auth.stateDescription === "authenticated" && (
+                            <div className={classes.providerFields}>
+                                <ProviderValueField
+                                    label={t("api base url")}
+                                    value={regionProvider.apiBase}
+                                    onRequestCopy={onFieldRequestCopyFactory(
+                                        regionProvider.apiBase
+                                    )}
+                                />
+                                <ProviderValueField
+                                    label={t("token")}
+                                    value={regionProvider.auth.token}
+                                    onRequestCopy={onFieldRequestCopyFactory(
+                                        regionProvider.auth.token
+                                    )}
+                                    isSensitiveInformation={true}
+                                />
+                                <ModelsSection
+                                    models={regionProvider.models}
+                                    selectedModel={regionProvider.selectedModelId}
+                                    onSelectedModelChange={modelId =>
+                                        ai.setSelectedModel({
+                                            providerId: regionProvider.id,
+                                            modelId
+                                        })
+                                    }
+                                />
+                            </div>
+                        )}
+                    </div>
+                ))}
+                <div className={classes.customProvidersSection}>
+                    <Divider />
+
+                    <div>
+                        <Text typo="section heading">
+                            {t("custom providers section title")}
+                        </Text>
+                        <Text
+                            typo="body 2"
+                            color="secondary"
+                            // className={classes.customProvidersDescription}
+                        >
+                            {t("custom providers section helper")}
+                        </Text>
+                    </div>
+
+                    {customProviders.map(provider => (
+                        <div key={provider.id} className={classes.customProviderCard}>
+                            <div className={classes.customProviderHeader}>
+                                <Text typo="object heading">{provider.name}</Text>
                                 <div className={classes.providerCardActions}>
                                     <Button
                                         variant="ternary"
-                                        startIcon={getIconUrlByName("Refresh")}
-                                        onClick={onRefreshClickFactory(regionProvider.id)}
+                                        startIcon={getIconUrlByName("Delete")}
+                                        onClick={onDeleteCustomProviderFactory(
+                                            provider.id
+                                        )}
                                         className={classes.compactActionButton}
                                     >
-                                        {t("refresh credentials")}
+                                        {t("delete provider")}
+                                    </Button>
+                                    <Button
+                                        variant="ternary"
+                                        startIcon={getIconUrlByName("Edit")}
+                                        onClick={onEditClickFactory(provider.id)}
+                                        className={classes.compactActionButton}
+                                    >
+                                        {t("edit provider")}
                                     </Button>
                                     {renderDefaultProviderAction({
-                                        providerId: regionProvider.id,
-                                        isDefault: regionProvider.isDefault
+                                        providerId: provider.id,
+                                        isDefault: provider.isDefault
                                     })}
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {regionProvider.auth.stateDescription === "no account" &&
-                        (() => {
-                            const { accountCreation } = regionProvider;
-
-                            if (
-                                accountCreation === undefined ||
-                                (accountCreation.title === undefined &&
-                                    accountCreation.description === undefined &&
-                                    accountCreation.buttonLabel === undefined)
-                            ) {
-                                return (
-                                    <Text typo="body 1">
-                                        {t("no account", {
-                                            webUiUrl: regionProvider.webUiUrl
-                                        })}
-                                    </Text>
-                                );
-                            }
-                            return (
-                                <div className={classes.noAccountCard}>
-                                    <div className={classes.noAccountText}>
-                                        <div className={classes.noAccountTitle}>
-                                            <img
-                                                src={openWebUiIconUrl}
-                                                alt=""
-                                                width={32}
-                                                height={32}
-                                                className={classes.noAccountLogo}
-                                            />
-                                            {accountCreation.title !== undefined && (
-                                                <Text
-                                                    typo="body 1"
-                                                    className={classes.noAccountTitleText}
-                                                >
-                                                    <LocalizedMarkdown inline>
-                                                        {accountCreation.title}
-                                                    </LocalizedMarkdown>
-                                                </Text>
-                                            )}
-                                        </div>
-                                        <Text
-                                            typo="body 2"
-                                            className={classes.noAccountDescription}
-                                        >
-                                            {accountCreation.description === undefined ? (
-                                                t("no account", {
-                                                    webUiUrl: regionProvider.webUiUrl
-                                                })
-                                            ) : (
-                                                <LocalizedMarkdown inline>
-                                                    {accountCreation.description}
-                                                </LocalizedMarkdown>
-                                            )}
-                                        </Text>
-                                    </div>
-                                    {accountCreation.buttonLabel !== undefined && (
-                                        <Button
-                                            href={regionProvider.webUiUrl}
-                                            doOpenNewTabIfHref={true}
-                                            className={classes.noAccountButton}
-                                        >
-                                            <LocalizedMarkdown inline>
-                                                {accountCreation.buttonLabel}
-                                            </LocalizedMarkdown>
-                                        </Button>
+                            </div>
+                            <div className={classes.customProviderFields}>
+                                <ProviderValueField
+                                    label={t("custom provider api base field")}
+                                    value={provider.apiBase}
+                                    onRequestCopy={onFieldRequestCopyFactory(
+                                        provider.apiBase
                                     )}
-                                </div>
-                            );
-                        })()}
-
-                    {regionProvider.auth.stateDescription === "error" && (
-                        <Text typo="body 1" className={classes.errorText}>
-                            {t("gateway error")}
-                        </Text>
-                    )}
-
-                    {regionProvider.auth.stateDescription === "authenticated" && (
-                        <div className={classes.providerFields}>
-                            <ProviderValueField
-                                label={t("api base url")}
-                                value={regionProvider.apiBase}
-                                onRequestCopy={onFieldRequestCopyFactory(
-                                    regionProvider.apiBase
-                                )}
-                            />
-                            <ProviderValueField
-                                label={t("token")}
-                                value={regionProvider.auth.token}
-                                onRequestCopy={onFieldRequestCopyFactory(
-                                    regionProvider.auth.token
-                                )}
-                                isSensitiveInformation={true}
-                            />
-                            <ModelsSection
-                                models={regionProvider.models}
-                                selectedModel={regionProvider.selectedModelId}
-                                onSelectedModelChange={modelId =>
-                                    ai.setSelectedModel({
-                                        providerId: regionProvider.id,
-                                        modelId
-                                    })
-                                }
-                            />
-                        </div>
-                    )}
-                </div>
-            ))}
-
-            <div className={classes.customProvidersSection}>
-                <Divider className={classes.customProvidersDivider} />
-                <div className={classes.customProvidersHeader}>
-                    <Text typo="object heading">
-                        {t("custom providers section title")}
-                    </Text>
-                    <Text typo="body 2" className={classes.customProvidersDescription}>
-                        {t("custom providers section helper")}
-                    </Text>
-                </div>
-
-                {customProviders.map(provider => (
-                    <div key={provider.id} className={classes.providerCard}>
-                        <div className={classes.providerCardHeader}>
-                            <Text typo="label 1">{provider.name}</Text>
-                            <div className={classes.providerCardActions}>
-                                <Button
-                                    variant="ternary"
-                                    startIcon={getIconUrlByName("Delete")}
-                                    onClick={onDeleteCustomProviderFactory(provider.id)}
-                                    className={classes.compactActionButton}
-                                >
-                                    {t("delete provider")}
-                                </Button>
-                                <Button
-                                    variant="ternary"
-                                    startIcon={getIconUrlByName("Edit")}
-                                    onClick={onEditClickFactory(provider.id)}
-                                    className={classes.compactActionButton}
-                                >
-                                    {t("edit provider")}
-                                </Button>
-                                {renderDefaultProviderAction({
-                                    providerId: provider.id,
-                                    isDefault: provider.isDefault
-                                })}
+                                />
+                                <ProviderValueField
+                                    label={t("custom provider api key field")}
+                                    value={provider.apiKey}
+                                    onRequestCopy={onFieldRequestCopyFactory(
+                                        provider.apiKey
+                                    )}
+                                    isSensitiveInformation={true}
+                                />
+                                <ModelsSection
+                                    models={provider.models}
+                                    selectedModel={provider.selectedModelId}
+                                    onSelectedModelChange={modelId =>
+                                        ai.setSelectedModel({
+                                            providerId: provider.id,
+                                            modelId
+                                        })
+                                    }
+                                />
                             </div>
                         </div>
-                        <div className={classes.providerFields}>
-                            <ProviderValueField
-                                label={t("custom provider api base field")}
-                                value={provider.apiBase}
-                                onRequestCopy={onFieldRequestCopyFactory(
-                                    provider.apiBase
-                                )}
-                            />
-                            <ProviderValueField
-                                label={t("custom provider api key field")}
-                                value={provider.apiKey}
-                                onRequestCopy={onFieldRequestCopyFactory(provider.apiKey)}
-                                isSensitiveInformation={true}
-                            />
-                            <ModelsSection
-                                models={provider.models}
-                                selectedModel={provider.selectedModelId}
-                                onSelectedModelChange={modelId =>
-                                    ai.setSelectedModel({
-                                        providerId: provider.id,
-                                        modelId
-                                    })
-                                }
-                            />
-                        </div>
-                    </div>
-                ))}
+                    ))}
 
-                <ButtonBase
-                    type="button"
-                    className={classes.addCustomProviderAction}
-                    onClick={onAddClick}
-                >
-                    <Icon icon={getIconUrlByName("Add")} size="default" />
-                    <Text typo="object heading" htmlComponent="span">
-                        {t("add custom provider")}
-                    </Text>
-                </ButtonBase>
+                    <ButtonBase
+                        type="button"
+                        className={classes.addCustomProviderAction}
+                        onClick={onAddClick}
+                    >
+                        <Icon icon={getIconUrlByName("Add")} size="default" />
+                        <Text typo="object heading" htmlComponent="span">
+                            {t("add custom provider")}
+                        </Text>
+                    </ButtonBase>
+                </div>
             </div>
-
             <CustomProviderFormDialog />
             <ConfirmCustomProviderDeletionDialog evtOpen={evtConfirmDeleteDialogOpen} />
         </div>
@@ -379,6 +397,11 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withName({ AccountAiGatewayTab: AccountAiTab })
     .create(({ theme }) => ({
+        accountAiTabContent: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(5)
+        },
         regionProviderSection: {
             display: "flex",
             flexDirection: "column",
@@ -404,37 +427,28 @@ const useStyles = tss
             color: theme.colors.useCases.typography.textSecondary
         },
         customProvidersSection: {
-            marginTop: theme.spacing(4),
-            display: "flex",
-            flexDirection: "column"
-        },
-        customProvidersDivider: {
-            marginBottom: theme.spacing(3)
-        },
-        customProvidersHeader: {
             display: "flex",
             flexDirection: "column",
-            gap: theme.spacing(0.5)
+            gap: theme.spacing(5)
         },
-        customProvidersDescription: {
-            color: theme.colors.useCases.typography.textSecondary
-        },
-        providerCard: {
+
+        customProviderCard: {
             border: `1px solid ${theme.colors.useCases.typography.textDisabled}`,
             borderRadius: theme.spacing(3),
-            padding: theme.spacing(3),
-            marginTop: theme.spacing(3)
-        },
-        providerCardHeader: {
+            padding: theme.spacing(4),
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
+            gap: theme.spacing(3)
+        },
+        customProviderHeader: {
+            display: "flex",
             alignItems: "center",
-            marginBottom: theme.spacing(2)
+            justifyContent: "space-between"
         },
         providerCardActions: {
             display: "flex",
             alignItems: "center",
-            gap: theme.spacing(1),
+            gap: theme.spacing(2),
             flexWrap: "wrap",
             justifyContent: "flex-end"
         },
@@ -473,9 +487,15 @@ const useStyles = tss
             display: "flex",
             flexDirection: "column",
             gap: theme.spacing(2),
-            marginTop: theme.spacing(2),
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3)
+            paddingLeft: theme.spacing(6),
+            paddingRight: theme.spacing(6)
+        },
+        customProviderFields: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(2),
+            paddingLeft: theme.spacing(4),
+            paddingRight: theme.spacing(4)
         },
         addCustomProviderAction: {
             justifyContent: "flex-start",
