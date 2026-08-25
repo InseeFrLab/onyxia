@@ -30,7 +30,7 @@ export type S3SelectionActionBarProps = {
         | undefined;
     bookmark:
         | {
-              callback: () => void;
+              callback: (() => void) | undefined;
               isBookmarked: boolean;
           }
         | undefined;
@@ -51,14 +51,10 @@ type Action = {
     key: string;
     label: string;
     icon: ReactElement;
-    onClick: () => void;
+    onClick: (() => void) | undefined;
     tooltipTitle?: ReactNode;
     tooltipClassName?: string;
     isActive?: boolean;
-};
-
-type OptionalAction = Omit<Action, "onClick"> & {
-    onClick: (() => void) | undefined;
 };
 
 export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
@@ -103,105 +99,111 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         </span>
     );
 
-    const actionCandidates: OptionalAction[] = [
-        {
-            key: "download",
-            label: t("download"),
-            icon: (
-                <Icon
-                    className={classes.actionIcon}
-                    icon={getIconUrl("FileDownload")}
-                    size="small"
-                />
-            ),
-            onClick: download?.callback
-        },
-        {
-            key: "delete",
-            label: t("delete"),
-            icon: (
-                <Icon
-                    className={classes.actionIcon}
-                    icon={getIconUrl("Delete")}
-                    size="small"
-                />
-            ),
-            onClick: deleteAction?.callback
-        },
-        {
-            key: "copy",
-            label: t("copy s3 uri"),
-            icon: (
-                <Icon
-                    className={classes.actionIcon}
-                    icon={getIconUrl("ContentCopy")}
-                    size="small"
-                />
-            ),
-            onClick:
-                copyS3Uri === undefined
-                    ? undefined
-                    : () => {
-                          setIsS3UriCopied(true);
-                          copyS3Uri.callback();
-                      },
-            tooltipTitle:
-                copyS3Uri === undefined ? undefined : isS3UriCopied ? (
-                    copiedTooltipTitle
-                ) : (
-                    <span className={classes.copyTooltip}>
-                        {t("copy s3 uri tooltip", {
-                            s3UriStr: copyS3Uri.s3UriStr
-                        })}
-                    </span>
-                ),
-            tooltipClassName: classes.copyTooltipBubble
-        },
-        {
-            key: "bookmark",
-            label:
-                bookmark?.isBookmarked === true
-                    ? t("delete from bookmarks")
-                    : t("add to bookmarks"),
-            icon:
-                bookmark?.isBookmarked === true ? (
-                    <StarIcon className={classes.actionIcon} fontSize="small" />
-                ) : (
-                    <StarBorderIcon className={classes.actionIcon} fontSize="small" />
-                ),
-            onClick: bookmark?.callback,
-            isActive: bookmark?.isBookmarked === true
-        },
-        {
-            key: "share",
-            label: t("share"),
-            icon: (
-                <Icon
-                    className={classes.actionIcon}
-                    icon={getIconUrl("Share")}
-                    size="small"
-                />
-            ),
-            onClick: share?.callback
-        },
-        {
-            key: "access-policy",
-            label: accessPolicy?.isPublic === true ? t("make private") : t("make public"),
-            icon: (
-                <Icon
-                    className={classes.actionIcon}
-                    icon={getIconUrl(
-                        accessPolicy?.isPublic === true ? "PublicOff" : "Public"
-                    )}
-                    size="small"
-                />
-            ),
-            onClick: accessPolicy?.callback
-        }
+    const actionCandidates: (Action | undefined)[] = [
+        download === undefined
+            ? undefined
+            : {
+                  key: "download",
+                  label: t("download"),
+                  icon: (
+                      <Icon
+                          className={classes.actionIcon}
+                          icon={getIconUrl("FileDownload")}
+                          size="small"
+                      />
+                  ),
+                  onClick: download.callback
+              },
+        deleteAction === undefined
+            ? undefined
+            : {
+                  key: "delete",
+                  label: t("delete"),
+                  icon: (
+                      <Icon
+                          className={classes.actionIcon}
+                          icon={getIconUrl("Delete")}
+                          size="small"
+                      />
+                  ),
+                  onClick: deleteAction.callback
+              },
+        copyS3Uri === undefined
+            ? undefined
+            : {
+                  key: "copy",
+                  label: t("copy s3 uri"),
+                  icon: (
+                      <Icon
+                          className={classes.actionIcon}
+                          icon={getIconUrl("ContentCopy")}
+                          size="small"
+                      />
+                  ),
+                  onClick: () => {
+                      setIsS3UriCopied(true);
+                      copyS3Uri.callback();
+                  },
+                  tooltipTitle: isS3UriCopied ? (
+                      copiedTooltipTitle
+                  ) : (
+                      <span className={classes.copyTooltip}>
+                          {t("copy s3 uri tooltip", {
+                              s3UriStr: copyS3Uri.s3UriStr
+                          })}
+                      </span>
+                  ),
+                  tooltipClassName: classes.copyTooltipBubble
+              },
+        bookmark === undefined
+            ? undefined
+            : {
+                  key: "bookmark",
+                  label: bookmark.isBookmarked
+                      ? t("delete from bookmarks")
+                      : t("add to bookmarks"),
+                  icon: bookmark.isBookmarked ? (
+                      <StarIcon className={classes.actionIcon} fontSize="small" />
+                  ) : (
+                      <StarBorderIcon className={classes.actionIcon} fontSize="small" />
+                  ),
+                  onClick: bookmark.callback,
+                  isActive: bookmark.isBookmarked
+              },
+        share === undefined
+            ? undefined
+            : {
+                  key: "share",
+                  label: t("share"),
+                  icon: (
+                      <Icon
+                          className={classes.actionIcon}
+                          icon={getIconUrl("Share")}
+                          size="small"
+                      />
+                  ),
+                  onClick: share.callback
+              },
+        accessPolicy === undefined
+            ? undefined
+            : {
+                  key: "access-policy",
+                  label: accessPolicy.isPublic ? t("make private") : t("make public"),
+                  icon: (
+                      <Icon
+                          className={classes.actionIcon}
+                          icon={getIconUrl(
+                              accessPolicy.isPublic ? "PublicOff" : "Public"
+                          )}
+                          size="small"
+                      />
+                  ),
+                  onClick: accessPolicy.callback
+              }
     ];
 
     const actions = actionCandidates.filter(
-        (action): action is Action => action.onClick !== undefined
+        (action): action is Action => action !== undefined
     );
 
     const selectedLabel =
@@ -238,8 +240,13 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                     const button = (
                         <button
                             type="button"
-                            className={classes.actionButton}
+                            className={cx(
+                                classes.actionButton,
+                                action.onClick === undefined &&
+                                    classes.actionButtonDisabled
+                            )}
                             onClick={action.onClick}
+                            disabled={action.onClick === undefined}
                         >
                             <span
                                 className={cx(
@@ -370,6 +377,13 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             },
             "&:active": {
                 backgroundColor: theme.colors.useCases.surfaces.surface2
+            }
+        },
+        actionButtonDisabled: {
+            cursor: "default",
+            opacity: 0.42,
+            "&:hover, &:active": {
+                backgroundColor: "transparent"
             }
         },
         actionIconFrame: {

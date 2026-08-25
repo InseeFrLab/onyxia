@@ -27,7 +27,7 @@ type S3ProfileSelectProps = {
     /** Opens the settings/details view for the currently selected profile */
     onEditProfile: () => void;
 
-    onCreateNewProfile: () => void;
+    onCreateNewProfile: (() => void) | undefined;
 };
 ```
 
@@ -105,6 +105,8 @@ Clicking `New S3 Profile`:
 
 - closes the dropdown,
 - calls `props.onCreateNewProfile().`@
+
+The action row is not rendered when `onCreateNewProfile` is undefined.
 
 ### Outside click behavior
 

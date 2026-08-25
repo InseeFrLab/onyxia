@@ -158,6 +158,8 @@ function S3Explorer() {
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
 
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
+
     const {
         ref: ref_root,
         domRect: { height: rootHeight }
@@ -230,8 +232,15 @@ function S3Explorer() {
                 profile: mainView.profileSelect.selectedProfile.name
             }).link;
         },
-        onDelete: s3ExplorerUiController.deleteBookmark,
-        onRename: ({ s3Uri }) => openBookmarkDialog({ s3Uri })
+        onDelete: isUserLoggedIn
+            ? ({ s3Uri }) => {
+                  assert(isUserLoggedIn);
+                  s3ExplorerUiController.deleteBookmark({ s3Uri });
+              }
+            : undefined,
+        onRename: isUserLoggedIn
+            ? ({ s3Uri }) => openBookmarkDialog({ s3Uri })
+            : undefined
     } satisfies S3BookmarksBarProps;
 
     const onDownload = (params: { s3Uris: S3Uri[] }) => {
@@ -386,15 +395,19 @@ function S3Explorer() {
                                 >
                                     {t("no profile description")}
                                 </div>
-                                <Button
-                                    className={css({ marginTop: theme.spacing(1) })}
-                                    startIcon={getIconUrlByName("Add")}
-                                    onClick={() =>
-                                        dialogProps.evtS3ProfileDialogOpen.post("create")
-                                    }
-                                >
-                                    {t("create profile")}
-                                </Button>
+                                {isUserLoggedIn && (
+                                    <Button
+                                        className={css({ marginTop: theme.spacing(1) })}
+                                        startIcon={getIconUrlByName("Add")}
+                                        onClick={() =>
+                                            dialogProps.evtS3ProfileDialogOpen.post(
+                                                "create"
+                                            )
+                                        }
+                                    >
+                                        {t("create profile")}
+                                    </Button>
+                                )}
                             </div>
                         );
                     }
@@ -437,9 +450,15 @@ function S3Explorer() {
                                     onEditProfile={() =>
                                         dialogProps.evtS3ProfileDialogOpen.post("detail")
                                     }
-                                    onCreateNewProfile={() => {
-                                        dialogProps.evtS3ProfileDialogOpen.post("create");
-                                    }}
+                                    onCreateNewProfile={
+                                        isUserLoggedIn
+                                            ? () => {
+                                                  dialogProps.evtS3ProfileDialogOpen.post(
+                                                      "create"
+                                                  );
+                                              }
+                                            : undefined
+                                    }
                                 />
                                 <S3UriBar
                                     className={css({
@@ -457,42 +476,43 @@ function S3Explorer() {
                                                 !s3Uri?.isDelimiterTerminated
                                         })
                                     }
-                                    onToggleBookmark={(() => {
-                                        if (
-                                            mainView.uriBar.bookmarkStatus.isBookmarked &&
-                                            mainView.uriBar.bookmarkStatus.isReadonly
-                                        ) {
-                                            return undefined;
-                                        }
+                                    onToggleBookmark={
+                                        !isUserLoggedIn ||
+                                        (mainView.uriBar.bookmarkStatus.isBookmarked &&
+                                            mainView.uriBar.bookmarkStatus.isReadonly)
+                                            ? undefined
+                                            : ({ s3Uri }) => {
+                                                  assert(isUserLoggedIn);
 
-                                        return ({ s3Uri }) => {
-                                            const getDisplayName = () => {
-                                                const dResult = new Deferred<
-                                                    | {
-                                                          doProceed: true;
-                                                          displayName: string;
+                                                  const getDisplayName = () => {
+                                                      const dResult = new Deferred<
+                                                          | {
+                                                                doProceed: true;
+                                                                displayName: string;
+                                                            }
+                                                          | { doProceed: false }
+                                                      >();
+
+                                                      dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
+                                                          {
+                                                              s3Uri,
+                                                              currentDisplayName:
+                                                                  undefined,
+                                                              resolveDoProceed:
+                                                                  dResult.resolve
+                                                          }
+                                                      );
+
+                                                      return dResult.pr;
+                                                  };
+
+                                                  s3ExplorerUiController.toggleIsS3UriBookmarked(
+                                                      {
+                                                          getDisplayName
                                                       }
-                                                    | { doProceed: false }
-                                                >();
-
-                                                dialogProps.evtCreateOrRenameBookmarkDialogOpen.post(
-                                                    {
-                                                        s3Uri,
-                                                        currentDisplayName: undefined,
-                                                        resolveDoProceed: dResult.resolve
-                                                    }
-                                                );
-
-                                                return dResult.pr;
-                                            };
-
-                                            s3ExplorerUiController.toggleIsS3UriBookmarked(
-                                                {
-                                                    getDisplayName
-                                                }
-                                            );
-                                        };
-                                    })()}
+                                                  );
+                                              }
+                                    }
                                     isBookmarked={
                                         mainView.uriBar.bookmarkStatus.isBookmarked
                                     }
@@ -632,7 +652,11 @@ function S3Explorer() {
                                             anonymousProfileName
                                         })
                                     }
-                                    onBookmark={toggleBookmarkFromDataView}
+                                    onBookmark={
+                                        isUserLoggedIn
+                                            ? toggleBookmarkFromDataView
+                                            : undefined
+                                    }
                                     bookmarkedS3Uris={mainView.bookmarks.items.map(
                                         item => item.s3Uri
                                     )}

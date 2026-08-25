@@ -37,7 +37,7 @@ type S3SelectionActionBarProps = {
 
     bookmark:
         | {
-              callback: () => void;
+              callback: (() => void) | undefined;
               isBookmarked: boolean;
           }
         | undefined;
@@ -70,6 +70,8 @@ A left section displaying the selection summary
 A section displaying the available actions, aligned to the left of the bar
 
 The layout is horizontal and must remain on a single line.
+
+The bookmark action remains visible but disabled when its `callback` is undefined.
 
 # Rendering rules
 
@@ -123,7 +125,7 @@ Each action button is rendered only when its action object prop is defined.
 - Share → rendered when `share !== undefined`
 - Access policy → rendered when `accessPolicy !== undefined`
 
-Clicking a rendered action calls the matching action object's `callback`, except for Copy S3 URI.
+Clicking an enabled rendered action calls the matching action object's `callback`, except for Copy S3 URI. A bookmark whose callback is undefined is disabled and cannot be clicked.
 
 Clicking Copy S3 URI copies `copyS3Uri.s3UriStr` to the clipboard by using `copyToClipboard(copyS3Uri.s3UriStr)`, then shows the copied confirmation state.
 

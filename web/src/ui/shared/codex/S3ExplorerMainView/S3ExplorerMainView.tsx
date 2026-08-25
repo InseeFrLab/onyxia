@@ -87,7 +87,7 @@ export type S3ExplorerMainViewProps = {
         anonymousProfileName: string;
     }) => void;
 
-    onBookmark: (params: { s3Uri: S3Uri }) => void;
+    onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
     onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
 
@@ -600,9 +600,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const requestBookmarkForItem = useConstCallback(
         (item: S3ExplorerMainViewProps.Item) => {
-            if (!getIsItemActionAvailable(item)) {
-                return;
-            }
+            assert(onBookmark !== undefined);
+            assert(getIsItemActionAvailable(item));
 
             onBookmark({
                 s3Uri: item.s3Uri
@@ -803,10 +802,13 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 !getIsItemActionAvailable(selectedItemForSingleItemAction)
                                     ? undefined
                                     : {
-                                          callback: () =>
-                                              requestBookmarkForItem(
-                                                  selectedItemForSingleItemAction
-                                              ),
+                                          callback:
+                                              onBookmark !== undefined
+                                                  ? () =>
+                                                        requestBookmarkForItem(
+                                                            selectedItemForSingleItemAction
+                                                        )
+                                                  : undefined,
                                           isBookmarked: bookmarkedItemKeySet.has(
                                               stringifyS3Uri(
                                                   selectedItemForSingleItemAction.s3Uri
@@ -1167,6 +1169,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         itemKey
                                                     )}
                                                     onBookmark={
+                                                        onBookmark !== undefined &&
                                                         getIsItemActionAvailable(item)
                                                             ? onBookmarkFactory(itemKey)
                                                             : undefined
@@ -2774,50 +2777,48 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                         />
                                     </span>
                                 </MuiTooltip>
-                                {onBookmark !== undefined && (
-                                    <Tooltip
-                                        title={
-                                            isBookmarked
-                                                ? t("delete from bookmarks")
-                                                : t("add to bookmarks")
-                                        }
+                                <Tooltip
+                                    title={
+                                        isBookmarked
+                                            ? t("delete from bookmarks")
+                                            : t("add to bookmarks")
+                                    }
+                                >
+                                    <span
+                                        className={classes.inlineActionWrapper}
+                                        data-s3-row-interactive="true"
                                     >
-                                        <span
-                                            className={classes.inlineActionWrapper}
-                                            data-s3-row-interactive="true"
+                                        <button
+                                            type="button"
+                                            className={cx(
+                                                classes.rowActionButton,
+                                                isBookmarked &&
+                                                    classes.rowActionButtonActive
+                                            )}
+                                            aria-label={
+                                                isBookmarked
+                                                    ? t("delete from bookmarks")
+                                                    : t("add to bookmarks")
+                                            }
+                                            disabled={
+                                                !isItemActionAvailable ||
+                                                onBookmark === undefined
+                                            }
+                                            onClick={event => {
+                                                event.stopPropagation();
+                                                assert(isItemActionAvailable);
+                                                assert(onBookmark !== undefined);
+                                                onBookmark();
+                                            }}
                                         >
-                                            <button
-                                                type="button"
-                                                className={cx(
-                                                    classes.rowActionButton,
-                                                    isBookmarked &&
-                                                        classes.rowActionButtonActive
-                                                )}
-                                                aria-label={
-                                                    isBookmarked
-                                                        ? t("delete from bookmarks")
-                                                        : t("add to bookmarks")
-                                                }
-                                                disabled={!isItemActionAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (!isItemActionAvailable) {
-                                                        return;
-                                                    }
-
-                                                    onBookmark();
-                                                }}
-                                            >
-                                                {isBookmarked ? (
-                                                    <StarIcon fontSize="small" />
-                                                ) : (
-                                                    <StarBorderIcon fontSize="small" />
-                                                )}
-                                            </button>
-                                        </span>
-                                    </Tooltip>
-                                )}
+                                            {isBookmarked ? (
+                                                <StarIcon fontSize="small" />
+                                            ) : (
+                                                <StarBorderIcon fontSize="small" />
+                                            )}
+                                        </button>
+                                    </span>
+                                </Tooltip>
                                 {onShare !== undefined && (
                                     <Tooltip title={t("share")}>
                                         <span

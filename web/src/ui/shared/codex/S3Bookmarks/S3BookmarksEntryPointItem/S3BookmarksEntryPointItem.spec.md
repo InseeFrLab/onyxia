@@ -17,8 +17,10 @@ export type S3BookmarksEntryPointListProps = {
     className?: string;
     items: S3BookmarksEntryPointListProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
-    onDelete: (props: { s3Uri: S3Uri }) => void;
-    onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
+    onDelete: ((props: { s3Uri: S3Uri }) => void) | undefined;
+    onRename:
+        | ((props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void)
+        | undefined;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
@@ -55,7 +57,7 @@ For each entry in props.items, the component renders one `S3BookmarkItem` with:
 - `link` from `props.getItemLink({ s3Uri: item.s3Uri })`
 - `isActive` set to true when `item.s3Uri === props.activeItemS3Uri`
 
-If `item.isReadonly === true`, `callbacks` must be `undefined`.
+If `item.isReadonly === true`, or either mutation callback is undefined, `callbacks` must be `undefined`.
 
 Otherwise `callbacks` must be:
 

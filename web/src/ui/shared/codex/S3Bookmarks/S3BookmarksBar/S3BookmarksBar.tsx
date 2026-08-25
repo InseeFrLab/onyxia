@@ -21,8 +21,10 @@ export type S3BookmarksBarProps = {
     className?: string;
     items: S3BookmarksBarProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
-    onDelete: (props: { s3Uri: S3Uri }) => void;
-    onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
+    onDelete: ((props: { s3Uri: S3Uri }) => void) | undefined;
+    onRename:
+        | ((props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void)
+        | undefined;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
     showItemIcons?: boolean;
     showLeadingIcon?: boolean;
@@ -81,7 +83,7 @@ export function S3BookmarksBar(props: S3BookmarksBarProps) {
 
     const resolveCallbacks = useCallback(
         (item: S3BookmarksBarProps.Item) =>
-            item.isReadonly
+            item.isReadonly || onDelete === undefined || onRename === undefined
                 ? undefined
                 : {
                       onDelete: () => onDelete({ s3Uri: item.s3Uri }),
