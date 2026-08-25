@@ -124,12 +124,15 @@ export namespace S3Config {
         url: string;
         pathStyleAccess: boolean;
         region: string | undefined;
-        sts: {
-            url: string | undefined;
-            durationSeconds: number | undefined;
-            roles: Entry.StsRole[];
-            oidcParams: OidcParams_Partial;
-        };
+        // NOTE: sts and anonymousProfileName cannot be undefined at the same time.
+        sts:
+            | {
+                  url: string | undefined;
+                  durationSeconds: number | undefined;
+                  roles: Entry.StsRole[];
+                  oidcParams: OidcParams_Partial;
+              }
+            | undefined;
         anonymousProfileName: string | undefined;
         bookmarks: Entry.Bookmark[];
     };
@@ -208,58 +211,69 @@ export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Confi
     const parsedValue_arr = parsedValue instanceof Array ? parsedValue : [parsedValue];
 
     const entries = parsedValue_arr
-        .filter(s3Config => s3Config.sts !== undefined)
+        .filter(
+            s3Config =>
+                s3Config.sts !== undefined || s3Config.anonymousProfileName !== undefined
+        )
         .map((s3Config): S3Config.Entry => {
             const { sts } = s3Config;
-
-            assert(sts !== undefined);
-
-            const roles = Array.isArray(sts.role) ? sts.role : [sts.role];
 
             return {
                 url: s3Config.URL,
                 pathStyleAccess: s3Config.pathStyleAccess ?? true,
                 region: s3Config.region,
-                sts: {
-                    url: sts.URL,
-                    durationSeconds: sts.durationSeconds,
-                    roles: roles.map(
-                        (role): S3Config.Entry.StsRole => ({
-                            roleARN: role.roleARN,
-                            roleSessionName: role.roleSessionName,
-                            profileName: role.profileName,
-                            ...(role.claimName === undefined
-                                ? { isTemplated: false }
-                                : {
-                                      isTemplated: true,
-                                      claimName: role.claimName,
-                                      includedClaimPattern: role.includedClaimPattern,
-                                      excludedClaimPattern: role.excludedClaimPattern
+                sts:
+                    sts === undefined
+                        ? undefined
+                        : {
+                              url: sts.URL,
+                              durationSeconds: sts.durationSeconds,
+                              roles: (Array.isArray(sts.role)
+                                  ? sts.role
+                                  : [sts.role]
+                              ).map(
+                                  (role): S3Config.Entry.StsRole => ({
+                                      roleARN: role.roleARN,
+                                      roleSessionName: role.roleSessionName,
+                                      profileName: role.profileName,
+                                      ...(role.claimName === undefined
+                                          ? { isTemplated: false }
+                                          : {
+                                                isTemplated: true,
+                                                claimName: role.claimName,
+                                                includedClaimPattern:
+                                                    role.includedClaimPattern,
+                                                excludedClaimPattern:
+                                                    role.excludedClaimPattern
+                                            })
                                   })
-                        })
-                    ),
-                    oidcParams: {
-                        issuerUri: sts.oidcConfiguration?.issuerURI || undefined,
-                        clientId: sts.oidcConfiguration?.clientID || undefined,
-                        extraQueryParams_raw:
-                            sts.oidcConfiguration?.extraQueryParams || undefined,
-                        scope_spaceSeparated: sts.oidcConfiguration?.scope || undefined,
-                        idleSessionLifetimeInSeconds: (() => {
-                            const value =
-                                sts.oidcConfiguration?.idleSessionLifetimeInSeconds;
+                              ),
+                              oidcParams: {
+                                  issuerUri:
+                                      sts.oidcConfiguration?.issuerURI || undefined,
+                                  clientId: sts.oidcConfiguration?.clientID || undefined,
+                                  extraQueryParams_raw:
+                                      sts.oidcConfiguration?.extraQueryParams ||
+                                      undefined,
+                                  scope_spaceSeparated:
+                                      sts.oidcConfiguration?.scope || undefined,
+                                  idleSessionLifetimeInSeconds: (() => {
+                                      const value =
+                                          sts.oidcConfiguration
+                                              ?.idleSessionLifetimeInSeconds;
 
-                            if (value === "" || value === undefined) {
-                                return undefined;
-                            }
+                                      if (value === "" || value === undefined) {
+                                          return undefined;
+                                      }
 
-                            if (typeof value === "number") {
-                                return value;
-                            }
+                                      if (typeof value === "number") {
+                                          return value;
+                                      }
 
-                            return parseInt(value);
-                        })()
-                    }
-                },
+                                      return parseInt(value);
+                                  })()
+                              }
+                          },
                 anonymousProfileName: s3Config.anonymousProfileName,
                 bookmarks: (s3Config.bookmarks ?? []).map(
                     (bookmark): S3Config.Entry.Bookmark => ({
@@ -285,8 +299,10 @@ export function parseS3ConfigFromEnvValue(params: { envValue: string }): S3Confi
         });
 
     const s3ConfigForCreationForm =
-        parsedValue_arr.find(s3Config => s3Config.sts === undefined) ??
-        parsedValue_arr[0];
+        parsedValue_arr.find(
+            s3Config =>
+                s3Config.sts === undefined && s3Config.anonymousProfileName === undefined
+        ) ?? parsedValue_arr[0];
 
     return {
         entries,

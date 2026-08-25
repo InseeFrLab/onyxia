@@ -72,13 +72,15 @@ export async function bootstrapCore(
             const { createOnyxiaApi } = await import("core/adapters/onyxiaApi/mock");
 
             const oidcParams = (() => {
-                const [entry] = s3Config.entries;
+                const sts = s3Config.entries
+                    .map(entry => entry.sts)
+                    .find(sts => sts !== undefined);
 
-                if (entry === undefined) {
+                if (sts === undefined) {
                     return undefined;
                 }
 
-                const { issuerUri, clientId, ...rest } = entry.sts.oidcParams;
+                const { issuerUri, clientId, ...rest } = sts.oidcParams;
 
                 assert(issuerUri !== undefined, "Missing OIDC Issuer URI");
                 assert(clientId !== undefined, "Missing OIDC Client ID");
