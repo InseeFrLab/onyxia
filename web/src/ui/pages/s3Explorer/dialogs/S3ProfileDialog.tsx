@@ -217,6 +217,7 @@ const S3ProfileDetails = withLoader<{
     FallbackComponent: () => null,
     Component: ({ onCreateNewProfile, onEdit, onClose }) => {
         const mainView = useCoreState("s3ProfilesDetailsUiController", "mainView");
+        const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
 
         const {
             functions: { s3ProfilesDetailsUiController }
@@ -229,10 +230,10 @@ const S3ProfileDetails = withLoader<{
                 onSelectedProfileChange={
                     s3ProfilesDetailsUiController.updateSelectedS3Profile
                 }
-                onCreateNewProfile={onCreateNewProfile}
-                onEdit={mainView.isReadonly ? undefined : onEdit}
+                onCreateNewProfile={isUserLoggedIn ? onCreateNewProfile : undefined}
+                onEdit={mainView.isReadonly || !isUserLoggedIn ? undefined : onEdit}
                 onDelete={
-                    mainView.isReadonly
+                    mainView.isReadonly || !isUserLoggedIn
                         ? undefined
                         : () => {
                               s3ProfilesDetailsUiController.deleteProfile();
@@ -276,6 +277,7 @@ const S3ProfileForm = withLoader<{
     FallbackComponent: () => null,
     Component: ({ onClose }) => {
         const mainView = useCoreState("s3ProfilesCreationUiController", "main");
+        const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
         const {
             functions: { s3ProfilesCreationUiController }
         } = getCoreSync();
@@ -355,16 +357,14 @@ const S3ProfileForm = withLoader<{
                         }),
                     errorMessage: mainView.formValuesErrors.sessionToken
                 }}
-                onSubmit={(() => {
-                    if (!mainView.isFormSubmittable) {
-                        return undefined;
-                    }
-
-                    return async () => {
-                        await s3ProfilesCreationUiController.submit();
-                        onClose();
-                    };
-                })()}
+                onSubmit={
+                    !isUserLoggedIn || !mainView.isFormSubmittable
+                        ? undefined
+                        : async () => {
+                              await s3ProfilesCreationUiController.submit();
+                              onClose();
+                          }
+                }
                 onCancel={onClose}
             />
         );

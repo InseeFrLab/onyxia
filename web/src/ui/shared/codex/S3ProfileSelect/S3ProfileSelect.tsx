@@ -21,7 +21,7 @@ export type S3ProfileSelectProps = {
     /** Opens the settings/details view for the currently selected profile */
     onEditProfile: () => void;
 
-    onCreateNewProfile: () => void;
+    onCreateNewProfile: (() => void) | undefined;
 };
 
 export function S3ProfileSelect(props: S3ProfileSelectProps) {
@@ -100,11 +100,6 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
         }
 
         onSelectedProfileChange({ profileName });
-    };
-
-    const handleCreateNewProfile = () => {
-        setIsOpen(false);
-        onCreateNewProfile();
     };
 
     return (
@@ -201,19 +196,28 @@ export function S3ProfileSelect(props: S3ProfileSelectProps) {
                             );
                         })}
                     </div>
-                    <div className={classes.divider} />
-                    <button
-                        type="button"
-                        className={classes.createRow}
-                        onClick={handleCreateNewProfile}
-                    >
-                        <Icon
-                            className={classes.createIcon}
-                            icon={getIconUrlByName("Add")}
-                            size="small"
-                        />
-                        <span className={classes.createLabel}>{t("new s3 profile")}</span>
-                    </button>
+                    {onCreateNewProfile !== undefined && (
+                        <>
+                            <div className={classes.divider} />
+                            <button
+                                type="button"
+                                className={classes.createRow}
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    onCreateNewProfile();
+                                }}
+                            >
+                                <Icon
+                                    className={classes.createIcon}
+                                    icon={getIconUrlByName("Add")}
+                                    size="small"
+                                />
+                                <span className={classes.createLabel}>
+                                    {t("new s3 profile")}
+                                </span>
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
         </div>

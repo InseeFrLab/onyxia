@@ -6,7 +6,7 @@
 
 - Display the currently selected S3 profile name in a selector.
 - Let the user switch to another available profile through `onSelectedProfileChange`.
-- Let the user start profile creation through `onCreateNewProfile`.
+- Let the user start profile creation when `onCreateNewProfile` is defined.
 - Expose the edit action when available, and render it disabled when the selected profile is read-only.
 - Expose the delete action next to edit when `onDelete` is provided.
 - Display connection fields for the endpoint URL and the default region when a default region exists.
@@ -35,3 +35,5 @@ The parent must provide at least one profile name and keep `profileName` synchro
 Credential copy buttons always copy the raw credential value even though the rendered text is shortened.
 
 When `onDelete` is undefined, no delete affordance is rendered. When `onDelete` is defined, the delete button invokes it without owning confirmation or persistence logic.
+
+When `onCreateNewProfile` is undefined, no profile-creation affordance is rendered.

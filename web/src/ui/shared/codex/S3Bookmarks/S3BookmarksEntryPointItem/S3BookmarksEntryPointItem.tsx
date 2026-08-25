@@ -9,8 +9,10 @@ export type S3BookmarksEntryPointListProps = {
     className?: string;
     items: S3BookmarksEntryPointListProps.Item[];
     activeItemS3Uri: S3Uri | undefined;
-    onDelete: (props: { s3Uri: S3Uri }) => void;
-    onRename: (props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void;
+    onDelete: ((props: { s3Uri: S3Uri }) => void) | undefined;
+    onRename:
+        | ((props: { s3Uri: S3Uri; currentDisplayName: string | undefined }) => void)
+        | undefined;
     getItemLink: (props: { s3Uri: S3Uri }) => Link;
 };
 
@@ -46,7 +48,9 @@ export function S3BookmarksEntryPointList(props: S3BookmarksEntryPointListProps)
                         s3Uri={item.s3Uri}
                         link={link}
                         callbacks={
-                            item.isReadonly
+                            item.isReadonly ||
+                            onDelete === undefined ||
+                            onRename === undefined
                                 ? undefined
                                 : {
                                       onDelete: () => onDelete({ s3Uri: item.s3Uri }),

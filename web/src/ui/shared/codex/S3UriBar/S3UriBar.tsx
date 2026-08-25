@@ -1391,7 +1391,7 @@ export function S3UriBar(props: S3UriBarProps) {
                             </div>
                         </Tooltip>
                     )}
-                    {!isUndefinedPrefixMode && (onToggleBookmark || isBookmarked) && (
+                    {!isUndefinedPrefixMode && (
                         <Tooltip
                             title={
                                 isBookmarked
@@ -1415,7 +1415,8 @@ export function S3UriBar(props: S3UriBarProps) {
                                     onClick={event => {
                                         event.stopPropagation();
                                         assert(currentS3Uri !== undefined);
-                                        onToggleBookmark?.({ s3Uri: currentS3Uri });
+                                        assert(onToggleBookmark !== undefined);
+                                        onToggleBookmark({ s3Uri: currentS3Uri });
                                     }}
                                     disabled={!onToggleBookmark}
                                     className={cx(

@@ -70,7 +70,7 @@ export type S3ExplorerMainViewProps = {
         anonymousProfileName: string;
     }) => void;
 
-    onBookmark: (params: { s3Uri: S3Uri }) => void;
+    onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
     onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
 
@@ -213,6 +213,8 @@ The component renders `S3SelectionActionBar` above the list.
 - `accessPolicy`
 - `onClear`
 
+When `onBookmark` is undefined, the bookmark action object remains present for a single actionable item, with its callback set to undefined.
+
 When `listedPrefix.isFullyQualifiedUri === true`, `onClear` must be passed as `undefined` so the selection action bar does not expose a clear-selection control.
 
 It must pass `undefined` for selection action objects that do not make sense
@@ -260,6 +262,7 @@ Typical row actions include:
 - Copy S3 path
 - Delete
 - Overflow menu
+- Bookmark, rendered disabled when `onBookmark` is undefined
 - Row action rules
 - Actions appear on focus only when:
     - the row is selected, or

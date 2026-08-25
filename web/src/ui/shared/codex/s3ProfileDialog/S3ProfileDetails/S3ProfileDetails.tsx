@@ -34,7 +34,7 @@ export type Props = {
 
     onSelectedProfileChange: (params: { profileName: string }) => void;
 
-    onCreateNewProfile: () => void;
+    onCreateNewProfile: (() => void) | undefined;
 
     onEdit: (() => void) | undefined;
 
@@ -345,7 +345,7 @@ function ProfileDropdown(props: {
     availableProfileNames: string[];
     profileName: string;
     onSelectedProfileChange: (params: { profileName: string }) => void;
-    onCreateNewProfile: () => void;
+    onCreateNewProfile: (() => void) | undefined;
 }) {
     const {
         availableProfileNames,
@@ -413,11 +413,6 @@ function ProfileDropdown(props: {
         }
 
         onSelectedProfileChange({ profileName: nextProfileName });
-    };
-
-    const handleCreateNewProfile = () => {
-        setIsOpen(false);
-        onCreateNewProfile();
     };
 
     return (
@@ -493,19 +488,28 @@ function ProfileDropdown(props: {
                             );
                         })}
                     </div>
-                    <div className={classes.divider} />
-                    <button
-                        type="button"
-                        className={classes.createRow}
-                        onClick={handleCreateNewProfile}
-                    >
-                        <Icon
-                            className={classes.createIcon}
-                            icon={getIconUrlByName("Add")}
-                            size="small"
-                        />
-                        <span className={classes.createLabel}>{t("new s3 profile")}</span>
-                    </button>
+                    {onCreateNewProfile !== undefined && (
+                        <>
+                            <div className={classes.divider} />
+                            <button
+                                type="button"
+                                className={classes.createRow}
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    onCreateNewProfile();
+                                }}
+                            >
+                                <Icon
+                                    className={classes.createIcon}
+                                    icon={getIconUrlByName("Add")}
+                                    size="small"
+                                />
+                                <span className={classes.createLabel}>
+                                    {t("new s3 profile")}
+                                </span>
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
         </div>
