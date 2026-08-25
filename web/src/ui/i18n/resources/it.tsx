@@ -116,7 +116,7 @@ export const translations: Translations<"it"> = {
         "custom providers section title": "Provider IA personalizzati",
         "custom providers section helper":
             "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
-        "add custom provider": "Aggiungi provider personalizzato",
+        "add custom ai provider": "Aggiungi un provider IA personalizzato",
         "custom provider api base field": "URL base API",
         "custom provider api key field": "Chiave API",
         "no account": ({ webUiUrl }) => (
@@ -608,8 +608,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

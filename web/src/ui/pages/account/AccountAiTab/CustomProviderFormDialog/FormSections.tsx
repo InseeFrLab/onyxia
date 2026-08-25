@@ -33,6 +33,7 @@ export function ProviderSection(props: {
         <FormSection
             title={t("custom provider section title")}
             subtitle={t("custom provider section subtitle")}
+            headingTypo="section heading"
         >
             <FormTextField
                 label={t("custom provider label field")}
@@ -140,40 +141,47 @@ export function VerificationSection(props: {
 function FormSection(props: {
     title: string;
     subtitle: string;
+    headingTypo?: "section heading" | "object heading";
     action?: ReactNode;
     children: ReactNode;
 }) {
-    const { title, subtitle, action, children } = props;
-    const { classes } = useStyles();
+    const { title, subtitle, headingTypo = "object heading", action, children } = props;
+    const { classes, cx } = useStyles();
 
     return (
         <section className={classes.section}>
-            {action === undefined ? (
-                <>
-                    <SectionHeading title={title} subtitle={subtitle} />
-                    <div className={classes.fields}>{children}</div>
-                </>
-            ) : (
-                <>
-                    <div className={classes.verificationHeadingRow}>
-                        <SectionHeading title={title} subtitle={subtitle} />
-                        {action}
-                    </div>
-                    {children}
-                </>
-            )}
+            <div className={classes.headingRow}>
+                <SectionHeading
+                    title={title}
+                    subtitle={subtitle}
+                    headingTypo={headingTypo}
+                />
+                {action}
+            </div>
+            <div
+                className={cx(
+                    classes.fields,
+                    action !== undefined && classes.verificationFields
+                )}
+            >
+                {children}
+            </div>
         </section>
     );
 }
 
-function SectionHeading(props: { title: string; subtitle: string }) {
-    const { title, subtitle } = props;
+function SectionHeading(props: {
+    title: string;
+    subtitle: string;
+    headingTypo: "section heading" | "object heading";
+}) {
+    const { title, subtitle, headingTypo } = props;
     const { classes } = useStyles_SectionHeading();
 
     return (
         <div className={classes.root}>
-            <Text typo="object heading">{title}</Text>
-            <Text typo="body 2" color="secondary">
+            <Text typo={headingTypo}>{title}</Text>
+            <Text typo="body 1" color="secondary">
                 {subtitle}
             </Text>
         </div>
@@ -198,7 +206,7 @@ function StatusMessage(props: { severity: "success" | "error"; children: ReactNo
                     severity === "success" ? classes.dotSuccess : classes.dotError
                 )}
             />
-            <Text typo="body 2">{children}</Text>
+            <Text typo="label 1">{children}</Text>
         </div>
     );
 }
@@ -207,11 +215,11 @@ const useStyles = tss
     .withName({ CustomProviderFormSections: FormSection })
     .create(({ theme }) => ({
         section: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(4),
             paddingBottom: theme.spacing(4),
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-            "& + &": {
-                marginTop: theme.spacing(4)
-            },
             "&:last-child": {
                 borderBottom: "none",
                 paddingBottom: 0
@@ -220,35 +228,57 @@ const useStyles = tss
         fields: {
             display: "flex",
             flexDirection: "column",
-            gap: theme.spacing(3),
-            marginTop: theme.spacing(4)
+            gap: theme.spacing(3)
         },
-        verificationHeadingRow: {
+        verificationFields: {
+            gap: theme.spacing(4)
+        },
+        headingRow: {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: theme.spacing(2),
-            marginBottom: theme.spacing(5)
+            gap: theme.spacing(6)
         },
         testButton: {
-            flex: "none"
+            flex: "none",
+            ...theme.typography.variants["label 2"].style,
+            borderWidth: 0,
+            padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
+            backgroundColor: theme.colors.palette.dark.light,
+            color: theme.colors.useCases.surfaces.background,
+            "& .MuiButton-startIcon": {
+                marginLeft: 0,
+                marginRight: theme.spacing(1)
+            },
+            "& .MuiButton-startIcon > *": {
+                width: theme.spacing(3),
+                height: theme.spacing(3)
+            },
+            "&.Mui-disabled": {
+                backgroundColor: theme.colors.palette.dark.light,
+                color: theme.colors.useCases.surfaces.background,
+                opacity: 0.3
+            }
         },
         testingMessage: {
             display: "flex",
             alignItems: "center",
-            gap: theme.spacing(1.5),
+            gap: 10,
             minHeight: 40,
-            marginTop: theme.spacing(2),
-            paddingLeft: theme.spacing(2)
+            padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+            borderRadius: theme.spacing(2),
+            boxSizing: "border-box",
+            backgroundColor: theme.colors.useCases.surfaces.surface2
         }
     }));
 
 const useStyles_SectionHeading = tss.withName({ SectionHeading }).create(({ theme }) => ({
     root: {
         minWidth: 0,
+        flex: 1,
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(0.5)
+        gap: theme.spacing(1)
     }
 }));
 
@@ -257,10 +287,9 @@ const useStyles_StatusMessage = tss.withName({ StatusMessage }).create(({ theme 
         minHeight: 40,
         display: "flex",
         alignItems: "center",
-        gap: theme.spacing(1.5),
-        marginTop: theme.spacing(2),
-        padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-        borderRadius: 8,
+        gap: 10,
+        padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+        borderRadius: theme.spacing(2),
         boxSizing: "border-box",
         color: theme.colors.useCases.typography.textPrimary
     },
@@ -272,8 +301,8 @@ const useStyles_StatusMessage = tss.withName({ StatusMessage }).create(({ theme 
     },
     dot: {
         flex: "none",
-        width: 16,
-        height: 16,
+        width: theme.spacing(3),
+        height: theme.spacing(3),
         borderRadius: "50%"
     },
     dotSuccess: {

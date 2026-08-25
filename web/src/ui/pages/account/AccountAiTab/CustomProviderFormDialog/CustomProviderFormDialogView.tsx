@@ -26,7 +26,7 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
         onDoSetAsDefaultChange
     } = props;
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
     const { t } = useTranslation("CustomProviderFormDialog");
 
     const onSubmit: FormEventHandler<HTMLFormElement> = event => {
@@ -75,21 +75,29 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                 <div className={classes.footer}>
                     <label className={classes.defaultProviderControl}>
                         <Checkbox
+                            className={classes.defaultProviderCheckbox}
                             checked={doSetAsDefault}
                             disabled={isAlreadyDefault}
                             onChange={event =>
                                 onDoSetAsDefaultChange(event.target.checked)
                             }
-                            size="small"
                         />
-                        <Text typo="body 2">{t("set as default provider")}</Text>
+                        <Text typo="label 1">{t("set as default provider")}</Text>
                     </label>
 
                     <div className={classes.actions}>
-                        <Button variant="secondary" onClick={onClose}>
+                        <Button
+                            variant="secondary"
+                            className={cx(classes.compactButton, classes.cancelButton)}
+                            onClick={onClose}
+                        >
                             {t("provider cancel")}
                         </Button>
-                        <Button type="submit" disabled={!canSave}>
+                        <Button
+                            type="submit"
+                            className={cx(classes.compactButton, classes.saveButton)}
+                            disabled={!canSave}
+                        >
                             {t(isEditing ? "provider update" : "provider save")}
                         </Button>
                     </div>
@@ -105,32 +113,55 @@ const useStyles = tss.withName({ CustomProviderFormDialogView }).create(({ theme
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
+        gap: theme.spacing(3),
         color: theme.colors.useCases.typography.textPrimary
     },
     body: {
         flex: 1,
         minHeight: 0,
         overflowY: "auto",
-        paddingRight: theme.spacing(0.5)
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(4)
     },
     footer: {
         flex: "none",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: theme.spacing(2),
-        paddingTop: theme.spacing(3),
-        marginTop: theme.spacing(2)
+        gap: theme.spacing(3),
+        paddingTop: theme.spacing(4)
     },
     defaultProviderControl: {
         display: "flex",
         alignItems: "center",
-        gap: theme.spacing(1.5),
+        gap: theme.spacing(3),
         cursor: "pointer"
+    },
+    defaultProviderCheckbox: {
+        padding: 0
     },
     actions: {
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(2)
+    },
+    compactButton: {
+        ...theme.typography.variants["label 2"].style,
+        borderWidth: 0,
+        padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`
+    },
+    cancelButton: {
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    saveButton: {
+        backgroundColor: theme.colors.useCases.buttons.actionActive,
+        color: theme.colors.useCases.surfaces.background,
+        "&.Mui-disabled": {
+            backgroundColor: theme.colors.useCases.buttons.actionActive,
+            color: theme.colors.useCases.surfaces.background,
+            opacity: 0.3
+        }
     }
 }));

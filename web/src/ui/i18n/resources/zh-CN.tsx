@@ -108,7 +108,7 @@ export const translations: Translations<"zh-CN"> = {
         "custom providers section title": "自定义 AI 提供商",
         "custom providers section helper":
             "添加您自己的兼容 OpenAI 的 AI 提供商。凭据存储在您的浏览器中。",
-        "add custom provider": "添加自定义提供商",
+        "add custom ai provider": "添加自定义 AI 提供商",
         "custom provider api base field": "API 基础 URL",
         "custom provider api key field": "API 密钥",
         "no account": ({ webUiUrl }) => (

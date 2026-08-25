@@ -117,7 +117,7 @@ export const translations: Translations<"nl"> = {
         "custom providers section title": "Aangepaste AI-providers",
         "custom providers section helper":
             "Voeg uw eigen OpenAI-compatibele AI-providers toe. Inloggegevens worden in uw browser opgeslagen.",
-        "add custom provider": "Aangepaste provider toevoegen",
+        "add custom ai provider": "Aangepaste AI-provider toevoegen",
         "custom provider api base field": "API-basis-URL",
         "custom provider api key field": "API-sleutel",
         "no account": ({ webUiUrl }) => (

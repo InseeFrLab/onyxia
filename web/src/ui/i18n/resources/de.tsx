@@ -118,7 +118,7 @@ export const translations: Translations<"de"> = {
         "custom providers section title": "Benutzerdefinierte KI-Anbieter",
         "custom providers section helper":
             "Fügen Sie Ihre eigenen OpenAI-kompatiblen KI-Anbieter hinzu. Die Anmeldedaten werden in Ihrem Browser gespeichert.",
-        "add custom provider": "Benutzerdefinierten Anbieter hinzufügen",
+        "add custom ai provider": "Benutzerdefinierten KI-Anbieter hinzufügen",
         "custom provider api base field": "API-Basis-URL",
         "custom provider api key field": "API-Schlüssel",
         "no account": ({ webUiUrl }) => (

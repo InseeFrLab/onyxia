@@ -364,7 +364,7 @@ export const AccountAiTab = memo((props: Props) => {
                     >
                         <Icon icon={getIconUrlByName("Add")} size="default" />
                         <Text typo="object heading" htmlComponent="span">
-                            {t("add custom provider")}
+                            {t("add custom ai provider")}
                         </Text>
                     </ButtonBase>
                 </div>
@@ -387,7 +387,7 @@ const { i18n } = declareComponentKeys<
     | "gateway error"
     | "custom providers section title"
     | "custom providers section helper"
-    | "add custom provider"
+    | "add custom ai provider"
     | "custom provider api base field"
     | "custom provider api key field"
     | { K: "no account"; P: { webUiUrl: string }; R: JSX.Element }
@@ -499,13 +499,10 @@ const useStyles = tss
         },
         addCustomProviderAction: {
             justifyContent: "flex-start",
-            gap: theme.spacing(3),
-            marginTop: theme.spacing(3),
-            padding: theme.spacing(3),
-            borderWidth: theme.spacing(0.5),
-            borderStyle: "solid",
-            borderColor: theme.colors.useCases.surfaces.surface2,
-            borderRadius: theme.spacing(2),
+            gap: theme.spacing(4),
+            padding: theme.spacing(4),
+            border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+            borderRadius: theme.spacing(3),
             textAlign: "left",
             transition: theme.muiTheme.transitions.create("background-color"),
             "&:hover": {

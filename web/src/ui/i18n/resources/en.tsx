@@ -116,7 +116,7 @@ export const translations: Translations<"en"> = {
         "custom providers section title": "Custom AI providers",
         "custom providers section helper":
             "Add your own OpenAI-compatible AI providers. Credentials are stored in your browser.",
-        "add custom provider": "Add custom provider",
+        "add custom ai provider": "Add a Custom AI Provider",
         "custom provider api base field": "API base URL",
         "custom provider api key field": "API key",
         "no account": ({ webUiUrl }) => (

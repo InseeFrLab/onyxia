@@ -118,7 +118,7 @@ export const translations: Translations<"fr"> = {
         "custom providers section title": "Providers IA personnalisés",
         "custom providers section helper":
             "Ajoutez vos propres providers IA compatibles OpenAI. Les identifiants sont stockés dans votre navigateur.",
-        "add custom provider": "Ajouter un provider personnalisé",
+        "add custom ai provider": "Ajouter un provider IA personnalisé",
         "custom provider api base field": "URL de base de l'API",
         "custom provider api key field": "Clé API",
         "no account": ({ webUiUrl }) => (

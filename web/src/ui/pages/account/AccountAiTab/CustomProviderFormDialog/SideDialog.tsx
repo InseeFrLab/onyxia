@@ -41,17 +41,22 @@ export function SideDialog(props: {
                 aria-modal="true"
                 aria-label={typeof title === "string" ? title : undefined}
             >
-                <div className={classes.headingWrapper}>
-                    <Text typo="section heading" className={classes.title}>
-                        {title}
-                    </Text>
-                    <IconButton
-                        className={classes.closeButton}
-                        size="small"
-                        icon={getIconUrlByName("Close")}
-                        aria-label={closeLabel}
-                        onClick={onClose}
-                    />
+                <div className={classes.header}>
+                    <div className={classes.titleRow}>
+                        <Text typo="section heading" className={classes.title}>
+                            {title}
+                        </Text>
+                        <IconButton
+                            className={classes.closeButton}
+                            size="default"
+                            icon={getIconUrlByName("Close")}
+                            aria-label={closeLabel}
+                            onClick={onClose}
+                        />
+                    </div>
+                    <div className={classes.dividerWrapper}>
+                        <div className={classes.divider} />
+                    </div>
                 </div>
 
                 <div className={classes.childrenWrapper}>{children}</div>
@@ -64,31 +69,36 @@ const useStyles = tss.withName({ SideDialog }).create(({ theme }) => ({
     root: {
         position: "fixed",
         inset: 0,
+        height: "100%",
+        minHeight: 0,
         zIndex: theme.muiTheme.zIndex.modal,
-        marginRight: theme.spacing(3),
         display: "flex",
         justifyContent: "flex-end",
         alignItems: "stretch",
-        padding: `64px ${theme.spacing(2)}px 32px`,
+        overflow: "hidden",
+        padding: `64px ${theme.spacing(4)}px ${theme.spacing(6)}px 0`,
         boxSizing: "border-box",
-        backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.72),
+        backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.7),
         backdropFilter: "blur(1px)",
         "@media (max-width: 720px)": {
-            marginRight: 0,
             padding: 0
         }
     },
     panel: {
         width: 657,
+        height: 976,
         maxWidth: "100%",
+        maxHeight: "100%",
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
+        gap: theme.spacing(3),
         overflow: "hidden",
-        borderRadius: 16,
-        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        boxSizing: "border-box",
+        padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
+        borderRadius: theme.spacing(3),
         backgroundColor: theme.colors.useCases.surfaces.surface1,
-        boxShadow: theme.shadows[4],
+        boxShadow: "0 6px 10px 0 rgba(44, 50, 63, 0.07)",
         animation: `${keyframes`
             from {
                 opacity: 0;
@@ -100,33 +110,41 @@ const useStyles = tss.withName({ SideDialog }).create(({ theme }) => ({
             }
         `} 340ms cubic-bezier(0.2, 0, 0, 1)`,
         "@media (max-width: 720px)": {
+            height: "100%",
             borderRadius: 0,
-            borderTop: "none",
-            borderBottom: "none"
+            padding: `${theme.spacing(4)}px ${theme.spacing(3)}px`
         }
     },
-    headingWrapper: {
+    header: {
         flex: "none",
+        display: "flex",
+        flexDirection: "column"
+    },
+    titleRow: {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: theme.spacing(2),
-        margin: `0 ${theme.spacing(5)}px`,
-        padding: `${theme.spacing(5)}px 0 ${theme.spacing(2)}px`,
-        borderBottom: `1px solid ${theme.colors.useCases.typography.textSecondary}`
+        gap: 10
     },
     title: {
+        flex: 1,
         minWidth: 0,
         color: theme.colors.useCases.typography.textPrimary
     },
     closeButton: {
-        flex: "none"
+        flex: "none",
+        padding: 0
+    },
+    dividerWrapper: {
+        padding: `${theme.spacing(3)}px 0`
+    },
+    divider: {
+        height: 1,
+        backgroundColor: theme.colors.useCases.typography.textSecondary
     },
     childrenWrapper: {
         flex: 1,
         minHeight: 0,
-        overflow: "hidden",
-        padding: `${theme.spacing(5)}px ${theme.spacing(5)}px ${theme.spacing(4)}px`,
-        boxSizing: "border-box"
+        overflow: "hidden"
     }
 }));

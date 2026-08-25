@@ -122,7 +122,7 @@ const useStyles = tss
         return {
             input: {
                 minHeight: 45,
-                borderRadius: 8,
+                borderRadius: theme.spacing(2),
                 border: "2px solid transparent",
                 backgroundColor: fieldBackground,
                 transition: "border-color 160ms ease, background-color 160ms ease",
@@ -133,8 +133,8 @@ const useStyles = tss
                     borderColor: theme.colors.useCases.buttons.actionActive
                 },
                 "& .MuiInputBase-input": {
-                    ...theme.typography.variants["body 2"].style,
-                    padding: `${theme.spacing(1.25)}px ${theme.spacing(1.5)}px`,
+                    ...theme.typography.variants["label 1"].style,
+                    padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
                     color: theme.colors.useCases.typography.textPrimary,
                     "&::placeholder": {
                         color: theme.colors.useCases.typography.textSecondary,
@@ -145,7 +145,7 @@ const useStyles = tss
             selectControl: {
                 "& .MuiInputBase-root": {
                     minHeight: 45,
-                    borderRadius: 8,
+                    borderRadius: theme.spacing(2),
                     backgroundColor: fieldBackground,
                     color: theme.colors.useCases.typography.textPrimary
                 },
@@ -159,17 +159,21 @@ const useStyles = tss
                     borderColor: theme.colors.useCases.buttons.actionActive
                 },
                 "& .MuiSelect-select": {
-                    ...theme.typography.variants["body 2"].style,
+                    ...theme.typography.variants["label 1"].style,
                     display: "flex",
                     alignItems: "center",
                     minHeight: "unset",
-                    padding: `${theme.spacing(1.25)}px ${theme.spacing(
-                        5
-                    )}px ${theme.spacing(1.25)}px ${theme.spacing(1.5)}px`
+                    paddingTop: theme.spacing(2),
+                    paddingBottom: theme.spacing(2),
+                    paddingLeft: theme.spacing(2.5),
+                    paddingRight: `${theme.spacing(6)}px !important`
                 },
                 "& .MuiSelect-icon": {
                     color: theme.colors.useCases.typography.textPrimary,
-                    right: theme.spacing(1.5)
+                    right: theme.spacing(2.5)
+                },
+                "& .MuiInputBase-root.Mui-disabled": {
+                    opacity: 0.3
                 },
                 "& .Mui-disabled": {
                     color: theme.colors.useCases.typography.textDisabled,
@@ -179,11 +183,11 @@ const useStyles = tss
             modelMenu: {
                 marginTop: theme.spacing(0.5),
                 padding: theme.spacing(0.5),
-                borderRadius: 8
+                borderRadius: theme.spacing(2)
             },
             modelMenuItem: {
                 minHeight: 32,
-                borderRadius: 6
+                borderRadius: theme.spacing(1.5)
             }
         };
     });
