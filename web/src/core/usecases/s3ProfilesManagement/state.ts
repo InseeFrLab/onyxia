@@ -6,10 +6,12 @@ import type { OidcParams_Partial } from "core/ports/OnyxiaApi/OidcParams";
 
 export type State = {
     ambientProfileName: string | undefined;
-    decodedIdTokens: {
-        oidcParams: OidcParams_Partial;
-        decodedIdToken: Record<string, unknown>;
-    }[];
+    decodedIdTokens:
+        | {
+              oidcParams: OidcParams_Partial;
+              decodedIdToken: Record<string, unknown>;
+          }[]
+        | undefined;
 };
 
 export const name = "s3ProfilesManagement";

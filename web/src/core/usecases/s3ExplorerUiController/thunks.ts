@@ -101,6 +101,37 @@ export const thunks = {
                 routeParams_toSet: privateSelectors.routeParams(getState())
             };
         },
+    getShouldEnforceLogin:
+        (params: { routeParams: Pick<RouteParams, "profile"> }) =>
+        (...args) => {
+            const { routeParams } = params;
+            const [, getState] = args;
+
+            const profileName = routeParams.profile;
+
+            if (profileName === undefined) {
+                return true;
+            }
+
+            const s3Profiles = s3ProfilesManagement.selectors.s3Profiles(getState());
+
+            const s3Profile = s3Profiles.find(
+                s3Profile => s3Profile.profileName === profileName
+            );
+
+            if (s3Profile === undefined) {
+                return true;
+            }
+
+            const isAnonymousAdminProfile =
+                s3Profile.origin === "onyxia instance config (setup by admin)" &&
+                !s3Profile.paramsOfCreateS3Client.isStsEnabled &&
+                s3Profile.paramsOfCreateS3Client.credentials === undefined;
+
+            const shouldEnforceLogin = !isAnonymousAdminProfile;
+
+            return shouldEnforceLogin;
+        },
     notifyRouteParamsExternallyUpdated:
         (params: { routeParams: RouteParams }) =>
         async (...args) => {

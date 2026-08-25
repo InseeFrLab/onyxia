@@ -47,7 +47,7 @@ export const thunks = {
             const { restorableConfig } = params;
 
             const { restorableServiceConfigs } =
-                projectManagement.protectedSelectors.projectConfig(getState());
+                projectManagement.protectedSelectors.projectConfigs(getState());
 
             const restorableConfig_withSameRef = (() => {
                 const results = restorableServiceConfigs.filter(restorableConfig_i =>
@@ -98,7 +98,7 @@ export const thunks = {
             const { restorableConfigRef: ref } = params;
 
             const { restorableServiceConfigs } =
-                projectManagement.protectedSelectors.projectConfig(getState());
+                projectManagement.protectedSelectors.projectConfigs(getState());
 
             const index_toDelete = restorableServiceConfigs.findIndex(c =>
                 getAreSameRestorableConfigRef(c, ref)
@@ -131,7 +131,7 @@ export const thunks = {
             const { restorableConfigRef: ref, targetIndex } = params;
 
             const { restorableServiceConfigs } =
-                projectManagement.protectedSelectors.projectConfig(getState());
+                projectManagement.protectedSelectors.projectConfigs(getState());
 
             const index_current = restorableServiceConfigs.findIndex(c =>
                 getAreSameRestorableConfigRef(c, ref)
@@ -168,7 +168,7 @@ export const thunks = {
             const { restorableConfigRef: ref, newFriendlyName } = params;
 
             const { restorableServiceConfigs } =
-                projectManagement.protectedSelectors.projectConfig(getState());
+                projectManagement.protectedSelectors.projectConfigs(getState());
 
             const restorableConfig_current = restorableServiceConfigs.find(c =>
                 getAreSameRestorableConfigRef(c, ref)

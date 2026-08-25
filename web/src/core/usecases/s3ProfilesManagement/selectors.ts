@@ -1,35 +1,49 @@
 import { createSelector } from "clean-architecture";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
-import { type S3Profile, createS3Profiles } from "./decoupledLogic/s3Profiles";
+import { createS3Profiles } from "./decoupledLogic/s3Profiles";
 import { name } from "./state";
 import type { State as RootState } from "core/bootstrap";
 import { getRootContext } from "core/rootContext";
+import { assert } from "tsafe";
 
 const state = (rootState: RootState) => rootState[name];
 
 const s3Profiles = createSelector(
-    createSelector(
-        projectManagement.protectedSelectors.projectConfig,
-        projectConfig => projectConfig.s3Profiles
-    ),
-    createSelector(
-        userConfigs.selectors.userConfigs,
-        userConfigs => userConfigs.s3BookmarksStr
-    ),
+    (state: RootState) => {
+        const { oidc } = getRootContext();
+
+        if (!oidc.isUserLoggedIn) {
+            return undefined;
+        }
+        return projectManagement.protectedSelectors.projectConfigs(state).s3Profiles;
+    },
+    (state: RootState) => {
+        const { oidc } = getRootContext();
+
+        if (!oidc.isUserLoggedIn) {
+            return undefined;
+        }
+        return userConfigs.selectors.userConfigs(state).s3BookmarksStr;
+    },
     createSelector(state, state => state.decodedIdTokens),
-    (
-        s3Profiles_persistenceLayer,
-        userConfigs_s3BookmarksStr,
-        decodedIdTokens
-    ): S3Profile[] =>
+    (projectConfigs_s3Profiles, userConfigs_s3BookmarksStr, decodedIdTokens) =>
         createS3Profiles({
-            persistenceLayerData: {
-                s3Profiles: s3Profiles_persistenceLayer,
-                userConfigs_s3BookmarksStr
-            },
             onyxiaInstanceS3ConfigEntries: getRootContext().s3Config.entries,
-            decodedIdTokens
+            userData: (() => {
+                if (decodedIdTokens === undefined) {
+                    return undefined;
+                }
+
+                assert(projectConfigs_s3Profiles !== undefined);
+                assert(userConfigs_s3BookmarksStr !== undefined);
+
+                return {
+                    decodedIdTokens,
+                    userConfigs_s3BookmarksStr,
+                    projectConfigs_s3Profiles
+                };
+            })()
         })
 );
 
@@ -44,7 +58,10 @@ const ambientS3Profile = createSelector(
                     : s3Profiles => s3Profiles.profileName === ambientProfileName
             ) ??
             s3Profiles.find(s3Profile => s3Profile.profileName === "default") ??
-            s3Profiles.find(s3Profile => s3Profile.origin === "onyxia instance config") ??
+            s3Profiles.find(
+                s3Profile =>
+                    s3Profile.origin === "onyxia instance config (setup by admin)"
+            ) ??
             s3Profiles.find(() => true)
         );
     }

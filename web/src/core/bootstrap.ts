@@ -339,13 +339,7 @@ export async function bootstrapCore(
         await dispatch(usecases.userProfileForm.protectedThunks.initialize());
     }
 
-    init_s3ProfilesManagement: {
-        if (!oidc.isUserLoggedIn) {
-            break init_s3ProfilesManagement;
-        }
-
-        await dispatch(usecases.s3ProfilesManagement.protectedThunks.initialize());
-    }
+    await dispatch(usecases.s3ProfilesManagement.protectedThunks.initialize());
 
     pluginSystemInitCore({ core, context });
 

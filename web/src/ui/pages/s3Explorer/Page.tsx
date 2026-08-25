@@ -25,9 +25,8 @@ import { S3ExplorerMainView } from "ui/shared/codex/S3ExplorerMainView";
 import { CommandBar } from "ui/shared/CommandBar";
 import { S3BookmarksEntryPointList } from "ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import { customIcons } from "lazy-icons";
+import { customIcons, getIconUrlByName } from "lazy-icons";
 import { S3ContextActionButton } from "ui/shared/codex/S3ContextActionButton";
-import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
 import { CodeTextEditor } from "ui/shared/textEditor/CodeTextEditor";
 import { Icon } from "onyxia-ui/Icon";
@@ -41,12 +40,19 @@ const Page = withLoader({
 export default Page;
 
 async function loader() {
-    await enforceLogin();
-
     const core = await getCore();
 
     const route = getRoute();
     assert(routeGroup.has(route));
+
+    const shouldEnforceLogin =
+        core.functions.s3ExplorerUiController.getShouldEnforceLogin({
+            routeParams: route.params
+        });
+
+    if (shouldEnforceLogin) {
+        await enforceLogin();
+    }
 
     const { routeParams_toSet } = core.functions.s3ExplorerUiController.load({
         routeParams: route.params
