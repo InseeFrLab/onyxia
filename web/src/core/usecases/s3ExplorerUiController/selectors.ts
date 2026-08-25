@@ -145,7 +145,7 @@ const profileName_anonymous = createSelector(
         if (ambientS3Profile === undefined) {
             return undefined;
         }
-        if (ambientS3Profile.origin !== "onyxia instance config") {
+        if (ambientS3Profile.origin !== "onyxia instance config (setup by admin)") {
             return undefined;
         }
         if (
@@ -157,7 +157,7 @@ const profileName_anonymous = createSelector(
 
         const s3Profile_anonymous = s3Profiles.find(
             s3Profile =>
-                s3Profile.origin === "onyxia instance config" &&
+                s3Profile.origin === "onyxia instance config (setup by admin)" &&
                 !s3Profile.paramsOfCreateS3Client.isStsEnabled &&
                 s3Profile.paramsOfCreateS3Client.credentials === undefined &&
                 s3Profile.paramsOfCreateS3Client.url ===
@@ -222,7 +222,8 @@ const profileSelect = createSelector(
             selectedProfile: {
                 name: ambientS3Profile.profileName,
                 url: ambientS3Profile.paramsOfCreateS3Client.url,
-                isReadonly: ambientS3Profile.origin === "onyxia instance config"
+                isReadonly:
+                    ambientS3Profile.origin === "onyxia instance config (setup by admin)"
             },
             availableProfileNames: s3Profiles.map(s3Profile => s3Profile.profileName)
         };

@@ -5,7 +5,7 @@ import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-const projectConfig = createSelector(state, state => state.currentProjectConfigs);
+const projectConfigs = createSelector(state, state => state.currentProjectConfigs);
 
 export const protectedSelectors = {
     projects: createSelector(state, state => state.projects),
@@ -18,7 +18,7 @@ export const protectedSelectors = {
 
         return project;
     }),
-    projectConfig
+    projectConfigs
 };
 
 export const selectors = {
@@ -31,8 +31,8 @@ export const selectors = {
         })
     ),
     servicePassword: createSelector(
-        projectConfig,
-        projectConfig => projectConfig.servicePassword
+        projectConfigs,
+        projectConfigs => projectConfigs.servicePassword
     ),
     groupProjectName: createSelector(
         protectedSelectors.currentProject,

@@ -237,7 +237,8 @@ export const protectedThunks = {
             await mutex.runExclusive(async () => {
                 const { secretsManager } = rootContext;
 
-                const currentProjectConfig = protectedSelectors.projectConfig(getState());
+                const currentProjectConfig =
+                    protectedSelectors.projectConfigs(getState());
 
                 const currentLocalValue = currentProjectConfig[params.key];
 

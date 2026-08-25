@@ -6,7 +6,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 const state = (rootState: RootState) => rootState[name];
 
 const restorableConfigs = createSelector(
-    projectManagement.protectedSelectors.projectConfig,
+    projectManagement.protectedSelectors.projectConfigs,
     createSelector(state, state => state.indexedChartsIcons),
     ({ restorableServiceConfigs }, indexedChartsIcons) =>
         restorableServiceConfigs.map(restorableConfig => ({

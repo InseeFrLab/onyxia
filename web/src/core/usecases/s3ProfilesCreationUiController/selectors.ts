@@ -121,13 +121,13 @@ const submittableFormValuesAsS3Profile_vault = createSelector(
     formattedFormValuesUrl,
     isFormSubmittable,
     createSelector(state, state => state.creationTimeOfProfileToEdit),
-    projectManagement.protectedSelectors.projectConfig,
+    projectManagement.protectedSelectors.projectConfigs,
     (
         formValues,
         formattedFormValuesUrl,
         isFormSubmittable,
         creationTimeOfProfileToEdit,
-        projectConfig
+        projectConfigs
     ) => {
         if (!isFormSubmittable) {
             return undefined;
@@ -140,7 +140,7 @@ const submittableFormValuesAsS3Profile_vault = createSelector(
                 return undefined;
             }
 
-            const s3Profile_vault_current = projectConfig.s3Profiles.find(
+            const s3Profile_vault_current = projectConfigs.s3Profiles.find(
                 s3Config => s3Config.creationTime === creationTimeOfProfileToEdit
             );
 

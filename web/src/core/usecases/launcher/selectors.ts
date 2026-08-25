@@ -177,7 +177,9 @@ const s3ProfileSelect = createSelector(
         }
 
         const availableConfigs = s3Configs.filter(
-            config => canInjectPersonalInfos || config.origin !== "onyxia instance config"
+            config =>
+                canInjectPersonalInfos ||
+                config.origin !== "onyxia instance config (setup by admin)"
         );
 
         // We don't display the s3 config selector if there is no config or only one

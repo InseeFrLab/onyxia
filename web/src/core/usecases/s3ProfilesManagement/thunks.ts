@@ -103,7 +103,8 @@ export const protectedThunks = {
                                     .s3Profiles(getState())
                                     .filter(
                                         s3Profile =>
-                                            s3Profile.origin === "onyxia instance config"
+                                            s3Profile.origin ===
+                                            "onyxia instance config (setup by admin)"
                                     )
                                     .map(s3Profile => s3Profile.bookmarks)
                                     .flat()
@@ -169,7 +170,7 @@ export const protectedThunks = {
             const [dispatch, getState] = args;
 
             const s3Profiles_vault = structuredClone(
-                projectManagement.protectedSelectors.projectConfig(getState()).s3Profiles
+                projectManagement.protectedSelectors.projectConfigs(getState()).s3Profiles
             );
 
             const i = s3Profiles_vault.findIndex(
@@ -205,7 +206,7 @@ export const protectedThunks = {
             const [dispatch, getState] = args;
 
             const s3Profiles_vault = structuredClone(
-                projectManagement.protectedSelectors.projectConfig(getState()).s3Profiles
+                projectManagement.protectedSelectors.projectConfigs(getState()).s3Profiles
             );
 
             const i = s3Profiles_vault.findIndex(
@@ -253,8 +254,9 @@ export const protectedThunks = {
                 case "created by user (or group project member)":
                     {
                         const s3Profiles_vault = structuredClone(
-                            projectManagement.protectedSelectors.projectConfig(getState())
-                                .s3Profiles
+                            projectManagement.protectedSelectors.projectConfigs(
+                                getState()
+                            ).s3Profiles
                         );
 
                         const s3Profile_vault = s3Profiles_vault.find(
@@ -302,7 +304,7 @@ export const protectedThunks = {
                         );
                     }
                     break;
-                case "onyxia instance config":
+                case "onyxia instance config (setup by admin)":
                     {
                         const { s3BookmarksStr } =
                             userConfigs.selectors.userConfigs(getState());
@@ -381,7 +383,17 @@ export const protectedThunks = {
     initialize:
         () =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore, s3Config }] = args;
+            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore, s3Config, oidc }] =
+                args;
+
+            if (!oidc.isUserLoggedIn) {
+                dispatch(
+                    actions.initialized({
+                        decodedIdTokens: undefined
+                    })
+                );
+                return;
+            }
 
             const getDecodedIdToken = async (params: {
                 oidcParams_partial: OidcParams_Partial;

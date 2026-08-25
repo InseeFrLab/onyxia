@@ -185,7 +185,9 @@ export const thunks = {
                             s3Profile => s3Profile.profileName === "default"
                         ) ??
                         s3Profiles.find(
-                            s3Profile => s3Profile.origin === "onyxia instance config"
+                            s3Profile =>
+                                s3Profile.origin ===
+                                "onyxia instance config (setup by admin)"
                         ) ??
                         s3Profiles.find(() => true)
                     )?.profileName;
