@@ -426,7 +426,8 @@ export const protectedThunks = {
             };
 
             const oidcParams_arr = s3Config.entries
-                .map(entry => entry.sts.oidcParams)
+                .map(entry => entry.sts?.oidcParams)
+                .filter(oidcParams => oidcParams !== undefined)
                 .reduce(...removeDuplicates<OidcParams_Partial>(same));
 
             const decodedIdTokens: State["decodedIdTokens"] = await Promise.all(

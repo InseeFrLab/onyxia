@@ -110,6 +110,12 @@ export function createS3Profiles(params: {
     const s3Profiles_admin: S3Profile.SetupByAdmin[] = onyxiaInstanceS3ConfigEntries
         .map((c): S3Profile.SetupByAdmin[] => {
             const decodedIdToken = (() => {
+                const { sts } = c;
+
+                if (sts === undefined) {
+                    return undefined;
+                }
+
                 if (userData === undefined) {
                     return undefined;
                 }
@@ -117,7 +123,7 @@ export function createS3Profiles(params: {
                 const { decodedIdTokens } = userData;
 
                 const wrap = decodedIdTokens.find(wrap =>
-                    same(wrap.oidcParams, c.sts.oidcParams)
+                    same(wrap.oidcParams, sts.oidcParams)
                 );
 
                 assert(wrap !== undefined);
@@ -212,6 +218,8 @@ export function createS3Profiles(params: {
             }): S3Profile.SetupByAdmin => {
                 const { stsRole } = params;
 
+                assert(c.sts !== undefined);
+
                 const paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts = {
                     url: c.url,
                     pathStyleAccess: c.pathStyleAccess,
@@ -234,7 +242,7 @@ export function createS3Profiles(params: {
             };
 
             const stsRoles: StsRole[] =
-                decodedIdToken === undefined
+                decodedIdToken === undefined || c.sts === undefined
                     ? []
                     : c.sts.roles
                           .map(stsRole_fromConfig => {
