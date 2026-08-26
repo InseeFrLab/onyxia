@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "11.7.1" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "11.7.2" -f onyxia-values.yaml
 ```
 
 To expose Onyxia with the Kubernetes Gateway API instead of an Ingress, use an `HTTPRoute`.
@@ -40,7 +40,7 @@ httpRoute:
     - datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "11.7.1" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "11.7.2" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
@@ -62,7 +62,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v11.7.1/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v11.7.2/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
@@ -97,7 +97,7 @@ api:
 ```
 
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v4.12.0/README.md#configuration)
--   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.7.1/web/.env)
+-   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.7.2/web/.env)
 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
@@ -150,4 +150,4 @@ httpRoute:
 If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/catalog-of-services)).  
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
-[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v5.7.1/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
+[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v5.7.2/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
