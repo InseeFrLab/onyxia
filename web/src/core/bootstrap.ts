@@ -195,34 +195,10 @@ export async function bootstrapCore(
                 "SecretsManager not initialized, probably because user is not logged in."
         }),
         sqlOlap: createDuckDbSqlOlap({
-            getS3Client: async () => {
-                if (!oidc.isUserLoggedIn) {
-                    return {
-                        errorCause: "need login"
-                    };
-                }
-
-                const result = await dispatch(
+            getAmbientS3ProfileAndClient: () =>
+                dispatch(
                     usecases.s3ProfilesManagement.protectedThunks.getAmbientS3ProfileAndClient()
-                );
-
-                if (result === undefined) {
-                    return {
-                        errorCause: "no s3 client"
-                    };
-                }
-
-                const { s3Profile, s3Client } = result;
-
-                return {
-                    s3Client,
-                    s3_endpoint: s3Profile.paramsOfCreateS3Client.url,
-                    s3_url_style: s3Profile.paramsOfCreateS3Client.pathStyleAccess
-                        ? "path"
-                        : "vhost",
-                    s3_region: s3Profile.paramsOfCreateS3Client.region
-                };
-            }
+                )
         }),
         s3Config
     };

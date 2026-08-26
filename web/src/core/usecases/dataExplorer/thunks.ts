@@ -4,7 +4,6 @@ import { protectedSelectors } from "./selectors";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { same } from "evt/tools/inDepth/same";
 import { performQuery } from "./decoupledLogic/performQuery";
-import { assert } from "tsafe";
 
 export const thunks = {
     load:
@@ -75,7 +74,7 @@ const privateThunks = {
     subscribeToEventAction:
         () =>
         (...args) => {
-            const [dispatch, getState, { evtAction, oidc, sqlOlap }] = args;
+            const [dispatch, getState, { evtAction, sqlOlap }] = args;
 
             if (hasSubscribedToEvtAction) {
                 return;
@@ -95,10 +94,6 @@ const privateThunks = {
 
                     const queryResponse = await performQuery({
                         getShouldAbort,
-                        login: () => {
-                            assert(!oidc.isUserLoggedIn);
-                            return oidc.login({ doesCurrentHrefRequiresAuth: false });
-                        },
                         queryRequest,
                         sqlOlap
                     });

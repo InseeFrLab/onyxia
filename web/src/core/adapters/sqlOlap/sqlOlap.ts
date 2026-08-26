@@ -15,34 +15,26 @@ import memoize from "memoizee";
 import { createArrowTableApi } from "./utils/arrowTable";
 import { inferFileType as inferFileType_pure } from "./utils/inferFileType";
 import type { S3Client } from "core/ports/S3Client";
+import type { S3Profile } from "core/usecases/s3ProfilesManagement/decoupledLogic/s3Profiles";
 import { Deferred } from "evt/tools/Deferred";
 import { streamToArrayBuffer } from "core/tools/streamToArrayBuffer";
 import { getHttpUrlWithoutRedirect } from "core/tools/getHttpUrlWithoutRedirect";
 import { parseS3Uri } from "core/tools/S3Uri";
 
 export const createDuckDbSqlOlap = (params: {
-    getS3Client: () => Promise<
+    getAmbientS3ProfileAndClient: () => Promise<
         | {
-              errorCause: "need login" | "no s3 client";
-              s3Client?: never;
-              s3_endpoint?: never;
-              s3_url_style?: never;
-              s3_region?: never;
-          }
-        | {
-              errorCause?: never;
               s3Client: S3Client;
-              s3_endpoint: string;
-              s3_url_style: "path" | "vhost";
-              s3_region: string | undefined;
+              s3Profile: S3Profile;
           }
+        | undefined
     >;
 }): SqlOlap => {
-    const { getS3Client } = params;
+    const { getAmbientS3ProfileAndClient } = params;
 
     const prArrowTableApi = createArrowTableApi();
 
-    const inferFileType = memoize((sourceUrl: string) => {
+    const inferFileType = memoize((s3Client: S3Client | undefined, sourceUrl: string) => {
         const dOut = new Deferred<SqlOlap.ReturnTypeOfInferType>();
 
         const { protocol: sourceUrlProtocol } = new URL(sourceUrl);
@@ -90,11 +82,8 @@ export const createDuckDbSqlOlap = (params: {
                         };
                     }
                     case "s3:": {
-                        const { errorCause: errorCause_getS3Client, s3Client } =
-                            await getS3Client();
-
-                        if (errorCause_getS3Client !== undefined) {
-                            dOut.resolve({ errorCause: errorCause_getS3Client });
+                        if (s3Client === undefined) {
+                            dOut.resolve({ errorCause: "no s3 client" });
                             return new Promise<never>(() => {});
                         }
                         const s3Uri = parseS3Uri({
@@ -156,102 +145,118 @@ export const createDuckDbSqlOlap = (params: {
         return dOut.pr;
     });
 
+    // NOTE: Eager background warmup.
+    const prDb = (async () => {
+        const duckdb = await import("@duckdb/duckdb-wasm");
+
+        const bundle = await duckdb.selectBundle({
+            mvp: {
+                mainModule: duckdbMvpWasmUrl,
+                mainWorker: duckdbBrowserMvpWorkerJsUrl
+            },
+            eh: {
+                mainModule: duckdbEhWasmUrl,
+                mainWorker: duckdbBrowserEhWorkerJsUrl
+            },
+            coi: {
+                mainModule: duckdbCoiWasmUrl,
+                mainWorker: duckdbBrowserCoiWorkerJsUrl,
+                pthreadWorker: duckdbBrowserCoiPThreadWorkerJsUrl
+            }
+        });
+
+        assert(bundle.mainWorker !== null);
+
+        const db = new duckdb.AsyncDuckDB(
+            new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING),
+            new Worker(bundle.mainWorker)
+        );
+
+        await db.instantiate(
+            bundle.mainModule,
+            bundle.pthreadWorker
+            //progress => console.log( `Loading DuckDB: ${~~((progress.bytesLoaded / progress.bytesTotal) * 100)}%`)
+        );
+
+        let query = [
+            `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`,
+            "LOAD httpfs;"
+        ].join("\n");
+
+        const conn = await db.connect();
+        await conn.query(query);
+        conn.close();
+
+        return db;
+    })();
+
+    const getConfiguredAsyncDuckDb = async (
+        s3Profile: S3Profile | undefined,
+        s3Client: S3Client | undefined
+    ) => {
+        const db = await prDb;
+
+        setup_s3: {
+            if (s3Profile === undefined) {
+                break setup_s3;
+            }
+
+            assert(s3Client !== undefined);
+
+            const tokens = await s3Client.getToken({ doForceRenew: false });
+
+            const s3_endpoint = s3Profile.paramsOfCreateS3Client.url;
+            const s3_url_style = s3Profile.paramsOfCreateS3Client.pathStyleAccess
+                ? "path"
+                : "vhost";
+            const s3_region = s3Profile.paramsOfCreateS3Client.region;
+
+            const query = [
+                "",
+                "CREATE OR REPLACE SECRET onyxia_s3 (",
+                [
+                    "TYPE s3",
+                    "PROVIDER config",
+                    `ENDPOINT '${s3_endpoint
+                        .trim()
+                        .replace(/^https?:\/\//, "")
+                        .replace(/\/$/, "")}'`,
+                    `URL_STYLE '${s3_url_style}'`,
+                    `USE_SSL ${s3_endpoint.startsWith("http://") ? "false" : "true"}`,
+                    ...(s3_region === undefined ? [] : [`REGION '${s3_region}'`]),
+                    ...(tokens === undefined
+                        ? []
+                        : [
+                              `KEY_ID '${tokens.accessKeyId}'`,
+                              `SECRET '${tokens.secretAccessKey}'`,
+                              ...(tokens.sessionToken === undefined
+                                  ? []
+                                  : [`SESSION_TOKEN '${tokens.sessionToken}'`])
+                          ])
+                ]
+                    .map(part => `    ${part}`)
+                    .join(",\n"),
+                ");"
+            ].join("\n");
+
+            const conn = await db.connect();
+            await conn.query(query);
+            conn.close();
+        }
+
+        return db;
+    };
+
     const sqlOlap: SqlOlap = {
-        getConfiguredAsyncDuckDb: (() => {
-            let hasInit = false;
+        getConfiguredAsyncDuckDb: async () => {
+            const { s3Client, s3Profile } = (await getAmbientS3ProfileAndClient()) ?? {};
+            return getConfiguredAsyncDuckDb(s3Profile, s3Client);
+        },
+        inferFileType: async ({ sourceUrl }) => {
+            const { s3Client } = (await getAmbientS3ProfileAndClient()) ?? {};
 
-            const prDb = getAsyncDuckDb();
-
-            let s3FeatureStatus: SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb.S3FeatureStatus;
-
-            return async () => {
-                const db = await prDb;
-
-                let conn:
-                    | import("@duckdb/duckdb-wasm").AsyncDuckDBConnection
-                    | undefined = undefined;
-
-                init: {
-                    if (hasInit) {
-                        break init;
-                    }
-
-                    conn = await db.connect();
-
-                    await conn.query(
-                        [
-                            `SET custom_extension_repository = '${window.location.origin}${import.meta.env.BASE_URL}duckdb-extensions';`,
-                            "LOAD httpfs;"
-                        ].join("\n")
-                    );
-
-                    hasInit = true;
-                }
-
-                setup_s3: {
-                    const { errorCause, s3Client, s3_endpoint, s3_url_style, s3_region } =
-                        await getS3Client();
-
-                    if (errorCause !== undefined) {
-                        s3FeatureStatus =
-                            id<SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb.S3FeatureStatus.NotCapable>(
-                                {
-                                    isS3Capable: false,
-                                    reason: errorCause
-                                }
-                            );
-                        break setup_s3;
-                    }
-
-                    if (conn === undefined) {
-                        conn = await db.connect();
-                    }
-
-                    const tokens = await s3Client.getToken({ doForceRenew: false });
-
-                    const query = [
-                        "CREATE OR REPLACE SECRET onyxia_s3 (",
-                        [
-                            "TYPE s3",
-                            "PROVIDER config",
-                            `ENDPOINT '${s3_endpoint
-                                .trim()
-                                .replace(/^https?:\/\//, "")
-                                .replace(/\/$/, "")}'`,
-                            `URL_STYLE '${s3_url_style}'`,
-                            `USE_SSL ${s3_endpoint.startsWith("http://") ? "false" : "true"}`,
-                            ...(s3_region === undefined ? [] : [`REGION '${s3_region}'`]),
-                            ...(tokens === undefined
-                                ? []
-                                : [
-                                      `KEY_ID '${tokens.accessKeyId}'`,
-                                      `SECRET '${tokens.secretAccessKey}'`,
-                                      ...(tokens.sessionToken === undefined
-                                          ? []
-                                          : [`SESSION_TOKEN '${tokens.sessionToken}'`])
-                                  ])
-                        ]
-                            .map(part => `    ${part}`)
-                            .join(",\n"),
-                        ");"
-                    ].join("\n");
-
-                    await conn.query(query);
-
-                    s3FeatureStatus = {
-                        isS3Capable: true
-                    };
-                }
-
-                await conn?.close();
-
-                return id<SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb>({
-                    db,
-                    s3FeatureStatus
-                });
-            };
-        })(),
-        inferFileType: ({ sourceUrl }) => inferFileType(sourceUrl),
+            return inferFileType(s3Client, sourceUrl);
+        },
         getRows: async ({ sourceUrl, rowsPerPage, page }) => {
             const {
                 errorCause: errorCause_inferFileType,
@@ -265,11 +270,11 @@ export const createDuckDbSqlOlap = (params: {
                 });
             }
 
-            const { db, s3FeatureStatus } = await sqlOlap.getConfiguredAsyncDuckDb();
+            const { s3Profile, s3Client } = (await getAmbientS3ProfileAndClient()) ?? {};
 
-            if (sourceUrlProtocol === "s3:" && !s3FeatureStatus.isS3Capable) {
+            if (sourceUrlProtocol === "s3:" && s3Profile === undefined) {
                 return id<SqlOlap.ReturnTypeOfGetRows.Failed>({
-                    errorCause: s3FeatureStatus.reason
+                    errorCause: "no s3 client"
                 });
             }
 
@@ -299,6 +304,8 @@ export const createDuckDbSqlOlap = (params: {
             if (page !== 1) {
                 sqlQuery += ` OFFSET ${rowsPerPage * (page - 1)}`;
             }
+
+            const db = await getConfiguredAsyncDuckDb(s3Profile, s3Client);
 
             const conn = await db.connect();
             const stmt = await conn.prepare(sqlQuery);
@@ -342,12 +349,12 @@ export const createDuckDbSqlOlap = (params: {
                         });
                     }
 
-                    const { db, s3FeatureStatus } =
-                        await sqlOlap.getConfiguredAsyncDuckDb();
+                    const { s3Profile, s3Client } =
+                        (await getAmbientS3ProfileAndClient()) ?? {};
 
-                    if (sourceUrlProtocol === "s3:" && !s3FeatureStatus.isS3Capable) {
+                    if (sourceUrlProtocol === "s3:" && s3Client === undefined) {
                         return id<SqlOlap.ReturnTypeOfGetRowCount.Failed>({
-                            errorCause: s3FeatureStatus.reason
+                            errorCause: "no s3 client"
                         });
                     }
 
@@ -365,6 +372,7 @@ export const createDuckDbSqlOlap = (params: {
 
                     const query = `SELECT count(*)::INTEGER as v FROM read_parquet("${sourceUrl}");`;
 
+                    const db = await getConfiguredAsyncDuckDb(s3Profile, s3Client);
                     const conn = await db.connect();
                     const stmt = await conn.prepare(query);
 
@@ -396,41 +404,3 @@ export const createDuckDbSqlOlap = (params: {
 
     return sqlOlap;
 };
-
-const getAsyncDuckDb = memoize(
-    async () => {
-        const duckdb = await import("@duckdb/duckdb-wasm");
-
-        const bundle = await duckdb.selectBundle({
-            mvp: {
-                mainModule: duckdbMvpWasmUrl,
-                mainWorker: duckdbBrowserMvpWorkerJsUrl
-            },
-            eh: {
-                mainModule: duckdbEhWasmUrl,
-                mainWorker: duckdbBrowserEhWorkerJsUrl
-            },
-            coi: {
-                mainModule: duckdbCoiWasmUrl,
-                mainWorker: duckdbBrowserCoiWorkerJsUrl,
-                pthreadWorker: duckdbBrowserCoiPThreadWorkerJsUrl
-            }
-        });
-
-        assert(bundle.mainWorker !== null);
-
-        const db = new duckdb.AsyncDuckDB(
-            new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING),
-            new Worker(bundle.mainWorker)
-        );
-
-        await db.instantiate(
-            bundle.mainModule,
-            bundle.pthreadWorker
-            //progress => console.log( `Loading DuckDB: ${~~((progress.bytesLoaded / progress.bytesTotal) * 100)}%`)
-        );
-
-        return db;
-    },
-    { promise: true }
-);

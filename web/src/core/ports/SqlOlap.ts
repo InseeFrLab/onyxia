@@ -1,7 +1,7 @@
 import type { AsyncDuckDB } from "@duckdb/duckdb-wasm";
 
 export type SqlOlap = {
-    getConfiguredAsyncDuckDb: () => Promise<SqlOlap.ReturnTypeOfGetConfiguredAsyncDuckDb>;
+    getConfiguredAsyncDuckDb: () => Promise<AsyncDuckDB>;
     getRowCount: (params: {
         sourceUrl: string;
     }) => Promise<SqlOlap.ReturnTypeOfGetRowCount>;
@@ -16,25 +16,6 @@ export type SqlOlap = {
 };
 
 export namespace SqlOlap {
-    export type ReturnTypeOfGetConfiguredAsyncDuckDb = {
-        db: AsyncDuckDB;
-        s3FeatureStatus: ReturnTypeOfGetConfiguredAsyncDuckDb.S3FeatureStatus;
-    };
-
-    export namespace ReturnTypeOfGetConfiguredAsyncDuckDb {
-        export type S3FeatureStatus =
-            | S3FeatureStatus.Capable
-            | S3FeatureStatus.NotCapable;
-
-        export namespace S3FeatureStatus {
-            export type Capable = { isS3Capable: true };
-            export type NotCapable = {
-                isS3Capable: false;
-                reason: "need login" | "no s3 client";
-            };
-        }
-    }
-
     export type ReturnTypeOfInferType =
         | ReturnTypeOfInferType.Failed
         | ReturnTypeOfInferType.Success;
@@ -42,7 +23,7 @@ export namespace SqlOlap {
     export namespace ReturnTypeOfInferType {
         export type Failed = {
             errorCause:
-                | ReturnTypeOfGetConfiguredAsyncDuckDb.S3FeatureStatus.NotCapable["reason"]
+                | "no s3 client"
                 | "unsupported protocol"
                 | "https fetch error"
                 | "query error"

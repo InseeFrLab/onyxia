@@ -32,11 +32,10 @@ export namespace QueryResponse {
 
 export async function performQuery(params: {
     sqlOlap: SqlOlap;
-    login: () => Promise<never>;
     queryRequest: QueryRequest;
     getShouldAbort: () => boolean;
 }): Promise<QueryResponse> {
-    const { sqlOlap, login, queryRequest, getShouldAbort } = params;
+    const { sqlOlap, queryRequest, getShouldAbort } = params;
 
     const { errorCause: errorCause_getRowCount, rowCount } = await sqlOlap.getRowCount({
         sourceUrl: queryRequest.source
@@ -48,10 +47,6 @@ export async function performQuery(params: {
 
     if (errorCause_getRowCount !== undefined) {
         switch (errorCause_getRowCount) {
-            case "need login":
-                await login();
-                assert(false);
-                break;
             case "not file type allowing querying row count":
                 break;
             case "https fetch error":
@@ -83,7 +78,6 @@ export async function performQuery(params: {
     }
 
     if (errorCause_getRows !== undefined) {
-        assert(errorCause_getRows !== "need login");
         switch (errorCause_getRows) {
             case "no s3 client":
             case "https fetch error":
