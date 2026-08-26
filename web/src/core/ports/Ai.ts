@@ -1,4 +1,10 @@
-import type { DeploymentRegion, LocalizedString } from "./OnyxiaApi";
+import type { LocalizedString } from "./OnyxiaApi";
+
+export type AiAccountCreation = {
+    title: LocalizedString | undefined;
+    description: LocalizedString | undefined;
+    buttonLabel: LocalizedString | undefined;
+};
 
 export type Ai = {
     id: string;
@@ -10,7 +16,7 @@ export type Ai = {
      */
     provider: string;
     description: LocalizedString | undefined;
-    accountCreation: DeploymentRegion.AiAccountCreation | undefined;
+    accountCreation: AiAccountCreation | undefined;
     webUiUrl: string;
     apiBase: string;
     getToken: () => Promise<GetTokenResult>;

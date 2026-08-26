@@ -20,7 +20,7 @@ export declare namespace State {
 
     // --- Providers ---
 
-    export type Provider = Provider.Region | Provider.Custom;
+    export type Provider = Provider.Managed | Provider.Custom;
 
     export namespace Provider {
         export type Common = {
@@ -29,17 +29,17 @@ export declare namespace State {
             apiBase: string;
             /**
              * LLM provider family (e.g. "openai", "anthropic", "gemini"), injected as
-             * `ai.provider` in the service launch context. For region providers it
-             * comes from the deployment region config; for custom ones the user sets it.
+             * `ai.provider` in the service launch context. For managed providers it
+             * comes from the instance config; for custom ones the user sets it.
              */
             provider: string;
             models: Models | undefined;
             selectedModelId: string | undefined;
         };
 
-        /** Provisioned by the deployment region, authenticated via the OIDC token. */
-        export type Region = Common & {
-            kind: "region";
+        /** Provisioned by the instance configuration, authenticated via OIDC. */
+        export type Managed = Common & {
+            kind: "managed";
             webUiUrl: string;
             description: Ai["description"];
             accountCreation: Ai["accountCreation"];
@@ -95,15 +95,15 @@ export const { reducer, actions } = createUsecaseActions({
             if (state.stateDescription !== "initialized") return;
             state.activeProviderId = payload.activeProviderId;
         },
-        regionAuthRefreshed: (
+        managedAuthRefreshed: (
             state,
             {
                 payload
-            }: { payload: { providerId: string; auth: State.Provider.Region["auth"] } }
+            }: { payload: { providerId: string; auth: State.Provider.Managed["auth"] } }
         ) => {
             assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
-            if (provider === undefined || provider.kind !== "region") return;
+            if (provider === undefined || provider.kind !== "managed") return;
             provider.auth = payload.auth;
         },
         modelsLoaded: (

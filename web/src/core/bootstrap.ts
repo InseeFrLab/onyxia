@@ -17,6 +17,7 @@ import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
+import { parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -35,6 +36,7 @@ export type ParamsOfBootstrapCore = {
     isAiEnabled: boolean;
     getIsDarkModeEnabled: () => boolean;
     S3_envValue: string;
+    AI_envValue: string;
 };
 
 export type Context = {
@@ -68,6 +70,10 @@ export async function bootstrapCore(
     const s3Config = parseS3ConfigFromEnvValue({
         envValue: params.S3_envValue
     });
+
+    const aiConfig = isAiEnabled
+        ? parseAiConfigFromEnvValue({ envValue: params.AI_envValue })
+        : { entries: [] };
 
     let oidc: Oidc | undefined = undefined;
 
@@ -332,16 +338,11 @@ export async function bootstrapCore(
             break init_ai;
         }
 
-        const deploymentRegion =
-            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
-
-        // Wire one Ai adapter per region-provided gateway into `context.ai` (none if
-        // the region exposes no AI: only custom providers will then be loaded).
-        region_ai: {
-            if (deploymentRegion.ai.length === 0) {
-                break region_ai;
+        // Wire one Ai adapter per instance-configured gateway into `context.ai` (none
+        // if the AI env is empty: only custom providers will then be loaded).
+        configured_ai: {
+            if (aiConfig.entries.length === 0) {
+                break configured_ai;
             }
 
             const [{ createAi }, { createOidc, mergeOidcParams }, { oidcParams }] =
@@ -358,10 +359,10 @@ export async function bootstrapCore(
             // distinct client only once.
             const getOidcAccessTokenByOidcKey = new Map<string, () => Promise<string>>();
 
-            for (const aiConfig of deploymentRegion.ai) {
+            for (const aiConfigEntry of aiConfig.entries) {
                 const oidcParams_ai = mergeOidcParams({
                     oidcParams,
-                    oidcParams_partial: aiConfig.oidcParams
+                    oidcParams_partial: aiConfigEntry.oidcParams
                 });
 
                 const oidcKey = `${oidcParams_ai.issuerUri}\0${oidcParams_ai.clientId}`;
@@ -390,20 +391,20 @@ export async function bootstrapCore(
 
                 context.ai.push(
                     createAi({
-                        id: aiConfig.id,
-                        name: aiConfig.name ?? new URL(aiConfig.url).hostname,
-                        provider: aiConfig.provider,
-                        description: aiConfig.description,
-                        accountCreation: aiConfig.accountCreation,
-                        webUiUrl: aiConfig.url,
-                        oauthProvider: aiConfig.oauthProvider,
+                        id: aiConfigEntry.id,
+                        name: aiConfigEntry.name ?? new URL(aiConfigEntry.url).hostname,
+                        provider: aiConfigEntry.provider,
+                        description: aiConfigEntry.description,
+                        accountCreation: aiConfigEntry.accountCreation,
+                        webUiUrl: aiConfigEntry.url,
+                        oauthProvider: aiConfigEntry.oauthProvider,
                         getOidcAccessToken
                     })
                 );
             }
         }
 
-        // Sole initiator of the AI use-case, dispatched only now that any region
+        // Sole initiator of the AI use-case, dispatched only now that any managed
         // adapters are wired into `context.ai`. Fire-and-forget so app start isn't
         // blocked; consumers await readiness via `ai...waitForInitialization`.
         dispatch(usecases.ai.protectedThunks.initialize());

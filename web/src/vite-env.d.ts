@@ -60,6 +60,7 @@ type ImportMetaEnv = {
   VAULT_DOCUMENTATION_LINK: string
   DISABLE_DISPLAY_ALL_CATALOG: string
   S3: string
+  AI: string
   DISABLE_AI: string
   ONYXIA_API_URL: string
   ONYXIA_VERSION: string

@@ -1,5 +1,4 @@
 import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
-import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 
 export type ApiTypes = {
     "/public/ip": {
@@ -80,22 +79,6 @@ export type ApiTypes = {
                     scc: string;
                     enabled: boolean;
                 };
-            };
-            data?: {
-                ai?: ArrayOrNot<{
-                    id?: string;
-                    URL: string;
-                    name?: string;
-                    provider?: string;
-                    description?: LocalizedString;
-                    accountCreation?: {
-                        title?: LocalizedString;
-                        description?: LocalizedString;
-                        buttonLabel?: LocalizedString;
-                    };
-                    oauthProvider: string;
-                    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
-                }>;
             };
             vault?: {
                 URL: string;

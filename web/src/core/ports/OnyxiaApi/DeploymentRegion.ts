@@ -1,5 +1,4 @@
 import type { OidcParams_Partial } from "./OidcParams";
-import type { LocalizedString } from "./Language";
 
 export type DeploymentRegion = {
     id: string;
@@ -40,16 +39,6 @@ export type DeploymentRegion = {
               oidcParams: OidcParams_Partial;
           }
         | undefined;
-    ai: {
-        id: string;
-        url: string;
-        name: string | undefined;
-        provider: string;
-        description: LocalizedString | undefined;
-        accountCreation: DeploymentRegion.AiAccountCreation | undefined;
-        oauthProvider: string;
-        oidcParams: OidcParams_Partial;
-    }[];
     proxyInjection:
         | {
               enabled: boolean | undefined;
@@ -109,10 +98,3 @@ export type DeploymentRegion = {
           }
         | undefined;
 };
-export namespace DeploymentRegion {
-    export type AiAccountCreation = {
-        title: LocalizedString | undefined;
-        description: LocalizedString | undefined;
-        buttonLabel: LocalizedString | undefined;
-    };
-}

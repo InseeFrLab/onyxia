@@ -20,7 +20,7 @@ export type PersistedCustomProvider = {
  */
 export type PersistedAiConfig = {
     customProviders: PersistedCustomProvider[];
-    /** Model selection per provider id (region providers included). */
+    /** Model selection per provider id (managed providers included). */
     selections: Record<string, PersistedModelSelection>;
     // null (not undefined) because absent selections must round-trip through JSON.
     activeProviderId: string | null;

@@ -41,7 +41,7 @@ export const AccountAiTab = memo((props: Props) => {
         functions: { ai, aiCustomProviderFormUiController }
     } = getCoreSync();
 
-    const { stateDescription, regionProviders, customProviders } = useCoreState(
+    const { stateDescription, managedProviders, customProviders } = useCoreState(
         "ai",
         "main"
     );
@@ -128,53 +128,53 @@ export const AccountAiTab = memo((props: Props) => {
     return (
         <div className={className}>
             <div className={classes.accountAiTabContent}>
-                {regionProviders.map(regionProvider => (
+                {managedProviders.map(managedProvider => (
                     <div
-                        key={regionProvider.id}
-                        className={classes.regionProviderSection}
+                        key={managedProvider.id}
+                        className={classes.managedProviderSection}
                     >
-                        <div className={classes.regionProviderHeader}>
-                            <Text typo="section heading">{regionProvider.name}</Text>
-                            <div className={classes.regionProviderSubtitleRow}>
+                        <div className={classes.managedProviderHeader}>
+                            <Text typo="section heading">{managedProvider.name}</Text>
+                            <div className={classes.managedProviderSubtitleRow}>
                                 <Text
                                     typo="body 2"
-                                    className={classes.regionProviderDescription}
+                                    className={classes.managedProviderDescription}
                                 >
-                                    {regionProvider.description === undefined ? (
+                                    {managedProvider.description === undefined ? (
                                         t("credentials section helper", {
-                                            webUiUrl: regionProvider.webUiUrl
+                                            webUiUrl: managedProvider.webUiUrl
                                         })
                                     ) : (
                                         <LocalizedMarkdown inline>
-                                            {regionProvider.description}
+                                            {managedProvider.description}
                                         </LocalizedMarkdown>
                                     )}
                                 </Text>
-                                {regionProvider.auth.stateDescription ===
+                                {managedProvider.auth.stateDescription ===
                                     "authenticated" && (
                                     <div className={classes.providerCardActions}>
                                         <Button
                                             variant="ternary"
                                             startIcon={getIconUrlByName("Refresh")}
                                             onClick={onRefreshClickFactory(
-                                                regionProvider.id
+                                                managedProvider.id
                                             )}
                                             className={classes.compactActionButton}
                                         >
                                             {t("refresh credentials")}
                                         </Button>
                                         {renderDefaultProviderAction({
-                                            providerId: regionProvider.id,
-                                            isDefault: regionProvider.isDefault
+                                            providerId: managedProvider.id,
+                                            isDefault: managedProvider.isDefault
                                         })}
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {regionProvider.auth.stateDescription === "no account" &&
+                        {managedProvider.auth.stateDescription === "no account" &&
                             (() => {
-                                const { accountCreation } = regionProvider;
+                                const { accountCreation } = managedProvider;
 
                                 if (
                                     accountCreation === undefined ||
@@ -185,7 +185,7 @@ export const AccountAiTab = memo((props: Props) => {
                                     return (
                                         <Text typo="body 1">
                                             {t("no account", {
-                                                webUiUrl: regionProvider.webUiUrl
+                                                webUiUrl: managedProvider.webUiUrl
                                             })}
                                         </Text>
                                     );
@@ -221,7 +221,7 @@ export const AccountAiTab = memo((props: Props) => {
                                                 {accountCreation.description ===
                                                 undefined ? (
                                                     t("no account", {
-                                                        webUiUrl: regionProvider.webUiUrl
+                                                        webUiUrl: managedProvider.webUiUrl
                                                     })
                                                 ) : (
                                                     <LocalizedMarkdown inline>
@@ -232,7 +232,7 @@ export const AccountAiTab = memo((props: Props) => {
                                         </div>
                                         {accountCreation.buttonLabel !== undefined && (
                                             <Button
-                                                href={regionProvider.webUiUrl}
+                                                href={managedProvider.webUiUrl}
                                                 doOpenNewTabIfHref={true}
                                                 className={classes.noAccountButton}
                                             >
@@ -245,35 +245,35 @@ export const AccountAiTab = memo((props: Props) => {
                                 );
                             })()}
 
-                        {regionProvider.auth.stateDescription === "error" && (
+                        {managedProvider.auth.stateDescription === "error" && (
                             <Text typo="body 1" className={classes.errorText}>
                                 {t("gateway error")}
                             </Text>
                         )}
 
-                        {regionProvider.auth.stateDescription === "authenticated" && (
+                        {managedProvider.auth.stateDescription === "authenticated" && (
                             <div className={classes.providerFields}>
                                 <ProviderValueField
                                     label={t("api base url")}
-                                    value={regionProvider.apiBase}
+                                    value={managedProvider.apiBase}
                                     onRequestCopy={onFieldRequestCopyFactory(
-                                        regionProvider.apiBase
+                                        managedProvider.apiBase
                                     )}
                                 />
                                 <ProviderValueField
                                     label={t("token")}
-                                    value={regionProvider.auth.token}
+                                    value={managedProvider.auth.token}
                                     onRequestCopy={onFieldRequestCopyFactory(
-                                        regionProvider.auth.token
+                                        managedProvider.auth.token
                                     )}
                                     isSensitiveInformation={true}
                                 />
                                 <ModelsSection
-                                    models={regionProvider.models}
-                                    selectedModel={regionProvider.selectedModelId}
+                                    models={managedProvider.models}
+                                    selectedModel={managedProvider.selectedModelId}
                                     onSelectedModelChange={modelId =>
                                         ai.setSelectedModel({
-                                            providerId: regionProvider.id,
+                                            providerId: managedProvider.id,
                                             modelId
                                         })
                                     }
@@ -402,7 +402,7 @@ const useStyles = tss
             flexDirection: "column",
             gap: theme.spacing(5)
         },
-        regionProviderSection: {
+        managedProviderSection: {
             display: "flex",
             flexDirection: "column",
             gap: theme.spacing(3),
@@ -410,18 +410,18 @@ const useStyles = tss
                 marginTop: theme.spacing(5)
             }
         },
-        regionProviderHeader: {
+        managedProviderHeader: {
             display: "flex",
             flexDirection: "column",
             gap: theme.spacing(0.5)
         },
-        regionProviderSubtitleRow: {
+        managedProviderSubtitleRow: {
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(2),
             flexWrap: "wrap"
         },
-        regionProviderDescription: {
+        managedProviderDescription: {
             flex: 1,
             minWidth: 260,
             color: theme.colors.useCases.typography.textSecondary

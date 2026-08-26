@@ -44,7 +44,6 @@ export function createOnyxiaApi(params: {
                     id: "virtual",
                     vault: undefined,
                     kubernetes: undefined,
-                    ai: [],
                     allowedURIPatternForUserDefinedInitScript: THROW_IF_ACCESSED,
                     certificateAuthorityInjection: THROW_IF_ACCESSED,
                     certManager: THROW_IF_ACCESSED,

@@ -13,7 +13,7 @@ import type { GetTokenResult } from "core/ports/Ai";
 import * as userConfigs from "core/usecases/userConfigs";
 import { assert } from "tsafe";
 
-function getTokenResultToAuth(result: GetTokenResult): State.Provider.Region["auth"] {
+function getTokenResultToAuth(result: GetTokenResult): State.Provider.Managed["auth"] {
     switch (result.status) {
         case "no-account":
             return { stateDescription: "no account" };
@@ -59,7 +59,7 @@ export const thunks = {
             const result = await aiProvider.getToken();
 
             dispatch(
-                actions.regionAuthRefreshed({
+                actions.managedAuthRefreshed({
                     providerId,
                     auth: getTokenResultToAuth(result)
                 })
@@ -237,11 +237,10 @@ const privateThunks = {
         async (...args) => {
             const [dispatch, getState, { ai }] = args;
 
-            // `ai` (region-provided adapters) may be empty: the feature can be enabled
-            // with no region gateway, in which case only custom providers are loaded.
-            // Build one region provider per region-provided endpoint, keeping a handle
-            // on its adapter + token result for the post-init model fetch.
-            let regionEntries;
+            // `ai` (instance-configured adapters) may be empty: the feature can be
+            // enabled with no managed gateway, in which case only custom providers
+            // are loaded. Keep each adapter and its token result for model fetching.
+            let managedEntries;
             let customProviders: State.Provider.Custom[];
 
             try {
@@ -249,12 +248,12 @@ const privateThunks = {
                     aiConfigStr: userConfigs.selectors.userConfigs(getState()).aiConfigStr
                 });
 
-                regionEntries = await Promise.all(
+                managedEntries = await Promise.all(
                     ai.map(async aiProvider => {
                         const tokenResult = await aiProvider.getToken();
 
-                        const provider: State.Provider.Region = {
-                            kind: "region",
+                        const provider: State.Provider.Managed = {
+                            kind: "managed",
                             id: aiProvider.id,
                             name: aiProvider.name,
                             provider: aiProvider.provider,
@@ -276,7 +275,7 @@ const privateThunks = {
                     })
                 );
 
-                const regionProviders = regionEntries.map(({ provider }) => provider);
+                const managedProviders = managedEntries.map(({ provider }) => provider);
 
                 customProviders = (persisted?.customProviders ?? []).map(p => ({
                     kind: "custom",
@@ -289,9 +288,9 @@ const privateThunks = {
                     selectedModelId: fromPersistedSelection(persisted?.selections[p.id])
                 }));
 
-                const providers = [...regionProviders, ...customProviders];
+                const providers = [...managedProviders, ...customProviders];
                 const defaultableProviderIds = [
-                    ...regionEntries
+                    ...managedEntries
                         .filter(({ tokenResult }) => tokenResult.status === "success")
                         .map(({ provider }) => provider.id),
                     ...customProviders.map(provider => provider.id)
@@ -323,7 +322,7 @@ const privateThunks = {
             // `getCoreSync` suspends until bootstrap resolves, so the launcher's
             // one-shot read of `aiOnyxiaContext` always sees the loaded models.
             await Promise.all([
-                ...regionEntries.map(async ({ provider, aiProvider, tokenResult }) => {
+                ...managedEntries.map(async ({ provider, aiProvider, tokenResult }) => {
                     if (tokenResult.status !== "success") return;
                     try {
                         const models = await aiProvider.listModels(tokenResult.token);
@@ -355,7 +354,7 @@ const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
 }>();
 
 export const protectedThunks = {
-    // Initiates the AI use-case. Dispatched once by bootstrap, *after* the region AI
+    // Initiates the AI use-case. Dispatched once by bootstrap, *after* the managed AI
     // adapters have been wired into `context.ai`. Idempotent: a second dispatch
     // returns the same in-flight promise. This is the ONLY place that starts the
     // work — consumers must use `waitForInitialization`, never call this, so they
@@ -378,7 +377,7 @@ export const protectedThunks = {
     // Awaits the in-flight initialization if it has started, otherwise resolves
     // immediately. Crucially it never triggers the init itself: callers like the
     // launcher's `getXOnyxiaContext` can run very early (restorable-config
-    // autocomplete, before bootstrap has wired up the region adapters), and a
+    // autocomplete, before bootstrap has wired up the managed adapters), and a
     // premature init would build the providers from an empty `context.ai` and
     // freeze that wrong state. Early callers simply see the AI context as
     // not-yet-available; the real init happens later in bootstrap.

@@ -592,7 +592,7 @@ export const protectedThunks = {
             // wait for the AI use-case's in-flight initialization (providers + their
             // model lists) to finish first. This only awaits an init already started
             // by bootstrap; it never triggers one (which would otherwise run before
-            // the region AI adapters are wired up, when called early for restorable-
+            // the managed AI adapters are wired up, when called early for restorable-
             // config autocomplete).
             await dispatch(aiUsecase.protectedThunks.waitForInitialization());
 

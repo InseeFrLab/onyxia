@@ -30,8 +30,8 @@ const main = createSelector(
 
         return {
             stateDescription: state.stateDescription,
-            regionProviders: (providers ?? [])
-                .filter((p): p is State.Provider.Region => p.kind === "region")
+            managedProviders: (providers ?? [])
+                .filter((p): p is State.Provider.Managed => p.kind === "managed")
                 .map(p => ({
                     ...toCommonView(p),
                     webUiUrl: p.webUiUrl,
