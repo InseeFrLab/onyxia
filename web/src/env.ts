@@ -1280,7 +1280,7 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
-        envName: "ENABLED_AI",
+        envName: "DISABLE_AI",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
