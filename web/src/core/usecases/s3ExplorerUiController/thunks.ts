@@ -26,6 +26,7 @@ import {
 } from "./decoupledLogic/bucketPolicies";
 import { downloadS3UrisAsZip } from "./decoupledLogic/downloadAsZip";
 import { triggerBrowserDownload } from "core/tools/triggerBrowserDownload";
+import { shellQuote } from "core/tools/shellQuote";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -420,7 +421,7 @@ export const thunks = {
                     cmds: [
                         {
                             cmdId,
-                            cmd: `aws s3 ls ${stringifyS3Uri(s3Uri)}`
+                            cmd: `aws s3 ls ${shellQuote(stringifyS3Uri(s3Uri))}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
                         }
                     ]
                 })
@@ -833,7 +834,7 @@ export const thunks = {
                         cmds: [
                             {
                                 cmdId,
-                                cmd: `aws s3 rm ${stringifyS3Uri(s3Uri)}`
+                                cmd: `aws s3 rm ${shellQuote(stringifyS3Uri(s3Uri))}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
                             }
                         ]
                     })
@@ -916,7 +917,7 @@ export const thunks = {
                     cmds: [
                         {
                             cmdId,
-                            cmd: params_putBucketPolicies.awsS3CliEmulatedCommand.cmd
+                            cmd: `${params_putBucketPolicies.awsS3CliEmulatedCommand.cmd}${profileName === "default" ? "" : ` \\\n  --profile ${shellQuote(profileName)}`}`
                         }
                     ]
                 })
@@ -1086,7 +1087,7 @@ export const privateThunks = {
             await dispatchProxy({
                 commandLogIssued: {
                     cmdId,
-                    cmd: `mc cp ./${s3Uri.keySegments.at(-1)} ${stringifyS3Uri(s3Uri)}`
+                    cmd: `aws s3 cp ${shellQuote(`./${s3Uri.keySegments.at(-1)}`)} ${shellQuote(stringifyS3Uri(s3Uri))}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
                 },
                 putObjectStarted: {
                     profileName,
@@ -1235,7 +1236,7 @@ export const privateThunks = {
                     cmds: [
                         {
                             cmdId,
-                            cmd: `aws s3 presign ${stringifyS3Uri(s3Uri)} --expires-in ${validityDurationSecond}`
+                            cmd: `aws s3 presign ${shellQuote(stringifyS3Uri(s3Uri))} --expires-in ${validityDurationSecond}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
                         }
                     ]
                 })

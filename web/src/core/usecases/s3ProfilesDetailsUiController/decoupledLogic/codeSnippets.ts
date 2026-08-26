@@ -1,3 +1,5 @@
+import { shellQuote } from "core/tools/shellQuote";
+
 export const technologies = [
     "AWS CLI / shared profile",
     "MinIO Client (bash)",
@@ -598,10 +600,6 @@ function normalizeEndpointUrl(endpointUrl: string): string {
     const trimmed = endpointUrl.trim();
 
     return /^https?:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`;
-}
-
-function shellQuote(value: string): string {
-    return `'${value.replace(/'/g, `'"'"'`)}'`;
 }
 
 function toSafeIdentifier(value: string, separator: "-" | "_"): string {

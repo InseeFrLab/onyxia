@@ -156,9 +156,17 @@ function S3Explorer() {
 
     const { css, cx, theme } = useStyles();
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
-
     const { isUserLoggedIn } = useCoreState("userAuthentication", "main");
+
+    const isCommandBarEnabled = (function useClosure() {
+        const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
+
+        if (!isUserLoggedIn) {
+            return false;
+        }
+
+        return isCommandBarEnabled;
+    })();
 
     const {
         ref: ref_root,

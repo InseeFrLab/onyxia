@@ -1,5 +1,6 @@
 import { getS3UriKey } from "core/tools/S3Uri";
 import type { S3Uri } from "core/tools/S3Uri";
+import { shellQuote } from "core/tools/shellQuote";
 import { assert, type Equals } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 
@@ -558,10 +559,6 @@ function createAwsS3CliEmulatedCommand(params: {
         ].join("\n"),
         resp: ""
     };
-}
-
-function shellQuote(value: string): string {
-    return `'${value.replace(/'/g, "'\\''")}'`;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

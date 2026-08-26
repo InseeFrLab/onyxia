@@ -21,6 +21,7 @@ import { stringifyS3Uri } from "core/tools/S3Uri";
 import type { S3Uri } from "core/tools/S3Uri";
 import { getObjectRendering } from "./decoupledLogic/objectRendering";
 import { same } from "evt/tools/inDepth/same";
+import { shellQuote } from "core/tools/shellQuote";
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -290,7 +291,7 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
                             cmds: [
                                 {
                                     cmdId,
-                                    cmd: `mc mb s3/${bucket}`
+                                    cmd: `aws s3 mb ${shellQuote(`s3://${bucket}`)}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
                                 }
                             ]
                         })
