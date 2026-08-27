@@ -1,10 +1,9 @@
-publiccodeYmlVersion: "0.2"
- 
+publiccodeYmlVersion: "0"
+
 name: Onyxia
 applicationSuite: Onyxia
 url: "https://github.com/InseeFrLab/onyxia"
 landingURL: "https://onyxia.sh"
-creationDate: "2017-01-01"
 releaseDate: "2020-03-22"
 logo: https://inseefrlab.github.io/onyxia/icon.svg
 
@@ -24,9 +23,7 @@ usedBy:
 
 fundedBy:
   - name: Insee
-    url: https://lannuaire.service-public.fr/gouvernement/278bf3d4-9cf3-4a36-a317-ec56fb0abc52
-
-roadmap: "https://docs.onyxia.sh/roadmap"
+    uri: https://lannuaire.service-public.fr/gouvernement/278bf3d4-9cf3-4a36-a317-ec56fb0abc52
 
 developmentStatus: development
 
@@ -38,73 +35,65 @@ intendedAudience:
 
 description:
   en:
-    genericName: Onyxia
     shortDescription: >
-          Web app to simplify data science environment setup on Kubernetes
+      Web app to simplify data science environment setup on Kubernetes
 
     longDescription: >
-          Onyxia is a powerful open-source web application designed to streamline the creation of state-of-the-art data science environments. Its core mission is to make advanced cloud-based resources accessible—even to users without prior expertise in cloud technologies.
-          What distinguishes Onyxia is its intuitive, user-friendly interface that abstracts away the complexity of cloud infrastructure. Data scientists can effortlessly configure their preferred tools—such as Jupyter, RStudio, and VSCode—while selecting computational resources (GPU, CPU, RAM), defining environment variables, and setting up persistent storage. With just a few clicks, Onyxia automates the entire deployment process: it launches containerized environments, connects to S3-compatible storage systems, and manages secure credentials through integrations with Vault and OIDC providers.
-          Importantly, Onyxia is not the environment where data analysis itself takes place. Instead, it acts as the gateway—a preparatory layer—where data professionals define and launch their technical stack before entering their actual workspace (e.g., Jupyter or RStudio). This separation of concerns keeps the experience streamlined and focused.
-          A built-in file explorer facilitates the handling of large datasets, while Onyxia’s transparent architecture fosters learning and trust. Every action performed through the interface is logged in a terminal-style viewer, showing users the exact commands being executed (e.g., Helm, Kubernetes, Docker). This visibility not only promotes reproducibility and confidence but also serves as an educational bridge for those curious about the infrastructure powering their work.
-          For deployment, Onyxia is installed by system administrators on a Kubernetes cluster—either on-premises or through a cloud provider—and exposed via a web UI for the data science team. Once in place, it dramatically reduces onboarding friction, encourages best practices, and empowers teams to focus entirely on data-driven innovation.
+      Onyxia is a powerful open-source web application designed to streamline the creation of state-of-the-art data science environments. Its core mission is to make advanced cloud-based resources accessible—even to users without prior expertise in cloud technologies.
+      What distinguishes Onyxia is its intuitive, user-friendly interface that abstracts away the complexity of cloud infrastructure. Data scientists can effortlessly configure their preferred tools—such as Jupyter, RStudio, and VSCode—while selecting computational resources (GPU, CPU, RAM), defining environment variables, and setting up persistent storage. With just a few clicks, Onyxia automates the entire deployment process: it launches containerized environments, connects to S3-compatible storage systems, and manages secure credentials through integrations with Vault and OIDC providers.
+      Importantly, Onyxia is not the environment where data analysis itself takes place. Instead, it acts as the gateway—a preparatory layer—where data professionals define and launch their technical stack before entering their actual workspace (e.g., Jupyter or RStudio). This separation of concerns keeps the experience streamlined and focused.
+      A built-in file explorer facilitates the handling of large datasets, while Onyxia’s transparent architecture fosters learning and trust. Every action performed through the interface is logged in a terminal-style viewer, showing users the exact commands being executed (e.g., Helm, Kubernetes, Docker). This visibility not only promotes reproducibility and confidence but also serves as an educational bridge for those curious about the infrastructure powering their work.
+      For deployment, Onyxia is installed by system administrators on a Kubernetes cluster—either on-premises or through a cloud provider—and exposed via a web UI for the data science team. Once in place, it dramatically reduces onboarding friction, encourages best practices, and empowers teams to focus entirely on data-driven innovation.
 
     documentation: "https://docs.onyxia.sh"
 
     features:
-       - UI for launching docker images (Helm charts)
-       - Users can define the amount of RAM, CPU and GPU they would like to allocate to their containers
-       - Define environnement variables to be made available in the containers.
-       - Save and restore your service service configurations.
-       - View datasets
+      - UI for launching docker images (Helm charts)
+      - Users can define the amount of RAM, CPU and GPU they would like to allocate to their containers
+      - Define environnement variables to be made available in the containers.
+      - Save and restore your service service configurations.
+      - View datasets
     screenshots:
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/f07e91e7-d597-4eca-b9df-2ddf457afb19
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/77eb58e1-6f5d-43c4-8447-90f5c5aad5d2
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/ae32ccab-e295-4079-b06e-c4035e67d7a4
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/e8ec58ad-7dc8-410d-9cd3-5f0996e8f8f8
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/b5256014-2af3-4e39-9ecb-f3f120aa920a
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273940140-f07e91e7-d597-4eca-b9df-2ddf457afb19.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939460-77eb58e1-6f5d-43c4-8447-90f5c5aad5d2.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939517-ae32ccab-e295-4079-b06e-c4035e67d7a4.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939583-e8ec58ad-7dc8-410d-9cd3-5f0996e8f8f8.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939654-b5256014-2af3-4e39-9ecb-f3f120aa920a.png
     videos:
-       - https://youtu.be/FvpNfVrxBFM?si=goZHdAkOegWjrXBw
+      - https://youtu.be/FvpNfVrxBFM?si=goZHdAkOegWjrXBw
 
   fr:
-    genericName: Onyxia
     shortDescription: >
-          Application web pour simplifier la mise en place d'un environnement de data science sur Kubernetes
+      Application web pour simplifier la mise en place d'un environnement de data science sur Kubernetes
 
     longDescription: >
-          Onyxia est une application web open-source conçue pour simplifier la mise en place d’environnements de travail avancés dédiés à la science des données. Sa vocation première est de rendre les ressources cloud accessibles, même aux utilisateurs n’ayant pas de compétences techniques poussées en infrastructure.
-          Ce qui distingue Onyxia, c’est son interface intuitive et ergonomique, qui masque toute la complexité des technologies cloud. En quelques clics, les utilisateurs peuvent sélectionner leurs outils de prédilection (Jupyter, RStudio, VSCode, etc.), allouer les ressources nécessaires (GPU, CPU, mémoire vive), configurer des variables d’environnement, et activer un stockage persistant. Onyxia prend ensuite en charge l’ensemble du processus : lancement des conteneurs, connexion à un stockage compatible S3, gestion sécurisée des identifiants via Vault et OIDC.
-          Onyxia n’est pas l’endroit où les data scientists effectuent leur analyse, mais plutôt la porte d’entrée de leur environnement technique. Il s’agit d’une étape intermédiaire dans leur workflow, leur permettant de configurer efficacement leur stack de travail avant d’accéder à leurs outils habituels.
-          L’explorateur de fichiers intégré facilite la manipulation de grands volumes de données, tandis que l’architecture transparente d’Onyxia en fait également un outil pédagogique. Chaque action réalisée via l’interface est affichée sous forme de commandes dans un terminal simulé. Cette transparence permet aux utilisateurs de comprendre les mécanismes sous-jacents (Kubernetes, Helm, Docker, etc.) et, s’ils le souhaitent, de répliquer les opérations eux-mêmes.
-          L’installation d’Onyxia est assurée par les administrateurs système sur un cluster Kubernetes — en local ou chez un fournisseur cloud — avant d’être mise à disposition de l’équipe data via une interface web. Une fois déployé, Onyxia réduit considérablement le temps d’onboarding, encourage les bonnes pratiques et permet aux équipes de se concentrer pleinement sur leurs projets de données.
+      Onyxia est une application web open-source conçue pour simplifier la mise en place d’environnements de travail avancés dédiés à la science des données. Sa vocation première est de rendre les ressources cloud accessibles, même aux utilisateurs n’ayant pas de compétences techniques poussées en infrastructure.
+      Ce qui distingue Onyxia, c’est son interface intuitive et ergonomique, qui masque toute la complexité des technologies cloud. En quelques clics, les utilisateurs peuvent sélectionner leurs outils de prédilection (Jupyter, RStudio, VSCode, etc.), allouer les ressources nécessaires (GPU, CPU, mémoire vive), configurer des variables d’environnement, et activer un stockage persistant. Onyxia prend ensuite en charge l’ensemble du processus : lancement des conteneurs, connexion à un stockage compatible S3, gestion sécurisée des identifiants via Vault et OIDC.
+      Onyxia n’est pas l’endroit où les data scientists effectuent leur analyse, mais plutôt la porte d’entrée de leur environnement technique. Il s’agit d’une étape intermédiaire dans leur workflow, leur permettant de configurer efficacement leur stack de travail avant d’accéder à leurs outils habituels.
+      L’explorateur de fichiers intégré facilite la manipulation de grands volumes de données, tandis que l’architecture transparente d’Onyxia en fait également un outil pédagogique. Chaque action réalisée via l’interface est affichée sous forme de commandes dans un terminal simulé. Cette transparence permet aux utilisateurs de comprendre les mécanismes sous-jacents (Kubernetes, Helm, Docker, etc.) et, s’ils le souhaitent, de répliquer les opérations eux-mêmes.
+      L’installation d’Onyxia est assurée par les administrateurs système sur un cluster Kubernetes — en local ou chez un fournisseur cloud — avant d’être mise à disposition de l’équipe data via une interface web. Une fois déployé, Onyxia réduit considérablement le temps d’onboarding, encourage les bonnes pratiques et permet aux équipes de se concentrer pleinement sur leurs projets de données.
 
     documentation: "https://docs.onyxia.sh"
 
     features:
-       - UI de lancement d'images docker (Helm charts)
-       - Les utilisateurs peuvent définir la quantité de RAM, de CPU et de GPU qu’ils souhaitent allouer à leurs conteneurs.
-       - Définir des variables d’environnement à rendre disponibles dans les conteneurs.
-       - Sauvegardez et restaurez vos configurations de services.
-       - Visualiser les jeux de données
+      - UI de lancement d'images docker (Helm charts)
+      - Les utilisateurs peuvent définir la quantité de RAM, de CPU et de GPU qu’ils souhaitent allouer à leurs conteneurs.
+      - Définir des variables d’environnement à rendre disponibles dans les conteneurs.
+      - Sauvegardez et restaurez vos configurations de services.
+      - Visualiser les jeux de données
 
     screenshots:
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/f07e91e7-d597-4eca-b9df-2ddf457afb19
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/77eb58e1-6f5d-43c4-8447-90f5c5aad5d2
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/ae32ccab-e295-4079-b06e-c4035e67d7a4
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/e8ec58ad-7dc8-410d-9cd3-5f0996e8f8f8
-       - https://github.com/InseeFrLab/onyxia/assets/6702424/b5256014-2af3-4e39-9ecb-f3f120aa920a
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273940140-f07e91e7-d597-4eca-b9df-2ddf457afb19.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939460-77eb58e1-6f5d-43c4-8447-90f5c5aad5d2.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939517-ae32ccab-e295-4079-b06e-c4035e67d7a4.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939583-e8ec58ad-7dc8-410d-9cd3-5f0996e8f8f8.png
+      - https://github-production-user-asset-6210df.s3.amazonaws.com/6702424/273939654-b5256014-2af3-4e39-9ecb-f3f120aa920a.png
     videos:
-       - https://youtu.be/FvpNfVrxBFM?si=goZHdAkOegWjrXBw
-
+      - https://youtu.be/FvpNfVrxBFM?si=goZHdAkOegWjrXBw
 
 legal:
   license: MIT
   mainCopyrightOwner: INSEE
-  repoOwner: INSEE
-
-authors:
-  distinctAuthorsCount: 0
-  distinctOrganizationsCount: 0
 
 maintenance:
   type: "internal"
@@ -116,15 +105,6 @@ maintenance:
     - name: Joseph Garrone
       email: "joseph.garrone@protonmail.com"
       affiliation: INSEE
-
-metadataFiles:
-  readme: README.md
-  license: LICENSE
-  contributing: CONTRIBUTING.md
-  changelog: null
-  codeOfConduct: CODE_OF_CONDUCT.md
-  governance: GOVERNANCE.md
-  funding: null
 
 localisation:
   localisationReady: true
@@ -141,5 +121,5 @@ localisation:
 
 dependsOn:
   open:
-   - name: Kubernetes
-   - name: Helm
+    - name: Kubernetes
+    - name: Helm
