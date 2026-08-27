@@ -10,6 +10,17 @@ export type DeploymentRegion = {
     ingressClassName: string | undefined;
     ingress: boolean | undefined;
     route: boolean | undefined;
+    httpRoute:
+        | {
+              enabled: boolean;
+              parentRefs: {
+                  name: string;
+                  namespace?: string;
+                  sectionName?: string;
+                  port?: number;
+              }[];
+          }
+        | undefined;
     customValues: Record<string, unknown> | undefined;
     istio:
         | {
