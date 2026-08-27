@@ -37,6 +37,24 @@ export type S3Client = {
         isForDirectDownload: boolean;
     }) => Promise<string>;
 
+    /**
+     * Creates a form that can be used without S3 credentials to upload objects
+     * whose keys start with the key of `s3UriPrefix`.
+     *
+     * `maxObjectSizeInBytes` applies to each object independently. Enforcing a
+     * maximum size across all objects uploaded with the form requires a stateful
+     * service in front of S3.
+     */
+    createPresignedPost: (params: {
+        s3UriPrefix: S3Uri.TerminatedByDelimiter;
+        validityDurationSecond: number;
+        maxObjectSizeInBytes: number | undefined;
+    }) => Promise<{
+        url: string;
+        fields: Record<string, string>;
+        expirationTime: number;
+    }>;
+
     getUnsignedObjectHttpUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         isForDirectDownload: boolean;
