@@ -36,6 +36,10 @@ export const LeftBar = memo((props: Props) => {
 
     const { urlToLink } = useUrlToLink();
 
+    if (route.name === "s3FileRequest") {
+        return null;
+    }
+
     return (
         <OnyxiaUiLeftBar
             className={cx(classes.root, className)}
