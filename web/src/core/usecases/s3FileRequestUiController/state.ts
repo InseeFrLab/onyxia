@@ -6,7 +6,7 @@ import type { S3Client } from "core/ports/S3Client";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 
-export type PresignedPost = Awaited<ReturnType<S3Client["createPresignedPost"]>>;
+export type PresignedPost = S3Client.PresignedPost;
 
 export type State = {
     presignedPost: PresignedPost;

@@ -87,6 +87,8 @@ export type S3ExplorerMainViewProps = {
         anonymousProfileName: string;
     }) => void;
 
+    onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
+
     onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
     onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
@@ -145,6 +147,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onDownload,
         onShareObject,
         onSharePrefix,
+        onRequestFiles,
         onBookmark,
         bookmarkedS3Uris,
         onChangePrefixPolicy,
@@ -572,6 +575,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         }
     );
 
+    const requestFilesForPrefix = useConstCallback(
+        (item: S3ExplorerMainViewProps.Item.PrefixSegment) => {
+            if (!getIsItemActionAvailable(item)) {
+                return;
+            }
+
+            onRequestFiles({ s3Uri: item.s3Uri });
+        }
+    );
+
     const requestDownloadForItems = useConstCallback(
         (itemsToDownload: S3ExplorerMainViewProps.Item[]) => {
             const downloadableItems = itemsToDownload.filter(getIsItemActionAvailable);
@@ -661,6 +674,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         }
 
         requestPrefixPolicyChangeForItem(item);
+    });
+
+    const onRequestFilesFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined || item.type !== "prefix segment") {
+            return;
+        }
+
+        requestFilesForPrefix(item);
     });
 
     const onDownloadFactory = useCallbackFactory(([itemKey]: [string]) => {
@@ -830,6 +853,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                           callback: () =>
                                               requestShareForItem(
                                                   selectedItemForSingleItemAction
+                                              )
+                                      }
+                            }
+                            requestFiles={
+                                selectedPrefixForSingleItemAction === undefined ||
+                                !getIsItemActionAvailable(
+                                    selectedPrefixForSingleItemAction
+                                )
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              requestFilesForPrefix(
+                                                  selectedPrefixForSingleItemAction
                                               )
                                       }
                             }
@@ -1154,6 +1190,13 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         item.profileNameForSharing !==
                                                             undefined
                                                             ? onShareFactory(itemKey)
+                                                            : undefined
+                                                    }
+                                                    onRequestFiles={
+                                                        item.type === "prefix segment"
+                                                            ? onRequestFilesFactory(
+                                                                  itemKey
+                                                              )
                                                             : undefined
                                                     }
                                                     onChangePrefixPolicy={
@@ -1810,6 +1853,7 @@ const { i18n } = declareComponentKeys<
     | { K: "delete selection dialog body"; P: { count: number }; R: string }
     | "delete"
     | "share"
+    | "request files"
     | "download"
     | "copy s3 uri"
     | "copied"
@@ -2445,6 +2489,7 @@ type ItemRowProps = {
     onNavigate: () => void;
     onDelete: () => void;
     onShare: (() => void) | undefined;
+    onRequestFiles: (() => void) | undefined;
     onChangePrefixPolicy: (() => void) | undefined;
     onDownload: (() => void) | undefined;
     onBookmark: (() => void) | undefined;
@@ -2467,6 +2512,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         onNavigate,
         onDelete,
         onShare,
+        onRequestFiles,
         onChangePrefixPolicy,
         onDownload,
         onBookmark,
@@ -2480,6 +2526,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const isItemActionAvailable = getIsItemActionAvailable(item);
     const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
     const isShareAvailable = onShare !== undefined && isItemActionAvailable;
+    const isRequestFilesAvailable = onRequestFiles !== undefined && isItemActionAvailable;
     const prefixPolicyAction = getPrefixPolicyAction(item);
     const isPrefixPolicyActionAvailable =
         onChangePrefixPolicy !== undefined && isItemActionAvailable;
@@ -2846,6 +2893,32 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                         </span>
                                     </Tooltip>
                                 )}
+                                {onRequestFiles !== undefined && (
+                                    <Tooltip title={t("request files")}>
+                                        <span
+                                            className={classes.inlineActionWrapper}
+                                            data-s3-row-interactive="true"
+                                        >
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName(
+                                                    "DriveFolderUpload"
+                                                )}
+                                                aria-label={t("request files")}
+                                                disabled={!isRequestFilesAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (!isRequestFilesAvailable) {
+                                                        return;
+                                                    }
+
+                                                    onRequestFiles();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
                                 {prefixPolicyAction !== undefined &&
                                     onChangePrefixPolicy !== undefined && (
                                         <Tooltip
@@ -2954,6 +3027,7 @@ function areItemRowPropsEqual(
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
         previousProps.onShare === nextProps.onShare &&
+        previousProps.onRequestFiles === nextProps.onRequestFiles &&
         previousProps.onChangePrefixPolicy === nextProps.onChangePrefixPolicy &&
         previousProps.onDownload === nextProps.onDownload &&
         previousProps.onBookmark === nextProps.onBookmark &&

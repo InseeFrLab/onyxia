@@ -34,6 +34,7 @@ const baseArgs: S3SelectionActionBarProps = {
     share: {
         callback: action("share")
     },
+    requestFiles: undefined,
     accessPolicy: undefined
 };
 
@@ -55,6 +56,9 @@ export const SinglePrefix: Story = {
         ...baseArgs,
         download: undefined,
         share: undefined,
+        requestFiles: {
+            callback: action("requestFiles")
+        },
         accessPolicy: {
             callback: action("makePublic"),
             isPublic: false
@@ -71,6 +75,9 @@ export const PublicBookmarkedPrefix: Story = {
             isBookmarked: true
         },
         share: undefined,
+        requestFiles: {
+            callback: action("requestFiles")
+        },
         accessPolicy: {
             callback: action("makePrivate"),
             isPublic: true
