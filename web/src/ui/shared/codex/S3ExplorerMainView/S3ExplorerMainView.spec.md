@@ -45,6 +45,8 @@ export type S3ExplorerMainViewProps = {
           }
     );
 
+    profileNameForSharing: string | undefined;
+
     onNavigate: (params: { s3Uri: S3Uri }) => void;
 
     onNavigateBack: () => void;
@@ -99,8 +101,8 @@ export namespace S3ExplorerMainViewProps {
         export type PrefixSegment = Common & {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
-            policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            profileNameForSharing: string | undefined;
+            publicAccessAction: "make public" | "make private" | undefined;
+            shouldShowShareAction: boolean;
         };
 
         export type Object = Common & {
@@ -223,10 +225,11 @@ for the current selection:
 - download is available when every selected item is not deleting and does not
   have an unfinished upload progress state
 - share is available for one selected object or one prefix whose
-  `profileNameForSharing` is defined
-- make public is available only for one selected private prefix whose
-  `policy.canBeMadePublic === true`
-- make private is available only for one selected public prefix
+  `shouldShowShareAction` is `true`
+- make public is available when the selected prefix has
+  `publicAccessAction === "make public"`
+- make private is available when the selected prefix has
+  `publicAccessAction === "make private"`
 - copy S3 path is available only for one selected item
 - delete is available when at least one item is selected
 
@@ -272,23 +275,19 @@ Typical row actions include:
 - Actions remain secondary compared to the bulk action bar
 - Actions are hidden when not relevant for the row type
 
-### Prefix policy
-
-Prefix public state is read only from the prefix item `policy`.
+### Public access action
 
 Rules:
 
-- Public prefix: `policy.isPublic === true`
-- Private prefix: `policy.isPublic === false`
-- Object items do not expose public state in this component
-- Public prefixes display a `Public` tag next to the prefix name
-- Private prefixes do not display a public tag
-- Public prefixes expose a `make private` contextual action with the
-  `PublicOff` icon
-- Private prefixes expose a `make public` contextual action with the `Public`
-  icon only when `policy.canBeMadePublic === true`
-- Private prefixes with `policy.canBeMadePublic === false` do not expose a
-  policy contextual action
+- `publicAccessAction === "make public"` displays the `make public` action with
+  the `Public` icon.
+- `publicAccessAction === "make private"` displays the `make private` action with
+  the `PublicOff` icon.
+- `publicAccessAction === "make private"` also displays the `Public` marker next
+  to the prefix name and in prefix summaries.
+- `publicAccessAction === undefined` does not display a public access action.
+- The component does not derive the effective public status of a prefix beyond
+  these direct display instructions.
 
 Clicking `make public` triggers:
 
@@ -311,8 +310,11 @@ onChangePrefixPolicy({
 ### Share
 
 Share is available as a row action for object rows and prefix rows whose
-`profileNameForSharing` is defined, provided that the item is not deleting and does
+`shouldShowShareAction` is `true`, provided that the item is not deleting and does
 not have an unfinished upload progress state.
+
+When a prefix has `shouldShowShareAction === true`, the component asserts that the
+root-level `profileNameForSharing` is defined before invoking `onSharePrefix`.
 
 Clicking Share triggers:
 
@@ -321,7 +323,7 @@ onShareObject({ s3Uri: item.s3Uri });
 
 onSharePrefix({
     s3Uri: item.s3Uri,
-    anonymousProfileName: item.profileNameForSharing
+    anonymousProfileName: profileNameForSharing
 });
 ```
 

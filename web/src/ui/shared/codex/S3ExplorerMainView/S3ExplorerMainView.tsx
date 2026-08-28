@@ -62,6 +62,8 @@ export type S3ExplorerMainViewProps = {
           }
     );
 
+    profileNameForSharing: string | undefined;
+
     onNavigate: (params: { s3Uri: S3Uri }) => void;
 
     onNavigateBack: () => void;
@@ -118,8 +120,8 @@ export namespace S3ExplorerMainViewProps {
         export type PrefixSegment = Common & {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
-            policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            profileNameForSharing: string | undefined;
+            publicAccessAction: "make public" | "make private" | undefined;
+            shouldShowShareAction: boolean;
         };
 
         export type Object = Common & {
@@ -139,6 +141,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         className,
         isListing,
         listedPrefix,
+        profileNameForSharing,
         onNavigate,
         onNavigateBack,
         onPutObjects,
@@ -387,10 +390,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         selectedItemForSingleItemAction?.type === "prefix segment"
             ? selectedItemForSingleItemAction
             : undefined;
-    const selectedPrefixPolicyAction =
+    const selectedPrefixPublicAccessAction =
         selectedPrefixForSingleItemAction !== undefined &&
         getIsItemActionAvailable(selectedPrefixForSingleItemAction)
-            ? getPrefixPolicyAction(selectedPrefixForSingleItemAction)
+            ? selectedPrefixForSingleItemAction.publicAccessAction
             : undefined;
 
     const setSelectionToSingleItem = useConstCallback((itemKey: string) => {
@@ -544,13 +547,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 });
                 return;
             case "prefix segment":
-                if (item.profileNameForSharing === undefined) {
+                if (!item.shouldShowShareAction) {
                     return;
                 }
 
+                assert(profileNameForSharing !== undefined);
+
                 onSharePrefix({
                     s3Uri: item.s3Uri,
-                    anonymousProfileName: item.profileNameForSharing
+                    anonymousProfileName: profileNameForSharing
                 });
                 return;
         }
@@ -562,14 +567,17 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 return;
             }
 
-            const action = getPrefixPolicyAction(item);
+            const { publicAccessAction } = item;
 
-            if (action === undefined) {
+            if (publicAccessAction === undefined) {
                 return;
             }
 
             onChangePrefixPolicy({
-                action,
+                action:
+                    publicAccessAction === "make private"
+                        ? "undo make public"
+                        : "make public",
                 s3Uri: item.s3Uri
             });
         }
@@ -846,8 +854,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 ) ||
                                 (selectedItemForSingleItemAction.type ===
                                     "prefix segment" &&
-                                    selectedItemForSingleItemAction.profileNameForSharing ===
-                                        undefined)
+                                    !selectedItemForSingleItemAction.shouldShowShareAction)
                                     ? undefined
                                     : {
                                           callback: () =>
@@ -871,7 +878,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             }
                             accessPolicy={
                                 selectedPrefixForSingleItemAction === undefined ||
-                                selectedPrefixPolicyAction === undefined
+                                selectedPrefixPublicAccessAction === undefined
                                     ? undefined
                                     : {
                                           callback: () =>
@@ -879,8 +886,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                   selectedPrefixForSingleItemAction
                                               ),
                                           isPublic:
-                                              selectedPrefixPolicyAction ===
-                                              "undo make public"
+                                              selectedPrefixPublicAccessAction ===
+                                              "make private"
                                       }
                             }
                         />
@@ -1187,8 +1194,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     onDelete={onDeleteFactory(itemKey)}
                                                     onShare={
                                                         item.type === "object" ||
-                                                        item.profileNameForSharing !==
-                                                            undefined
+                                                        item.shouldShowShareAction
                                                             ? onShareFactory(itemKey)
                                                             : undefined
                                                     }
@@ -1201,7 +1207,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     }
                                                     onChangePrefixPolicy={
                                                         item.type === "prefix segment" &&
-                                                        getPrefixPolicyAction(item) !==
+                                                        item.publicAccessAction !==
                                                             undefined
                                                             ? onChangePrefixPolicyFactory(
                                                                   itemKey
@@ -1910,9 +1916,9 @@ export type DeleteDialogState = {
     items: S3ExplorerMainViewProps.Item[];
 };
 
-type PrefixPolicyAction = Parameters<
-    S3ExplorerMainViewProps["onChangePrefixPolicy"]
->[0]["action"];
+type PublicAccessAction = NonNullable<
+    S3ExplorerMainViewProps.Item.PrefixSegment["publicAccessAction"]
+>;
 
 type ObjectToUpload = Parameters<
     S3ExplorerMainViewProps["onPutObjects"]
@@ -2157,33 +2163,15 @@ function getIsItemActionAvailable(item: S3ExplorerMainViewProps.Item): boolean {
     return getProgressPercent(item) === undefined;
 }
 
-function getPrefixPolicyAction(
-    item: S3ExplorerMainViewProps.Item
-): PrefixPolicyAction | undefined {
-    if (item.type !== "prefix segment") {
-        return undefined;
-    }
-
-    if (item.policy.isPublic) {
-        return "undo make public";
-    }
-
-    if (item.policy.canBeMadePublic) {
-        return "make public";
-    }
-
-    return undefined;
-}
-
 function getPrefixPolicyActionLabel(
-    action: PrefixPolicyAction,
+    action: PublicAccessAction,
     t: ReturnType<typeof useTranslation>["t"]
 ): string {
     return action === "make public" ? t("make public") : t("make private");
 }
 
 function getPrefixPolicyActionIconName(
-    action: PrefixPolicyAction
+    action: PublicAccessAction
 ): "Public" | "PublicOff" {
     return action === "make public" ? "Public" : "PublicOff";
 }
@@ -2377,7 +2365,7 @@ export function DeleteSelectionDialog(props: {
                                     }
                                     isPublic={
                                         item.type === "prefix segment" &&
-                                        item.policy.isPublic
+                                        item.publicAccessAction === "make private"
                                     }
                                 />
                             ))}
@@ -2527,7 +2515,8 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
     const isShareAvailable = onShare !== undefined && isItemActionAvailable;
     const isRequestFilesAvailable = onRequestFiles !== undefined && isItemActionAvailable;
-    const prefixPolicyAction = getPrefixPolicyAction(item);
+    const prefixPolicyAction =
+        item.type === "prefix segment" ? item.publicAccessAction : undefined;
     const isPrefixPolicyActionAvailable =
         onChangePrefixPolicy !== undefined && isItemActionAvailable;
     const isCopyAvailable = !item.isDeleting;
@@ -2538,7 +2527,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         item.type === "prefix segment" ? t("folder") : t("object");
     const itemIconLabel =
         item.type === "prefix segment"
-            ? item.policy.isPublic
+            ? item.publicAccessAction === "make private"
                 ? t("folder is public")
                 : t("folder is private")
             : itemKindLabelCapitalized;
@@ -2656,7 +2645,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                 </button>
 
                                 {item.type === "prefix segment" &&
-                                    item.policy.isPublic && (
+                                    item.publicAccessAction === "make private" && (
                                         <span className={classes.itemPublicTag}>
                                             <Icon
                                                 icon={getIconUrlByName("Public")}
@@ -3065,25 +3054,7 @@ function areItemsRenderEqual(
 
     return (
         nextItem.type === "prefix segment" &&
-        arePrefixPoliciesEqual(previousItem.policy, nextItem.policy)
+        previousItem.publicAccessAction === nextItem.publicAccessAction &&
+        previousItem.shouldShowShareAction === nextItem.shouldShowShareAction
     );
-}
-
-function arePrefixPoliciesEqual(
-    previousPolicy: S3ExplorerMainViewProps.Item.PrefixSegment["policy"],
-    nextPolicy: S3ExplorerMainViewProps.Item.PrefixSegment["policy"]
-): boolean {
-    if (previousPolicy.isPublic !== nextPolicy.isPublic) {
-        return false;
-    }
-
-    if (previousPolicy.isPublic) {
-        return true;
-    }
-
-    if (nextPolicy.isPublic) {
-        return false;
-    }
-
-    return previousPolicy.canBeMadePublic === nextPolicy.canBeMadePublic;
 }
