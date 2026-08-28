@@ -171,6 +171,7 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onDownload: action("download"),
     onShareObject: action("shareObject"),
     onSharePrefix: action("sharePrefix"),
+    onRequestFiles: action("requestFiles"),
     onBookmark: action("bookmark"),
     bookmarkedS3Uris: [],
     onChangePrefixPolicy: action("changePrefixPolicy"),
@@ -236,6 +237,7 @@ function StatefulExplorer(
         | "onDownload"
         | "onShareObject"
         | "onSharePrefix"
+        | "onRequestFiles"
         | "onBookmark"
         | "bookmarkedS3Uris"
         | "onChangePrefixPolicy"
@@ -352,6 +354,9 @@ function StatefulExplorer(
                 onSharePrefix={params => {
                     action("sharePrefix")(params);
                 }}
+                onRequestFiles={params => {
+                    action("requestFiles")(params);
+                }}
                 onBookmark={({ s3Uri }) => {
                     action("bookmark")(s3Uri);
                 }}
@@ -432,6 +437,7 @@ export const EmptyPrefix: Story = {
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onSharePrefix: action("sharePrefix"),
+        onRequestFiles: action("requestFiles"),
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
@@ -510,6 +516,7 @@ export const FullyQualifiedObject: Story = {
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onSharePrefix: action("sharePrefix"),
+        onRequestFiles: action("requestFiles"),
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
@@ -540,6 +547,7 @@ export const AccessDenied: Story = {
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onSharePrefix: action("sharePrefix"),
+        onRequestFiles: action("requestFiles"),
         onBookmark: action("bookmark"),
         bookmarkedS3Uris: [],
         onChangePrefixPolicy: action("changePrefixPolicy"),
