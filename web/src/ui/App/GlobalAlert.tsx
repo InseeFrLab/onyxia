@@ -55,10 +55,6 @@ export const GlobalAlert = memo(
             return null;
         }
 
-        if (route.name === "s3Explorer") {
-            return null;
-        }
-
         return (
             <Alert
                 ref={ref}

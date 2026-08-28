@@ -338,6 +338,29 @@ export const translations: Translations<"en"> = {
         "create new folder": "Create new folder",
         "download file": "Download file"
     },
+    S3FileRequest: {
+        "page title": "Upload requested files",
+        "page description":
+            "Someone shared this secure link so you can send files directly to their storage space. You do not need an Onyxia account.",
+        "expires on": ({ date }) => `This link expires on ${date}`,
+        "link expired": "This upload link has expired",
+        "link expired description":
+            "Ask the person who shared it with you to create a new link.",
+        "drop files": "Drag and drop your files here",
+        "drop files active": "Drop your files to upload them",
+        "drop files hint": "Files start uploading as soon as you select them.",
+        "choose files": "Choose files",
+        "all files uploaded": "Your files have been sent",
+        "all files uploaded description":
+            "You can close this page or add more files while the link is valid.",
+        "uploads title": "Your uploads",
+        uploading: ({ percent }) => `Uploading · ${percent}%`,
+        uploaded: "Uploaded",
+        "upload failed": "Upload failed",
+        "cancel upload": "Cancel upload",
+        "retry upload": "Retry upload",
+        "privacy note": "Only the files you choose are sent through this link."
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Share object"
     },

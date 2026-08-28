@@ -208,6 +208,26 @@ export const translations: Translations<"es"> = {
         "create new folder": "Crear nueva carpeta",
         "download file": "Descargar archivo"
     },
+    S3FileRequest: {
+        "page title": undefined,
+        "page description": undefined,
+        "expires on": undefined,
+        "link expired": undefined,
+        "link expired description": undefined,
+        "drop files": undefined,
+        "drop files active": undefined,
+        "drop files hint": undefined,
+        "choose files": undefined,
+        "all files uploaded": undefined,
+        "all files uploaded description": undefined,
+        "uploads title": undefined,
+        uploading: undefined,
+        uploaded: undefined,
+        "upload failed": undefined,
+        "cancel upload": undefined,
+        "retry upload": undefined,
+        "privacy note": undefined
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Compartir objeto"
     },

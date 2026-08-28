@@ -186,6 +186,26 @@ export const translations: Translations<"zh-CN"> = {
         "create new folder": "创建新文件夹",
         "download file": "下载文件"
     },
+    S3FileRequest: {
+        "page title": undefined,
+        "page description": undefined,
+        "expires on": undefined,
+        "link expired": undefined,
+        "link expired description": undefined,
+        "drop files": undefined,
+        "drop files active": undefined,
+        "drop files hint": undefined,
+        "choose files": undefined,
+        "all files uploaded": undefined,
+        "all files uploaded description": undefined,
+        "uploads title": undefined,
+        uploading: undefined,
+        uploaded: undefined,
+        "upload failed": undefined,
+        "cancel upload": undefined,
+        "retry upload": undefined,
+        "privacy note": undefined
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"
     },

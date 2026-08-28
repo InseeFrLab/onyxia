@@ -11,7 +11,7 @@ type PresignedPost = {
 export const routeDefs = {
     s3FileRequest: defineRoute(
         {
-            presignedPost: param.path.ofType(
+            presignedPost: param.query.ofType(
                 id<ValueSerializer<PresignedPost>>({
                     parse: raw => JSON.parse(raw),
                     stringify: value => JSON.stringify(value)
