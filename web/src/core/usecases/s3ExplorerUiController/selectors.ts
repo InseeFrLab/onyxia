@@ -98,6 +98,8 @@ export type MainView = {
         | undefined;
 
     commandLogsEntries: State.CommandLogsEntry[];
+
+    profileNameForSharing: string | undefined;
 };
 
 export namespace MainView {
@@ -113,8 +115,8 @@ export namespace MainView {
         export type PrefixSegment = Common & {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
-            policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            profileNameForSharing: string | undefined;
+            publicAccessAction: "make public" | "make private" | undefined;
+            shouldShowShareAction: boolean;
         };
 
         export type Object = Common & {
@@ -366,25 +368,16 @@ const items = createSelector(
                             size: item.size
                         });
                     case "prefix": {
-                        const policy: MainView.Item.PrefixSegment["policy"] =
-                            isAnonymousS3Profile
-                                ? // NOTE: Semantically false but yield the intended result.
-                                  { isPublic: false, canBeMadePublic: false }
-                                : getHasPrefixBeMadePublic({
-                                        s3Uri: item.s3Uri,
-                                        bucketPoliciesByBucket
-                                    })
-                                  ? {
-                                        isPublic: true
-                                    }
-                                  : {
-                                        isPublic: false,
-                                        canBeMadePublic:
-                                            !getIsWithinPrefixThatHasBeenMadePublic({
-                                                s3Uri: item.s3Uri,
-                                                bucketPoliciesByBucket
-                                            }).isWithinPrefixThatHasBeenMadePublic
-                                    };
+                        const hasBeenMadePublic = getHasPrefixBeMadePublic({
+                            s3Uri: item.s3Uri,
+                            bucketPoliciesByBucket
+                        });
+
+                        const isWithinPrefixThatHasBeenMadePublic =
+                            getIsWithinPrefixThatHasBeenMadePublic({
+                                s3Uri: item.s3Uri,
+                                bucketPoliciesByBucket
+                            }).isWithinPrefixThatHasBeenMadePublic;
 
                         return id<MainView.Item.PrefixSegment>({
                             type: "prefix segment",
@@ -398,30 +391,26 @@ const items = createSelector(
                             s3Uri: item.s3Uri,
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            profileNameForSharing: (() => {
-                                if (profileName_anonymous === undefined) {
-                                    return undefined;
-                                }
-
+                            publicAccessAction: (() => {
                                 if (isAnonymousS3Profile) {
-                                    return profileName_anonymous;
-                                }
-
-                                if (policy.isPublic) {
-                                    return profileName_anonymous;
-                                }
-
-                                // NOTE: Semantically, this is wrong, it's sharable
-                                // if it's within a prefix that has been made public
-                                // but since we already compute that for canBeMadePublic
-                                // we reuse the value here.
-                                if (policy.canBeMadePublic) {
                                     return undefined;
                                 }
 
-                                return profileName_anonymous;
+                                if (hasBeenMadePublic) {
+                                    return "make private";
+                                }
+
+                                if (isWithinPrefixThatHasBeenMadePublic) {
+                                    return undefined;
+                                }
+
+                                return "make public";
                             })(),
-                            policy
+                            shouldShowShareAction:
+                                profileName_anonymous !== undefined &&
+                                (isAnonymousS3Profile ||
+                                    hasBeenMadePublic ||
+                                    isWithinPrefixThatHasBeenMadePublic)
                         });
                     }
                     default:
@@ -795,6 +784,7 @@ const mainView = createSelector(
     isListing,
     listedPrefix,
     commandLogsEntries,
+    profileName_anonymous,
     (
         profileSelect,
         bookmarks,
@@ -806,7 +796,8 @@ const mainView = createSelector(
         objectRendering,
         isListing,
         listedPrefix,
-        commandLogsEntries
+        commandLogsEntries,
+        profileNameForSharing
     ): MainView => ({
         profileSelect,
         bookmarks,
@@ -818,7 +809,8 @@ const mainView = createSelector(
         objectRendering,
         isListing,
         listedPrefix,
-        commandLogsEntries
+        commandLogsEntries,
+        profileNameForSharing
     })
 );
 

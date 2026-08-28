@@ -20,8 +20,8 @@ type MockNode =
           s3Uri: S3Uri.TerminatedByDelimiter;
           uploadProgressPercent: number | undefined;
           isDeleting: boolean;
-          policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-          profileNameForSharing: string | undefined;
+          publicAccessAction: "make public" | "make private" | undefined;
+          shouldShowShareAction: boolean;
       }
     | {
           type: "object";
@@ -75,24 +75,24 @@ const baseNodes: MockNode[] = [
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: true },
-        profileNameForSharing: "anonymous"
+        publicAccessAction: "make private",
+        shouldShowShareAction: true
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/raw/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: false, canBeMadePublic: true },
-        profileNameForSharing: undefined
+        publicAccessAction: "make public",
+        shouldShowShareAction: false
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/tmp/"),
         uploadProgressPercent: 42,
         isDeleting: false,
-        policy: { isPublic: false, canBeMadePublic: false },
-        profileNameForSharing: undefined
+        publicAccessAction: undefined,
+        shouldShowShareAction: false
     },
     {
         type: "object",
@@ -126,16 +126,16 @@ const nestedNodes: MockNode[] = [
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2024/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: false, canBeMadePublic: true },
-        profileNameForSharing: undefined
+        publicAccessAction: "make public",
+        shouldShowShareAction: false
     },
     {
         type: "prefix segment",
         s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/2025/"),
         uploadProgressPercent: undefined,
         isDeleting: false,
-        policy: { isPublic: true },
-        profileNameForSharing: "anonymous"
+        publicAccessAction: "make private",
+        shouldShowShareAction: true
     },
     {
         type: "object",
@@ -157,6 +157,7 @@ const nestedNodes: MockNode[] = [
 
 const placeholderArgs: S3ExplorerMainViewProps = {
     isListing: false,
+    profileNameForSharing: "anonymous",
     listedPrefix: {
         s3Uri: defaultPrefix,
         isErrored: false,
@@ -293,8 +294,8 @@ function StatefulExplorer(
                             },
                             uploadProgressPercent: undefined,
                             isDeleting: false,
-                            policy: { isPublic: false, canBeMadePublic: true },
-                            profileNameForSharing: undefined
+                            publicAccessAction: "make public",
+                            shouldShowShareAction: false
                         }
                     ]);
                 }}
@@ -375,13 +376,11 @@ function StatefulExplorer(
 
                             return {
                                 ...node,
-                                policy:
+                                publicAccessAction:
                                     policyAction === "make public"
-                                        ? { isPublic: true }
-                                        : {
-                                              isPublic: false,
-                                              canBeMadePublic: true
-                                          }
+                                        ? "make private"
+                                        : "make public",
+                                shouldShowShareAction: policyAction === "make public"
                             };
                         })
                     );
@@ -397,11 +396,12 @@ function StatefulExplorer(
 
 export const Playground: Story = {
     args: placeholderArgs,
-    render: ({ className, isListing, isUploadDisabled }) => (
+    render: ({ className, isListing, isUploadDisabled, profileNameForSharing }) => (
         <StatefulExplorer
             className={className}
             isListing={isListing}
             isUploadDisabled={isUploadDisabled}
+            profileNameForSharing={profileNameForSharing}
         />
     )
 };
@@ -411,11 +411,12 @@ export const ListingInProgress: Story = {
         ...placeholderArgs,
         isListing: true
     },
-    render: ({ className, isListing, isUploadDisabled }) => (
+    render: ({ className, isListing, isUploadDisabled, profileNameForSharing }) => (
         <StatefulExplorer
             className={className}
             isListing={isListing}
             isUploadDisabled={isUploadDisabled}
+            profileNameForSharing={profileNameForSharing}
         />
     )
 };
@@ -423,6 +424,7 @@ export const ListingInProgress: Story = {
 export const EmptyPrefix: Story = {
     args: {
         isListing: false,
+        profileNameForSharing: "anonymous",
         listedPrefix: {
             s3Uri: defaultPrefix,
             isErrored: false,
@@ -502,6 +504,7 @@ function FullyQualifiedObjectExplorer(props: S3ExplorerMainViewProps) {
 export const FullyQualifiedObject: Story = {
     args: {
         isListing: false,
+        profileNameForSharing: "anonymous",
         listedPrefix: {
             s3Uri: fullyQualifiedObject.s3Uri,
             isErrored: false,
@@ -530,6 +533,7 @@ export const FullyQualifiedObject: Story = {
 export const AccessDenied: Story = {
     args: {
         isListing: false,
+        profileNameForSharing: "anonymous",
         listedPrefix: {
             s3Uri: defaultPrefix,
             isErrored: true,
