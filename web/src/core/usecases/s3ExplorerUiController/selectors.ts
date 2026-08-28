@@ -4,15 +4,12 @@ import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
 import { assert, type Equals } from "tsafe";
-import { id } from "tsafe/id";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
 import { name, type State } from "./state";
-import {
-    getHasPrefixBeMadePublic,
-    getIsWithinPrefixThatHasBeenMadePublic
-} from "./decoupledLogic/bucketPolicies";
+import { getIsWithinPrefixThatHasBeenMadePublic } from "./decoupledLogic/bucketPolicies";
 import { type ObjectRendering } from "./decoupledLogic/objectRendering";
+import { stateItemToSelectorItem } from "./decoupledLogic/stateItemToSelectorItem";
 
 export type RouteParams = {
     profile?: string;
@@ -326,14 +323,17 @@ const items = createSelector(
             : paramsOfCreateS3Client.credentials === undefined;
         return isAnonymousS3Profile;
     }),
-    profileName_anonymous,
+    createSelector(
+        profileName_anonymous,
+        profileName_anonymous => profileName_anonymous !== undefined
+    ),
     (
         listedPrefix_state,
         uploads_profile,
         deletions_profile,
         bucketPoliciesByBucket,
         isAnonymousS3Profile,
-        profileName_anonymous
+        isSharingPublicFolderFeatureEnabled
     ): MainView.Item[] | undefined => {
         if (listedPrefix_state === undefined) {
             return undefined;
@@ -348,75 +348,13 @@ const items = createSelector(
             uploads: uploads_profile
         });
 
-        const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(
-            item => {
-                switch (item.type) {
-                    case "object":
-                        return id<MainView.Item.Object>({
-                            type: "object",
-                            displayName: (() => {
-                                const keyBasename = item.s3Uri.keySegments.at(-1);
-
-                                assert(keyBasename !== undefined);
-
-                                return keyBasename;
-                            })(),
-                            s3Uri: item.s3Uri,
-                            uploadProgressPercent: undefined,
-                            isDeleting: false,
-                            lastModified: item.lastModified,
-                            size: item.size
-                        });
-                    case "prefix": {
-                        const hasBeenMadePublic = getHasPrefixBeMadePublic({
-                            s3Uri: item.s3Uri,
-                            bucketPoliciesByBucket
-                        });
-
-                        const isWithinPrefixThatHasBeenMadePublic =
-                            getIsWithinPrefixThatHasBeenMadePublic({
-                                s3Uri: item.s3Uri,
-                                bucketPoliciesByBucket
-                            }).isWithinPrefixThatHasBeenMadePublic;
-
-                        return id<MainView.Item.PrefixSegment>({
-                            type: "prefix segment",
-                            displayName: (() => {
-                                const lastSegment = item.s3Uri.keySegments.at(-1);
-
-                                assert(lastSegment !== undefined);
-
-                                return lastSegment;
-                            })(),
-                            s3Uri: item.s3Uri,
-                            uploadProgressPercent: undefined,
-                            isDeleting: false,
-                            publicAccessAction: (() => {
-                                if (isAnonymousS3Profile) {
-                                    return undefined;
-                                }
-
-                                if (hasBeenMadePublic) {
-                                    return "make private";
-                                }
-
-                                if (isWithinPrefixThatHasBeenMadePublic) {
-                                    return undefined;
-                                }
-
-                                return "make public";
-                            })(),
-                            shouldShowShareAction:
-                                profileName_anonymous !== undefined &&
-                                (isAnonymousS3Profile ||
-                                    hasBeenMadePublic ||
-                                    isWithinPrefixThatHasBeenMadePublic)
-                        });
-                    }
-                    default:
-                        assert<Equals<typeof item, never>>(false);
-                }
-            }
+        const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(item =>
+            stateItemToSelectorItem({
+                item,
+                isSharingPublicFolderFeatureEnabled,
+                bucketPoliciesByBucket,
+                isAnonymousS3Profile
+            })
         );
 
         const items: MainView.Item[] = [];
