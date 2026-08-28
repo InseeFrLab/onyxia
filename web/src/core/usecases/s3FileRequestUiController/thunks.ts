@@ -179,18 +179,8 @@ export const privateThunks = {
 
                 xhrByUploadId.set(uploadId, xhr);
 
-                try {
-                    xhr.open("POST", presignedPost.url);
-                    xhr.send(formData);
-                } catch (error) {
-                    complete({
-                        status: "failed",
-                        errorMessage:
-                            error instanceof Error
-                                ? error.message
-                                : "The upload could not be started."
-                    });
-                }
+                xhr.open("POST", presignedPost.url);
+                xhr.send(formData);
             });
         }
 } satisfies Thunks;

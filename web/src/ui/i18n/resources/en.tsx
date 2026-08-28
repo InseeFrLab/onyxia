@@ -258,6 +258,7 @@ export const translations: Translations<"en"> = {
             `You are about to delete ${count} selected item${count > 1 ? "s" : ""}. Deleting a prefix also deletes everything inside it.`,
         delete: "Delete",
         share: "Share",
+        "request files": "Request files",
         download: "Download",
         "copy s3 uri": "Copy S3 URI",
         copied: "Copied",
@@ -322,6 +323,26 @@ export const translations: Translations<"en"> = {
         "validity duration one week": "1 week",
         "selected duration": "the selected duration"
     },
+    S3FileRequestCreationDialog: {
+        description:
+            "Share this link with anyone—even someone without an account on this Onyxia instance—to let them upload files from their computer directly to this folder.",
+        "link settings": "Link settings",
+        "link expires after": "Link expires after",
+        "link validity aria label": "Upload link validity duration",
+        "maximum size per file": "Maximum size per file",
+        "maximum file size aria label": "Maximum size per uploaded file",
+        "upload link": "Upload link",
+        "generating upload link": "Generating upload link...",
+        "copy upload link aria label": "Copy upload link",
+        "generation failed": "The upload link could not be generated.",
+        retry: "Retry",
+        "security note":
+            "Anyone with this link can upload files to this folder until it expires. The link does not give access to view or download existing files.",
+        "validity duration one hour": "1 hour",
+        "validity duration one day": "1 day",
+        "validity duration one week": "1 week",
+        "no limit": "No limit"
+    },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Copy folder URL",
         "public sharing note":
@@ -363,6 +384,9 @@ export const translations: Translations<"en"> = {
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Share object"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Request files"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Share folder"
@@ -409,6 +433,7 @@ export const translations: Translations<"en"> = {
         "add to bookmarks": "Add to bookmarks",
         "delete from bookmarks": "Delete from bookmarks",
         share: "Share",
+        "request files": "Request files",
         "make public": "Make public",
         "make private": "Make private",
         "one selected": "1 selected",

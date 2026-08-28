@@ -209,6 +209,9 @@ export const translations: Translations<"zh-CN"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"
     },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": undefined
+    },
     S3SharePrefixDialogContainer: {
         "dialog title": "共享文件夹"
     },
@@ -246,6 +249,7 @@ export const translations: Translations<"zh-CN"> = {
         "new s3 profile": "新建 S3 配置文件"
     },
     S3SelectionActionBar: {
+        "request files": undefined,
         download: "下载",
         delete: "删除",
         "copy s3 uri": "复制 S3 URI",
@@ -348,6 +352,7 @@ export const translations: Translations<"zh-CN"> = {
         "make private": "设为私有"
     },
     S3ExplorerMainView: {
+        "request files": undefined,
         "create prefix dialog title": "创建前缀",
         "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",
         "prefix name field label": "前缀名称",
@@ -419,6 +424,24 @@ export const translations: Translations<"zh-CN"> = {
         "validity duration one day": "1 天",
         "validity duration one week": "1 周",
         "selected duration": "所选时长"
+    },
+    S3FileRequestCreationDialog: {
+        description: undefined,
+        "link settings": undefined,
+        "link expires after": undefined,
+        "link validity aria label": undefined,
+        "maximum size per file": undefined,
+        "maximum file size aria label": undefined,
+        "upload link": undefined,
+        "generating upload link": undefined,
+        "copy upload link aria label": undefined,
+        "generation failed": undefined,
+        retry: undefined,
+        "security note": undefined,
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "no limit": undefined
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "复制文件夹 URL",

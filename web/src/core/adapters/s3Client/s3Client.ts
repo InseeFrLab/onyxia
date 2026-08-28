@@ -169,9 +169,15 @@ export function createS3Client(
                 import("@aws-sdk/client-s3").S3Client
             >();
 
-            async function getAwsS3Client() {
+            type Token = NonNullable<
+                Awaited<ReturnType<typeof getNewlyRequestedOrCachedToken>>
+            >;
+
+            async function getAwsS3Client(options?: { token: Token }) {
                 const [tokens, AwsS3Client] = await Promise.all([
-                    getNewlyRequestedOrCachedToken(),
+                    options === undefined
+                        ? getNewlyRequestedOrCachedToken()
+                        : Promise.resolve(options.token),
                     import("@aws-sdk/client-s3").then(({ S3Client }) => S3Client)
                 ] as const);
 
@@ -549,6 +555,71 @@ export function createS3Client(
             );
 
             return downloadUrl;
+        },
+        createPresignedPost: async ({
+            s3Uri,
+            validityDurationSecond,
+            maxObjectSizeInBytes
+        }) => {
+            assert(
+                !isAnonymousProfile,
+                "Trying to generate a presigned POST with a public client"
+            );
+
+            const { getAwsS3Client, getNewlyRequestedOrCachedToken } = await prApi;
+
+            // This is the only recoverable boundary in this operation: obtaining
+            // temporary credentials can fail when the identity or STS service is
+            // unreachable. Signing the POST below is otherwise a local operation.
+            const tokenResult = await getNewlyRequestedOrCachedToken().then(
+                token => ({ isSuccess: true as const, token }),
+                error => ({
+                    isSuccess: false as const,
+                    errorMessage: error instanceof Error ? error.message : String(error)
+                })
+            );
+
+            if (!tokenResult.isSuccess) {
+                return tokenResult;
+            }
+
+            const { token } = tokenResult;
+
+            assert(token !== undefined);
+
+            const { awsS3Client } = await getAwsS3Client({ token });
+
+            const now = Date.now();
+            const requestedExpirationTime = now + validityDurationSecond * 1_000;
+            const expirationTime = Math.min(
+                requestedExpirationTime,
+                token.expirationTime ?? requestedExpirationTime
+            );
+            const expiresInSecond = Math.max(
+                1,
+                Math.floor((expirationTime - now) / 1_000)
+            );
+
+            const { url, fields } = await (
+                await import("@aws-sdk/s3-presigned-post")
+            ).createPresignedPost(awsS3Client, {
+                Bucket: s3Uri.bucket,
+                Key: `${getS3UriKey(s3Uri)}\${filename}`,
+                Expires: expiresInSecond,
+                Conditions:
+                    maxObjectSizeInBytes === undefined
+                        ? []
+                        : [["content-length-range", 0, maxObjectSizeInBytes]]
+            });
+
+            return {
+                isSuccess: true,
+                presignedPost: {
+                    url,
+                    fields,
+                    expirationTime: now + expiresInSecond * 1_000
+                }
+            };
         },
 
         getObjectContent: async ({ s3Uri, range }) => {

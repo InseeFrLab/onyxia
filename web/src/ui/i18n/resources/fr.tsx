@@ -237,6 +237,9 @@ export const translations: Translations<"fr"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Partager l'objet"
     },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Demander des fichiers"
+    },
     S3SharePrefixDialogContainer: {
         "dialog title": "Partager le dossier"
     },
@@ -282,6 +285,7 @@ export const translations: Translations<"fr"> = {
         "add to bookmarks": "Ajouter aux favoris",
         "delete from bookmarks": "Supprimer des favoris",
         share: "Partager",
+        "request files": "Demander des fichiers",
         "make public": "Rendre public",
         "make private": "Rendre privé",
         "one selected": "1 sélectionné",
@@ -395,6 +399,7 @@ export const translations: Translations<"fr"> = {
             `Vous êtes sur le point de supprimer ${count} élément${count > 1 ? "s" : ""} sélectionné${count > 1 ? "s" : ""}. Supprimer un préfixe supprime aussi tout son contenu.`,
         delete: "Supprimer",
         share: "Partager",
+        "request files": "Demander des fichiers",
         download: "Télécharger",
         "copy s3 uri": "Copier l'URI S3",
         copied: "Copié",
@@ -459,6 +464,26 @@ export const translations: Translations<"fr"> = {
         "validity duration one day": "1 jour",
         "validity duration one week": "1 semaine",
         "selected duration": "la durée sélectionnée"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "Partagez ce lien avec n’importe qui — même une personne sans compte sur cette instance Onyxia — pour lui permettre de téléverser des fichiers depuis son ordinateur directement dans ce dossier.",
+        "link settings": "Paramètres du lien",
+        "link expires after": "Expiration du lien",
+        "link validity aria label": "Durée de validité du lien de téléversement",
+        "maximum size per file": "Taille maximale par fichier",
+        "maximum file size aria label": "Taille maximale par fichier téléversé",
+        "upload link": "Lien de téléversement",
+        "generating upload link": "Génération du lien de téléversement...",
+        "copy upload link aria label": "Copier le lien de téléversement",
+        "generation failed": "Le lien de téléversement n’a pas pu être généré.",
+        retry: "Réessayer",
+        "security note":
+            "Toute personne disposant de ce lien peut téléverser des fichiers dans ce dossier jusqu’à son expiration. Le lien ne permet pas de voir ni de télécharger les fichiers existants.",
+        "validity duration one hour": "1 heure",
+        "validity duration one day": "1 jour",
+        "validity duration one week": "1 semaine",
+        "no limit": "Aucune limite"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Copier l'URL du dossier",

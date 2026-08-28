@@ -228,6 +228,9 @@ export const translations: Translations<"fi"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Jaa objekti"
     },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": undefined
+    },
     S3SharePrefixDialogContainer: {
         "dialog title": "Jaa kansio"
     },
@@ -265,6 +268,7 @@ export const translations: Translations<"fi"> = {
         "new s3 profile": "Uusi S3-profiili"
     },
     S3SelectionActionBar: {
+        "request files": undefined,
         download: "Lataa",
         delete: "Poista",
         "copy s3 uri": "Kopioi S3-URI",
@@ -369,6 +373,7 @@ export const translations: Translations<"fi"> = {
         "make private": "Tee yksityiseksi"
     },
     S3ExplorerMainView: {
+        "request files": undefined,
         "create prefix dialog title": "Luo etuliite",
         "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",
         "prefix name field label": "Etuliitteen nimi",
@@ -445,6 +450,24 @@ export const translations: Translations<"fi"> = {
         "validity duration one day": "1 päivä",
         "validity duration one week": "1 viikko",
         "selected duration": "valittu kesto"
+    },
+    S3FileRequestCreationDialog: {
+        description: undefined,
+        "link settings": undefined,
+        "link expires after": undefined,
+        "link validity aria label": undefined,
+        "maximum size per file": undefined,
+        "maximum file size aria label": undefined,
+        "upload link": undefined,
+        "generating upload link": undefined,
+        "copy upload link aria label": undefined,
+        "generation failed": undefined,
+        retry: undefined,
+        "security note": undefined,
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "no limit": undefined
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Kopioi kansion URL",

@@ -102,6 +102,7 @@ function S3Explorer() {
             evtS3ProfileDialogOpen: new Evt(),
             evtS3ShareObjectDialogOpen: new Evt(),
             evtS3SharePrefixDialogOpen: new Evt(),
+            evtS3FileRequestCreationDialogOpen: new Evt(),
             evtMaybeAcknowledgeConfigVolatilityDialogOpen: new Evt()
         })
     );
@@ -659,6 +660,13 @@ function S3Explorer() {
                                             s3Uri,
                                             anonymousProfileName
                                         })
+                                    }
+                                    onRequestFiles={({ s3Uri }) =>
+                                        dialogProps.evtS3FileRequestCreationDialogOpen.post(
+                                            {
+                                                s3Uri
+                                            }
+                                        )
                                     }
                                     onBookmark={
                                         isUserLoggedIn

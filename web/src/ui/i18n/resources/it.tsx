@@ -231,6 +231,9 @@ export const translations: Translations<"it"> = {
     S3ShareObjectDialogContainer: {
         "dialog title": "Condividi oggetto"
     },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": undefined
+    },
     S3SharePrefixDialogContainer: {
         "dialog title": "Condividi cartella"
     },
@@ -268,6 +271,7 @@ export const translations: Translations<"it"> = {
         "new s3 profile": "Nuovo profilo S3"
     },
     S3SelectionActionBar: {
+        "request files": undefined,
         download: "Scarica",
         delete: "Elimina",
         "copy s3 uri": "Copia URI S3",
@@ -374,6 +378,7 @@ export const translations: Translations<"it"> = {
         "make private": "Rendi privato"
     },
     S3ExplorerMainView: {
+        "request files": undefined,
         "create prefix dialog title": "Crea prefisso",
         "create prefix dialog subtitle":
             "Crea un nuovo prefisso nella posizione S3 corrente.",
@@ -452,6 +457,24 @@ export const translations: Translations<"it"> = {
         "validity duration one day": "1 giorno",
         "validity duration one week": "1 settimana",
         "selected duration": "la durata selezionata"
+    },
+    S3FileRequestCreationDialog: {
+        description: undefined,
+        "link settings": undefined,
+        "link expires after": undefined,
+        "link validity aria label": undefined,
+        "maximum size per file": undefined,
+        "maximum file size aria label": undefined,
+        "upload link": undefined,
+        "generating upload link": undefined,
+        "copy upload link aria label": undefined,
+        "generation failed": undefined,
+        retry: undefined,
+        "security note": undefined,
+        "validity duration one hour": undefined,
+        "validity duration one day": undefined,
+        "validity duration one week": undefined,
+        "no limit": undefined
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Copia URL della cartella",

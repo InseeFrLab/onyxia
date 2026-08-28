@@ -1,12 +1,9 @@
 import { defineRoute, createGroup, param } from "type-route";
 import { id } from "tsafe";
 import type { ValueSerializer } from "type-route";
+import type { S3Client } from "core/ports/S3Client";
 
-type PresignedPost = {
-    url: string;
-    fields: Record<string, string>;
-    expirationTime: number;
-};
+type PresignedPost = S3Client.PresignedPost;
 
 export const routeDefs = {
     s3FileRequest: defineRoute(
