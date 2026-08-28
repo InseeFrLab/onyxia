@@ -187,30 +187,32 @@ export const translations: Translations<"zh-CN"> = {
         "download file": "下载文件"
     },
     S3FileRequest: {
-        "page title": undefined,
-        "page description": undefined,
-        "expires on": undefined,
-        "link expired": undefined,
-        "link expired description": undefined,
-        "drop files": undefined,
-        "drop files active": undefined,
-        "drop files hint": undefined,
-        "choose files": undefined,
-        "all files uploaded": undefined,
-        "all files uploaded description": undefined,
-        "uploads title": undefined,
-        uploading: undefined,
-        uploaded: undefined,
-        "upload failed": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined,
-        "privacy note": undefined
+        "page title": "上传对方请求的文件",
+        "page description":
+            "有人分享了这个安全链接，以便你将文件直接发送到对方的存储空间。无需 Onyxia 帐户。",
+        "expires on": ({ date }) => `此链接将于 ${date} 过期`,
+        "link expired": "此上传链接已过期",
+        "link expired description": "请让链接分享者创建一个新链接。",
+        "drop files": "将文件拖放到此处",
+        "drop files active": "松开文件即可上传",
+        "drop files hint": "选择文件后会立即开始上传。",
+        "choose files": "选择文件",
+        "all files uploaded": "文件已发送",
+        "all files uploaded description":
+            "只要链接仍然有效，你就可以关闭此页面或继续添加文件。",
+        "uploads title": "你的上传任务",
+        uploading: ({ percent }) => `正在上传 · ${percent}%`,
+        uploaded: "已上传",
+        "upload failed": "上传失败",
+        "cancel upload": "取消上传",
+        "retry upload": "重试上传",
+        "privacy note": "只有你选择的文件会通过此链接发送。"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"
     },
     S3FileRequestCreationDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "请求文件"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "共享文件夹"
@@ -249,7 +251,7 @@ export const translations: Translations<"zh-CN"> = {
         "new s3 profile": "新建 S3 配置文件"
     },
     S3SelectionActionBar: {
-        "request files": undefined,
+        "request files": "请求文件",
         download: "下载",
         delete: "删除",
         "copy s3 uri": "复制 S3 URI",
@@ -352,7 +354,7 @@ export const translations: Translations<"zh-CN"> = {
         "make private": "设为私有"
     },
     S3ExplorerMainView: {
-        "request files": undefined,
+        "request files": "请求文件",
         "create prefix dialog title": "创建前缀",
         "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",
         "prefix name field label": "前缀名称",
@@ -426,22 +428,24 @@ export const translations: Translations<"zh-CN"> = {
         "selected duration": "所选时长"
     },
     S3FileRequestCreationDialog: {
-        description: undefined,
-        "link settings": undefined,
-        "link expires after": undefined,
-        "link validity aria label": undefined,
-        "maximum size per file": undefined,
-        "maximum file size aria label": undefined,
-        "upload link": undefined,
-        "generating upload link": undefined,
-        "copy upload link aria label": undefined,
-        "generation failed": undefined,
-        retry: undefined,
-        "security note": undefined,
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "no limit": undefined
+        description:
+            "将此链接分享给任何人，即使对方没有此 Onyxia 实例的帐户，也可以从计算机将文件直接上传到此文件夹。",
+        "link settings": "链接设置",
+        "link expires after": "链接有效期",
+        "link validity aria label": "上传链接的有效期",
+        "maximum size per file": "每个文件的最大大小",
+        "maximum file size aria label": "每个上传文件的最大大小",
+        "upload link": "上传链接",
+        "generating upload link": "正在生成上传链接...",
+        "copy upload link aria label": "复制上传链接",
+        "generation failed": "无法生成上传链接。",
+        retry: "重试",
+        "security note":
+            "在链接过期之前，任何拥有此链接的人都可以将文件上传到此文件夹。此链接不能用于查看或下载现有文件。",
+        "validity duration one hour": "1 小时",
+        "validity duration one day": "1 天",
+        "validity duration one week": "1 周",
+        "no limit": "无限制"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "复制文件夹 URL",

@@ -209,30 +209,33 @@ export const translations: Translations<"it"> = {
         "download file": "scarica file"
     },
     S3FileRequest: {
-        "page title": undefined,
-        "page description": undefined,
-        "expires on": undefined,
-        "link expired": undefined,
-        "link expired description": undefined,
-        "drop files": undefined,
-        "drop files active": undefined,
-        "drop files hint": undefined,
-        "choose files": undefined,
-        "all files uploaded": undefined,
-        "all files uploaded description": undefined,
-        "uploads title": undefined,
-        uploading: undefined,
-        uploaded: undefined,
-        "upload failed": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined,
-        "privacy note": undefined
+        "page title": "Carica i file richiesti",
+        "page description":
+            "Qualcuno ha condiviso questo link sicuro per consentirti di inviare file direttamente al proprio spazio di archiviazione. Non è necessario un account Onyxia.",
+        "expires on": ({ date }) => `Questo link scade il ${date}`,
+        "link expired": "Questo link di caricamento è scaduto",
+        "link expired description":
+            "Chiedi alla persona che ha condiviso il link di crearne uno nuovo.",
+        "drop files": "Trascina qui i tuoi file",
+        "drop files active": "Rilascia i file per caricarli",
+        "drop files hint": "Il caricamento inizia non appena selezioni i file.",
+        "choose files": "Scegli i file",
+        "all files uploaded": "I tuoi file sono stati inviati",
+        "all files uploaded description":
+            "Puoi chiudere questa pagina o aggiungere altri file finché il link è valido.",
+        "uploads title": "I tuoi caricamenti",
+        uploading: ({ percent }) => `Caricamento · ${percent}%`,
+        uploaded: "Caricato",
+        "upload failed": "Caricamento non riuscito",
+        "cancel upload": "Annulla caricamento",
+        "retry upload": "Riprova il caricamento",
+        "privacy note": "Tramite questo link vengono inviati solo i file scelti."
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Condividi oggetto"
     },
     S3FileRequestCreationDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Richiedi file"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Condividi cartella"
@@ -271,7 +274,7 @@ export const translations: Translations<"it"> = {
         "new s3 profile": "Nuovo profilo S3"
     },
     S3SelectionActionBar: {
-        "request files": undefined,
+        "request files": "Richiedi file",
         download: "Scarica",
         delete: "Elimina",
         "copy s3 uri": "Copia URI S3",
@@ -378,7 +381,7 @@ export const translations: Translations<"it"> = {
         "make private": "Rendi privato"
     },
     S3ExplorerMainView: {
-        "request files": undefined,
+        "request files": "Richiedi file",
         "create prefix dialog title": "Crea prefisso",
         "create prefix dialog subtitle":
             "Crea un nuovo prefisso nella posizione S3 corrente.",
@@ -459,22 +462,24 @@ export const translations: Translations<"it"> = {
         "selected duration": "la durata selezionata"
     },
     S3FileRequestCreationDialog: {
-        description: undefined,
-        "link settings": undefined,
-        "link expires after": undefined,
-        "link validity aria label": undefined,
-        "maximum size per file": undefined,
-        "maximum file size aria label": undefined,
-        "upload link": undefined,
-        "generating upload link": undefined,
-        "copy upload link aria label": undefined,
-        "generation failed": undefined,
-        retry: undefined,
-        "security note": undefined,
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "no limit": undefined
+        description:
+            "Condividi questo link con chiunque, anche con chi non ha un account su questa istanza Onyxia, per consentire di caricare file dal proprio computer direttamente in questa cartella.",
+        "link settings": "Impostazioni del link",
+        "link expires after": "Il link scade dopo",
+        "link validity aria label": "Durata di validità del link di caricamento",
+        "maximum size per file": "Dimensione massima per file",
+        "maximum file size aria label": "Dimensione massima per file caricato",
+        "upload link": "Link di caricamento",
+        "generating upload link": "Generazione del link di caricamento...",
+        "copy upload link aria label": "Copia il link di caricamento",
+        "generation failed": "Non è stato possibile generare il link di caricamento.",
+        retry: "Riprova",
+        "security note":
+            "Chiunque disponga di questo link può caricare file in questa cartella fino alla scadenza. Il link non consente di visualizzare o scaricare i file esistenti.",
+        "validity duration one hour": "1 ora",
+        "validity duration one day": "1 giorno",
+        "validity duration one week": "1 settimana",
+        "no limit": "Nessun limite"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Copia URL della cartella",

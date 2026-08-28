@@ -206,30 +206,33 @@ export const translations: Translations<"no"> = {
         "download file": "last ned fil"
     },
     S3FileRequest: {
-        "page title": undefined,
-        "page description": undefined,
-        "expires on": undefined,
-        "link expired": undefined,
-        "link expired description": undefined,
-        "drop files": undefined,
-        "drop files active": undefined,
-        "drop files hint": undefined,
-        "choose files": undefined,
-        "all files uploaded": undefined,
-        "all files uploaded description": undefined,
-        "uploads title": undefined,
-        uploading: undefined,
-        uploaded: undefined,
-        "upload failed": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined,
-        "privacy note": undefined
+        "page title": "Last opp forespurte filer",
+        "page description":
+            "Noen har delt denne sikre lenken slik at du kan sende filer direkte til lagringsområdet deres. Du trenger ikke en Onyxia-konto.",
+        "expires on": ({ date }) => `Denne lenken utløper ${date}`,
+        "link expired": "Denne opplastingslenken har utløpt",
+        "link expired description":
+            "Be personen som delte lenken med deg, om å opprette en ny lenke.",
+        "drop files": "Dra og slipp filene dine her",
+        "drop files active": "Slipp filene for å laste dem opp",
+        "drop files hint": "Opplastingen starter så snart du velger filene.",
+        "choose files": "Velg filer",
+        "all files uploaded": "Filene dine er sendt",
+        "all files uploaded description":
+            "Du kan lukke denne siden eller legge til flere filer så lenge lenken er gyldig.",
+        "uploads title": "Opplastingene dine",
+        uploading: ({ percent }) => `Laster opp · ${percent} %`,
+        uploaded: "Lastet opp",
+        "upload failed": "Opplastingen mislyktes",
+        "cancel upload": "Avbryt opplasting",
+        "retry upload": "Prøv opplastingen på nytt",
+        "privacy note": "Bare filene du velger, sendes via denne lenken."
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Del objekt"
     },
     S3FileRequestCreationDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Be om filer"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Del mappe"
@@ -268,7 +271,7 @@ export const translations: Translations<"no"> = {
         "new s3 profile": "Ny S3-profil"
     },
     S3SelectionActionBar: {
-        "request files": undefined,
+        "request files": "Be om filer",
         download: "Last ned",
         delete: "Slett",
         "copy s3 uri": "Kopier S3-URI",
@@ -374,7 +377,7 @@ export const translations: Translations<"no"> = {
         "make private": "Gjør privat"
     },
     S3ExplorerMainView: {
-        "request files": undefined,
+        "request files": "Be om filer",
         "create prefix dialog title": "Opprett prefiks",
         "create prefix dialog subtitle":
             "Opprett et nytt prefiks i gjeldende S3-plassering.",
@@ -455,22 +458,24 @@ export const translations: Translations<"no"> = {
         "selected duration": "den valgte varigheten"
     },
     S3FileRequestCreationDialog: {
-        description: undefined,
-        "link settings": undefined,
-        "link expires after": undefined,
-        "link validity aria label": undefined,
-        "maximum size per file": undefined,
-        "maximum file size aria label": undefined,
-        "upload link": undefined,
-        "generating upload link": undefined,
-        "copy upload link aria label": undefined,
-        "generation failed": undefined,
-        retry: undefined,
-        "security note": undefined,
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "no limit": undefined
+        description:
+            "Del denne lenken med hvem som helst, også personer uten konto på denne Onyxia-instansen, slik at de kan laste opp filer fra datamaskinen sin direkte til denne mappen.",
+        "link settings": "Lenkeinnstillinger",
+        "link expires after": "Lenken utløper etter",
+        "link validity aria label": "Opplastingslenkens gyldighet",
+        "maximum size per file": "Maksimal størrelse per fil",
+        "maximum file size aria label": "Maksimal størrelse per opplastet fil",
+        "upload link": "Opplastingslenke",
+        "generating upload link": "Genererer opplastingslenke...",
+        "copy upload link aria label": "Kopier opplastingslenke",
+        "generation failed": "Opplastingslenken kunne ikke genereres.",
+        retry: "Prøv igjen",
+        "security note":
+            "Alle med denne lenken kan laste opp filer til mappen frem til lenken utløper. Lenken gir ikke tilgang til å vise eller laste ned eksisterende filer.",
+        "validity duration one hour": "1 time",
+        "validity duration one day": "1 dag",
+        "validity duration one week": "1 uke",
+        "no limit": "Ingen grense"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Kopier mappe-URL",

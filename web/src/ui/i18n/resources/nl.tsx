@@ -210,30 +210,34 @@ export const translations: Translations<"nl"> = {
         "download file": "bestand downloaden"
     },
     S3FileRequest: {
-        "page title": undefined,
-        "page description": undefined,
-        "expires on": undefined,
-        "link expired": undefined,
-        "link expired description": undefined,
-        "drop files": undefined,
-        "drop files active": undefined,
-        "drop files hint": undefined,
-        "choose files": undefined,
-        "all files uploaded": undefined,
-        "all files uploaded description": undefined,
-        "uploads title": undefined,
-        uploading: undefined,
-        uploaded: undefined,
-        "upload failed": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined,
-        "privacy note": undefined
+        "page title": "Gevraagde bestanden uploaden",
+        "page description":
+            "Iemand heeft deze beveiligde link gedeeld, zodat je bestanden rechtstreeks naar diens opslagruimte kunt sturen. Je hebt geen Onyxia-account nodig.",
+        "expires on": ({ date }) => `Deze link verloopt op ${date}`,
+        "link expired": "Deze uploadlink is verlopen",
+        "link expired description":
+            "Vraag de persoon die de link met je heeft gedeeld om een nieuwe link te maken.",
+        "drop files": "Sleep je bestanden hierheen",
+        "drop files active": "Zet je bestanden neer om ze te uploaden",
+        "drop files hint": "Het uploaden begint zodra je de bestanden selecteert.",
+        "choose files": "Bestanden kiezen",
+        "all files uploaded": "Je bestanden zijn verzonden",
+        "all files uploaded description":
+            "Je kunt deze pagina sluiten of meer bestanden toevoegen zolang de link geldig is.",
+        "uploads title": "Je uploads",
+        uploading: ({ percent }) => `Uploaden · ${percent}%`,
+        uploaded: "Geüpload",
+        "upload failed": "Upload mislukt",
+        "cancel upload": "Upload annuleren",
+        "retry upload": "Upload opnieuw proberen",
+        "privacy note":
+            "Alleen de bestanden die je kiest, worden via deze link verzonden."
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Object delen"
     },
     S3FileRequestCreationDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Bestanden aanvragen"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Map delen"
@@ -272,7 +276,7 @@ export const translations: Translations<"nl"> = {
         "new s3 profile": "Nieuw S3-profiel"
     },
     S3SelectionActionBar: {
-        "request files": undefined,
+        "request files": "Bestanden aanvragen",
         download: "Downloaden",
         delete: "Verwijderen",
         "copy s3 uri": "S3-URI kopiëren",
@@ -377,7 +381,7 @@ export const translations: Translations<"nl"> = {
         "make private": "Privé maken"
     },
     S3ExplorerMainView: {
-        "request files": undefined,
+        "request files": "Bestanden aanvragen",
         "create prefix dialog title": "Prefix aanmaken",
         "create prefix dialog subtitle":
             "Maak een nieuwe prefix aan binnen de huidige S3-locatie.",
@@ -457,22 +461,24 @@ export const translations: Translations<"nl"> = {
         "selected duration": "de geselecteerde duur"
     },
     S3FileRequestCreationDialog: {
-        description: undefined,
-        "link settings": undefined,
-        "link expires after": undefined,
-        "link validity aria label": undefined,
-        "maximum size per file": undefined,
-        "maximum file size aria label": undefined,
-        "upload link": undefined,
-        "generating upload link": undefined,
-        "copy upload link aria label": undefined,
-        "generation failed": undefined,
-        retry: undefined,
-        "security note": undefined,
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "no limit": undefined
+        description:
+            "Deel deze link met iedereen, ook met iemand zonder account op deze Onyxia-instantie, zodat diegene bestanden vanaf een computer rechtstreeks naar deze map kan uploaden.",
+        "link settings": "Linkinstellingen",
+        "link expires after": "Link verloopt na",
+        "link validity aria label": "Geldigheidsduur van de uploadlink",
+        "maximum size per file": "Maximale grootte per bestand",
+        "maximum file size aria label": "Maximale grootte per geüpload bestand",
+        "upload link": "Uploadlink",
+        "generating upload link": "Uploadlink genereren...",
+        "copy upload link aria label": "Uploadlink kopiëren",
+        "generation failed": "De uploadlink kon niet worden gegenereerd.",
+        retry: "Opnieuw proberen",
+        "security note":
+            "Iedereen met deze link kan bestanden naar deze map uploaden totdat de link verloopt. De link geeft geen toegang om bestaande bestanden te bekijken of te downloaden.",
+        "validity duration one hour": "1 uur",
+        "validity duration one day": "1 dag",
+        "validity duration one week": "1 week",
+        "no limit": "Geen limiet"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Map-URL kopiëren",

@@ -214,30 +214,33 @@ export const translations: Translations<"de"> = {
         "download file": "Datei herunterladen"
     },
     S3FileRequest: {
-        "page title": undefined,
-        "page description": undefined,
-        "expires on": undefined,
-        "link expired": undefined,
-        "link expired description": undefined,
-        "drop files": undefined,
-        "drop files active": undefined,
-        "drop files hint": undefined,
-        "choose files": undefined,
-        "all files uploaded": undefined,
-        "all files uploaded description": undefined,
-        "uploads title": undefined,
-        uploading: undefined,
-        uploaded: undefined,
-        "upload failed": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined,
-        "privacy note": undefined
+        "page title": "Angeforderte Dateien hochladen",
+        "page description":
+            "Jemand hat diesen sicheren Link mit Ihnen geteilt, damit Sie Dateien direkt an den zugehörigen Speicherplatz senden können. Sie benötigen kein Onyxia-Konto.",
+        "expires on": ({ date }) => `Dieser Link läuft am ${date} ab`,
+        "link expired": "Dieser Upload-Link ist abgelaufen",
+        "link expired description":
+            "Bitten Sie die Person, die den Link mit Ihnen geteilt hat, einen neuen Link zu erstellen.",
+        "drop files": "Dateien hierher ziehen und ablegen",
+        "drop files active": "Dateien zum Hochladen ablegen",
+        "drop files hint": "Der Upload beginnt, sobald Sie die Dateien auswählen.",
+        "choose files": "Dateien auswählen",
+        "all files uploaded": "Ihre Dateien wurden gesendet",
+        "all files uploaded description":
+            "Sie können diese Seite schließen oder weitere Dateien hinzufügen, solange der Link gültig ist.",
+        "uploads title": "Ihre Uploads",
+        uploading: ({ percent }) => `Wird hochgeladen · ${percent} %`,
+        uploaded: "Hochgeladen",
+        "upload failed": "Upload fehlgeschlagen",
+        "cancel upload": "Upload abbrechen",
+        "retry upload": "Upload wiederholen",
+        "privacy note": "Nur die von Ihnen ausgewählten Dateien werden gesendet."
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Objekt teilen"
     },
     S3FileRequestCreationDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Dateien anfordern"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Ordner teilen"
@@ -276,7 +279,7 @@ export const translations: Translations<"de"> = {
         "new s3 profile": "Neues S3-Profil"
     },
     S3SelectionActionBar: {
-        "request files": undefined,
+        "request files": "Dateien anfordern",
         download: "Herunterladen",
         delete: "Löschen",
         "copy s3 uri": "S3-URI kopieren",
@@ -387,7 +390,7 @@ export const translations: Translations<"de"> = {
         "make private": "Privat machen"
     },
     S3ExplorerMainView: {
-        "request files": undefined,
+        "request files": "Dateien anfordern",
         "create prefix dialog title": "Präfix erstellen",
         "create prefix dialog subtitle":
             "Erstelle ein neues Präfix im aktuellen S3-Speicherort.",
@@ -468,22 +471,24 @@ export const translations: Translations<"de"> = {
         "selected duration": "die ausgewählte Dauer"
     },
     S3FileRequestCreationDialog: {
-        description: undefined,
-        "link settings": undefined,
-        "link expires after": undefined,
-        "link validity aria label": undefined,
-        "maximum size per file": undefined,
-        "maximum file size aria label": undefined,
-        "upload link": undefined,
-        "generating upload link": undefined,
-        "copy upload link aria label": undefined,
-        "generation failed": undefined,
-        retry: undefined,
-        "security note": undefined,
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "no limit": undefined
+        description:
+            "Teilen Sie diesen Link mit beliebigen Personen, auch mit Personen ohne Konto auf dieser Onyxia-Instanz, damit sie Dateien von ihrem Computer direkt in diesen Ordner hochladen können.",
+        "link settings": "Linkeinstellungen",
+        "link expires after": "Link läuft ab nach",
+        "link validity aria label": "Gültigkeitsdauer des Upload-Links",
+        "maximum size per file": "Maximale Größe pro Datei",
+        "maximum file size aria label": "Maximale Größe pro hochgeladener Datei",
+        "upload link": "Upload-Link",
+        "generating upload link": "Upload-Link wird generiert...",
+        "copy upload link aria label": "Upload-Link kopieren",
+        "generation failed": "Der Upload-Link konnte nicht generiert werden.",
+        retry: "Erneut versuchen",
+        "security note":
+            "Jede Person mit diesem Link kann bis zu dessen Ablauf Dateien in diesen Ordner hochladen. Der Link gewährt keinen Zugriff zum Anzeigen oder Herunterladen vorhandener Dateien.",
+        "validity duration one hour": "1 Stunde",
+        "validity duration one day": "1 Tag",
+        "validity duration one week": "1 Woche",
+        "no limit": "Keine Begrenzung"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Ordner-URL kopieren",

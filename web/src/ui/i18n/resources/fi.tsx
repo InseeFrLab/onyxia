@@ -206,30 +206,33 @@ export const translations: Translations<"fi"> = {
         "download file": "lataa tiedosto"
     },
     S3FileRequest: {
-        "page title": undefined,
-        "page description": undefined,
-        "expires on": undefined,
-        "link expired": undefined,
-        "link expired description": undefined,
-        "drop files": undefined,
-        "drop files active": undefined,
-        "drop files hint": undefined,
-        "choose files": undefined,
-        "all files uploaded": undefined,
-        "all files uploaded description": undefined,
-        "uploads title": undefined,
-        uploading: undefined,
-        uploaded: undefined,
-        "upload failed": undefined,
-        "cancel upload": undefined,
-        "retry upload": undefined,
-        "privacy note": undefined
+        "page title": "Lataa pyydetyt tiedostot",
+        "page description":
+            "Joku jakoi tämän suojatun linkin, jotta voit lähettää tiedostoja suoraan hänen tallennustilaansa. Et tarvitse Onyxia-tiliä.",
+        "expires on": ({ date }) => `Tämä linkki vanhenee ${date}`,
+        "link expired": "Tämä lähetyslinkki on vanhentunut",
+        "link expired description":
+            "Pyydä linkin jakanutta henkilöä luomaan uusi linkki.",
+        "drop files": "Vedä ja pudota tiedostosi tähän",
+        "drop files active": "Pudota tiedostot ladataksesi ne",
+        "drop files hint": "Lataus alkaa heti, kun valitset tiedostot.",
+        "choose files": "Valitse tiedostot",
+        "all files uploaded": "Tiedostosi on lähetetty",
+        "all files uploaded description":
+            "Voit sulkea tämän sivun tai lisätä tiedostoja niin kauan kuin linkki on voimassa.",
+        "uploads title": "Lähetyksesi",
+        uploading: ({ percent }) => `Ladataan · ${percent} %`,
+        uploaded: "Ladattu",
+        "upload failed": "Lataus epäonnistui",
+        "cancel upload": "Peruuta lataus",
+        "retry upload": "Yritä latausta uudelleen",
+        "privacy note": "Vain valitsemasi tiedostot lähetetään tämän linkin kautta."
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Jaa objekti"
     },
     S3FileRequestCreationDialogContainer: {
-        "dialog title": undefined
+        "dialog title": "Pyydä tiedostoja"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Jaa kansio"
@@ -268,7 +271,7 @@ export const translations: Translations<"fi"> = {
         "new s3 profile": "Uusi S3-profiili"
     },
     S3SelectionActionBar: {
-        "request files": undefined,
+        "request files": "Pyydä tiedostoja",
         download: "Lataa",
         delete: "Poista",
         "copy s3 uri": "Kopioi S3-URI",
@@ -373,7 +376,7 @@ export const translations: Translations<"fi"> = {
         "make private": "Tee yksityiseksi"
     },
     S3ExplorerMainView: {
-        "request files": undefined,
+        "request files": "Pyydä tiedostoja",
         "create prefix dialog title": "Luo etuliite",
         "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",
         "prefix name field label": "Etuliitteen nimi",
@@ -452,22 +455,24 @@ export const translations: Translations<"fi"> = {
         "selected duration": "valittu kesto"
     },
     S3FileRequestCreationDialog: {
-        description: undefined,
-        "link settings": undefined,
-        "link expires after": undefined,
-        "link validity aria label": undefined,
-        "maximum size per file": undefined,
-        "maximum file size aria label": undefined,
-        "upload link": undefined,
-        "generating upload link": undefined,
-        "copy upload link aria label": undefined,
-        "generation failed": undefined,
-        retry: undefined,
-        "security note": undefined,
-        "validity duration one hour": undefined,
-        "validity duration one day": undefined,
-        "validity duration one week": undefined,
-        "no limit": undefined
+        description:
+            "Jaa tämä linkki kenelle tahansa, myös henkilölle, jolla ei ole tiliä tässä Onyxia-instanssissa, jotta hän voi ladata tiedostoja tietokoneeltaan suoraan tähän kansioon.",
+        "link settings": "Linkin asetukset",
+        "link expires after": "Linkki vanhenee tämän ajan kuluttua",
+        "link validity aria label": "Lähetyslinkin voimassaoloaika",
+        "maximum size per file": "Tiedoston enimmäiskoko",
+        "maximum file size aria label": "Ladattavan tiedoston enimmäiskoko",
+        "upload link": "Lähetyslinkki",
+        "generating upload link": "Lähetyslinkkiä luodaan...",
+        "copy upload link aria label": "Kopioi lähetyslinkki",
+        "generation failed": "Lähetyslinkkiä ei voitu luoda.",
+        retry: "Yritä uudelleen",
+        "security note":
+            "Kuka tahansa linkin saanut voi ladata tiedostoja tähän kansioon linkin vanhenemiseen asti. Linkki ei anna oikeutta tarkastella tai ladata olemassa olevia tiedostoja.",
+        "validity duration one hour": "1 tunti",
+        "validity duration one day": "1 päivä",
+        "validity duration one week": "1 viikko",
+        "no limit": "Ei rajoitusta"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Kopioi kansion URL",
