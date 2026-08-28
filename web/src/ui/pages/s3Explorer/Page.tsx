@@ -618,6 +618,7 @@ function S3Explorer() {
                                     })}
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
+                                    profileNameForSharing={mainView.profileNameForSharing}
                                     onNavigateBack={s3ExplorerUiController.navigateBack}
                                     onNavigate={({ s3Uri }) =>
                                         s3ExplorerUiController.listPrefix({
