@@ -201,6 +201,7 @@ const baseArgs: S3UriBarProps = {
     onChangePrefixPolicy: action("changePrefixPolicy"),
     shouldShowShareAction: false,
     onSharePrefix: action("sharePrefix"),
+    onRequestFiles: undefined,
     evtAction: Evt.create<{ action: "display copy feedback"; s3Uri: S3Uri }>()
 };
 
@@ -218,7 +219,8 @@ export const PrefixActions: Story = {
             s3Uri: "s3://analytics-data/exports/2024/quarter-1/"
         }),
         publicAccessAction: "make private",
-        shouldShowShareAction: true
+        shouldShowShareAction: true,
+        onRequestFiles: action("requestFiles")
     },
     render: args => <StatefulS3UriBar {...args} />
 };
@@ -653,6 +655,7 @@ function ControlledS3UriBarStory() {
                 onChangePrefixPolicy={action("changePrefixPolicy")}
                 shouldShowShareAction={false}
                 onSharePrefix={action("sharePrefix")}
+                onRequestFiles={undefined}
                 evtAction={evtAction}
             />
 
@@ -732,6 +735,7 @@ function UndefinedPrefixLockedEditingStory() {
                 onChangePrefixPolicy={action("changePrefixPolicy")}
                 shouldShowShareAction={false}
                 onSharePrefix={action("sharePrefix")}
+                onRequestFiles={undefined}
                 evtAction={evtAction}
             />
 

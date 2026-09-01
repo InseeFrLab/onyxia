@@ -58,6 +58,9 @@ export type S3UriBarProps = {
     }) => void;
     shouldShowShareAction: boolean;
     onSharePrefix: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
+    onRequestFiles:
+        | ((params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void)
+        | undefined;
     evtAction: NonPostableEvt<{
         action: "display copy feedback";
         s3Uri: S3Uri;
@@ -77,6 +80,7 @@ export function S3UriBar(props: S3UriBarProps) {
         onChangePrefixPolicy,
         shouldShowShareAction,
         onSharePrefix,
+        onRequestFiles,
         evtAction
     } = props;
 
@@ -1458,6 +1462,23 @@ export function S3UriBar(props: S3UriBarProps) {
                             </div>
                         </Tooltip>
                     )}
+                    {currentS3Uri?.isDelimiterTerminated &&
+                        onRequestFiles !== undefined && (
+                            <Tooltip title={t("request files")}>
+                                <div data-s3-uri-ignore-edit="true">
+                                    <IconButton
+                                        aria-label={t("request files")}
+                                        icon={getIconUrlByName("DriveFolderUpload")}
+                                        size="default"
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            onRequestFiles({ s3Uri: currentS3Uri });
+                                        }}
+                                        className={classes.actionButton}
+                                    />
+                                </div>
+                            </Tooltip>
+                        )}
                     {publicAccessAction !== undefined && (
                         <Tooltip title={t(publicAccessAction)}>
                             <div data-s3-uri-ignore-edit="true">
@@ -2091,6 +2112,7 @@ const { i18n } = declareComponentKeys<
     | "pinned storage location"
     | "bookmarked"
     | "share"
+    | "request files"
     | "make public"
     | "make private"
     | "edit s3 uri"

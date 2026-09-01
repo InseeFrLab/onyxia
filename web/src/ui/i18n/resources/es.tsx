@@ -1446,6 +1446,7 @@ export const translations: Translations<"es"> = {
         "pinned storage location": "Ubicación de almacenamiento fijada",
         bookmarked: "Marcado",
         share: "Compartir",
+        "request files": "Solicitar archivos",
         "make public": "Hacer público",
         "make private": "Hacer privado",
         "edit s3 uri": "Editar URI S3",

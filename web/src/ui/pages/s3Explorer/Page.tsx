@@ -271,6 +271,11 @@ function S3Explorer() {
         });
     };
 
+    const onRequestFiles = mainView.isRequestFilesEnabled
+        ? ({ s3Uri }: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
+              dialogProps.evtS3FileRequestCreationDialogOpen.post({ s3Uri })
+        : undefined;
+
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
@@ -559,6 +564,7 @@ function S3Explorer() {
                                                 mainView.profileNameForSharing
                                         });
                                     }}
+                                    onRequestFiles={onRequestFiles}
                                     evtAction={evtS3UriBarAction}
                                 />
                                 <S3ContextActionButton
@@ -696,13 +702,7 @@ function S3Explorer() {
                                             anonymousProfileName
                                         })
                                     }
-                                    onRequestFiles={({ s3Uri }) =>
-                                        dialogProps.evtS3FileRequestCreationDialogOpen.post(
-                                            {
-                                                s3Uri
-                                            }
-                                        )
-                                    }
+                                    onRequestFiles={onRequestFiles}
                                     onBookmark={
                                         isUserLoggedIn
                                             ? toggleBookmarkFromDataView
