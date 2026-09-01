@@ -79,6 +79,10 @@ const baseArgs: S3UriBarProps = {
     areHintsLoading: false,
     isBookmarked: false,
     onToggleBookmark: action("toggleBookmark"),
+    publicAccessAction: undefined,
+    onChangePrefixPolicy: action("changePrefixPolicy"),
+    shouldShowShareAction: false,
+    onSharePrefix: action("sharePrefix"),
     evtAction: Evt.create<{
         action: "display copy feedback";
         s3Uri: S3Uri;

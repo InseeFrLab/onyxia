@@ -197,12 +197,28 @@ const baseArgs: S3UriBarProps = {
     areHintsLoading: false,
     isBookmarked: false,
     onToggleBookmark: action("toggleBookmark"),
+    publicAccessAction: undefined,
+    onChangePrefixPolicy: action("changePrefixPolicy"),
+    shouldShowShareAction: false,
+    onSharePrefix: action("sharePrefix"),
     evtAction: Evt.create<{ action: "display copy feedback"; s3Uri: S3Uri }>()
 };
 
 export const NavigationMode: Story = {
     args: {
         ...baseArgs
+    },
+    render: args => <StatefulS3UriBar {...args} />
+};
+
+export const PrefixActions: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: parseS3UriBarS3Uri({
+            s3Uri: "s3://analytics-data/exports/2024/quarter-1/"
+        }),
+        publicAccessAction: "make private",
+        shouldShowShareAction: true
     },
     render: args => <StatefulS3UriBar {...args} />
 };
@@ -633,6 +649,10 @@ function ControlledS3UriBarStory() {
                     );
                     action("toggleBookmark")(currentS3Uri);
                 }}
+                publicAccessAction={undefined}
+                onChangePrefixPolicy={action("changePrefixPolicy")}
+                shouldShowShareAction={false}
+                onSharePrefix={action("sharePrefix")}
                 evtAction={evtAction}
             />
 
@@ -708,6 +728,10 @@ function UndefinedPrefixLockedEditingStory() {
                     });
                 }}
                 onToggleBookmark={undefined}
+                publicAccessAction={undefined}
+                onChangePrefixPolicy={action("changePrefixPolicy")}
+                shouldShowShareAction={false}
+                onSharePrefix={action("sharePrefix")}
                 evtAction={evtAction}
             />
 

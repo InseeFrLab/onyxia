@@ -525,6 +525,40 @@ function S3Explorer() {
                                     isBookmarked={
                                         mainView.uriBar.bookmarkStatus.isBookmarked
                                     }
+                                    publicAccessAction={
+                                        mainView.uriBar.publicAccessAction
+                                    }
+                                    onChangePrefixPolicy={async ({ action, s3Uri }) => {
+                                        const dDoProceed = new Deferred<boolean>();
+
+                                        dialogProps.evtMakePrefixPublicDialogOpen.post({
+                                            s3Uri,
+                                            action,
+                                            resolveDoProceed: dDoProceed.resolve
+                                        });
+
+                                        if (!(await dDoProceed.pr)) {
+                                            return;
+                                        }
+
+                                        s3ExplorerUiController.toggleS3UriPublicPrivatePolicy(
+                                            { s3Uri }
+                                        );
+                                    }}
+                                    shouldShowShareAction={
+                                        mainView.uriBar.shouldShowShareAction
+                                    }
+                                    onSharePrefix={({ s3Uri }) => {
+                                        assert(
+                                            mainView.profileNameForSharing !== undefined
+                                        );
+
+                                        dialogProps.evtS3SharePrefixDialogOpen.post({
+                                            s3Uri,
+                                            anonymousProfileName:
+                                                mainView.profileNameForSharing
+                                        });
+                                    }}
                                     evtAction={evtS3UriBarAction}
                                 />
                                 <S3ContextActionButton

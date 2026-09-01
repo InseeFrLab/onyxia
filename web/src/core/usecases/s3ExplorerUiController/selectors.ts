@@ -3,13 +3,13 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { type S3Uri, stringifyS3Uri, getIsInside } from "core/tools/S3Uri";
 import type { State as RootState } from "core/bootstrap";
-import { assert, type Equals } from "tsafe";
+import { assert, type Equals, id } from "tsafe";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
 import { name, type State } from "./state";
 import { getIsWithinPrefixThatHasBeenMadePublic } from "./decoupledLogic/bucketPolicies";
 import { type ObjectRendering } from "./decoupledLogic/objectRendering";
-import { stateItemToSelectorItem } from "./decoupledLogic/stateItemToSelectorItem";
+import { getPublicAccessActionAndShouldShowShareAction } from "./decoupledLogic/getPublicAccessActionAndShouldShowShareAction";
 
 export type RouteParams = {
     profile?: string;
@@ -61,6 +61,8 @@ export type MainView = {
                   isBookmarked: true;
                   isReadonly: boolean;
               };
+        publicAccessAction: "make public" | "make private" | undefined;
+        shouldShowShareAction: boolean;
     };
 
     isBackButtonDisabled: boolean;
@@ -308,12 +310,9 @@ const deletions_profile = createSelector(
     }
 );
 
-const items = createSelector(
-    listedPrefix_state,
-    uploads_profile,
-    deletions_profile,
-    createSelector(state, state => state.bucketPoliciesByBucket),
-    createSelector(s3ProfilesManagement.selectors.ambientS3Profile, s3Profile => {
+const isAnonymousS3Profile = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    s3Profile => {
         if (s3Profile === undefined) {
             return true;
         }
@@ -322,7 +321,15 @@ const items = createSelector(
             ? false
             : paramsOfCreateS3Client.credentials === undefined;
         return isAnonymousS3Profile;
-    }),
+    }
+);
+
+const items = createSelector(
+    listedPrefix_state,
+    uploads_profile,
+    deletions_profile,
+    createSelector(state, state => state.bucketPoliciesByBucket),
+    isAnonymousS3Profile,
     createSelector(
         profileName_anonymous,
         profileName_anonymous => profileName_anonymous !== undefined
@@ -348,13 +355,54 @@ const items = createSelector(
             uploads: uploads_profile
         });
 
-        const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(item =>
-            stateItemToSelectorItem({
-                item,
-                isSharingPublicFolderFeatureEnabled,
-                bucketPoliciesByBucket,
-                isAnonymousS3Profile
-            })
+        const items_actual: MainView.Item[] = listedPrefix_state.current.items.map(
+            item => {
+                switch (item.type) {
+                    case "object":
+                        return id<MainView.Item.Object>({
+                            type: "object",
+                            displayName: (() => {
+                                const keyBasename = item.s3Uri.keySegments.at(-1);
+
+                                assert(keyBasename !== undefined);
+
+                                return keyBasename;
+                            })(),
+                            s3Uri: item.s3Uri,
+                            uploadProgressPercent: undefined,
+                            isDeleting: false,
+                            lastModified: item.lastModified,
+                            size: item.size
+                        });
+                    case "prefix": {
+                        const { publicAccessAction, shouldShowShareAction } =
+                            getPublicAccessActionAndShouldShowShareAction({
+                                s3Uri: item.s3Uri,
+                                bucketPoliciesByBucket,
+                                isAnonymousS3Profile,
+                                isSharingPublicFolderFeatureEnabled
+                            });
+
+                        return id<MainView.Item.PrefixSegment>({
+                            type: "prefix segment",
+                            displayName: (() => {
+                                const lastSegment = item.s3Uri.keySegments.at(-1);
+
+                                assert(lastSegment !== undefined);
+
+                                return lastSegment;
+                            })(),
+                            s3Uri: item.s3Uri,
+                            uploadProgressPercent: undefined,
+                            isDeleting: false,
+                            publicAccessAction,
+                            shouldShowShareAction
+                        });
+                    }
+                    default:
+                        assert<Equals<typeof item, never>>(false);
+                }
+            }
         );
 
         const items: MainView.Item[] = [];
@@ -545,12 +593,21 @@ const uriBar = createSelector(
     bookmarks,
     listedPrefix,
     isListing,
+    createSelector(state, state => state.bucketPoliciesByBucket),
+    isAnonymousS3Profile,
+    createSelector(
+        profileName_anonymous,
+        profileName_anonymous => profileName_anonymous !== undefined
+    ),
     (
         s3Uri,
         s3Uri_publicPrefix,
         bookmarks,
         listedPrefix,
-        isListing
+        isListing,
+        bucketPoliciesByBucket,
+        isAnonymousS3Profile,
+        isSharingPublicFolderFeatureEnabled
     ): MainView["uriBar"] => {
         const sortHints = (
             hints: MainView["uriBar"]["hints"]
@@ -585,7 +642,9 @@ const uriBar = createSelector(
                 ),
                 bookmarkStatus: {
                     isBookmarked: false
-                }
+                },
+                publicAccessAction: undefined,
+                shouldShowShareAction: false
             };
         }
 
@@ -655,7 +714,9 @@ const uriBar = createSelector(
             return {
                 s3Uri: { s3Uri, s3Uri_publicPrefix },
                 hints: sortHints(hints),
-                bookmarkStatus
+                bookmarkStatus,
+                publicAccessAction: undefined,
+                shouldShowShareAction: false
             };
         }
 
@@ -697,10 +758,24 @@ const uriBar = createSelector(
             }
         });
 
+        const { publicAccessAction, shouldShowShareAction } = !s3Uri.isDelimiterTerminated
+            ? {
+                  publicAccessAction: undefined,
+                  shouldShowShareAction: false
+              }
+            : getPublicAccessActionAndShouldShowShareAction({
+                  s3Uri: s3Uri,
+                  bucketPoliciesByBucket,
+                  isAnonymousS3Profile,
+                  isSharingPublicFolderFeatureEnabled
+              });
+
         return {
             s3Uri: { s3Uri, s3Uri_publicPrefix },
             hints: sortHints(hints),
-            bookmarkStatus
+            bookmarkStatus,
+            publicAccessAction,
+            shouldShowShareAction
         };
     }
 );
