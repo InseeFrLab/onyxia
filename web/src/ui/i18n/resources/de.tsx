@@ -1360,6 +1360,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "pinned storage location": "Angehefteter Speicherort",
         bookmarked: "Als Lesezeichen gespeichert",
         share: "Teilen",
+        "request files": "Dateien anfordern",
         "make public": "Öffentlich machen",
         "make private": "Privat machen",
         "edit s3 uri": "S3-URI bearbeiten",

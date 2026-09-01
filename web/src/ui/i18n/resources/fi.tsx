@@ -1330,6 +1330,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "pinned storage location": "Kiinnitetty tallennussijainti",
         bookmarked: "Kirjanmerkitty",
         share: "Jaa",
+        "request files": "Pyydä tiedostoja",
         "make public": "Tee julkiseksi",
         "make private": "Tee yksityiseksi",
         "edit s3 uri": "Muokkaa S3-URIa",

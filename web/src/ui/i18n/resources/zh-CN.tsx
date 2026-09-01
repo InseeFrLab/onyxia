@@ -1269,6 +1269,7 @@ ${
         "pinned storage location": "已固定的存储位置",
         bookmarked: "已添加书签",
         share: "共享",
+        "request files": "请求文件",
         "make public": "公开",
         "make private": "设为私有",
         "edit s3 uri": "编辑 S3 URI",

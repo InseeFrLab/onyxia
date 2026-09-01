@@ -1347,6 +1347,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "pinned storage location": "Vastgezette opslaglocatie",
         bookmarked: "Bladwijzer",
         share: "Delen",
+        "request files": "Bestanden aanvragen",
         "make public": "Openbaar maken",
         "make private": "Privé maken",
         "edit s3 uri": "S3-URI bewerken",

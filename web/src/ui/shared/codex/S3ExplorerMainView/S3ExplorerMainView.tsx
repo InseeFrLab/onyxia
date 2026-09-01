@@ -89,7 +89,9 @@ export type S3ExplorerMainViewProps = {
         anonymousProfileName: string;
     }) => void;
 
-    onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
+    onRequestFiles:
+        | ((params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void)
+        | undefined;
 
     onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
@@ -585,7 +587,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const requestFilesForPrefix = useConstCallback(
         (item: S3ExplorerMainViewProps.Item.PrefixSegment) => {
-            if (!getIsItemActionAvailable(item)) {
+            if (!getIsItemActionAvailable(item) || onRequestFiles === undefined) {
                 return;
             }
 
@@ -865,6 +867,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             }
                             requestFiles={
                                 selectedPrefixForSingleItemAction === undefined ||
+                                onRequestFiles === undefined ||
                                 !getIsItemActionAvailable(
                                     selectedPrefixForSingleItemAction
                                 )
@@ -1199,7 +1202,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                             : undefined
                                                     }
                                                     onRequestFiles={
-                                                        item.type === "prefix segment"
+                                                        item.type === "prefix segment" &&
+                                                        onRequestFiles !== undefined
                                                             ? onRequestFilesFactory(
                                                                   itemKey
                                                               )

@@ -2,6 +2,7 @@ import type { Thunks } from "core/bootstrap";
 import { actions, type PresignedPost } from "./state";
 import { privateSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
+import { getIsKnownS3HttpUrl } from "./decoupledLogic/getIsKnownS3HttpUrl";
 
 const fileByUploadId = new Map<string, File>();
 const xhrByUploadId = new Map<string, XMLHttpRequest>();
@@ -11,7 +12,17 @@ export const thunks = {
         (params: { presignedPost: PresignedPost }) =>
         (...args) => {
             const { presignedPost } = params;
-            const [dispatch] = args;
+            const [dispatch, , rootContext] = args;
+
+            if (
+                !getIsKnownS3HttpUrl({
+                    s3Config: rootContext.s3Config,
+                    s3HttpUrl: presignedPost.url
+                })
+            ) {
+                alert("Not allowed");
+                throw new Error();
+            }
 
             for (const xhr of [...xhrByUploadId.values()]) {
                 xhr.abort();

@@ -1333,6 +1333,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "pinned storage location": "Pinned storage location",
         bookmarked: "Bookmarked",
         share: "Share",
+        "request files": "Request files",
         "make public": "Make public",
         "make private": "Make private",
         "edit s3 uri": "Edit S3 URI",

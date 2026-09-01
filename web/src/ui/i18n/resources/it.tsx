@@ -1344,6 +1344,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "pinned storage location": "Posizione di archiviazione fissata",
         bookmarked: "Nei segnalibri",
         share: "Condividi",
+        "request files": "Richiedi file",
         "make public": "Rendi pubblico",
         "make private": "Rendi privato",
         "edit s3 uri": "Modifica URI S3",

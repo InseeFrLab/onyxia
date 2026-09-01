@@ -1338,6 +1338,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "pinned storage location": "Festet lagringssted",
         bookmarked: "Bokmerket",
         share: "Del",
+        "request files": "Be om filer",
         "make public": "Gjør offentlig",
         "make private": "Gjør privat",
         "edit s3 uri": "Rediger S3-URI",

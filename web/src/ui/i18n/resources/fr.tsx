@@ -1357,6 +1357,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "pinned storage location": "Emplacement de stockage épinglé",
         bookmarked: "Dans les favoris",
         share: "Partager",
+        "request files": "Demander des fichiers",
         "make public": "Rendre public",
         "make private": "Rendre privé",
         "edit s3 uri": "Modifier l'URI S3",

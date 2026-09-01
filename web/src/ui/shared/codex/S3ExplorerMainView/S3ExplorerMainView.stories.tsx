@@ -421,6 +421,19 @@ export const ListingInProgress: Story = {
     )
 };
 
+export const RequestFilesDisabled: Story = {
+    args: {
+        ...placeholderArgs,
+        listedPrefix: toListedItems(baseNodes, defaultPrefix),
+        onRequestFiles: undefined
+    },
+    render: args => (
+        <div style={{ maxWidth: 1200, padding: 24 }}>
+            <S3ExplorerMainView {...args} />
+        </div>
+    )
+};
+
 export const EmptyPrefix: Story = {
     args: {
         isListing: false,

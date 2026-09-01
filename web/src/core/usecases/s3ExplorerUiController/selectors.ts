@@ -10,6 +10,8 @@ import { name, type State } from "./state";
 import { getIsWithinPrefixThatHasBeenMadePublic } from "./decoupledLogic/bucketPolicies";
 import { type ObjectRendering } from "./decoupledLogic/objectRendering";
 import { getPublicAccessActionAndShouldShowShareAction } from "./decoupledLogic/getPublicAccessActionAndShouldShowShareAction";
+import { getRootContext } from "core/rootContext";
+import { getIsKnownS3HttpUrl } from "core/usecases/s3FileRequestUiController/decoupledLogic/getIsKnownS3HttpUrl";
 
 export type RouteParams = {
     profile?: string;
@@ -99,6 +101,8 @@ export type MainView = {
     commandLogsEntries: State.CommandLogsEntry[];
 
     profileNameForSharing: string | undefined;
+
+    isRequestFilesEnabled: boolean;
 };
 
 export namespace MainView {
@@ -785,6 +789,20 @@ const commandLogsEntries = createSelector(
     (state): MainView["commandLogsEntries"] => state.commandLogsEntries
 );
 
+const isRequestFilesEnabled = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    (s3Profile): MainView["isRequestFilesEnabled"] => {
+        if (s3Profile === undefined) {
+            return false;
+        }
+
+        return getIsKnownS3HttpUrl({
+            s3HttpUrl: s3Profile.paramsOfCreateS3Client.url,
+            s3Config: getRootContext().s3Config
+        });
+    }
+);
+
 const mainView = createSelector(
     profileSelect,
     bookmarks,
@@ -798,6 +816,7 @@ const mainView = createSelector(
     listedPrefix,
     commandLogsEntries,
     profileName_anonymous,
+    isRequestFilesEnabled,
     (
         profileSelect,
         bookmarks,
@@ -810,7 +829,8 @@ const mainView = createSelector(
         isListing,
         listedPrefix,
         commandLogsEntries,
-        profileNameForSharing
+        profileNameForSharing,
+        isRequestFilesEnabled
     ): MainView => ({
         profileSelect,
         bookmarks,
@@ -823,7 +843,8 @@ const mainView = createSelector(
         isListing,
         listedPrefix,
         commandLogsEntries,
-        profileNameForSharing
+        profileNameForSharing,
+        isRequestFilesEnabled
     })
 );
 
