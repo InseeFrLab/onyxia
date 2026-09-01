@@ -325,7 +325,7 @@ export const translations: Translations<"en"> = {
     },
     S3FileRequestCreationDialog: {
         description:
-            "Share this link with anyone—even someone without an account on this Onyxia instance—to let them upload files from their computer directly to this folder.",
+            "Share this link with anyone, even someone without an account on this Onyxia instance, to let them upload files from their computer directly to this folder.",
         "link settings": "Link settings",
         "link expires after": "Link expires after",
         "link validity aria label": "Upload link validity duration",
