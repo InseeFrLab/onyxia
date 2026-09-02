@@ -23,6 +23,7 @@ Its purpose is to:
 export type S3FileRequestCreationDialogProps = {
     className?: string;
     folderName: string;
+    isEmptyPrefix: boolean;
     validityDuration: S3FileRequestCreationDialogProps.ValidityDuration;
     maxObjectSize: S3FileRequestCreationDialogProps.MaxObjectSize;
     uploadPageUrl: string | undefined;
@@ -34,6 +35,7 @@ export type S3FileRequestCreationDialogProps = {
         maxObjectSize: S3FileRequestCreationDialogProps.MaxObjectSize;
     }) => void;
     retryGeneration: () => void;
+    createEmptyFolder: () => void;
 };
 
 export namespace S3FileRequestCreationDialogProps {
@@ -64,6 +66,11 @@ can be shared with anyone, including someone without an account, to upload files
 to this folder.
 
 Long folder names must wrap without breaking the layout.
+
+When `isEmptyPrefix` is false, display a warning that files uploaded through the
+link will replace existing files with the same name and path. The warning must
+offer an accessible button styled as a link that invokes `createEmptyFolder()`.
+Do not display the warning when `isEmptyPrefix` is true.
 
 ## Link Settings
 

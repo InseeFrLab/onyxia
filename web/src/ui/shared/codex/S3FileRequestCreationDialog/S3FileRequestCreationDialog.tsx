@@ -1,4 +1,5 @@
 import FormControl from "@mui/material/FormControl";
+import MuiLink from "@mui/material/Link";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { alpha } from "@mui/material/styles";
@@ -17,6 +18,7 @@ import {
 export type S3FileRequestCreationDialogProps = {
     className?: string;
     folderName: string;
+    isEmptyPrefix: boolean;
     validityDuration: S3FileRequestCreationDialogProps.ValidityDuration;
     maxObjectSize: S3FileRequestCreationDialogProps.MaxObjectSize;
     uploadPageUrl: string | undefined;
@@ -28,6 +30,7 @@ export type S3FileRequestCreationDialogProps = {
         maxObjectSize: S3FileRequestCreationDialogProps.MaxObjectSize;
     }) => void;
     retryGeneration: () => void;
+    createEmptyFolder: () => void;
 };
 
 export namespace S3FileRequestCreationDialogProps {
@@ -56,13 +59,15 @@ export function S3FileRequestCreationDialog(props: S3FileRequestCreationDialogPr
     const {
         className,
         folderName,
+        isEmptyPrefix,
         validityDuration,
         maxObjectSize,
         uploadPageUrl,
         errorMessage,
         changeValidityDuration,
         changeMaxObjectSize,
-        retryGeneration
+        retryGeneration,
+        createEmptyFolder
     } = props;
 
     const { t } = useTranslation({ S3FileRequestCreationDialog });
@@ -79,6 +84,24 @@ export function S3FileRequestCreationDialog(props: S3FileRequestCreationDialogPr
                 <Text typo="body 1" className={classes.description}>
                     {t("description")}
                 </Text>
+                {!isEmptyPrefix && (
+                    <div className={classes.overwriteWarning} role="note">
+                        <Icon icon={getIconUrlByName("WarningAmber")} size="small" />
+                        <div className={classes.overwriteWarningContent}>
+                            <Text typo="body 2" className={classes.overwriteWarningText}>
+                                {t("overwrite warning")}
+                            </Text>
+                            <MuiLink
+                                component="button"
+                                type="button"
+                                className={classes.createEmptyFolderLink}
+                                onClick={createEmptyFolder}
+                            >
+                                {t("create empty folder instead")}
+                            </MuiLink>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className={classes.settingsSection}>
@@ -247,6 +270,37 @@ const useStyles = tss.withName({ S3FileRequestCreationDialog }).create(({ theme 
         lineHeight: 1.55,
         maxWidth: 760
     },
+    overwriteWarning: {
+        display: "grid",
+        gridTemplateColumns: "24px minmax(0, 1fr)",
+        alignItems: "start",
+        gap: theme.spacing(1.5),
+        marginTop: theme.spacing(2.5),
+        padding: theme.spacing(2),
+        borderRadius: 10,
+        color: theme.colors.useCases.alertSeverity.warning.main,
+        border: `1px solid ${alpha(
+            theme.colors.useCases.alertSeverity.warning.main,
+            0.35
+        )}`,
+        backgroundColor: alpha(theme.colors.useCases.alertSeverity.warning.main, 0.08)
+    },
+    overwriteWarningContent: {
+        minWidth: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: theme.spacing(1)
+    },
+    overwriteWarningText: {
+        color: theme.colors.useCases.typography.textPrimary,
+        lineHeight: 1.5
+    },
+    createEmptyFolderLink: {
+        ...theme.typography.variants["label 1"].style,
+        color: theme.colors.useCases.typography.textFocus,
+        textAlign: "left"
+    },
     settingsSection: {
         display: "flex",
         flexDirection: "column",
@@ -343,6 +397,8 @@ const useStyles = tss.withName({ S3FileRequestCreationDialog }).create(({ theme 
 
 const { i18n } = declareComponentKeys<
     | "description"
+    | "overwrite warning"
+    | "create empty folder instead"
     | "link settings"
     | "link expires after"
     | "link validity aria label"
