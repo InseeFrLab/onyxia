@@ -231,9 +231,7 @@ export const translations: Translations<"nl"> = {
         uploaded: "Geüpload",
         "upload failed": "Upload mislukt",
         "cancel upload": "Upload annuleren",
-        "retry upload": "Upload opnieuw proberen",
-        "privacy note":
-            "Alleen de bestanden die je kiest, worden via deze link verzonden."
+        "retry upload": "Upload opnieuw proberen"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Object delen"

@@ -235,8 +235,7 @@ export const translations: Translations<"de"> = {
         uploaded: "Hochgeladen",
         "upload failed": "Upload fehlgeschlagen",
         "cancel upload": "Upload abbrechen",
-        "retry upload": "Upload wiederholen",
-        "privacy note": "Nur die von Ihnen ausgewählten Dateien werden gesendet."
+        "retry upload": "Upload wiederholen"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Objekt teilen"

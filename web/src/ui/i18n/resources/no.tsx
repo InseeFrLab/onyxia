@@ -227,8 +227,7 @@ export const translations: Translations<"no"> = {
         uploaded: "Lastet opp",
         "upload failed": "Opplastingen mislyktes",
         "cancel upload": "Avbryt opplasting",
-        "retry upload": "Prøv opplastingen på nytt",
-        "privacy note": "Bare filene du velger, sendes via denne lenken."
+        "retry upload": "Prøv opplastingen på nytt"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Del objekt"

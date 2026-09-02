@@ -430,11 +430,6 @@ export function S3FileRequest(props: S3FileRequestProps) {
                             </div>
                         </section>
                     )}
-
-                    <div className={classes.privacyNote}>
-                        <Icon icon={getIconUrlByName("LockOutlined")} size="small" />
-                        <span>{t("privacy note")}</span>
-                    </div>
                 </section>
             </div>
         </div>
@@ -774,15 +769,6 @@ const useStyles = tss.withName({ S3FileRequest }).create(({ theme }) => ({
         alignItems: "center",
         justifyContent: "center",
         color: theme.colors.useCases.alertSeverity.success.main
-    },
-    privacyNote: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: theme.spacing(1),
-        textAlign: "center",
-        color: theme.colors.useCases.typography.textSecondary,
-        ...theme.typography.variants["caption"].style
     }
 }));
 
@@ -806,6 +792,5 @@ const { i18n } = declareComponentKeys<
     | "upload failed"
     | "cancel upload"
     | "retry upload"
-    | "privacy note"
 >()({ S3FileRequest });
 export type I18n = typeof i18n;

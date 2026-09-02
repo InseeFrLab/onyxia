@@ -207,8 +207,7 @@ export const translations: Translations<"zh-CN"> = {
         uploaded: "已上传",
         "upload failed": "上传失败",
         "cancel upload": "取消上传",
-        "retry upload": "重试上传",
-        "privacy note": "只有你选择的文件会通过此链接发送。"
+        "retry upload": "重试上传"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"

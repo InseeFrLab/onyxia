@@ -230,8 +230,7 @@ export const translations: Translations<"it"> = {
         uploaded: "Caricato",
         "upload failed": "Caricamento non riuscito",
         "cancel upload": "Annulla caricamento",
-        "retry upload": "Riprova il caricamento",
-        "privacy note": "Tramite questo link vengono inviati solo i file scelti."
+        "retry upload": "Riprova il caricamento"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Condividi oggetto"

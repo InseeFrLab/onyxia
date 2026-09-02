@@ -227,8 +227,7 @@ export const translations: Translations<"fi"> = {
         uploaded: "Ladattu",
         "upload failed": "Lataus epäonnistui",
         "cancel upload": "Peruuta lataus",
-        "retry upload": "Yritä latausta uudelleen",
-        "privacy note": "Vain valitsemasi tiedostot lähetetään tämän linkin kautta."
+        "retry upload": "Yritä latausta uudelleen"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Jaa objekti"

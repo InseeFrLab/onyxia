@@ -381,8 +381,7 @@ export const translations: Translations<"en"> = {
         uploaded: "Uploaded",
         "upload failed": "Upload failed",
         "cancel upload": "Cancel upload",
-        "retry upload": "Retry upload",
-        "privacy note": "Only the files you choose are sent through this link."
+        "retry upload": "Retry upload"
     },
     S3ShareObjectDialogContainer: {
         "dialog title": "Share object"
