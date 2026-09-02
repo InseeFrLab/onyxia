@@ -474,6 +474,9 @@ export const translations: Translations<"de"> = {
     S3FileRequestCreationDialog: {
         description:
             "Teilen Sie diesen Link mit beliebigen Personen, auch mit Personen ohne Konto auf dieser Onyxia-Instanz, damit sie Dateien von ihrem Computer direkt in diesen Ordner hochladen können.",
+        "overwrite warning":
+            "Über diesen Link hochgeladene Dateien werden direkt in diesem Ordner gespeichert. Wenn eine hochgeladene Datei denselben Namen und Pfad wie eine vorhandene Datei hat, wird die vorhandene Datei ersetzt.",
+        "create empty folder instead": "Stattdessen einen leeren Ordner erstellen",
         "link settings": "Linkeinstellungen",
         "link expires after": "Link läuft ab nach",
         "link validity aria label": "Gültigkeitsdauer des Upload-Links",

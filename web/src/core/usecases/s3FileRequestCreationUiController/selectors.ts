@@ -10,6 +10,7 @@ export type MainView = {
     maxObjectSize: State.MaxObjectSize;
     presignedPost: State["presignedPost"];
     errorMessage: string | undefined;
+    isEmptyPrefix: boolean;
 };
 
 const mainView = createSelector(
@@ -19,13 +20,15 @@ const mainView = createSelector(
         validityDuration,
         maxObjectSize,
         presignedPost,
-        errorMessage
+        errorMessage,
+        isEmptyPrefix
     }): MainView => ({
         folderName: s3Uri.keySegments.at(-1) ?? s3Uri.bucket,
         validityDuration,
         maxObjectSize,
         presignedPost,
-        errorMessage
+        errorMessage,
+        isEmptyPrefix
     })
 );
 

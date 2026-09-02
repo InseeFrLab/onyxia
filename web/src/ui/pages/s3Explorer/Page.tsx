@@ -271,9 +271,37 @@ function S3Explorer() {
         });
     };
 
+    const openDirectoryCreationDialog = async () => {
+        assert(!mainView.directoryCreationButton.isDisabled);
+
+        const dPrefixSegment = new Deferred<string | undefined>();
+
+        dialogProps.evtDirectoryCreationDialogOpen.post({
+            exclude: mainView.directoryCreationButton.exclude,
+            resolveDoProceed: result => {
+                dPrefixSegment.resolve(
+                    result.doProceed ? result.prefixSegment : undefined
+                );
+            }
+        });
+
+        const prefixSegment = await dPrefixSegment.pr;
+
+        if (prefixSegment === undefined) {
+            return;
+        }
+
+        s3ExplorerUiController.createDirectory({ prefixSegment });
+    };
+
     const onRequestFiles = mainView.isRequestFilesEnabled
         ? ({ s3Uri }: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
-              dialogProps.evtS3FileRequestCreationDialogOpen.post({ s3Uri })
+              dialogProps.evtS3FileRequestCreationDialogOpen.post({
+                  s3Uri,
+                  onCreateEmptyFolder: () => {
+                      void openDirectoryCreationDialog();
+                  }
+              })
         : undefined;
 
     return (
@@ -581,30 +609,8 @@ function S3Explorer() {
                                     icon={getIconUrlByName("CreateNewFolderOutlined")}
                                     label={t("create new folder")}
                                     disabled={mainView.directoryCreationButton.isDisabled}
-                                    onClick={async () => {
-                                        assert(
-                                            !mainView.directoryCreationButton.isDisabled
-                                        );
-
-                                        const dPrefixSegment = new Deferred<string>();
-
-                                        dialogProps.evtDirectoryCreationDialogOpen.post({
-                                            exclude:
-                                                mainView.directoryCreationButton.exclude,
-                                            resolveDoProceed: params => {
-                                                if (!params.doProceed) {
-                                                    return;
-                                                }
-
-                                                dPrefixSegment.resolve(
-                                                    params.prefixSegment
-                                                );
-                                            }
-                                        });
-
-                                        s3ExplorerUiController.createDirectory({
-                                            prefixSegment: await dPrefixSegment.pr
-                                        });
+                                    onClick={() => {
+                                        void openDirectoryCreationDialog();
                                     }}
                                 />
                             </div>

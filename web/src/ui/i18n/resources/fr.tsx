@@ -469,6 +469,9 @@ export const translations: Translations<"fr"> = {
     S3FileRequestCreationDialog: {
         description:
             "Partagez ce lien avec n’importe qui, même une personne sans compte sur cette instance Onyxia, pour lui permettre de téléverser des fichiers depuis son ordinateur directement dans ce dossier.",
+        "overwrite warning":
+            "Les fichiers téléversés via ce lien sont enregistrés directement dans ce dossier. Si un fichier téléversé a le même nom et le même chemin qu’un fichier existant, ce dernier sera remplacé.",
+        "create empty folder instead": "Créer plutôt un dossier vide",
         "link settings": "Paramètres du lien",
         "link expires after": "Expiration du lien",
         "link validity aria label": "Durée de validité du lien de téléversement",

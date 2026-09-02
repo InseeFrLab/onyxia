@@ -12,6 +12,7 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 export type S3FileRequestCreationDialogProps = {
     evtOpen: Evt<{
         s3Uri: S3Uri.TerminatedByDelimiter;
+        onCreateEmptyFolder: () => void;
     }>;
 };
 
@@ -38,7 +39,17 @@ function S3FileRequestCreationDialogContainer(props: S3FileRequestCreationDialog
         <Dialog
             maxWidth="xl"
             title={t("dialog title")}
-            body={state === undefined ? undefined : <Body s3Uri={state.s3Uri} />}
+            body={
+                state === undefined ? undefined : (
+                    <Body
+                        s3Uri={state.s3Uri}
+                        onCreateEmptyFolder={() => {
+                            setState(undefined);
+                            state.onCreateEmptyFolder();
+                        }}
+                    />
+                )
+            }
             isOpen={state !== undefined}
             onClose={() => setState(undefined)}
             showCloseButton
@@ -48,14 +59,15 @@ function S3FileRequestCreationDialogContainer(props: S3FileRequestCreationDialog
 
 const Body = withLoader<{
     s3Uri: S3Uri.TerminatedByDelimiter;
+    onCreateEmptyFolder: () => void;
 }>({
     loader: async ({ s3Uri }) => {
         const core = await getCore();
 
-        core.functions.s3FileRequestCreationUiController.load({ s3Uri });
+        await core.functions.s3FileRequestCreationUiController.load({ s3Uri });
     },
     FallbackComponent: () => null,
-    Component: () => {
+    Component: ({ onCreateEmptyFolder }) => {
         const mainView = useCoreState("s3FileRequestCreationUiController", "mainView");
         const {
             functions: { s3FileRequestCreationUiController }
@@ -74,6 +86,7 @@ const Body = withLoader<{
         return (
             <S3FileRequestCreationDialog_headless
                 folderName={mainView.folderName}
+                isEmptyPrefix={mainView.isEmptyPrefix}
                 validityDuration={mainView.validityDuration}
                 maxObjectSize={mainView.maxObjectSize}
                 uploadPageUrl={uploadPageUrl}
@@ -85,6 +98,7 @@ const Body = withLoader<{
                     s3FileRequestCreationUiController.changeMaxObjectSize
                 }
                 retryGeneration={s3FileRequestCreationUiController.retryGeneration}
+                createEmptyFolder={onCreateEmptyFolder}
             />
         );
     }

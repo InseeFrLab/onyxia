@@ -461,6 +461,9 @@ export const translations: Translations<"no"> = {
     S3FileRequestCreationDialog: {
         description:
             "Del denne lenken med hvem som helst, også personer uten konto på denne Onyxia-instansen, slik at de kan laste opp filer fra datamaskinen sin direkte til denne mappen.",
+        "overwrite warning":
+            "Filer som lastes opp via denne lenken, lagres direkte i denne mappen. Hvis en opplastet fil har samme navn og bane som en eksisterende fil, blir den eksisterende filen erstattet.",
+        "create empty folder instead": "Opprett en tom mappe i stedet",
         "link settings": "Lenkeinnstillinger",
         "link expires after": "Lenken utløper etter",
         "link validity aria label": "Opplastingslenkens gyldighet",

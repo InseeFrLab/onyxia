@@ -431,6 +431,9 @@ export const translations: Translations<"zh-CN"> = {
     S3FileRequestCreationDialog: {
         description:
             "将此链接分享给任何人，即使对方没有此 Onyxia 实例的帐户，也可以从计算机将文件直接上传到此文件夹。",
+        "overwrite warning":
+            "通过此链接上传的文件会直接保存到此文件夹。如果上传文件的名称和路径与现有文件相同，现有文件将被替换。",
+        "create empty folder instead": "改为创建一个空文件夹",
         "link settings": "链接设置",
         "link expires after": "链接有效期",
         "link validity aria label": "上传链接的有效期",

@@ -10,17 +10,36 @@ let nextGenerationId = 0;
 export const thunks = {
     load:
         (params: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
-        (...args) => {
+        async (...args) => {
+            const { s3Uri } = params;
+
             const [dispatch, getState] = args;
 
             const s3Profile = s3ProfilesManagement.selectors.ambientS3Profile(getState());
 
             assert(s3Profile !== undefined);
 
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({
+                    profileName: s3Profile.profileName
+                })
+            );
+
+            const isEmptyPrefix = await (async () => {
+                const result = await s3Client.listObjects({ s3Uri });
+
+                if (!result.isSuccess) {
+                    return false;
+                }
+
+                return result.objects.length === 0 && result.prefixes.length === 0;
+            })();
+
             dispatch(
                 actions.loaded({
-                    s3Uri: params.s3Uri,
-                    profileName: s3Profile.profileName
+                    s3Uri,
+                    profileName: s3Profile.profileName,
+                    isEmptyPrefix
                 })
             );
         },

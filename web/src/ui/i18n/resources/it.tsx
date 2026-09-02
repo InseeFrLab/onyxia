@@ -465,6 +465,9 @@ export const translations: Translations<"it"> = {
     S3FileRequestCreationDialog: {
         description:
             "Condividi questo link con chiunque, anche con chi non ha un account su questa istanza Onyxia, per consentire di caricare file dal proprio computer direttamente in questa cartella.",
+        "overwrite warning":
+            "I file caricati tramite questo link vengono salvati direttamente in questa cartella. Se un file caricato ha lo stesso nome e percorso di un file esistente, il file esistente verrà sostituito.",
+        "create empty folder instead": "Crea invece una cartella vuota",
         "link settings": "Impostazioni del link",
         "link expires after": "Il link scade dopo",
         "link validity aria label": "Durata di validità del link di caricamento",

@@ -16,6 +16,7 @@ export type State = {
     generationId: number | undefined;
     presignedPost: PresignedPost | undefined;
     errorMessage: string | undefined;
+    isEmptyPrefix: boolean;
 };
 
 export namespace State {
@@ -38,6 +39,7 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     s3Uri: S3Uri.TerminatedByDelimiter;
                     profileName: string;
+                    isEmptyPrefix: boolean;
                 };
             }
         ) =>

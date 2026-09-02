@@ -463,6 +463,9 @@ export const translations: Translations<"nl"> = {
     S3FileRequestCreationDialog: {
         description:
             "Deel deze link met iedereen, ook met iemand zonder account op deze Onyxia-instantie, zodat diegene bestanden vanaf een computer rechtstreeks naar deze map kan uploaden.",
+        "overwrite warning":
+            "Bestanden die via deze link worden geüpload, worden rechtstreeks in deze map opgeslagen. Als een geüpload bestand dezelfde naam en hetzelfde pad heeft als een bestaand bestand, wordt het bestaande bestand vervangen.",
+        "create empty folder instead": "Maak in plaats daarvan een lege map",
         "link settings": "Linkinstellingen",
         "link expires after": "Link verloopt na",
         "link validity aria label": "Geldigheidsduur van de uploadlink",

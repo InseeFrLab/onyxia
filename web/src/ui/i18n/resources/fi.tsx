@@ -458,6 +458,9 @@ export const translations: Translations<"fi"> = {
     S3FileRequestCreationDialog: {
         description:
             "Jaa tämä linkki kenelle tahansa, myös henkilölle, jolla ei ole tiliä tässä Onyxia-instanssissa, jotta hän voi ladata tiedostoja tietokoneeltaan suoraan tähän kansioon.",
+        "overwrite warning":
+            "Tämän linkin kautta ladatut tiedostot tallennetaan suoraan tähän kansioon. Jos ladatulla tiedostolla on sama nimi ja polku kuin olemassa olevalla tiedostolla, olemassa oleva tiedosto korvataan.",
+        "create empty folder instead": "Luo sen sijaan tyhjä kansio",
         "link settings": "Linkin asetukset",
         "link expires after": "Linkki vanhenee tämän ajan kuluttua",
         "link validity aria label": "Lähetyslinkin voimassaoloaika",
