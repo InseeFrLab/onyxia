@@ -363,6 +363,8 @@ export const translations: Translations<"en"> = {
         "page title": "Upload requested files",
         "page description":
             "Someone shared this secure link so you can send files directly to their storage space. You do not need an Onyxia account.",
+        "s3 server destination": "You are uploading on this S3 server:",
+        "s3 location destination": "At this location:",
         "expires on": ({ date }) => `This link expires on ${date}`,
         "link expired": "This upload link has expired",
         "link expired description":

@@ -3,6 +3,7 @@ import { actions, type PresignedPost } from "./state";
 import { privateSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
 import { parsePresignedPostUrl } from "./decoupledLogic/getIsKnownS3HttpUrl";
+import { getPresignedPostKeyPrefix } from "./decoupledLogic/getPresignedPostKeyPrefix";
 
 type FileToUpload = {
     file: File;
@@ -19,15 +20,23 @@ export const thunks = {
             const { presignedPost } = params;
             const [dispatch, , rootContext] = args;
 
-            if (
-                !parsePresignedPostUrl({
-                    s3Config: rootContext.s3Config,
-                    presignedPost_url: presignedPost.url
-                }).isKnownS3Server
-            ) {
+            const parsedPresignedPostUrl = parsePresignedPostUrl({
+                s3Config: rootContext.s3Config,
+                presignedPost_url: presignedPost.url
+            });
+
+            if (!parsedPresignedPostUrl.isKnownS3Server) {
                 alert("Not allowed");
                 throw new Error();
             }
+
+            const { s3ServerUrl, bucket } = parsedPresignedPostUrl;
+
+            const keyPrefix = getPresignedPostKeyPrefix({
+                presignedPost_fields: presignedPost.fields
+            });
+
+            const s3UriStr = `s3://${bucket}/${keyPrefix === undefined ? "" : keyPrefix}`;
 
             for (const xhr of [...xhrByUploadId.values()]) {
                 xhr.abort();
@@ -36,7 +45,13 @@ export const thunks = {
             xhrByUploadId.clear();
             fileToUploadByUploadId.clear();
 
-            dispatch(actions.loaded({ presignedPost }));
+            dispatch(
+                actions.loaded({
+                    presignedPost,
+                    s3ServerUrl,
+                    s3UriStr
+                })
+            );
         },
     uploadFiles:
         (params: { files: readonly FileToUpload[] }) =>

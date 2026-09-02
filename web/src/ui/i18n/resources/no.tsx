@@ -209,6 +209,8 @@ export const translations: Translations<"no"> = {
         "page title": "Last opp forespurte filer",
         "page description":
             "Noen har delt denne sikre lenken slik at du kan sende filer direkte til lagringsområdet deres. Du trenger ikke en Onyxia-konto.",
+        "s3 server destination": "Du laster opp til denne S3-serveren:",
+        "s3 location destination": "På denne plasseringen:",
         "expires on": ({ date }) => `Denne lenken utløper ${date}`,
         "link expired": "Denne opplastingslenken har utløpt",
         "link expired description":

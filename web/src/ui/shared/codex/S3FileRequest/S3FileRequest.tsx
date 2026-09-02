@@ -25,6 +25,8 @@ import {
 export type S3FileRequestProps = {
     className?: string;
     expirationTime: number;
+    s3ServerUrl: string;
+    s3UriStr: string;
     uploads: readonly S3FileRequestProps.Upload[];
     onUploadFiles: (params: {
         files: readonly S3FileRequestProps.FileToUpload[];
@@ -53,6 +55,8 @@ export function S3FileRequest(props: S3FileRequestProps) {
     const {
         className,
         expirationTime,
+        s3ServerUrl,
+        s3UriStr,
         uploads,
         onUploadFiles,
         onCancelUpload,
@@ -183,6 +187,28 @@ export function S3FileRequest(props: S3FileRequestProps) {
                             </Text>
                         </div>
                     </header>
+
+                    <div className={classes.destination}>
+                        <div className={classes.destinationRow}>
+                            <span className={classes.destinationLabel}>
+                                {t("s3 server destination")}
+                            </span>
+                            <code
+                                className={classes.destinationValue}
+                                title={s3ServerUrl}
+                            >
+                                {s3ServerUrl}
+                            </code>
+                        </div>
+                        <div className={classes.destinationRow}>
+                            <span className={classes.destinationLabel}>
+                                {t("s3 location destination")}
+                            </span>
+                            <code className={classes.destinationValue} title={s3UriStr}>
+                                {s3UriStr}
+                            </code>
+                        </div>
+                    </div>
 
                     <div
                         className={cx(
@@ -500,6 +526,38 @@ const useStyles = tss.withName({ S3FileRequest }).create(({ theme }) => ({
         lineHeight: 1.6,
         maxWidth: 650
     },
+    destination: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1.25),
+        padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
+        borderRadius: 12,
+        border: `1px solid ${alpha(theme.colors.useCases.typography.textFocus, 0.25)}`,
+        backgroundColor: alpha(theme.colors.useCases.typography.textFocus, 0.05)
+    },
+    destinationRow: {
+        minWidth: 0,
+        display: "flex",
+        alignItems: "baseline",
+        gap: theme.spacing(1),
+        "@media (max-width: 640px)": {
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: theme.spacing(0.5)
+        }
+    },
+    destinationLabel: {
+        ...theme.typography.variants["label 1"].style,
+        flexShrink: 0,
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    destinationValue: {
+        ...theme.typography.variants["body 2"].style,
+        minWidth: 0,
+        overflowWrap: "anywhere",
+        color: theme.colors.useCases.typography.textFocus,
+        fontFamily: "monospace"
+    },
     expiration: {
         display: "flex",
         alignItems: "flex-start",
@@ -731,6 +789,8 @@ const useStyles = tss.withName({ S3FileRequest }).create(({ theme }) => ({
 const { i18n } = declareComponentKeys<
     | "page title"
     | "page description"
+    | "s3 server destination"
+    | "s3 location destination"
     | { K: "expires on"; P: { date: string }; R: string }
     | "link expired"
     | "link expired description"

@@ -24,7 +24,7 @@ async function loader() {
 }
 
 function S3FileRequestPage() {
-    const { expirationTime, uploads } = useCoreState(
+    const { expirationTime, s3ServerUrl, s3UriStr, uploads } = useCoreState(
         "s3FileRequestUiController",
         "mainView"
     );
@@ -35,6 +35,8 @@ function S3FileRequestPage() {
     return (
         <S3FileRequest
             expirationTime={expirationTime}
+            s3ServerUrl={s3ServerUrl}
+            s3UriStr={s3UriStr}
             uploads={uploads}
             onUploadFiles={({ files }) => {
                 void s3FileRequestUiController.uploadFiles({ files });
