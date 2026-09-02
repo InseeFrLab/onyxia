@@ -10,6 +10,8 @@ export type PresignedPost = S3Client.PresignedPost;
 
 export type State = {
     presignedPost: PresignedPost;
+    s3ServerUrl: string;
+    s3UriStr: string;
     uploads: State.Upload[];
 };
 
@@ -30,11 +32,24 @@ export const { reducer, actions } = createUsecaseActions({
     name,
     initialState: createObjectThatThrowsIfAccessed<State>(),
     reducers: {
-        loaded: (_state, { payload }: { payload: { presignedPost: PresignedPost } }) => {
-            const { presignedPost } = payload;
+        loaded: (
+            _state,
+            {
+                payload
+            }: {
+                payload: {
+                    presignedPost: PresignedPost;
+                    s3ServerUrl: string;
+                    s3UriStr: string;
+                };
+            }
+        ) => {
+            const { presignedPost, s3ServerUrl, s3UriStr } = payload;
 
             return id<State>({
                 presignedPost,
+                s3ServerUrl,
+                s3UriStr,
                 uploads: []
             });
         },
