@@ -208,7 +208,7 @@ export const translations: Translations<"fi"> = {
     S3FileRequest: {
         "page title": "Lataa pyydetyt tiedostot",
         "page description":
-            "Joku jakoi tämän suojatun linkin, jotta voit lähettää tiedostoja suoraan hänen tallennustilaansa. Et tarvitse Onyxia-tiliä.",
+            "Joku jakoi tämän suojatun linkin, jotta voit lähettää tiedostoja suoraan hänen tallennustilaansa.",
         "s3 server destination": "Lähetät tiedostoja tälle S3-palvelimelle:",
         "s3 location destination": "Tähän sijaintiin:",
         "expires on": ({ date }) => `Tämä linkki vanhenee ${date}`,

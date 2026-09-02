@@ -214,7 +214,7 @@ export const translations: Translations<"fr"> = {
     S3FileRequest: {
         "page title": "Envoyer les fichiers demandés",
         "page description":
-            "Une personne a partagé ce lien sécurisé afin que vous puissiez envoyer des fichiers directement dans son espace de stockage. Aucun compte Onyxia n’est nécessaire.",
+            "Une personne a partagé ce lien sécurisé afin que vous puissiez envoyer des fichiers directement dans son espace de stockage.",
         "s3 server destination": "Vous envoyez des fichiers sur ce serveur S3 :",
         "s3 location destination": "À cet emplacement :",
         "expires on": ({ date }) => `Ce lien expire le ${date}`,

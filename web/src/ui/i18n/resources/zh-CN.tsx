@@ -189,7 +189,7 @@ export const translations: Translations<"zh-CN"> = {
     S3FileRequest: {
         "page title": "上传对方请求的文件",
         "page description":
-            "有人分享了这个安全链接，以便你将文件直接发送到对方的存储空间。无需 Onyxia 帐户。",
+            "有人分享了这个安全链接，以便你将文件直接发送到对方的存储空间。",
         "s3 server destination": "你正在上传到此 S3 服务器：",
         "s3 location destination": "目标位置：",
         "expires on": ({ date }) => `此链接将于 ${date} 过期`,

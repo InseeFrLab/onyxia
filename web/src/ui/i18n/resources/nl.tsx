@@ -212,7 +212,7 @@ export const translations: Translations<"nl"> = {
     S3FileRequest: {
         "page title": "Gevraagde bestanden uploaden",
         "page description":
-            "Iemand heeft deze beveiligde link gedeeld, zodat je bestanden rechtstreeks naar diens opslagruimte kunt sturen. Je hebt geen Onyxia-account nodig.",
+            "Iemand heeft deze beveiligde link gedeeld, zodat je bestanden rechtstreeks naar diens opslagruimte kunt sturen.",
         "s3 server destination": "Je uploadt naar deze S3-server:",
         "s3 location destination": "Op deze locatie:",
         "expires on": ({ date }) => `Deze link verloopt op ${date}`,
