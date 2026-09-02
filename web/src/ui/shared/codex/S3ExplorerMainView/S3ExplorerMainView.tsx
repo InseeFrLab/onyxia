@@ -44,6 +44,12 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useFormattedRelativeDate } from "ui/shared/formattedDate";
 import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
 import type { S3Client } from "core/ports/S3Client";
+import {
+    getFilesToUploadFromDataTransfer,
+    getFilesToUploadFromFiles,
+    getHasDraggedFiles,
+    type FileToUpload
+} from "ui/shared/codex/getFilesToUploadFromDataTransfer";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -513,17 +519,17 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         const items = Array.from(event.dataTransfer.items);
         const files = Array.from(event.dataTransfer.files);
 
-        const objectsToUpload = await getObjectsToUploadFromDroppedItems({
+        const filesToUpload = await getFilesToUploadFromDataTransfer({
             items,
             files
         });
 
-        if (objectsToUpload.length === 0) {
+        if (filesToUpload.length === 0) {
             return;
         }
 
         onPutObjects({
-            files: objectsToUpload
+            files: filesToUpload.map(getObjectToUpload)
         });
     });
 
@@ -1928,38 +1934,6 @@ type ObjectToUpload = Parameters<
     S3ExplorerMainViewProps["onPutObjects"]
 >[0]["files"][number];
 
-type DataTransferItemWithWebkitGetAsEntry = DataTransferItem & {
-    webkitGetAsEntry?: () => FileSystemEntryLike | null;
-};
-
-type FileSystemEntryLike = {
-    readonly isFile: boolean;
-    readonly isDirectory: boolean;
-    readonly name: string;
-};
-
-type FileSystemFileEntryLike = FileSystemEntryLike & {
-    readonly isFile: true;
-    readonly isDirectory: false;
-    file: (
-        successCallback: (file: File) => void,
-        errorCallback?: (error: DOMException) => void
-    ) => void;
-};
-
-type FileSystemDirectoryEntryLike = FileSystemEntryLike & {
-    readonly isFile: false;
-    readonly isDirectory: true;
-    createReader: () => FileSystemDirectoryReaderLike;
-};
-
-type FileSystemDirectoryReaderLike = {
-    readEntries: (
-        successCallback: (entries: FileSystemEntryLike[]) => void,
-        errorCallback?: (error: DOMException) => void
-    ) => void;
-};
-
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
 }
@@ -2009,138 +1983,15 @@ function tryApplyPendingPreSelection(params: {
 }
 
 function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
-    return files.map(file => {
-        const relativePathSegments = file.webkitRelativePath
-            .split("/")
-            .filter(Boolean)
-            .slice(0, -1);
-
-        return {
-            relativePathSegments,
-            fileBasename: file.name,
-            blob: file as Blob
-        };
-    });
+    return getFilesToUploadFromFiles(files).map(getObjectToUpload);
 }
 
-function getFileSystemEntry(item: DataTransferItem): FileSystemEntryLike | null {
-    return (item as DataTransferItemWithWebkitGetAsEntry).webkitGetAsEntry?.() ?? null;
-}
-
-function getHasDraggedFiles(dataTransfer: DataTransfer): boolean {
-    if (dataTransfer.items.length !== 0) {
-        return Array.from(dataTransfer.items).some(item => item.kind === "file");
-    }
-
-    return dataTransfer.types.includes("Files");
-}
-
-function readFileEntry(entry: FileSystemFileEntryLike): Promise<File> {
-    return new Promise((resolve, reject) => entry.file(resolve, error => reject(error)));
-}
-
-function readDirectoryEntries(
-    entry: FileSystemDirectoryEntryLike
-): Promise<FileSystemEntryLike[]> {
-    const reader = entry.createReader();
-    const entries: FileSystemEntryLike[] = [];
-
-    return new Promise((resolve, reject) => {
-        const readNextBatch = () => {
-            reader.readEntries(
-                batch => {
-                    if (batch.length === 0) {
-                        resolve(entries);
-                        return;
-                    }
-
-                    entries.push(...batch);
-                    readNextBatch();
-                },
-                error => reject(error)
-            );
-        };
-
-        readNextBatch();
-    });
-}
-
-async function getObjectsToUploadFromFileSystemEntry(params: {
-    entry: FileSystemEntryLike;
-    relativePathSegments: string[];
-}): Promise<ObjectToUpload[]> {
-    const { entry, relativePathSegments } = params;
-
-    if (entry.isFile) {
-        const file = await readFileEntry(entry as FileSystemFileEntryLike);
-
-        return [
-            {
-                relativePathSegments: [...relativePathSegments],
-                fileBasename: file.name,
-                blob: file
-            }
-        ];
-    }
-
-    const directoryEntry = entry as FileSystemDirectoryEntryLike;
-    const childEntries = await readDirectoryEntries(directoryEntry);
-    const childRelativePathSegments = [...relativePathSegments, directoryEntry.name];
-
-    return (
-        await Promise.all(
-            childEntries.map(childEntry =>
-                getObjectsToUploadFromFileSystemEntry({
-                    entry: childEntry,
-                    relativePathSegments: childRelativePathSegments
-                })
-            )
-        )
-    ).flat();
-}
-
-async function getObjectsToUploadFromDroppedItems(params: {
-    items: readonly DataTransferItem[];
-    files: readonly File[];
-}): Promise<ObjectToUpload[]> {
-    const { items, files } = params;
-    const fileItems = items.filter(
-        (item): item is DataTransferItem => item.kind === "file"
-    );
-    const itemsWithEntries = fileItems.map(item => ({
-        item,
-        entry: getFileSystemEntry(item)
-    }));
-    const hasFileSystemEntrySupport = itemsWithEntries.some(
-        ({ entry }) => entry !== null
-    );
-
-    const droppedObjects = (
-        await Promise.all(
-            itemsWithEntries.map(async ({ item, entry }) => {
-                if (entry !== null) {
-                    return getObjectsToUploadFromFileSystemEntry({
-                        entry,
-                        relativePathSegments: []
-                    });
-                }
-
-                const file = item.getAsFile();
-
-                if (file === null) {
-                    return [];
-                }
-
-                return getObjectsToUploadFromFiles([file]);
-            })
-        )
-    ).flat();
-
-    if (hasFileSystemEntrySupport) {
-        return droppedObjects;
-    }
-
-    return getObjectsToUploadFromFiles(files);
+function getObjectToUpload(fileToUpload: FileToUpload): ObjectToUpload {
+    return {
+        relativePathSegments: fileToUpload.relativePathSegments,
+        fileBasename: fileToUpload.file.name,
+        blob: fileToUpload.file
+    };
 }
 
 function getFormattedSize(size: number): string {

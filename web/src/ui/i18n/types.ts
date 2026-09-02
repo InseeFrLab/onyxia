@@ -32,7 +32,7 @@ export type ComponentKey =
     | import("ui/shared/codex/S3FileRequestCreationDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/S3ProfileDialog").I18n
     | import("ui/pages/s3Explorer/Page").I18n
-    | import("ui/pages/s3FileRequest/Page").I18n
+    | import("ui/shared/codex/S3FileRequest/S3FileRequest").I18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksBar").I18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksBarItem/S3BookmarksBarItem").S3BookmarkItemI18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem").I18n
