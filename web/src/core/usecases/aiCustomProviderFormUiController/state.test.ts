@@ -13,7 +13,7 @@ function createOpenedState(params?: {
             isAlreadyDefault: params?.isAlreadyDefault ?? false,
             formValues: {
                 name: "My provider",
-                provider: "openai",
+                protocol: "openai",
                 apiBase: "https://api.openai.com/v1",
                 apiKey: "secret",
                 selectedModelId: params?.selectedModelId ?? "model-1"

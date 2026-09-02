@@ -8,26 +8,29 @@ import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { FormSelectField, FormTextField, ModelSelectField } from "./FormFields";
 import type { FormTest, FormValues } from "./types";
+import type { CustomProviderProtocol } from "core/usecases/aiCustomProviderFormUiController/decoupledLogic/customProviderProtocol";
 
 export function ProviderSection(props: {
     name: string;
-    provider: string;
-    supportedProtocols: readonly string[];
+    protocol: string;
+    supportedProtocols: readonly CustomProviderProtocol[];
     onNameChange: (value: string) => void;
-    onProviderChange: (value: string) => void;
+    onProtocolChange: (value: CustomProviderProtocol) => void;
 }) {
-    const { name, provider, supportedProtocols, onNameChange, onProviderChange } = props;
+    const { name, protocol, supportedProtocols, onNameChange, onProtocolChange } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
 
-    const providerOptions = [
-        { value: "openai", label: t("openai provider option") },
-        {
-            value: "openai-compatible",
-            label: t("openai compatible provider option")
-        },
-        { value: "mistral", label: t("mistral provider option") },
-        { value: "anthropic", label: t("anthropic provider option") }
-    ].filter(({ value }) => supportedProtocols.includes(value));
+    const protocolOptions = (
+        [
+            { value: "openai", label: t("openai provider option") },
+            {
+                value: "openai-compatible",
+                label: t("openai compatible provider option")
+            },
+            { value: "mistral", label: t("mistral provider option") },
+            { value: "anthropic", label: t("anthropic provider option") }
+        ] satisfies { value: CustomProviderProtocol; label: string }[]
+    ).filter(({ value }) => supportedProtocols.includes(value));
 
     return (
         <FormSection
@@ -43,9 +46,19 @@ export function ProviderSection(props: {
             />
             <FormSelectField
                 label={t("custom provider type field")}
-                value={provider}
-                onChange={onProviderChange}
-                options={providerOptions}
+                value={protocol}
+                onChange={value => {
+                    const protocol = supportedProtocols.find(
+                        protocol => protocol === value
+                    );
+
+                    if (protocol === undefined) {
+                        return;
+                    }
+
+                    onProtocolChange(protocol);
+                }}
+                options={protocolOptions}
             />
         </FormSection>
     );
@@ -245,7 +258,7 @@ const useStyles = tss
             borderWidth: 0,
             padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
             backgroundColor: theme.colors.palette.dark.light,
-            color: theme.colors.useCases.surfaces.background,
+            color: theme.colors.palette.light.main,
             "& .MuiButton-startIcon": {
                 marginLeft: 0,
                 marginRight: theme.spacing(1)
@@ -256,7 +269,7 @@ const useStyles = tss
             },
             "&.Mui-disabled": {
                 backgroundColor: theme.colors.palette.dark.light,
-                color: theme.colors.useCases.surfaces.background,
+                color: theme.colors.palette.light.main,
                 opacity: 0.3
             }
         },

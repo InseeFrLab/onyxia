@@ -20,7 +20,7 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
         supportedProtocols,
         onClose,
         onFieldChange,
-        onProviderChange,
+        onProtocolChange,
         onTest,
         onSave,
         onDoSetAsDefaultChange
@@ -49,10 +49,10 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                 <div className={classes.body}>
                     <ProviderSection
                         name={values.name}
-                        provider={values.provider}
+                        protocol={values.protocol}
                         supportedProtocols={supportedProtocols}
                         onNameChange={value => onFieldChange("name", value)}
-                        onProviderChange={onProviderChange}
+                        onProtocolChange={onProtocolChange}
                     />
 
                     <CredentialsSection

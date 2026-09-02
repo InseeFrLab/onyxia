@@ -1,5 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
-import type { Ai } from "core/ports/Ai";
+import type { AiGateway } from "core/ports/AiGateway";
 import { assert } from "tsafe";
 import { id } from "tsafe/id";
 
@@ -14,25 +14,21 @@ export declare namespace State {
 
     export type Initialized = {
         stateDescription: "initialized";
-        providers: Provider[];
+        providers: AiProvider[];
         activeProviderId: string | undefined;
     };
 
-    // --- Providers ---
+    // --- AI providers ---
 
-    export type Provider = Provider.Managed | Provider.Custom;
+    export type AiProvider = AiProvider.Managed | AiProvider.Custom;
 
-    export namespace Provider {
+    export namespace AiProvider {
         export type Common = {
             id: string;
             name: string;
             apiBase: string;
-            /**
-             * LLM provider family (e.g. "openai", "anthropic", "gemini"), injected as
-             * `ai.provider` in the service launch context. For managed providers it
-             * comes from the instance config; for custom ones the user sets it.
-             */
-            provider: string;
+            /** Wire protocol used by the provider API (for example OpenAI or Anthropic). */
+            protocol: string;
             models: Models | undefined;
             selectedModelId: string | undefined;
         };
@@ -41,12 +37,13 @@ export declare namespace State {
         export type Managed = Common & {
             kind: "managed";
             webUiUrl: string;
-            description: Ai["description"];
-            accountCreation: Ai["accountCreation"];
+            description: AiGateway["description"];
+            accountCreation: AiGateway["accountCreation"];
             auth:
+                | { stateDescription: "fetching" }
                 | { stateDescription: "no account" }
                 | { stateDescription: "error" }
-                | { stateDescription: "authenticated"; token: string };
+                | { stateDescription: "authenticated"; accessToken: string };
         };
 
         /** Added by the user, authenticated via a static API key. */
@@ -78,7 +75,7 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    providers: State.Provider[];
+                    providers: State.AiProvider[];
                     activeProviderId: string | undefined;
                 };
             }
@@ -92,19 +89,39 @@ export const { reducer, actions } = createUsecaseActions({
             state,
             { payload }: { payload: { activeProviderId: string | undefined } }
         ) => {
-            if (state.stateDescription !== "initialized") return;
+            assert(state.stateDescription === "initialized");
             state.activeProviderId = payload.activeProviderId;
+        },
+        managedAuthFetchStarted: (
+            state,
+            { payload }: { payload: { providerId: string } }
+        ) => {
+            assert(state.stateDescription === "initialized");
+            const provider = state.providers.find(p => p.id === payload.providerId);
+            if (provider === undefined || provider.kind !== "managed") return;
+            provider.auth = { stateDescription: "fetching" };
         },
         managedAuthRefreshed: (
             state,
             {
                 payload
-            }: { payload: { providerId: string; auth: State.Provider.Managed["auth"] } }
+            }: {
+                payload: {
+                    providerId: string;
+                    auth: State.AiProvider.Managed["auth"];
+                };
+            }
         ) => {
             assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
             if (provider === undefined || provider.kind !== "managed") return;
             provider.auth = payload.auth;
+        },
+        modelsFetchStarted: (state, { payload }: { payload: { providerId: string } }) => {
+            assert(state.stateDescription === "initialized");
+            const provider = state.providers.find(p => p.id === payload.providerId);
+            if (provider === undefined) return;
+            provider.models = { stateDescription: "fetching" };
         },
         modelsLoaded: (
             state,
@@ -117,10 +134,12 @@ export const { reducer, actions } = createUsecaseActions({
                 stateDescription: "loaded",
                 availableModels: payload.models
             };
-            // Default the chat model to the first available one if none is set.
-            if (provider.selectedModelId === undefined && payload.models.length > 0) {
-                provider.selectedModelId = payload.models[0].id;
-            }
+            const selectedModelIsAvailable = payload.models.some(
+                model => model.id === provider.selectedModelId
+            );
+            provider.selectedModelId = selectedModelIsAvailable
+                ? provider.selectedModelId
+                : payload.models[0]?.id;
         },
         modelsFetchFailed: (state, { payload }: { payload: { providerId: string } }) => {
             assert(state.stateDescription === "initialized");
@@ -134,17 +153,16 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             assert(state.stateDescription === "initialized");
             const provider = state.providers.find(p => p.id === payload.providerId);
-            // Synchronous user action on a displayed provider: it must exist.
             assert(provider !== undefined);
             provider.selectedModelId = payload.modelId;
         },
         addCustomProvider: (
             state,
-            { payload }: { payload: { provider: State.Provider.Custom } }
+            { payload }: { payload: { aiProvider: State.AiProvider.Custom } }
         ) => {
             assert(state.stateDescription === "initialized");
-            state.providers.push(payload.provider);
-            state.activeProviderId ??= payload.provider.id;
+            state.providers.push(payload.aiProvider);
+            state.activeProviderId ??= payload.aiProvider.id;
         },
         editCustomProvider: (
             state,
@@ -154,7 +172,7 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     providerId: string;
                     name: string;
-                    provider: string;
+                    protocol: string;
                     apiBase: string;
                     apiKey: string;
                     models: State.AiModel[];
@@ -168,7 +186,7 @@ export const { reducer, actions } = createUsecaseActions({
             assert(provider !== undefined);
             assert(provider.kind === "custom");
             provider.name = payload.name;
-            provider.provider = payload.provider;
+            provider.protocol = payload.protocol;
             provider.apiBase = payload.apiBase;
             provider.apiKey = payload.apiKey;
             provider.models = {

@@ -21,7 +21,7 @@ export namespace State {
 
     export type FormValues = {
         name: string;
-        provider: string;
+        protocol: string;
         apiBase: string;
         apiKey: string;
         selectedModelId: string;
@@ -63,13 +63,13 @@ export const { reducer, actions } = createUsecaseActions({
             state.connectionTest = { stateDescription: "idle" };
             state.connectionTestRequestId = undefined;
         },
-        providerChanged: (
+        protocolChanged: (
             state,
-            { payload }: { payload: { provider: string; apiBase: string } }
+            { payload }: { payload: { protocol: string; apiBase: string } }
         ) => {
             assert(state.stateDescription === "opened");
 
-            state.formValues.provider = payload.provider;
+            state.formValues.protocol = payload.protocol;
             state.formValues.apiBase = payload.apiBase;
             state.formValues.selectedModelId = "";
             state.connectionTest = { stateDescription: "idle" };

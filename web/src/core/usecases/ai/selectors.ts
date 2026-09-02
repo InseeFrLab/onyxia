@@ -18,9 +18,9 @@ const main = createSelector(
     providers,
     activeProviderId,
     (state, providers, activeProviderId) => {
-        const toCommonView = (provider: State.Provider) => ({
+        const toCommonView = (provider: State.AiProvider) => ({
             id: provider.id,
-            provider: provider.provider,
+            protocol: provider.protocol,
             apiBase: provider.apiBase,
             isDefault: provider.id === activeProviderId,
             models: provider.models,
@@ -31,7 +31,7 @@ const main = createSelector(
         return {
             stateDescription: state.stateDescription,
             managedProviders: (providers ?? [])
-                .filter((p): p is State.Provider.Managed => p.kind === "managed")
+                .filter((p): p is State.AiProvider.Managed => p.kind === "managed")
                 .map(p => ({
                     ...toCommonView(p),
                     webUiUrl: p.webUiUrl,
@@ -40,7 +40,7 @@ const main = createSelector(
                     auth: p.auth
                 })),
             customProviders: (providers ?? [])
-                .filter((p): p is State.Provider.Custom => p.kind === "custom")
+                .filter((p): p is State.AiProvider.Custom => p.kind === "custom")
                 .map(p => ({
                     ...toCommonView(p),
                     apiKey: p.apiKey
@@ -53,11 +53,11 @@ const aiOnyxiaContext = createSelector(
     providers,
     activeProviderId,
     (providers, activeProviderId) => {
-        const toProviderView = (provider: State.Provider) => {
+        const toProviderView = (provider: State.AiProvider) => {
             const apiKey = (() => {
                 if (provider.kind === "custom") return provider.apiKey;
                 if (provider.auth.stateDescription !== "authenticated") return undefined;
-                return provider.auth.token;
+                return provider.auth.accessToken;
             })();
 
             // A provider is only usable once authenticated. Its models may not be
@@ -74,7 +74,8 @@ const aiOnyxiaContext = createSelector(
                 id: provider.id,
                 isDefault: provider.id === activeProviderId,
                 name: provider.name,
-                provider: provider.provider,
+                // Keep the historical `provider` key at the x-onyxia boundary.
+                provider: provider.protocol,
                 apiBase: provider.apiBase,
                 apiKey,
                 models,
@@ -89,7 +90,17 @@ const aiOnyxiaContext = createSelector(
         return {
             enabled: providerViews.length > 0,
             activeProvider: providerViews.find(p => p.id === activeProviderId),
-            providers: providerViews.filter(p => p.id !== activeProviderId)
+            providers: providerViews
+                .filter(p => p.id !== activeProviderId)
+                .map(provider => ({
+                    id: provider.id,
+                    isDefault: provider.isDefault,
+                    name: provider.name,
+                    provider: provider.provider,
+                    apiBase: provider.apiBase,
+                    models: provider.models,
+                    selectedModel: provider.selectedModel
+                }))
         };
     }
 );

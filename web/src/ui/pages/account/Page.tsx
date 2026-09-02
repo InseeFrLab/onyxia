@@ -1,9 +1,8 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useMemo } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
-import { type AccountTabId, accountTabIds } from "./accountTabIds";
-import { useMemo } from "react";
+import { type AccountTabId, accountTabIds } from "ui/pages/account/accountTabIds";
 import { routes, useRoute } from "ui/routes";
-import { routeGroup } from "./route";
+import { routeGroup } from "ui/pages/account/route";
 import { useTranslation } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -42,13 +41,14 @@ function Account() {
     const tabs = useMemo(
         () =>
             accountTabIds
-                .filter(accountTabId =>
-                    accountTabId !== "k8sCodeSnippets"
-                        ? true
-                        : k8sCodeSnippets.getIsAvailable()
+                .filter(
+                    accountTabId =>
+                        accountTabId !== "k8sCodeSnippets" ||
+                        k8sCodeSnippets.getIsAvailable()
                 )
-                .filter(accountTabId =>
-                    accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
+                .filter(
+                    accountTabId =>
+                        accountTabId !== "vault" || vaultCredentials.isAvailable()
                 )
                 .filter(accountTabId => {
                     if (env.ONYXIA_API_URL !== undefined) {
@@ -57,7 +57,7 @@ function Account() {
 
                     return accountTabId === "user-interface";
                 })
-                .filter(accountTabId => (accountTabId !== "ai" ? true : ai.isAvailable()))
+                .filter(accountTabId => accountTabId !== "ai" || ai.isAvailable())
                 .map(id => ({ id, title: t(id) })),
         [t]
     );
@@ -68,13 +68,19 @@ function Account() {
 
     const { classes } = useStyles();
 
+    const fallbackTab = tabs.at(0);
+    assert(fallbackTab !== undefined);
+
     const activeTabId =
-        route.params.tabId ??
-        (() => {
-            const tab = tabs.at(0);
-            assert(tab !== undefined);
-            return tab.id;
-        })();
+        tabs.find(tab => tab.id === route.params.tabId)?.id ?? fallbackTab.id;
+
+    useEffect(() => {
+        if (route.params.tabId === undefined || route.params.tabId === activeTabId) {
+            return;
+        }
+
+        routes.account({ tabId: activeTabId }).replace();
+    }, [route.params.tabId, activeTabId]);
 
     return (
         <div className={classes.root}>

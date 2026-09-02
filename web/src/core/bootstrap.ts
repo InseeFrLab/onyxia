@@ -8,7 +8,7 @@ import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import type { SqlOlap } from "core/ports/SqlOlap";
 import { usecases } from "./usecases";
 import type { SecretsManager } from "core/ports/SecretsManager";
-import type { Ai } from "core/ports/Ai";
+import type { AiGateway } from "core/ports/AiGateway";
 import type { Oidc } from "core/ports/Oidc";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap";
@@ -17,7 +17,7 @@ import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
-import { parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
+import { parseManagedAiGatewayConfigFromEnvValue } from "core/ports/OnyxiaApi/ManagedAiGatewayConfig";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -46,7 +46,7 @@ export type Context = {
     secretsManager: SecretsManager;
     sqlOlap: SqlOlap;
     s3Config: S3Config;
-    ai: Ai[];
+    aiGateways: AiGateway[];
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -71,8 +71,8 @@ export async function bootstrapCore(
         envValue: params.S3_envValue
     });
 
-    const aiConfig = isAiEnabled
-        ? parseAiConfigFromEnvValue({ envValue: params.AI_envValue })
+    const managedAiGatewayConfig = isAiEnabled
+        ? parseManagedAiGatewayConfigFromEnvValue({ envValue: params.AI_envValue })
         : { entries: [] };
 
     let oidc: Oidc | undefined = undefined;
@@ -210,7 +210,7 @@ export async function bootstrapCore(
                 )
         }),
         s3Config,
-        ai: []
+        aiGateways: []
     };
 
     setRootContext(context);
@@ -338,74 +338,53 @@ export async function bootstrapCore(
             break init_ai;
         }
 
-        // Wire one Ai adapter per instance-configured gateway into `context.ai` (none
+        // Wire one adapter per instance-configured gateway into `context.aiGateways` (none
         // if the AI env is empty: only custom providers will then be loaded).
-        configured_ai: {
-            if (aiConfig.entries.length === 0) {
-                break configured_ai;
+        configured_ai_gateways: {
+            if (managedAiGatewayConfig.entries.length === 0) {
+                break configured_ai_gateways;
             }
 
-            const [{ createAi }, { createOidc, mergeOidcParams }, { oidcParams }] =
+            const [{ createOpenWebUiGateway }, { createOidc }, { oidcParams }] =
                 await Promise.all([
-                    import("core/adapters/ai"),
+                    import("core/adapters/managedAiGateway"),
                     import("core/adapters/oidc"),
                     onyxiaApi.getAvailableRegionsAndOidcParams()
                 ]);
 
-            assert(oidcParams !== undefined);
+            if (oidcParams === undefined) {
+                break configured_ai_gateways;
+            }
 
-            // Providers may share the same OIDC client: oidc-spa identifies a client by
-            // issuerUri + clientId, so creating it twice would collide. Create each
-            // distinct client only once.
-            const getOidcAccessTokenByOidcKey = new Map<string, () => Promise<string>>();
-
-            for (const aiConfigEntry of aiConfig.entries) {
-                const oidcParams_ai = mergeOidcParams({
-                    oidcParams,
-                    oidcParams_partial: aiConfigEntry.oidcParams
+            for (const gatewayConfig of managedAiGatewayConfig.entries) {
+                const aiGatewayOidc = await createOidc({
+                    issuerUri: oidcParams.issuerUri,
+                    ...gatewayConfig.oidcParams,
+                    transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang,
+                    autoLogin: true,
+                    enableDebugLogs: enableOidcDebugLogs,
+                    // OpenWebUI validates this token server-side and cannot present a
+                    // DPoP proof, so the token must remain a regular bearer token.
+                    disableDPoP: true
                 });
 
-                const oidcKey = `${oidcParams_ai.issuerUri}\0${oidcParams_ai.clientId}`;
-
-                let getOidcAccessToken = getOidcAccessTokenByOidcKey.get(oidcKey);
-
-                if (getOidcAccessToken === undefined) {
-                    const oidc_ai = await createOidc({
-                        ...oidcParams_ai,
-                        transformBeforeRedirectForKeycloakTheme,
-                        getCurrentLang,
-                        autoLogin: true,
-                        enableDebugLogs: enableOidcDebugLogs,
-                        // The access token is handed over to OpenWebUI's token exchange
-                        // endpoint, which validates it server-side and cannot present a
-                        // DPoP proof. It must therefore be a plain bearer token, never
-                        // sender-constrained, even when DPoP is globally enabled.
-                        disableDPoP: true
-                    });
-
-                    getOidcAccessToken = async () =>
-                        (await oidc_ai.getTokens()).accessToken;
-
-                    getOidcAccessTokenByOidcKey.set(oidcKey, getOidcAccessToken);
-                }
-
-                context.ai.push(
-                    createAi({
-                        id: aiConfigEntry.id,
-                        name: aiConfigEntry.name ?? new URL(aiConfigEntry.url).hostname,
-                        provider: aiConfigEntry.provider,
-                        description: aiConfigEntry.description,
-                        accountCreation: aiConfigEntry.accountCreation,
-                        webUiUrl: aiConfigEntry.url,
-                        oauthProvider: aiConfigEntry.oauthProvider,
-                        getOidcAccessToken
+                context.aiGateways.push(
+                    createOpenWebUiGateway({
+                        id: gatewayConfig.url,
+                        name: gatewayConfig.name ?? new URL(gatewayConfig.url).hostname,
+                        description: gatewayConfig.description,
+                        accountCreation: gatewayConfig.accountCreation,
+                        webUiUrl: gatewayConfig.url,
+                        getOidcAccessToken: async () =>
+                            (await aiGatewayOidc.getTokens()).accessToken
                     })
                 );
             }
         }
 
         // Sole initiator of the AI use-case, dispatched only now that any managed
-        // adapters are wired into `context.ai`. Fire-and-forget so app start isn't
+        // gateways are wired into `context.aiGateways`. Fire-and-forget so app start isn't
         // blocked; consumers await readiness via `ai...waitForInitialization`.
         dispatch(usecases.ai.protectedThunks.initialize());
     }

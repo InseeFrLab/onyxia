@@ -1,47 +1,37 @@
 import type { ArrayOrNot } from "core/tools/ArrayOrNot";
-import type { AiAccountCreation } from "core/ports/Ai";
+import type { AiGateway } from "core/ports/AiGateway";
 import { type LocalizedString, zLocalizedString } from "./Language";
-import type { OidcParams_Partial } from "./OidcParams";
+import type { OidcParams } from "./OidcParams";
 import type { ApiTypes } from "core/adapters/onyxiaApi/ApiTypes";
 import { z } from "zod";
 import { assert, type Equals, id } from "tsafe";
 import JSON5 from "json5";
 
-type AiConfig_AI_EnvValue_ExpectedShape = ArrayOrNot<{
-    id?: string;
+type AI_EnvValue_ExpectedShape = ArrayOrNot<{
     URL: string;
     name?: string;
-    provider?: string;
     description?: LocalizedString;
     accountCreation?: {
         title?: LocalizedString;
         description?: LocalizedString;
         buttonLabel?: LocalizedString;
     };
-    oauthProvider: string;
-    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
+    oidcConfiguration: Omit<ApiTypes.OidcConfiguration, "issuerURI">;
 }>;
 
-const zAiConfig_AI_EnvValue_ExpectedShape = (() => {
-    type TargetType = AiConfig_AI_EnvValue_ExpectedShape;
+const zAI_EnvValue_ExpectedShape = (() => {
+    type TargetType = AI_EnvValue_ExpectedShape;
 
     const zOidcConfigurationShape = z.object({
-        issuerURI: z.string().optional(),
-        clientID: z.string().optional(),
+        clientID: z.string().min(1),
         extraQueryParams: z.string().optional(),
         scope: z.string().optional(),
         idleSessionLifetimeInSeconds: z.union([z.number(), z.string()]).optional()
     });
 
-    const zOidcConfiguration = z.custom<Partial<ApiTypes.OidcConfiguration>>(
-        value => zOidcConfigurationShape.safeParse(value).success
-    );
-
-    const zAiConfig = z.object({
-        id: z.string().optional(),
-        URL: z.string(),
+    const zGatewayConfig = z.object({
+        URL: z.string().url(),
         name: z.string().optional(),
-        provider: z.string().optional(),
         description: zLocalizedString.optional(),
         accountCreation: z
             .object({
@@ -50,11 +40,10 @@ const zAiConfig_AI_EnvValue_ExpectedShape = (() => {
                 buttonLabel: zLocalizedString.optional()
             })
             .optional(),
-        oauthProvider: z.string(),
-        oidcConfiguration: zOidcConfiguration.optional()
+        oidcConfiguration: zOidcConfigurationShape
     });
 
-    const zTargetType = z.union([zAiConfig, z.array(zAiConfig)]);
+    const zTargetType = z.union([zGatewayConfig, z.array(zGatewayConfig)]);
 
     type InferredType = z.infer<typeof zTargetType>;
 
@@ -63,24 +52,23 @@ const zAiConfig_AI_EnvValue_ExpectedShape = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
-export type AiConfig = {
-    entries: AiConfig.Entry[];
+export type ManagedAiGatewayConfig = {
+    entries: ManagedAiGatewayConfig.Entry[];
 };
 
-export namespace AiConfig {
+export namespace ManagedAiGatewayConfig {
     export type Entry = {
-        id: string;
         url: string;
         name: string | undefined;
-        provider: string;
         description: LocalizedString | undefined;
-        accountCreation: AiAccountCreation | undefined;
-        oauthProvider: string;
-        oidcParams: OidcParams_Partial;
+        accountCreation: AiGateway.AccountCreation | undefined;
+        oidcParams: Omit<OidcParams, "issuerUri">;
     };
 }
 
-export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfig {
+export function parseManagedAiGatewayConfigFromEnvValue(params: {
+    envValue: string;
+}): ManagedAiGatewayConfig {
     const { envValue } = params;
 
     if (envValue === "") {
@@ -95,42 +83,41 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
         throw new Error("The AI env is not a valid JSON5");
     }
 
-    const parseResult = zAiConfig_AI_EnvValue_ExpectedShape.safeParse(parsedValue);
+    const parseResult = zAI_EnvValue_ExpectedShape.safeParse(parsedValue);
 
     if (!parseResult.success) {
         throw new Error(`The format of the AI env is not valid: ${parseResult.error}`);
     }
 
-    const aiConfigs = Array.isArray(parseResult.data)
+    const gatewayConfigs = Array.isArray(parseResult.data)
         ? parseResult.data
         : [parseResult.data];
 
     return {
-        entries: aiConfigs.map(
-            (aiConfig, index): AiConfig.Entry => ({
-                id: aiConfig.id ?? `onyxia-${index}`,
-                url: aiConfig.URL,
-                name: aiConfig.name,
-                provider: aiConfig.provider ?? "openai",
-                description: aiConfig.description,
+        entries: gatewayConfigs.map(gatewayConfig => {
+            const url = new URL(gatewayConfig.URL).toString().replace(/\/$/, "");
+
+            return {
+                url,
+                name: gatewayConfig.name,
+                description: gatewayConfig.description,
                 accountCreation:
-                    aiConfig.accountCreation === undefined
+                    gatewayConfig.accountCreation === undefined
                         ? undefined
                         : {
-                              title: aiConfig.accountCreation.title,
-                              description: aiConfig.accountCreation.description,
-                              buttonLabel: aiConfig.accountCreation.buttonLabel
+                              title: gatewayConfig.accountCreation.title,
+                              description: gatewayConfig.accountCreation.description,
+                              buttonLabel: gatewayConfig.accountCreation.buttonLabel
                           },
-                oauthProvider: aiConfig.oauthProvider,
                 oidcParams: {
-                    issuerUri: aiConfig.oidcConfiguration?.issuerURI || undefined,
-                    clientId: aiConfig.oidcConfiguration?.clientID || undefined,
+                    clientId: gatewayConfig.oidcConfiguration.clientID,
                     extraQueryParams_raw:
-                        aiConfig.oidcConfiguration?.extraQueryParams || undefined,
-                    scope_spaceSeparated: aiConfig.oidcConfiguration?.scope || undefined,
+                        gatewayConfig.oidcConfiguration.extraQueryParams || undefined,
+                    scope_spaceSeparated:
+                        gatewayConfig.oidcConfiguration.scope || undefined,
                     idleSessionLifetimeInSeconds: (() => {
                         const value =
-                            aiConfig.oidcConfiguration?.idleSessionLifetimeInSeconds;
+                            gatewayConfig.oidcConfiguration.idleSessionLifetimeInSeconds;
 
                         if (value === "" || value === undefined) {
                             return undefined;
@@ -143,7 +130,7 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
                         return parseInt(value);
                     })()
                 }
-            })
-        )
+            } satisfies ManagedAiGatewayConfig.Entry;
+        })
     };
 }

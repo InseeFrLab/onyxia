@@ -19,16 +19,17 @@ describe(fetchAiModels.name, () => {
 
         await expect(
             fetchAiModels({
-                provider: "openai-compatible",
+                protocol: "openai-compatible",
                 apiBase: "https://gateway.example.com/v1",
-                token: "openai-key"
+                apiKey: "openai-key"
             })
         ).resolves.toStrictEqual([
             { id: "model-a", name: "model-a" },
             { id: "model-b", name: "Model B" }
         ]);
         expect(fetchMock).toHaveBeenCalledWith("https://gateway.example.com/v1/models", {
-            headers: { Authorization: "Bearer openai-key" }
+            headers: { Authorization: "Bearer openai-key" },
+            signal: expect.any(AbortSignal)
         });
     });
 
@@ -50,9 +51,9 @@ describe(fetchAiModels.name, () => {
 
         await expect(
             fetchAiModels({
-                provider: "anthropic",
+                protocol: "anthropic",
                 apiBase: "https://api.anthropic.com/v1",
-                token: "anthropic-key"
+                apiKey: "anthropic-key"
             })
         ).resolves.toStrictEqual([
             { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6" }
@@ -62,7 +63,8 @@ describe(fetchAiModels.name, () => {
                 "x-api-key": "anthropic-key",
                 "anthropic-version": "2023-06-01",
                 "anthropic-dangerous-direct-browser-access": "true"
-            }
+            },
+            signal: expect.any(AbortSignal)
         });
     });
 });

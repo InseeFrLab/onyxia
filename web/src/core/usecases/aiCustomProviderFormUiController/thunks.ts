@@ -2,16 +2,16 @@ import type { Thunks } from "core/bootstrap";
 import * as ai from "core/usecases/ai";
 import { assert } from "tsafe/assert";
 import {
-    isCustomProviderProtocol,
-    resolveApiBaseOnProviderChange
-} from "./decoupledLogic/resolveApiBaseOnProviderChange";
+    customProviderProtocolDefaultApiBase,
+    type CustomProviderProtocol
+} from "./decoupledLogic/customProviderProtocol";
 import { privateSelectors } from "./selectors";
 import { actions, type ChangeValueParams } from "./state";
 
 function createEmptyFormValues() {
     return {
         name: "",
-        provider: "",
+        protocol: "",
         apiBase: "",
         apiKey: "",
         selectedModelId: ""
@@ -65,7 +65,7 @@ export const thunks = {
                     isAlreadyDefault: provider.isDefault,
                     formValues: {
                         name: provider.name,
-                        provider: provider.provider,
+                        protocol: provider.protocol,
                         apiBase: provider.apiBase,
                         apiKey: provider.apiKey,
                         selectedModelId: selectedModelId ?? ""
@@ -93,24 +93,19 @@ export const thunks = {
             const [dispatch] = args;
             dispatch(actions.formValueChanged(params));
         },
-    changeProvider:
-        (params: { provider: string }) =>
+    changeProtocol:
+        (params: { protocol: CustomProviderProtocol }) =>
         (...args) => {
-            const { provider } = params;
+            const { protocol } = params;
             const [dispatch, getState] = args;
-
-            assert(isCustomProviderProtocol(provider));
 
             const state = privateSelectors.state(getState());
             assert(state.stateDescription === "opened");
 
             dispatch(
-                actions.providerChanged({
-                    provider,
-                    apiBase: resolveApiBaseOnProviderChange({
-                        currentApiBase: state.formValues.apiBase,
-                        nextProvider: provider
-                    })
+                actions.protocolChanged({
+                    protocol,
+                    apiBase: customProviderProtocolDefaultApiBase[protocol]
                 })
             );
         },
@@ -129,21 +124,23 @@ export const thunks = {
             assert(state.stateDescription === "opened");
 
             if (
-                !privateSelectors.canTestConnection(getState()) ||
-                state.connectionTest.stateDescription === "testing"
+                state.connectionTest.stateDescription === "testing" ||
+                state.isSubmitting
             ) {
                 return;
             }
 
+            assert(privateSelectors.canTestConnection(getState()));
+
             const requestId = crypto.randomUUID();
-            const { provider, apiBase, apiKey } = state.formValues;
+            const { protocol, apiBase, apiKey } = state.formValues;
 
             dispatch(actions.connectionTestStarted({ requestId }));
 
             try {
                 const { models } = await dispatch(
                     ai.thunks.testCustomProviderConnection({
-                        provider,
+                        protocol,
                         apiBase,
                         apiKey
                     })
@@ -159,11 +156,17 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const form = privateSelectors.submittableForm(getState());
+            const state = privateSelectors.state(getState());
 
-            if (form === undefined) {
+            assert(state.stateDescription === "opened");
+
+            if (state.isSubmitting) {
                 return;
             }
+
+            const form = privateSelectors.submittableForm(getState());
+
+            assert(form !== undefined);
 
             const requestId = crypto.randomUUID();
             dispatch(actions.submissionStarted({ requestId }));
@@ -171,7 +174,7 @@ export const thunks = {
             const {
                 editedProviderId,
                 name,
-                provider,
+                protocol,
                 apiBase,
                 apiKey,
                 models,
@@ -184,7 +187,7 @@ export const thunks = {
                     await dispatch(
                         ai.thunks.addCustomProvider({
                             name,
-                            provider,
+                            protocol,
                             apiBase,
                             apiKey,
                             models,
@@ -197,7 +200,7 @@ export const thunks = {
                         ai.thunks.editCustomProvider({
                             providerId: editedProviderId,
                             name,
-                            provider,
+                            protocol,
                             apiBase,
                             apiKey,
                             models,

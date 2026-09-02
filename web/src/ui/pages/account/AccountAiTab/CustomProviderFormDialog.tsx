@@ -31,8 +31,8 @@ export const CustomProviderFormDialog = memo(() => {
             onFieldChange={(key, value) =>
                 aiCustomProviderFormUiController.changeValue({ key, value })
             }
-            onProviderChange={provider =>
-                aiCustomProviderFormUiController.changeProvider({ provider })
+            onProtocolChange={protocol =>
+                aiCustomProviderFormUiController.changeProtocol({ protocol })
             }
             onTest={() => void aiCustomProviderFormUiController.testConnection()}
             onSave={() => void aiCustomProviderFormUiController.submit()}

@@ -821,7 +821,13 @@ export const protectedThunks = {
                     useCertManager: region.certManager?.useCertManager,
                     certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
-                ai: aiUsecase.selectors.aiOnyxiaContext(getState()),
+                ai: !doInjectPersonalInfos
+                    ? {
+                          enabled: false,
+                          activeProvider: undefined,
+                          providers: []
+                      }
+                    : aiUsecase.selectors.aiOnyxiaContext(getState()),
                 proxyInjection: region.proxyInjection,
                 packageRepositoryInjection: region.packageRepositoryInjection,
                 certificateAuthorityInjection: region.certificateAuthorityInjection

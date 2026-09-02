@@ -5,37 +5,45 @@ import type { State } from "./state";
 import {
     parseAiConfigStr,
     serializeAiConfig,
-    type PersistedAiConfig,
-    type PersistedModelSelection
+    type PersistedAiConfig
 } from "./decoupledLogic/persistedAiConfig";
 import { fetchAiModels } from "core/tools/fetchAiModels";
-import type { GetTokenResult } from "core/ports/Ai";
 import * as userConfigs from "core/usecases/userConfigs";
 import { assert } from "tsafe";
+import type { AiGateway } from "core/ports/AiGateway";
 
-function getTokenResultToAuth(result: GetTokenResult): State.Provider.Managed["auth"] {
-    switch (result.status) {
+function accessTokenResultToAuth(
+    result: AiGateway.AccessTokenResult
+): State.AiProvider.Managed["auth"] {
+    if (result.ok) {
+        return {
+            stateDescription: "authenticated",
+            accessToken: result.accessToken
+        };
+    }
+
+    switch (result.error.kind) {
         case "no-account":
             return { stateDescription: "no account" };
-        case "error":
+        case "unexpected":
             return { stateDescription: "error" };
-        case "success":
-            return { stateDescription: "authenticated", token: result.token };
     }
 }
 
-function toPersistedSelection(
-    selectedModel: string | undefined
-): PersistedModelSelection {
-    return {
-        modelId: selectedModel ?? null
-    };
-}
-
-function fromPersistedSelection(
-    selection: PersistedModelSelection | undefined
-): string | undefined {
-    return selection?.modelId ?? undefined;
+async function getAccessTokenSafely(
+    aiGateway: AiGateway
+): Promise<AiGateway.AccessTokenResult> {
+    try {
+        return await aiGateway.getAccessToken();
+    } catch (cause) {
+        return {
+            ok: false,
+            error: {
+                kind: "unexpected",
+                cause: cause instanceof Error ? cause : new Error(String(cause))
+            }
+        };
+    }
 }
 
 export const thunks = {
@@ -46,24 +54,39 @@ export const thunks = {
 
             return paramsOfBootstrapCore.isAiEnabled;
         },
-    refreshToken:
+    refreshAccessToken:
         (params: { providerId: string }) =>
         async (...args) => {
             const { providerId } = params;
-            const [dispatch, , { ai }] = args;
+            const [dispatch, , { aiGateways }] = args;
 
-            const aiProvider = ai.find(aiProvider => aiProvider.id === providerId);
+            const aiGateway = aiGateways.find(aiGateway => aiGateway.id === providerId);
 
-            assert(aiProvider !== undefined);
+            assert(aiGateway !== undefined);
 
-            const result = await aiProvider.getToken();
+            dispatch(actions.managedAuthFetchStarted({ providerId }));
+
+            const result = await getAccessTokenSafely(aiGateway);
 
             dispatch(
                 actions.managedAuthRefreshed({
                     providerId,
-                    auth: getTokenResultToAuth(result)
+                    auth: accessTokenResultToAuth(result)
                 })
             );
+
+            if (!result.ok) {
+                return;
+            }
+
+            dispatch(actions.modelsFetchStarted({ providerId }));
+
+            try {
+                const models = await aiGateway.listModels(result.accessToken);
+                dispatch(actions.modelsLoaded({ providerId, models }));
+            } catch {
+                dispatch(actions.modelsFetchFailed({ providerId }));
+            }
         },
     setActiveProvider:
         (params: { activeProviderId: string }) =>
@@ -97,7 +120,7 @@ export const thunks = {
     addCustomProvider:
         (params: {
             name: string;
-            provider: string;
+            protocol: string;
             apiBase: string;
             apiKey: string;
             models: State.AiModel[];
@@ -106,25 +129,30 @@ export const thunks = {
         }) =>
         async (...args) => {
             const {
-                name,
-                provider,
+                name: providerName,
+                protocol,
                 apiBase,
                 apiKey,
                 models,
                 selectedModelId,
                 doSetAsDefault
             } = params;
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
 
             const providerId = crypto.randomUUID();
+            const stateBeforeAddition = getState()[name];
+
+            assert(stateBeforeAddition.stateDescription === "initialized");
+
+            const previousActiveProviderId = stateBeforeAddition.activeProviderId;
 
             dispatch(
                 actions.addCustomProvider({
-                    provider: {
+                    aiProvider: {
                         kind: "custom",
                         id: providerId,
-                        name,
-                        provider,
+                        name: providerName,
+                        protocol,
                         apiBase,
                         apiKey,
                         models: { stateDescription: "loaded", availableModels: models },
@@ -137,13 +165,23 @@ export const thunks = {
                 dispatch(actions.activeProviderChanged({ activeProviderId: providerId }));
             }
 
-            await dispatch(privateThunks.persistConfig());
+            try {
+                await dispatch(privateThunks.persistConfig());
+            } catch (error) {
+                dispatch(actions.deleteCustomProvider({ providerId }));
+                dispatch(
+                    actions.activeProviderChanged({
+                        activeProviderId: previousActiveProviderId
+                    })
+                );
+                throw error;
+            }
         },
     editCustomProvider:
         (params: {
             providerId: string;
             name: string;
-            provider: string;
+            protocol: string;
             apiBase: string;
             apiKey: string;
             models: State.AiModel[];
@@ -154,7 +192,7 @@ export const thunks = {
             const {
                 providerId,
                 name,
-                provider,
+                protocol,
                 apiBase,
                 apiKey,
                 models,
@@ -167,7 +205,7 @@ export const thunks = {
                 actions.editCustomProvider({
                     providerId,
                     name: name,
-                    provider,
+                    protocol,
                     apiBase,
                     apiKey,
                     models,
@@ -184,13 +222,13 @@ export const thunks = {
     // Command-query thunk: the connection-test result is purely UI-local (it never
     // touches the persisted state), so returning it here is intentional.
     testCustomProviderConnection:
-        (params: { provider: string; apiBase: string; apiKey: string }) =>
+        (params: { protocol: string; apiBase: string; apiKey: string }) =>
         async (): Promise<{ models: State.AiModel[] }> => {
-            const { provider, apiBase, apiKey } = params;
+            const { protocol, apiBase, apiKey } = params;
             const models = await fetchAiModels({
-                provider,
+                protocol,
                 apiBase,
-                token: apiKey
+                apiKey
             });
             return { models };
         }
@@ -204,23 +242,20 @@ const privateThunks = {
 
             const state = getState()[name];
 
-            if (state.stateDescription !== "initialized") return;
+            assert(state.stateDescription === "initialized");
 
             const aiConfig: PersistedAiConfig = {
                 customProviders: state.providers
-                    .filter((p): p is State.Provider.Custom => p.kind === "custom")
-                    .map(({ id, name, provider, apiBase, apiKey }) => ({
+                    .filter((p): p is State.AiProvider.Custom => p.kind === "custom")
+                    .map(({ id, name, protocol, apiBase, apiKey }) => ({
                         id,
                         name,
-                        provider,
+                        provider: protocol,
                         apiBase,
                         apiKey
                     })),
                 selections: Object.fromEntries(
-                    state.providers.map(p => [
-                        p.id,
-                        toPersistedSelection(p.selectedModelId)
-                    ])
+                    state.providers.map(p => [p.id, p.selectedModelId ?? null])
                 ),
                 activeProviderId: state.activeProviderId ?? null
             };
@@ -235,81 +270,52 @@ const privateThunks = {
     initialize:
         () =>
         async (...args) => {
-            const [dispatch, getState, { ai }] = args;
+            const [dispatch, getState, { aiGateways }] = args;
 
-            // `ai` (instance-configured adapters) may be empty: the feature can be
-            // enabled with no managed gateway, in which case only custom providers
-            // are loaded. Keep each adapter and its token result for model fetching.
-            let managedEntries;
-            let customProviders: State.Provider.Custom[];
+            // `aiGateways` may be empty: the feature can be enabled with only custom
+            // providers. Managed gateway authentication is deliberately provider-local:
+            // it must never prevent the global use case from becoming initialized.
+            let managedProviders: State.AiProvider.Managed[];
+            let customProviders: State.AiProvider.Custom[];
+            let persisted: PersistedAiConfig | null;
 
             try {
-                const persisted = parseAiConfigStr({
+                persisted = parseAiConfigStr({
                     aiConfigStr: userConfigs.selectors.userConfigs(getState()).aiConfigStr
                 });
 
-                managedEntries = await Promise.all(
-                    ai.map(async aiProvider => {
-                        const tokenResult = await aiProvider.getToken();
-
-                        const provider: State.Provider.Managed = {
-                            kind: "managed",
-                            id: aiProvider.id,
-                            name: aiProvider.name,
-                            provider: aiProvider.provider,
-                            description: aiProvider.description,
-                            accountCreation: aiProvider.accountCreation,
-                            webUiUrl: aiProvider.webUiUrl,
-                            apiBase: aiProvider.apiBase,
-                            auth: getTokenResultToAuth(tokenResult),
-                            models:
-                                tokenResult.status === "success"
-                                    ? { stateDescription: "fetching" }
-                                    : undefined,
-                            selectedModelId: fromPersistedSelection(
-                                persisted?.selections[aiProvider.id]
-                            )
-                        };
-
-                        return { provider, aiProvider, tokenResult };
-                    })
-                );
-
-                const managedProviders = managedEntries.map(({ provider }) => provider);
+                managedProviders = aiGateways.map(aiGateway => ({
+                    kind: "managed",
+                    id: aiGateway.id,
+                    name: aiGateway.name,
+                    protocol: aiGateway.protocol,
+                    description: aiGateway.description,
+                    accountCreation: aiGateway.accountCreation,
+                    webUiUrl: aiGateway.webUiUrl,
+                    apiBase: aiGateway.apiBase,
+                    auth: { stateDescription: "fetching" },
+                    models: undefined,
+                    selectedModelId: persisted?.selections[aiGateway.id] ?? undefined
+                }));
 
                 customProviders = (persisted?.customProviders ?? []).map(p => ({
                     kind: "custom",
                     id: p.id,
                     name: p.name,
-                    provider: p.provider,
+                    protocol: p.provider,
                     apiBase: p.apiBase,
                     apiKey: p.apiKey,
                     models: { stateDescription: "fetching" },
-                    selectedModelId: fromPersistedSelection(persisted?.selections[p.id])
+                    selectedModelId: persisted?.selections[p.id] ?? undefined
                 }));
 
                 const providers = [...managedProviders, ...customProviders];
-                const defaultableProviderIds = [
-                    ...managedEntries
-                        .filter(({ tokenResult }) => tokenResult.status === "success")
-                        .map(({ provider }) => provider.id),
-                    ...customProviders.map(provider => provider.id)
-                ];
-
-                const activeProviderId = ((): string | undefined => {
-                    // Never saved a preference → default to the first usable provider.
-                    if (persisted === null) {
-                        return defaultableProviderIds[0];
-                    }
-
-                    const stored = persisted.activeProviderId ?? undefined;
-
-                    if (stored !== undefined && defaultableProviderIds.includes(stored)) {
-                        return stored;
-                    }
-
-                    return defaultableProviderIds[0];
-                })();
+                const storedActiveProviderId = persisted?.activeProviderId ?? undefined;
+                const activeProviderId = providers.some(
+                    provider => provider.id === storedActiveProviderId
+                )
+                    ? storedActiveProviderId
+                    : undefined;
 
                 dispatch(actions.initialized({ providers, activeProviderId }));
             } catch {
@@ -317,35 +323,78 @@ const privateThunks = {
                 return;
             }
 
-            // Awaited so the whole AI context (providers + their model lists) is
-            // ready before `initialize` resolves. Bootstrap awaits this thunk, and
-            // `getCoreSync` suspends until bootstrap resolves, so the launcher's
-            // one-shot read of `aiOnyxiaContext` always sees the loaded models.
+            // The UI is already usable at this point. These calls remain awaited by the
+            // initialization promise so the launcher's one-shot AI context contains the
+            // final authentication and model-list results.
             await Promise.all([
-                ...managedEntries.map(async ({ provider, aiProvider, tokenResult }) => {
-                    if (tokenResult.status !== "success") return;
+                ...aiGateways.map(async aiGateway => {
+                    const accessTokenResult = await getAccessTokenSafely(aiGateway);
+
+                    dispatch(
+                        actions.managedAuthRefreshed({
+                            providerId: aiGateway.id,
+                            auth: accessTokenResultToAuth(accessTokenResult)
+                        })
+                    );
+
+                    if (!accessTokenResult.ok) return;
+
+                    dispatch(actions.modelsFetchStarted({ providerId: aiGateway.id }));
+
                     try {
-                        const models = await aiProvider.listModels(tokenResult.token);
+                        const models = await aiGateway.listModels(
+                            accessTokenResult.accessToken
+                        );
                         dispatch(
                             actions.modelsLoaded({
-                                providerId: provider.id,
+                                providerId: aiGateway.id,
                                 models
                             })
                         );
                     } catch {
-                        dispatch(actions.modelsFetchFailed({ providerId: provider.id }));
+                        dispatch(
+                            actions.modelsFetchFailed({
+                                providerId: aiGateway.id
+                            })
+                        );
                     }
                 }),
                 ...customProviders.map(p =>
                     dispatchFetchedModels({
                         dispatch,
                         providerId: p.id,
-                        provider: p.provider,
+                        protocol: p.protocol,
                         apiBase: p.apiBase,
                         apiKey: p.apiKey
                     })
                 )
             ]);
+
+            const state = getState()[name];
+
+            assert(state.stateDescription === "initialized");
+
+            const activeProvider = state.providers.find(
+                provider => provider.id === state.activeProviderId
+            );
+            const activeProviderIsUsable =
+                activeProvider !== undefined &&
+                (activeProvider.kind === "custom" ||
+                    activeProvider.auth.stateDescription === "authenticated");
+
+            if (activeProviderIsUsable) {
+                return;
+            }
+
+            dispatch(
+                actions.activeProviderChanged({
+                    activeProviderId: state.providers.find(
+                        provider =>
+                            provider.kind === "custom" ||
+                            provider.auth.stateDescription === "authenticated"
+                    )?.id
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -355,10 +404,10 @@ const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
 
 export const protectedThunks = {
     // Initiates the AI use-case. Dispatched once by bootstrap, *after* the managed AI
-    // adapters have been wired into `context.ai`. Idempotent: a second dispatch
+    // gateways have been wired into `context.aiGateways`. Idempotent: a second dispatch
     // returns the same in-flight promise. This is the ONLY place that starts the
     // work — consumers must use `waitForInitialization`, never call this, so they
-    // can't lock the context before `context.ai` is populated.
+    // can't lock the context before `context.aiGateways` is populated.
     initialize:
         () =>
         (...args): Promise<void> => {
@@ -378,7 +427,7 @@ export const protectedThunks = {
     // immediately. Crucially it never triggers the init itself: callers like the
     // launcher's `getXOnyxiaContext` can run very early (restorable-config
     // autocomplete, before bootstrap has wired up the managed adapters), and a
-    // premature init would build the providers from an empty `context.ai` and
+    // premature init would build the providers from an empty `context.aiGateways` and
     // freeze that wrong state. Early callers simply see the AI context as
     // not-yet-available; the real init happens later in bootstrap.
     waitForInitialization:
@@ -401,13 +450,13 @@ async function dispatchFetchedModels(params: {
             | ReturnType<typeof actions.modelsFetchFailed>
     ) => void;
     providerId: string;
-    provider: string;
+    protocol: string;
     apiBase: string;
     apiKey: string;
 }): Promise<void> {
-    const { dispatch, providerId, provider, apiBase, apiKey } = params;
+    const { dispatch, providerId, protocol, apiBase, apiKey } = params;
     try {
-        const models = await fetchAiModels({ provider, apiBase, token: apiKey });
+        const models = await fetchAiModels({ protocol, apiBase, apiKey });
         dispatch(actions.modelsLoaded({ providerId, models }));
     } catch {
         dispatch(actions.modelsFetchFailed({ providerId }));

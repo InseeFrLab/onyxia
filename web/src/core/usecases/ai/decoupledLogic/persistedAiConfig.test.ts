@@ -31,10 +31,10 @@ const sampleConfig: PersistedAiConfig = {
         }
     ],
     selections: {
-        p1: { modelId: "gpt-4" },
-        p2: { modelId: "devstral-small-latest" },
-        p3: { modelId: "claude-sonnet-4-6" },
-        region1: { modelId: null }
+        p1: "gpt-4",
+        p2: "devstral-small-latest",
+        p3: "claude-sonnet-4-6",
+        region1: null
     },
     activeProviderId: "p1"
 };
@@ -68,9 +68,26 @@ describe(symToStr({ parseAiConfigStr }), () => {
         ).toStrictEqual(sampleConfig);
     });
 
-    it("preserves a null modelId selection", () => {
+    it("normalizes model selections stored in the previous format", () => {
+        const legacyConfig = {
+            ...sampleConfig,
+            selections: {
+                p1: { modelId: "gpt-4" },
+                region1: { modelId: null }
+            }
+        };
+
+        expect(
+            parseAiConfigStr({ aiConfigStr: JSON.stringify(legacyConfig) })?.selections
+        ).toStrictEqual({
+            p1: "gpt-4",
+            region1: null
+        });
+    });
+
+    it("preserves a null model selection", () => {
         const parsed = parseAiConfigStr({ aiConfigStr: JSON.stringify(sampleConfig) });
-        expect(parsed?.selections.region1).toStrictEqual({ modelId: null });
+        expect(parsed?.selections.region1).toBeNull();
     });
 });
 

@@ -1,3 +1,5 @@
+import type { CustomProviderProtocol } from "core/usecases/aiCustomProviderFormUiController/decoupledLogic/customProviderProtocol";
+
 export type AiModel = {
     id: string;
     name: string;
@@ -5,7 +7,7 @@ export type AiModel = {
 
 export type FormValues = {
     name: string;
-    provider: string;
+    protocol: string;
     apiBase: string;
     apiKey: string;
     selectedModelId: string;
@@ -25,10 +27,10 @@ export type ViewProps = {
     doSetAsDefault: boolean;
     canSave: boolean;
     canTest: boolean;
-    supportedProtocols: readonly string[];
+    supportedProtocols: readonly CustomProviderProtocol[];
     onClose: () => void;
     onFieldChange: (key: keyof FormValues, value: string) => void;
-    onProviderChange: (provider: string) => void;
+    onProtocolChange: (protocol: CustomProviderProtocol) => void;
     onTest: () => void;
     onSave: () => void;
     onDoSetAsDefaultChange: (doSetAsDefault: boolean) => void;

@@ -1,6 +1,6 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
-import { customProviderProtocols } from "./decoupledLogic/resolveApiBaseOnProviderChange";
+import { customProviderProtocols } from "./decoupledLogic/customProviderProtocol";
 import { name } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
@@ -14,7 +14,7 @@ const isFormSubmittable = createSelector(state, state => {
 
     return (
         formValues.name.trim() !== "" &&
-        formValues.provider !== "" &&
+        formValues.protocol !== "" &&
         formValues.apiBase.trim() !== "" &&
         formValues.apiKey.trim() !== "" &&
         formValues.selectedModelId !== "" &&
@@ -29,7 +29,7 @@ const canTestConnection = createSelector(state, state => {
     }
 
     return (
-        state.formValues.provider !== "" &&
+        state.formValues.protocol !== "" &&
         state.formValues.apiBase.trim() !== "" &&
         state.formValues.apiKey.trim() !== ""
     );
@@ -47,7 +47,7 @@ const submittableForm = createSelector(state, isFormSubmittable, (state, isValid
     return {
         editedProviderId: state.editedProviderId,
         name: state.formValues.name.trim(),
-        provider: state.formValues.provider,
+        protocol: state.formValues.protocol,
         apiBase: state.formValues.apiBase.trim(),
         apiKey: state.formValues.apiKey.trim(),
         models: state.connectionTest.models,

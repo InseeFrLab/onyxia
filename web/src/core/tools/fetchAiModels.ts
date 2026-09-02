@@ -2,25 +2,28 @@ import { z } from "zod";
 
 export type AiModel = { id: string; name: string };
 
+const requestTimeoutMs = 10_000;
+
 /** Lists the models exposed by a user-added provider using its native protocol. */
 export async function fetchAiModels(params: {
-    provider: string;
+    protocol: string;
     apiBase: string;
-    token: string;
+    apiKey: string;
 }): Promise<AiModel[]> {
-    const { provider, apiBase, token } = params;
+    const { protocol, apiBase, apiKey } = params;
 
     const headers: Record<string, string> =
-        provider === "anthropic"
+        protocol === "anthropic"
             ? {
-                  "x-api-key": token,
+                  "x-api-key": apiKey,
                   "anthropic-version": "2023-06-01",
                   "anthropic-dangerous-direct-browser-access": "true"
               }
-            : { Authorization: `Bearer ${token}` };
+            : { Authorization: `Bearer ${apiKey}` };
 
     const response = await fetch(`${apiBase}/models`, {
-        headers
+        headers,
+        signal: AbortSignal.timeout(requestTimeoutMs)
     });
 
     if (!response.ok) {
@@ -29,7 +32,7 @@ export async function fetchAiModels(params: {
 
     const json = await response.json();
 
-    if (provider === "anthropic") {
+    if (protocol === "anthropic") {
         try {
             const { data } = z
                 .object({

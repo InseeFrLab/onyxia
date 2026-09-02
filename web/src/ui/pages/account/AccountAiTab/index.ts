@@ -1,3 +1,1 @@
-import { AccountAiTab } from "./AccountAiTab";
-
-export default AccountAiTab;
+export { AccountAiTab as default } from "ui/pages/account/AccountAiTab/AccountAiTab";

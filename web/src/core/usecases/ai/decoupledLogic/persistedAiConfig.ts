@@ -1,9 +1,7 @@
 import { z } from "zod";
 
 // undefined isn't representable in JSON, so absent selections are stored as null.
-export type PersistedModelSelection = {
-    modelId: string | null;
-};
+export type PersistedModelSelection = string | null;
 
 export type PersistedCustomProvider = {
     id: string;
@@ -26,7 +24,15 @@ export type PersistedAiConfig = {
     activeProviderId: string | null;
 };
 
-const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
+const zPersistedModelSelection = z
+    .union([z.string().nullable(), z.object({ modelId: z.string().nullable() })])
+    .transform(selection =>
+        typeof selection === "object" && selection !== null
+            ? selection.modelId
+            : selection
+    );
+
+const zPersistedAiConfig = z.object({
     customProviders: z.array(
         z.object({
             id: z.string(),
@@ -36,12 +42,7 @@ const zPersistedAiConfig: z.ZodType<PersistedAiConfig> = z.object({
             apiKey: z.string()
         })
     ),
-    selections: z.record(
-        z.string(),
-        z.object({
-            modelId: z.string().nullable()
-        })
-    ),
+    selections: z.record(z.string(), zPersistedModelSelection),
     activeProviderId: z.string().nullable()
 });
 

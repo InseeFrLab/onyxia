@@ -19,13 +19,13 @@ import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { useCoreState, getCoreSync } from "core";
 import { getIconUrlByName } from "lazy-icons";
-import { ProviderValueField } from "./ProviderValueField";
-import { ModelsSection } from "./ModelsSection";
-import { CustomProviderFormDialog } from "./CustomProviderFormDialog";
+import { ProviderValueField } from "ui/pages/account/AccountAiTab/ProviderValueField";
+import { ModelsSection } from "ui/pages/account/AccountAiTab/ModelsSection";
+import { CustomProviderFormDialog } from "ui/pages/account/AccountAiTab/CustomProviderFormDialog";
 import {
     ConfirmCustomProviderDeletionDialog,
     type Props as ConfirmCustomProviderDeletionDialogProps
-} from "./ConfirmCustomProviderDeletionDialog";
+} from "ui/pages/account/AccountAiTab/ConfirmCustomProviderDeletionDialog";
 import { Divider } from "@mui/material";
 
 export type Props = {
@@ -57,7 +57,7 @@ export const AccountAiTab = memo((props: Props) => {
     );
 
     const onRefreshClickFactory = useCallbackFactory(([providerId]: [string]) =>
-        ai.refreshToken({ providerId })
+        ai.refreshAccessToken({ providerId })
     );
 
     const onSetDefaultProviderFactory = useCallbackFactory(([providerId]: [string]) =>
@@ -172,6 +172,10 @@ export const AccountAiTab = memo((props: Props) => {
                             </div>
                         </div>
 
+                        {managedProvider.auth.stateDescription === "fetching" && (
+                            <CircularProgress />
+                        )}
+
                         {managedProvider.auth.stateDescription === "no account" &&
                             (() => {
                                 const { accountCreation } = managedProvider;
@@ -262,9 +266,9 @@ export const AccountAiTab = memo((props: Props) => {
                                 />
                                 <ProviderValueField
                                     label={t("token")}
-                                    value={managedProvider.auth.token}
+                                    value={managedProvider.auth.accessToken}
                                     onRequestCopy={onFieldRequestCopyFactory(
-                                        managedProvider.auth.token
+                                        managedProvider.auth.accessToken
                                     )}
                                     isSensitiveInformation={true}
                                 />

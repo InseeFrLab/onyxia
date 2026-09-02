@@ -20,7 +20,7 @@ const commonArgs: Pick<
     | "supportedProtocols"
     | "onClose"
     | "onFieldChange"
-    | "onProviderChange"
+    | "onProtocolChange"
     | "onTest"
     | "onSave"
     | "onDoSetAsDefaultChange"
@@ -28,7 +28,7 @@ const commonArgs: Pick<
     supportedProtocols: ["openai", "openai-compatible", "mistral", "anthropic"],
     onClose: doNothing,
     onFieldChange: doNothing,
-    onProviderChange: doNothing,
+    onProtocolChange: doNothing,
     onTest: doNothing,
     onSave: doNothing,
     onDoSetAsDefaultChange: doNothing
@@ -41,7 +41,7 @@ export const Default: Story = {
         isAlreadyDefault: false,
         values: {
             name: "",
-            provider: "",
+            protocol: "",
             apiBase: "",
             apiKey: "",
             selectedModelId: ""
@@ -60,7 +60,7 @@ export const Filled: Story = {
         isAlreadyDefault: false,
         values: {
             name: "Custom Provider 1",
-            provider: "openai",
+            protocol: "openai",
             apiBase: "https://llm.example.test/api",
             apiKey: "storybook-api-key",
             selectedModelId: "qwen3-vl"
