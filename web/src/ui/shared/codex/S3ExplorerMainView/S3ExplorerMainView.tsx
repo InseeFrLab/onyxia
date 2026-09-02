@@ -1023,16 +1023,71 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                         <div className={classes.emptyStateDescription}>
                                             {t("empty prefix upload description")}
                                         </div>
+                                        <div className={classes.emptyStateChoices}>
+                                            <div className={classes.emptyStateChoice}>
+                                                <Button
+                                                    className={
+                                                        classes.emptyStateChoiceButton
+                                                    }
+                                                    startIcon={getIconUrlByName(
+                                                        "UploadFileOutlined"
+                                                    )}
+                                                    disabled={
+                                                        isUploadToListedPrefixDisabled
+                                                    }
+                                                    onClick={openFilePicker}
+                                                >
+                                                    {t("upload files")}
+                                                </Button>
+                                                <div
+                                                    className={
+                                                        classes.emptyStateChoiceDescription
+                                                    }
+                                                >
+                                                    {t(
+                                                        "upload files from device description"
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {onRequestFiles === undefined ? null : (
+                                                <div className={classes.emptyStateChoice}>
+                                                    <Button
+                                                        className={
+                                                            classes.emptyStateChoiceButton
+                                                        }
+                                                        variant="secondary"
+                                                        startIcon={getIconUrlByName(
+                                                            "DriveFolderUpload"
+                                                        )}
+                                                        onClick={() => {
+                                                            assert(
+                                                                listedPrefix.s3Uri
+                                                                    .isDelimiterTerminated
+                                                            );
+
+                                                            onRequestFiles({
+                                                                s3Uri: listedPrefix.s3Uri
+                                                            });
+                                                        }}
+                                                    >
+                                                        {t("create upload link")}
+                                                    </Button>
+                                                    <div
+                                                        className={
+                                                            classes.emptyStateChoiceDescription
+                                                        }
+                                                    >
+                                                        {t(
+                                                            "create upload link description"
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className={classes.emptyStateDropHint}>
+                                            {t("drop files here hint")}
+                                        </div>
                                         <div className={classes.emptyStateActions}>
-                                            <Button
-                                                startIcon={getIconUrlByName(
-                                                    "UploadFileOutlined"
-                                                )}
-                                                disabled={isUploadToListedPrefixDisabled}
-                                                onClick={openFilePicker}
-                                            >
-                                                {t("upload files here")}
-                                            </Button>
                                             <Button
                                                 variant="secondary"
                                                 startIcon={getIconUrlByName("ArrowBack")}
@@ -1040,9 +1095,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                             >
                                                 {t("go back")}
                                             </Button>
-                                        </div>
-                                        <div className={classes.emptyStateDropHint}>
-                                            {t("drop files here hint")}
                                         </div>
                                     </div>
                                 </div>
@@ -1397,7 +1449,32 @@ const useStyles = tss
         },
         emptyStateDropHint: {
             color: theme.colors.useCases.typography.textSecondary,
-            marginTop: theme.spacing(0.5)
+            marginTop: theme.spacing(2),
+            fontStyle: "italic"
+        },
+        emptyStateChoices: {
+            width: "min(580px, 100%)",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: theme.spacing(3),
+            marginTop: theme.spacing(1)
+        },
+        emptyStateChoice: {
+            width: "min(270px, 100%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: theme.spacing(1)
+        },
+        emptyStateChoiceButton: {
+            width: "100%"
+        },
+        emptyStateChoiceDescription: {
+            ...theme.typography.variants["body 2"].style,
+            color: theme.colors.useCases.typography.textSecondary,
+            lineHeight: 1.45
         },
         emptyStateActions: {
             display: "flex",
@@ -1908,7 +1985,9 @@ const { i18n } = declareComponentKeys<
     | "empty prefix description"
     | "empty prefix upload description"
     | "upload files"
-    | "upload files here"
+    | "upload files from device description"
+    | "create upload link"
+    | "create upload link description"
     | "drop files here hint"
     | "new folder"
     | "name"
