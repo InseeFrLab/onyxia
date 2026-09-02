@@ -13,6 +13,8 @@ type Story = StoryObj<typeof meta>;
 
 const baseArgs: S3FileRequestProps = {
     expirationTime: Date.now() + 24 * 60 * 60 * 1_000,
+    s3ServerUrl: "https://minio.lab.sspcloud.fr",
+    s3UriStr: "s3://garronej/requested-files/",
     uploads: [],
     onUploadFiles: action("uploadFiles"),
     onCancelUpload: action("cancelUpload"),
