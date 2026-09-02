@@ -403,9 +403,12 @@ export const translations: Translations<"zh-CN"> = {
             `没有键以 "${s3UriStr}" 开头的对象。`,
         "this prefix is empty": "此前缀为空",
         "empty prefix description": "上传文件或创建文件夹以开始填充此位置。",
-        "empty prefix upload description": "在此上传文件，或将文件拖放到此区域。",
+        "empty prefix upload description": "选择要如何在此处添加文件。",
         "upload files": "上传文件",
-        "upload files here": "在此上传文件",
+        "upload files from device description": "从计算机中选择要上传到此处的文件。",
+        "create upload link": "创建上传链接",
+        "create upload link description":
+            "生成一个可共享的链接，让其他人可以将文件上传到此处。",
         "drop files here hint": "将文件拖放到此区域中的任意位置即可上传。",
         "new folder": "新建文件夹",
         name: "名称",
@@ -445,7 +448,7 @@ export const translations: Translations<"zh-CN"> = {
         "generation failed": "无法生成上传链接。",
         retry: "重试",
         "security note":
-            "在链接过期之前，任何拥有此链接的人都可以将文件上传到此文件夹。此链接不能用于查看或下载现有文件。",
+            "在链接过期之前，任何拥有此链接的人都可以将文件上传到此文件夹。此链接不能用于查看或下载现有文件。但是，如果上传文件与现有文件的名称和路径相同，现有文件将被替换。",
         "validity duration one hour": "1 小时",
         "validity duration one day": "1 天",
         "validity duration one week": "1 周",

@@ -390,6 +390,19 @@ Rules:
 - The overlay should confirm the import action
 - The overlay should not repeat the current S3 URI or prefix label
 
+# Empty Prefix
+
+When the listed prefix is empty, present two distinct ways to add files:
+
+- upload files from the current device through `onPutObjects`
+- create a shareable upload link through `onRequestFiles`, when that callback is
+  available
+
+The upload-link action must pass the currently listed prefix to
+`onRequestFiles`. Each action should include concise supporting text, while the
+back action remains visually secondary. Do not render the upload-link choice
+when `onRequestFiles` is undefined.
+
 # Error state
 
 When: `listedPrefix.isErrored === true`

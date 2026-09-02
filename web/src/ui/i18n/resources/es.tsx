@@ -435,10 +435,13 @@ export const translations: Translations<"es"> = {
         "this prefix is empty": "Este prefijo está vacío",
         "empty prefix description":
             "Sube archivos o crea una carpeta para empezar a llenar esta ubicación.",
-        "empty prefix upload description":
-            "Sube archivos aquí o arrástralos y suéltalos en esta zona.",
+        "empty prefix upload description": "Elige cómo quieres añadir archivos aquí.",
         "upload files": "Subir archivos",
-        "upload files here": "Subir archivos aquí",
+        "upload files from device description":
+            "Selecciona archivos de tu ordenador para subirlos aquí.",
+        "create upload link": "Crear enlace de subida",
+        "create upload link description":
+            "Genera un enlace para compartir que permita a otra persona subir archivos aquí.",
         "drop files here hint":
             "Suelta archivos en cualquier lugar de esta zona para subirlos.",
         "new folder": "Nueva carpeta",
@@ -480,7 +483,7 @@ export const translations: Translations<"es"> = {
         "generation failed": "No se ha podido generar el enlace de subida.",
         retry: "Reintentar",
         "security note":
-            "Cualquier persona que tenga este enlace puede subir archivos a esta carpeta hasta que caduque. El enlace no permite ver ni descargar los archivos existentes.",
+            "Cualquier persona que tenga este enlace puede subir archivos a esta carpeta hasta que caduque. El enlace no permite ver ni descargar los archivos existentes. Sin embargo, un archivo subido reemplazará a uno existente si tiene el mismo nombre y la misma ruta.",
         "validity duration one hour": "1 hora",
         "validity duration one day": "1 día",
         "validity duration one week": "1 semana",

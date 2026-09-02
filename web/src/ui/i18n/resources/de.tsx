@@ -444,9 +444,13 @@ export const translations: Translations<"de"> = {
         "empty prefix description":
             "Lade Dateien hoch oder erstelle einen Ordner, um diesen Speicherort zu befüllen.",
         "empty prefix upload description":
-            "Lade hier Dateien hoch oder ziehe sie per Drag-and-drop in diesen Bereich.",
+            "Wähle aus, wie Dateien hier hinzugefügt werden sollen.",
         "upload files": "Dateien hochladen",
-        "upload files here": "Dateien hier hochladen",
+        "upload files from device description":
+            "Wähle Dateien auf deinem Computer aus, um sie hier hochzuladen.",
+        "create upload link": "Upload-Link erstellen",
+        "create upload link description":
+            "Erstelle einen teilbaren Link, über den eine andere Person hier Dateien hochladen kann.",
         "drop files here hint":
             "Lege Dateien irgendwo in diesem Bereich ab, um sie hochzuladen.",
         "new folder": "Neuer Ordner",
@@ -488,7 +492,7 @@ export const translations: Translations<"de"> = {
         "generation failed": "Der Upload-Link konnte nicht generiert werden.",
         retry: "Erneut versuchen",
         "security note":
-            "Jede Person mit diesem Link kann bis zu dessen Ablauf Dateien in diesen Ordner hochladen. Der Link gewährt keinen Zugriff zum Anzeigen oder Herunterladen vorhandener Dateien.",
+            "Jede Person mit diesem Link kann bis zu dessen Ablauf Dateien in diesen Ordner hochladen. Der Link gewährt keinen Zugriff zum Anzeigen oder Herunterladen vorhandener Dateien. Eine hochgeladene Datei ersetzt jedoch eine vorhandene Datei, wenn Name und Pfad übereinstimmen.",
         "validity duration one hour": "1 Stunde",
         "validity duration one day": "1 Tag",
         "validity duration one week": "1 Woche",

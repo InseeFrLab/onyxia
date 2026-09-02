@@ -434,10 +434,13 @@ export const translations: Translations<"it"> = {
         "this prefix is empty": "Questo prefisso è vuoto",
         "empty prefix description":
             "Carica file o crea una cartella per iniziare a popolare questa posizione.",
-        "empty prefix upload description":
-            "Carica file qui oppure trascinali e rilasciali in quest'area.",
+        "empty prefix upload description": "Scegli come aggiungere file qui.",
         "upload files": "Carica file",
-        "upload files here": "Carica file qui",
+        "upload files from device description":
+            "Seleziona dal computer i file da caricare qui.",
+        "create upload link": "Crea link di caricamento",
+        "create upload link description":
+            "Genera un link condivisibile che consenta a un'altra persona di caricare file qui.",
         "drop files here hint":
             "Rilascia file in qualsiasi punto di quest'area per caricarli.",
         "new folder": "Nuova cartella",
@@ -479,7 +482,7 @@ export const translations: Translations<"it"> = {
         "generation failed": "Non è stato possibile generare il link di caricamento.",
         retry: "Riprova",
         "security note":
-            "Chiunque disponga di questo link può caricare file in questa cartella fino alla scadenza. Il link non consente di visualizzare o scaricare i file esistenti.",
+            "Chiunque disponga di questo link può caricare file in questa cartella fino alla scadenza. Il link non consente di visualizzare o scaricare i file esistenti. Tuttavia, un file caricato sostituirà un file esistente se ha lo stesso nome e percorso.",
         "validity duration one hour": "1 ora",
         "validity duration one day": "1 giorno",
         "validity duration one week": "1 settimana",

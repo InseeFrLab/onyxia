@@ -296,10 +296,13 @@ export const translations: Translations<"en"> = {
         "this prefix is empty": "This prefix is empty",
         "empty prefix description":
             "Upload files or create a folder to start populating this location.",
-        "empty prefix upload description":
-            "Upload files here or drag and drop them into this area.",
+        "empty prefix upload description": "Choose how files should be added here.",
         "upload files": "Upload files",
-        "upload files here": "Upload files here",
+        "upload files from device description":
+            "Select files from your computer to upload here.",
+        "create upload link": "Create upload link",
+        "create upload link description":
+            "Generate a shareable link that lets someone else upload files here.",
         "drop files here hint": "Drop files anywhere in this area to upload them.",
         "new folder": "New folder",
         name: "Name",
@@ -340,7 +343,7 @@ export const translations: Translations<"en"> = {
         "generation failed": "The upload link could not be generated.",
         retry: "Retry",
         "security note":
-            "Anyone with this link can upload files to this folder until it expires. The link does not give access to view or download existing files.",
+            "Anyone with this link can upload files to this folder until it expires. The link does not allow them to view or download existing files. However, an uploaded file will replace an existing file if it has the same name and path.",
         "validity duration one hour": "1 hour",
         "validity duration one day": "1 day",
         "validity duration one week": "1 week",

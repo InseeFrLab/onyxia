@@ -428,9 +428,13 @@ export const translations: Translations<"fi"> = {
         "empty prefix description":
             "Lataa tiedostoja tai luo kansio aloittaaksesi tämän sijainnin täyttämisen.",
         "empty prefix upload description":
-            "Lataa tiedostoja tähän tai vedä ja pudota ne tälle alueelle.",
+            "Valitse, miten tiedostoja lisätään tähän sijaintiin.",
         "upload files": "Lataa tiedostoja",
-        "upload files here": "Lataa tiedostoja tähän",
+        "upload files from device description":
+            "Valitse tietokoneeltasi tiedostot, jotka haluat ladata tähän.",
+        "create upload link": "Luo latauslinkki",
+        "create upload link description":
+            "Luo jaettava linkki, jonka kautta toinen henkilö voi ladata tiedostoja tähän.",
         "drop files here hint":
             "Pudota tiedostoja mihin tahansa tälle alueelle ladataksesi ne.",
         "new folder": "Uusi kansio",
@@ -472,7 +476,7 @@ export const translations: Translations<"fi"> = {
         "generation failed": "Lähetyslinkkiä ei voitu luoda.",
         retry: "Yritä uudelleen",
         "security note":
-            "Kuka tahansa linkin saanut voi ladata tiedostoja tähän kansioon linkin vanhenemiseen asti. Linkki ei anna oikeutta tarkastella tai ladata olemassa olevia tiedostoja.",
+            "Kuka tahansa linkin saanut voi ladata tiedostoja tähän kansioon linkin vanhenemiseen asti. Linkki ei anna oikeutta tarkastella tai ladata olemassa olevia tiedostoja. Ladattu tiedosto kuitenkin korvaa olemassa olevan tiedoston, jos niillä on sama nimi ja polku.",
         "validity duration one hour": "1 tunti",
         "validity duration one day": "1 päivä",
         "validity duration one week": "1 viikko",

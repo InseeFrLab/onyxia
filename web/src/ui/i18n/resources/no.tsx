@@ -430,10 +430,13 @@ export const translations: Translations<"no"> = {
         "this prefix is empty": "Dette prefikset er tomt",
         "empty prefix description":
             "Last opp filer eller opprett en mappe for å begynne å fylle denne plasseringen.",
-        "empty prefix upload description":
-            "Last opp filer her eller dra og slipp dem i dette området.",
+        "empty prefix upload description": "Velg hvordan filer skal legges til her.",
         "upload files": "Last opp filer",
-        "upload files here": "Last opp filer her",
+        "upload files from device description":
+            "Velg filer fra datamaskinen din for å laste dem opp her.",
+        "create upload link": "Opprett opplastingslenke",
+        "create upload link description":
+            "Lag en delbar lenke som lar en annen person laste opp filer her.",
         "drop files here hint":
             "Slipp filer hvor som helst i dette området for å laste dem opp.",
         "new folder": "Ny mappe",
@@ -475,7 +478,7 @@ export const translations: Translations<"no"> = {
         "generation failed": "Opplastingslenken kunne ikke genereres.",
         retry: "Prøv igjen",
         "security note":
-            "Alle med denne lenken kan laste opp filer til mappen frem til lenken utløper. Lenken gir ikke tilgang til å vise eller laste ned eksisterende filer.",
+            "Alle med denne lenken kan laste opp filer til mappen frem til lenken utløper. Lenken gir ikke tilgang til å vise eller laste ned eksisterende filer. En opplastet fil erstatter imidlertid en eksisterende fil hvis de har samme navn og bane.",
         "validity duration one hour": "1 time",
         "validity duration one day": "1 dag",
         "validity duration one week": "1 uke",

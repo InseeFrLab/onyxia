@@ -434,9 +434,13 @@ export const translations: Translations<"nl"> = {
         "empty prefix description":
             "Upload bestanden of maak een map om deze locatie te vullen.",
         "empty prefix upload description":
-            "Upload hier bestanden of sleep ze naar dit gebied.",
+            "Kies hoe bestanden hier moeten worden toegevoegd.",
         "upload files": "Bestanden uploaden",
-        "upload files here": "Bestanden hier uploaden",
+        "upload files from device description":
+            "Selecteer bestanden op je computer om ze hier te uploaden.",
+        "create upload link": "Uploadlink maken",
+        "create upload link description":
+            "Maak een deelbare link waarmee iemand anders hier bestanden kan uploaden.",
         "drop files here hint": "Sleep bestanden ergens in dit gebied om ze te uploaden.",
         "new folder": "Nieuwe map",
         name: "Naam",
@@ -477,7 +481,7 @@ export const translations: Translations<"nl"> = {
         "generation failed": "De uploadlink kon niet worden gegenereerd.",
         retry: "Opnieuw proberen",
         "security note":
-            "Iedereen met deze link kan bestanden naar deze map uploaden totdat de link verloopt. De link geeft geen toegang om bestaande bestanden te bekijken of te downloaden.",
+            "Iedereen met deze link kan bestanden naar deze map uploaden totdat de link verloopt. De link geeft geen toegang om bestaande bestanden te bekijken of te downloaden. Een geüpload bestand vervangt echter een bestaand bestand als de naam en het pad hetzelfde zijn.",
         "validity duration one hour": "1 uur",
         "validity duration one day": "1 dag",
         "validity duration one week": "1 week",

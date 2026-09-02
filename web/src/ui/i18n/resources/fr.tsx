@@ -438,10 +438,13 @@ export const translations: Translations<"fr"> = {
         "this prefix is empty": "Ce préfixe est vide",
         "empty prefix description":
             "Téléversez des fichiers ou créez un dossier pour commencer à remplir cet emplacement.",
-        "empty prefix upload description":
-            "Téléversez des fichiers ici ou glissez-déposez-les dans cette zone.",
+        "empty prefix upload description": "Choisissez comment ajouter des fichiers ici.",
         "upload files": "Téléverser des fichiers",
-        "upload files here": "Téléverser des fichiers ici",
+        "upload files from device description":
+            "Sélectionnez sur votre ordinateur les fichiers à téléverser ici.",
+        "create upload link": "Créer un lien de téléversement",
+        "create upload link description":
+            "Générez un lien à partager pour permettre à une autre personne de téléverser des fichiers ici.",
         "drop files here hint":
             "Déposez des fichiers n'importe où dans cette zone pour les téléverser.",
         "new folder": "Nouveau dossier",
@@ -483,7 +486,7 @@ export const translations: Translations<"fr"> = {
         "generation failed": "Le lien de téléversement n’a pas pu être généré.",
         retry: "Réessayer",
         "security note":
-            "Toute personne disposant de ce lien peut téléverser des fichiers dans ce dossier jusqu’à son expiration. Le lien ne permet pas de voir ni de télécharger les fichiers existants.",
+            "Toute personne disposant de ce lien peut téléverser des fichiers dans ce dossier jusqu’à son expiration. Le lien ne permet pas de voir ni de télécharger les fichiers existants. Toutefois, un fichier téléversé remplacera un fichier existant s’il a le même nom et le même chemin.",
         "validity duration one hour": "1 heure",
         "validity duration one day": "1 jour",
         "validity duration one week": "1 semaine",
