@@ -11,7 +11,7 @@ import { getIsWithinPrefixThatHasBeenMadePublic } from "./decoupledLogic/bucketP
 import { type ObjectRendering } from "./decoupledLogic/objectRendering";
 import { getPublicAccessActionAndShouldShowShareAction } from "./decoupledLogic/getPublicAccessActionAndShouldShowShareAction";
 import { getRootContext } from "core/rootContext";
-import { getIsKnownS3HttpUrl } from "core/usecases/s3FileRequestUiController/decoupledLogic/getIsKnownS3HttpUrl";
+import { getIsKnownS3ServerUrl } from "core/usecases/s3FileRequestUiController/decoupledLogic/getIsKnownS3HttpUrl";
 
 export type RouteParams = {
     profile?: string;
@@ -796,8 +796,9 @@ const isRequestFilesEnabled = createSelector(
             return false;
         }
 
-        return getIsKnownS3HttpUrl({
-            s3HttpUrl: s3Profile.paramsOfCreateS3Client.url,
+        return getIsKnownS3ServerUrl({
+            s3ServerUrl: s3Profile.paramsOfCreateS3Client.url,
+            pathStyleAccess: s3Profile.paramsOfCreateS3Client.pathStyleAccess,
             s3Config: getRootContext().s3Config
         });
     }

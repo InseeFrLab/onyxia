@@ -2,7 +2,7 @@ import type { Thunks } from "core/bootstrap";
 import { actions, type PresignedPost } from "./state";
 import { privateSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
-import { getIsKnownS3HttpUrl } from "./decoupledLogic/getIsKnownS3HttpUrl";
+import { parsePresignedPostUrl } from "./decoupledLogic/getIsKnownS3HttpUrl";
 
 type FileToUpload = {
     file: File;
@@ -20,10 +20,10 @@ export const thunks = {
             const [dispatch, , rootContext] = args;
 
             if (
-                !getIsKnownS3HttpUrl({
+                !parsePresignedPostUrl({
                     s3Config: rootContext.s3Config,
-                    s3HttpUrl: presignedPost.url
-                })
+                    presignedPost_url: presignedPost.url
+                }).isKnownS3Server
             ) {
                 alert("Not allowed");
                 throw new Error();
