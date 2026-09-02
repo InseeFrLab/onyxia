@@ -4,7 +4,12 @@ import { privateSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
 import { getIsKnownS3HttpUrl } from "./decoupledLogic/getIsKnownS3HttpUrl";
 
-const fileByUploadId = new Map<string, File>();
+type FileToUpload = {
+    file: File;
+    relativePathSegments: readonly string[];
+};
+
+const fileToUploadByUploadId = new Map<string, FileToUpload>();
 const xhrByUploadId = new Map<string, XMLHttpRequest>();
 
 export const thunks = {
@@ -29,24 +34,26 @@ export const thunks = {
             }
 
             xhrByUploadId.clear();
-            fileByUploadId.clear();
+            fileToUploadByUploadId.clear();
 
             dispatch(actions.loaded({ presignedPost }));
         },
     uploadFiles:
-        (params: { files: readonly File[] }) =>
+        (params: { files: readonly FileToUpload[] }) =>
         async (...args) => {
             const { files } = params;
             const [dispatch] = args;
 
-            const uploads = files.map(file => {
+            const uploads = files.map(fileToUpload => {
+                const { file, relativePathSegments } = fileToUpload;
                 const uploadId = `${Date.now()}-${Math.random()}`;
+                const filePath = [...relativePathSegments, file.name].join("/");
 
-                fileByUploadId.set(uploadId, file);
+                fileToUploadByUploadId.set(uploadId, fileToUpload);
 
                 return {
                     uploadId,
-                    fileName: file.name,
+                    fileName: filePath,
                     sizeInBytes: file.size
                 };
             });
@@ -78,7 +85,7 @@ export const thunks = {
 
             assert(upload !== undefined);
             assert(upload.status === "failed");
-            assert(fileByUploadId.has(uploadId));
+            assert(fileToUploadByUploadId.has(uploadId));
 
             dispatch(actions.uploadRetried({ uploadId }));
 
@@ -93,8 +100,11 @@ export const privateThunks = {
             const { uploadId } = params;
             const [dispatch, getState] = args;
 
-            const file = fileByUploadId.get(uploadId);
-            assert(file !== undefined);
+            const fileToUpload = fileToUploadByUploadId.get(uploadId);
+            assert(fileToUpload !== undefined);
+
+            const { file, relativePathSegments } = fileToUpload;
+            const filePath = [...relativePathSegments, file.name].join("/");
 
             const presignedPost = privateSelectors.presignedPost(getState());
 
@@ -113,7 +123,12 @@ export const privateThunks = {
                 const formData = new FormData();
 
                 for (const [name, value] of Object.entries(presignedPost.fields)) {
-                    formData.append(name, value);
+                    formData.append(
+                        name,
+                        name === "key"
+                            ? value.replace("${filename}", () => filePath)
+                            : value
+                    );
                 }
 
                 // S3 requires the file to be the last field in a POST form.
@@ -132,7 +147,7 @@ export const privateThunks = {
 
                     switch (params.status) {
                         case "success":
-                            fileByUploadId.delete(uploadId);
+                            fileToUploadByUploadId.delete(uploadId);
                             dispatch(actions.uploadSucceeded({ uploadId }));
                             break;
                         case "failed":
@@ -145,7 +160,7 @@ export const privateThunks = {
                             );
                             break;
                         case "canceled":
-                            fileByUploadId.delete(uploadId);
+                            fileToUploadByUploadId.delete(uploadId);
                             dispatch(actions.uploadCanceled({ uploadId }));
                             break;
                     }
