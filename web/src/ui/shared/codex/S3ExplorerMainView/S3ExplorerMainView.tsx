@@ -44,6 +44,12 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useFormattedRelativeDate } from "ui/shared/formattedDate";
 import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
 import type { S3Client } from "core/ports/S3Client";
+import {
+    getFilesToUploadFromDataTransfer,
+    getFilesToUploadFromFiles,
+    getHasDraggedFiles,
+    type FileToUpload
+} from "ui/shared/codex/getFilesToUploadFromDataTransfer";
 
 export type S3ExplorerMainViewProps = {
     className?: string;
@@ -61,6 +67,8 @@ export type S3ExplorerMainViewProps = {
               isFullyQualifiedUri: boolean;
           }
     );
+
+    profileNameForSharing: string | undefined;
 
     onNavigate: (params: { s3Uri: S3Uri }) => void;
 
@@ -86,6 +94,10 @@ export type S3ExplorerMainViewProps = {
         s3Uri: S3Uri.TerminatedByDelimiter;
         anonymousProfileName: string;
     }) => void;
+
+    onRequestFiles:
+        | ((params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void)
+        | undefined;
 
     onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
@@ -116,8 +128,8 @@ export namespace S3ExplorerMainViewProps {
         export type PrefixSegment = Common & {
             type: "prefix segment";
             s3Uri: S3Uri.TerminatedByDelimiter;
-            policy: { isPublic: true } | { isPublic: false; canBeMadePublic: boolean };
-            profileNameForSharing: string | undefined;
+            publicAccessAction: "make public" | "make private" | undefined;
+            shouldShowShareAction: boolean;
         };
 
         export type Object = Common & {
@@ -137,6 +149,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         className,
         isListing,
         listedPrefix,
+        profileNameForSharing,
         onNavigate,
         onNavigateBack,
         onPutObjects,
@@ -145,6 +158,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onDownload,
         onShareObject,
         onSharePrefix,
+        onRequestFiles,
         onBookmark,
         bookmarkedS3Uris,
         onChangePrefixPolicy,
@@ -384,10 +398,10 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         selectedItemForSingleItemAction?.type === "prefix segment"
             ? selectedItemForSingleItemAction
             : undefined;
-    const selectedPrefixPolicyAction =
+    const selectedPrefixPublicAccessAction =
         selectedPrefixForSingleItemAction !== undefined &&
         getIsItemActionAvailable(selectedPrefixForSingleItemAction)
-            ? getPrefixPolicyAction(selectedPrefixForSingleItemAction)
+            ? selectedPrefixForSingleItemAction.publicAccessAction
             : undefined;
 
     const setSelectionToSingleItem = useConstCallback((itemKey: string) => {
@@ -505,17 +519,17 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         const items = Array.from(event.dataTransfer.items);
         const files = Array.from(event.dataTransfer.files);
 
-        const objectsToUpload = await getObjectsToUploadFromDroppedItems({
+        const filesToUpload = await getFilesToUploadFromDataTransfer({
             items,
             files
         });
 
-        if (objectsToUpload.length === 0) {
+        if (filesToUpload.length === 0) {
             return;
         }
 
         onPutObjects({
-            files: objectsToUpload
+            files: filesToUpload.map(getObjectToUpload)
         });
     });
 
@@ -541,13 +555,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 });
                 return;
             case "prefix segment":
-                if (item.profileNameForSharing === undefined) {
+                if (!item.shouldShowShareAction) {
                     return;
                 }
 
+                assert(profileNameForSharing !== undefined);
+
                 onSharePrefix({
                     s3Uri: item.s3Uri,
-                    anonymousProfileName: item.profileNameForSharing
+                    anonymousProfileName: profileNameForSharing
                 });
                 return;
         }
@@ -559,16 +575,29 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 return;
             }
 
-            const action = getPrefixPolicyAction(item);
+            const { publicAccessAction } = item;
 
-            if (action === undefined) {
+            if (publicAccessAction === undefined) {
                 return;
             }
 
             onChangePrefixPolicy({
-                action,
+                action:
+                    publicAccessAction === "make private"
+                        ? "undo make public"
+                        : "make public",
                 s3Uri: item.s3Uri
             });
+        }
+    );
+
+    const requestFilesForPrefix = useConstCallback(
+        (item: S3ExplorerMainViewProps.Item.PrefixSegment) => {
+            if (!getIsItemActionAvailable(item) || onRequestFiles === undefined) {
+                return;
+            }
+
+            onRequestFiles({ s3Uri: item.s3Uri });
         }
     );
 
@@ -661,6 +690,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         }
 
         requestPrefixPolicyChangeForItem(item);
+    });
+
+    const onRequestFilesFactory = useCallbackFactory(([itemKey]: [string]) => {
+        const item = itemByKey.get(itemKey);
+
+        if (item === undefined || item.type !== "prefix segment") {
+            return;
+        }
+
+        requestFilesForPrefix(item);
     });
 
     const onDownloadFactory = useCallbackFactory(([itemKey]: [string]) => {
@@ -823,8 +862,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                 ) ||
                                 (selectedItemForSingleItemAction.type ===
                                     "prefix segment" &&
-                                    selectedItemForSingleItemAction.profileNameForSharing ===
-                                        undefined)
+                                    !selectedItemForSingleItemAction.shouldShowShareAction)
                                     ? undefined
                                     : {
                                           callback: () =>
@@ -833,9 +871,23 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                               )
                                       }
                             }
+                            requestFiles={
+                                selectedPrefixForSingleItemAction === undefined ||
+                                onRequestFiles === undefined ||
+                                !getIsItemActionAvailable(
+                                    selectedPrefixForSingleItemAction
+                                )
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              requestFilesForPrefix(
+                                                  selectedPrefixForSingleItemAction
+                                              )
+                                      }
+                            }
                             accessPolicy={
                                 selectedPrefixForSingleItemAction === undefined ||
-                                selectedPrefixPolicyAction === undefined
+                                selectedPrefixPublicAccessAction === undefined
                                     ? undefined
                                     : {
                                           callback: () =>
@@ -843,8 +895,8 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                   selectedPrefixForSingleItemAction
                                               ),
                                           isPublic:
-                                              selectedPrefixPolicyAction ===
-                                              "undo make public"
+                                              selectedPrefixPublicAccessAction ===
+                                              "make private"
                                       }
                             }
                         />
@@ -971,16 +1023,71 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                         <div className={classes.emptyStateDescription}>
                                             {t("empty prefix upload description")}
                                         </div>
+                                        <div className={classes.emptyStateChoices}>
+                                            <div className={classes.emptyStateChoice}>
+                                                <Button
+                                                    className={
+                                                        classes.emptyStateChoiceButton
+                                                    }
+                                                    startIcon={getIconUrlByName(
+                                                        "UploadFileOutlined"
+                                                    )}
+                                                    disabled={
+                                                        isUploadToListedPrefixDisabled
+                                                    }
+                                                    onClick={openFilePicker}
+                                                >
+                                                    {t("upload files")}
+                                                </Button>
+                                                <div
+                                                    className={
+                                                        classes.emptyStateChoiceDescription
+                                                    }
+                                                >
+                                                    {t(
+                                                        "upload files from device description"
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {onRequestFiles === undefined ? null : (
+                                                <div className={classes.emptyStateChoice}>
+                                                    <Button
+                                                        className={
+                                                            classes.emptyStateChoiceButton
+                                                        }
+                                                        variant="secondary"
+                                                        startIcon={getIconUrlByName(
+                                                            "DriveFolderUpload"
+                                                        )}
+                                                        onClick={() => {
+                                                            assert(
+                                                                listedPrefix.s3Uri
+                                                                    .isDelimiterTerminated
+                                                            );
+
+                                                            onRequestFiles({
+                                                                s3Uri: listedPrefix.s3Uri
+                                                            });
+                                                        }}
+                                                    >
+                                                        {t("create upload link")}
+                                                    </Button>
+                                                    <div
+                                                        className={
+                                                            classes.emptyStateChoiceDescription
+                                                        }
+                                                    >
+                                                        {t(
+                                                            "create upload link description"
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className={classes.emptyStateDropHint}>
+                                            {t("drop files here hint")}
+                                        </div>
                                         <div className={classes.emptyStateActions}>
-                                            <Button
-                                                startIcon={getIconUrlByName(
-                                                    "UploadFileOutlined"
-                                                )}
-                                                disabled={isUploadToListedPrefixDisabled}
-                                                onClick={openFilePicker}
-                                            >
-                                                {t("upload files here")}
-                                            </Button>
                                             <Button
                                                 variant="secondary"
                                                 startIcon={getIconUrlByName("ArrowBack")}
@@ -988,9 +1095,6 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                             >
                                                 {t("go back")}
                                             </Button>
-                                        </div>
-                                        <div className={classes.emptyStateDropHint}>
-                                            {t("drop files here hint")}
                                         </div>
                                     </div>
                                 </div>
@@ -1151,14 +1255,21 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     onDelete={onDeleteFactory(itemKey)}
                                                     onShare={
                                                         item.type === "object" ||
-                                                        item.profileNameForSharing !==
-                                                            undefined
+                                                        item.shouldShowShareAction
                                                             ? onShareFactory(itemKey)
+                                                            : undefined
+                                                    }
+                                                    onRequestFiles={
+                                                        item.type === "prefix segment" &&
+                                                        onRequestFiles !== undefined
+                                                            ? onRequestFilesFactory(
+                                                                  itemKey
+                                                              )
                                                             : undefined
                                                     }
                                                     onChangePrefixPolicy={
                                                         item.type === "prefix segment" &&
-                                                        getPrefixPolicyAction(item) !==
+                                                        item.publicAccessAction !==
                                                             undefined
                                                             ? onChangePrefixPolicyFactory(
                                                                   itemKey
@@ -1338,7 +1449,32 @@ const useStyles = tss
         },
         emptyStateDropHint: {
             color: theme.colors.useCases.typography.textSecondary,
-            marginTop: theme.spacing(0.5)
+            marginTop: theme.spacing(2),
+            fontStyle: "italic"
+        },
+        emptyStateChoices: {
+            width: "min(580px, 100%)",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: theme.spacing(3),
+            marginTop: theme.spacing(1)
+        },
+        emptyStateChoice: {
+            width: "min(270px, 100%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: theme.spacing(1)
+        },
+        emptyStateChoiceButton: {
+            width: "100%"
+        },
+        emptyStateChoiceDescription: {
+            ...theme.typography.variants["body 2"].style,
+            color: theme.colors.useCases.typography.textSecondary,
+            lineHeight: 1.45
         },
         emptyStateActions: {
             display: "flex",
@@ -1810,6 +1946,7 @@ const { i18n } = declareComponentKeys<
     | { K: "delete selection dialog body"; P: { count: number }; R: string }
     | "delete"
     | "share"
+    | "request files"
     | "download"
     | "copy s3 uri"
     | "copied"
@@ -1848,7 +1985,9 @@ const { i18n } = declareComponentKeys<
     | "empty prefix description"
     | "empty prefix upload description"
     | "upload files"
-    | "upload files here"
+    | "upload files from device description"
+    | "create upload link"
+    | "create upload link description"
     | "drop files here hint"
     | "new folder"
     | "name"
@@ -1866,45 +2005,13 @@ export type DeleteDialogState = {
     items: S3ExplorerMainViewProps.Item[];
 };
 
-type PrefixPolicyAction = Parameters<
-    S3ExplorerMainViewProps["onChangePrefixPolicy"]
->[0]["action"];
+type PublicAccessAction = NonNullable<
+    S3ExplorerMainViewProps.Item.PrefixSegment["publicAccessAction"]
+>;
 
 type ObjectToUpload = Parameters<
     S3ExplorerMainViewProps["onPutObjects"]
 >[0]["files"][number];
-
-type DataTransferItemWithWebkitGetAsEntry = DataTransferItem & {
-    webkitGetAsEntry?: () => FileSystemEntryLike | null;
-};
-
-type FileSystemEntryLike = {
-    readonly isFile: boolean;
-    readonly isDirectory: boolean;
-    readonly name: string;
-};
-
-type FileSystemFileEntryLike = FileSystemEntryLike & {
-    readonly isFile: true;
-    readonly isDirectory: false;
-    file: (
-        successCallback: (file: File) => void,
-        errorCallback?: (error: DOMException) => void
-    ) => void;
-};
-
-type FileSystemDirectoryEntryLike = FileSystemEntryLike & {
-    readonly isFile: false;
-    readonly isDirectory: true;
-    createReader: () => FileSystemDirectoryReaderLike;
-};
-
-type FileSystemDirectoryReaderLike = {
-    readEntries: (
-        successCallback: (entries: FileSystemEntryLike[]) => void,
-        errorCallback?: (error: DOMException) => void
-    ) => void;
-};
 
 function getItemKey(item: S3ExplorerMainViewProps.Item): string {
     return stringifyS3Uri(item.s3Uri);
@@ -1955,138 +2062,15 @@ function tryApplyPendingPreSelection(params: {
 }
 
 function getObjectsToUploadFromFiles(files: readonly File[]): ObjectToUpload[] {
-    return files.map(file => {
-        const relativePathSegments = file.webkitRelativePath
-            .split("/")
-            .filter(Boolean)
-            .slice(0, -1);
-
-        return {
-            relativePathSegments,
-            fileBasename: file.name,
-            blob: file as Blob
-        };
-    });
+    return getFilesToUploadFromFiles(files).map(getObjectToUpload);
 }
 
-function getFileSystemEntry(item: DataTransferItem): FileSystemEntryLike | null {
-    return (item as DataTransferItemWithWebkitGetAsEntry).webkitGetAsEntry?.() ?? null;
-}
-
-function getHasDraggedFiles(dataTransfer: DataTransfer): boolean {
-    if (dataTransfer.items.length !== 0) {
-        return Array.from(dataTransfer.items).some(item => item.kind === "file");
-    }
-
-    return dataTransfer.types.includes("Files");
-}
-
-function readFileEntry(entry: FileSystemFileEntryLike): Promise<File> {
-    return new Promise((resolve, reject) => entry.file(resolve, error => reject(error)));
-}
-
-function readDirectoryEntries(
-    entry: FileSystemDirectoryEntryLike
-): Promise<FileSystemEntryLike[]> {
-    const reader = entry.createReader();
-    const entries: FileSystemEntryLike[] = [];
-
-    return new Promise((resolve, reject) => {
-        const readNextBatch = () => {
-            reader.readEntries(
-                batch => {
-                    if (batch.length === 0) {
-                        resolve(entries);
-                        return;
-                    }
-
-                    entries.push(...batch);
-                    readNextBatch();
-                },
-                error => reject(error)
-            );
-        };
-
-        readNextBatch();
-    });
-}
-
-async function getObjectsToUploadFromFileSystemEntry(params: {
-    entry: FileSystemEntryLike;
-    relativePathSegments: string[];
-}): Promise<ObjectToUpload[]> {
-    const { entry, relativePathSegments } = params;
-
-    if (entry.isFile) {
-        const file = await readFileEntry(entry as FileSystemFileEntryLike);
-
-        return [
-            {
-                relativePathSegments: [...relativePathSegments],
-                fileBasename: file.name,
-                blob: file
-            }
-        ];
-    }
-
-    const directoryEntry = entry as FileSystemDirectoryEntryLike;
-    const childEntries = await readDirectoryEntries(directoryEntry);
-    const childRelativePathSegments = [...relativePathSegments, directoryEntry.name];
-
-    return (
-        await Promise.all(
-            childEntries.map(childEntry =>
-                getObjectsToUploadFromFileSystemEntry({
-                    entry: childEntry,
-                    relativePathSegments: childRelativePathSegments
-                })
-            )
-        )
-    ).flat();
-}
-
-async function getObjectsToUploadFromDroppedItems(params: {
-    items: readonly DataTransferItem[];
-    files: readonly File[];
-}): Promise<ObjectToUpload[]> {
-    const { items, files } = params;
-    const fileItems = items.filter(
-        (item): item is DataTransferItem => item.kind === "file"
-    );
-    const itemsWithEntries = fileItems.map(item => ({
-        item,
-        entry: getFileSystemEntry(item)
-    }));
-    const hasFileSystemEntrySupport = itemsWithEntries.some(
-        ({ entry }) => entry !== null
-    );
-
-    const droppedObjects = (
-        await Promise.all(
-            itemsWithEntries.map(async ({ item, entry }) => {
-                if (entry !== null) {
-                    return getObjectsToUploadFromFileSystemEntry({
-                        entry,
-                        relativePathSegments: []
-                    });
-                }
-
-                const file = item.getAsFile();
-
-                if (file === null) {
-                    return [];
-                }
-
-                return getObjectsToUploadFromFiles([file]);
-            })
-        )
-    ).flat();
-
-    if (hasFileSystemEntrySupport) {
-        return droppedObjects;
-    }
-
-    return getObjectsToUploadFromFiles(files);
+function getObjectToUpload(fileToUpload: FileToUpload): ObjectToUpload {
+    return {
+        relativePathSegments: fileToUpload.relativePathSegments,
+        fileBasename: fileToUpload.file.name,
+        blob: fileToUpload.file
+    };
 }
 
 function getFormattedSize(size: number): string {
@@ -2113,33 +2097,15 @@ function getIsItemActionAvailable(item: S3ExplorerMainViewProps.Item): boolean {
     return getProgressPercent(item) === undefined;
 }
 
-function getPrefixPolicyAction(
-    item: S3ExplorerMainViewProps.Item
-): PrefixPolicyAction | undefined {
-    if (item.type !== "prefix segment") {
-        return undefined;
-    }
-
-    if (item.policy.isPublic) {
-        return "undo make public";
-    }
-
-    if (item.policy.canBeMadePublic) {
-        return "make public";
-    }
-
-    return undefined;
-}
-
 function getPrefixPolicyActionLabel(
-    action: PrefixPolicyAction,
+    action: PublicAccessAction,
     t: ReturnType<typeof useTranslation>["t"]
 ): string {
     return action === "make public" ? t("make public") : t("make private");
 }
 
 function getPrefixPolicyActionIconName(
-    action: PrefixPolicyAction
+    action: PublicAccessAction
 ): "Public" | "PublicOff" {
     return action === "make public" ? "Public" : "PublicOff";
 }
@@ -2333,7 +2299,7 @@ export function DeleteSelectionDialog(props: {
                                     }
                                     isPublic={
                                         item.type === "prefix segment" &&
-                                        item.policy.isPublic
+                                        item.publicAccessAction === "make private"
                                     }
                                 />
                             ))}
@@ -2445,6 +2411,7 @@ type ItemRowProps = {
     onNavigate: () => void;
     onDelete: () => void;
     onShare: (() => void) | undefined;
+    onRequestFiles: (() => void) | undefined;
     onChangePrefixPolicy: (() => void) | undefined;
     onDownload: (() => void) | undefined;
     onBookmark: (() => void) | undefined;
@@ -2467,6 +2434,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         onNavigate,
         onDelete,
         onShare,
+        onRequestFiles,
         onChangePrefixPolicy,
         onDownload,
         onBookmark,
@@ -2480,7 +2448,9 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const isItemActionAvailable = getIsItemActionAvailable(item);
     const isDownloadAvailable = onDownload !== undefined && isItemActionAvailable;
     const isShareAvailable = onShare !== undefined && isItemActionAvailable;
-    const prefixPolicyAction = getPrefixPolicyAction(item);
+    const isRequestFilesAvailable = onRequestFiles !== undefined && isItemActionAvailable;
+    const prefixPolicyAction =
+        item.type === "prefix segment" ? item.publicAccessAction : undefined;
     const isPrefixPolicyActionAvailable =
         onChangePrefixPolicy !== undefined && isItemActionAvailable;
     const isCopyAvailable = !item.isDeleting;
@@ -2491,7 +2461,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         item.type === "prefix segment" ? t("folder") : t("object");
     const itemIconLabel =
         item.type === "prefix segment"
-            ? item.policy.isPublic
+            ? item.publicAccessAction === "make private"
                 ? t("folder is public")
                 : t("folder is private")
             : itemKindLabelCapitalized;
@@ -2609,7 +2579,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                 </button>
 
                                 {item.type === "prefix segment" &&
-                                    item.policy.isPublic && (
+                                    item.publicAccessAction === "make private" && (
                                         <span className={classes.itemPublicTag}>
                                             <Icon
                                                 icon={getIconUrlByName("Public")}
@@ -2846,6 +2816,32 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                                         </span>
                                     </Tooltip>
                                 )}
+                                {onRequestFiles !== undefined && (
+                                    <Tooltip title={t("request files")}>
+                                        <span
+                                            className={classes.inlineActionWrapper}
+                                            data-s3-row-interactive="true"
+                                        >
+                                            <IconButton
+                                                className={classes.rowActionButton}
+                                                icon={getIconUrlByName(
+                                                    "DriveFolderUpload"
+                                                )}
+                                                aria-label={t("request files")}
+                                                disabled={!isRequestFilesAvailable}
+                                                onClick={event => {
+                                                    event.stopPropagation();
+
+                                                    if (!isRequestFilesAvailable) {
+                                                        return;
+                                                    }
+
+                                                    onRequestFiles();
+                                                }}
+                                            />
+                                        </span>
+                                    </Tooltip>
+                                )}
                                 {prefixPolicyAction !== undefined &&
                                     onChangePrefixPolicy !== undefined && (
                                         <Tooltip
@@ -2954,6 +2950,7 @@ function areItemRowPropsEqual(
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
         previousProps.onShare === nextProps.onShare &&
+        previousProps.onRequestFiles === nextProps.onRequestFiles &&
         previousProps.onChangePrefixPolicy === nextProps.onChangePrefixPolicy &&
         previousProps.onDownload === nextProps.onDownload &&
         previousProps.onBookmark === nextProps.onBookmark &&
@@ -2991,25 +2988,7 @@ function areItemsRenderEqual(
 
     return (
         nextItem.type === "prefix segment" &&
-        arePrefixPoliciesEqual(previousItem.policy, nextItem.policy)
+        previousItem.publicAccessAction === nextItem.publicAccessAction &&
+        previousItem.shouldShowShareAction === nextItem.shouldShowShareAction
     );
-}
-
-function arePrefixPoliciesEqual(
-    previousPolicy: S3ExplorerMainViewProps.Item.PrefixSegment["policy"],
-    nextPolicy: S3ExplorerMainViewProps.Item.PrefixSegment["policy"]
-): boolean {
-    if (previousPolicy.isPublic !== nextPolicy.isPublic) {
-        return false;
-    }
-
-    if (previousPolicy.isPublic) {
-        return true;
-    }
-
-    if (nextPolicy.isPublic) {
-        return false;
-    }
-
-    return previousPolicy.canBeMadePublic === nextPolicy.canBeMadePublic;
 }

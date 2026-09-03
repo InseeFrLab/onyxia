@@ -209,8 +209,35 @@ export const translations: Translations<"nl"> = {
         "create new folder": "Nieuwe map maken",
         "download file": "bestand downloaden"
     },
+    S3FileRequest: {
+        "page title": "Gevraagde bestanden uploaden",
+        "page description":
+            "Iemand heeft deze beveiligde link gedeeld, zodat je bestanden rechtstreeks naar diens opslagruimte kunt sturen.",
+        "s3 server destination": "Je uploadt naar deze S3-server:",
+        "s3 location destination": "Op deze locatie:",
+        "expires on": ({ date }) => `Deze link verloopt op ${date}`,
+        "link expired": "Deze uploadlink is verlopen",
+        "link expired description":
+            "Vraag de persoon die de link met je heeft gedeeld om een nieuwe link te maken.",
+        "drop files": "Sleep je bestanden hierheen",
+        "drop files active": "Zet je bestanden neer om ze te uploaden",
+        "drop files hint": "Het uploaden begint zodra je de bestanden selecteert.",
+        "choose files": "Bestanden kiezen",
+        "all files uploaded": "Je bestanden zijn verzonden",
+        "all files uploaded description":
+            "Je kunt deze pagina sluiten of meer bestanden toevoegen zolang de link geldig is.",
+        "uploads title": "Je uploads",
+        uploading: ({ percent }) => `Uploaden · ${percent}%`,
+        uploaded: "Geüpload",
+        "upload failed": "Upload mislukt",
+        "cancel upload": "Upload annuleren",
+        "retry upload": "Upload opnieuw proberen"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Object delen"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Bestanden aanvragen"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Map delen"
@@ -249,6 +276,7 @@ export const translations: Translations<"nl"> = {
         "new s3 profile": "Nieuw S3-profiel"
     },
     S3SelectionActionBar: {
+        "request files": "Bestanden aanvragen",
         download: "Downloaden",
         delete: "Verwijderen",
         "copy s3 uri": "S3-URI kopiëren",
@@ -353,6 +381,7 @@ export const translations: Translations<"nl"> = {
         "make private": "Privé maken"
     },
     S3ExplorerMainView: {
+        "request files": "Bestanden aanvragen",
         "create prefix dialog title": "Prefix aanmaken",
         "create prefix dialog subtitle":
             "Maak een nieuwe prefix aan binnen de huidige S3-locatie.",
@@ -405,9 +434,13 @@ export const translations: Translations<"nl"> = {
         "empty prefix description":
             "Upload bestanden of maak een map om deze locatie te vullen.",
         "empty prefix upload description":
-            "Upload hier bestanden of sleep ze naar dit gebied.",
+            "Kies hoe bestanden hier moeten worden toegevoegd.",
         "upload files": "Bestanden uploaden",
-        "upload files here": "Bestanden hier uploaden",
+        "upload files from device description":
+            "Selecteer bestanden op je computer om ze hier te uploaden.",
+        "create upload link": "Uploadlink maken",
+        "create upload link description":
+            "Maak een deelbare link waarmee iemand anders hier bestanden kan uploaden.",
         "drop files here hint": "Sleep bestanden ergens in dit gebied om ze te uploaden.",
         "new folder": "Nieuwe map",
         name: "Naam",
@@ -430,6 +463,29 @@ export const translations: Translations<"nl"> = {
         "validity duration one day": "1 dag",
         "validity duration one week": "1 week",
         "selected duration": "de geselecteerde duur"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "Deel deze link met iedereen, ook met iemand zonder account op deze Onyxia-instantie, zodat diegene bestanden vanaf een computer rechtstreeks naar deze map kan uploaden.",
+        "overwrite warning":
+            "Bestanden die via deze link worden geüpload, worden rechtstreeks in deze map opgeslagen. Als een geüpload bestand dezelfde naam en hetzelfde pad heeft als een bestaand bestand, wordt het bestaande bestand vervangen.",
+        "create empty folder instead": "Maak in plaats daarvan een lege map",
+        "link settings": "Linkinstellingen",
+        "link expires after": "Link verloopt na",
+        "link validity aria label": "Geldigheidsduur van de uploadlink",
+        "maximum size per file": "Maximale grootte per bestand",
+        "maximum file size aria label": "Maximale grootte per geüpload bestand",
+        "upload link": "Uploadlink",
+        "generating upload link": "Uploadlink genereren...",
+        "copy upload link aria label": "Uploadlink kopiëren",
+        "generation failed": "De uploadlink kon niet worden gegenereerd.",
+        retry: "Opnieuw proberen",
+        "security note":
+            "Iedereen met deze link kan bestanden naar deze map uploaden totdat de link verloopt. De link geeft geen toegang om bestaande bestanden te bekijken of te downloaden. Een geüpload bestand vervangt echter een bestaand bestand als de naam en het pad hetzelfde zijn.",
+        "validity duration one hour": "1 uur",
+        "validity duration one day": "1 dag",
+        "validity duration one week": "1 week",
+        "no limit": "Geen limiet"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Map-URL kopiëren",
@@ -1297,6 +1353,10 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "delete from bookmarks": "Uit bladwijzers verwijderen",
         "pinned storage location": "Vastgezette opslaglocatie",
         bookmarked: "Bladwijzer",
+        share: "Delen",
+        "request files": "Bestanden aanvragen",
+        "make public": "Openbaar maken",
+        "make private": "Privé maken",
         "edit s3 uri": "S3-URI bewerken",
         prefix: "Prefix",
         "admin bookmark": "Beheerbladwijzer",

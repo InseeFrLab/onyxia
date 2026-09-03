@@ -39,6 +39,11 @@ export type S3SelectionActionBarProps = {
               callback: () => void;
           }
         | undefined;
+    requestFiles:
+        | {
+              callback: () => void;
+          }
+        | undefined;
     accessPolicy:
         | {
               callback: () => void;
@@ -67,6 +72,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
         copyS3Uri,
         bookmark,
         share,
+        requestFiles,
         accessPolicy
     } = props;
 
@@ -183,6 +189,20 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                       />
                   ),
                   onClick: share.callback
+              },
+        requestFiles === undefined
+            ? undefined
+            : {
+                  key: "request-files",
+                  label: t("request files"),
+                  icon: (
+                      <Icon
+                          className={classes.actionIcon}
+                          icon={getIconUrl("DriveFolderUpload")}
+                          size="small"
+                      />
+                  ),
+                  onClick: requestFiles.callback
               },
         accessPolicy === undefined
             ? undefined
@@ -470,6 +490,7 @@ const { i18n } = declareComponentKeys<
     | "add to bookmarks"
     | "delete from bookmarks"
     | "share"
+    | "request files"
     | "make public"
     | "make private"
     | "one selected"

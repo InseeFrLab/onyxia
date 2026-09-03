@@ -28,8 +28,11 @@ export type ComponentKey =
     | import("ui/pages/s3Explorer/dialogs/S3ShareObjectDialog").I18n
     | import("ui/shared/codex/S3SharePrefixDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/S3SharePrefixDialog").I18n
+    | import("ui/pages/s3Explorer/dialogs/S3FileRequestCreationDialog").I18n
+    | import("ui/shared/codex/S3FileRequestCreationDialog").I18n
     | import("ui/pages/s3Explorer/dialogs/S3ProfileDialog").I18n
     | import("ui/pages/s3Explorer/Page").I18n
+    | import("ui/shared/codex/S3FileRequest/S3FileRequest").I18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksBar").I18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksBarItem/S3BookmarksBarItem").S3BookmarkItemI18n
     | import("ui/shared/codex/S3Bookmarks/S3BookmarksEntryPointItem").I18n

@@ -110,24 +110,31 @@ export function S3DialogCopyUrlField(props: {
 }
 
 export function S3DialogCopyPlainUrlField(props: {
-    value: string;
+    value: string | undefined;
+    pendingText?: string;
     copyLabel?: string;
     ariaLabel: string;
     onCopied?: () => void;
+    isMultiline?: boolean;
 }) {
-    const { classes } = useStyles_S3DialogCopyField();
+    const { isMultiline = true } = props;
+    const { classes, cx } = useStyles_S3DialogCopyField();
 
     return (
         <S3DialogCopyFieldBase
             {...props}
-            isMultiline={true}
+            isMultiline={isMultiline}
             hasTitle={false}
             renderValue={value => (
                 <a
                     href={value}
                     target="_blank"
                     rel="noreferrer"
-                    className={classes.plainUrlPreview}
+                    title={value}
+                    className={cx(
+                        classes.plainUrlPreview,
+                        !isMultiline && classes.plainUrlPreviewSingleLine
+                    )}
                 >
                     {value}
                 </a>
@@ -539,6 +546,8 @@ const useStyles_S3DialogCopyField = tss
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(1.5),
+            width: "100%",
+            maxWidth: "100%",
             minWidth: 0,
             minHeight: 52,
             padding: `${theme.spacing(0.75)}px ${theme.spacing(1.5)}px ${theme.spacing(
@@ -650,6 +659,11 @@ const useStyles_S3DialogCopyField = tss
                 outlineOffset: 2,
                 borderRadius: 4
             }
+        },
+        plainUrlPreviewSingleLine: {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap"
         },
         urlLine: {
             display: "flex",

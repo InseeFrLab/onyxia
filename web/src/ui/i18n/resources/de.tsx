@@ -213,8 +213,35 @@ export const translations: Translations<"de"> = {
         "create new folder": "Neuen Ordner erstellen",
         "download file": "Datei herunterladen"
     },
+    S3FileRequest: {
+        "page title": "Angeforderte Dateien hochladen",
+        "page description":
+            "Jemand hat diesen sicheren Link mit Ihnen geteilt, damit Sie Dateien direkt an den zugehörigen Speicherplatz senden können.",
+        "s3 server destination": "Sie laden auf diesen S3-Server hoch:",
+        "s3 location destination": "An diesen Speicherort:",
+        "expires on": ({ date }) => `Dieser Link läuft am ${date} ab`,
+        "link expired": "Dieser Upload-Link ist abgelaufen",
+        "link expired description":
+            "Bitten Sie die Person, die den Link mit Ihnen geteilt hat, einen neuen Link zu erstellen.",
+        "drop files": "Dateien hierher ziehen und ablegen",
+        "drop files active": "Dateien zum Hochladen ablegen",
+        "drop files hint": "Der Upload beginnt, sobald Sie die Dateien auswählen.",
+        "choose files": "Dateien auswählen",
+        "all files uploaded": "Ihre Dateien wurden gesendet",
+        "all files uploaded description":
+            "Sie können diese Seite schließen oder weitere Dateien hinzufügen, solange der Link gültig ist.",
+        "uploads title": "Ihre Uploads",
+        uploading: ({ percent }) => `Wird hochgeladen · ${percent} %`,
+        uploaded: "Hochgeladen",
+        "upload failed": "Upload fehlgeschlagen",
+        "cancel upload": "Upload abbrechen",
+        "retry upload": "Upload wiederholen"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Objekt teilen"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Dateien anfordern"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Ordner teilen"
@@ -253,6 +280,7 @@ export const translations: Translations<"de"> = {
         "new s3 profile": "Neues S3-Profil"
     },
     S3SelectionActionBar: {
+        "request files": "Dateien anfordern",
         download: "Herunterladen",
         delete: "Löschen",
         "copy s3 uri": "S3-URI kopieren",
@@ -363,6 +391,7 @@ export const translations: Translations<"de"> = {
         "make private": "Privat machen"
     },
     S3ExplorerMainView: {
+        "request files": "Dateien anfordern",
         "create prefix dialog title": "Präfix erstellen",
         "create prefix dialog subtitle":
             "Erstelle ein neues Präfix im aktuellen S3-Speicherort.",
@@ -415,9 +444,13 @@ export const translations: Translations<"de"> = {
         "empty prefix description":
             "Lade Dateien hoch oder erstelle einen Ordner, um diesen Speicherort zu befüllen.",
         "empty prefix upload description":
-            "Lade hier Dateien hoch oder ziehe sie per Drag-and-drop in diesen Bereich.",
+            "Wähle aus, wie Dateien hier hinzugefügt werden sollen.",
         "upload files": "Dateien hochladen",
-        "upload files here": "Dateien hier hochladen",
+        "upload files from device description":
+            "Wähle Dateien auf deinem Computer aus, um sie hier hochzuladen.",
+        "create upload link": "Upload-Link erstellen",
+        "create upload link description":
+            "Erstelle einen teilbaren Link, über den eine andere Person hier Dateien hochladen kann.",
         "drop files here hint":
             "Lege Dateien irgendwo in diesem Bereich ab, um sie hochzuladen.",
         "new folder": "Neuer Ordner",
@@ -441,6 +474,29 @@ export const translations: Translations<"de"> = {
         "validity duration one day": "1 Tag",
         "validity duration one week": "1 Woche",
         "selected duration": "die ausgewählte Dauer"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "Teilen Sie diesen Link mit beliebigen Personen, auch mit Personen ohne Konto auf dieser Onyxia-Instanz, damit sie Dateien von ihrem Computer direkt in diesen Ordner hochladen können.",
+        "overwrite warning":
+            "Über diesen Link hochgeladene Dateien werden direkt in diesem Ordner gespeichert. Wenn eine hochgeladene Datei denselben Namen und Pfad wie eine vorhandene Datei hat, wird die vorhandene Datei ersetzt.",
+        "create empty folder instead": "Stattdessen einen leeren Ordner erstellen",
+        "link settings": "Linkeinstellungen",
+        "link expires after": "Link läuft ab nach",
+        "link validity aria label": "Gültigkeitsdauer des Upload-Links",
+        "maximum size per file": "Maximale Größe pro Datei",
+        "maximum file size aria label": "Maximale Größe pro hochgeladener Datei",
+        "upload link": "Upload-Link",
+        "generating upload link": "Upload-Link wird generiert...",
+        "copy upload link aria label": "Upload-Link kopieren",
+        "generation failed": "Der Upload-Link konnte nicht generiert werden.",
+        retry: "Erneut versuchen",
+        "security note":
+            "Jede Person mit diesem Link kann bis zu dessen Ablauf Dateien in diesen Ordner hochladen. Der Link gewährt keinen Zugriff zum Anzeigen oder Herunterladen vorhandener Dateien. Eine hochgeladene Datei ersetzt jedoch eine vorhandene Datei, wenn Name und Pfad übereinstimmen.",
+        "validity duration one hour": "1 Stunde",
+        "validity duration one day": "1 Tag",
+        "validity duration one week": "1 Woche",
+        "no limit": "Keine Begrenzung"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Ordner-URL kopieren",
@@ -1311,6 +1367,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "delete from bookmarks": "Aus Lesezeichen entfernen",
         "pinned storage location": "Angehefteter Speicherort",
         bookmarked: "Als Lesezeichen gespeichert",
+        share: "Teilen",
+        "request files": "Dateien anfordern",
+        "make public": "Öffentlich machen",
+        "make private": "Privat machen",
         "edit s3 uri": "S3-URI bearbeiten",
         prefix: "Präfix",
         "admin bookmark": "Admin-Lesezeichen",

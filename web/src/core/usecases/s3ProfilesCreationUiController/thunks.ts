@@ -134,6 +134,34 @@ export const thunks = {
             const [dispatch, getState] = args;
             dispatch(actions.formValueChanged({ key, value }));
 
+            preset_region: {
+                if (key !== "url") {
+                    break preset_region;
+                }
+
+                const url = privateSelectors.formattedFormValuesUrl(getState());
+
+                assert(url !== null);
+
+                if (url === undefined) {
+                    break preset_region;
+                }
+
+                const match = new URL(url).hostname.match(
+                    /^s3\.([a-z0-9-]+)\.amazonaws\.com(?:\.cn)?$/
+                );
+
+                if (match === null) {
+                    break preset_region;
+                }
+
+                const region = match[1];
+
+                assert(region !== undefined);
+
+                dispatch(actions.formValueChanged({ key: "region", value: region }));
+            }
+
             preset_pathStyleAccess: {
                 if (key !== "url") {
                     break preset_pathStyleAccess;

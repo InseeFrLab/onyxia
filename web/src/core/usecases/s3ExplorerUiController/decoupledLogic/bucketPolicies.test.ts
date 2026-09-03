@@ -173,6 +173,60 @@ describe("bucketPolicies", () => {
         ).toStrictEqual({ isWithinPrefixThatHasBeenMadePublic: false });
     });
 
+    it("supports making the bucket root public", () => {
+        const bucketRoot = parsePrefix("s3://mybucket/");
+
+        const { updatedBucketPolicies } = makePrefixPublic({
+            s3Uri: bucketRoot,
+            bucketPoliciesByBucket: getBucketPoliciesByBucket({
+                Version: "2012-10-17",
+                Statement: []
+            })
+        });
+
+        const statements = updatedBucketPolicies.Statement;
+
+        assert(Array.isArray(statements));
+        expect(statements).toHaveLength(2);
+        expect(statements[0]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicGetObject",
+            Resource: ["arn:aws:s3:::mybucket/*"]
+        });
+        expect(statements[1]).toMatchObject({
+            Sid: "OnyxiaMakePrefixPublicListBucket",
+            Condition: {
+                StringLike: {
+                    "s3:prefix": ["*"]
+                }
+            }
+        });
+
+        const bucketPoliciesByBucket = getBucketPoliciesByBucket(updatedBucketPolicies);
+
+        expect(
+            getHasPrefixBeMadePublic({
+                s3Uri: bucketRoot,
+                bucketPoliciesByBucket
+            })
+        ).toBe(true);
+        expect(
+            getIsWithinPrefixThatHasBeenMadePublic({
+                s3Uri: parseObject("s3://mybucket/nested/file.csv"),
+                bucketPoliciesByBucket
+            })
+        ).toStrictEqual({
+            isWithinPrefixThatHasBeenMadePublic: true,
+            s3Uri_publicPrefix: bucketRoot
+        });
+
+        expect(
+            undoMakePrefixPublic({
+                s3Uri: bucketRoot,
+                bucketPoliciesByBucket
+            }).updatedBucketPolicies.Statement
+        ).toStrictEqual([]);
+    });
+
     it("returns the public prefix that contains an object", () => {
         const updatedBucketPolicies = makePrefixPublic({
             s3Uri: parsePrefix("s3://mybucket/foo/"),

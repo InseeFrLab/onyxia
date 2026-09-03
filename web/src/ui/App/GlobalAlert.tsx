@@ -6,6 +6,7 @@ import { Alert } from "onyxia-ui/Alert";
 import { simpleHash } from "ui/tools/simpleHash";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { type LocalizedString } from "ui/i18n";
+import { useRoute } from "ui/routes";
 
 type Props = {
     className?: string;
@@ -47,6 +48,12 @@ export const GlobalAlert = memo(
         }, [localStorageKey, trigger]);
 
         const { css, theme } = useStyles();
+
+        const route = useRoute();
+
+        if (route.name === "s3FileRequest") {
+            return null;
+        }
 
         return (
             <Alert

@@ -205,8 +205,35 @@ export const translations: Translations<"fi"> = {
         "create new folder": "Luo uusi kansio",
         "download file": "lataa tiedosto"
     },
+    S3FileRequest: {
+        "page title": "Lataa pyydetyt tiedostot",
+        "page description":
+            "Joku jakoi tämän suojatun linkin, jotta voit lähettää tiedostoja suoraan hänen tallennustilaansa.",
+        "s3 server destination": "Lähetät tiedostoja tälle S3-palvelimelle:",
+        "s3 location destination": "Tähän sijaintiin:",
+        "expires on": ({ date }) => `Tämä linkki vanhenee ${date}`,
+        "link expired": "Tämä lähetyslinkki on vanhentunut",
+        "link expired description":
+            "Pyydä linkin jakanutta henkilöä luomaan uusi linkki.",
+        "drop files": "Vedä ja pudota tiedostosi tähän",
+        "drop files active": "Pudota tiedostot ladataksesi ne",
+        "drop files hint": "Lataus alkaa heti, kun valitset tiedostot.",
+        "choose files": "Valitse tiedostot",
+        "all files uploaded": "Tiedostosi on lähetetty",
+        "all files uploaded description":
+            "Voit sulkea tämän sivun tai lisätä tiedostoja niin kauan kuin linkki on voimassa.",
+        "uploads title": "Lähetyksesi",
+        uploading: ({ percent }) => `Ladataan · ${percent} %`,
+        uploaded: "Ladattu",
+        "upload failed": "Lataus epäonnistui",
+        "cancel upload": "Peruuta lataus",
+        "retry upload": "Yritä latausta uudelleen"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Jaa objekti"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Pyydä tiedostoja"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Jaa kansio"
@@ -245,6 +272,7 @@ export const translations: Translations<"fi"> = {
         "new s3 profile": "Uusi S3-profiili"
     },
     S3SelectionActionBar: {
+        "request files": "Pyydä tiedostoja",
         download: "Lataa",
         delete: "Poista",
         "copy s3 uri": "Kopioi S3-URI",
@@ -349,6 +377,7 @@ export const translations: Translations<"fi"> = {
         "make private": "Tee yksityiseksi"
     },
     S3ExplorerMainView: {
+        "request files": "Pyydä tiedostoja",
         "create prefix dialog title": "Luo etuliite",
         "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",
         "prefix name field label": "Etuliitteen nimi",
@@ -399,9 +428,13 @@ export const translations: Translations<"fi"> = {
         "empty prefix description":
             "Lataa tiedostoja tai luo kansio aloittaaksesi tämän sijainnin täyttämisen.",
         "empty prefix upload description":
-            "Lataa tiedostoja tähän tai vedä ja pudota ne tälle alueelle.",
+            "Valitse, miten tiedostoja lisätään tähän sijaintiin.",
         "upload files": "Lataa tiedostoja",
-        "upload files here": "Lataa tiedostoja tähän",
+        "upload files from device description":
+            "Valitse tietokoneeltasi tiedostot, jotka haluat ladata tähän.",
+        "create upload link": "Luo latauslinkki",
+        "create upload link description":
+            "Luo jaettava linkki, jonka kautta toinen henkilö voi ladata tiedostoja tähän.",
         "drop files here hint":
             "Pudota tiedostoja mihin tahansa tälle alueelle ladataksesi ne.",
         "new folder": "Uusi kansio",
@@ -425,6 +458,29 @@ export const translations: Translations<"fi"> = {
         "validity duration one day": "1 päivä",
         "validity duration one week": "1 viikko",
         "selected duration": "valittu kesto"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "Jaa tämä linkki kenelle tahansa, myös henkilölle, jolla ei ole tiliä tässä Onyxia-instanssissa, jotta hän voi ladata tiedostoja tietokoneeltaan suoraan tähän kansioon.",
+        "overwrite warning":
+            "Tämän linkin kautta ladatut tiedostot tallennetaan suoraan tähän kansioon. Jos ladatulla tiedostolla on sama nimi ja polku kuin olemassa olevalla tiedostolla, olemassa oleva tiedosto korvataan.",
+        "create empty folder instead": "Luo sen sijaan tyhjä kansio",
+        "link settings": "Linkin asetukset",
+        "link expires after": "Linkki vanhenee tämän ajan kuluttua",
+        "link validity aria label": "Lähetyslinkin voimassaoloaika",
+        "maximum size per file": "Tiedoston enimmäiskoko",
+        "maximum file size aria label": "Ladattavan tiedoston enimmäiskoko",
+        "upload link": "Lähetyslinkki",
+        "generating upload link": "Lähetyslinkkiä luodaan...",
+        "copy upload link aria label": "Kopioi lähetyslinkki",
+        "generation failed": "Lähetyslinkkiä ei voitu luoda.",
+        retry: "Yritä uudelleen",
+        "security note":
+            "Kuka tahansa linkin saanut voi ladata tiedostoja tähän kansioon linkin vanhenemiseen asti. Linkki ei anna oikeutta tarkastella tai ladata olemassa olevia tiedostoja. Ladattu tiedosto kuitenkin korvaa olemassa olevan tiedoston, jos niillä on sama nimi ja polku.",
+        "validity duration one hour": "1 tunti",
+        "validity duration one day": "1 päivä",
+        "validity duration one week": "1 viikko",
+        "no limit": "Ei rajoitusta"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Kopioi kansion URL",
@@ -1281,6 +1337,10 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "delete from bookmarks": "Poista kirjanmerkeistä",
         "pinned storage location": "Kiinnitetty tallennussijainti",
         bookmarked: "Kirjanmerkitty",
+        share: "Jaa",
+        "request files": "Pyydä tiedostoja",
+        "make public": "Tee julkiseksi",
+        "make private": "Tee yksityiseksi",
         "edit s3 uri": "Muokkaa S3-URIa",
         prefix: "Etuliite",
         "admin bookmark": "Ylläpitäjän kirjanmerkki",
