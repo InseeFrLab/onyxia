@@ -49,7 +49,9 @@ describe("getFormattedDate", () => {
 
         const formattedDate = getFormattedRelativeDate({ time, lang: "en", now });
 
-        expect(formattedDate).toBe("Today at 10:25\u202fAM");
+        // Node 18/20/22 (CLDR 46/47) → U+202F
+        // Node 26 (CLDR 48) → U+0020
+        expect(formattedDate.replace(/[\u00A0\u202F]/g, " ")).toBe("Today at 10:25 AM");
     });
 
     it("formats yesterday's date relative to now", () => {
