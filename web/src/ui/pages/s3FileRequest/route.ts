@@ -15,7 +15,7 @@ export const routeDefs = {
                 })
             )
         },
-        () => `/s3FileRequest`
+        () => `/upload-files`
     )
 };
 
