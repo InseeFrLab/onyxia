@@ -129,6 +129,22 @@ export const translations: Translations<"it"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "Inizializzazione IA non riuscita",
+        "account required title": "Account IA richiesto",
+        "config restoration failed":
+            "Non è stato possibile ripristinare la configurazione IA salvata. La funzione IA è stata avviata senza di essa.",
+        "initialization failed": "Non è stato possibile inizializzare la funzione IA.",
+        "no account": ({ providerName }) =>
+            `Non è stato trovato alcun account ${providerName}. Apri il servizio una volta per creare il tuo account, quindi riprova.`,
+        "authentication failed": ({ providerName }) =>
+            `L’autenticazione con ${providerName} non è riuscita. Riprova più tardi.`,
+        "models fetch failed": ({ providerName }) =>
+            `Non è stato possibile caricare i modelli disponibili da ${providerName}.`,
+        "open provider": ({ providerName }) => `Apri ${providerName}`,
+        "manage ai settings": "Gestisci impostazioni IA",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Elimina questo provider IA personalizzato",
         "dialog body":
@@ -608,9 +624,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

@@ -132,6 +132,22 @@ export const translations: Translations<"de"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "KI-Initialisierung fehlgeschlagen",
+        "account required title": "KI-Konto erforderlich",
+        "config restoration failed":
+            "Ihre gespeicherte KI-Konfiguration konnte nicht wiederhergestellt werden. Die KI-Funktion wurde ohne sie gestartet.",
+        "initialization failed": "Die KI-Funktion konnte nicht initialisiert werden.",
+        "no account": ({ providerName }) =>
+            `Es wurde kein ${providerName}-Konto gefunden. Öffnen Sie den Dienst einmal, um Ihr Konto zu erstellen, und versuchen Sie es erneut.`,
+        "authentication failed": ({ providerName }) =>
+            `Die Authentifizierung bei ${providerName} ist fehlgeschlagen. Bitte versuchen Sie es später erneut.`,
+        "models fetch failed": ({ providerName }) =>
+            `Die verfügbaren Modelle konnten nicht von ${providerName} geladen werden.`,
+        "open provider": ({ providerName }) => `${providerName} öffnen`,
+        "manage ai settings": "KI-Einstellungen verwalten",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Diesen benutzerdefinierten KI-Anbieter löschen",
         "dialog body":

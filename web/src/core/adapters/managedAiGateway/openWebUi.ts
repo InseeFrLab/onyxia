@@ -21,11 +21,8 @@ export function createOpenWebUiGateway(params: {
             return await getAccessTokenInner();
         } catch (cause) {
             return {
-                ok: false,
-                error: {
-                    kind: "unexpected",
-                    cause: cause instanceof Error ? cause : new Error(String(cause))
-                }
+                stateDescription: "error",
+                cause: cause instanceof Error ? cause : new Error(String(cause))
             };
         }
     }
@@ -44,18 +41,15 @@ export function createOpenWebUiGateway(params: {
         );
 
         if (response.status === 403) {
-            return { ok: false, error: { kind: "no-account" } };
+            return { stateDescription: "no account" };
         }
 
         if (!response.ok) {
             return {
-                ok: false,
-                error: {
-                    kind: "unexpected",
-                    cause: new Error(
-                        `OIDC token exchange failed (${response.status}): ${await response.text()}`
-                    )
-                }
+                stateDescription: "error",
+                cause: new Error(
+                    `OIDC token exchange failed (${response.status}): ${await response.text()}`
+                )
             };
         }
 
@@ -65,7 +59,7 @@ export function createOpenWebUiGateway(params: {
             })
             .parse(await response.json());
 
-        return { ok: true, accessToken: exchangedToken };
+        return { stateDescription: "authenticated", accessToken: exchangedToken };
     }
 
     return {

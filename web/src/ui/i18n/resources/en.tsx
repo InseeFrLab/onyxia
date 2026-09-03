@@ -129,6 +129,22 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "AI initialization failed",
+        "account required title": "AI account required",
+        "config restoration failed":
+            "Your saved AI configuration could not be restored. The AI feature started without it.",
+        "initialization failed": "The AI feature could not be initialized.",
+        "no account": ({ providerName }) =>
+            `No ${providerName} account was found. Open the service once to create your account, then try again.`,
+        "authentication failed": ({ providerName }) =>
+            `Authentication with ${providerName} failed. Please try again later.`,
+        "models fetch failed": ({ providerName }) =>
+            `The available models could not be loaded from ${providerName}.`,
+        "open provider": ({ providerName }) => `Open ${providerName}`,
+        "manage ai settings": "Manage AI settings",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Delete this Custom AI Provider",
         "dialog body":

@@ -20,10 +20,7 @@ export declare namespace AiGateway {
     };
 
     export type AccessTokenResult =
-        | { ok: true; accessToken: string }
-        | { ok: false; error: AccessTokenError };
-
-    export type AccessTokenError =
-        | { kind: "no-account" }
-        | { kind: "unexpected"; cause: Error };
+        | { stateDescription: "authenticated"; accessToken: string }
+        | { stateDescription: "no account" }
+        | { stateDescription: "error"; cause: Error };
 }

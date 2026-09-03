@@ -130,6 +130,22 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "AI-initialisering mislyktes",
+        "account required title": "AI-konto kreves",
+        "config restoration failed":
+            "Den lagrede AI-konfigurasjonen kunne ikke gjenopprettes. AI-funksjonen startet uten den.",
+        "initialization failed": "AI-funksjonen kunne ikke initialiseres.",
+        "no account": ({ providerName }) =>
+            `Fant ingen ${providerName}-konto. Åpne tjenesten én gang for å opprette kontoen, og prøv deretter på nytt.`,
+        "authentication failed": ({ providerName }) =>
+            `Autentisering med ${providerName} mislyktes. Prøv igjen senere.`,
+        "models fetch failed": ({ providerName }) =>
+            `De tilgjengelige modellene kunne ikke lastes fra ${providerName}.`,
+        "open provider": ({ providerName }) => `Åpne ${providerName}`,
+        "manage ai settings": "Administrer AI-innstillinger",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Slett denne egendefinerte KI-leverandøren",
         "dialog body":

@@ -132,6 +132,22 @@ export const translations: Translations<"fr"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "Échec de l’initialisation de l’IA",
+        "account required title": "Compte IA requis",
+        "config restoration failed":
+            "La configuration IA enregistrée n’a pas pu être restaurée. La fonctionnalité IA a démarré sans celle-ci.",
+        "initialization failed": "La fonctionnalité IA n’a pas pu être initialisée.",
+        "no account": ({ providerName }) =>
+            `Aucun compte ${providerName} n’a été trouvé. Ouvrez le service une première fois pour créer votre compte, puis réessayez.`,
+        "authentication failed": ({ providerName }) =>
+            `L’authentification auprès de ${providerName} a échoué. Veuillez réessayer plus tard.`,
+        "models fetch failed": ({ providerName }) =>
+            `Impossible de charger les modèles disponibles depuis ${providerName}.`,
+        "open provider": ({ providerName }) => `Ouvrir ${providerName}`,
+        "manage ai settings": "Gérer les paramètres IA",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Supprimer ce fournisseur d’IA personnalisé",
         "dialog body":

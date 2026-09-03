@@ -232,12 +232,11 @@ assert<Equals<XOnyxiaContext["user"]["lang"], Language>>();
 namespace AiProviderLaunchContext {
     export type Common = {
         id: string;
-        isDefault: boolean;
         apiBase: string;
         name: string;
         selectedModel: string | undefined;
         models: string[] | undefined;
-        // Historical x-onyxia key for the API protocol.
+        //API protocol.
         provider: string;
     };
 

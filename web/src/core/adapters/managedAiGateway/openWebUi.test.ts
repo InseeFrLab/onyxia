@@ -29,7 +29,7 @@ describe(createOpenWebUiGateway.name, () => {
         vi.stubGlobal("fetch", fetchMock);
 
         await expect(createAdapter().getAccessToken()).resolves.toStrictEqual({
-            ok: true,
+            stateDescription: "authenticated",
             accessToken: "openwebui-token"
         });
         expect(fetchMock).toHaveBeenCalledWith(
@@ -52,8 +52,7 @@ describe(createOpenWebUiGateway.name, () => {
         );
 
         await expect(createAdapter().getAccessToken()).resolves.toStrictEqual({
-            ok: false,
-            error: { kind: "no-account" }
+            stateDescription: "no account"
         });
     });
 
@@ -67,8 +66,8 @@ describe(createOpenWebUiGateway.name, () => {
         });
 
         await expect(gateway.getAccessToken()).resolves.toStrictEqual({
-            ok: false,
-            error: { kind: "unexpected", cause: error }
+            stateDescription: "error",
+            cause: error
         });
         expect(fetchMock).not.toHaveBeenCalled();
     });
@@ -83,11 +82,11 @@ describe(createOpenWebUiGateway.name, () => {
 
         const result = await createAdapter().getAccessToken();
 
-        expect(result.ok).toBe(false);
-        if (result.ok || result.error.kind !== "unexpected") {
+        expect(result.stateDescription).toBe("error");
+        if (result.stateDescription !== "error") {
             return;
         }
-        expect(result.error.cause).toEqual(
+        expect(result.cause).toEqual(
             new Error("OIDC token exchange failed (503): Unavailable")
         );
     });
@@ -104,10 +103,10 @@ describe(createOpenWebUiGateway.name, () => {
 
         const result = await createAdapter().getAccessToken();
 
-        expect(result.ok).toBe(false);
-        if (result.ok || result.error.kind !== "unexpected") {
+        expect(result.stateDescription).toBe("error");
+        if (result.stateDescription !== "error") {
             return;
         }
-        expect(result.error.cause).toBeInstanceOf(ZodError);
+        expect(result.cause).toBeInstanceOf(ZodError);
     });
 });

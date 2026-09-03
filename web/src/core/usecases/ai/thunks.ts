@@ -10,41 +10,7 @@ import {
 import { fetchAiModels } from "core/tools/fetchAiModels";
 import * as userConfigs from "core/usecases/userConfigs";
 import { assert } from "tsafe";
-import type { AiGateway } from "core/ports/AiGateway";
-
-function accessTokenResultToAuth(
-    result: AiGateway.AccessTokenResult
-): State.AiProvider.Managed["auth"] {
-    if (result.ok) {
-        return {
-            stateDescription: "authenticated",
-            accessToken: result.accessToken
-        };
-    }
-
-    switch (result.error.kind) {
-        case "no-account":
-            return { stateDescription: "no account" };
-        case "unexpected":
-            return { stateDescription: "error" };
-    }
-}
-
-async function getAccessTokenSafely(
-    aiGateway: AiGateway
-): Promise<AiGateway.AccessTokenResult> {
-    try {
-        return await aiGateway.getAccessToken();
-    } catch (cause) {
-        return {
-            ok: false,
-            error: {
-                kind: "unexpected",
-                cause: cause instanceof Error ? cause : new Error(String(cause))
-            }
-        };
-    }
-}
+import { Evt } from "evt";
 
 export const thunks = {
     isAvailable:
@@ -66,23 +32,16 @@ export const thunks = {
 
             dispatch(actions.managedAuthFetchStarted({ providerId }));
 
-            const result = await getAccessTokenSafely(aiGateway);
+            const auth = await aiGateway.getAccessToken();
 
-            dispatch(
-                actions.managedAuthRefreshed({
-                    providerId,
-                    auth: accessTokenResultToAuth(result)
-                })
-            );
+            assert(auth.stateDescription === "authenticated");
 
-            if (!result.ok) {
-                return;
-            }
+            dispatch(actions.managedAuthRefreshed({ providerId, auth }));
 
             dispatch(actions.modelsFetchStarted({ providerId }));
 
             try {
-                const models = await aiGateway.listModels(result.accessToken);
+                const models = await aiGateway.listModels(auth.accessToken);
                 dispatch(actions.modelsLoaded({ providerId, models }));
             } catch {
                 dispatch(actions.modelsFetchFailed({ providerId }));
@@ -234,6 +193,21 @@ export const thunks = {
         }
 } satisfies Thunks;
 
+export type AiInitializationError =
+    | { kind: "config-restoration-failed" }
+    | { kind: "initialization-failed" }
+    | {
+          kind: "no-account";
+          providerName: string;
+          webUiUrl: string;
+      }
+    | {
+          kind: "authentication-failed" | "models-fetch-failed";
+          providerName: string;
+      };
+
+export const evtDisplayError = Evt.create<AiInitializationError>();
+
 const privateThunks = {
     persistConfig:
         () =>
@@ -280,9 +254,16 @@ const privateThunks = {
             let persisted: PersistedAiConfig | null;
 
             try {
+                const aiConfigStr =
+                    userConfigs.selectors.userConfigs(getState()).aiConfigStr;
+
                 persisted = parseAiConfigStr({
-                    aiConfigStr: userConfigs.selectors.userConfigs(getState()).aiConfigStr
+                    aiConfigStr
                 });
+
+                if (aiConfigStr !== null && persisted === null) {
+                    evtDisplayError.post({ kind: "config-restoration-failed" });
+                }
 
                 managedProviders = aiGateways.map(aiGateway => ({
                     kind: "managed",
@@ -320,6 +301,7 @@ const privateThunks = {
                 dispatch(actions.initialized({ providers, activeProviderId }));
             } catch {
                 dispatch(actions.initializationFailed());
+                evtDisplayError.post({ kind: "initialization-failed" });
                 return;
             }
 
@@ -328,23 +310,35 @@ const privateThunks = {
             // final authentication and model-list results.
             await Promise.all([
                 ...aiGateways.map(async aiGateway => {
-                    const accessTokenResult = await getAccessTokenSafely(aiGateway);
+                    const auth = await aiGateway.getAccessToken();
 
                     dispatch(
                         actions.managedAuthRefreshed({
                             providerId: aiGateway.id,
-                            auth: accessTokenResultToAuth(accessTokenResult)
+                            auth
                         })
                     );
 
-                    if (!accessTokenResult.ok) return;
+                    if (auth.stateDescription !== "authenticated") {
+                        evtDisplayError.post(
+                            auth.stateDescription === "no account"
+                                ? {
+                                      kind: "no-account",
+                                      providerName: aiGateway.name,
+                                      webUiUrl: aiGateway.webUiUrl
+                                  }
+                                : {
+                                      kind: "authentication-failed",
+                                      providerName: aiGateway.name
+                                  }
+                        );
+                        return;
+                    }
 
                     dispatch(actions.modelsFetchStarted({ providerId: aiGateway.id }));
 
                     try {
-                        const models = await aiGateway.listModels(
-                            accessTokenResult.accessToken
-                        );
+                        const models = await aiGateway.listModels(auth.accessToken);
                         dispatch(
                             actions.modelsLoaded({
                                 providerId: aiGateway.id,
@@ -357,16 +351,22 @@ const privateThunks = {
                                 providerId: aiGateway.id
                             })
                         );
+                        evtDisplayError.post({
+                            kind: "models-fetch-failed",
+                            providerName: aiGateway.name
+                        });
                     }
                 }),
                 ...customProviders.map(p =>
-                    dispatchFetchedModels({
-                        dispatch,
-                        providerId: p.id,
-                        protocol: p.protocol,
-                        apiBase: p.apiBase,
-                        apiKey: p.apiKey
-                    })
+                    dispatch(
+                        privateThunks.fetchCustomProviderModels({
+                            providerId: p.id,
+                            providerName: p.name,
+                            protocol: p.protocol,
+                            apiBase: p.apiBase,
+                            apiKey: p.apiKey
+                        })
+                    )
                 )
             ]);
 
@@ -395,6 +395,26 @@ const privateThunks = {
                     )?.id
                 })
             );
+        },
+    fetchCustomProviderModels:
+        (params: {
+            providerId: string;
+            providerName: string;
+            protocol: string;
+            apiBase: string;
+            apiKey: string;
+        }) =>
+        async (...args) => {
+            const { providerId, providerName, protocol, apiBase, apiKey } = params;
+            const [dispatch] = args;
+
+            try {
+                const models = await fetchAiModels({ protocol, apiBase, apiKey });
+                dispatch(actions.modelsLoaded({ providerId, models }));
+            } catch {
+                dispatch(actions.modelsFetchFailed({ providerId }));
+                evtDisplayError.post({ kind: "models-fetch-failed", providerName });
+            }
         }
 } satisfies Thunks;
 
@@ -442,23 +462,3 @@ export const protectedThunks = {
             await getContext(rootContext).prInitialized;
         }
 } satisfies Thunks;
-
-async function dispatchFetchedModels(params: {
-    dispatch: (
-        action:
-            | ReturnType<typeof actions.modelsLoaded>
-            | ReturnType<typeof actions.modelsFetchFailed>
-    ) => void;
-    providerId: string;
-    protocol: string;
-    apiBase: string;
-    apiKey: string;
-}): Promise<void> {
-    const { dispatch, providerId, protocol, apiBase, apiKey } = params;
-    try {
-        const models = await fetchAiModels({ protocol, apiBase, apiKey });
-        dispatch(actions.modelsLoaded({ providerId, models }));
-    } catch {
-        dispatch(actions.modelsFetchFailed({ providerId }));
-    }
-}

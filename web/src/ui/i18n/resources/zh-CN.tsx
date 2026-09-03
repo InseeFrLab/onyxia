@@ -121,6 +121,22 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "AI 初始化失败",
+        "account required title": "需要 AI 账户",
+        "config restoration failed":
+            "无法恢复已保存的 AI 配置。AI 功能已在不使用该配置的情况下启动。",
+        "initialization failed": "无法初始化 AI 功能。",
+        "no account": ({ providerName }) =>
+            `未找到 ${providerName} 账户。请先打开一次该服务以创建账户，然后重试。`,
+        "authentication failed": ({ providerName }) =>
+            `${providerName} 身份验证失败。请稍后重试。`,
+        "models fetch failed": ({ providerName }) =>
+            `无法从 ${providerName} 加载可用模型。`,
+        "open provider": ({ providerName }) => `打开 ${providerName}`,
+        "manage ai settings": "管理 AI 设置",
+        ok: "确定"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "删除此自定义 AI 提供商",
         "dialog body": "这将永久删除该提供商及浏览器中存储的凭据。此操作无法撤销。",

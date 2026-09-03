@@ -131,6 +131,22 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "Tekoälyn alustus epäonnistui",
+        "account required title": "Tekoälytili vaaditaan",
+        "config restoration failed":
+            "Tallennettua tekoälymääritystä ei voitu palauttaa. Tekoälytoiminto käynnistyi ilman sitä.",
+        "initialization failed": "Tekoälytoimintoa ei voitu alustaa.",
+        "no account": ({ providerName }) =>
+            `${providerName}-tiliä ei löytynyt. Avaa palvelu kerran luodaksesi tilin ja yritä sitten uudelleen.`,
+        "authentication failed": ({ providerName }) =>
+            `Todennus palveluun ${providerName} epäonnistui. Yritä myöhemmin uudelleen.`,
+        "models fetch failed": ({ providerName }) =>
+            `Saatavilla olevia malleja ei voitu ladata palvelusta ${providerName}.`,
+        "open provider": ({ providerName }) => `Avaa ${providerName}`,
+        "manage ai settings": "Hallitse tekoälyasetuksia",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Poista tämä mukautettu tekoälypalveluntarjoaja",
         "dialog body":

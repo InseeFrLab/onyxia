@@ -130,6 +130,22 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
+    AiInitializationErrorDialog: {
+        "initialization error title": "AI-initialisatie mislukt",
+        "account required title": "AI-account vereist",
+        "config restoration failed":
+            "Uw opgeslagen AI-configuratie kon niet worden hersteld. De AI-functie is zonder deze configuratie gestart.",
+        "initialization failed": "De AI-functie kon niet worden geïnitialiseerd.",
+        "no account": ({ providerName }) =>
+            `Er is geen ${providerName}-account gevonden. Open de dienst eenmaal om uw account aan te maken en probeer het opnieuw.`,
+        "authentication failed": ({ providerName }) =>
+            `Authenticatie bij ${providerName} is mislukt. Probeer het later opnieuw.`,
+        "models fetch failed": ({ providerName }) =>
+            `De beschikbare modellen konden niet van ${providerName} worden geladen.`,
+        "open provider": ({ providerName }) => `${providerName} openen`,
+        "manage ai settings": "AI-instellingen beheren",
+        ok: "OK"
+    },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Deze aangepaste AI-provider verwijderen",
         "dialog body":
