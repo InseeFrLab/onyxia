@@ -57,6 +57,9 @@ The component renders a regular box composed of:
 The parent owns modal chrome, title, close button, URL generation, state updates,
 and lifecycle.
 
+The component has a 760px content width and shrinks to fit narrower containers.
+Long generated URLs must never increase that width.
+
 # Rendering Rules
 
 ## Destination Folder
@@ -124,7 +127,8 @@ When `errorMessage === undefined` and `uploadPageUrl === undefined`:
 
 When `errorMessage === undefined` and `uploadPageUrl !== undefined`:
 
-- display the URL using the standard S3 dialog URL preview
+- display the opaque Onyxia URL as neutral, single-line link text
+- truncate the visible text when needed instead of exposing or emphasizing the URL structure
 - preserve the complete URL for navigation and copying
 - let the user open the URL in a new browser tab
 - let the user copy the complete URL
