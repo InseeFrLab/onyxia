@@ -11,7 +11,7 @@ import { tss } from "tss";
 import { assert, type Equals } from "tsafe/assert";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import {
-    S3DialogCopyUrlField,
+    S3DialogCopyPlainUrlField,
     S3DialogItemSummary
 } from "ui/shared/codex/S3DialogPrimitives";
 
@@ -170,10 +170,11 @@ export function S3FileRequestCreationDialog(props: S3FileRequestCreationDialogPr
             <div className={classes.linkSection}>
                 <Text typo="label 1">{t("upload link")}</Text>
                 {errorMessage === undefined ? (
-                    <S3DialogCopyUrlField
+                    <S3DialogCopyPlainUrlField
                         value={uploadPageUrl}
                         pendingText={t("generating upload link")}
                         ariaLabel={t("copy upload link aria label")}
+                        isMultiline={false}
                     />
                 ) : (
                     <div className={classes.errorBox} role="alert">
@@ -241,6 +242,8 @@ const useStyles = tss.withName({ S3FileRequestCreationDialog }).create(({ theme 
     root: {
         display: "flex",
         flexDirection: "column",
+        width: 760,
+        maxWidth: "100%",
         boxSizing: "border-box"
     },
     folderSection: {
@@ -360,7 +363,10 @@ const useStyles = tss.withName({ S3FileRequestCreationDialog }).create(({ theme 
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(2),
+        width: "100%",
+        maxWidth: "100%",
         minWidth: 0,
+        overflow: "hidden",
         paddingTop: theme.spacing(3),
         paddingBottom: theme.spacing(3)
     },
