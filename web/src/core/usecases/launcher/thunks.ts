@@ -1,5 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
+import * as aiUsecase from "core/usecases/ai";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
@@ -587,6 +588,14 @@ export const protectedThunks = {
                 { paramsOfBootstrapCore, secretsManager, onyxiaApi, oidc }
             ] = args;
 
+            // `aiOnyxiaContext` is read synchronously below as a one-shot snapshot, so
+            // wait for the AI use-case's in-flight initialization (providers + their
+            // model lists) to finish first. This only awaits an init already started
+            // by bootstrap; it never triggers one (which would otherwise run before
+            // the managed AI adapters are wired up, when called early for restorable-
+            // config autocomplete).
+            await dispatch(aiUsecase.protectedThunks.waitForInitialization());
+
             const { user } = await onyxiaApi.getUserAndProjects();
 
             const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
@@ -812,6 +821,13 @@ export const protectedThunks = {
                     useCertManager: region.certManager?.useCertManager,
                     certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
+                ai: !doInjectPersonalInfos
+                    ? {
+                          enabled: false,
+                          activeProvider: undefined,
+                          providers: []
+                      }
+                    : aiUsecase.selectors.aiOnyxiaContext(getState()),
                 proxyInjection: region.proxyInjection,
                 packageRepositoryInjection: region.packageRepositoryInjection,
                 certificateAuthorityInjection: region.certificateAuthorityInjection

@@ -17,7 +17,8 @@ export const translations: Translations<"it"> = {
         text2: "Accedi alle diverse informazioni del tuo account.",
         text3: "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
         "personal tokens tooltip": 'O in inglese solo "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificatore dell'account",
@@ -94,6 +95,104 @@ export const translations: Translations<"it"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                La tua sessione OIDC ti dà accesso senza interruzioni al gateway IA.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Apri gateway IA
+                </MuiLink>
+            </>
+        ),
+        "api base url": "URL base dell'API",
+        token: "Token",
+        "gateway error": "Impossibile inizializzare il gateway IA.",
+        "default provider": "Provider predefinito",
+        "set default provider": "Imposta come predefinito",
+        "refresh credentials": "Aggiorna credenziali",
+        "delete provider": "Elimina",
+        "edit provider": "Modifica",
+        "custom providers section title": "Provider IA personalizzati",
+        "custom providers section helper":
+            "Aggiungi i tuoi provider IA compatibili con OpenAI. Le credenziali sono memorizzate nel tuo browser.",
+        "add custom ai provider": "Aggiungi un provider IA personalizzato",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Non hai ancora un account sul gateway IA. Per favore accedi prima su{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                per creare il tuo account.
+            </>
+        )
+    },
+    AiInitializationErrorDialog: {
+        "initialization error title": "Inizializzazione IA non riuscita",
+        "account required title": "Account IA richiesto",
+        "config restoration failed":
+            "Non è stato possibile ripristinare la configurazione IA salvata. La funzione IA è stata avviata senza di essa.",
+        "initialization failed": "Non è stato possibile inizializzare la funzione IA.",
+        "no account": ({ providerName }) =>
+            `Non è stato trovato alcun account ${providerName}. Apri il servizio una volta per creare il tuo account, quindi riprova.`,
+        "authentication failed": ({ providerName }) =>
+            `L’autenticazione con ${providerName} non è riuscita. Riprova più tardi.`,
+        "models fetch failed": ({ providerName }) =>
+            `Non è stato possibile caricare i modelli disponibili da ${providerName}.`,
+        "open provider": ({ providerName }) => `Apri ${providerName}`,
+        "manage ai settings": "Gestisci impostazioni IA",
+        ok: "OK"
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Elimina questo provider IA personalizzato",
+        "dialog body":
+            "Il provider e le credenziali memorizzate nel browser verranno eliminati definitivamente. Questa azione non può essere annullata.",
+        cancel: "Annulla",
+        "delete provider": "Elimina provider"
+    },
+    ProviderValueField: {
+        copy: "Copia",
+        copied: "Copiato"
+    },
+    ModelsSection: {
+        "model label": "Modello",
+        "not defined": "Non definito",
+        "models fetch error":
+            "Impossibile recuperare i modelli — controlla l'URL e la chiave API."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Provider IA personalizzati",
+        "edit custom provider title": "Modifica provider IA",
+        "custom provider section title": "Provider IA personalizzati",
+        "custom provider section subtitle":
+            "Configura i provider IA in base al protocollo API utilizzato.",
+        "custom provider label field": "Etichetta",
+        "custom provider type field": "Protocollo API",
+        "openai provider option": "OpenAI (nativo)",
+        "openai compatible provider option": "Compatibile con OpenAI",
+        "mistral provider option": "Mistral (nativo)",
+        "anthropic provider option": "Anthropic (nativo)",
+        "credentials section title": "Credenziali del provider",
+        "credentials section subtitle":
+            "Inserisci le credenziali. Verranno memorizzate nel browser.",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "verification section title": "Verifica e carica i modelli",
+        "verification section subtitle":
+            "Verifica le credenziali e individua automaticamente i modelli disponibili.",
+        "custom provider model field": "Tipo di modello",
+        "provider test": "Testa connessione",
+        "provider testing": "Test della connessione...",
+        "provider test success": "Connessione riuscita. Il provider è pronto all'uso.",
+        "provider test error":
+            "Impossibile connettersi — controlla l'URL e la chiave API.",
+        "set as default provider": "Imposta come provider predefinito",
+        "provider save": "Aggiungi",
+        "provider update": "Salva",
+        "provider cancel": "Annulla",
+        "close aria label": "Chiudi"
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",
@@ -524,9 +623,9 @@ export const translations: Translations<"it"> = {
                 <MuiLink href={docHref} target="_blank">
                     la nostra documentazione
                 </MuiLink>
-                {". \u00a0"}
+                . &nbsp;
                 <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                {"."}
+                .
             </>
         )
     },

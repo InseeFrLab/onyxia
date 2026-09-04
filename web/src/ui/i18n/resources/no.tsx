@@ -18,7 +18,8 @@ export const translations: Translations<"no"> = {
         text3: "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
         "personal tokens tooltip":
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -95,6 +96,102 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
+    },
+    AccountAiGatewayTab: {
+        "credentials section helper": ({ webUiUrl }) => (
+            <>
+                Din OIDC-økt gir deg sømløs tilgang til AI-gatewayen.{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    Åpne AI-gateway
+                </MuiLink>
+            </>
+        ),
+        "api base url": "API-basis-URL",
+        token: "Token",
+        "gateway error": "Kunne ikke initialisere AI-gatewayen.",
+        "default provider": "Standardleverandør",
+        "set default provider": "Angi som standard",
+        "refresh credentials": "Oppdater legitimasjon",
+        "delete provider": "Slett",
+        "edit provider": "Rediger",
+        "custom providers section title": "Tilpassede AI-leverandører",
+        "custom providers section helper":
+            "Legg til dine egne OpenAI-kompatible AI-leverandører. Påloggingsinformasjonen lagres i nettleseren din.",
+        "add custom ai provider": "Legg til tilpasset AI-leverandør",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-nøkkel",
+        "no account": ({ webUiUrl }) => (
+            <>
+                Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}
+                <MuiLink href={webUiUrl} target="_blank">
+                    {webUiUrl}
+                </MuiLink>{" "}
+                for å opprette kontoen din.
+            </>
+        )
+    },
+    AiInitializationErrorDialog: {
+        "initialization error title": "AI-initialisering mislyktes",
+        "account required title": "AI-konto kreves",
+        "config restoration failed":
+            "Den lagrede AI-konfigurasjonen kunne ikke gjenopprettes. AI-funksjonen startet uten den.",
+        "initialization failed": "AI-funksjonen kunne ikke initialiseres.",
+        "no account": ({ providerName }) =>
+            `Fant ingen ${providerName}-konto. Åpne tjenesten én gang for å opprette kontoen, og prøv deretter på nytt.`,
+        "authentication failed": ({ providerName }) =>
+            `Autentisering med ${providerName} mislyktes. Prøv igjen senere.`,
+        "models fetch failed": ({ providerName }) =>
+            `De tilgjengelige modellene kunne ikke lastes fra ${providerName}.`,
+        "open provider": ({ providerName }) => `Åpne ${providerName}`,
+        "manage ai settings": "Administrer AI-innstillinger",
+        ok: "OK"
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Slett denne egendefinerte KI-leverandøren",
+        "dialog body":
+            "Dette fjerner leverandøren og den lagrede påloggingsinformasjonen permanent fra nettleseren. Handlingen kan ikke angres.",
+        cancel: "Avbryt",
+        "delete provider": "Slett leverandør"
+    },
+    ProviderValueField: {
+        copy: "Kopier",
+        copied: "Kopiert"
+    },
+    ModelsSection: {
+        "model label": "Modell",
+        "not defined": "Ikke definert",
+        "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen."
+    },
+    CustomProviderFormDialog: {
+        "add custom provider title": "Tilpassede AI-leverandører",
+        "edit custom provider title": "Rediger AI-leverandør",
+        "custom provider section title": "Tilpassede AI-leverandører",
+        "custom provider section subtitle":
+            "Konfigurer AI-leverandører etter API-protokollen de bruker.",
+        "custom provider label field": "Etikett",
+        "custom provider type field": "API-protokoll",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-kompatibel",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
+        "credentials section title": "Leverandørlegitimasjon",
+        "credentials section subtitle":
+            "Skriv inn legitimasjonen din. Den lagres i nettleseren.",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-nøkkel",
+        "verification section title": "Bekreft og last inn modeller",
+        "verification section subtitle":
+            "Bekreft legitimasjonen og finn tilgjengelige modeller automatisk.",
+        "custom provider model field": "Modelltype",
+        "provider test": "Test tilkobling",
+        "provider testing": "Tester tilkobling...",
+        "provider test success": "Tilkobling vellykket. Leverandøren er klar til bruk.",
+        "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
+        "set as default provider": "Angi som standardleverandør",
+        "provider save": "Legg til",
+        "provider update": "Lagre",
+        "provider cancel": "Avbryt",
+        "close aria label": "Lukk"
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

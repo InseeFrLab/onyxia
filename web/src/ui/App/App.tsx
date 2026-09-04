@@ -17,6 +17,7 @@ import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
 import { Uploads } from "ui/pages/s3Explorer/Uploads";
+import { AiInitializationErrorDialog } from "./AiInitializationErrorDialog";
 
 triggerCoreBootstrap({
     onyxiaApiUrl: env.ONYXIA_API_URL,
@@ -37,8 +38,10 @@ triggerCoreBootstrap({
     isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED,
     enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
+    isAiEnabled: !env.DISABLE_AI,
     getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled,
-    S3_envValue: env.S3
+    S3_envValue: env.S3,
+    AI_envValue: env.AI
 });
 
 export function App() {
@@ -71,6 +74,7 @@ export function App() {
                     />
                 )}
                 <GlobalDialog />
+                <AiInitializationErrorDialog />
                 <Header className={classes.header} />
                 <section className={classes.betweenHeaderAndFooter}>
                     <LeftBar className={classes.leftBar} />

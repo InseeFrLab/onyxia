@@ -198,6 +198,11 @@ export type XOnyxiaContext = {
         useCertManager: boolean;
         certManagerClusterIssuer: string | undefined;
     };
+    ai: {
+        enabled: boolean;
+        activeProvider: AiProviderLaunchContext.Active | undefined;
+        providers: AiProviderLaunchContext.Inactive[];
+    };
     proxyInjection:
         | {
               enabled: boolean | undefined;
@@ -223,3 +228,19 @@ export type XOnyxiaContext = {
 };
 
 assert<Equals<XOnyxiaContext["user"]["lang"], Language>>();
+
+namespace AiProviderLaunchContext {
+    export type Common = {
+        id: string;
+        apiBase: string;
+        name: string;
+        selectedModel: string | undefined;
+        models: string[] | undefined;
+        //API protocol.
+        provider: string;
+    };
+
+    export type Active = Common & { apiKey: string };
+
+    export type Inactive = Common;
+}

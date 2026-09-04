@@ -457,12 +457,32 @@ function computeRootFormFieldGroup_rec(params: {
             assert(values instanceof Array);
 
             const nodes = values
-                .map((...[, index]) => {
+                .map((value_i, index) => {
                     const helmValuesPath_child = [...helmValuesPath, index];
+
+                    // Same item scoping as in computeHelmValues_rec (array_mapping):
+                    // let x-onyxia relative expressions resolve against the
+                    // current array item before falling back to the global context.
+                    const xOnyxiaContext_child = (() => {
+                        if (!(value_i instanceof Object) || value_i instanceof Array) {
+                            return xOnyxiaContext;
+                        }
+
+                        return new Proxy(xOnyxiaContext, {
+                            get(...args) {
+                                const [, prop] = args;
+
+                                if (typeof prop === "string" && prop in value_i) {
+                                    return value_i[prop];
+                                }
+                                return Reflect.get(...args);
+                            }
+                        });
+                    })();
 
                     return computeRootFormFieldGroup_rec({
                         helmValues,
-                        xOnyxiaContext,
+                        xOnyxiaContext: xOnyxiaContext_child,
                         helmValuesSchema: itemSchema,
                         autoInjectionDisabledFields,
                         helmValuesPath: helmValuesPath_child,
