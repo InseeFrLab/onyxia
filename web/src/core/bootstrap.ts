@@ -205,10 +205,12 @@ export async function bootstrapCore(
 
     setRootContext(context);
 
-    const { core, dispatch, getState } = createCore({
+    const { core, dispatch, getState, evtAction } = createCore({
         context,
         usecases
     });
+
+    evtAction.setMaxHandlers(100);
 
     isCoreCreated = true;
 
