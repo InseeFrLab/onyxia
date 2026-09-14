@@ -1410,7 +1410,7 @@ const useStyles = tss
             gap: theme.spacing(1.5)
         },
         emptyStateDropZone: {
-            width: "min(680px, 100%)",
+            width: "min(760px, 100%)",
             boxSizing: "border-box",
             borderRadius: 8,
             border: `2px dashed ${
@@ -1453,7 +1453,7 @@ const useStyles = tss
             fontStyle: "italic"
         },
         emptyStateChoices: {
-            width: "min(580px, 100%)",
+            width: "min(660px, 100%)",
             display: "flex",
             alignItems: "flex-start",
             justifyContent: "center",
@@ -1462,14 +1462,20 @@ const useStyles = tss
             marginTop: theme.spacing(1)
         },
         emptyStateChoice: {
-            width: "min(270px, 100%)",
+            width: "min(318px, 100%)",
+            flex: "1 1 300px",
+            maxWidth: 318,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             gap: theme.spacing(1)
         },
         emptyStateChoiceButton: {
-            width: "100%"
+            width: "100%",
+            whiteSpace: "nowrap",
+            "@media (max-width: 520px)": {
+                whiteSpace: "normal"
+            }
         },
         emptyStateChoiceDescription: {
             ...theme.typography.variants["body 2"].style,
