@@ -6,7 +6,6 @@ import { S3SharePrefixDialog as S3SharePrefixDialog_headless } from "ui/shared/c
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { routes } from "ui/routes";
 import { stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
-import { assert } from "tsafe";
 
 export type S3SharePrefixDialogProps = {
     evtOpen: Evt<{
@@ -41,8 +40,6 @@ function S3SharePrefixDialogContainer(props: S3SharePrefixDialogProps) {
         }
 
         const prefixBasename = state.s3Uri.keySegments.at(-1);
-
-        assert(prefixBasename !== undefined);
 
         const onyxiaUrl =
             window.location.origin +

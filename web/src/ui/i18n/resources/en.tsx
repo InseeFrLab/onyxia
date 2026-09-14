@@ -258,6 +258,7 @@ export const translations: Translations<"en"> = {
             `You are about to delete ${count} selected item${count > 1 ? "s" : ""}. Deleting a prefix also deletes everything inside it.`,
         delete: "Delete",
         share: "Share",
+        "request files": "Request files",
         download: "Download",
         "copy s3 uri": "Copy S3 URI",
         copied: "Copied",
@@ -295,10 +296,13 @@ export const translations: Translations<"en"> = {
         "this prefix is empty": "This prefix is empty",
         "empty prefix description":
             "Upload files or create a folder to start populating this location.",
-        "empty prefix upload description":
-            "Upload files here or drag and drop them into this area.",
+        "empty prefix upload description": "Choose how files should be added here.",
         "upload files": "Upload files",
-        "upload files here": "Upload files here",
+        "upload files from device description":
+            "Select files from your computer to upload here.",
+        "create upload link": "Create upload link",
+        "create upload link description":
+            "Generate a shareable link that lets someone else upload files here.",
         "drop files here hint": "Drop files anywhere in this area to upload them.",
         "new folder": "New folder",
         name: "Name",
@@ -322,6 +326,29 @@ export const translations: Translations<"en"> = {
         "validity duration one week": "1 week",
         "selected duration": "the selected duration"
     },
+    S3FileRequestCreationDialog: {
+        description:
+            "Share this link with anyone, even someone without an account on this Onyxia instance, to let them upload files from their computer directly to this folder.",
+        "overwrite warning":
+            "Files uploaded through this link are saved directly in this folder. If an uploaded file has the same name and path as an existing file, the existing file will be replaced.",
+        "create empty folder instead": "Create an empty folder instead",
+        "link settings": "Link settings",
+        "link expires after": "Link expires after",
+        "link validity aria label": "Upload link validity duration",
+        "maximum size per file": "Maximum size per file",
+        "maximum file size aria label": "Maximum size per uploaded file",
+        "upload link": "Upload link",
+        "generating upload link": "Generating upload link...",
+        "copy upload link aria label": "Copy upload link",
+        "generation failed": "The upload link could not be generated.",
+        retry: "Retry",
+        "security note":
+            "Anyone with this link can upload files to this folder until it expires. The link does not allow them to view or download existing files. However, an uploaded file will replace an existing file if it has the same name and path.",
+        "validity duration one hour": "1 hour",
+        "validity duration one day": "1 day",
+        "validity duration one week": "1 week",
+        "no limit": "No limit"
+    },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Copy folder URL",
         "public sharing note":
@@ -338,8 +365,35 @@ export const translations: Translations<"en"> = {
         "create new folder": "Create new folder",
         "download file": "Download file"
     },
+    S3FileRequest: {
+        "page title": "Upload requested files",
+        "page description":
+            "Someone shared this secure link so you can send files directly to their storage space.",
+        "s3 server destination": "You are uploading on this S3 server:",
+        "s3 location destination": "At this location:",
+        "expires on": ({ date }) => `This link expires on ${date}`,
+        "link expired": "This upload link has expired",
+        "link expired description":
+            "Ask the person who shared it with you to create a new link.",
+        "drop files": "Drag and drop your files here",
+        "drop files active": "Drop your files to upload them",
+        "drop files hint": "Files start uploading as soon as you select them.",
+        "choose files": "Choose files",
+        "all files uploaded": "Your files have been sent",
+        "all files uploaded description":
+            "You can close this page or add more files while the link is valid.",
+        "uploads title": "Your uploads",
+        uploading: ({ percent }) => `Uploading · ${percent}%`,
+        uploaded: "Uploaded",
+        "upload failed": "Upload failed",
+        "cancel upload": "Cancel upload",
+        "retry upload": "Retry upload"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Share object"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Request files"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Share folder"
@@ -386,6 +440,7 @@ export const translations: Translations<"en"> = {
         "add to bookmarks": "Add to bookmarks",
         "delete from bookmarks": "Delete from bookmarks",
         share: "Share",
+        "request files": "Request files",
         "make public": "Make public",
         "make private": "Make private",
         "one selected": "1 selected",
@@ -1284,6 +1339,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "delete from bookmarks": "Delete from bookmarks",
         "pinned storage location": "Pinned storage location",
         bookmarked: "Bookmarked",
+        share: "Share",
+        "request files": "Request files",
+        "make public": "Make public",
+        "make private": "Make private",
         "edit s3 uri": "Edit S3 URI",
         prefix: "Prefix",
         "admin bookmark": "Admin bookmark",

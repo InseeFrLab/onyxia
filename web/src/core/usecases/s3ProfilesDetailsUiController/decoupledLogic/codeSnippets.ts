@@ -402,7 +402,6 @@ function getDuckDbSnippet(context: SnippetContext): CodeSnippet {
 }
 
 function getRAwsS3Snippet(context: SnippetContext): CodeSnippet {
-    const awsS3PackageRegion = getAwsS3PackageRegion(context);
     const useHttps = toRBoolean(context.endpointScheme === "https");
 
     return {
@@ -422,7 +421,7 @@ function getRAwsS3Snippet(context: SnippetContext): CodeSnippet {
                     objects <- get_bucket(
                       bucket = bucket,
                       max = 10,
-                      region = ${JSON.stringify(awsS3PackageRegion)},
+                      region = ${JSON.stringify(context.region)},
                       use_https = ${useHttps},
                       key = "",
                       secret = "",
@@ -458,7 +457,7 @@ function getRAwsS3Snippet(context: SnippetContext): CodeSnippet {
                     objects <- get_bucket(
                       bucket = bucket,
                       max = 10,
-                      region = ${JSON.stringify(awsS3PackageRegion)},
+                      region = ${JSON.stringify(context.region)},
                       use_https = ${useHttps}
                     )
 
@@ -624,10 +623,6 @@ function toSqlString(value: string): string {
 
 function toRBoolean(value: boolean): "TRUE" | "FALSE" {
     return value ? "TRUE" : "FALSE";
-}
-
-function getAwsS3PackageRegion(context: SnippetContext): string {
-    return context.endpointAuthority === "s3.amazonaws.com" ? context.region : "";
 }
 
 function getMinioClientHostUrl(params: {

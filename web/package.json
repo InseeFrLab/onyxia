@@ -2,7 +2,7 @@
     "name": "onyxia-web",
     "homepage": "https://onyxia.sh",
     "type": "module",
-    "version": "5.7.2",
+    "version": "5.8.0-rc.1",
     "license": "MIT",
     "scripts": {
         "postinstall": "yarn install-git-hooks && yarn postinstall:code-gen",
@@ -23,6 +23,7 @@
     "dependencies": {
         "@aws-sdk/client-s3": "^3.828.0",
         "@aws-sdk/lib-storage": "^3.828.0",
+        "@aws-sdk/s3-presigned-post": "3.828.0",
         "@aws-sdk/s3-request-presigner": "^3.828.0",
         "@aws-sdk/client-sts": "^3.907.0",
         "@babel/runtime": "7.26.0",

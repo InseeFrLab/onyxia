@@ -8,7 +8,7 @@ export type BucketPolicies = Record<string, unknown>;
 
 assert<Equals<S3Client.BucketPolicies, BucketPolicies>>;
 
-type BucketPoliciesByBucket = Record<
+export type BucketPoliciesByBucket = Record<
     string,
     { bucketPolicies: BucketPolicies | undefined } | undefined
 >;

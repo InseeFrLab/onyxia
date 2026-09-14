@@ -83,7 +83,7 @@
     "@smithy/util-utf8" "^2.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-s3@^3.828.0":
+"@aws-sdk/client-s3@3.828.0", "@aws-sdk/client-s3@^3.828.0":
   version "3.828.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.828.0.tgz#f026b618aa1cdae696a34c47aabb5712606ce0d7"
   integrity sha512-TvFyrEfJkf9NN3cq5mXCgFv/sPaA8Rm5tEPgV5emuLedeGsORlWmVpdSKqfZ4lSoED1tMfNM6LY4uA9D8/RS5g==
@@ -825,6 +825,21 @@
     "@smithy/config-resolver" "^4.4.3"
     "@smithy/node-config-provider" "^4.3.5"
     "@smithy/types" "^4.9.0"
+    tslib "^2.6.2"
+
+"@aws-sdk/s3-presigned-post@3.828.0":
+  version "3.828.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/s3-presigned-post/-/s3-presigned-post-3.828.0.tgz#1bd1b4e9c3d5fb921886f0ef7e3681510848fe21"
+  integrity sha512-tCL7RehC9BkvzoNozhe28zQD9jeDuhtzWdkyVhRkoAJAQfMjPtcPcVIAH/WO7zY/+FJNJ4Q4EaeL+D7L83+fpg==
+  dependencies:
+    "@aws-sdk/client-s3" "3.828.0"
+    "@aws-sdk/types" "3.821.0"
+    "@aws-sdk/util-format-url" "3.821.0"
+    "@smithy/middleware-endpoint" "^4.1.11"
+    "@smithy/signature-v4" "^5.1.2"
+    "@smithy/types" "^4.3.1"
+    "@smithy/util-hex-encoding" "^4.0.0"
+    "@smithy/util-utf8" "^4.0.0"
     tslib "^2.6.2"
 
 "@aws-sdk/s3-request-presigner@^3.828.0":

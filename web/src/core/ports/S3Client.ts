@@ -37,6 +37,24 @@ export type S3Client = {
         isForDirectDownload: boolean;
     }) => Promise<string>;
 
+    /**
+     * Creates a form that can be used without S3 credentials to upload objects
+     * whose keys start with the key of `s3Uri`.
+     *
+     * `maxObjectSizeInBytes` applies to each object independently. Enforcing a
+     * maximum size across all objects uploaded with the form requires a stateful
+     * service in front of S3.
+     *
+     * A failure value represents an expected failure to acquire temporary S3
+     * credentials. Invalid state or unexpected signing errors are not converted
+     * into this result and still throw.
+     */
+    createPresignedPost: (params: {
+        s3Uri: S3Uri.TerminatedByDelimiter;
+        validityDurationSecond: number;
+        maxObjectSizeInBytes: number | undefined;
+    }) => Promise<S3Client.CreatePresignedPostReturn>;
+
     getUnsignedObjectHttpUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         isForDirectDownload: boolean;
@@ -76,6 +94,22 @@ export type S3Client = {
 
 export namespace S3Client {
     export type BucketPolicies = Record<string, unknown>;
+
+    export type PresignedPost = {
+        url: string;
+        fields: Record<string, string>;
+        expirationTime: number;
+    };
+
+    export type CreatePresignedPostReturn =
+        | {
+              isSuccess: true;
+              presignedPost: PresignedPost;
+          }
+        | {
+              isSuccess: false;
+              errorMessage: string;
+          };
 
     export type ListObjectsReturn = ListObjectsReturn.Error | ListObjectsReturn.Success;
 

@@ -205,8 +205,35 @@ export const translations: Translations<"no"> = {
         "create new folder": "Opprett ny mappe",
         "download file": "last ned fil"
     },
+    S3FileRequest: {
+        "page title": "Last opp forespurte filer",
+        "page description":
+            "Noen har delt denne sikre lenken slik at du kan sende filer direkte til lagringsområdet deres.",
+        "s3 server destination": "Du laster opp til denne S3-serveren:",
+        "s3 location destination": "På denne plasseringen:",
+        "expires on": ({ date }) => `Denne lenken utløper ${date}`,
+        "link expired": "Denne opplastingslenken har utløpt",
+        "link expired description":
+            "Be personen som delte lenken med deg, om å opprette en ny lenke.",
+        "drop files": "Dra og slipp filene dine her",
+        "drop files active": "Slipp filene for å laste dem opp",
+        "drop files hint": "Opplastingen starter så snart du velger filene.",
+        "choose files": "Velg filer",
+        "all files uploaded": "Filene dine er sendt",
+        "all files uploaded description":
+            "Du kan lukke denne siden eller legge til flere filer så lenge lenken er gyldig.",
+        "uploads title": "Opplastingene dine",
+        uploading: ({ percent }) => `Laster opp · ${percent} %`,
+        uploaded: "Lastet opp",
+        "upload failed": "Opplastingen mislyktes",
+        "cancel upload": "Avbryt opplasting",
+        "retry upload": "Prøv opplastingen på nytt"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Del objekt"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Be om filer"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Del mappe"
@@ -245,6 +272,7 @@ export const translations: Translations<"no"> = {
         "new s3 profile": "Ny S3-profil"
     },
     S3SelectionActionBar: {
+        "request files": "Be om filer",
         download: "Last ned",
         delete: "Slett",
         "copy s3 uri": "Kopier S3-URI",
@@ -350,6 +378,7 @@ export const translations: Translations<"no"> = {
         "make private": "Gjør privat"
     },
     S3ExplorerMainView: {
+        "request files": "Be om filer",
         "create prefix dialog title": "Opprett prefiks",
         "create prefix dialog subtitle":
             "Opprett et nytt prefiks i gjeldende S3-plassering.",
@@ -401,10 +430,13 @@ export const translations: Translations<"no"> = {
         "this prefix is empty": "Dette prefikset er tomt",
         "empty prefix description":
             "Last opp filer eller opprett en mappe for å begynne å fylle denne plasseringen.",
-        "empty prefix upload description":
-            "Last opp filer her eller dra og slipp dem i dette området.",
+        "empty prefix upload description": "Velg hvordan filer skal legges til her.",
         "upload files": "Last opp filer",
-        "upload files here": "Last opp filer her",
+        "upload files from device description":
+            "Velg filer fra datamaskinen din for å laste dem opp her.",
+        "create upload link": "Opprett opplastingslenke",
+        "create upload link description":
+            "Lag en delbar lenke som lar en annen person laste opp filer her.",
         "drop files here hint":
             "Slipp filer hvor som helst i dette området for å laste dem opp.",
         "new folder": "Ny mappe",
@@ -428,6 +460,29 @@ export const translations: Translations<"no"> = {
         "validity duration one day": "1 dag",
         "validity duration one week": "1 uke",
         "selected duration": "den valgte varigheten"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "Del denne lenken med hvem som helst, også personer uten konto på denne Onyxia-instansen, slik at de kan laste opp filer fra datamaskinen sin direkte til denne mappen.",
+        "overwrite warning":
+            "Filer som lastes opp via denne lenken, lagres direkte i denne mappen. Hvis en opplastet fil har samme navn og bane som en eksisterende fil, blir den eksisterende filen erstattet.",
+        "create empty folder instead": "Opprett en tom mappe i stedet",
+        "link settings": "Lenkeinnstillinger",
+        "link expires after": "Lenken utløper etter",
+        "link validity aria label": "Opplastingslenkens gyldighet",
+        "maximum size per file": "Maksimal størrelse per fil",
+        "maximum file size aria label": "Maksimal størrelse per opplastet fil",
+        "upload link": "Opplastingslenke",
+        "generating upload link": "Genererer opplastingslenke...",
+        "copy upload link aria label": "Kopier opplastingslenke",
+        "generation failed": "Opplastingslenken kunne ikke genereres.",
+        retry: "Prøv igjen",
+        "security note":
+            "Alle med denne lenken kan laste opp filer til mappen frem til lenken utløper. Lenken gir ikke tilgang til å vise eller laste ned eksisterende filer. En opplastet fil erstatter imidlertid en eksisterende fil hvis de har samme navn og bane.",
+        "validity duration one hour": "1 time",
+        "validity duration one day": "1 dag",
+        "validity duration one week": "1 uke",
+        "no limit": "Ingen grense"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Kopier mappe-URL",
@@ -1289,6 +1344,10 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "delete from bookmarks": "Slett fra bokmerker",
         "pinned storage location": "Festet lagringssted",
         bookmarked: "Bokmerket",
+        share: "Del",
+        "request files": "Be om filer",
+        "make public": "Gjør offentlig",
+        "make private": "Gjør privat",
         "edit s3 uri": "Rediger S3-URI",
         prefix: "Prefiks",
         "admin bookmark": "Admin-bokmerke",

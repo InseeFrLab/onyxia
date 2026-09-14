@@ -33,3 +33,11 @@ export const LongUrl: Story = {
     },
     render: Default.render
 };
+
+export const BucketRoot: Story = {
+    args: {
+        prefixBasename: undefined,
+        onyxiaUrl: "https://datalab.sspcloud.fr/s3/garronej/?profile=anonymous"
+    },
+    render: Default.render
+};

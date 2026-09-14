@@ -186,8 +186,34 @@ export const translations: Translations<"zh-CN"> = {
         "create new folder": "创建新文件夹",
         "download file": "下载文件"
     },
+    S3FileRequest: {
+        "page title": "上传对方请求的文件",
+        "page description":
+            "有人分享了这个安全链接，以便你将文件直接发送到对方的存储空间。",
+        "s3 server destination": "你正在上传到此 S3 服务器：",
+        "s3 location destination": "目标位置：",
+        "expires on": ({ date }) => `此链接将于 ${date} 过期`,
+        "link expired": "此上传链接已过期",
+        "link expired description": "请让链接分享者创建一个新链接。",
+        "drop files": "将文件拖放到此处",
+        "drop files active": "松开文件即可上传",
+        "drop files hint": "选择文件后会立即开始上传。",
+        "choose files": "选择文件",
+        "all files uploaded": "文件已发送",
+        "all files uploaded description":
+            "只要链接仍然有效，你就可以关闭此页面或继续添加文件。",
+        "uploads title": "你的上传任务",
+        uploading: ({ percent }) => `正在上传 · ${percent}%`,
+        uploaded: "已上传",
+        "upload failed": "上传失败",
+        "cancel upload": "取消上传",
+        "retry upload": "重试上传"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "共享对象"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "请求文件"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "共享文件夹"
@@ -226,6 +252,7 @@ export const translations: Translations<"zh-CN"> = {
         "new s3 profile": "新建 S3 配置文件"
     },
     S3SelectionActionBar: {
+        "request files": "请求文件",
         download: "下载",
         delete: "删除",
         "copy s3 uri": "复制 S3 URI",
@@ -328,6 +355,7 @@ export const translations: Translations<"zh-CN"> = {
         "make private": "设为私有"
     },
     S3ExplorerMainView: {
+        "request files": "请求文件",
         "create prefix dialog title": "创建前缀",
         "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",
         "prefix name field label": "前缀名称",
@@ -375,9 +403,12 @@ export const translations: Translations<"zh-CN"> = {
             `没有键以 "${s3UriStr}" 开头的对象。`,
         "this prefix is empty": "此前缀为空",
         "empty prefix description": "上传文件或创建文件夹以开始填充此位置。",
-        "empty prefix upload description": "在此上传文件，或将文件拖放到此区域。",
+        "empty prefix upload description": "选择要如何在此处添加文件。",
         "upload files": "上传文件",
-        "upload files here": "在此上传文件",
+        "upload files from device description": "从计算机中选择要上传到此处的文件。",
+        "create upload link": "创建上传链接",
+        "create upload link description":
+            "生成一个可共享的链接，让其他人可以将文件上传到此处。",
         "drop files here hint": "将文件拖放到此区域中的任意位置即可上传。",
         "new folder": "新建文件夹",
         name: "名称",
@@ -399,6 +430,29 @@ export const translations: Translations<"zh-CN"> = {
         "validity duration one day": "1 天",
         "validity duration one week": "1 周",
         "selected duration": "所选时长"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "将此链接分享给任何人，即使对方没有此 Onyxia 实例的帐户，也可以从计算机将文件直接上传到此文件夹。",
+        "overwrite warning":
+            "通过此链接上传的文件会直接保存到此文件夹。如果上传文件的名称和路径与现有文件相同，现有文件将被替换。",
+        "create empty folder instead": "改为创建一个空文件夹",
+        "link settings": "链接设置",
+        "link expires after": "链接有效期",
+        "link validity aria label": "上传链接的有效期",
+        "maximum size per file": "每个文件的最大大小",
+        "maximum file size aria label": "每个上传文件的最大大小",
+        "upload link": "上传链接",
+        "generating upload link": "正在生成上传链接...",
+        "copy upload link aria label": "复制上传链接",
+        "generation failed": "无法生成上传链接。",
+        retry: "重试",
+        "security note":
+            "在链接过期之前，任何拥有此链接的人都可以将文件上传到此文件夹。此链接不能用于查看或下载现有文件。但是，如果上传文件与现有文件的名称和路径相同，现有文件将被替换。",
+        "validity duration one hour": "1 小时",
+        "validity duration one day": "1 天",
+        "validity duration one week": "1 周",
+        "no limit": "无限制"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "复制文件夹 URL",
@@ -1221,6 +1275,10 @@ ${
         "delete from bookmarks": "从书签中删除",
         "pinned storage location": "已固定的存储位置",
         bookmarked: "已添加书签",
+        share: "共享",
+        "request files": "请求文件",
+        "make public": "公开",
+        "make private": "设为私有",
         "edit s3 uri": "编辑 S3 URI",
         prefix: "前缀",
         "admin bookmark": "管理员书签",

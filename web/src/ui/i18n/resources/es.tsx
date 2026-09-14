@@ -208,8 +208,35 @@ export const translations: Translations<"es"> = {
         "create new folder": "Crear nueva carpeta",
         "download file": "Descargar archivo"
     },
+    S3FileRequest: {
+        "page title": "Subir los archivos solicitados",
+        "page description":
+            "Alguien ha compartido este enlace seguro para que puedas enviar archivos directamente a su espacio de almacenamiento.",
+        "s3 server destination": "Estás subiendo archivos a este servidor S3:",
+        "s3 location destination": "En esta ubicación:",
+        "expires on": ({ date }) => `Este enlace caduca el ${date}`,
+        "link expired": "Este enlace de subida ha caducado",
+        "link expired description":
+            "Pide a la persona que compartió el enlace que cree uno nuevo.",
+        "drop files": "Arrastra y suelta tus archivos aquí",
+        "drop files active": "Suelta los archivos para subirlos",
+        "drop files hint": "La subida comienza en cuanto seleccionas los archivos.",
+        "choose files": "Elegir archivos",
+        "all files uploaded": "Tus archivos se han enviado",
+        "all files uploaded description":
+            "Puedes cerrar esta página o añadir más archivos mientras el enlace sea válido.",
+        "uploads title": "Tus subidas",
+        uploading: ({ percent }) => `Subiendo · ${percent}%`,
+        uploaded: "Subido",
+        "upload failed": "Error al subir",
+        "cancel upload": "Cancelar subida",
+        "retry upload": "Reintentar subida"
+    },
     S3ShareObjectDialogContainer: {
         "dialog title": "Compartir objeto"
+    },
+    S3FileRequestCreationDialogContainer: {
+        "dialog title": "Solicitar archivos"
     },
     S3SharePrefixDialogContainer: {
         "dialog title": "Compartir carpeta"
@@ -248,6 +275,7 @@ export const translations: Translations<"es"> = {
         "new s3 profile": "Nuevo perfil S3"
     },
     S3SelectionActionBar: {
+        "request files": "Solicitar archivos",
         download: "Descargar",
         delete: "Eliminar",
         "copy s3 uri": "Copiar URI S3",
@@ -356,6 +384,7 @@ export const translations: Translations<"es"> = {
         "make private": "Hacer privado"
     },
     S3ExplorerMainView: {
+        "request files": "Solicitar archivos",
         "create prefix dialog title": "Crear prefijo",
         "create prefix dialog subtitle":
             "Crea un nuevo prefijo dentro de la ubicación S3 actual.",
@@ -406,10 +435,13 @@ export const translations: Translations<"es"> = {
         "this prefix is empty": "Este prefijo está vacío",
         "empty prefix description":
             "Sube archivos o crea una carpeta para empezar a llenar esta ubicación.",
-        "empty prefix upload description":
-            "Sube archivos aquí o arrástralos y suéltalos en esta zona.",
+        "empty prefix upload description": "Elige cómo quieres añadir archivos aquí.",
         "upload files": "Subir archivos",
-        "upload files here": "Subir archivos aquí",
+        "upload files from device description":
+            "Selecciona archivos de tu ordenador para subirlos aquí.",
+        "create upload link": "Crear enlace de subida",
+        "create upload link description":
+            "Genera un enlace para compartir que permita a otra persona subir archivos aquí.",
         "drop files here hint":
             "Suelta archivos en cualquier lugar de esta zona para subirlos.",
         "new folder": "Nueva carpeta",
@@ -433,6 +465,29 @@ export const translations: Translations<"es"> = {
         "validity duration one day": "1 día",
         "validity duration one week": "1 semana",
         "selected duration": "la duración seleccionada"
+    },
+    S3FileRequestCreationDialog: {
+        description:
+            "Comparte este enlace con cualquier persona, incluso con alguien sin cuenta en esta instancia de Onyxia, para que pueda subir archivos desde su ordenador directamente a esta carpeta.",
+        "overwrite warning":
+            "Los archivos subidos mediante este enlace se guardan directamente en esta carpeta. Si un archivo subido tiene el mismo nombre y la misma ruta que un archivo existente, se reemplazará el archivo existente.",
+        "create empty folder instead": "Crear una carpeta vacía en su lugar",
+        "link settings": "Configuración del enlace",
+        "link expires after": "El enlace caduca después de",
+        "link validity aria label": "Duración de validez del enlace de subida",
+        "maximum size per file": "Tamaño máximo por archivo",
+        "maximum file size aria label": "Tamaño máximo por archivo subido",
+        "upload link": "Enlace de subida",
+        "generating upload link": "Generando enlace de subida...",
+        "copy upload link aria label": "Copiar enlace de subida",
+        "generation failed": "No se ha podido generar el enlace de subida.",
+        retry: "Reintentar",
+        "security note":
+            "Cualquier persona que tenga este enlace puede subir archivos a esta carpeta hasta que caduque. El enlace no permite ver ni descargar los archivos existentes. Sin embargo, un archivo subido reemplazará a uno existente si tiene el mismo nombre y la misma ruta.",
+        "validity duration one hour": "1 hora",
+        "validity duration one day": "1 día",
+        "validity duration one week": "1 semana",
+        "no limit": "Sin límite"
     },
     S3SharePrefixDialog: {
         "copy folder URL aria label": "Copiar URL de la carpeta",
@@ -1298,6 +1353,10 @@ export const translations: Translations<"es"> = {
         "delete from bookmarks": "Eliminar de marcadores",
         "pinned storage location": "Ubicación de almacenamiento fijada",
         bookmarked: "Marcado",
+        share: "Compartir",
+        "request files": "Solicitar archivos",
+        "make public": "Hacer público",
+        "make private": "Hacer privado",
         "edit s3 uri": "Editar URI S3",
         prefix: "Prefijo",
         "admin bookmark": "Marcador de administración",

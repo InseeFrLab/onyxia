@@ -9,7 +9,6 @@ import {
 } from "./decoupledLogic/codeSnippets";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import { assert } from "tsafe";
-import { parseUrl } from "core/tools/parseUrl";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -43,22 +42,10 @@ const mainView = createSelector(
     (state, s3Profile, availableProfileNames): MainView => {
         assert(s3Profile !== undefined);
 
-        const { region, host, port } = (() => {
-            const { host, port = 443 } = parseUrl(s3Profile.paramsOfCreateS3Client.url);
-
-            const region = s3Profile.paramsOfCreateS3Client.region;
-
-            return { region, host, port };
-        })();
-
-        const endpointUrl = `${
-            host === "s3.amazonaws.com" ? `s3.${region}.amazonaws.com` : host
-        }${port === 443 ? "" : `:${port}`}`;
-
         return {
             availableProfileNames,
             profileName: s3Profile.profileName,
-            endpointUrl,
+            endpointUrl: s3Profile.paramsOfCreateS3Client.url,
             defaultRegion: s3Profile.paramsOfCreateS3Client.region,
             isReadonly: (() => {
                 switch (s3Profile.origin) {
