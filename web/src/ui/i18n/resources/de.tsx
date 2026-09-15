@@ -98,7 +98,16 @@ export const translations: Translations<"de"> = {
         "expires in": ({ howMuchTime }) =>
             `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Ihre OIDC-Sitzung gibt Ihnen nahtlosen Zugriff auf das KI-Gateway.{" "}
@@ -166,6 +175,9 @@ export const translations: Translations<"de"> = {
             "Modelle konnten nicht abgerufen werden — überprüfen Sie URL und API-Schlüssel."
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "Benutzerdefinierte KI-Anbieter",
         "edit custom provider title": "KI-Anbieter bearbeiten",
         "custom provider section title": "Benutzerdefinierte KI-Anbieter",

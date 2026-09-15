@@ -38,7 +38,6 @@ triggerCoreBootstrap({
     isAuthGloballyRequired: env.AUTHENTICATION_GLOBALLY_REQUIRED,
     enableOidcDebugLogs: env.OIDC_DEBUG_LOGS,
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
-    isAiEnabled: !env.DISABLE_AI,
     getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled,
     S3_envValue: env.S3,
     AI_envValue: env.AI

@@ -1,5 +1,6 @@
-import * as ai from "./ai";
-import * as aiCustomProviderFormUiController from "./aiCustomProviderFormUiController";
+import * as aiProvidersManagements from "./aiProvidersManagements";
+import * as aiAccountUiController from "./aiAccountUiController";
+import * as aiProviderCreationFormUiController from "./aiProviderCreationFormUiController";
 import * as autoLogoutCountdown from "./autoLogoutCountdown";
 import * as catalog from "./catalog";
 import * as clusterEventsMonitor from "./clusterEventsMonitor";
@@ -28,8 +29,9 @@ import * as s3ProfilesCreationUiController from "./s3ProfilesCreationUiControlle
 import * as s3ExplorerUiController from "./s3ExplorerUiController";
 
 export const usecases = {
-    ai,
-    aiCustomProviderFormUiController,
+    aiProvidersManagements,
+    aiAccountUiController,
+    aiProviderCreationFormUiController,
     autoLogoutCountdown,
     catalog,
     clusterEventsMonitor,

@@ -97,7 +97,16 @@ export const translations: Translations<"es"> = {
         "expires in": ({ howMuchTime }) =>
             `Estas credenciales son válidas por los próximos ${howMuchTime}`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Su sesión OIDC le da acceso sin interrupciones a la pasarela de IA.{" "}
@@ -165,6 +174,9 @@ export const translations: Translations<"es"> = {
             "No se pueden obtener los modelos — compruebe la URL y la clave API."
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "Proveedores de IA personalizados",
         "edit custom provider title": "Editar proveedor de IA",
         "custom provider section title": "Proveedores de IA personalizados",

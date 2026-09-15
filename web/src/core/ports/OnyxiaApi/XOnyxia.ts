@@ -200,8 +200,15 @@ export type XOnyxiaContext = {
     };
     ai: {
         enabled: boolean;
-        activeProvider: AiProviderLaunchContext.Active | undefined;
-        providers: AiProviderLaunchContext.Inactive[];
+        listModels: string[]; // <providerName>/<model>[]
+        defaultModel: string | undefined; // <providerName>/<model>
+        providers: {
+            name: string; //Needs to be unique
+            apiBase: string;
+            apiKey: string | undefined;
+            models: string[];
+            type: "openai-compatible" | "openai" | "anthropic" | "mistral" | "deepseek";
+        }[];
     };
     proxyInjection:
         | {
@@ -228,19 +235,3 @@ export type XOnyxiaContext = {
 };
 
 assert<Equals<XOnyxiaContext["user"]["lang"], Language>>();
-
-namespace AiProviderLaunchContext {
-    export type Common = {
-        id: string;
-        apiBase: string;
-        name: string;
-        selectedModel: string | undefined;
-        models: string[] | undefined;
-        //API protocol.
-        provider: string;
-    };
-
-    export type Active = Common & { apiKey: string };
-
-    export type Inactive = Common;
-}

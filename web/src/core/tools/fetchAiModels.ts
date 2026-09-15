@@ -8,20 +8,22 @@ const requestTimeoutMs = 10_000;
 export async function fetchAiModels(params: {
     protocol: string;
     apiBase: string;
-    apiKey: string;
+    apiKey: string | undefined;
 }): Promise<AiModel[]> {
     const { protocol, apiBase, apiKey } = params;
 
     const headers: Record<string, string> =
         protocol === "anthropic"
             ? {
-                  "x-api-key": apiKey,
+                  ...(apiKey === undefined ? {} : { "x-api-key": apiKey }),
                   "anthropic-version": "2023-06-01",
                   "anthropic-dangerous-direct-browser-access": "true"
               }
-            : { Authorization: `Bearer ${apiKey}` };
+            : apiKey === undefined
+              ? {}
+              : { Authorization: `Bearer ${apiKey}` };
 
-    const response = await fetch(`${apiBase}/models`, {
+    const response = await fetch(`${apiBase.replace(/\/+$/, "")}/models`, {
         headers,
         signal: AbortSignal.timeout(requestTimeoutMs)
     });
@@ -45,10 +47,7 @@ export async function fetchAiModels(params: {
                 })
                 .parse(json);
 
-            return data.map(({ id, display_name }) => ({
-                id,
-                name: display_name ?? id
-            }));
+            return data.map(({ id, display_name }) => ({ id, name: display_name ?? id }));
         } catch {
             throw new Error("Unexpected Anthropic /models response shape");
         }

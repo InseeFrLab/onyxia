@@ -4,7 +4,7 @@ import { Button } from "onyxia-ui/Button";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { getCoreSync } from "core";
-import type { AiInitializationError } from "core/usecases/ai";
+import type { AiInitializationError } from "core/usecases/aiProvidersManagements";
 import { useEvt } from "evt/hooks";
 import { same } from "evt/tools/inDepth/same";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
@@ -15,7 +15,7 @@ import { tss } from "tss";
 
 export const AiInitializationErrorDialog = memo(() => {
     const {
-        evts: { evtAi }
+        evts: { evtAiProvidersManagements }
     } = getCoreSync();
 
     const { t } = useTranslation({ AiInitializationErrorDialog });
@@ -25,7 +25,7 @@ export const AiInitializationErrorDialog = memo(() => {
     const [errors, setErrors] = useState<AiInitializationError[]>([]);
 
     useEvt(ctx => {
-        evtAi.attach(ctx, event => {
+        evtAiProvidersManagements.attach(ctx, event => {
             if (event === undefined || event.action !== "display error") {
                 return;
             }
@@ -46,15 +46,9 @@ export const AiInitializationErrorDialog = memo(() => {
         return <Dialog isOpen={false} onClose={close} />;
     }
 
-    const doesRequireAccountOnly = errors.every(error => error.kind === "no-account");
-
     return (
         <Dialog
-            title={
-                doesRequireAccountOnly
-                    ? t("account required title")
-                    : t("initialization error title")
-            }
+            title={t("initialization error title")}
             body={
                 <div className={classes.errorList}>
                     {errors.map((error, index) => {
@@ -81,10 +75,6 @@ export const AiInitializationErrorDialog = memo(() => {
                                                     return t("config restoration failed");
                                                 case "initialization-failed":
                                                     return t("initialization failed");
-                                                case "no-account":
-                                                    return t("no account", {
-                                                        providerName: error.providerName
-                                                    });
                                                 case "authentication-failed":
                                                     return t("authentication failed", {
                                                         providerName: error.providerName
@@ -96,18 +86,6 @@ export const AiInitializationErrorDialog = memo(() => {
                                             }
                                         })()}
                                     </Text>
-                                    {error.kind === "no-account" && (
-                                        <Button
-                                            className={classes.errorAction}
-                                            variant="ternary"
-                                            href={error.webUiUrl}
-                                            doOpenNewTabIfHref={true}
-                                        >
-                                            {t("open provider", {
-                                                providerName: error.providerName
-                                            })}
-                                        </Button>
-                                    )}
                                 </div>
                             </div>
                         );
@@ -146,8 +124,6 @@ const iconNameBySeverity = {
 
 function getSeverity(error: AiInitializationError): keyof typeof iconNameBySeverity {
     switch (error.kind) {
-        case "no-account":
-            return "info";
         case "config-restoration-failed":
         case "models-fetch-failed":
             return "warning";
@@ -169,10 +145,6 @@ const useStyles = tss.withName({ AiInitializationErrorDialog }).create(({ theme 
     },
     errorIcon: {
         flexShrink: 0
-    },
-    errorAction: {
-        marginTop: theme.spacing(1),
-        marginLeft: -theme.spacing(2)
     }
 }));
 

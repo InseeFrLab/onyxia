@@ -98,7 +98,17 @@ export const translations: Translations<"fr"> = {
         "expires in": ({ howMuchTime }) =>
             `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
+        "connect provider": "Se connecter",
+        "default model": "Modèle par défaut",
+        "no default model": "Aucun modèle par défaut",
+        "save key": "Enregistrer la clé",
+        "save failed": "Impossible d’enregistrer les modifications. Réessayez.",
+        retry: "Réessayer",
+        "authentication required":
+            "Une authentification est nécessaire. Connectez-vous au provider ou renseignez une clé API si cela est autorisé.",
+        "selected models": "Modèles présélectionnés",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Votre session OIDC vous donne accès à la passerelle IA.{" "}
@@ -160,12 +170,15 @@ export const translations: Translations<"fr"> = {
         copied: "Copié"
     },
     ModelsSection: {
-        "model label": "Modèles",
+        "model label": "Modèles présélectionnés",
         "not defined": "Non défini",
         "models fetch error":
             "Impossible de récupérer les modèles — vérifiez l'URL et la clé API."
     },
     CustomProviderFormDialog: {
+        "submission error": "Impossible d’enregistrer ce provider. Réessayez.",
+        "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Providers IA personnalisés",
         "edit custom provider title": "Modifier le provider IA",
         "custom provider section title": "Providers IA personnalisés",
@@ -179,7 +192,7 @@ export const translations: Translations<"fr"> = {
         "anthropic provider option": "Anthropic (natif)",
         "credentials section title": "Identifiants du provider",
         "credentials section subtitle":
-            "Saisissez vos identifiants. Ils seront stockés dans votre navigateur.",
+            "Saisissez vos identifiants pour les enregistrer dans les paramètres de votre compte. Laissez la clé API vide si le provider ne nécessite pas d’authentification.",
         "custom provider api base field": "URL de base de l'API",
         "custom provider api key field": "Clé API",
         "verification section title": "Vérifier et charger les modèles",

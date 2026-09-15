@@ -6,22 +6,23 @@ import { Text } from "onyxia-ui/Text";
 import type { ReactNode } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
-import { FormSelectField, FormTextField, ModelSelectField } from "./FormFields";
-import type { FormTest, FormValues } from "./types";
-import type { CustomProviderProtocol } from "core/usecases/aiCustomProviderFormUiController/decoupledLogic/customProviderProtocol";
+import { FormSelectField, FormTextField } from "./FormFields";
+import type { FormTest } from "./types";
+import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 
 export function ProviderSection(props: {
     name: string;
     protocol: string;
-    supportedProtocols: readonly CustomProviderProtocol[];
+    supportedProtocols: readonly AiConfig.SupportedAiProviderType[];
     onNameChange: (value: string) => void;
-    onProtocolChange: (value: CustomProviderProtocol) => void;
+    onProtocolChange: (value: AiConfig.SupportedAiProviderType) => void;
 }) {
     const { name, protocol, supportedProtocols, onNameChange, onProtocolChange } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
 
     const protocolOptions = (
         [
+            { value: "deepseek", label: t("deepseek provider option") },
             { value: "openai", label: t("openai provider option") },
             {
                 value: "openai-compatible",
@@ -29,7 +30,7 @@ export function ProviderSection(props: {
             },
             { value: "mistral", label: t("mistral provider option") },
             { value: "anthropic", label: t("anthropic provider option") }
-        ] satisfies { value: CustomProviderProtocol; label: string }[]
+        ] satisfies { value: AiConfig.SupportedAiProviderType; label: string }[]
     ).filter(({ value }) => supportedProtocols.includes(value));
 
     return (
@@ -95,17 +96,13 @@ export function CredentialsSection(props: {
 }
 
 export function VerificationSection(props: {
-    selectedModelId: FormValues["selectedModelId"];
     test: FormTest;
     canTest: boolean;
-    onSelectedModelIdChange: (value: string) => void;
     onTest: () => void;
 }) {
-    const { selectedModelId, test, canTest, onSelectedModelIdChange, onTest } = props;
+    const { test, canTest, onTest } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
     const { classes } = useStyles();
-
-    const testedModels = test.stateDescription === "success" ? test.models : undefined;
 
     return (
         <FormSection
@@ -123,14 +120,6 @@ export function VerificationSection(props: {
                 </Button>
             }
         >
-            <ModelSelectField
-                label={t("custom provider model field")}
-                value={selectedModelId}
-                onChange={onSelectedModelIdChange}
-                models={testedModels ?? []}
-                disabled={testedModels === undefined}
-            />
-
             {test.stateDescription === "testing" && (
                 <div className={classes.testingMessage} role="status">
                     <CircularProgress size={16} />

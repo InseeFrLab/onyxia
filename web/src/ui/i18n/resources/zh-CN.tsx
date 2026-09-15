@@ -88,7 +88,16 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 您的 OIDC 会话使您可以无缝访问 AI 网关。{" "}
@@ -153,6 +162,9 @@ export const translations: Translations<"zh-CN"> = {
         "models fetch error": "无法获取模型 — 请检查您的 URL 和 API 密钥。"
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",
         "custom provider section title": "自定义 AI 提供商",

@@ -35,7 +35,7 @@ function Account() {
     const { t } = useTranslation({ Account });
 
     const {
-        functions: { k8sCodeSnippets, vaultCredentials, ai }
+        functions: { k8sCodeSnippets, vaultCredentials, aiAccountUiController }
     } = getCoreSync();
 
     const tabs = useMemo(
@@ -57,7 +57,10 @@ function Account() {
 
                     return accountTabId === "user-interface";
                 })
-                .filter(accountTabId => accountTabId !== "ai" || ai.isAvailable())
+                .filter(
+                    accountTabId =>
+                        accountTabId !== "ai" || aiAccountUiController.isAvailable()
+                )
                 .map(id => ({ id, title: t(id) })),
         [t]
     );

@@ -96,7 +96,17 @@ export const translations: Translations<"en"> = {
         "expires in": ({ howMuchTime }) =>
             `These credentials are valid for the next ${howMuchTime}`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": "Choose a unique provider name without a slash (/).",
+        "connect provider": "Connect",
+        "default model": "Default model",
+        "no default model": "No default model",
+        "save key": "Save key",
+        "save failed": "Unable to save your changes. Please try again.",
+        retry: "Retry",
+        "authentication required":
+            "Authentication is required. Connect to the provider or enter an API key when allowed.",
+        "selected models": "Selected models",
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Your OIDC session gives you seamless access to the AI gateway.{" "}
@@ -157,11 +167,14 @@ export const translations: Translations<"en"> = {
         copied: "Copied"
     },
     ModelsSection: {
-        "model label": "Model",
+        "model label": "Selected models",
         "not defined": "Not defined",
         "models fetch error": "Unable to fetch models — check your URL and API key."
     },
     CustomProviderFormDialog: {
+        "submission error": "Unable to save this provider. Please try again.",
+        "invalid name": "Choose a unique provider name without a slash (/).",
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Add Custom AI Providers",
         "edit custom provider title": "Edit AI provider",
         "custom provider section title": "Custom AI Providers",
@@ -175,7 +188,7 @@ export const translations: Translations<"en"> = {
         "anthropic provider option": "Anthropic (native)",
         "credentials section title": "Providers Credentials",
         "credentials section subtitle":
-            "Enter your credentials. They will be stored in your browser.",
+            "Enter your credentials to save them with your account settings. Leave the API key empty if the provider requires no authentication.",
         "custom provider api base field": "API Base URL",
         "custom provider api key field": "API Key",
         "verification section title": "Verify & Load Models",

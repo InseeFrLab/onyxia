@@ -1,4 +1,4 @@
-import type { CustomProviderProtocol } from "core/usecases/aiCustomProviderFormUiController/decoupledLogic/customProviderProtocol";
+import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 
 export type AiModel = {
     id: string;
@@ -10,7 +10,6 @@ export type FormValues = {
     protocol: string;
     apiBase: string;
     apiKey: string;
-    selectedModelId: string;
 };
 
 export type FormTest =
@@ -21,17 +20,17 @@ export type FormTest =
 
 export type ViewProps = {
     isEditing: boolean;
-    isAlreadyDefault: boolean;
+    hasSubmissionError?: boolean;
+    nameIsValid?: boolean;
+    isSubmitting?: boolean;
     values: FormValues;
     test: FormTest;
-    doSetAsDefault: boolean;
     canSave: boolean;
     canTest: boolean;
-    supportedProtocols: readonly CustomProviderProtocol[];
+    supportedProtocols: readonly AiConfig.SupportedAiProviderType[];
     onClose: () => void;
     onFieldChange: (key: keyof FormValues, value: string) => void;
-    onProtocolChange: (protocol: CustomProviderProtocol) => void;
+    onProtocolChange: (protocol: AiConfig.SupportedAiProviderType) => void;
     onTest: () => void;
     onSave: () => void;
-    onDoSetAsDefaultChange: (doSetAsDefault: boolean) => void;
 };

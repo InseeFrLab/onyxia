@@ -23,31 +23,26 @@ const commonArgs: Pick<
     | "onProtocolChange"
     | "onTest"
     | "onSave"
-    | "onDoSetAsDefaultChange"
 > = {
     supportedProtocols: ["openai", "openai-compatible", "mistral", "anthropic"],
     onClose: doNothing,
     onFieldChange: doNothing,
     onProtocolChange: doNothing,
     onTest: doNothing,
-    onSave: doNothing,
-    onDoSetAsDefaultChange: doNothing
+    onSave: doNothing
 };
 
 export const Default: Story = {
     args: {
         ...commonArgs,
         isEditing: false,
-        isAlreadyDefault: false,
         values: {
             name: "",
             protocol: "",
             apiBase: "",
-            apiKey: "",
-            selectedModelId: ""
+            apiKey: ""
         },
         test: { stateDescription: "idle" },
-        doSetAsDefault: false,
         canSave: false,
         canTest: false
     }
@@ -57,13 +52,11 @@ export const Filled: Story = {
     args: {
         ...commonArgs,
         isEditing: true,
-        isAlreadyDefault: false,
         values: {
             name: "Custom Provider 1",
             protocol: "openai",
             apiBase: "https://llm.example.test/api",
-            apiKey: "storybook-api-key",
-            selectedModelId: "qwen3-vl"
+            apiKey: "storybook-api-key"
         },
         test: {
             stateDescription: "success",
@@ -74,7 +67,6 @@ export const Filled: Story = {
                 { id: "qwen3-vl", name: "qwen3-vl" }
             ]
         },
-        doSetAsDefault: false,
         canSave: true,
         canTest: true
     }

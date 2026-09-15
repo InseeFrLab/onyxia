@@ -97,7 +97,16 @@ export const translations: Translations<"fi"> = {
         "expires in": ({ howMuchTime }) =>
             `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 OIDC-istuntosi antaa sinulle saumattoman pääsyn tekoälyyhdyskäytävään.{" "}
@@ -164,6 +173,9 @@ export const translations: Translations<"fi"> = {
         "models fetch error": "Mallien haku epäonnistui — tarkista URL ja API-avain."
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "Mukautetut tekoälyntarjoajat",
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider section title": "Mukautetut tekoälyntarjoajat",

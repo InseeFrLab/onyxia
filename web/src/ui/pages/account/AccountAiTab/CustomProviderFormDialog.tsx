@@ -7,10 +7,10 @@ export { CustomProviderFormDialogView } from "./CustomProviderFormDialog/CustomP
 export type { ViewProps } from "./CustomProviderFormDialog/types";
 
 export const CustomProviderFormDialog = memo(() => {
-    const form = useCoreState("aiCustomProviderFormUiController", "main");
+    const form = useCoreState("aiProviderCreationFormUiController", "main");
 
     const {
-        functions: { aiCustomProviderFormUiController }
+        functions: { aiProviderCreationFormUiController }
     } = getCoreSync();
 
     if (!form.isOpen) {
@@ -20,32 +20,48 @@ export const CustomProviderFormDialog = memo(() => {
     return (
         <CustomProviderFormDialogView
             isEditing={form.isEditing}
-            isAlreadyDefault={form.isAlreadyDefault}
-            values={form.formValues}
-            test={form.connectionTest}
-            doSetAsDefault={form.doSetAsDefault}
+            values={{ ...form.formValues, protocol: form.formValues.providerType ?? "" }}
+            test={
+                form.connectionTest.stateDescription === "succeeded"
+                    ? {
+                          stateDescription: "success",
+                          models: form.connectionTest.availableModels
+                      }
+                    : {
+                          stateDescription:
+                              form.connectionTest.stateDescription === "not tested"
+                                  ? "idle"
+                                  : form.connectionTest.stateDescription === "failed"
+                                    ? "error"
+                                    : "testing"
+                      }
+            }
             canSave={form.canSubmit}
-            canTest={form.canTest}
-            supportedProtocols={form.supportedProtocols}
-            onClose={() => aiCustomProviderFormUiController.close()}
-            onFieldChange={(key, value) =>
-                aiCustomProviderFormUiController.changeValue({ key, value })
-            }
+            canTest={form.canTestConnection}
+            supportedProtocols={form.supportedProviderTypes}
+            onClose={() => aiProviderCreationFormUiController.close()}
+            onFieldChange={(key, value) => {
+                if (key !== "protocol")
+                    aiProviderCreationFormUiController.changeValue({ key, value });
+            }}
             onProtocolChange={protocol =>
-                aiCustomProviderFormUiController.changeProtocol({ protocol })
-            }
-            onTest={() => void aiCustomProviderFormUiController.testConnection()}
-            onSave={() => void aiCustomProviderFormUiController.submit()}
-            onDoSetAsDefaultChange={doSetAsDefault =>
-                aiCustomProviderFormUiController.changeDoSetAsDefault({
-                    doSetAsDefault
+                aiProviderCreationFormUiController.changeProviderType({
+                    providerType: protocol
                 })
             }
+            onTest={() => void aiProviderCreationFormUiController.testConnection()}
+            onSave={() => void aiProviderCreationFormUiController.submit()}
+            hasSubmissionError={form.hasSubmissionFailed}
+            nameIsValid={form.isNameValid}
+            isSubmitting={form.isSubmitting}
         />
     );
 });
 
 const { i18n } = declareComponentKeys<
+    | "submission error"
+    | "invalid name"
+    | "deepseek provider option"
     | "add custom provider title"
     | "edit custom provider title"
     | "custom provider section title"

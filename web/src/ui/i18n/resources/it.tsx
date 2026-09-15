@@ -96,7 +96,16 @@ export const translations: Translations<"it"> = {
         "expires in": ({ howMuchTime }) =>
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 La tua sessione OIDC ti dà accesso senza interruzioni al gateway IA.{" "}
@@ -163,6 +172,9 @@ export const translations: Translations<"it"> = {
             "Impossibile recuperare i modelli — controlla l'URL e la chiave API."
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "Provider IA personalizzati",
         "edit custom provider title": "Modifica provider IA",
         "custom provider section title": "Provider IA personalizzati",
@@ -624,8 +636,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

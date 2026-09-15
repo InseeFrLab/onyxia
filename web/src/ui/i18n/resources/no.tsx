@@ -97,7 +97,16 @@ export const translations: Translations<"no"> = {
         "expires in": ({ howMuchTime }) =>
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Din OIDC-økt gir deg sømløs tilgang til AI-gatewayen.{" "}
@@ -163,6 +172,9 @@ export const translations: Translations<"no"> = {
         "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen."
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "Tilpassede AI-leverandører",
         "edit custom provider title": "Rediger AI-leverandør",
         "custom provider section title": "Tilpassede AI-leverandører",

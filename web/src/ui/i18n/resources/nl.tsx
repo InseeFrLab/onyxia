@@ -97,7 +97,16 @@ export const translations: Translations<"nl"> = {
         "expires in": ({ howMuchTime }) =>
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
-    AccountAiGatewayTab: {
+    AccountAiTab: {
+        "invalid name": undefined,
+        "connect provider": undefined,
+        "default model": undefined,
+        "no default model": undefined,
+        "save key": undefined,
+        "save failed": undefined,
+        retry: undefined,
+        "authentication required": undefined,
+        "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>
                 Uw OIDC-sessie geeft u naadloze toegang tot de AI-gateway.{" "}
@@ -164,6 +173,9 @@ export const translations: Translations<"nl"> = {
             "Kan modellen niet ophalen — controleer uw URL en API-sleutel."
     },
     CustomProviderFormDialog: {
+        "submission error": undefined,
+        "invalid name": undefined,
+        "deepseek provider option": undefined,
         "add custom provider title": "Aangepaste AI-providers",
         "edit custom provider title": "AI-provider bewerken",
         "custom provider section title": "Aangepaste AI-providers",
