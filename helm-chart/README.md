@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "11.7.2" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "11.7.3" -f onyxia-values.yaml
 ```
 
 To expose Onyxia with the Kubernetes Gateway API instead of an Ingress, use an `HTTPRoute`.
@@ -40,7 +40,7 @@ httpRoute:
     - datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "11.7.2" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "11.7.3" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
@@ -62,7 +62,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v11.7.2/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v11.7.3/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
