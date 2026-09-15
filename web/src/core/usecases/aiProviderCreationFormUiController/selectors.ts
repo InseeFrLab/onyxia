@@ -61,8 +61,10 @@ const main = createSelector(
             // entry the user would then have to fix.
             canSubmit:
                 isNameValid &&
+                formValues.providerType !== undefined &&
+                isApiBaseValid &&
                 !state.isSubmitting &&
-                state.connectionTest.stateDescription === "succeeded",
+                state.connectionTest.stateDescription !== "testing",
             supportedProviderTypes: supportedAiProviderTypes
         };
     }

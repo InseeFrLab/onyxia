@@ -22,6 +22,7 @@ export type ViewProps = {
     isEditing: boolean;
     hasSubmissionError?: boolean;
     nameIsValid?: boolean;
+    apiBaseIsValid?: boolean;
     isSubmitting?: boolean;
     values: FormValues;
     test: FormTest;

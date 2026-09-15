@@ -5,7 +5,7 @@ import { useCoreState, getCoreSync } from "core";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { Select, MenuItem, TextField, Alert, Stack } from "@mui/material";
+import { Select, MenuItem, Alert, Stack } from "@mui/material";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { ProviderValueField } from "./ProviderValueField";
@@ -40,8 +40,9 @@ export const AccountAiTab = memo((props: Props) => {
         return confirmation.pr;
     }
 
+    //See with Jo if it's possible to add loader
     useEffect(() => {
-        void account.load();
+        account.load();
     }, [account]);
 
     if (!state.isReady) {
@@ -49,7 +50,7 @@ export const AccountAiTab = memo((props: Props) => {
             return (
                 <Stack spacing={2}>
                     <Alert severity="error">{t("gateway error")}</Alert>
-                    <Button onClick={() => void account.load()}>{t("retry")}</Button>
+                    <Button onClick={() => account.load()}>{t("retry")}</Button>
                 </Stack>
             );
         return <CircularProgress />;
@@ -177,7 +178,7 @@ export const AccountAiTab = memo((props: Props) => {
                                 variant="secondary"
                                 disabled={provider.operationState === "pending"}
                                 onClick={() =>
-                                    void account.logInToProvider({
+                                    account.logInToProvider({
                                         providerName: provider.name
                                     })
                                 }
@@ -198,17 +199,20 @@ export const AccountAiTab = memo((props: Props) => {
                             }
                         />
                     )}
-                    {provider.auth.stateDescription === "authenticated" && (
-                        <ProviderValueField
-                            label={t("token")}
-                            value={provider.auth.apiKey}
-                            isSensitiveInformation
-                            onRequestCopy={() => {
-                                if (provider.auth.stateDescription === "authenticated")
-                                    copyToClipboard(provider.auth.apiKey);
-                            }}
-                        />
-                    )}
+                    {provider.auth.stateDescription === "authenticated" &&
+                        !provider.canUserProvideApiKey && (
+                            <ProviderValueField
+                                label={t("api key")}
+                                value={provider.auth.apiKey}
+                                isSensitiveInformation
+                                onRequestCopy={() => {
+                                    if (
+                                        provider.auth.stateDescription === "authenticated"
+                                    )
+                                        copyToClipboard(provider.auth.apiKey);
+                                }}
+                            />
+                        )}
                     {provider.models.stateDescription === "loaded" && (
                         <ModelsSection
                             models={provider.models.availableModels}
@@ -249,28 +253,16 @@ function ApiKeyForm(props: {
     const [value, setValue] = useState(props.initialValue);
     const { t } = useTranslation({ AccountAiTab });
     return (
-        <Stack
-            direction="row"
-            spacing={2}
-            component="form"
-            onSubmit={event => {
-                event.preventDefault();
-                void props.onSave(value);
-            }}
-        >
-            <TextField
-                fullWidth
-                type="password"
-                label={t("custom provider api key field")}
-                value={value}
-                disabled={props.disabled}
-                onChange={event => setValue(event.target.value)}
-                autoComplete="off"
-            />
-            <Button type="submit" disabled={props.disabled}>
-                {t("save key")}
-            </Button>
-        </Stack>
+        <ProviderValueField
+            label={t("api key")}
+            value={value}
+            isSensitiveInformation={true}
+            disabled={props.disabled}
+            onChange={setValue}
+            onSave={() => props.onSave(value)}
+            saveLabel={t("save key")}
+            onRequestCopy={() => copyToClipboard(value)}
+        />
     );
 }
 
@@ -291,7 +283,7 @@ const { i18n } = declareComponentKeys<
     | "edit provider"
     | { K: "credentials section helper"; P: { webUiUrl: string }; R: JSX.Element }
     | "api base url"
-    | "token"
+    | "api key"
     | "gateway error"
     | "custom providers section title"
     | "custom providers section helper"

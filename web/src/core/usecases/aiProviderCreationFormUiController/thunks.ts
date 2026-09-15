@@ -99,7 +99,13 @@ export const thunks = {
         (...args): void => {
             const { providerType } = params;
 
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
+
+            const form = selectors.main(getState());
+
+            if (!form.isOpen || form.isSubmitting) {
+                return;
+            }
 
             dispatch(thunks.changeValue({ key: "providerType", value: providerType }));
             dispatch(
@@ -108,6 +114,39 @@ export const thunks = {
                     value: providerTypeDefaultApiBase[providerType]
                 })
             );
+
+            // A provider name is its identifier. Update an automatically suggested
+            // name when the protocol changes, without replacing a custom name.
+            if (!form.isEditing) {
+                const providerNames = new Set(
+                    (aiProvidersManagements.selectors.aiProviders(getState()) ?? []).map(
+                        aiProvider => aiProvider.name
+                    )
+                );
+
+                const nameWasSuggested =
+                    form.formValues.providerType !== undefined &&
+                    form.formValues.name ===
+                        getAvailableProviderName({
+                            baseName:
+                                providerTypeDisplayName[form.formValues.providerType],
+                            providerNames
+                        });
+
+                if (form.formValues.name.trim() !== "" && !nameWasSuggested) {
+                    return;
+                }
+
+                dispatch(
+                    thunks.changeValue({
+                        key: "name",
+                        value: getAvailableProviderName({
+                            baseName: providerTypeDisplayName[providerType],
+                            providerNames
+                        })
+                    })
+                );
+            }
         },
     testConnection:
         () =>
@@ -168,7 +207,6 @@ export const thunks = {
             const { providerType } = formValues;
 
             assert(providerType !== undefined);
-            assert(connectionTest.stateDescription === "succeeded");
 
             dispatch(actions.submissionStarted());
 
@@ -180,7 +218,10 @@ export const thunks = {
                         providerType,
                         apiBase: formValues.apiBase.trim().replace(/\/+$/, ""),
                         apiKey: formValues.apiKey.trim(),
-                        availableModels: connectionTest.availableModels
+                        availableModels:
+                            connectionTest.stateDescription === "succeeded"
+                                ? connectionTest.availableModels
+                                : undefined
                     })
                 );
             } catch {
@@ -192,3 +233,28 @@ export const thunks = {
             dispatch(actions.submissionSucceeded());
         }
 } satisfies Thunks;
+
+const providerTypeDisplayName: Record<AiConfig.SupportedAiProviderType, string> = {
+    deepseek: "DeepSeek",
+    openai: "OpenAI",
+    "openai-compatible": "OpenAI Compatible",
+    mistral: "Mistral",
+    anthropic: "Anthropic"
+};
+
+function getAvailableProviderName(params: {
+    baseName: string;
+    providerNames: ReadonlySet<string>;
+}): string {
+    const { baseName, providerNames } = params;
+
+    let suffix = 1;
+    let providerName = baseName;
+
+    while (providerNames.has(providerName)) {
+        suffix += 1;
+        providerName = `${baseName} ${suffix}`;
+    }
+
+    return providerName;
+}

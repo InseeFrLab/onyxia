@@ -1,6 +1,6 @@
 import Alert from "@mui/material/Alert";
 import { Button } from "onyxia-ui/Button";
-import { memo, type FormEventHandler } from "react";
+import { memo, type FormEventHandler, useState } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { CredentialsSection, ProviderSection, VerificationSection } from "./FormSections";
@@ -22,11 +22,13 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
         onSave,
         hasSubmissionError,
         nameIsValid,
+        apiBaseIsValid,
         isSubmitting
     } = props;
 
     const { classes, cx } = useStyles();
     const { t } = useTranslation("CustomProviderFormDialog");
+    const [isApiBaseValidationVisible, setIsApiBaseValidationVisible] = useState(false);
 
     const onSubmit: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault();
@@ -52,18 +54,31 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                         supportedProtocols={supportedProtocols}
                         onNameChange={value => onFieldChange("name", value)}
                         onProtocolChange={onProtocolChange}
+                        nameError={
+                            nameIsValid === false && values.name !== ""
+                                ? t("invalid name")
+                                : undefined
+                        }
                     />
 
                     <CredentialsSection
                         apiBase={values.apiBase}
                         apiKey={values.apiKey}
-                        onFieldChange={onFieldChange}
+                        onFieldChange={(key, value) => {
+                            if (key === "apiBase") setIsApiBaseValidationVisible(false);
+                            onFieldChange(key, value);
+                        }}
+                        onApiBaseBlur={() => setIsApiBaseValidationVisible(true)}
+                        apiBaseError={
+                            isApiBaseValidationVisible &&
+                            apiBaseIsValid === false &&
+                            values.apiBase !== ""
+                                ? t("invalid api base")
+                                : undefined
+                        }
                     />
 
                     <VerificationSection test={test} canTest={canTest} onTest={onTest} />
-                    {nameIsValid === false && values.name !== "" && (
-                        <Alert severity="error">{t("invalid name")}</Alert>
-                    )}
                     {hasSubmissionError && (
                         <Alert severity="error">{t("submission error")}</Alert>
                     )}

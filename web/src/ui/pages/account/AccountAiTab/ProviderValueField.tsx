@@ -14,10 +14,23 @@ export type Props = {
     value: string;
     onRequestCopy: () => void | Promise<void>;
     isSensitiveInformation?: boolean;
+    onChange?: (value: string) => void;
+    onSave?: () => void | Promise<void>;
+    saveLabel?: string;
+    disabled?: boolean;
 };
 
 export const ProviderValueField = memo((props: Props) => {
-    const { label, value, onRequestCopy, isSensitiveInformation = false } = props;
+    const {
+        label,
+        value,
+        onRequestCopy,
+        isSensitiveInformation = false,
+        onChange,
+        onSave,
+        saveLabel,
+        disabled = false
+    } = props;
 
     const { classes, cx } = useStyles();
     const { t } = useTranslation({ ProviderValueField });
@@ -44,18 +57,39 @@ export const ProviderValueField = memo((props: Props) => {
         setIsCopied(true);
     });
 
+    const isEditable = onChange !== undefined && onSave !== undefined;
+
     return (
-        <div className={classes.root}>
+        <form
+            className={classes.root}
+            onSubmit={event => {
+                event.preventDefault();
+                onSave?.();
+            }}
+        >
             <Text typo="label 1">{label}</Text>
             <div className={cx(classes.codeFrame, isCopied && classes.codeFrameCopied)}>
-                <Text typo="body 1" className={classes.codeFrameValue}>
-                    {isHidden ? "•".repeat(Math.max(value.length, 30)) : value}
-                </Text>
+                {isEditable ? (
+                    <input
+                        className={classes.codeFrameInput}
+                        type={isHidden ? "password" : "text"}
+                        value={value}
+                        disabled={disabled}
+                        onChange={event => onChange(event.target.value)}
+                        autoComplete="off"
+                        aria-label={label}
+                    />
+                ) : (
+                    <Text typo="body 1" className={classes.codeFrameValue}>
+                        {isHidden ? "•".repeat(Math.max(value.length, 30)) : value}
+                    </Text>
+                )}
                 {isSensitiveInformation && (
                     <IconButton
                         icon={getIconUrlByName(isHidden ? "Visibility" : "VisibilityOff")}
                         onClick={onToggleHidden}
                         size="small"
+                        disabled={disabled}
                     />
                 )}
                 <Button
@@ -66,11 +100,21 @@ export const ProviderValueField = memo((props: Props) => {
                         classes.codeFrameButton,
                         isCopied && classes.codeFrameButtonCopied
                     )}
+                    disabled={disabled}
                 >
                     {isCopied ? t("copied") : t("copy")}
                 </Button>
+                {isEditable && (
+                    <Button
+                        type="submit"
+                        disabled={disabled}
+                        className={cx(classes.codeFrameButton, classes.saveButton)}
+                    >
+                        {saveLabel}
+                    </Button>
+                )}
             </div>
-        </div>
+        </form>
     );
 });
 
@@ -108,6 +152,20 @@ const useStyles = tss.withName({ ProviderValueField }).create(({ theme }) => ({
         whiteSpace: "nowrap",
         fontFamily: "monospace"
     },
+    codeFrameInput: {
+        flex: 1,
+        minWidth: 0,
+        border: 0,
+        outline: 0,
+        padding: 0,
+        color: theme.colors.useCases.typography.textPrimary,
+        backgroundColor: "transparent",
+        ...theme.typography.variants["body 1"].style,
+        fontFamily: "monospace",
+        "&:disabled": {
+            color: theme.colors.useCases.typography.textDisabled
+        }
+    },
     codeFrameButton: {
         minHeight: 28,
         paddingTop: theme.spacing(0.5),
@@ -123,5 +181,8 @@ const useStyles = tss.withName({ ProviderValueField }).create(({ theme }) => ({
                 backgroundColor: theme.colors.useCases.alertSeverity.success.main
             }
         }
+    },
+    saveButton: {
+        flexShrink: 0
     }
 }));

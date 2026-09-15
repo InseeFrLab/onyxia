@@ -16,8 +16,16 @@ export function ProviderSection(props: {
     supportedProtocols: readonly AiConfig.SupportedAiProviderType[];
     onNameChange: (value: string) => void;
     onProtocolChange: (value: AiConfig.SupportedAiProviderType) => void;
+    nameError?: string;
 }) {
-    const { name, protocol, supportedProtocols, onNameChange, onProtocolChange } = props;
+    const {
+        name,
+        protocol,
+        supportedProtocols,
+        onNameChange,
+        onProtocolChange,
+        nameError
+    } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
 
     const protocolOptions = (
@@ -39,12 +47,6 @@ export function ProviderSection(props: {
             subtitle={t("custom provider section subtitle")}
             headingTypo="section heading"
         >
-            <FormTextField
-                label={t("custom provider label field")}
-                value={name}
-                onChange={onNameChange}
-                autoComplete="off"
-            />
             <FormSelectField
                 label={t("custom provider type field")}
                 value={protocol}
@@ -61,6 +63,13 @@ export function ProviderSection(props: {
                 }}
                 options={protocolOptions}
             />
+            <FormTextField
+                label={t("custom provider label field")}
+                value={name}
+                onChange={onNameChange}
+                autoComplete="off"
+                errorMessage={nameError}
+            />
         </FormSection>
     );
 }
@@ -69,8 +78,10 @@ export function CredentialsSection(props: {
     apiBase: string;
     apiKey: string;
     onFieldChange: (key: "apiBase" | "apiKey", value: string) => void;
+    apiBaseError?: string;
+    onApiBaseBlur?: () => void;
 }) {
-    const { apiBase, apiKey, onFieldChange } = props;
+    const { apiBase, apiKey, onFieldChange, apiBaseError, onApiBaseBlur } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
 
     return (
@@ -83,6 +94,8 @@ export function CredentialsSection(props: {
                 value={apiBase}
                 onChange={value => onFieldChange("apiBase", value)}
                 autoComplete="url"
+                errorMessage={apiBaseError}
+                onBlur={onApiBaseBlur}
             />
             <FormTextField
                 label={t("custom provider api key field")}
@@ -246,7 +259,11 @@ const useStyles = tss
             ...theme.typography.variants["label 2"].style,
             borderWidth: 0,
             padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
-            backgroundColor: theme.colors.palette.dark.light,
+            // Figma's `surface-action-secondary`: #ECEEF2 in light mode and #2E333F
+            // in dark mode. Keep it derived from the palette so overrides still apply.
+            backgroundColor: theme.isDarkModeEnabled
+                ? theme.colors.palette.dark.light
+                : theme.colors.palette.light.main,
             color: theme.colors.palette.light.main,
             "& .MuiButton-startIcon": {
                 marginLeft: 0,
@@ -257,7 +274,9 @@ const useStyles = tss
                 height: theme.spacing(3)
             },
             "&.Mui-disabled": {
-                backgroundColor: theme.colors.palette.dark.light,
+                backgroundColor: theme.isDarkModeEnabled
+                    ? theme.colors.palette.dark.light
+                    : theme.colors.palette.light.main,
                 color: theme.colors.palette.light.main,
                 opacity: 0.3
             }

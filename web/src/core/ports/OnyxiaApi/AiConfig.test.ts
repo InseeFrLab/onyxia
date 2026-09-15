@@ -30,7 +30,7 @@ describe("AI environment configuration", () => {
             ]
         });
     });
-    it("normalizes OIDC configuration and defaults fallback to false", () => {
+    it("normalizes OIDC configuration", () => {
         expect(
             parse({
                 providers: {
@@ -46,7 +46,6 @@ describe("AI environment configuration", () => {
             providers: [
                 {
                     authentification: {
-                        allowFallbackToUserProvidedApiKey: false,
                         oidcConfig: {
                             clientId: "client",
                             scope: undefined,

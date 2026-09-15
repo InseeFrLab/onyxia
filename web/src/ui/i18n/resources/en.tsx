@@ -116,7 +116,7 @@ export const translations: Translations<"en"> = {
             </>
         ),
         "api base url": "API base URL",
-        token: "Token",
+        "api key": "API Key",
         "gateway error": "Unable to initialize the AI gateway.",
         "default provider": "Default provider",
         "set default provider": "Set default provider",
@@ -174,6 +174,7 @@ export const translations: Translations<"en"> = {
     CustomProviderFormDialog: {
         "submission error": "Unable to save this provider. Please try again.",
         "invalid name": "Choose a unique provider name without a slash (/).",
+        "invalid api base": "Enter a valid HTTP(S) URL.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Add Custom AI Providers",
         "edit custom provider title": "Edit AI provider",

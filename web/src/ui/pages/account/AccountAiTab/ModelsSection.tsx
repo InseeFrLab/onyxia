@@ -11,6 +11,7 @@ export type Props = {
 };
 export const ModelsSection = memo((props: Props) => {
     const { t } = useTranslation({ ModelsSection });
+
     return (
         <Stack spacing={1}>
             <Text typo="label 1">{t("model label")}</Text>

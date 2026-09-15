@@ -106,7 +106,6 @@ export namespace AiConfig {
             | {
                   type: "api-key";
                   obtentionMethod: "open-webui-oidc-token-exchange";
-                  allowFallbackToUserProvidedApiKey: boolean;
                   oidcConfig: {
                       clientId: string;
                       extraQueryParams: string | undefined;
@@ -175,9 +174,6 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
                         : {
                               type: "api-key",
                               obtentionMethod: "open-webui-oidc-token-exchange",
-                              allowFallbackToUserProvidedApiKey:
-                                  provider.authentification
-                                      .allowFallbackToUserProvidedApiKey ?? false,
                               oidcConfig: {
                                   clientId:
                                       provider.authentification.oidcConfiguration

@@ -116,7 +116,7 @@ export const translations: Translations<"fi"> = {
             </>
         ),
         "api base url": "API-perus-URL",
-        token: "Token",
+        "api key": "API-avain",
         "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
         "default provider": "Oletustarjoaja",
         "set default provider": "Aseta oletukseksi",
@@ -175,6 +175,7 @@ export const translations: Translations<"fi"> = {
     CustomProviderFormDialog: {
         "submission error": undefined,
         "invalid name": undefined,
+        "invalid api base": "Anna kelvollinen HTTP(S)-URL.",
         "deepseek provider option": undefined,
         "add custom provider title": "Mukautetut tekoälyntarjoajat",
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",

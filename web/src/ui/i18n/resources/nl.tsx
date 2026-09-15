@@ -116,7 +116,7 @@ export const translations: Translations<"nl"> = {
             </>
         ),
         "api base url": "API-basis-URL",
-        token: "Token",
+        "api key": "API-sleutel",
         "gateway error": "Kan de AI-gateway niet initialiseren.",
         "default provider": "Standaardprovider",
         "set default provider": "Als standaard instellen",
@@ -175,6 +175,7 @@ export const translations: Translations<"nl"> = {
     CustomProviderFormDialog: {
         "submission error": undefined,
         "invalid name": undefined,
+        "invalid api base": "Voer een geldige HTTP(S)-URL in.",
         "deepseek provider option": undefined,
         "add custom provider title": "Aangepaste AI-providers",
         "edit custom provider title": "AI-provider bewerken",

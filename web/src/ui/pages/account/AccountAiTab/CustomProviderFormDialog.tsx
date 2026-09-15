@@ -49,10 +49,11 @@ export const CustomProviderFormDialog = memo(() => {
                     providerType: protocol
                 })
             }
-            onTest={() => void aiProviderCreationFormUiController.testConnection()}
-            onSave={() => void aiProviderCreationFormUiController.submit()}
+            onTest={() => aiProviderCreationFormUiController.testConnection()}
+            onSave={() => aiProviderCreationFormUiController.submit()}
             hasSubmissionError={form.hasSubmissionFailed}
             nameIsValid={form.isNameValid}
+            apiBaseIsValid={form.isApiBaseValid}
             isSubmitting={form.isSubmitting}
         />
     );
@@ -61,6 +62,7 @@ export const CustomProviderFormDialog = memo(() => {
 const { i18n } = declareComponentKeys<
     | "submission error"
     | "invalid name"
+    | "invalid api base"
     | "deepseek provider option"
     | "add custom provider title"
     | "edit custom provider title"

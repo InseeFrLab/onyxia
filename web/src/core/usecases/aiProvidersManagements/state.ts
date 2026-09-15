@@ -92,13 +92,13 @@ export const { reducer, actions } = createUsecaseActions({
 
             getOrCreateRuntime({ state, providerName }).models = models;
         },
-        /**
-         * The creation form only submits a provider it has successfully talked to, so we
-         * already know its models and don't have to fetch them again.
-         */
         userProviderCreated: (
             state,
-            { payload }: { payload: { providerName: string; availableModels: AiModel[] } }
+            {
+                payload
+            }: {
+                payload: { providerName: string; availableModels: AiModel[] | undefined };
+            }
         ) => {
             const { providerName, availableModels } = payload;
 
@@ -106,7 +106,10 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.runtimeByProviderName[providerName] = {
                 auth: { stateDescription: "not loaded" },
-                models: { stateDescription: "loaded", availableModels }
+                models:
+                    availableModels === undefined
+                        ? { stateDescription: "not loaded" }
+                        : { stateDescription: "loaded", availableModels }
             };
         },
         userProviderDeleted: (

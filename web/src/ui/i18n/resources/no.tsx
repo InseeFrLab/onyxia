@@ -116,7 +116,7 @@ export const translations: Translations<"no"> = {
             </>
         ),
         "api base url": "API-basis-URL",
-        token: "Token",
+        "api key": "API-nøkkel",
         "gateway error": "Kunne ikke initialisere AI-gatewayen.",
         "default provider": "Standardleverandør",
         "set default provider": "Angi som standard",
@@ -174,6 +174,7 @@ export const translations: Translations<"no"> = {
     CustomProviderFormDialog: {
         "submission error": undefined,
         "invalid name": undefined,
+        "invalid api base": "Skriv inn en gyldig HTTP(S)-URL.",
         "deepseek provider option": undefined,
         "add custom provider title": "Tilpassede AI-leverandører",
         "edit custom provider title": "Rediger AI-leverandør",

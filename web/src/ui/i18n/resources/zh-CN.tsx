@@ -107,7 +107,7 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         "api base url": "API 基础 URL",
-        token: "令牌",
+        "api key": "API 密钥",
         "gateway error": "无法初始化 AI 网关。",
         "default provider": "默认提供商",
         "set default provider": "设为默认提供商",
@@ -164,6 +164,7 @@ export const translations: Translations<"zh-CN"> = {
     CustomProviderFormDialog: {
         "submission error": undefined,
         "invalid name": undefined,
+        "invalid api base": "请输入有效的 HTTP(S) URL。",
         "deepseek provider option": undefined,
         "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",

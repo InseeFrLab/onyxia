@@ -55,7 +55,6 @@ function setup() {
                     authentification: {
                         type: "api-key",
                         obtentionMethod: "open-webui-oidc-token-exchange",
-                        allowFallbackToUserProvidedApiKey: false,
                         oidcConfig: {
                             clientId: "bridge",
                             scope: undefined,
@@ -171,6 +170,61 @@ it("creates a provider through the current form controller and selects its defau
     expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
         defaultModel: "Personal/a",
         listModels: ["Personal/a"]
+    });
+});
+
+it("prefills a unique provider name and saves it when model loading fails", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const creation = core.functions.aiProviderCreationFormUiController;
+    creation.open({ providerName: undefined });
+    creation.changeProviderType({ providerType: "mistral" });
+
+    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+        formValues: { name: "Mistral" },
+        canSubmit: true
+    });
+
+    vi.mocked(fetch).mockRejectedValueOnce(new Error("unreachable"));
+    await creation.testConnection();
+
+    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+        connectionTest: { stateDescription: "failed" },
+        canSubmit: true
+    });
+
+    await creation.submit();
+
+    expect(core.states.aiProviderCreationFormUiController.getMain().isOpen).toBe(false);
+    expect(
+        core.states.aiAccountUiController
+            .getMain()
+            .providers?.find(provider => provider.name === "Mistral")?.models
+    ).toMatchObject({ stateDescription: "not loaded" });
+
+    creation.open({ providerName: undefined });
+    creation.changeProviderType({ providerType: "mistral" });
+    creation.changeProviderType({ providerType: "openai" });
+    creation.changeProviderType({ providerType: "mistral" });
+
+    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+        formValues: { name: "Mistral 2" }
+    });
+});
+
+it("does not allow a custom provider to reuse an existing provider name", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const creation = core.functions.aiProviderCreationFormUiController;
+    creation.open({ providerName: undefined });
+    creation.changeProviderType({ providerType: "openai" });
+    creation.changeValue({ key: "name", value: "Exchange" });
+
+    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+        isNameValid: false,
+        canSubmit: false
     });
 });
 

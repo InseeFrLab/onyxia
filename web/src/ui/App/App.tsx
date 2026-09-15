@@ -17,7 +17,6 @@ import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
 import { Uploads } from "ui/pages/s3Explorer/Uploads";
-import { AiInitializationErrorDialog } from "./AiInitializationErrorDialog";
 
 triggerCoreBootstrap({
     onyxiaApiUrl: env.ONYXIA_API_URL,
@@ -73,7 +72,6 @@ export function App() {
                     />
                 )}
                 <GlobalDialog />
-                <AiInitializationErrorDialog />
                 <Header className={classes.header} />
                 <section className={classes.betweenHeaderAndFooter}>
                     <LeftBar className={classes.leftBar} />

@@ -42,8 +42,7 @@ const main = createSelector(
             canUserProvideApiKey:
                 aiProvider.origin === "configured by admin" &&
                 aiProvider.authentification.type === "api-key" &&
-                (aiProvider.authentification.obtentionMethod === "user-provided" ||
-                    aiProvider.authentification.allowFallbackToUserProvidedApiKey),
+                aiProvider.authentification.obtentionMethod === "user-provided",
             /** The user has to go through this provider's own login flow. */
             canUserLogIn:
                 aiProvider.origin === "configured by admin" &&

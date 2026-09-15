@@ -116,7 +116,7 @@ export const translations: Translations<"es"> = {
             </>
         ),
         "api base url": "URL base de la API",
-        token: "Token",
+        "api key": "Clave API",
         "gateway error": "No se pudo inicializar la pasarela de IA.",
         "default provider": "Proveedor predeterminado",
         "set default provider": "Definir como predeterminado",
@@ -176,6 +176,7 @@ export const translations: Translations<"es"> = {
     CustomProviderFormDialog: {
         "submission error": undefined,
         "invalid name": undefined,
+        "invalid api base": "Introduzca una URL HTTP(S) válida.",
         "deepseek provider option": undefined,
         "add custom provider title": "Proveedores de IA personalizados",
         "edit custom provider title": "Editar proveedor de IA",

@@ -118,7 +118,7 @@ export const translations: Translations<"fr"> = {
             </>
         ),
         "api base url": "URL de base de l'API",
-        token: "Jeton",
+        "api key": "Clé API",
         "gateway error": "Impossible d'initialiser la passerelle IA.",
         "default provider": "Provider par défaut",
         "set default provider": "Définir par défaut",
@@ -178,6 +178,7 @@ export const translations: Translations<"fr"> = {
     CustomProviderFormDialog: {
         "submission error": "Impossible d’enregistrer ce provider. Réessayez.",
         "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
+        "invalid api base": "Saisissez une URL HTTP(S) valide.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Providers IA personnalisés",
         "edit custom provider title": "Modifier le provider IA",

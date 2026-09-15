@@ -28,10 +28,6 @@ export declare namespace State {
         apiKey: string;
     };
 
-    /**
-     * A provider is only ever saved once we have managed to list its models, so the
-     * successful test is also what supplies them.
-     */
     export type ConnectionTest =
         | { stateDescription: "not tested" }
         | { stateDescription: "testing" }

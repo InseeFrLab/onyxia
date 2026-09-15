@@ -1,4 +1,5 @@
 import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -12,24 +13,45 @@ export function FormTextField(props: {
     onChange: (value: string) => void;
     autoComplete: string;
     isSensitive?: boolean;
+    errorMessage?: string;
+    onBlur?: () => void;
 }) {
-    const { label, value, onChange, autoComplete, isSensitive = false } = props;
+    const {
+        label,
+        value,
+        onChange,
+        autoComplete,
+        isSensitive = false,
+        errorMessage,
+        onBlur
+    } = props;
     const inputId = useId();
+    const helperTextId = useId();
     const { classes } = useStyles();
 
     return (
-        <Input
-            id={inputId}
-            className={classes.input}
-            value={value}
-            placeholder={label}
-            onChange={event => onChange(event.target.value)}
-            type={isSensitive ? "password" : "text"}
-            fullWidth={true}
-            disableUnderline={true}
-            autoComplete={autoComplete}
-            inputProps={{ "aria-label": label }}
-        />
+        <FormControl fullWidth={true} error={errorMessage !== undefined}>
+            <Input
+                id={inputId}
+                className={classes.input}
+                value={value}
+                placeholder={label}
+                onChange={event => onChange(event.target.value)}
+                onBlur={onBlur}
+                type={isSensitive ? "password" : "text"}
+                fullWidth={true}
+                disableUnderline={true}
+                autoComplete={autoComplete}
+                inputProps={{
+                    "aria-label": label,
+                    "aria-describedby":
+                        errorMessage === undefined ? undefined : helperTextId
+                }}
+            />
+            {errorMessage !== undefined && (
+                <FormHelperText id={helperTextId}>{errorMessage}</FormHelperText>
+            )}
+        </FormControl>
     );
 }
 
@@ -132,6 +154,9 @@ const useStyles = tss
                 "&.Mui-focused": {
                     borderColor: theme.colors.useCases.buttons.actionActive
                 },
+                "&.Mui-error": {
+                    borderColor: theme.colors.useCases.alertSeverity.error.main
+                },
                 "& .MuiInputBase-input": {
                     ...theme.typography.variants["label 1"].style,
                     padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
@@ -140,6 +165,10 @@ const useStyles = tss
                         color: theme.colors.useCases.typography.textSecondary,
                         opacity: 1
                     }
+                },
+                "& .MuiFormHelperText-root": {
+                    marginLeft: theme.spacing(1),
+                    marginRight: theme.spacing(1)
                 }
             },
             selectControl: {

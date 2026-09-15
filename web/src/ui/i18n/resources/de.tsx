@@ -117,7 +117,7 @@ export const translations: Translations<"de"> = {
             </>
         ),
         "api base url": "API-Basis-URL",
-        token: "Token",
+        "api key": "API-Schlüssel",
         "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
         "default provider": "Standardanbieter",
         "set default provider": "Als Standard festlegen",
@@ -177,6 +177,7 @@ export const translations: Translations<"de"> = {
     CustomProviderFormDialog: {
         "submission error": undefined,
         "invalid name": undefined,
+        "invalid api base": "Geben Sie eine gültige HTTP(S)-URL ein.",
         "deepseek provider option": undefined,
         "add custom provider title": "Benutzerdefinierte KI-Anbieter",
         "edit custom provider title": "KI-Anbieter bearbeiten",

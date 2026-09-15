@@ -334,8 +334,7 @@ export const thunks = {
 
             assert(
                 authentification.type === "api-key" &&
-                    (authentification.obtentionMethod === "user-provided" ||
-                        authentification.allowFallbackToUserProvidedApiKey),
+                    authentification.obtentionMethod === "user-provided",
                 "this provider doesn't accept a user provided API key"
             );
 
@@ -354,9 +353,8 @@ export const thunks = {
             await dispatch(thunks.refreshProvider({ providerName }));
         },
     /**
-     * Creates a provider, or updates the one named `providerName_current`. The models are
-     * supplied by the caller: the creation form only submits a provider it has managed to
-     * talk to, so there is nothing left to fetch.
+     * Creates a provider, or updates the one named `providerName_current`. Model listing
+     * is optional: an unreachable provider must still be saved so it can be fixed later.
      */
     createOrUpdateUserProvider:
         (params: {
@@ -365,7 +363,7 @@ export const thunks = {
             providerType: AiConfig.SupportedAiProviderType;
             apiBase: string;
             apiKey: string;
-            availableModels: AiModel[];
+            availableModels: AiModel[] | undefined;
         }) =>
         async (...args): Promise<void> => {
             const {
@@ -611,16 +609,6 @@ const privateThunks = {
                 } catch {
                     // The client itself may be what failed, don't cache a broken one.
                     getContext(rootContext).prOidcByProviderName.delete(providerName);
-
-                    if (
-                        authentification.allowFallbackToUserProvidedApiKey &&
-                        apiKey_userProvided !== undefined
-                    ) {
-                        return {
-                            stateDescription: "authenticated",
-                            apiKey: apiKey_userProvided
-                        };
-                    }
 
                     return { stateDescription: "error" };
                 }
