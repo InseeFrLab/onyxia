@@ -116,7 +116,7 @@ export function ModelSelectField(props: {
 
                     const model = models.find(model => model.id === selectedValue);
 
-                    return model?.name ?? selectedValue;
+                    return model?.id ?? selectedValue;
                 }}
                 MenuProps={{
                     PaperProps: { className: classes.modelMenu }
@@ -128,7 +128,7 @@ export function ModelSelectField(props: {
                         value={model.id}
                         className={classes.modelMenuItem}
                     >
-                        {model.name}
+                        {model.id}
                     </MenuItem>
                 ))}
             </Select>

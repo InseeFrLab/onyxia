@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export type AiModel = { id: string; name: string };
+export type AiModel = { id: string };
 
 const requestTimeoutMs = 10_000;
 
@@ -47,7 +47,7 @@ export async function fetchAiModels(params: {
                 })
                 .parse(json);
 
-            return data.map(({ id, display_name }) => ({ id, name: display_name ?? id }));
+            return data.map(({ id }) => ({ id }));
         } catch {
             throw new Error("Unexpected Anthropic /models response shape");
         }
@@ -60,7 +60,7 @@ export async function fetchAiModels(params: {
             })
             .parse(json);
 
-        return data.map(({ id, name }) => ({ id, name: name ?? id }));
+        return data.map(({ id }) => ({ id }));
     } catch {
         throw new Error("Unexpected OpenAI-compatible /models response shape");
     }

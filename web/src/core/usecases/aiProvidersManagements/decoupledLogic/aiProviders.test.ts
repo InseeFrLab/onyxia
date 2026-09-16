@@ -36,10 +36,7 @@ function createConfiguredProvider(
 
 const loadedModels: ProviderRuntime["models"] = {
     stateDescription: "loaded",
-    availableModels: [
-        { id: "gpt-5", name: "GPT 5" },
-        { id: "meta-llama/Llama-3", name: "Llama 3" }
-    ]
+    availableModels: [{ id: "gpt-5" }, { id: "meta-llama/Llama-3" }]
 };
 
 describe(symToStr({ createAiProviders }), () => {
@@ -54,7 +51,7 @@ describe(symToStr({ createAiProviders }), () => {
 
         expect(aiProvider.models).toStrictEqual({
             stateDescription: "loaded",
-            availableModels: [{ id: "gpt-5", name: "gpt-5" }]
+            availableModels: [{ id: "gpt-5" }]
         });
     });
 

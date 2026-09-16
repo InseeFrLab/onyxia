@@ -18,11 +18,7 @@ const meta = {
     },
     args: {
         onSelectedModelsChange: () => {},
-        models: [
-            { id: "model-a", name: "Model A" },
-            { id: "model-b", name: "Model B" },
-            { id: "org/model-c", name: "Model C" }
-        ],
+        models: [{ id: "model-a" }, { id: "model-b" }, { id: "org/model-c" }],
         selectedModels: [],
         disabled: false
     }

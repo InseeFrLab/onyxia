@@ -90,7 +90,6 @@ export const translations: Translations<"zh-CN"> = {
     },
     AccountAiTab: {
         "invalid name": undefined,
-        "connect provider": undefined,
         "default model": undefined,
         "no default model": undefined,
         "save key": undefined,

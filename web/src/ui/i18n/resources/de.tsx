@@ -100,7 +100,6 @@ export const translations: Translations<"de"> = {
     },
     AccountAiTab: {
         "invalid name": undefined,
-        "connect provider": undefined,
         "default model": undefined,
         "no default model": undefined,
         "save key": undefined,

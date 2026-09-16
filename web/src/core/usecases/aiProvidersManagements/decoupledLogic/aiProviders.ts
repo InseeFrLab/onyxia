@@ -116,8 +116,7 @@ export function createAiProviders(params: {
                     : {
                           stateDescription: "loaded",
                           availableModels: provider_config.models.map(modelId => ({
-                              id: modelId,
-                              name: modelId
+                              id: modelId
                           }))
                       };
 

@@ -23,10 +23,7 @@ describe(fetchAiModels.name, () => {
                 apiBase: "https://gateway.example.com/v1",
                 apiKey: "openai-key"
             })
-        ).resolves.toStrictEqual([
-            { id: "model-a", name: "model-a" },
-            { id: "model-b", name: "Model B" }
-        ]);
+        ).resolves.toStrictEqual([{ id: "model-a" }, { id: "model-b" }]);
         expect(fetchMock).toHaveBeenCalledWith("https://gateway.example.com/v1/models", {
             headers: { Authorization: "Bearer openai-key" },
             signal: expect.any(AbortSignal)
@@ -55,9 +52,7 @@ describe(fetchAiModels.name, () => {
                 apiBase: "https://api.anthropic.com/v1",
                 apiKey: "anthropic-key"
             })
-        ).resolves.toStrictEqual([
-            { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6" }
-        ]);
+        ).resolves.toStrictEqual([{ id: "claude-sonnet-4-6" }]);
         expect(fetchMock).toHaveBeenCalledWith("https://api.anthropic.com/v1/models", {
             headers: {
                 "x-api-key": "anthropic-key",

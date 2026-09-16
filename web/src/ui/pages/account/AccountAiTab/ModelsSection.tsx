@@ -34,7 +34,7 @@ export const ModelsSection = memo((props: Props) => {
                 {props.models.map(model => (
                     <MenuItem key={model.id} value={model.id}>
                         <Checkbox checked={props.selectedModels.includes(model.id)} />
-                        <ListItemText primary={model.name} />
+                        <ListItemText primary={model.id} />
                     </MenuItem>
                 ))}
             </Select>

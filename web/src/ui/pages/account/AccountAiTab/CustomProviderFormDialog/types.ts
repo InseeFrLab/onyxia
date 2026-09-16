@@ -1,9 +1,6 @@
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 
-export type AiModel = {
-    id: string;
-    name: string;
-};
+export type AiModel = import("core/tools/fetchAiModels").AiModel;
 
 export type FormValues = {
     name: string;

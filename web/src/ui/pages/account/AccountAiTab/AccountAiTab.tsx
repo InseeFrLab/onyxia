@@ -171,21 +171,6 @@ export const AccountAiTab = memo((props: Props) => {
                     {provider.models.stateDescription === "error" && (
                         <Alert severity="warning">{t("gateway error")}</Alert>
                     )}
-                    {provider.canUserLogIn &&
-                        (provider.auth.stateDescription === "authentication required" ||
-                            provider.auth.stateDescription === "error") && (
-                            <Button
-                                variant="secondary"
-                                disabled={provider.operationState === "pending"}
-                                onClick={() =>
-                                    account.logInToProvider({
-                                        providerName: provider.name
-                                    })
-                                }
-                            >
-                                {t("connect provider")}
-                            </Button>
-                        )}
                     {provider.canUserProvideApiKey && (
                         <ApiKeyForm
                             key={`${provider.name}/${provider.userProvidedApiKey}`}
@@ -268,7 +253,6 @@ function ApiKeyForm(props: {
 
 const { i18n } = declareComponentKeys<
     | "invalid name"
-    | "connect provider"
     | "default model"
     | "no default model"
     | "save key"

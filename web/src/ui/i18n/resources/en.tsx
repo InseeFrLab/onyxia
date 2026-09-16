@@ -98,7 +98,6 @@ export const translations: Translations<"en"> = {
     },
     AccountAiTab: {
         "invalid name": "Choose a unique provider name without a slash (/).",
-        "connect provider": "Connect",
         "default model": "Default model",
         "no default model": "No default model",
         "save key": "Save key",

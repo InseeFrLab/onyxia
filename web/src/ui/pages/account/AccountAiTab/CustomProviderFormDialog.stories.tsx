@@ -61,10 +61,10 @@ export const Filled: Story = {
         test: {
             stateDescription: "success",
             models: [
-                { id: "gemma4-26b-moe", name: "gemma4-26b-moe" },
-                { id: "qwen3-6-35b-mo", name: "qwen3-6-35b-mo" },
-                { id: "qwen3-embedding-8b", name: "qwen3-embedding-8b" },
-                { id: "qwen3-vl", name: "qwen3-vl" }
+                { id: "gemma4-26b-moe" },
+                { id: "qwen3-6-35b-mo" },
+                { id: "qwen3-embedding-8b" },
+                { id: "qwen3-vl" }
             ]
         },
         canSave: true,

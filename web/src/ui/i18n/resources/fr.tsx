@@ -100,7 +100,6 @@ export const translations: Translations<"fr"> = {
     },
     AccountAiTab: {
         "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
-        "connect provider": "Se connecter",
         "default model": "Modèle par défaut",
         "no default model": "Aucun modèle par défaut",
         "save key": "Enregistrer la clé",

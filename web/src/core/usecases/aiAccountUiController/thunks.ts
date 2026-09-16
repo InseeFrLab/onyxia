@@ -13,7 +13,6 @@ export const thunks = {
 
             return dispatch(aiProvidersManagements.thunks.isAvailable());
         },
-    /** The tab shows a loader until this settles, nothing is loaded at bootstrap. */
     load:
         () =>
         async (...args): Promise<void> => {
@@ -39,19 +38,7 @@ export const thunks = {
                 })
             );
         },
-    logInToProvider:
-        (params: { providerName: string }) =>
-        async (...args): Promise<void> => {
-            const [dispatch] = args;
 
-            await dispatch(
-                privateThunks.runProviderOperation({
-                    providerName: params.providerName,
-                    mutate: () =>
-                        dispatch(aiProvidersManagements.thunks.logInToProvider(params))
-                })
-            );
-        },
     setSelectedModelIds:
         (params: { providerName: string; modelIds: string[] }) =>
         (...[dispatch]) => {

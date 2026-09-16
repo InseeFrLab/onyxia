@@ -98,7 +98,6 @@ export const translations: Translations<"it"> = {
     },
     AccountAiTab: {
         "invalid name": undefined,
-        "connect provider": undefined,
         "default model": undefined,
         "no default model": undefined,
         "save key": undefined,
@@ -637,9 +636,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
