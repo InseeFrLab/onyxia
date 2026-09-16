@@ -104,12 +104,6 @@ export const thunks = {
                     if (parseAiConfigStr({ aiConfigStr }) !== undefined) {
                         break report_unreadable_config;
                     }
-
-                    // We carry on with an empty config, but the user must not be left to
-                    // believe their providers vanished on their own.
-                    dispatch(
-                        actions.errorNotified({ kind: "config-restoration-failed" })
-                    );
                 }
 
                 dispatch(actions.loaded());
@@ -616,15 +610,6 @@ const privateThunks = {
 
             dispatch(actions.providerAuthChanged({ providerName, auth }));
 
-            if (auth.stateDescription === "error") {
-                dispatch(
-                    actions.errorNotified({
-                        kind: "authentication-failed",
-                        providerName
-                    })
-                );
-            }
-
             return auth.stateDescription === "authenticated" ? auth : undefined;
         },
     refreshProviderModels:
@@ -676,13 +661,6 @@ const privateThunks = {
                         models: { stateDescription: "error" }
                     })
                 );
-
-                dispatch(
-                    actions.errorNotified({
-                        kind: "models-fetch-failed",
-                        providerName
-                    })
-                );
             }
         },
     /**
@@ -728,8 +706,6 @@ export const protectedThunks = {
             await dispatch(thunks.load());
 
             if (selectors.stateDescription(getState()) !== "ready") {
-                dispatch(actions.errorNotified({ kind: "initialization-failed" }));
-
                 return emptyAiContext;
             }
 

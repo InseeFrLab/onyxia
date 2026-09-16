@@ -7,7 +7,6 @@ import {
     type AiProvider,
     type ProviderRuntime
 } from "./decoupledLogic/aiProviders";
-import type { AiInitializationError } from "./evt";
 import type { PersistedAiConfig } from "./decoupledLogic/persistedAiConfig";
 
 export const name = "aiProvidersManagements";
@@ -65,11 +64,6 @@ export const { reducer, actions } = createUsecaseActions({
                 unsavedConfig: undefined,
                 configSaveState: "idle"
             }),
-        /**
-         * Emitted for the sole purpose of letting the UI display it, see evt.ts. The
-         * state itself carries the error of each provider.
-         */
-        errorNotified: (_state, _action: { payload: AiInitializationError }) => {},
         providerAuthChanged: (
             state,
             {

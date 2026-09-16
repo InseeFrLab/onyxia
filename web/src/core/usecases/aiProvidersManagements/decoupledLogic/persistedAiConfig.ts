@@ -5,10 +5,8 @@ import { supportedAiProviderTypes } from "./supportedAiProviderTypes";
 
 /**
  * The user's own AI configuration, serialized into the single `aiConfigStr` user config
- * entry (persisted in the secret manager, that is currently Vault).
+ * entry (persisted in the secret manager).
  *
- * Only durable data lives here. Everything that can be recomputed when the use case is
- * loaded (the model lists, the tokens obtained by exchange) is deliberately left out.
  *
  * Providers are keyed by name, names are unique across admin configured providers and
  * user created ones alike.
