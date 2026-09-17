@@ -57,8 +57,6 @@ const main = createSelector(
             isNameValid,
             isApiBaseValid,
             canTestConnection,
-            // Saving a provider we haven't managed to reach would only produce a broken
-            // entry the user would then have to fix.
             canSubmit:
                 isNameValid &&
                 formValues.providerType !== undefined &&

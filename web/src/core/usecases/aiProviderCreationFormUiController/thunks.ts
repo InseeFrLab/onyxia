@@ -17,12 +17,12 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            if (providerName === undefined) {
-                assert(
-                    dispatch(aiProvidersManagements.thunks.canUserCreateProviders()),
-                    "the instance configuration doesn't let the user add providers"
-                );
+            assert(
+                dispatch(aiProvidersManagements.thunks.canUserCreateProviders()),
+                "the instance configuration doesn't let the user add providers"
+            );
 
+            if (providerName === undefined) {
                 dispatch(
                     actions.opened({
                         providerName_current: undefined,
@@ -61,8 +61,6 @@ export const thunks = {
                         apiBase: aiProvider.apiBase,
                         apiKey: apiKeyByProviderName[aiProvider.name] ?? ""
                     },
-                    // We already know the models of a provider that was saved, no need to
-                    // make the user test it again just to be allowed to rename it.
                     connectionTest:
                         aiProvider.models.stateDescription === "loaded"
                             ? {

@@ -82,9 +82,8 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.hasSubmissionFailed = false;
 
-            // The name plays no part in reaching the provider, changing it doesn't
-            // invalidate what we learned from it.
             if (key === "name") {
+                //the name do not change the connection test result
                 return;
             }
 
