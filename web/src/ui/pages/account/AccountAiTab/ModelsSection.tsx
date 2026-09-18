@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { Select, MenuItem, Checkbox, ListItemText, Stack } from "@mui/material";
-import { Text } from "onyxia-ui/Text";
+import { Autocomplete, Stack, TextField } from "@mui/material";
 import { useTranslation, declareComponentKeys } from "ui/i18n";
 import type { AiModel } from "core/tools/fetchAiModels";
 export type Props = {
@@ -13,31 +12,29 @@ export const ModelsSection = memo((props: Props) => {
     const { t } = useTranslation({ ModelsSection });
 
     return (
-        <Stack spacing={1}>
-            <Text typo="label 1">{t("model label")}</Text>
-            <Select
+        <Stack>
+            <Autocomplete
                 multiple
-                displayEmpty
+                disableCloseOnSelect
+                filterSelectedOptions
+                options={props.models.map(({ id }) => id)}
                 value={props.selectedModels}
                 disabled={props.disabled}
-                inputProps={{ "aria-label": t("model label") }}
-                renderValue={ids =>
-                    ids.length === 0 ? t("not defined") : ids.join(", ")
-                }
-                onChange={event => {
-                    const value = event.target.value;
-                    void props.onSelectedModelsChange(
-                        typeof value === "string" ? value.split(",") : value
-                    );
+                onChange={(_event, modelIds) => {
+                    void props.onSelectedModelsChange(modelIds);
                 }}
-            >
-                {props.models.map(model => (
-                    <MenuItem key={model.id} value={model.id}>
-                        <Checkbox checked={props.selectedModels.includes(model.id)} />
-                        <ListItemText primary={model.id} />
-                    </MenuItem>
-                ))}
-            </Select>
+                renderInput={params => (
+                    <TextField
+                        {...params}
+                        label={t("model label")}
+                        placeholder={
+                            props.selectedModels.length === 0
+                                ? t("not defined")
+                                : undefined
+                        }
+                    />
+                )}
+            />
         </Stack>
     );
 });
