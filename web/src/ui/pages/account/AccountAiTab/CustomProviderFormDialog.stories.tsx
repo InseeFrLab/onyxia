@@ -1,0 +1,73 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { CustomProviderFormDialogView, type ViewProps } from "./CustomProviderFormDialog";
+
+const meta = {
+    title: "Pages/Account/CustomProviderFormDialog",
+    component: CustomProviderFormDialogView,
+    parameters: {
+        layout: "fullscreen"
+    }
+} satisfies Meta<typeof CustomProviderFormDialogView>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+const doNothing = () => {};
+
+const commonArgs: Pick<
+    ViewProps,
+    | "supportedProtocols"
+    | "onClose"
+    | "onFieldChange"
+    | "onProtocolChange"
+    | "onTest"
+    | "onSave"
+> = {
+    supportedProtocols: ["openai", "openai-compatible", "mistral", "anthropic"],
+    onClose: doNothing,
+    onFieldChange: doNothing,
+    onProtocolChange: doNothing,
+    onTest: doNothing,
+    onSave: doNothing
+};
+
+export const Default: Story = {
+    args: {
+        ...commonArgs,
+        isEditing: false,
+        values: {
+            name: "",
+            protocol: "",
+            apiBase: "",
+            apiKey: ""
+        },
+        test: { stateDescription: "idle" },
+        canSave: false,
+        canTest: false
+    }
+};
+
+export const Filled: Story = {
+    args: {
+        ...commonArgs,
+        isEditing: true,
+        values: {
+            name: "Custom Provider 1",
+            protocol: "openai",
+            apiBase: "https://llm.example.test/api",
+            apiKey: "storybook-api-key"
+        },
+        test: {
+            stateDescription: "success",
+            models: [
+                { id: "gemma4-26b-moe" },
+                { id: "qwen3-6-35b-mo" },
+                { id: "qwen3-embedding-8b" },
+                { id: "qwen3-vl" }
+            ]
+        },
+        canSave: true,
+        canTest: true
+    }
+};

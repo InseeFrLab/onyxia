@@ -34,6 +34,7 @@ export type UserConfigs = Id<
         isCommandBarEnabled: boolean;
         userProfileStr: string | null;
         s3BookmarksStr: string | null;
+        aiConfigStr: string | null;
     }
 >;
 
@@ -76,6 +77,12 @@ export const { reducer, actions } = createUsecaseActions({
             { payload }: { payload: { key: keyof UserConfigs } }
         ) => {
             state[payload.key].isBeingChanged = false;
+        },
+        changeFailed: (state, { payload }: { payload: ChangeValueParams }) => {
+            const wrap = state[payload.key];
+
+            wrap.value = payload.value;
+            wrap.isBeingChanged = false;
         }
     }
 });
@@ -93,20 +100,32 @@ export const thunks = {
 
             assert(oidc.isUserLoggedIn);
 
-            if (getState()[name][params.key].value === params.value) {
+            const previousValue = getState()[name][params.key].value;
+
+            if (previousValue === params.value) {
                 return;
             }
 
             dispatch(actions.changeStarted(params));
 
-            const dirPath = await dispatch(privateThunks.getDirPath());
+            try {
+                const dirPath = await dispatch(privateThunks.getDirPath());
 
-            await secretsManager.put({
-                path: pathJoin(dirPath, params.key),
-                secret: { value: params.value }
-            });
+                await secretsManager.put({
+                    path: pathJoin(dirPath, params.key),
+                    secret: { value: params.value }
+                });
 
-            dispatch(actions.changeCompleted(params));
+                dispatch(actions.changeCompleted(params));
+            } catch (error) {
+                dispatch(
+                    actions.changeFailed({
+                        key: params.key,
+                        value: previousValue
+                    } as ChangeValueParams)
+                );
+                throw error;
+            }
         },
     resetHelperDialogs:
         () =>
@@ -172,7 +191,8 @@ export const protectedThunks = {
                 selectedProjectId: null,
                 isCommandBarEnabled: paramsOfBootstrapCore.isCommandBarEnabledByDefault,
                 userProfileStr: null,
-                s3BookmarksStr: null
+                s3BookmarksStr: null,
+                aiConfigStr: null
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());
