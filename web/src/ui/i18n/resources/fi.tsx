@@ -104,7 +104,7 @@ export const translations: Translations<"fi"> = {
         "save key": undefined,
         "save failed": undefined,
         retry: undefined,
-        "authentication required": undefined,
+        "api-key not provided": undefined,
         "selected models": undefined,
         "credentials section helper": ({ webUiUrl }) => (
             <>

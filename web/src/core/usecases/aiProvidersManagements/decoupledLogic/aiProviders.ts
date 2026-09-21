@@ -43,8 +43,8 @@ export namespace AiProvider {
         | { stateDescription: "not required" }
         | { stateDescription: "not loaded" }
         | { stateDescription: "fetching" }
-        /** The user has to bring an API key, or to log in, before we can call it. */
-        | { stateDescription: "authentication required" }
+        /** The user has to provide an API key before we can call it. */
+        | { stateDescription: "api-key not provided" }
         | { stateDescription: "error" }
         | { stateDescription: "authenticated"; apiKey: string };
 

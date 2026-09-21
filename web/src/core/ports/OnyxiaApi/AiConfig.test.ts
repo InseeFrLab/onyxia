@@ -46,10 +46,39 @@ describe("AI environment configuration", () => {
             providers: [
                 {
                     authentification: {
-                        oidcConfig: {
+                        oidcParams: {
                             clientId: "client",
-                            scope: undefined,
-                            extraQueryParams: undefined
+                            issuerUri: undefined,
+                            scope_spaceSeparated: undefined,
+                            extraQueryParams_raw: undefined,
+                            idleSessionLifetimeInSeconds: undefined
+                        }
+                    }
+                }
+            ]
+        });
+    });
+    it("allows OIDC token exchange without a provider-specific OIDC configuration", () => {
+        expect(
+            parse({
+                providers: {
+                    ...provider,
+                    authentification: {
+                        type: "api-key",
+                        obtentionMethod: "open-webui-oidc-token-exchange"
+                    }
+                }
+            })
+        ).toMatchObject({
+            providers: [
+                {
+                    authentification: {
+                        oidcParams: {
+                            clientId: undefined,
+                            issuerUri: undefined,
+                            scope_spaceSeparated: undefined,
+                            extraQueryParams_raw: undefined,
+                            idleSessionLifetimeInSeconds: undefined
                         }
                     }
                 }

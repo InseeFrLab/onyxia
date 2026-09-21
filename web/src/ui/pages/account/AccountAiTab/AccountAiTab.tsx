@@ -1,7 +1,7 @@
-import { memo, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
-import { useCoreState, getCoreSync } from "core";
+import { useCoreState, getCoreSync, getCore } from "core";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
@@ -18,9 +18,23 @@ import {
 import { Evt, type UnpackEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { Deferred } from "evt/tools/Deferred";
+import { withLoader } from "ui/tools/withLoader";
 
 export type Props = { className?: string };
-export const AccountAiTab = memo((props: Props) => {
+
+export const AccountAiTab = withLoader({
+    loader: async () => {
+        const {
+            functions: { aiAccountUiController: account }
+        } = await getCore();
+
+        await account.load();
+    },
+    FallbackComponent: () => null,
+    Component
+});
+
+function Component(props: Props) {
     const {
         functions: {
             aiAccountUiController: account,
@@ -39,11 +53,6 @@ export const AccountAiTab = memo((props: Props) => {
         evtOpen.post({ resolveDoProceed: confirmation.resolve });
         return confirmation.pr;
     }
-
-    //See with Jo if it's possible to add loader
-    useEffect(() => {
-        account.load();
-    }, [account]);
 
     if (!state.isReady) {
         if (state.stateDescription === "error")
@@ -165,8 +174,8 @@ export const AccountAiTab = memo((props: Props) => {
                         <CircularProgress size={20} />
                     )}
                     {(provider.auth.stateDescription === "error" ||
-                        provider.auth.stateDescription === "authentication required") && (
-                        <Alert severity="warning">{t("authentication required")}</Alert>
+                        provider.auth.stateDescription === "api-key not provided") && (
+                        <Alert severity="warning">{t("api-key not provided")}</Alert>
                     )}
                     {provider.models.stateDescription === "error" && (
                         <Alert severity="warning">{t("gateway error")}</Alert>
@@ -229,7 +238,8 @@ export const AccountAiTab = memo((props: Props) => {
             <ConfirmCustomProviderDeletionDialog evtOpen={evtOpen} />
         </Stack>
     );
-});
+}
+
 function ApiKeyForm(props: {
     initialValue: string;
     disabled: boolean;
@@ -258,7 +268,7 @@ const { i18n } = declareComponentKeys<
     | "save key"
     | "save failed"
     | "retry"
-    | "authentication required"
+    | "api-key not provided"
     | "selected models"
     | "default provider"
     | "set default provider"

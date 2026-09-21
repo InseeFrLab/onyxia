@@ -1,9 +1,7 @@
-import type { State as RootState, Thunks } from "core/bootstrap";
-import { createUsecaseContextApi } from "clean-architecture";
+import type { Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { Mutex } from "async-mutex";
-import type { Oidc } from "core/ports/Oidc";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import { fetchAiModels, type AiModel } from "core/tools/fetchAiModels";
@@ -28,8 +26,8 @@ import {
 export const thunks = {
     saveConfig:
         () =>
-        async (...[dispatch, getState, rootContext]): Promise<boolean> => {
-            return getContext(rootContext).mutex.runExclusive(async () => {
+        async (...[dispatch, getState]): Promise<boolean> => {
+            return globalContext.mutex.runExclusive(async () => {
                 while (true) {
                     const state = getState()[name];
                     if (
@@ -75,16 +73,14 @@ export const thunks = {
     load:
         () =>
         async (...args): Promise<void> => {
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, getState] = args;
 
             if (!dispatch(thunks.isAvailable())) {
                 return;
             }
 
-            const context = getContext(rootContext);
-
-            if (context.prLoad !== undefined) {
-                return context.prLoad;
+            if (globalContext.prLoad !== undefined) {
+                return globalContext.prLoad;
             }
 
             if (selectors.stateDescription(getState()) === "ready") {
@@ -121,14 +117,14 @@ export const thunks = {
                 );
             })();
 
-            context.prLoad = prLoad;
+            globalContext.prLoad = prLoad;
 
             try {
                 await prLoad;
             } catch {
                 dispatch(actions.loadingFailed());
             } finally {
-                context.prLoad = undefined;
+                globalContext.prLoad = undefined;
             }
         },
     /**
@@ -140,11 +136,10 @@ export const thunks = {
         async (...args): Promise<void> => {
             const { providerName } = params;
 
-            const [dispatch, , rootContext] = args;
+            const [dispatch] = args;
 
-            const context = getContext(rootContext);
-
-            const prRefresh_pending = context.prRefreshByProviderName.get(providerName);
+            const prRefresh_pending =
+                globalContext.prRefreshByProviderName.get(providerName);
 
             if (prRefresh_pending !== undefined) {
                 return prRefresh_pending;
@@ -170,73 +165,35 @@ export const thunks = {
                 );
             })();
 
-            context.prRefreshByProviderName.set(providerName, prRefresh);
+            globalContext.prRefreshByProviderName.set(providerName, prRefresh);
 
             try {
                 await prRefresh;
             } finally {
-                context.prRefreshByProviderName.delete(providerName);
+                globalContext.prRefreshByProviderName.delete(providerName);
             }
         },
     /** Refreshes only the exchanged token, leaving the model list untouched. */
     refreshToken:
         (params: { providerName: string }) =>
-        async (...[dispatch, getState, rootContext]): Promise<void> => {
-            const provider = getAiProvider({
-                rootState: getState(),
-                providerName: params.providerName
-            });
+        async (...[dispatch]): Promise<void> => {
+            const provider = dispatch(
+                privateThunks.getAiProvider({ providerName: params.providerName })
+            );
             assert(provider !== undefined && isAuthenticatedByTokenExchange(provider));
-            const context = getContext(rootContext);
-            const pending = context.prRefreshByProviderName.get(params.providerName);
+            const pending = globalContext.prRefreshByProviderName.get(
+                params.providerName
+            );
             if (pending !== undefined) return pending;
             const request = Promise.resolve().then(async () => {
                 await dispatch(privateThunks.refreshProviderAuth(params));
             });
-            context.prRefreshByProviderName.set(params.providerName, request);
+            globalContext.prRefreshByProviderName.set(params.providerName, request);
             try {
                 await request;
             } finally {
-                context.prRefreshByProviderName.delete(params.providerName);
+                globalContext.prRefreshByProviderName.delete(params.providerName);
             }
-        },
-    /**
-     * Sends the user through the login flow of the provider's own OIDC client. Only
-     * relevant for the providers authenticated by token exchange.
-     */
-    logInToProvider:
-        (params: { providerName: string }) =>
-        async (...args): Promise<void> => {
-            const { providerName } = params;
-
-            const [dispatch, getState] = args;
-
-            const aiProvider = getAiProvider({ rootState: getState(), providerName });
-
-            assert(aiProvider !== undefined);
-            assert(aiProvider.origin === "configured by admin");
-
-            const { authentification } = aiProvider;
-
-            assert(
-                authentification.type === "api-key" &&
-                    authentification.obtentionMethod === "open-webui-oidc-token-exchange"
-            );
-
-            const oidc = await dispatch(
-                privateThunks.getProviderOidc({
-                    providerName,
-                    oidcConfig: authentification.oidcConfig
-                })
-            );
-
-            if (!oidc.isUserLoggedIn) {
-                // Navigates away, the refresh below is for when the user was already
-                // logged in and only the exchanged key had to be renewed.
-                await oidc.login({ doesCurrentHrefRequiresAuth: false });
-            }
-
-            await dispatch(thunks.refreshProvider({ providerName }));
         },
     /** The models the user ticked in a provider's multi select. */
     setSelectedModelIds:
@@ -244,9 +201,9 @@ export const thunks = {
         (...args): void => {
             const { providerName, modelIds } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch] = args;
 
-            const aiProvider = getAiProvider({ rootState: getState(), providerName });
+            const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
             assert(aiProvider !== undefined);
 
@@ -286,13 +243,14 @@ export const thunks = {
         (...args): void => {
             const { defaultModel } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch] = args;
 
             if (defaultModel !== undefined) {
-                const aiProvider = getAiProvider({
-                    rootState: getState(),
-                    providerName: defaultModel.providerName
-                });
+                const aiProvider = dispatch(
+                    privateThunks.getAiProvider({
+                        providerName: defaultModel.providerName
+                    })
+                );
 
                 assert(aiProvider !== undefined);
                 assert(
@@ -317,9 +275,9 @@ export const thunks = {
         async (...args): Promise<void> => {
             const { providerName, apiKey } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch] = args;
 
-            const aiProvider = getAiProvider({ rootState: getState(), providerName });
+            const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
             assert(aiProvider !== undefined);
             assert(aiProvider.origin === "configured by admin");
@@ -439,9 +397,9 @@ export const thunks = {
         async (...args): Promise<void> => {
             const { providerName } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch] = args;
 
-            const aiProvider = getAiProvider({ rootState: getState(), providerName });
+            const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
             assert(aiProvider !== undefined);
             assert(aiProvider.origin === "created by user");
@@ -458,68 +416,22 @@ export const thunks = {
 } satisfies Thunks;
 
 const privateThunks = {
-    /** The provider's own OIDC client, created on first need and then reused. */
-    getProviderOidc:
-        (params: {
-            providerName: string;
-            oidcConfig: {
-                clientId: string;
-                extraQueryParams: string | undefined;
-                scope: string | undefined;
-            };
-        }) =>
-        async (...args): Promise<Oidc> => {
-            const { providerName, oidcConfig } = params;
+    getAiProvider:
+        (params: { providerName: string }) =>
+        (...[, getState]): AiProvider | undefined =>
+            selectors
+                .aiProviders(getState())
+                ?.find(aiProvider => aiProvider.name === params.providerName),
+    /** undefined when the user hasn't provided any key for this provider. */
+    getUserProvidedApiKey:
+        (params: { providerName: string }) =>
+        (...[, getState]): string | undefined => {
+            const apiKey =
+                protectedSelectors.persistedAiConfig(getState()).apiKeyByProviderName[
+                    params.providerName
+                ];
 
-            const [, , rootContext] = args;
-
-            const context = getContext(rootContext);
-
-            use_cached_oidc: {
-                const prOidc = context.prOidcByProviderName.get(providerName);
-
-                if (prOidc === undefined) {
-                    break use_cached_oidc;
-                }
-
-                return prOidc;
-            }
-
-            const prOidc = (async () => {
-                const { createOidc } = await import("core/adapters/oidc");
-
-                const { oidcParams } =
-                    await rootContext.onyxiaApi.getAvailableRegionsAndOidcParams();
-
-                assert(oidcParams !== undefined);
-
-                const { paramsOfBootstrapCore } = rootContext;
-
-                return createOidc({
-                    ...oidcParams,
-                    clientId: oidcConfig.clientId,
-                    extraQueryParams_raw: oidcConfig.extraQueryParams,
-                    scope_spaceSeparated: oidcConfig.scope,
-                    autoLogin: false,
-                    // OpenWebUI validates this token server side and can't present a DPoP proof,
-                    // so it has to remain a regular bearer token.
-                    disableDPoP: true,
-                    transformBeforeRedirectForKeycloakTheme:
-                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                    enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
-                });
-            })();
-
-            context.prOidcByProviderName.set(providerName, prOidc);
-
-            try {
-                return await prOidc;
-            } catch (error) {
-                context.prOidcByProviderName.delete(providerName);
-
-                throw error;
-            }
+            return apiKey === undefined || apiKey === "" ? undefined : apiKey;
         },
     /**
      * Returns the provider's authentication once settled, or undefined when it didn't
@@ -530,9 +442,9 @@ const privateThunks = {
         async (...args): Promise<AiProvider.Auth | undefined> => {
             const { providerName } = params;
 
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore }] = args;
 
-            const aiProvider = getAiProvider({ rootState: getState(), providerName });
+            const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
             if (aiProvider === undefined) {
                 return undefined;
@@ -550,15 +462,14 @@ const privateThunks = {
 
             const { authentification } = aiProvider;
 
-            const apiKey_userProvided = getUserProvidedApiKey({
-                rootState: getState(),
-                providerName
-            });
+            const apiKey_userProvided = dispatch(
+                privateThunks.getUserProvidedApiKey({ providerName })
+            );
 
             if (authentification.obtentionMethod === "user-provided") {
                 const auth: ProviderRuntime["auth"] =
                     apiKey_userProvided === undefined
-                        ? { stateDescription: "authentication required" }
+                        ? { stateDescription: "api-key not provided" }
                         : {
                               stateDescription: "authenticated",
                               apiKey: apiKey_userProvided
@@ -576,36 +487,47 @@ const privateThunks = {
                 })
             );
 
+            // OIDC is already authenticated at this point: `autoLogin` redirects as
+            // needed, so token exchange never transitions through "api-key not provided".
             const auth = await (async (): Promise<ProviderRuntime["auth"]> => {
+                const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+                assert(oidcParams !== undefined);
+
+                const { createOidc, mergeOidcParams } = await import(
+                    "core/adapters/oidc"
+                );
+
+                const oidc = await createOidc({
+                    ...mergeOidcParams({
+                        oidcParams: oidcParams,
+                        oidcParams_partial: authentification.oidcParams
+                    }),
+                    disableDPoP: true,
+                    autoLogin: true,
+                    transformBeforeRedirectForKeycloakTheme:
+                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
+                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
+                    enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                });
+
+                const { accessToken } = await oidc.getTokens();
+
+                let apiKey: string;
+
                 try {
-                    const oidc = await dispatch(
-                        privateThunks.getProviderOidc({
-                            providerName,
-                            oidcConfig: authentification.oidcConfig
-                        })
-                    );
-
-                    if (!oidc.isUserLoggedIn) {
-                        // Not an error: the user just hasn't gone through this provider's
-                        // login flow yet, `logInToProvider` does it on demand.
-                        return { stateDescription: "authentication required" };
-                    }
-
-                    const { accessToken } = await oidc.getTokens();
-
-                    return {
-                        stateDescription: "authenticated",
-                        apiKey: await exchangeOpenWebUiToken({
-                            apiBase: aiProvider.apiBase,
-                            oidcAccessToken: accessToken
-                        })
-                    };
+                    apiKey = await exchangeOpenWebUiToken({
+                        apiBase: aiProvider.apiBase,
+                        oidcAccessToken: accessToken
+                    });
                 } catch {
-                    // The client itself may be what failed, don't cache a broken one.
-                    getContext(rootContext).prOidcByProviderName.delete(providerName);
-
                     return { stateDescription: "error" };
                 }
+
+                return {
+                    stateDescription: "authenticated",
+                    apiKey
+                };
             })();
 
             dispatch(actions.providerAuthChanged({ providerName, auth }));
@@ -617,9 +539,9 @@ const privateThunks = {
         async (...args): Promise<void> => {
             const { providerName, apiKey } = params;
 
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, , rootContext] = args;
 
-            const aiProvider = getAiProvider({ rootState: getState(), providerName });
+            const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
             if (aiProvider === undefined) {
                 return;
@@ -695,7 +617,7 @@ export const protectedThunks = {
     getAiContext:
         () =>
         async (...args): Promise<XOnyxiaContext["ai"]> => {
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, getState] = args;
 
             if (!dispatch(thunks.isAvailable())) {
                 return emptyAiContext;
@@ -733,44 +655,17 @@ export const protectedThunks = {
             }
 
             // A refresh started elsewhere, from the account tab, may still be in flight.
-            await Promise.all(getContext(rootContext).prRefreshByProviderName.values());
+            await Promise.all(globalContext.prRefreshByProviderName.values());
 
             return protectedSelectors.aiContext(getState());
         }
 } satisfies Thunks;
 
-const { getContext } = createUsecaseContextApi(() => ({
+const globalContext = {
     prLoad: id<Promise<void> | undefined>(undefined),
     prRefreshByProviderName: new Map<string, Promise<void>>(),
-    prOidcByProviderName: new Map<string, Promise<Oidc>>(),
     mutex: new Mutex()
-}));
-
-function getAiProvider(params: {
-    rootState: RootState;
-    providerName: string;
-}): AiProvider | undefined {
-    const { rootState, providerName } = params;
-
-    return selectors
-        .aiProviders(rootState)
-        ?.find(aiProvider => aiProvider.name === providerName);
-}
-
-/** undefined when the user hasn't provided any key for this provider. */
-function getUserProvidedApiKey(params: {
-    rootState: RootState;
-    providerName: string;
-}): string | undefined {
-    const { rootState, providerName } = params;
-
-    const apiKey =
-        protectedSelectors.persistedAiConfig(rootState).apiKeyByProviderName[
-            providerName
-        ];
-
-    return apiKey === undefined || apiKey === "" ? undefined : apiKey;
-}
+};
 
 function isAuthenticatedByTokenExchange(aiProvider: AiProvider): boolean {
     if (aiProvider.origin !== "configured by admin") {

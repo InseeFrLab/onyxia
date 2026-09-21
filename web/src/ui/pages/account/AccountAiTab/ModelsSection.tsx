@@ -21,7 +21,7 @@ export const ModelsSection = memo((props: Props) => {
                 value={props.selectedModels}
                 disabled={props.disabled}
                 onChange={(_event, modelIds) => {
-                    void props.onSelectedModelsChange(modelIds);
+                    props.onSelectedModelsChange(modelIds);
                 }}
                 renderInput={params => (
                     <TextField

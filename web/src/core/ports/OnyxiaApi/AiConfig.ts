@@ -3,6 +3,8 @@ import { type LocalizedString, zLocalizedString } from "./Language";
 import { z } from "zod";
 import { assert, type Equals, id } from "tsafe";
 import JSON5 from "json5";
+import type { ApiTypes } from "core/adapters/onyxiaApi/ApiTypes";
+import type { OidcParams_Partial } from "./OidcParams";
 
 type AI_EnvValue_ExpectedShape = {
     disable?: boolean;
@@ -25,12 +27,7 @@ namespace AI_EnvValue_ExpectedShape {
             | {
                   type: "api-key";
                   obtentionMethod: "open-webui-oidc-token-exchange";
-                  allowFallbackToUserProvidedApiKey?: boolean;
-                  oidcConfiguration: {
-                      clientID: string;
-                      extraQueryParams?: string;
-                      scope?: string;
-                  };
+                  oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
               };
         models?: string[] /** When undefined, the models will be fetched from the provider model endpoint */;
     };
@@ -38,6 +35,21 @@ namespace AI_EnvValue_ExpectedShape {
 
 const zAI_EnvValue_ExpectedShape = (() => {
     type TargetType = AI_EnvValue_ExpectedShape;
+
+    const zOidcConfiguration = z.custom<Partial<ApiTypes.OidcConfiguration>>(
+        value =>
+            z
+                .object({
+                    issuerURI: z.string().optional(),
+                    clientID: z.string().min(1).optional(),
+                    extraQueryParams: z.string().optional(),
+                    scope: z.string().optional(),
+                    idleSessionLifetimeInSeconds: z
+                        .union([z.number(), z.string()])
+                        .optional()
+                })
+                .safeParse(value).success
+    );
 
     const zProvider = z.object({
         name: z
@@ -62,12 +74,7 @@ const zAI_EnvValue_ExpectedShape = (() => {
             z.object({
                 type: z.literal("api-key"),
                 obtentionMethod: z.literal("open-webui-oidc-token-exchange"),
-                allowFallbackToUserProvidedApiKey: z.boolean().optional(),
-                oidcConfiguration: z.object({
-                    clientID: z.string().min(1),
-                    extraQueryParams: z.string().optional(),
-                    scope: z.string().optional()
-                })
+                oidcConfiguration: zOidcConfiguration.optional()
             })
         ]),
         models: z.array(z.string().min(1)).optional()
@@ -88,7 +95,7 @@ const zAI_EnvValue_ExpectedShape = (() => {
 export type AiConfig = {
     disable: boolean;
     disallowUserToAddProviders: boolean;
-    providers: ArrayOrNot<AiConfig.Provider>;
+    providers: AiConfig.Provider[];
 };
 
 export namespace AiConfig {
@@ -106,11 +113,7 @@ export namespace AiConfig {
             | {
                   type: "api-key";
                   obtentionMethod: "open-webui-oidc-token-exchange";
-                  oidcConfig: {
-                      clientId: string;
-                      extraQueryParams: string | undefined;
-                      scope: string | undefined;
-                  };
+                  oidcParams: OidcParams_Partial;
               };
         /** When undefined, the models will be fetched from the provider model endpoint */
         models: string[] | undefined;
@@ -174,15 +177,34 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
                         : {
                               type: "api-key",
                               obtentionMethod: "open-webui-oidc-token-exchange",
-                              oidcConfig: {
+                              oidcParams: id<OidcParams_Partial>({
+                                  issuerUri:
+                                      provider.authentification.oidcConfiguration
+                                          ?.issuerURI,
                                   clientId:
                                       provider.authentification.oidcConfiguration
-                                          .clientID,
-                                  extraQueryParams:
+                                          ?.clientID,
+                                  extraQueryParams_raw:
                                       provider.authentification.oidcConfiguration
-                                          .extraQueryParams,
-                                  scope: provider.authentification.oidcConfiguration.scope
-                              }
+                                          ?.extraQueryParams,
+                                  scope_spaceSeparated:
+                                      provider.authentification.oidcConfiguration?.scope,
+                                  idleSessionLifetimeInSeconds: (() => {
+                                      const value =
+                                          provider.authentification.oidcConfiguration
+                                              ?.idleSessionLifetimeInSeconds;
+
+                                      if (value === "" || value === undefined) {
+                                          return undefined;
+                                      }
+
+                                      if (typeof value === "number") {
+                                          return value;
+                                      }
+
+                                      return parseInt(value);
+                                  })()
+                              })
                           }
             })
         )

@@ -11,7 +11,14 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock("core/rootContext", () => ({ getRootContext: () => mocks.context }));
 vi.mock("core/adapters/oidc", () => ({
-    createOidc: async () => ({ isUserLoggedIn: true, getTokens: mocks.getTokens })
+    createOidc: async () => ({ isUserLoggedIn: true, getTokens: mocks.getTokens }),
+    mergeOidcParams: ({
+        oidcParams,
+        oidcParams_partial
+    }: {
+        oidcParams: Record<string, unknown>;
+        oidcParams_partial: Record<string, unknown>;
+    }) => ({ ...oidcParams, ...oidcParams_partial })
 }));
 vi.mock("core/usecases/userConfigs", () => ({
     selectors: {
@@ -55,10 +62,12 @@ function setup() {
                     authentification: {
                         type: "api-key",
                         obtentionMethod: "open-webui-oidc-token-exchange",
-                        oidcConfig: {
+                        oidcParams: {
+                            issuerUri: undefined,
                             clientId: "bridge",
-                            scope: undefined,
-                            extraQueryParams: undefined
+                            extraQueryParams_raw: undefined,
+                            scope_spaceSeparated: undefined,
+                            idleSessionLifetimeInSeconds: undefined
                         }
                     }
                 },
@@ -169,7 +178,7 @@ it("creates a provider through the current form controller and selects its defau
     await core.functions.aiAccountUiController.setDefaultModel({ model: "Personal/a" });
     expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
         defaultModel: "Personal/a",
-        listModels: ["Personal/a"]
+        models: ["Personal/a"]
     });
 });
 

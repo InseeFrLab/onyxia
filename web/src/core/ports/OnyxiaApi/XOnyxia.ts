@@ -200,7 +200,7 @@ export type XOnyxiaContext = {
     };
     ai: {
         enabled: boolean;
-        listModels: string[]; // <providerName>/<model>[]
+        models: string[]; // <providerName>/<model>[]
         defaultModel: string | undefined; // <providerName>/<model>
         providers: {
             name: string; //Needs to be unique

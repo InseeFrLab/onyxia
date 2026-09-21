@@ -48,7 +48,7 @@ describe(symToStr({ createAiContext }), () => {
 
         expect(got).toStrictEqual({
             enabled: true,
-            listModels: ["Corporate/gpt-5", "Corporate/meta-llama/Llama-3"],
+            models: ["Corporate/gpt-5", "Corporate/meta-llama/Llama-3"],
             defaultModel: undefined,
             providers: [
                 {
@@ -96,7 +96,7 @@ describe(symToStr({ createAiContext }), () => {
             aiProviders: [
                 createConfiguredAiProvider({
                     name: "Needs a key",
-                    auth: { stateDescription: "authentication required" },
+                    auth: { stateDescription: "api-key not provided" },
                     selectedModelIds: ["gpt-5"]
                 }),
                 createConfiguredAiProvider({
@@ -109,7 +109,7 @@ describe(symToStr({ createAiContext }), () => {
         });
 
         expect(got.enabled).toBe(false);
-        expect(got.listModels).toStrictEqual([]);
+        expect(got.models).toStrictEqual([]);
     });
 
     it("leaves out a user created provider whose name the admin took", () => {
@@ -128,7 +128,7 @@ describe(symToStr({ createAiContext }), () => {
             defaultModel: undefined
         });
 
-        expect(got.listModels).toStrictEqual(["Corporate/gpt-5"]);
+        expect(got.models).toStrictEqual(["Corporate/gpt-5"]);
     });
 
     it("flattens the default model", () => {
@@ -150,7 +150,7 @@ describe(symToStr({ createAiContext }), () => {
             aiProviders: [
                 createConfiguredAiProvider({
                     name: "Needs a key",
-                    auth: { stateDescription: "authentication required" },
+                    auth: { stateDescription: "api-key not provided" },
                     selectedModelIds: ["gpt-5"]
                 })
             ],

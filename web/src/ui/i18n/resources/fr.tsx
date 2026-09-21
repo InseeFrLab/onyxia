@@ -105,8 +105,7 @@ export const translations: Translations<"fr"> = {
         "save key": "Enregistrer la clé",
         "save failed": "Impossible d’enregistrer les modifications. Réessayez.",
         retry: "Réessayer",
-        "authentication required":
-            "Une authentification est nécessaire. Connectez-vous au provider ou renseignez une clé API si cela est autorisé.",
+        "api-key not provided": "Une clé API est nécessaire pour ce provider.",
         "selected models": "Modèles présélectionnés",
         "credentials section helper": ({ webUiUrl }) => (
             <>

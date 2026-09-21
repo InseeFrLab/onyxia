@@ -3,7 +3,7 @@ import { stringifyModel, type AiProvider } from "./aiProviders";
 
 export const emptyAiContext: XOnyxiaContext["ai"] = {
     enabled: false,
-    listModels: [],
+    models: [],
     defaultModel: undefined,
     providers: []
 };
@@ -48,7 +48,7 @@ export function createAiContext(params: {
 
     return {
         enabled: listModels.length > 0,
-        listModels,
+        models: listModels,
         defaultModel:
             defaultModel_str !== undefined && listModels.includes(defaultModel_str)
                 ? defaultModel_str

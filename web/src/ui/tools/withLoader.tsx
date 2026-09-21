@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType, type FC } from "react";
+import { useEffect, useState, type ComponentType, type FC, Suspense } from "react";
 import { use } from "./use";
 import { assert } from "tsafe";
 
@@ -34,12 +34,17 @@ export function withLoader<Props extends Record<string, unknown>>(params: {
             };
         }, []);
 
+        assert(FallbackComponent !== undefined);
+
         if (!isLoaded) {
-            assert(FallbackComponent !== undefined);
             return <FallbackComponent {...props} />;
         }
 
-        return <Component {...props} />;
+        return (
+            <Suspense fallback={<FallbackComponent {...props} />}>
+                <Component {...props} />
+            </Suspense>
+        );
     }
 
     function ComponentWithLoader_Suspense(props: Props) {
