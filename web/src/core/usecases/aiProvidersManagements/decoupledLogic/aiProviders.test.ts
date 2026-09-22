@@ -3,10 +3,11 @@ import { symToStr } from "tsafe/symToStr";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import {
     createAiProviders,
+    createAiProvidersWithRuntime,
     getDefaultModel,
     parseModel,
-    type AiProvider,
-    type ProviderRuntime
+    type AiProviderWithRuntime,
+    type AiProviderRuntime
 } from "./aiProviders";
 import {
     createEmptyPersistedAiConfig,
@@ -34,14 +35,28 @@ function createConfiguredProvider(
     };
 }
 
-const loadedModels: ProviderRuntime["models"] = {
+const loadedModels: AiProviderRuntime["models"] = {
     stateDescription: "loaded",
     availableModels: [{ id: "gpt-5" }, { id: "meta-llama/Llama-3" }]
 };
 
+function createProviders(
+    params: Parameters<typeof createAiProviders>[0] & {
+        runtimeByProviderName: Record<string, AiProviderRuntime>;
+    }
+) {
+    const { runtimeByProviderName, ...providerParams } = params;
+    const persistedAiConfig = providerParams.persistedAiConfig;
+    return createAiProvidersWithRuntime({
+        aiProviders: createAiProviders(providerParams),
+        runtimeByProviderName,
+        persistedAiConfig
+    });
+}
+
 describe(symToStr({ createAiProviders }), () => {
     it("needs no fetch when the instance config pins the model list", () => {
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([
                 createConfiguredProvider({ name: "Corporate", models: ["gpt-5"] })
             ]),
@@ -56,7 +71,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("considers a provider that expects no key as authenticated by definition", () => {
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: createEmptyPersistedAiConfig(),
             runtimeByProviderName: {}
@@ -66,7 +81,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("reflects the runtime for a provider that has a key to obtain", () => {
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([
                 createConfiguredProvider({
                     name: "Corporate",
@@ -104,7 +119,7 @@ describe(symToStr({ createAiProviders }), () => {
             apiKeyByProviderName: { "My LLM": "key of my llm" }
         };
 
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([]),
             persistedAiConfig,
             runtimeByProviderName: {}
@@ -117,7 +132,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("expects no authentication from a user created provider without a key", () => {
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
@@ -136,7 +151,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("filters the selection against what the provider actually exposes", () => {
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
@@ -156,7 +171,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("preserves the selection while the models are being fetched", () => {
-        const [aiProvider] = createAiProviders({
+        const [aiProvider] = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
@@ -174,7 +189,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("flags a user created provider whose name the admin later took", () => {
-        const aiProviders = createAiProviders({
+        const aiProviders = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
@@ -208,7 +223,7 @@ describe(symToStr({ createAiProviders }), () => {
     });
 
     it("lists the admin configured providers before the user created ones", () => {
-        const aiProviders = createAiProviders({
+        const aiProviders = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
@@ -231,7 +246,7 @@ describe(symToStr({ createAiProviders }), () => {
 });
 
 describe(symToStr({ getDefaultModel }), () => {
-    const aiProviders: AiProvider[] = [
+    const aiProviders: AiProviderWithRuntime[] = [
         {
             origin: "configured by admin",
             name: "Corporate",
@@ -239,6 +254,7 @@ describe(symToStr({ getDefaultModel }), () => {
             apiBase: "https://corporate.example.com/v1",
             description: undefined,
             authentification: { type: "none" },
+            modelIds: undefined,
             auth: { stateDescription: "not required" },
             models: loadedModels,
             selectedModelIds: ["gpt-5"]

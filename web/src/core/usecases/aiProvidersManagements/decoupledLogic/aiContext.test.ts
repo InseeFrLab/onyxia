@@ -1,17 +1,20 @@
 import { describe, it, expect } from "vitest";
 import { symToStr } from "tsafe/symToStr";
 import { createAiContext } from "./aiContext";
-import type { AiProvider } from "./aiProviders";
+import type { AiProviderWithRuntime } from "./aiProviders";
 
 function createConfiguredAiProvider(
-    params: Partial<AiProvider.ConfiguredByAdmin> & { name: string }
-): AiProvider.ConfiguredByAdmin {
+    params: Partial<
+        Omit<Extract<AiProviderWithRuntime, { origin: "configured by admin" }>, "origin">
+    > & { name: string }
+): Extract<AiProviderWithRuntime, { origin: "configured by admin" }> {
     return {
         origin: "configured by admin",
         providerType: "openai-compatible",
         apiBase: "https://corporate.example.com/v1",
         description: undefined,
         authentification: { type: "none" },
+        modelIds: undefined,
         auth: { stateDescription: "not required" },
         models: { stateDescription: "loaded", availableModels: [] },
         selectedModelIds: [],
@@ -20,8 +23,10 @@ function createConfiguredAiProvider(
 }
 
 function createUserAiProvider(
-    params: Partial<AiProvider.CreatedByUser> & { name: string }
-): AiProvider.CreatedByUser {
+    params: Partial<
+        Omit<Extract<AiProviderWithRuntime, { origin: "created by user" }>, "origin">
+    > & { name: string }
+): Extract<AiProviderWithRuntime, { origin: "created by user" }> {
     return {
         origin: "created by user",
         providerType: "mistral",

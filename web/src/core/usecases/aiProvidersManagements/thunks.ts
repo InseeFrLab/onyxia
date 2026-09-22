@@ -11,8 +11,8 @@ import { actions, name } from "./state";
 import { protectedSelectors, selectors } from "./selectors";
 import {
     getConfiguredProviders,
-    type AiProvider,
-    type ProviderRuntime
+    type AiProviderRuntime,
+    type AiProviderWithRuntime
 } from "./decoupledLogic/aiProviders";
 import { emptyAiContext } from "./decoupledLogic/aiContext";
 import {
@@ -418,7 +418,7 @@ export const thunks = {
 const privateThunks = {
     getAiProvider:
         (params: { providerName: string }) =>
-        (...[, getState]): AiProvider | undefined =>
+        (...[, getState]): AiProviderWithRuntime | undefined =>
             selectors
                 .aiProviders(getState())
                 ?.find(aiProvider => aiProvider.name === params.providerName),
@@ -439,7 +439,7 @@ const privateThunks = {
      */
     refreshProviderAuth:
         (params: { providerName: string }) =>
-        async (...args): Promise<AiProvider.Auth | undefined> => {
+        async (...args): Promise<AiProviderRuntime["auth"] | undefined> => {
             const { providerName } = params;
 
             const [dispatch, , { onyxiaApi, paramsOfBootstrapCore }] = args;
@@ -467,7 +467,7 @@ const privateThunks = {
             );
 
             if (authentification.obtentionMethod === "user-provided") {
-                const auth: ProviderRuntime["auth"] =
+                const auth: AiProviderRuntime["auth"] =
                     apiKey_userProvided === undefined
                         ? { stateDescription: "api-key not provided" }
                         : {
@@ -489,7 +489,7 @@ const privateThunks = {
 
             // OIDC is already authenticated at this point: `autoLogin` redirects as
             // needed, so token exchange never transitions through "api-key not provided".
-            const auth = await (async (): Promise<ProviderRuntime["auth"]> => {
+            const auth = await (async (): Promise<AiProviderRuntime["auth"]> => {
                 const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
                 assert(oidcParams !== undefined);
@@ -667,7 +667,7 @@ const globalContext = {
     mutex: new Mutex()
 };
 
-function isAuthenticatedByTokenExchange(aiProvider: AiProvider): boolean {
+function isAuthenticatedByTokenExchange(aiProvider: AiProviderWithRuntime): boolean {
     if (aiProvider.origin !== "configured by admin") {
         return false;
     }

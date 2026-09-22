@@ -3,9 +3,8 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import type { AiModel } from "core/tools/fetchAiModels";
 import {
-    createInitialProviderRuntime,
-    type AiProvider,
-    type ProviderRuntime
+    createInitialAiProviderRuntime,
+    type AiProviderRuntime
 } from "./decoupledLogic/aiProviders";
 import type { PersistedAiConfig } from "./decoupledLogic/persistedAiConfig";
 
@@ -26,7 +25,7 @@ export declare namespace State {
     export type Ready = {
         stateDescription: "ready";
         /** Keyed by provider name, absent until a provider has been talked to. */
-        runtimeByProviderName: Record<string, ProviderRuntime>;
+        runtimeByProviderName: Record<string, AiProviderRuntime>;
         unsavedConfig: PersistedAiConfig | undefined;
         configSaveState: "idle" | "pending" | "error";
     };
@@ -68,7 +67,7 @@ export const { reducer, actions } = createUsecaseActions({
             state,
             {
                 payload
-            }: { payload: { providerName: string; auth: ProviderRuntime["auth"] } }
+            }: { payload: { providerName: string; auth: AiProviderRuntime["auth"] } }
         ) => {
             const { providerName, auth } = payload;
 
@@ -78,7 +77,9 @@ export const { reducer, actions } = createUsecaseActions({
         },
         providerModelsChanged: (
             state,
-            { payload }: { payload: { providerName: string; models: AiProvider.Models } }
+            {
+                payload
+            }: { payload: { providerName: string; models: AiProviderRuntime["models"] } }
         ) => {
             const { providerName, models } = payload;
 
@@ -122,8 +123,9 @@ export const { reducer, actions } = createUsecaseActions({
 function getOrCreateRuntime(params: {
     state: State.Ready;
     providerName: string;
-}): ProviderRuntime {
+}): AiProviderRuntime {
     const { state, providerName } = params;
 
-    return (state.runtimeByProviderName[providerName] ??= createInitialProviderRuntime());
+    return (state.runtimeByProviderName[providerName] ??=
+        createInitialAiProviderRuntime());
 }

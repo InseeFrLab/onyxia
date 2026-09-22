@@ -11,11 +11,9 @@ export namespace AiProvider {
         name: string;
         providerType: AiConfig.SupportedAiProviderType;
         apiBase: string;
-        auth: Auth;
-        models: Models;
         /**
          * What the user ticked in the models multi select. Always a subset of the
-         * available models once they are loaded.
+         * available models once the runtime has loaded them.
          */
         selectedModelIds: string[];
     };
@@ -25,6 +23,8 @@ export namespace AiProvider {
         origin: "configured by admin";
         description: LocalizedString | undefined;
         authentification: AiConfig.Provider["authentification"];
+        /** Model ids pinned by the instance configuration, when provided. */
+        modelIds: string[] | undefined;
     };
 
     /** Added by the user from the account tab, stored in their user configs. */
@@ -37,9 +37,16 @@ export namespace AiProvider {
          */
         isNameConflicting: boolean;
     };
+}
 
+/** Everything about a provider that can only be known by talking to it. */
+export type AiProviderRuntime = {
+    auth: AiProviderRuntime.Auth;
+    models: AiProviderRuntime.Models;
+};
+
+export namespace AiProviderRuntime {
     export type Auth =
-        /** The provider accepts unauthenticated calls. */
         | { stateDescription: "not required" }
         | { stateDescription: "not loaded" }
         | { stateDescription: "fetching" }
@@ -55,19 +62,13 @@ export namespace AiProvider {
         | { stateDescription: "loaded"; availableModels: AiModel[] };
 }
 
-/**
- * Everything about a provider that can only be known by talking to it: the API key
- * obtained by token exchange and the model list. This is the only part of the providers
- * that is held in the state, the rest is derived from the instance config and from the
- * user's persisted config.
- */
-export type ProviderRuntime = {
-    /** "not required" is a property of the config, it is derived and never stored. */
-    auth: Exclude<AiProvider.Auth, { stateDescription: "not required" }>;
-    models: AiProvider.Models;
+/** The representation consumed by the UI and the launch context. */
+export type AiProviderWithRuntime = AiProvider & {
+    auth: AiProviderRuntime.Auth;
+    models: AiProviderRuntime.Models;
 };
 
-export function createInitialProviderRuntime(): ProviderRuntime {
+export function createInitialAiProviderRuntime(): AiProviderRuntime {
     return {
         auth: { stateDescription: "not loaded" },
         models: { stateDescription: "not loaded" }
@@ -77,49 +78,11 @@ export function createInitialProviderRuntime(): ProviderRuntime {
 export function createAiProviders(params: {
     aiConfig: AiConfig;
     persistedAiConfig: PersistedAiConfig;
-    runtimeByProviderName: Record<string, ProviderRuntime>;
 }): AiProvider[] {
-    const { aiConfig, persistedAiConfig, runtimeByProviderName } = params;
-
-    const getRuntime = (providerName: string): ProviderRuntime =>
-        runtimeByProviderName[providerName] ?? createInitialProviderRuntime();
-
-    const getSelectedModelIds = (params: {
-        providerName: string;
-        models: AiProvider.Models;
-    }): string[] => {
-        const { providerName, models } = params;
-
-        const selectedModelIds =
-            persistedAiConfig.selectedModelIdsByProviderName[providerName] ?? [];
-
-        // While the models are being fetched we have nothing to check the selection
-        // against, dropping it then would silently clear what the user had ticked.
-        if (models.stateDescription !== "loaded") {
-            return selectedModelIds;
-        }
-
-        return selectedModelIds.filter(modelId =>
-            models.availableModels.some(availableModel => availableModel.id === modelId)
-        );
-    };
+    const { aiConfig, persistedAiConfig } = params;
 
     const aiProviders_configuredByAdmin = getConfiguredProviders({ aiConfig }).map(
         (provider_config): AiProvider.ConfiguredByAdmin => {
-            const runtime = getRuntime(provider_config.name);
-
-            // An explicit model list in the instance config means there is nothing to
-            // fetch: the provider is already at its final state.
-            const models: AiProvider.Models =
-                provider_config.models === undefined
-                    ? runtime.models
-                    : {
-                          stateDescription: "loaded",
-                          availableModels: provider_config.models.map(modelId => ({
-                              id: modelId
-                          }))
-                      };
-
             return {
                 origin: "configured by admin",
                 name: provider_config.name,
@@ -127,15 +90,11 @@ export function createAiProviders(params: {
                 apiBase: provider_config.apiBase,
                 description: provider_config.description,
                 authentification: provider_config.authentification,
-                auth:
-                    provider_config.authentification.type === "none"
-                        ? { stateDescription: "not required" }
-                        : runtime.auth,
-                models,
-                selectedModelIds: getSelectedModelIds({
-                    providerName: provider_config.name,
-                    models
-                })
+                modelIds: provider_config.models,
+                selectedModelIds:
+                    persistedAiConfig.selectedModelIdsByProviderName[
+                        provider_config.name
+                    ] ?? []
             };
         }
     );
@@ -146,10 +105,6 @@ export function createAiProviders(params: {
 
     const aiProviders_createdByUser = persistedAiConfig.customProviders.map(
         (customProvider): AiProvider.CreatedByUser => {
-            const { models } = getRuntime(customProvider.name);
-
-            const apiKey = persistedAiConfig.apiKeyByProviderName[customProvider.name];
-
             return {
                 origin: "created by user",
                 name: customProvider.name,
@@ -158,22 +113,61 @@ export function createAiProviders(params: {
                 isNameConflicting: providerNames_configuredByAdmin.has(
                     customProvider.name
                 ),
-                // A user created provider is authenticated by the key it was created
-                // with, there is nothing asynchronous about it.
-                auth:
-                    apiKey === undefined || apiKey === ""
-                        ? { stateDescription: "not required" }
-                        : { stateDescription: "authenticated", apiKey },
-                models,
-                selectedModelIds: getSelectedModelIds({
-                    providerName: customProvider.name,
-                    models
-                })
+                selectedModelIds:
+                    persistedAiConfig.selectedModelIdsByProviderName[
+                        customProvider.name
+                    ] ?? []
             };
         }
     );
 
     return [...aiProviders_configuredByAdmin, ...aiProviders_createdByUser];
+}
+
+/** Combines persisted provider definitions with their volatile execution state. */
+export function createAiProvidersWithRuntime(params: {
+    aiProviders: AiProvider[];
+    runtimeByProviderName: Record<string, AiProviderRuntime>;
+    persistedAiConfig: PersistedAiConfig;
+}): AiProviderWithRuntime[] {
+    const { aiProviders, runtimeByProviderName, persistedAiConfig } = params;
+
+    return aiProviders.map(aiProvider => {
+        const runtime =
+            runtimeByProviderName[aiProvider.name] ?? createInitialAiProviderRuntime();
+        const models =
+            aiProvider.origin === "configured by admin" &&
+            aiProvider.modelIds !== undefined
+                ? {
+                      stateDescription: "loaded" as const,
+                      availableModels: aiProvider.modelIds.map(id => ({ id }))
+                  }
+                : runtime.models;
+        const auth = (() => {
+            if (aiProvider.origin === "configured by admin") {
+                return aiProvider.authentification.type === "none"
+                    ? ({ stateDescription: "not required" } as const)
+                    : runtime.auth;
+            }
+
+            const apiKey = persistedAiConfig.apiKeyByProviderName[aiProvider.name];
+            return apiKey === undefined || apiKey === ""
+                ? ({ stateDescription: "not required" } as const)
+                : ({ stateDescription: "authenticated", apiKey } as const);
+        })();
+
+        return {
+            ...aiProvider,
+            auth,
+            models,
+            selectedModelIds:
+                models.stateDescription !== "loaded"
+                    ? aiProvider.selectedModelIds
+                    : aiProvider.selectedModelIds.filter(modelId =>
+                          models.availableModels.some(model => model.id === modelId)
+                      )
+        };
+    });
 }
 
 /** The instance config accepts a single provider as well as an array of them. */

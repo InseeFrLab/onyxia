@@ -1,5 +1,5 @@
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import { stringifyModel, type AiProvider } from "./aiProviders";
+import { stringifyModel, type AiProviderWithRuntime } from "./aiProviders";
 
 export const emptyAiContext: XOnyxiaContext["ai"] = {
     enabled: false,
@@ -10,7 +10,7 @@ export const emptyAiContext: XOnyxiaContext["ai"] = {
 
 /** Maps the providers onto the shape the launch context (`.ai`) is contracted to have. */
 export function createAiContext(params: {
-    aiProviders: AiProvider[];
+    aiProviders: AiProviderWithRuntime[];
     defaultModel: { providerName: string; modelId: string } | undefined;
 }): XOnyxiaContext["ai"] {
     const { aiProviders, defaultModel } = params;

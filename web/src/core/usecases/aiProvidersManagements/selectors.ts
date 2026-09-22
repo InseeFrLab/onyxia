@@ -5,8 +5,10 @@ import * as userConfigs from "core/usecases/userConfigs";
 import { name } from "./state";
 import {
     createAiProviders,
+    createAiProvidersWithRuntime,
     getDefaultModel,
-    type AiProvider
+    type AiProvider,
+    type AiProviderWithRuntime
 } from "./decoupledLogic/aiProviders";
 import {
     createEmptyPersistedAiConfig,
@@ -40,18 +42,38 @@ const persistedAiConfig = createSelector(
 );
 
 /** undefined until the use case has been loaded. */
-const aiProviders = createSelector(
+const aiProviders_withoutRuntime = createSelector(
     persistedAiConfig,
-    createSelector(state, state =>
-        state.stateDescription !== "ready" ? undefined : state.runtimeByProviderName
-    ),
-    (persistedAiConfig, runtimeByProviderName): AiProvider[] | undefined =>
-        runtimeByProviderName === undefined
+    stateDescription,
+    (persistedAiConfig, stateDescription): AiProvider[] | undefined =>
+        stateDescription !== "ready"
             ? undefined
             : createAiProviders({
                   aiConfig: getRootContext().aiConfig,
-                  persistedAiConfig,
-                  runtimeByProviderName
+                  persistedAiConfig
+              })
+);
+
+const aiProviderRuntimes = createSelector(state, state =>
+    state.stateDescription === "ready" ? state.runtimeByProviderName : undefined
+);
+
+/** Providers enriched at read time with their volatile runtime state. */
+const aiProviders = createSelector(
+    aiProviders_withoutRuntime,
+    aiProviderRuntimes,
+    persistedAiConfig,
+    (
+        aiProviders,
+        runtimeByProviderName,
+        persistedAiConfig
+    ): AiProviderWithRuntime[] | undefined =>
+        aiProviders === undefined || runtimeByProviderName === undefined
+            ? undefined
+            : createAiProvidersWithRuntime({
+                  aiProviders,
+                  runtimeByProviderName,
+                  persistedAiConfig
               })
 );
 
