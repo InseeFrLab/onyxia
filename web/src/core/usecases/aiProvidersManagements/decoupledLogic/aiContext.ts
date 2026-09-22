@@ -35,7 +35,7 @@ export function createAiContext(params: {
         }
     });
 
-    const listModels = aiProviders_usable
+    const models = aiProviders_usable
         .map(aiProvider =>
             aiProvider.selectedModelIds.map(modelId =>
                 stringifyModel({ providerName: aiProvider.name, modelId })
@@ -47,10 +47,10 @@ export function createAiContext(params: {
         defaultModel === undefined ? undefined : stringifyModel(defaultModel);
 
     return {
-        enabled: listModels.length > 0,
-        models: listModels,
+        enabled: models.length > 0,
+        models,
         defaultModel:
-            defaultModel_str !== undefined && listModels.includes(defaultModel_str)
+            defaultModel_str !== undefined && models.includes(defaultModel_str)
                 ? defaultModel_str
                 : undefined,
         providers: aiProviders_usable.map(aiProvider => ({
