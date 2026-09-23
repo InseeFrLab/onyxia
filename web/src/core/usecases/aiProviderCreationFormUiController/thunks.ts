@@ -32,7 +32,8 @@ export const thunks = {
                             apiBase: "",
                             apiKey: ""
                         },
-                        connectionTest: { stateDescription: "not tested" }
+                        connectionTest: { stateDescription: "not tested" },
+                        selectedModelIds_draft: []
                     })
                 );
 
@@ -67,7 +68,8 @@ export const thunks = {
                                   stateDescription: "succeeded",
                                   availableModels: aiProvider.models.availableModels
                               }
-                            : { stateDescription: "not tested" }
+                            : { stateDescription: "not tested" },
+                    selectedModelIds_draft: aiProvider.selectedModelIds
                 })
             );
         },
@@ -146,6 +148,40 @@ export const thunks = {
                 );
             }
         },
+    changeSelectedModelIds:
+        (params: { selectedModelIds: string[] }) =>
+        (...args): void => {
+            const { selectedModelIds } = params;
+
+            const [dispatch, getState] = args;
+
+            const form = selectors.main(getState());
+
+            if (!form.isOpen || form.isSubmitting) {
+                return;
+            }
+
+            const { connectionTest } = form;
+
+            assert(
+                connectionTest.stateDescription === "succeeded",
+                "models can only be selected once the connection test listed them"
+            );
+            assert(
+                selectedModelIds.every(modelId =>
+                    connectionTest.availableModels.some(
+                        availableModel => availableModel.id === modelId
+                    )
+                ),
+                "a model that the provider doesn't expose can't be selected"
+            );
+
+            dispatch(
+                actions.selectedModelIdsChanged({
+                    selectedModelIds: [...new Set(selectedModelIds)]
+                })
+            );
+        },
     testConnection:
         () =>
         async (...args): Promise<void> => {
@@ -201,18 +237,20 @@ export const thunks = {
                 return;
             }
 
-            const { formValues, connectionTest } = form;
+            const { formValues, connectionTest, selectedModelIds_draft } = form;
             const { providerType } = formValues;
 
             assert(providerType !== undefined);
 
             dispatch(actions.submissionStarted());
 
+            const providerName = formValues.name.trim();
+
             try {
                 await dispatch(
                     aiProvidersManagements.thunks.createOrUpdateUserProvider({
                         providerName_current: form.providerName_current,
-                        providerName: formValues.name.trim(),
+                        providerName,
                         providerType,
                         apiBase: formValues.apiBase.trim().replace(/\/+$/, ""),
                         apiKey: formValues.apiKey.trim(),
@@ -226,6 +264,16 @@ export const thunks = {
                 dispatch(actions.submissionFailed());
 
                 return;
+            }
+
+            // The models can only be selected when the provider listed them
+            if (connectionTest.stateDescription === "succeeded") {
+                dispatch(
+                    aiProvidersManagements.thunks.setSelectedModelIds({
+                        providerName,
+                        modelIds: selectedModelIds_draft
+                    })
+                );
             }
 
             dispatch(actions.submissionSucceeded());

@@ -42,21 +42,16 @@ export function SideDialog(props: {
                 aria-label={typeof title === "string" ? title : undefined}
             >
                 <div className={classes.header}>
-                    <div className={classes.titleRow}>
-                        <Text typo="section heading" className={classes.title}>
-                            {title}
-                        </Text>
-                        <IconButton
-                            className={classes.closeButton}
-                            size="default"
-                            icon={getIconUrlByName("Close")}
-                            aria-label={closeLabel}
-                            onClick={onClose}
-                        />
-                    </div>
-                    <div className={classes.dividerWrapper}>
-                        <div className={classes.divider} />
-                    </div>
+                    <Text typo="section heading" className={classes.title}>
+                        {title}
+                    </Text>
+                    <IconButton
+                        className={classes.closeButton}
+                        size="default"
+                        icon={getIconUrlByName("Close")}
+                        aria-label={closeLabel}
+                        onClick={onClose}
+                    />
                 </div>
 
                 <div className={classes.childrenWrapper}>{children}</div>
@@ -118,13 +113,9 @@ const useStyles = tss.withName({ SideDialog }).create(({ theme }) => ({
     header: {
         flex: "none",
         display: "flex",
-        flexDirection: "column"
-    },
-    titleRow: {
-        display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 10
+        gap: theme.spacing(2)
     },
     title: {
         flex: 1,
@@ -134,13 +125,6 @@ const useStyles = tss.withName({ SideDialog }).create(({ theme }) => ({
     closeButton: {
         flex: "none",
         padding: 0
-    },
-    dividerWrapper: {
-        padding: `${theme.spacing(3)}px 0`
-    },
-    divider: {
-        height: 1,
-        backgroundColor: theme.colors.useCases.typography.textSecondary
     },
     childrenWrapper: {
         flex: 1,

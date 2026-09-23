@@ -57,7 +57,7 @@ function setup() {
                     name: "Exchange",
                     providerType: "openai-compatible",
                     apiBase: "https://example.com/api",
-                    description: undefined,
+                    documentation: undefined,
                     models: undefined,
                     authentification: {
                         type: "api-key",
@@ -75,7 +75,7 @@ function setup() {
                     name: "Public",
                     providerType: "openai-compatible",
                     apiBase: "https://public.example/v1",
-                    description: undefined,
+                    documentation: undefined,
                     models: ["a"],
                     authentification: { type: "none" }
                 }

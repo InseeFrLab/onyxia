@@ -4,7 +4,7 @@ import { memo, type FormEventHandler, useState } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { CredentialsSection, ProviderSection, VerificationSection } from "./FormSections";
-import { SideDialog } from "./SideDialog";
+import { SideDialog } from "../../shared/SideDialog";
 import type { ViewProps } from "./types";
 
 export const CustomProviderFormDialogView = memo((props: ViewProps) => {
@@ -12,6 +12,7 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
         isEditing,
         values,
         test,
+        selectedModels,
         canSave,
         canTest,
         supportedProtocols,
@@ -19,6 +20,7 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
         onFieldChange,
         onProtocolChange,
         onTest,
+        onSelectedModelsChange,
         onSave,
         hasSubmissionError,
         nameIsValid,
@@ -78,7 +80,13 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                         }
                     />
 
-                    <VerificationSection test={test} canTest={canTest} onTest={onTest} />
+                    <VerificationSection
+                        test={test}
+                        canTest={canTest}
+                        onTest={onTest}
+                        selectedModels={selectedModels}
+                        onSelectedModelsChange={onSelectedModelsChange}
+                    />
                     {hasSubmissionError && (
                         <Alert severity="error">{t("submission error")}</Alert>
                     )}
@@ -125,7 +133,8 @@ const useStyles = tss.withName({ CustomProviderFormDialogView }).create(({ theme
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(4)
+        gap: theme.spacing(4),
+        paddingBottom: theme.spacing(6)
     },
     footer: {
         flex: "none",

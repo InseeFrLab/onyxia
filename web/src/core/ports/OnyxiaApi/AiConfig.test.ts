@@ -90,11 +90,63 @@ describe("AI environment configuration", () => {
             [{ models: [] }]
         );
     });
+    it("accepts a logo url, or one per theme", () => {
+        const logoUrl_themed = {
+            light: "https://example.com/logo-light.svg",
+            dark: "https://example.com/logo-dark.svg"
+        };
+
+        expect(
+            parse({
+                providers: [
+                    { ...provider, name: "A", logoUrl: "https://example.com/logo.png" },
+                    { ...provider, name: "B", logoUrl: logoUrl_themed },
+                    { ...provider, name: "C" }
+                ]
+            }).providers.map(({ logoUrl }) => logoUrl)
+        ).toStrictEqual(["https://example.com/logo.png", logoUrl_themed, undefined]);
+    });
+    it("accepts a documentation, the links being optional", () => {
+        const link = {
+            label: { en: "Read more", fr: "En savoir plus" },
+            url: "https://docs.example.com"
+        };
+
+        expect(
+            parse({
+                providers: [
+                    {
+                        ...provider,
+                        name: "A",
+                        documentation: { mainText: "Some help", links: [link] }
+                    },
+                    { ...provider, name: "B", documentation: { mainText: "Some help" } },
+                    { ...provider, name: "C" }
+                ]
+            }).providers.map(({ documentation }) => documentation)
+        ).toStrictEqual([
+            { mainText: "Some help", links: [link] },
+            { mainText: "Some help", links: [] },
+            undefined
+        ]);
+    });
     it.each([
         { providers: [provider, provider] },
         { providers: { ...provider, name: "a/b" } },
         { providers: { ...provider, providerType: "unknown" } },
-        { providers: { ...provider, authentification: { type: "api-key" } } }
+        { providers: { ...provider, authentification: { type: "api-key" } } },
+        { providers: { ...provider, logoUrl: "not an url" } },
+        { providers: { ...provider, documentation: { links: [] } } },
+        {
+            providers: {
+                ...provider,
+                documentation: {
+                    mainText: "Some help",
+                    links: [{ label: "Docs", url: "not an url" }]
+                }
+            }
+        },
+        { providers: { ...provider, logoUrl: { light: "https://example.com/logo.svg" } } }
     ])("rejects invalid or ambiguous providers", value => {
         expect(() => parse(value)).toThrow();
     });

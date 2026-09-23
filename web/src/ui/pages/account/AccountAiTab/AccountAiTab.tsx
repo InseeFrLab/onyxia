@@ -5,20 +5,21 @@ import { useCoreState, getCoreSync, getCore } from "core";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { Select, MenuItem, Alert, Stack } from "@mui/material";
-import { LocalizedMarkdown } from "ui/shared/Markdown";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { ProviderValueField } from "./ProviderValueField";
-import { ModelsSection } from "./ModelsSection";
-import { CustomProviderFormDialog } from "./CustomProviderFormDialog";
+import { Select, MenuItem, Alert, Stack, Box } from "@mui/material";
+import { ProviderCard, type ProviderState } from "./ProviderCard";
+import { AddCustomProviderButton } from "./AddCustomProviderButton";
+import { providerTypeLogoUrl } from "./shared/providerTypeLogoUrl";
+import { ManageProvidersDialog } from "./dialogs/ManageProvidersDialog";
+import { CustomProviderFormDialog } from "./dialogs/CustomProviderFormDialog";
 import {
     ConfirmCustomProviderDeletionDialog,
     type Props as ConfirmProps
-} from "./ConfirmCustomProviderDeletionDialog";
+} from "./dialogs/ConfirmCustomProviderDeletionDialog";
 import { Evt, type UnpackEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { Deferred } from "evt/tools/Deferred";
 import { withLoader } from "ui/tools/withLoader";
+import { tss } from "tss";
 
 export type Props = { className?: string };
 
@@ -45,6 +46,8 @@ function Component(props: Props) {
     const state = useCoreState("aiAccountUiController", "main");
 
     const { t } = useTranslation({ AccountAiTab });
+    const { classes } = useStyles();
+    const [managedProviderName, setManagedProviderName] = useState<string>();
 
     const evtOpen = useConst(() => Evt.create<UnpackEvt<ConfirmProps["evtOpen"]>>());
 
@@ -97,142 +100,145 @@ function Component(props: Props) {
                     ))}
                 </Select>
             </Stack>
-            {state.providers.map(provider => (
-                <Stack
-                    key={`${provider.origin}/${provider.name}`}
-                    spacing={2}
-                    component="section"
-                >
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <Text typo="section heading">{provider.name}</Text>
-                        {provider.canRefreshToken && (
-                            <Button
-                                variant="ternary"
-                                disabled={
-                                    provider.operationState === "pending" ||
-                                    provider.auth.stateDescription === "fetching"
-                                }
-                                onClick={() =>
-                                    account.refreshToken({
-                                        providerName: provider.name
+            <Box className={classes.providerGrid}>
+                {state.providers.map(provider => {
+                    const isDisabled =
+                        provider.operationState === "pending" ||
+                        (provider.origin === "created by user" &&
+                            provider.isNameConflicting);
+                    const providerState: ProviderState =
+                        provider.auth.stateDescription === "error" ||
+                        provider.models.stateDescription === "error"
+                            ? "connection error"
+                            : provider.auth.stateDescription !== "authenticated" ||
+                                (provider.models.stateDescription === "loaded" &&
+                                    provider.selectedModelIds.length === 0)
+                              ? "setup required"
+                              : "connected";
+
+                    return (
+                        <ProviderCard
+                            key={`${provider.origin}/${provider.name}`}
+                            name={provider.name}
+                            subtitle={
+                                provider.origin === "configured by admin"
+                                    ? t("provided by organization")
+                                    : t("custom providers section title")
+                            }
+                            state={providerState}
+                            logoUrl={
+                                provider.origin === "created by user"
+                                    ? providerTypeLogoUrl[provider.providerType]
+                                    : provider.logoUrl
+                            }
+                            modelSelector={{
+                                isDisabled:
+                                    isDisabled ||
+                                    provider.models.stateDescription !== "loaded",
+                                models:
+                                    provider.models.stateDescription === "loaded"
+                                        ? provider.models.availableModels.map(
+                                              ({ id }) => id
+                                          )
+                                        : [],
+                                selectedModels: provider.selectedModelIds,
+                                onSelectedModelsChange: modelIds =>
+                                    account.setSelectedModelIds({
+                                        providerName: provider.name,
+                                        modelIds
                                     })
-                                }
-                            >
-                                {t("refresh credentials")}
-                            </Button>
-                        )}
-                        {provider.origin === "created by user" && (
-                            <>
-                                <Button
-                                    variant="ternary"
-                                    disabled={provider.operationState === "pending"}
-                                    onClick={() =>
-                                        form.open({ providerName: provider.name })
-                                    }
-                                >
-                                    {t("edit provider")}
-                                </Button>
-                                <Button
-                                    variant="ternary"
-                                    disabled={provider.operationState === "pending"}
-                                    onClick={async () => {
-                                        const isConfirmed =
-                                            await confirmProviderDeletion();
-
-                                        if (!isConfirmed) {
-                                            return;
-                                        }
-
-                                        await account.deleteUserProvider({
-                                            providerName: provider.name
-                                        });
-                                    }}
-                                >
-                                    {t("delete provider")}
-                                </Button>
-                            </>
-                        )}
-                    </Stack>
-                    {provider.origin === "configured by admin" &&
-                        provider.description !== undefined && (
-                            <LocalizedMarkdown>{provider.description}</LocalizedMarkdown>
-                        )}
-                    {provider.origin === "created by user" &&
-                        provider.isNameConflicting && (
-                            <Alert severity="error">{t("invalid name")}</Alert>
-                        )}
-                    {provider.operationState === "error" && (
-                        <Alert severity="error">{t("save failed")}</Alert>
-                    )}
-                    <ProviderValueField
-                        label={t("api base url")}
-                        value={provider.apiBase}
-                        onRequestCopy={() => copyToClipboard(provider.apiBase)}
+                            }}
+                            manageLabel={t("manage")}
+                            onManage={() => setManagedProviderName(provider.name)}
+                        />
+                    );
+                })}
+                {account.canUserCreateProviders() && (
+                    <AddCustomProviderButton
+                        className={classes.addCustomProviderButton}
+                        label={t("add custom ai provider")}
+                        onClick={() => form.open({ providerName: undefined })}
                     />
-                    {(provider.auth.stateDescription === "fetching" ||
-                        provider.models.stateDescription === "fetching") && (
-                        <CircularProgress size={20} />
-                    )}
-                    {(provider.auth.stateDescription === "error" ||
-                        provider.auth.stateDescription === "api-key not provided") && (
-                        <Alert severity="warning">{t("api-key not provided")}</Alert>
-                    )}
-                    {provider.models.stateDescription === "error" && (
-                        <Alert severity="warning">{t("gateway error")}</Alert>
-                    )}
-                    {provider.canUserProvideApiKey && (
-                        <ApiKeyForm
-                            key={`${provider.name}/${provider.userProvidedApiKey}`}
-                            initialValue={provider.userProvidedApiKey}
-                            disabled={
-                                provider.operationState === "pending" ||
-                                provider.auth.stateDescription === "fetching"
-                            }
-                            onSave={apiKey =>
-                                account.setApiKey({ providerName: provider.name, apiKey })
-                            }
-                        />
-                    )}
-                    {provider.auth.stateDescription === "authenticated" &&
-                        !provider.canUserProvideApiKey && (
-                            <ProviderValueField
-                                label={t("api key")}
-                                value={provider.auth.apiKey}
-                                isSensitiveInformation
-                                onRequestCopy={() => {
-                                    if (
-                                        provider.auth.stateDescription === "authenticated"
-                                    )
-                                        copyToClipboard(provider.auth.apiKey);
-                                }}
-                            />
-                        )}
-                    {provider.models.stateDescription === "loaded" && (
-                        <ModelsSection
-                            models={provider.models.availableModels}
-                            selectedModels={provider.selectedModelIds}
-                            disabled={
-                                provider.operationState === "pending" ||
-                                (provider.origin === "created by user" &&
-                                    provider.isNameConflicting)
-                            }
-                            onSelectedModelsChange={modelIds =>
-                                account.setSelectedModelIds({
-                                    providerName: provider.name,
-                                    modelIds
-                                })
-                            }
-                        />
-                    )}
-                </Stack>
-            ))}
-            {account.canUserCreateProviders() && (
-                <Button
-                    variant="secondary"
-                    onClick={() => form.open({ providerName: undefined })}
-                >
-                    {t("add custom ai provider")}
-                </Button>
+                )}
+            </Box>
+            {managedProviderName !== undefined && (
+                <ManageProvidersDialog
+                    initialProviderName={managedProviderName}
+                    providers={state.providers.map(provider => ({
+                        name: provider.name,
+                        subtitle:
+                            provider.origin === "configured by admin"
+                                ? t("provided by organization")
+                                : t("custom providers section title"),
+                        apiBase: provider.apiBase,
+                        apiKey:
+                            provider.auth.stateDescription === "authenticated"
+                                ? provider.auth.apiKey
+                                : provider.canUserProvideApiKey
+                                  ? provider.userProvidedApiKey
+                                  : undefined,
+                        isApiKeyEditable: provider.canUserProvideApiKey,
+                        availableModels:
+                            provider.models.stateDescription === "loaded"
+                                ? provider.models.availableModels.map(({ id }) => id)
+                                : undefined,
+                        selectedModelIds: provider.selectedModelIds,
+                        isModelSelectionDisabled:
+                            provider.operationState === "pending" ||
+                            (provider.origin === "created by user" &&
+                                provider.isNameConflicting),
+                        connectionError:
+                            provider.auth.stateDescription === "error" ||
+                            provider.auth.stateDescription === "api-key not provided"
+                                ? t("api-key not provided")
+                                : provider.models.stateDescription === "error"
+                                  ? t("gateway error")
+                                  : provider.operationState === "error"
+                                    ? t("save failed")
+                                    : undefined,
+                        canRefreshCredentials: provider.canRefreshToken,
+                        isRefreshingCredentials:
+                            provider.operationState === "pending" ||
+                            provider.auth.stateDescription === "fetching",
+                        canEdit:
+                            provider.origin === "created by user" &&
+                            provider.operationState !== "pending",
+                        canDelete:
+                            provider.origin === "created by user" &&
+                            provider.operationState !== "pending",
+                        documentation:
+                            provider.origin === "configured by admin"
+                                ? provider.documentation
+                                : undefined
+                    }))}
+                    onClose={() => setManagedProviderName(undefined)}
+                    onRefreshCredentials={providerName =>
+                        account.refreshToken({ providerName })
+                    }
+                    onTestConnection={providerName =>
+                        account.testConnection({ providerName })
+                    }
+                    onEdit={providerName => {
+                        setManagedProviderName(undefined);
+                        form.open({ providerName });
+                    }}
+                    onDelete={async providerName => {
+                        const isConfirmed = await confirmProviderDeletion();
+
+                        if (!isConfirmed) {
+                            return;
+                        }
+
+                        setManagedProviderName(undefined);
+                        await account.deleteUserProvider({ providerName });
+                    }}
+                    onSaveModels={({ providerName, modelIds }) =>
+                        account.setSelectedModelIds({ providerName, modelIds })
+                    }
+                    onSaveApiKey={({ providerName, apiKey }) =>
+                        account.setApiKey({ providerName, apiKey })
+                    }
+                />
             )}
             <CustomProviderFormDialog />
             <ConfirmCustomProviderDeletionDialog evtOpen={evtOpen} />
@@ -240,50 +246,40 @@ function Component(props: Props) {
     );
 }
 
-function ApiKeyForm(props: {
-    initialValue: string;
-    disabled: boolean;
-    onSave: (apiKey: string) => Promise<void>;
-}) {
-    const [value, setValue] = useState(props.initialValue);
-    const { t } = useTranslation({ AccountAiTab });
-    return (
-        <ProviderValueField
-            label={t("api key")}
-            value={value}
-            isSensitiveInformation={true}
-            disabled={props.disabled}
-            onChange={setValue}
-            onSave={() => props.onSave(value)}
-            saveLabel={t("save key")}
-            onRequestCopy={() => copyToClipboard(value)}
-        />
-    );
-}
+const useStyles = tss.withName({ AccountAiTab }).create(({ theme }) => {
+    const gridGap = theme.spacing(1.25);
+
+    return {
+        providerGrid: {
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: gridGap,
+            "@media (max-width: 760px)": {
+                gridTemplateColumns: "1fr"
+            }
+        },
+        addCustomProviderButton: {
+            // Always on its own row, below the providers, but as wide as one of them.
+            gridColumn: "1 / -1",
+            justifySelf: "start",
+            width: `calc((100% - ${gridGap}px) / 2)`,
+            "@media (max-width: 760px)": {
+                width: "100%"
+            }
+        }
+    };
+});
 
 const { i18n } = declareComponentKeys<
-    | "invalid name"
     | "default model"
     | "no default model"
-    | "save key"
     | "save failed"
     | "retry"
     | "api-key not provided"
-    | "selected models"
-    | "default provider"
-    | "set default provider"
-    | "refresh credentials"
-    | "delete provider"
-    | "edit provider"
-    | { K: "credentials section helper"; P: { webUiUrl: string }; R: JSX.Element }
-    | "api base url"
-    | "api key"
+    | "provided by organization"
+    | "manage"
     | "gateway error"
     | "custom providers section title"
-    | "custom providers section helper"
     | "add custom ai provider"
-    | "custom provider api base field"
-    | "custom provider api key field"
-    | { K: "no account"; P: { webUiUrl: string }; R: JSX.Element }
 >()({ AccountAiTab });
 export type I18n = typeof i18n;

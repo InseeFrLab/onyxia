@@ -17,7 +17,11 @@ namespace AI_EnvValue_ExpectedShape {
         name: string;
         providerType: AiConfig.SupportedAiProviderType;
         apiBase: string;
-        description?: LocalizedString;
+        documentation?: {
+            mainText: LocalizedString;
+            links?: AiConfig.Documentation.Link[];
+        };
+        logoUrl?: AiConfig.LogoUrl;
         authentification:
             | { type: "none" }
             | {
@@ -64,7 +68,20 @@ const zAI_EnvValue_ExpectedShape = (() => {
             "deepseek"
         ]),
         apiBase: z.string().url(),
-        description: zLocalizedString.optional(),
+        documentation: z
+            .object({
+                mainText: zLocalizedString,
+                links: z
+                    .array(z.object({ label: zLocalizedString, url: z.string().url() }))
+                    .optional()
+            })
+            .optional(),
+        logoUrl: z
+            .union([
+                z.string().url(),
+                z.object({ light: z.string().url(), dark: z.string().url() })
+            ])
+            .optional(),
         authentification: z.union([
             z.object({ type: z.literal("none") }),
             z.object({
@@ -103,7 +120,8 @@ export namespace AiConfig {
         name: string;
         providerType: SupportedAiProviderType;
         apiBase: string;
-        description: LocalizedString | undefined;
+        documentation: Documentation | undefined;
+        logoUrl: LogoUrl | undefined;
         authentification:
             | { type: "none" }
             | {
@@ -118,6 +136,19 @@ export namespace AiConfig {
         /** When undefined, the models will be fetched from the provider model endpoint */
         models: string[] | undefined;
     };
+
+    /** Help about the provider, written by the admin, displayed when managing it. */
+    export type Documentation = {
+        mainText: LocalizedString;
+        links: Documentation.Link[];
+    };
+
+    export namespace Documentation {
+        export type Link = { label: LocalizedString; url: string };
+    }
+
+    /** An image url, or one url per theme like the other logos an admin can provide. */
+    export type LogoUrl = string | { light: string; dark: string };
 
     export type SupportedAiProviderType =
         | "openai-compatible"
@@ -165,7 +196,14 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
                 name: provider.name,
                 providerType: provider.providerType,
                 apiBase: provider.apiBase.replace(/\/+$/, ""),
-                description: provider.description,
+                documentation:
+                    provider.documentation === undefined
+                        ? undefined
+                        : {
+                              mainText: provider.documentation.mainText,
+                              links: provider.documentation.links ?? []
+                          },
+                logoUrl: provider.logoUrl,
                 models:
                     provider.models === undefined
                         ? undefined

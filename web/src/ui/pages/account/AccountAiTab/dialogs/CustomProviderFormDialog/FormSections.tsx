@@ -6,6 +6,8 @@ import { Text } from "onyxia-ui/Text";
 import type { ReactNode } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
+import { ModelsSelection } from "../../shared/ModelsSelection";
+import { providerTypeLogoUrl } from "../../shared/providerTypeLogoUrl";
 import { FormSelectField, FormTextField } from "./FormFields";
 import type { FormTest } from "./types";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
@@ -39,14 +41,12 @@ export function ProviderSection(props: {
             { value: "mistral", label: t("mistral provider option") },
             { value: "anthropic", label: t("anthropic provider option") }
         ] satisfies { value: AiConfig.SupportedAiProviderType; label: string }[]
-    ).filter(({ value }) => supportedProtocols.includes(value));
+    )
+        .filter(({ value }) => supportedProtocols.includes(value))
+        .map(option => ({ ...option, iconUrl: providerTypeLogoUrl[option.value] }));
 
     return (
-        <FormSection
-            title={t("custom provider section title")}
-            subtitle={t("custom provider section subtitle")}
-            headingTypo="section heading"
-        >
+        <FormSection title={t("custom provider section title")}>
             <FormSelectField
                 label={t("custom provider type field")}
                 value={protocol}
@@ -112,10 +112,12 @@ export function VerificationSection(props: {
     test: FormTest;
     canTest: boolean;
     onTest: () => void;
+    selectedModels: string[];
+    onSelectedModelsChange: (models: string[]) => void;
 }) {
-    const { test, canTest, onTest } = props;
+    const { test, canTest, onTest, selectedModels, onSelectedModelsChange } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
-    const { classes } = useStyles();
+    const { classes, theme } = useStyles();
 
     return (
         <FormSection
@@ -125,7 +127,7 @@ export function VerificationSection(props: {
                 <Button
                     variant="ternary"
                     className={classes.testButton}
-                    startIcon={getIconUrlByName("SatelliteAlt")}
+                    startIcon={getIconUrlByName("NetworkCheck")}
                     disabled={!canTest}
                     onClick={onTest}
                 >
@@ -133,10 +135,21 @@ export function VerificationSection(props: {
                 </Button>
             }
         >
+            <ModelsSelection
+                models={
+                    test.stateDescription === "success"
+                        ? test.models.map(model => model.id)
+                        : []
+                }
+                selectedModels={selectedModels}
+                disabled={test.stateDescription !== "success"}
+                onSelectedModelsChange={onSelectedModelsChange}
+            />
+
             {test.stateDescription === "testing" && (
                 <div className={classes.testingMessage} role="status">
-                    <CircularProgress size={16} />
-                    <Text typo="body 2">{t("provider testing")}</Text>
+                    <CircularProgress size={theme.spacing(3)} />
+                    <Text typo="label 1">{t("provider testing")}</Text>
                 </div>
             )}
 
@@ -155,28 +168,28 @@ export function VerificationSection(props: {
 
 function FormSection(props: {
     title: string;
-    subtitle: string;
-    headingTypo?: "section heading" | "object heading";
+    subtitle?: string;
     action?: ReactNode;
     children: ReactNode;
 }) {
-    const { title, subtitle, headingTypo = "object heading", action, children } = props;
+    const { title, subtitle, action, children } = props;
     const { classes, cx } = useStyles();
 
     return (
-        <section className={classes.section}>
+        <section
+            className={cx(
+                classes.section,
+                action !== undefined && classes.sectionWithAction
+            )}
+        >
             <div className={classes.headingRow}>
-                <SectionHeading
-                    title={title}
-                    subtitle={subtitle}
-                    headingTypo={headingTypo}
-                />
+                <SectionHeading title={title} subtitle={subtitle} />
                 {action}
             </div>
             <div
                 className={cx(
                     classes.fields,
-                    action !== undefined && classes.verificationFields
+                    action !== undefined && classes.sectionWithAction
                 )}
             >
                 {children}
@@ -185,20 +198,18 @@ function FormSection(props: {
     );
 }
 
-function SectionHeading(props: {
-    title: string;
-    subtitle: string;
-    headingTypo: "section heading" | "object heading";
-}) {
-    const { title, subtitle, headingTypo } = props;
+function SectionHeading(props: { title: string; subtitle: string | undefined }) {
+    const { title, subtitle } = props;
     const { classes } = useStyles_SectionHeading();
 
     return (
         <div className={classes.root}>
-            <Text typo={headingTypo}>{title}</Text>
-            <Text typo="body 1" color="secondary">
-                {subtitle}
-            </Text>
+            <Text typo="object heading">{title}</Text>
+            {subtitle !== undefined && (
+                <Text typo="body 1" color="secondary">
+                    {subtitle}
+                </Text>
+            )}
         </div>
     );
 }
@@ -232,7 +243,7 @@ const useStyles = tss
         section: {
             display: "flex",
             flexDirection: "column",
-            gap: theme.spacing(4),
+            gap: theme.spacing(2.5),
             paddingBottom: theme.spacing(4),
             borderBottom: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
             "&:last-child": {
@@ -245,7 +256,7 @@ const useStyles = tss
             flexDirection: "column",
             gap: theme.spacing(3)
         },
-        verificationFields: {
+        sectionWithAction: {
             gap: theme.spacing(4)
         },
         headingRow: {
@@ -259,12 +270,13 @@ const useStyles = tss
             ...theme.typography.variants["label 2"].style,
             borderWidth: 0,
             padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
-            // Figma's `surface-action-secondary`: #ECEEF2 in light mode and #2E333F
-            // in dark mode. Keep it derived from the palette so overrides still apply.
-            backgroundColor: theme.isDarkModeEnabled
-                ? theme.colors.palette.dark.light
-                : theme.colors.palette.light.main,
-            color: theme.colors.palette.light.main,
+            // Figma's `surface-action-secondary`: the inverse of the current surface
+            backgroundColor: theme.colors.useCases.typography.textPrimary,
+            color: theme.colors.useCases.surfaces.background,
+            "&:hover": {
+                backgroundColor: theme.colors.useCases.typography.textPrimary,
+                color: theme.colors.useCases.surfaces.background
+            },
             "& .MuiButton-startIcon": {
                 marginLeft: 0,
                 marginRight: theme.spacing(1)
@@ -274,22 +286,16 @@ const useStyles = tss
                 height: theme.spacing(3)
             },
             "&.Mui-disabled": {
-                backgroundColor: theme.isDarkModeEnabled
-                    ? theme.colors.palette.dark.light
-                    : theme.colors.palette.light.main,
-                color: theme.colors.palette.light.main,
+                backgroundColor: theme.colors.useCases.typography.textPrimary,
+                color: theme.colors.useCases.surfaces.background,
                 opacity: 0.3
             }
         },
         testingMessage: {
             display: "flex",
             alignItems: "center",
-            gap: 10,
-            minHeight: 40,
-            padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
-            borderRadius: theme.spacing(2),
-            boxSizing: "border-box",
-            backgroundColor: theme.colors.useCases.surfaces.surface2
+            gap: theme.spacing(2),
+            padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`
         }
     }));
 
@@ -305,10 +311,9 @@ const useStyles_SectionHeading = tss.withName({ SectionHeading }).create(({ them
 
 const useStyles_StatusMessage = tss.withName({ StatusMessage }).create(({ theme }) => ({
     root: {
-        minHeight: 40,
         display: "flex",
         alignItems: "center",
-        gap: 10,
+        gap: theme.spacing(2),
         padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
         borderRadius: theme.spacing(2),
         boxSizing: "border-box",

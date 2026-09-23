@@ -97,45 +97,16 @@ export const translations: Translations<"en"> = {
             `These credentials are valid for the next ${howMuchTime}`
     },
     AccountAiTab: {
-        "invalid name": "Choose a unique provider name without a slash (/).",
         "default model": "Default model",
         "no default model": "No default model",
-        "save key": "Save key",
         "save failed": "Unable to save your changes. Please try again.",
         retry: "Retry",
         "api-key not provided": "An API key is required for this provider.",
-        "selected models": "Selected models",
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                Your OIDC session gives you seamless access to the AI gateway.{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    Open AI gateway
-                </MuiLink>
-            </>
-        ),
-        "api base url": "API base URL",
-        "api key": "API Key",
+        "provided by organization": "Provided by your organization",
+        manage: "Manage",
         "gateway error": "Unable to initialize the AI gateway.",
-        "default provider": "Default provider",
-        "set default provider": "Set default provider",
-        "refresh credentials": "Refresh credentials",
-        "delete provider": "Delete",
-        "edit provider": "Edit",
         "custom providers section title": "Custom AI providers",
-        "custom providers section helper":
-            "Add your own OpenAI-compatible AI providers. Credentials are stored in your browser.",
-        "add custom ai provider": "Add a Custom AI Provider",
-        "custom provider api base field": "API base URL",
-        "custom provider api key field": "API key",
-        "no account": ({ webUiUrl }) => (
-            <>
-                You don&apos;t have an AI gateway account yet. Please log in to{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                first to create your account.
-            </>
-        )
+        "add custom ai provider": "Add a new custom AI provider"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Delete this Custom AI Provider",
@@ -148,28 +119,53 @@ export const translations: Translations<"en"> = {
         copy: "Copy",
         copied: "Copied"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "Connected",
+        "setup required": "Setup required",
+        "connection error": "Connection error"
+    },
+    ModelsSelection: {
         "model label": "Selected models",
         "not defined": "Not defined",
-        "models fetch error": "Unable to fetch models — check your URL and API key."
+        "no models available": "No models available",
+        "no matching models": "No matching models",
+        "deselect all": "Deselect all",
+        "more models": ({ count }) => `+${count} Models`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Manage providers",
+        "close aria label": "Close",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentation",
+        "connection details title": "Connection details",
+        "connection details helper":
+            "View and manage how Onyxia connects to this provider.",
+        "manage models title": "Manage models",
+        "manage models helper": "Choose the models available in your services.",
+        "api base url": "API Base URL",
+        "api key": "API Key",
+        "refresh credentials": "Refresh credentials",
+        "test connection": "Test connection",
+        "edit provider": "Edit provider",
+        "delete provider": "Delete provider",
+        cancel: "Cancel",
+        "save changes": "Save changes"
     },
     CustomProviderFormDialog: {
         "submission error": "Unable to save this provider. Please try again.",
         "invalid name": "Choose a unique provider name without a slash (/).",
         "invalid api base": "Enter a valid HTTP(S) URL.",
         "deepseek provider option": "DeepSeek",
-        "add custom provider title": "Add Custom AI Providers",
+        "add custom provider title": "Add a new custom AI provider",
         "edit custom provider title": "Edit AI provider",
-        "custom provider section title": "Custom AI Providers",
-        "custom provider section subtitle":
-            "Configure AI providers according to the API protocol they expose.",
+        "custom provider section title": "Configure AI provider",
         "custom provider label field": "Define a custom name",
-        "custom provider type field": "API protocol",
+        "custom provider type field": "Provider API",
         "openai provider option": "OpenAI (native)",
         "openai compatible provider option": "OpenAI-compatible",
         "mistral provider option": "Mistral (native)",
         "anthropic provider option": "Anthropic (native)",
-        "credentials section title": "Providers Credentials",
+        "credentials section title": "Provider Credentials",
         "credentials section subtitle":
             "Enter your credentials to save them with your account settings. Leave the API key empty if the provider requires no authentication.",
         "custom provider api base field": "API Base URL",
@@ -177,13 +173,11 @@ export const translations: Translations<"en"> = {
         "verification section title": "Verify & Load Models",
         "verification section subtitle":
             "Verify your credentials and automatically discover the available models.",
-        "custom provider model field": "Model Type",
         "provider test": "Test connection",
         "provider testing": "Testing connection...",
         "provider test success": "Connection successful. Your provider is ready to use.",
         "provider test error":
             "Connection failed. Please check your credentials or endpoint.",
-        "set as default provider": "Set as default provider",
         "provider save": "Add Custom AI Providers",
         "provider update": "Save changes",
         "provider cancel": "Cancel",

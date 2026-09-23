@@ -98,46 +98,16 @@ export const translations: Translations<"fi"> = {
             `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
     },
     AccountAiTab: {
-        "invalid name": undefined,
         "default model": undefined,
         "no default model": undefined,
-        "save key": undefined,
         "save failed": undefined,
         retry: undefined,
         "api-key not provided": undefined,
-        "selected models": undefined,
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                OIDC-istuntosi antaa sinulle saumattoman pääsyn tekoälyyhdyskäytävään.{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    Avaa tekoälyyhdyskäytävä
-                </MuiLink>
-            </>
-        ),
-        "api base url": "API-perus-URL",
-        "api key": "API-avain",
+        "provided by organization": undefined,
+        manage: undefined,
         "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
-        "default provider": "Oletustarjoaja",
-        "set default provider": "Aseta oletukseksi",
-        "refresh credentials": "Päivitä tunnistetiedot",
-        "delete provider": "Poista",
-        "edit provider": "Muokkaa",
         "custom providers section title": "Mukautetut tekoälyntarjoajat",
-        "custom providers section helper":
-            "Lisää omia OpenAI-yhteensopivia tekoälypalveluntarjoajia. Tunnukset tallennetaan selaimeesi.",
-        "add custom ai provider": "Lisää mukautettu tekoälyntarjoaja",
-        "custom provider api base field": "API-perus-URL",
-        "custom provider api key field": "API-avain",
-        "no account": ({ webUiUrl }) => (
-            <>
-                Sinulla ei vielä ole tiliä tekoälyyhdyskäytävässä. Kirjaudu ensin sisään
-                osoitteeseen{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                luodaksesi tilisi.
-            </>
-        )
+        "add custom ai provider": "Lisää mukautettu tekoälyntarjoaja"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Poista tämä mukautettu tekoälypalveluntarjoaja",
@@ -150,10 +120,37 @@ export const translations: Translations<"fi"> = {
         copy: "Kopioi",
         copied: "Kopioitu"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "Yhdistetty",
+        "setup required": "Määritys vaaditaan",
+        "connection error": "Yhteysvirhe"
+    },
+    ModelsSelection: {
         "model label": "Malli",
         "not defined": "Ei määritetty",
-        "models fetch error": "Mallien haku epäonnistui — tarkista URL ja API-avain."
+        "no models available": "Malleja ei ole saatavilla",
+        "no matching models": "Ei vastaavia malleja",
+        "deselect all": "Poista kaikki valinnat",
+        "more models": ({ count }) => `+${count} mallia`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Hallitse palveluntarjoajia",
+        "close aria label": "Sulje",
+        "provider selector aria label": "Palveluntarjoaja",
+        "documentation title": "Dokumentaatio",
+        "connection details title": "Yhteyden tiedot",
+        "connection details helper":
+            "Tarkastele ja hallitse Onyxian yhteyttä tähän palveluntarjoajaan.",
+        "manage models title": "Hallitse malleja",
+        "manage models helper": "Valitse palveluissasi käytettävissä olevat mallit.",
+        "api base url": "API:n perus-URL",
+        "api key": "API-avain",
+        "refresh credentials": "Päivitä tunnistetiedot",
+        "test connection": "Testaa yhteys",
+        "edit provider": "Muokkaa palveluntarjoajaa",
+        "delete provider": "Poista palveluntarjoaja",
+        cancel: "Peruuta",
+        "save changes": "Tallenna muutokset"
     },
     CustomProviderFormDialog: {
         "submission error": undefined,
@@ -163,8 +160,6 @@ export const translations: Translations<"fi"> = {
         "add custom provider title": "Mukautetut tekoälyntarjoajat",
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider section title": "Mukautetut tekoälyntarjoajat",
-        "custom provider section subtitle":
-            "Määritä tekoälypalveluntarjoajat niiden käyttämän API-protokollan mukaan.",
         "custom provider label field": "Tunniste",
         "custom provider type field": "API-protokolla",
         "openai provider option": "OpenAI (natiivi)",
@@ -179,12 +174,10 @@ export const translations: Translations<"fi"> = {
         "verification section title": "Vahvista ja lataa mallit",
         "verification section subtitle":
             "Vahvista tunnistetietosi ja etsi käytettävissä olevat mallit automaattisesti.",
-        "custom provider model field": "Mallin tyyppi",
         "provider test": "Testaa yhteys",
         "provider testing": "Testataan yhteyttä...",
         "provider test success": "Yhteys onnistui. Palveluntarjoaja on käyttövalmis.",
         "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
-        "set as default provider": "Aseta oletuspalveluntarjoajaksi",
         "provider save": "Lisää",
         "provider update": "Tallenna",
         "provider cancel": "Peruuta",

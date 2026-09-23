@@ -98,45 +98,16 @@ export const translations: Translations<"nl"> = {
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
     AccountAiTab: {
-        "invalid name": undefined,
         "default model": undefined,
         "no default model": undefined,
-        "save key": undefined,
         "save failed": undefined,
         retry: undefined,
         "api-key not provided": undefined,
-        "selected models": undefined,
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                Uw OIDC-sessie geeft u naadloze toegang tot de AI-gateway.{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    AI-gateway openen
-                </MuiLink>
-            </>
-        ),
-        "api base url": "API-basis-URL",
-        "api key": "API-sleutel",
+        "provided by organization": undefined,
+        manage: undefined,
         "gateway error": "Kan de AI-gateway niet initialiseren.",
-        "default provider": "Standaardprovider",
-        "set default provider": "Als standaard instellen",
-        "refresh credentials": "Referenties vernieuwen",
-        "delete provider": "Verwijderen",
-        "edit provider": "Bewerken",
         "custom providers section title": "Aangepaste AI-providers",
-        "custom providers section helper":
-            "Voeg uw eigen OpenAI-compatibele AI-providers toe. Inloggegevens worden in uw browser opgeslagen.",
-        "add custom ai provider": "Aangepaste AI-provider toevoegen",
-        "custom provider api base field": "API-basis-URL",
-        "custom provider api key field": "API-sleutel",
-        "no account": ({ webUiUrl }) => (
-            <>
-                U heeft nog geen account bij de AI-gateway. Meld u eerst aan bij{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                om uw account aan te maken.
-            </>
-        )
+        "add custom ai provider": "Aangepaste AI-provider toevoegen"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Deze aangepaste AI-provider verwijderen",
@@ -149,11 +120,37 @@ export const translations: Translations<"nl"> = {
         copy: "Kopiëren",
         copied: "Gekopieerd"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "Verbonden",
+        "setup required": "Configuratie vereist",
+        "connection error": "Verbindingsfout"
+    },
+    ModelsSelection: {
         "model label": "Model",
         "not defined": "Niet gedefinieerd",
-        "models fetch error":
-            "Kan modellen niet ophalen — controleer uw URL en API-sleutel."
+        "no models available": "Geen modellen beschikbaar",
+        "no matching models": "Geen overeenkomende modellen",
+        "deselect all": "Alles deselecteren",
+        "more models": ({ count }) => `+${count} modellen`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Providers beheren",
+        "close aria label": "Sluiten",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentatie",
+        "connection details title": "Verbindingsgegevens",
+        "connection details helper":
+            "Bekijk en beheer hoe Onyxia verbinding maakt met deze provider.",
+        "manage models title": "Modellen beheren",
+        "manage models helper": "Kies de modellen die beschikbaar zijn in je diensten.",
+        "api base url": "API-basis-URL",
+        "api key": "API-sleutel",
+        "refresh credentials": "Inloggegevens vernieuwen",
+        "test connection": "Verbinding testen",
+        "edit provider": "Provider bewerken",
+        "delete provider": "Provider verwijderen",
+        cancel: "Annuleren",
+        "save changes": "Wijzigingen opslaan"
     },
     CustomProviderFormDialog: {
         "submission error": undefined,
@@ -163,8 +160,6 @@ export const translations: Translations<"nl"> = {
         "add custom provider title": "Aangepaste AI-providers",
         "edit custom provider title": "AI-provider bewerken",
         "custom provider section title": "Aangepaste AI-providers",
-        "custom provider section subtitle":
-            "Configureer AI-providers op basis van het API-protocol dat ze gebruiken.",
         "custom provider label field": "Label",
         "custom provider type field": "API-protocol",
         "openai provider option": "OpenAI (native)",
@@ -179,14 +174,12 @@ export const translations: Translations<"nl"> = {
         "verification section title": "Modellen verifiëren en laden",
         "verification section subtitle":
             "Verifieer uw referenties en ontdek automatisch de beschikbare modellen.",
-        "custom provider model field": "Modeltype",
         "provider test": "Verbinding testen",
         "provider testing": "Verbinding testen...",
         "provider test success":
             "Verbinding geslaagd. De provider is klaar voor gebruik.",
         "provider test error":
             "Kan geen verbinding maken — controleer URL en API-sleutel.",
-        "set as default provider": "Instellen als standaardprovider",
         "provider save": "Toevoegen",
         "provider update": "Opslaan",
         "provider cancel": "Annuleren",

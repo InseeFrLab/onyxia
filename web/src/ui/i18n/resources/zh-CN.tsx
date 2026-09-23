@@ -89,45 +89,16 @@ export const translations: Translations<"zh-CN"> = {
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
     AccountAiTab: {
-        "invalid name": undefined,
         "default model": undefined,
         "no default model": undefined,
-        "save key": undefined,
         "save failed": undefined,
         retry: undefined,
         "api-key not provided": undefined,
-        "selected models": undefined,
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                您的 OIDC 会话使您可以无缝访问 AI 网关。{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    打开 AI 网关
-                </MuiLink>
-            </>
-        ),
-        "api base url": "API 基础 URL",
-        "api key": "API 密钥",
+        "provided by organization": undefined,
+        manage: undefined,
         "gateway error": "无法初始化 AI 网关。",
-        "default provider": "默认提供商",
-        "set default provider": "设为默认提供商",
-        "refresh credentials": "刷新凭据",
-        "delete provider": "删除",
-        "edit provider": "编辑",
         "custom providers section title": "自定义 AI 提供商",
-        "custom providers section helper":
-            "添加您自己的兼容 OpenAI 的 AI 提供商。凭据存储在您的浏览器中。",
-        "add custom ai provider": "添加自定义 AI 提供商",
-        "custom provider api base field": "API 基础 URL",
-        "custom provider api key field": "API 密钥",
-        "no account": ({ webUiUrl }) => (
-            <>
-                您还没有 AI 网关账户。请先登录{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                以创建您的账户。
-            </>
-        )
+        "add custom ai provider": "添加自定义 AI 提供商"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "删除此自定义 AI 提供商",
@@ -139,10 +110,36 @@ export const translations: Translations<"zh-CN"> = {
         copy: "复制",
         copied: "已复制"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "已连接",
+        "setup required": "需要设置",
+        "connection error": "连接错误"
+    },
+    ModelsSelection: {
         "model label": "模型",
         "not defined": "未定义",
-        "models fetch error": "无法获取模型 — 请检查您的 URL 和 API 密钥。"
+        "no models available": "没有可用的模型",
+        "no matching models": "没有匹配的模型",
+        "deselect all": "取消全选",
+        "more models": ({ count }) => `+${count}个模型`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "管理提供商",
+        "close aria label": "关闭",
+        "provider selector aria label": "提供商",
+        "documentation title": "文档",
+        "connection details title": "连接详情",
+        "connection details helper": "查看和管理 Onyxia 连接此提供商的方式。",
+        "manage models title": "管理模型",
+        "manage models helper": "选择服务中可用的模型。",
+        "api base url": "API 基础 URL",
+        "api key": "API 密钥",
+        "refresh credentials": "刷新凭据",
+        "test connection": "测试连接",
+        "edit provider": "编辑提供商",
+        "delete provider": "删除提供商",
+        cancel: "取消",
+        "save changes": "保存更改"
     },
     CustomProviderFormDialog: {
         "submission error": undefined,
@@ -152,7 +149,6 @@ export const translations: Translations<"zh-CN"> = {
         "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",
         "custom provider section title": "自定义 AI 提供商",
-        "custom provider section subtitle": "根据 AI 提供商使用的 API 协议进行配置。",
         "custom provider label field": "标签",
         "custom provider type field": "API 协议",
         "openai provider option": "OpenAI（原生）",
@@ -165,12 +161,10 @@ export const translations: Translations<"zh-CN"> = {
         "custom provider api key field": "API 密钥",
         "verification section title": "验证并加载模型",
         "verification section subtitle": "验证凭证并自动发现可用模型。",
-        "custom provider model field": "模型类型",
         "provider test": "测试连接",
         "provider testing": "正在测试连接...",
         "provider test success": "连接成功。提供商已准备就绪。",
         "provider test error": "无法连接 — 请检查 URL 和 API 密钥。",
-        "set as default provider": "设为默认提供商",
         "provider save": "添加",
         "provider update": "保存",
         "provider cancel": "取消",

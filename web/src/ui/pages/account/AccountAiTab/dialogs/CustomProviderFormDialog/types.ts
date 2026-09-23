@@ -23,6 +23,7 @@ export type ViewProps = {
     isSubmitting?: boolean;
     values: FormValues;
     test: FormTest;
+    selectedModels: string[];
     canSave: boolean;
     canTest: boolean;
     supportedProtocols: readonly AiConfig.SupportedAiProviderType[];
@@ -30,5 +31,6 @@ export type ViewProps = {
     onFieldChange: (key: keyof FormValues, value: string) => void;
     onProtocolChange: (protocol: AiConfig.SupportedAiProviderType) => void;
     onTest: () => void;
+    onSelectedModelsChange: (models: string[]) => void;
     onSave: () => void;
 };

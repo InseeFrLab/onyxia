@@ -52,6 +52,7 @@ const main = createSelector(
             isEditing: providerName_current !== undefined,
             formValues,
             connectionTest: state.connectionTest,
+            selectedModelIds_draft: state.selectedModelIds_draft,
             isSubmitting: state.isSubmitting,
             hasSubmissionFailed: state.hasSubmissionFailed,
             isNameValid,

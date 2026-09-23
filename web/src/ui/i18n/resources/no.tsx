@@ -98,45 +98,16 @@ export const translations: Translations<"no"> = {
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
     },
     AccountAiTab: {
-        "invalid name": undefined,
         "default model": undefined,
         "no default model": undefined,
-        "save key": undefined,
         "save failed": undefined,
         retry: undefined,
         "api-key not provided": undefined,
-        "selected models": undefined,
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                Din OIDC-økt gir deg sømløs tilgang til AI-gatewayen.{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    Åpne AI-gateway
-                </MuiLink>
-            </>
-        ),
-        "api base url": "API-basis-URL",
-        "api key": "API-nøkkel",
+        "provided by organization": undefined,
+        manage: undefined,
         "gateway error": "Kunne ikke initialisere AI-gatewayen.",
-        "default provider": "Standardleverandør",
-        "set default provider": "Angi som standard",
-        "refresh credentials": "Oppdater legitimasjon",
-        "delete provider": "Slett",
-        "edit provider": "Rediger",
         "custom providers section title": "Tilpassede AI-leverandører",
-        "custom providers section helper":
-            "Legg til dine egne OpenAI-kompatible AI-leverandører. Påloggingsinformasjonen lagres i nettleseren din.",
-        "add custom ai provider": "Legg til tilpasset AI-leverandør",
-        "custom provider api base field": "API-basis-URL",
-        "custom provider api key field": "API-nøkkel",
-        "no account": ({ webUiUrl }) => (
-            <>
-                Du har ikke en konto på AI-gatewayen ennå. Logg inn først på{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                for å opprette kontoen din.
-            </>
-        )
+        "add custom ai provider": "Legg til tilpasset AI-leverandør"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Slett denne egendefinerte KI-leverandøren",
@@ -149,10 +120,37 @@ export const translations: Translations<"no"> = {
         copy: "Kopier",
         copied: "Kopiert"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "Tilkoblet",
+        "setup required": "Oppsett kreves",
+        "connection error": "Tilkoblingsfeil"
+    },
+    ModelsSelection: {
         "model label": "Modell",
         "not defined": "Ikke definert",
-        "models fetch error": "Kan ikke hente modeller — sjekk URL-en og API-nøkkelen."
+        "no models available": "Ingen modeller tilgjengelig",
+        "no matching models": "Ingen samsvarende modeller",
+        "deselect all": "Fjern alle valg",
+        "more models": ({ count }) => `+${count} modeller`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Administrer leverandører",
+        "close aria label": "Lukk",
+        "provider selector aria label": "Leverandør",
+        "documentation title": "Dokumentasjon",
+        "connection details title": "Tilkoblingsdetaljer",
+        "connection details helper":
+            "Vis og administrer hvordan Onyxia kobler til denne leverandøren.",
+        "manage models title": "Administrer modeller",
+        "manage models helper": "Velg modellene som er tilgjengelige i tjenestene dine.",
+        "api base url": "API-grunn-URL",
+        "api key": "API-nøkkel",
+        "refresh credentials": "Oppdater legitimasjon",
+        "test connection": "Test tilkoblingen",
+        "edit provider": "Rediger leverandør",
+        "delete provider": "Slett leverandør",
+        cancel: "Avbryt",
+        "save changes": "Lagre endringer"
     },
     CustomProviderFormDialog: {
         "submission error": undefined,
@@ -162,8 +160,6 @@ export const translations: Translations<"no"> = {
         "add custom provider title": "Tilpassede AI-leverandører",
         "edit custom provider title": "Rediger AI-leverandør",
         "custom provider section title": "Tilpassede AI-leverandører",
-        "custom provider section subtitle":
-            "Konfigurer AI-leverandører etter API-protokollen de bruker.",
         "custom provider label field": "Etikett",
         "custom provider type field": "API-protokoll",
         "openai provider option": "OpenAI (native)",
@@ -178,12 +174,10 @@ export const translations: Translations<"no"> = {
         "verification section title": "Bekreft og last inn modeller",
         "verification section subtitle":
             "Bekreft legitimasjonen og finn tilgjengelige modeller automatisk.",
-        "custom provider model field": "Modelltype",
         "provider test": "Test tilkobling",
         "provider testing": "Tester tilkobling...",
         "provider test success": "Tilkobling vellykket. Leverandøren er klar til bruk.",
         "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
-        "set as default provider": "Angi som standardleverandør",
         "provider save": "Legg til",
         "provider update": "Lagre",
         "provider cancel": "Avbryt",

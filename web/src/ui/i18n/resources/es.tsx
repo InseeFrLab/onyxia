@@ -98,46 +98,16 @@ export const translations: Translations<"es"> = {
             `Estas credenciales son válidas por los próximos ${howMuchTime}`
     },
     AccountAiTab: {
-        "invalid name": undefined,
         "default model": undefined,
         "no default model": undefined,
-        "save key": undefined,
         "save failed": undefined,
         retry: undefined,
         "api-key not provided": undefined,
-        "selected models": undefined,
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                Su sesión OIDC le da acceso sin interrupciones a la pasarela de IA.{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    Abrir pasarela de IA
-                </MuiLink>
-            </>
-        ),
-        "api base url": "URL base de la API",
-        "api key": "Clave API",
+        "provided by organization": undefined,
+        manage: undefined,
         "gateway error": "No se pudo inicializar la pasarela de IA.",
-        "default provider": "Proveedor predeterminado",
-        "set default provider": "Definir como predeterminado",
-        "refresh credentials": "Actualizar credenciales",
-        "delete provider": "Eliminar",
-        "edit provider": "Editar",
         "custom providers section title": "Proveedores de IA personalizados",
-        "custom providers section helper":
-            "Añade tus propios proveedores de IA compatibles con OpenAI. Las credenciales se almacenan en tu navegador.",
-        "add custom ai provider": "Añadir un proveedor de IA personalizado",
-        "custom provider api base field": "URL base de la API",
-        "custom provider api key field": "Clave API",
-        "no account": ({ webUiUrl }) => (
-            <>
-                Aún no tiene una cuenta en la pasarela de IA. Por favor, inicie sesión
-                primero en{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                para crear su cuenta.
-            </>
-        )
+        "add custom ai provider": "Añadir un proveedor de IA personalizado"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Eliminar este proveedor de IA personalizado",
@@ -150,11 +120,37 @@ export const translations: Translations<"es"> = {
         copy: "Copiar",
         copied: "Copiado"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "Conectado",
+        "setup required": "Configuración requerida",
+        "connection error": "Error de conexión"
+    },
+    ModelsSelection: {
         "model label": "Modelo",
         "not defined": "No definido",
-        "models fetch error":
-            "No se pueden obtener los modelos — compruebe la URL y la clave API."
+        "no models available": "No hay modelos disponibles",
+        "no matching models": "Ningún modelo coincide",
+        "deselect all": "Deseleccionar todo",
+        "more models": ({ count }) => `+${count} modelos`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Gestionar proveedores",
+        "close aria label": "Cerrar",
+        "provider selector aria label": "Proveedor",
+        "documentation title": "Documentación",
+        "connection details title": "Detalles de conexión",
+        "connection details helper":
+            "Consulta y gestiona cómo se conecta Onyxia a este proveedor.",
+        "manage models title": "Gestionar modelos",
+        "manage models helper": "Elige los modelos disponibles en tus servicios.",
+        "api base url": "URL base de la API",
+        "api key": "Clave API",
+        "refresh credentials": "Actualizar credenciales",
+        "test connection": "Probar la conexión",
+        "edit provider": "Editar proveedor",
+        "delete provider": "Eliminar proveedor",
+        cancel: "Cancelar",
+        "save changes": "Guardar cambios"
     },
     CustomProviderFormDialog: {
         "submission error": undefined,
@@ -164,8 +160,6 @@ export const translations: Translations<"es"> = {
         "add custom provider title": "Proveedores de IA personalizados",
         "edit custom provider title": "Editar proveedor de IA",
         "custom provider section title": "Proveedores de IA personalizados",
-        "custom provider section subtitle":
-            "Configure sus proveedores de IA según el protocolo de API que utilicen.",
         "custom provider label field": "Etiqueta",
         "custom provider type field": "Protocolo API",
         "openai provider option": "OpenAI (nativo)",
@@ -180,12 +174,10 @@ export const translations: Translations<"es"> = {
         "verification section title": "Verificar y cargar modelos",
         "verification section subtitle":
             "Verifique sus credenciales y descubra automáticamente los modelos disponibles.",
-        "custom provider model field": "Tipo de modelo",
         "provider test": "Probar conexión",
         "provider testing": "Probando conexión...",
         "provider test success": "Conexión exitosa. El proveedor está listo para usar.",
         "provider test error": "No se puede conectar — compruebe la URL y la clave API.",
-        "set as default provider": "Establecer como proveedor predeterminado",
         "provider save": "Añadir",
         "provider update": "Guardar",
         "provider cancel": "Cancelar",

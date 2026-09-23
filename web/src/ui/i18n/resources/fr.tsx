@@ -99,46 +99,16 @@ export const translations: Translations<"fr"> = {
             `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
     },
     AccountAiTab: {
-        "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
         "default model": "Modèle par défaut",
         "no default model": "Aucun modèle par défaut",
-        "save key": "Enregistrer la clé",
         "save failed": "Impossible d’enregistrer les modifications. Réessayez.",
         retry: "Réessayer",
         "api-key not provided": "Une clé API est nécessaire pour ce provider.",
-        "selected models": "Modèles présélectionnés",
-        "credentials section helper": ({ webUiUrl }) => (
-            <>
-                Votre session OIDC vous donne accès à la passerelle IA.{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    Ouvrir la passerelle IA
-                </MuiLink>
-            </>
-        ),
-        "api base url": "URL de base de l'API",
-        "api key": "Clé API",
+        "provided by organization": "Fourni par votre organisation",
+        manage: "Gérer",
         "gateway error": "Impossible d'initialiser la passerelle IA.",
-        "default provider": "Provider par défaut",
-        "set default provider": "Définir par défaut",
-        "refresh credentials": "Rafraîchir les identifiants",
-        "delete provider": "Supprimer",
-        "edit provider": "Modifier",
         "custom providers section title": "Providers IA personnalisés",
-        "custom providers section helper":
-            "Ajoutez vos propres providers IA compatibles OpenAI. Les identifiants sont stockés dans votre navigateur.",
-        "add custom ai provider": "Ajouter un provider IA personnalisé",
-        "custom provider api base field": "URL de base de l'API",
-        "custom provider api key field": "Clé API",
-        "no account": ({ webUiUrl }) => (
-            <>
-                Vous n&apos;avez pas encore de compte sur la passerelle IA. Veuillez
-                d&apos;abord vous connecter sur{" "}
-                <MuiLink href={webUiUrl} target="_blank">
-                    {webUiUrl}
-                </MuiLink>{" "}
-                pour créer votre compte.
-            </>
-        )
+        "add custom ai provider": "Ajouter un provider IA personnalisé"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Supprimer ce fournisseur d’IA personnalisé",
@@ -151,24 +121,48 @@ export const translations: Translations<"fr"> = {
         copy: "Copier",
         copied: "Copié"
     },
-    ModelsSection: {
+    ProviderCard: {
+        connected: "Connecté",
+        "setup required": "Configuration requise",
+        "connection error": "Erreur de connexion"
+    },
+    ModelsSelection: {
         "model label": "Modèles présélectionnés",
         "not defined": "Non défini",
-        "models fetch error":
-            "Impossible de récupérer les modèles — vérifiez l'URL et la clé API."
+        "no models available": "Aucun modèle disponible",
+        "no matching models": "Aucun modèle correspondant",
+        "deselect all": "Tout désélectionner",
+        "more models": ({ count }) => `+${count} modèles`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Gérer les providers",
+        "close aria label": "Fermer",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentation",
+        "connection details title": "Détails de connexion",
+        "connection details helper":
+            "Consultez et gérez la manière dont Onyxia se connecte à ce provider.",
+        "manage models title": "Gérer les modèles",
+        "manage models helper": "Choisissez les modèles disponibles dans vos services.",
+        "api base url": "URL de base de l'API",
+        "api key": "Clé API",
+        "refresh credentials": "Rafraîchir les identifiants",
+        "test connection": "Tester la connexion",
+        "edit provider": "Modifier le provider",
+        "delete provider": "Supprimer le provider",
+        cancel: "Annuler",
+        "save changes": "Enregistrer les modifications"
     },
     CustomProviderFormDialog: {
         "submission error": "Impossible d’enregistrer ce provider. Réessayez.",
         "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
         "invalid api base": "Saisissez une URL HTTP(S) valide.",
         "deepseek provider option": "DeepSeek",
-        "add custom provider title": "Providers IA personnalisés",
+        "add custom provider title": "Ajouter un provider IA personnalisé",
         "edit custom provider title": "Modifier le provider IA",
-        "custom provider section title": "Providers IA personnalisés",
-        "custom provider section subtitle":
-            "Configurez vos providers IA selon le protocole d’API qu’ils exposent.",
+        "custom provider section title": "Configurer le provider IA",
         "custom provider label field": "Nom",
-        "custom provider type field": "Protocole API",
+        "custom provider type field": "API du provider",
         "openai provider option": "OpenAI (natif)",
         "openai compatible provider option": "Compatible OpenAI",
         "mistral provider option": "Mistral (natif)",
@@ -181,13 +175,11 @@ export const translations: Translations<"fr"> = {
         "verification section title": "Vérifier et charger les modèles",
         "verification section subtitle":
             "Vérifiez vos identifiants et découvrez automatiquement les modèles disponibles.",
-        "custom provider model field": "Type de modèle",
         "provider test": "Tester la connexion",
         "provider testing": "Test de la connexion...",
         "provider test success": "Connexion réussie. Votre provider est prêt à l'emploi.",
         "provider test error":
             "Impossible de se connecter — vérifiez l'URL et la clé API.",
-        "set as default provider": "Définir comme provider par défaut",
         "provider save": "Ajouter",
         "provider update": "Enregistrer",
         "provider cancel": "Annuler",

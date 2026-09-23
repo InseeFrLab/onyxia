@@ -39,6 +39,17 @@ export const thunks = {
             );
         },
 
+    testConnection:
+        (params: { providerName: string }) =>
+        async (...[dispatch]): Promise<void> => {
+            await dispatch(
+                privateThunks.runProviderOperation({
+                    providerName: params.providerName,
+                    mutate: () =>
+                        dispatch(aiProvidersManagements.thunks.refreshProvider(params))
+                })
+            );
+        },
     setSelectedModelIds:
         (params: { providerName: string; modelIds: string[] }) =>
         (...[dispatch]) => {

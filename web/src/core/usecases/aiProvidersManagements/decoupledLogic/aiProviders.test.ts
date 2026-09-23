@@ -28,7 +28,8 @@ function createConfiguredProvider(
     return {
         providerType: "openai-compatible",
         apiBase: "https://corporate.example.com/v1",
-        description: undefined,
+        documentation: undefined,
+        logoUrl: undefined,
         authentification: { type: "none" },
         models: undefined,
         ...params
@@ -252,7 +253,8 @@ describe(symToStr({ getDefaultModel }), () => {
             name: "Corporate",
             providerType: "openai-compatible",
             apiBase: "https://corporate.example.com/v1",
-            description: undefined,
+            documentation: undefined,
+            logoUrl: undefined,
             authentification: { type: "none" },
             modelIds: undefined,
             auth: { stateDescription: "not required" },

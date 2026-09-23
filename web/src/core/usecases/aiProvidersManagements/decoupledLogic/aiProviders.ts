@@ -1,5 +1,4 @@
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
-import type { LocalizedString } from "core/ports/OnyxiaApi/Language";
 import type { AiModel } from "core/tools/fetchAiModels";
 import type { PersistedAiConfig } from "./persistedAiConfig";
 
@@ -21,7 +20,8 @@ export namespace AiProvider {
     /** Provisioned by the instance configuration (the `AI` env). */
     export type ConfiguredByAdmin = Common & {
         origin: "configured by admin";
-        description: LocalizedString | undefined;
+        documentation: AiConfig.Documentation | undefined;
+        logoUrl: AiConfig.LogoUrl | undefined;
         authentification: AiConfig.Provider["authentification"];
         /** Model ids pinned by the instance configuration, when provided. */
         modelIds: string[] | undefined;
@@ -88,7 +88,8 @@ export function createAiProviders(params: {
                 name: provider_config.name,
                 providerType: provider_config.providerType,
                 apiBase: provider_config.apiBase,
-                description: provider_config.description,
+                documentation: provider_config.documentation,
+                logoUrl: provider_config.logoUrl,
                 authentification: provider_config.authentification,
                 modelIds: provider_config.models,
                 selectedModelIds:

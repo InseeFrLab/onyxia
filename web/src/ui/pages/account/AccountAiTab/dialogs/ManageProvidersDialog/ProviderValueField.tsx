@@ -57,7 +57,7 @@ export const ProviderValueField = memo((props: Props) => {
         setIsCopied(true);
     });
 
-    const isEditable = onChange !== undefined && onSave !== undefined;
+    const isEditable = onChange !== undefined;
 
     return (
         <form
@@ -104,7 +104,7 @@ export const ProviderValueField = memo((props: Props) => {
                 >
                     {isCopied ? t("copied") : t("copy")}
                 </Button>
-                {isEditable && (
+                {onSave !== undefined && (
                     <Button
                         type="submit"
                         disabled={disabled}

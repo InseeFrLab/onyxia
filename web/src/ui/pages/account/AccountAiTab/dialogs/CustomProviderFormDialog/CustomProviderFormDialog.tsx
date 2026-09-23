@@ -1,10 +1,10 @@
 import { getCoreSync, useCoreState } from "core";
 import { declareComponentKeys } from "i18nifty";
 import { memo } from "react";
-import { CustomProviderFormDialogView } from "./CustomProviderFormDialog/CustomProviderFormDialogView";
+import { CustomProviderFormDialogView } from "./CustomProviderFormDialogView";
 
-export { CustomProviderFormDialogView } from "./CustomProviderFormDialog/CustomProviderFormDialogView";
-export type { ViewProps } from "./CustomProviderFormDialog/types";
+export { CustomProviderFormDialogView } from "./CustomProviderFormDialogView";
+export type { ViewProps } from "./types";
 
 export const CustomProviderFormDialog = memo(() => {
     const form = useCoreState("aiProviderCreationFormUiController", "main");
@@ -36,6 +36,7 @@ export const CustomProviderFormDialog = memo(() => {
                                     : "testing"
                       }
             }
+            selectedModels={form.selectedModelIds_draft}
             canSave={form.canSubmit}
             canTest={form.canTestConnection}
             supportedProtocols={form.supportedProviderTypes}
@@ -50,6 +51,11 @@ export const CustomProviderFormDialog = memo(() => {
                 })
             }
             onTest={() => aiProviderCreationFormUiController.testConnection()}
+            onSelectedModelsChange={selectedModelIds =>
+                aiProviderCreationFormUiController.changeSelectedModelIds({
+                    selectedModelIds
+                })
+            }
             onSave={() => aiProviderCreationFormUiController.submit()}
             hasSubmissionError={form.hasSubmissionFailed}
             nameIsValid={form.isNameValid}
@@ -67,7 +73,6 @@ const { i18n } = declareComponentKeys<
     | "add custom provider title"
     | "edit custom provider title"
     | "custom provider section title"
-    | "custom provider section subtitle"
     | "custom provider label field"
     | "custom provider type field"
     | "openai provider option"
@@ -80,12 +85,10 @@ const { i18n } = declareComponentKeys<
     | "custom provider api key field"
     | "verification section title"
     | "verification section subtitle"
-    | "custom provider model field"
     | "provider test"
     | "provider testing"
     | "provider test success"
     | "provider test error"
-    | "set as default provider"
     | "provider save"
     | "provider update"
     | "provider cancel"
