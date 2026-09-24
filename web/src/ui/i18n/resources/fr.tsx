@@ -99,8 +99,8 @@ export const translations: Translations<"fr"> = {
             `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
     },
     AccountAiTab: {
-        "default model": "Modèle par défaut",
-        "no default model": "Aucun modèle par défaut",
+        "ai providers title": "Fournisseurs d'IA",
+        "default model": "Choisir un modèle par défaut",
         "save failed": "Impossible d’enregistrer les modifications. Réessayez.",
         retry: "Réessayer",
         "api-key not provided": "Une clé API est nécessaire pour ce provider.",
@@ -128,7 +128,6 @@ export const translations: Translations<"fr"> = {
     },
     ModelsSelection: {
         "model label": "Modèles présélectionnés",
-        "not defined": "Non défini",
         "no models available": "Aucun modèle disponible",
         "no matching models": "Aucun modèle correspondant",
         "deselect all": "Tout désélectionner",

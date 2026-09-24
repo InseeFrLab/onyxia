@@ -2,6 +2,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
+import ListSubheader from "@mui/material/ListSubheader";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { getIconUrlByName } from "lazy-icons";
@@ -9,7 +10,7 @@ import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useId, useState } from "react";
 import { tss } from "tss";
-import { getFieldStyle } from "../../shared/fieldStyle";
+import { getFieldStyle } from "./fieldStyle";
 
 export function FormTextField(props: {
     label: string;
@@ -78,16 +79,51 @@ export function FormTextField(props: {
     );
 }
 
+export type FormSelectOption = {
+    value: string;
+    label: string;
+    iconUrl?: ThemedAssetUrl;
+    /** What the field shows once the option is picked, `label` by default */
+    selectedLabel?: string;
+};
+
+export type FormSelectOptionGroup = {
+    groupLabel: string;
+    options: FormSelectOption[];
+};
+
 export function FormSelectField(props: {
     label: string;
     value: string;
     onChange: (value: string) => void;
-    options: { value: string; label: string; iconUrl?: ThemedAssetUrl }[];
+    options: (FormSelectOption | FormSelectOptionGroup)[];
+    /** Shown, as such, when the value matches no option */
+    placeholder?: string;
 }) {
-    const { label, value, onChange, options } = props;
+    const { label, value, onChange, options, placeholder } = props;
     const labelId = useId();
     const { classes, cx } = useStyles();
     const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
+
+    const options_flat = options.flatMap(option =>
+        "groupLabel" in option ? option.options : [option]
+    );
+
+    const renderOptionIcon = (option: FormSelectOption) =>
+        option.iconUrl !== undefined && (
+            <img
+                className={classes.optionIcon}
+                src={resolveThemedAssetUrl(option.iconUrl)}
+                alt=""
+            />
+        );
+
+    const renderOption = (option: FormSelectOption) => (
+        <MenuItem key={option.value} value={option.value} className={classes.menuItem}>
+            {renderOptionIcon(option)}
+            {option.label}
+        </MenuItem>
+    );
 
     return (
         <FormControl fullWidth={true} className={cx(classes.control, classes.select)}>
@@ -100,22 +136,22 @@ export function FormSelectField(props: {
                 onChange={event => onChange(event.target.value)}
                 labelId={labelId}
                 renderValue={selectedValue => {
-                    const option = options.find(option => option.value === selectedValue);
+                    const option = options_flat.find(
+                        option => option.value === selectedValue
+                    );
 
                     if (option === undefined) {
-                        return selectedValue;
+                        return placeholder === undefined ? (
+                            selectedValue
+                        ) : (
+                            <span className={classes.placeholder}>{placeholder}</span>
+                        );
                     }
 
                     return (
                         <>
-                            {option.iconUrl !== undefined && (
-                                <img
-                                    className={classes.optionIcon}
-                                    src={resolveThemedAssetUrl(option.iconUrl)}
-                                    alt=""
-                                />
-                            )}
-                            {option.label}
+                            {renderOptionIcon(option)}
+                            {option.selectedLabel ?? option.label}
                         </>
                     );
                 }}
@@ -124,22 +160,20 @@ export function FormSelectField(props: {
                     MenuListProps: { className: classes.menuList }
                 }}
             >
-                {options.map(option => (
-                    <MenuItem
-                        key={option.value}
-                        value={option.value}
-                        className={classes.menuItem}
-                    >
-                        {option.iconUrl !== undefined && (
-                            <img
-                                className={classes.optionIcon}
-                                src={resolveThemedAssetUrl(option.iconUrl)}
-                                alt=""
-                            />
-                        )}
-                        {option.label}
-                    </MenuItem>
-                ))}
+                {/* NOTE: Select wants its items as direct children, not in fragments */}
+                {options.flatMap(option =>
+                    "groupLabel" in option
+                        ? [
+                              <ListSubheader
+                                  key={`group/${option.groupLabel}`}
+                                  className={classes.groupLabel}
+                              >
+                                  {option.groupLabel}
+                              </ListSubheader>,
+                              ...option.options.map(renderOption)
+                          ]
+                        : [renderOption(option)]
+                )}
             </Select>
         </FormControl>
     );
@@ -208,8 +242,20 @@ const useStyles = tss
                 gap: theme.spacing(1),
                 padding: theme.spacing(2)
             },
-            menuItem: {
+            // NOTE: In a scrolling flex column: their height is their content's
+            groupLabel: {
+                flexShrink: 0,
                 ...theme.typography.variants["label 1"].style,
+                padding: theme.spacing(2),
+                borderRadius: theme.spacing(2),
+                backgroundColor: theme.colors.useCases.surfaces.background,
+                color: theme.colors.useCases.typography.textTertiary
+            },
+            placeholder: fieldStyle.placeholder,
+            menuItem: {
+                flexShrink: 0,
+                ...theme.typography.variants["label 1"].style,
+                minHeight: "auto",
                 gap: theme.spacing(2),
                 padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
                 borderRadius: theme.spacing(2),

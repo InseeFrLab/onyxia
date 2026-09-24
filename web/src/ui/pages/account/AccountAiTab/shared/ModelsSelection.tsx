@@ -76,7 +76,7 @@ export const ModelsSelection = memo((props: Props) => {
                             }
 
                             return props.selectedModels.length === 0
-                                ? t("not defined")
+                                ? t("model label")
                                 : undefined;
                         })()}
                         slotProps={{
@@ -194,7 +194,6 @@ const useStyles = tss.withName({ ModelsSelection }).create(({ theme }) => {
 });
 const { i18n } = declareComponentKeys<
     | "model label"
-    | "not defined"
     | "no models available"
     | "no matching models"
     | "deselect all"

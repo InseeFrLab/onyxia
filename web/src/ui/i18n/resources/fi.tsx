@@ -98,13 +98,13 @@ export const translations: Translations<"fi"> = {
             `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "Tekoälypalveluntarjoajat",
+        "default model": "Valitse oletusmalli",
+        "save failed": "Muutosten tallentaminen epäonnistui. Yritä uudelleen.",
+        retry: "Yritä uudelleen",
+        "api-key not provided": "Tämä palveluntarjoaja vaatii API-avaimen.",
+        "provided by organization": "Organisaatiosi tarjoama",
+        manage: "Hallinnoi",
         "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
         "custom providers section title": "Mukautetut tekoälyntarjoajat",
         "add custom ai provider": "Lisää mukautettu tekoälyntarjoaja"
@@ -127,7 +127,6 @@ export const translations: Translations<"fi"> = {
     },
     ModelsSelection: {
         "model label": "Malli",
-        "not defined": "Ei määritetty",
         "no models available": "Malleja ei ole saatavilla",
         "no matching models": "Ei vastaavia malleja",
         "deselect all": "Poista kaikki valinnat",
@@ -152,10 +151,12 @@ export const translations: Translations<"fi"> = {
         "save changes": "Tallenna muutokset"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error":
+            "Palveluntarjoajan tallentaminen epäonnistui. Yritä uudelleen.",
+        "invalid name":
+            "Valitse yksilöllinen palveluntarjoajan nimi ilman kauttaviivaa (/).",
         "invalid api base": "Anna kelvollinen HTTP(S)-URL.",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Mukautetut tekoälyntarjoajat",
         "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider section title": "Mukautetut tekoälyntarjoajat",

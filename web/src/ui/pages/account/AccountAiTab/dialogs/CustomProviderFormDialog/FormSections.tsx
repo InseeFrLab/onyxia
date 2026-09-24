@@ -8,7 +8,7 @@ import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { ModelsSelection } from "../../shared/ModelsSelection";
 import { providerTypeLogoUrl } from "../../shared/providerTypeLogoUrl";
-import { FormSelectField, FormTextField } from "./FormFields";
+import { FormSelectField, FormTextField } from "../../shared/FormFields";
 import type { FormTest } from "./types";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 

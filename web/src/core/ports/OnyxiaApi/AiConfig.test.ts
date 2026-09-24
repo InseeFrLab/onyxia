@@ -13,6 +13,7 @@ describe("AI environment configuration", () => {
         expect(parseAiConfigFromEnvValue({ envValue: "" })).toEqual({
             disable: false,
             disallowUserToAddProviders: false,
+            description: undefined,
             providers: []
         });
     });
@@ -154,5 +155,13 @@ describe("AI environment configuration", () => {
         expect(() => parseAiConfigFromEnvValue({ envValue: "{" })).toThrow(
             "not a valid JSON5"
         );
+    });
+    it("keeps the description written by the admin", () => {
+        expect(
+            parse({
+                description: { en: "[Read more](https://example.com)", fr: "Lire" },
+                providers: provider
+            }).description
+        ).toEqual({ en: "[Read more](https://example.com)", fr: "Lire" });
     });
 });

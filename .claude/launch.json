@@ -1,0 +1,11 @@
+{
+    "version": "0.0.1",
+    "configurations": [
+        {
+            "name": "storybook",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": ["--cwd", "web", "storybook", "--no-open"],
+            "port": 6006
+        }
+    ]
+}

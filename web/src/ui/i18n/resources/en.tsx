@@ -97,8 +97,8 @@ export const translations: Translations<"en"> = {
             `These credentials are valid for the next ${howMuchTime}`
     },
     AccountAiTab: {
-        "default model": "Default model",
-        "no default model": "No default model",
+        "ai providers title": "AI Providers",
+        "default model": "Choose a default model",
         "save failed": "Unable to save your changes. Please try again.",
         retry: "Retry",
         "api-key not provided": "An API key is required for this provider.",
@@ -126,7 +126,6 @@ export const translations: Translations<"en"> = {
     },
     ModelsSelection: {
         "model label": "Selected models",
-        "not defined": "Not defined",
         "no models available": "No models available",
         "no matching models": "No matching models",
         "deselect all": "Deselect all",

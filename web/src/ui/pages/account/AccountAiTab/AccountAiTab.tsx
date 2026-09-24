@@ -2,10 +2,12 @@ import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreState, getCoreSync, getCore } from "core";
 import { Button } from "onyxia-ui/Button";
-import { Text } from "onyxia-ui/Text";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { Select, MenuItem, Alert, Stack, Box } from "@mui/material";
+import { Alert, Stack, Box } from "@mui/material";
 import { ProviderCard } from "./ProviderCard";
+import { FormSelectField } from "./shared/FormFields";
+import { Text } from "onyxia-ui/Text";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { AddCustomProviderButton } from "./AddCustomProviderButton";
 import { providerTypeLogoUrl } from "./shared/providerTypeLogoUrl";
 import { ManageProvidersDialog } from "./dialogs/ManageProvidersDialog";
@@ -77,26 +79,33 @@ function Component(props: Props) {
                 </Alert>
             )}
             <Stack spacing={1}>
-                <Text typo="label 1">{t("default model")}</Text>
-                <Select
-                    value={state.defaultModel ?? ""}
-                    displayEmpty
-                    inputProps={{ "aria-label": t("default model") }}
-                    onChange={event =>
-                        account.setDefaultModel({
-                            model:
-                                event.target.value === "" ? undefined : event.target.value
-                        })
-                    }
-                >
-                    <MenuItem value="">{t("no default model")}</MenuItem>
-                    {state.defaultModelOptions.map(({ value: model }) => (
-                        <MenuItem key={model} value={model}>
-                            {model}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <Text typo="section heading">{t("ai providers title")}</Text>
+                {state.description !== undefined && (
+                    <LocalizedMarkdown className={classes.description}>
+                        {state.description}
+                    </LocalizedMarkdown>
+                )}
             </Stack>
+            {/* As wide as a provider card */}
+            <Box className={classes.providerGrid}>
+                <FormSelectField
+                    label={t("default model")}
+                    placeholder={t("default model")}
+                    value={state.defaultModel ?? ""}
+                    onChange={model => account.setDefaultModel({ model })}
+                    options={state.defaultModelOptionGroups.map(
+                        ({ providerName, options }) => ({
+                            groupLabel: providerName,
+                            options: options.map(({ value, modelId }) => ({
+                                value,
+                                label: modelId,
+                                // Once picked, the provider is needed too
+                                selectedLabel: value
+                            }))
+                        })
+                    )}
+                />
+            </Box>
             <Box className={classes.providerGrid}>
                 {state.providers.map(provider => {
                     const isDisabled =
@@ -292,6 +301,13 @@ const useStyles = tss.withName({ AccountAiTab }).create(({ theme }) => {
                 gridTemplateColumns: "1fr"
             }
         },
+        description: {
+            ...theme.typography.variants["body 1"].style,
+            color: theme.colors.useCases.typography.textSecondary,
+            "& > p": {
+                margin: 0
+            }
+        },
         addCustomProviderButton: {
             // Always on its own row, below the providers, across the whole tab
             gridColumn: "1 / -1"
@@ -300,8 +316,8 @@ const useStyles = tss.withName({ AccountAiTab }).create(({ theme }) => {
 });
 
 const { i18n } = declareComponentKeys<
+    | "ai providers title"
     | "default model"
-    | "no default model"
     | "save failed"
     | "retry"
     | "api-key not provided"

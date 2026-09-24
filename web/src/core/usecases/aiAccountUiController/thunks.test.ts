@@ -546,3 +546,17 @@ it("doesn't report a provider as connected once its API key is removed", async (
     // What was listed with the removed key must not be taken for a connection
     expect(getCardState()).toBe("setup required");
 });
+
+it("groups the default model options by provider, leaving out the ones without models", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    await core.functions.aiAccountUiController.setSelectedModelIds({
+        providerName: "Public",
+        modelIds: ["a"]
+    });
+
+    expect(core.states.aiAccountUiController.getMain().defaultModelOptionGroups).toEqual([
+        { providerName: "Public", options: [{ value: "Public/a", modelId: "a" }] }
+    ]);
+});

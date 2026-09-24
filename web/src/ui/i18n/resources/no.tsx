@@ -98,13 +98,13 @@ export const translations: Translations<"no"> = {
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "KI-leverandører",
+        "default model": "Velg en standardmodell",
+        "save failed": "Kunne ikke lagre endringene. Prøv igjen.",
+        retry: "Prøv igjen",
+        "api-key not provided": "Denne leverandøren krever en API-nøkkel.",
+        "provided by organization": "Levert av organisasjonen din",
+        manage: "Administrer",
         "gateway error": "Kunne ikke initialisere AI-gatewayen.",
         "custom providers section title": "Tilpassede AI-leverandører",
         "add custom ai provider": "Legg til tilpasset AI-leverandør"
@@ -127,7 +127,6 @@ export const translations: Translations<"no"> = {
     },
     ModelsSelection: {
         "model label": "Modell",
-        "not defined": "Ikke definert",
         "no models available": "Ingen modeller tilgjengelig",
         "no matching models": "Ingen samsvarende modeller",
         "deselect all": "Fjern alle valg",
@@ -152,10 +151,10 @@ export const translations: Translations<"no"> = {
         "save changes": "Lagre endringer"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error": "Kunne ikke lagre denne leverandøren. Prøv igjen.",
+        "invalid name": "Velg et unikt leverandørnavn uten skråstrek (/).",
         "invalid api base": "Skriv inn en gyldig HTTP(S)-URL.",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Tilpassede AI-leverandører",
         "edit custom provider title": "Rediger AI-leverandør",
         "custom provider section title": "Tilpassede AI-leverandører",

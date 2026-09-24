@@ -98,13 +98,13 @@ export const translations: Translations<"es"> = {
             `Estas credenciales son válidas por los próximos ${howMuchTime}`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "Proveedores de IA",
+        "default model": "Elegir un modelo predeterminado",
+        "save failed": "No se pudieron guardar los cambios. Inténtelo de nuevo.",
+        retry: "Reintentar",
+        "api-key not provided": "Este proveedor requiere una clave de API.",
+        "provided by organization": "Proporcionado por su organización",
+        manage: "Gestionar",
         "gateway error": "No se pudo inicializar la pasarela de IA.",
         "custom providers section title": "Proveedores de IA personalizados",
         "add custom ai provider": "Añadir un proveedor de IA personalizado"
@@ -127,7 +127,6 @@ export const translations: Translations<"es"> = {
     },
     ModelsSelection: {
         "model label": "Modelo",
-        "not defined": "No definido",
         "no models available": "No hay modelos disponibles",
         "no matching models": "Ningún modelo coincide",
         "deselect all": "Deseleccionar todo",
@@ -152,10 +151,10 @@ export const translations: Translations<"es"> = {
         "save changes": "Guardar cambios"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error": "No se pudo guardar este proveedor. Inténtelo de nuevo.",
+        "invalid name": "Elija un nombre de proveedor único sin barra (/).",
         "invalid api base": "Introduzca una URL HTTP(S) válida.",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Proveedores de IA personalizados",
         "edit custom provider title": "Editar proveedor de IA",
         "custom provider section title": "Proveedores de IA personalizados",

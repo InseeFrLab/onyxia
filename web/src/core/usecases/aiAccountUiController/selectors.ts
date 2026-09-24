@@ -5,6 +5,7 @@ import {
     stringifyModel,
     getProviderConnectionState
 } from "core/usecases/aiProvidersManagements";
+import { getRootContext } from "core/rootContext";
 import { name } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
@@ -68,24 +69,26 @@ const main = createSelector(
         }));
 
         // The default model is picked among what the user ticked, across all providers.
-        const defaultModelOptions = providers
-            .map(provider =>
-                provider.selectedModelIds.map(modelId => ({
+        const defaultModelOptionGroups = providers
+            .filter(provider => provider.selectedModelIds.length !== 0)
+            .map(provider => ({
+                providerName: provider.name,
+                options: provider.selectedModelIds.map(modelId => ({
                     value: stringifyModel({
                         providerName: provider.name,
                         modelId
                     }),
-                    providerName: provider.name,
                     modelId
                 }))
-            )
-            .flat();
+            }));
 
         return {
             stateDescription,
             isReady: true as const,
             providers,
-            defaultModelOptions,
+            defaultModelOptionGroups,
+            /** Markdown written by the admin in the instance configuration */
+            description: getRootContext().aiConfig.description,
             defaultModel:
                 defaultModel === undefined ? undefined : stringifyModel(defaultModel),
             configSaveState

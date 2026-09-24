@@ -98,13 +98,14 @@ export const translations: Translations<"nl"> = {
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "AI-providers",
+        "default model": "Kies een standaardmodel",
+        "save failed":
+            "Uw wijzigingen konden niet worden opgeslagen. Probeer het opnieuw.",
+        retry: "Opnieuw proberen",
+        "api-key not provided": "Voor deze provider is een API-sleutel vereist.",
+        "provided by organization": "Aangeboden door uw organisatie",
+        manage: "Beheren",
         "gateway error": "Kan de AI-gateway niet initialiseren.",
         "custom providers section title": "Aangepaste AI-providers",
         "add custom ai provider": "Aangepaste AI-provider toevoegen"
@@ -127,7 +128,6 @@ export const translations: Translations<"nl"> = {
     },
     ModelsSelection: {
         "model label": "Model",
-        "not defined": "Niet gedefinieerd",
         "no models available": "Geen modellen beschikbaar",
         "no matching models": "Geen overeenkomende modellen",
         "deselect all": "Alles deselecteren",
@@ -152,10 +152,11 @@ export const translations: Translations<"nl"> = {
         "save changes": "Wijzigingen opslaan"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error":
+            "Deze provider kon niet worden opgeslagen. Probeer het opnieuw.",
+        "invalid name": "Kies een unieke providernaam zonder schuine streep (/).",
         "invalid api base": "Voer een geldige HTTP(S)-URL in.",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Aangepaste AI-providers",
         "edit custom provider title": "AI-provider bewerken",
         "custom provider section title": "Aangepaste AI-providers",

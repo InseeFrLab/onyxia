@@ -99,13 +99,14 @@ export const translations: Translations<"de"> = {
             `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "KI-Anbieter",
+        "default model": "Standardmodell auswählen",
+        "save failed":
+            "Ihre Änderungen konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+        retry: "Erneut versuchen",
+        "api-key not provided": "Für diesen Anbieter ist ein API-Schlüssel erforderlich.",
+        "provided by organization": "Von Ihrer Organisation bereitgestellt",
+        manage: "Verwalten",
         "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
         "custom providers section title": "Benutzerdefinierte KI-Anbieter",
         "add custom ai provider": "Benutzerdefinierten KI-Anbieter hinzufügen"
@@ -128,7 +129,6 @@ export const translations: Translations<"de"> = {
     },
     ModelsSelection: {
         "model label": "Modell",
-        "not defined": "Nicht definiert",
         "no models available": "Keine Modelle verfügbar",
         "no matching models": "Keine passenden Modelle",
         "deselect all": "Alle abwählen",
@@ -153,10 +153,12 @@ export const translations: Translations<"de"> = {
         "save changes": "Änderungen speichern"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error":
+            "Dieser Anbieter konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+        "invalid name":
+            "Wählen Sie einen eindeutigen Anbieternamen ohne Schrägstrich (/).",
         "invalid api base": "Geben Sie eine gültige HTTP(S)-URL ein.",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Benutzerdefinierte KI-Anbieter",
         "edit custom provider title": "KI-Anbieter bearbeiten",
         "custom provider section title": "Benutzerdefinierte KI-Anbieter",

@@ -89,13 +89,13 @@ export const translations: Translations<"zh-CN"> = {
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "AI 提供商",
+        "default model": "选择默认模型",
+        "save failed": "无法保存您的更改，请重试。",
+        retry: "重试",
+        "api-key not provided": "此提供商需要 API 密钥。",
+        "provided by organization": "由您的组织提供",
+        manage: "管理",
         "gateway error": "无法初始化 AI 网关。",
         "custom providers section title": "自定义 AI 提供商",
         "add custom ai provider": "添加自定义 AI 提供商"
@@ -117,7 +117,6 @@ export const translations: Translations<"zh-CN"> = {
     },
     ModelsSelection: {
         "model label": "模型",
-        "not defined": "未定义",
         "no models available": "没有可用的模型",
         "no matching models": "没有匹配的模型",
         "deselect all": "取消全选",
@@ -141,10 +140,10 @@ export const translations: Translations<"zh-CN"> = {
         "save changes": "保存更改"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error": "无法保存此提供商，请重试。",
+        "invalid name": "请选择一个不含斜杠 (/) 的唯一提供商名称。",
         "invalid api base": "请输入有效的 HTTP(S) URL。",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "自定义 AI 提供商",
         "edit custom provider title": "编辑 AI 提供商",
         "custom provider section title": "自定义 AI 提供商",

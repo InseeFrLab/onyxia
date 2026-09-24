@@ -18,6 +18,7 @@ function createAiConfig(providers: AiConfig.Provider[]): AiConfig {
     return {
         disable: false,
         disallowUserToAddProviders: false,
+        description: undefined,
         providers
     };
 }

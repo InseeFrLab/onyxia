@@ -9,6 +9,7 @@ import type { OidcParams_Partial } from "./OidcParams";
 type AI_EnvValue_ExpectedShape = {
     disable?: boolean;
     disallowUserToAddProviders?: boolean;
+    description?: LocalizedString;
     providers: ArrayOrNot<AI_EnvValue_ExpectedShape.Provider>;
 };
 
@@ -99,6 +100,7 @@ const zAI_EnvValue_ExpectedShape = (() => {
     const zTargetType = z.object({
         disable: z.boolean().optional(),
         disallowUserToAddProviders: z.boolean().optional(),
+        description: zLocalizedString.optional(),
         providers: z.union([zProvider, z.array(zProvider)])
     });
 
@@ -112,6 +114,8 @@ const zAI_EnvValue_ExpectedShape = (() => {
 export type AiConfig = {
     disable: boolean;
     disallowUserToAddProviders: boolean;
+    /** Markdown, written by the admin, introducing AI in the account tab */
+    description: LocalizedString | undefined;
     providers: AiConfig.Provider[];
 };
 
@@ -165,6 +169,7 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
         return {
             disable: false,
             disallowUserToAddProviders: false,
+            description: undefined,
             providers: []
         };
     }
@@ -191,6 +196,7 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
     return {
         disable: config.disable ?? false,
         disallowUserToAddProviders: config.disallowUserToAddProviders ?? false,
+        description: config.description,
         providers: providers.map(
             (provider): AiConfig.Provider => ({
                 name: provider.name,

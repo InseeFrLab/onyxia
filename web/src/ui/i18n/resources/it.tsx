@@ -97,13 +97,13 @@ export const translations: Translations<"it"> = {
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
     },
     AccountAiTab: {
-        "default model": undefined,
-        "no default model": undefined,
-        "save failed": undefined,
-        retry: undefined,
-        "api-key not provided": undefined,
-        "provided by organization": undefined,
-        manage: undefined,
+        "ai providers title": "Provider di IA",
+        "default model": "Scegli un modello predefinito",
+        "save failed": "Impossibile salvare le modifiche. Riprova.",
+        retry: "Riprova",
+        "api-key not provided": "Per questo provider è necessaria una chiave API.",
+        "provided by organization": "Fornito dalla tua organizzazione",
+        manage: "Gestisci",
         "gateway error": "Impossibile inizializzare il gateway IA.",
         "custom providers section title": "Provider IA personalizzati",
         "add custom ai provider": "Aggiungi un provider IA personalizzato"
@@ -126,7 +126,6 @@ export const translations: Translations<"it"> = {
     },
     ModelsSelection: {
         "model label": "Modello",
-        "not defined": "Non definito",
         "no models available": "Nessun modello disponibile",
         "no matching models": "Nessun modello corrispondente",
         "deselect all": "Deseleziona tutto",
@@ -151,10 +150,10 @@ export const translations: Translations<"it"> = {
         "save changes": "Salva modifiche"
     },
     CustomProviderFormDialog: {
-        "submission error": undefined,
-        "invalid name": undefined,
+        "submission error": "Impossibile salvare questo provider. Riprova.",
+        "invalid name": "Scegli un nome di provider univoco senza barra (/).",
         "invalid api base": "Inserisci un URL HTTP(S) valido.",
-        "deepseek provider option": undefined,
+        "deepseek provider option": "DeepSeek",
         "add custom provider title": "Provider IA personalizzati",
         "edit custom provider title": "Modifica provider IA",
         "custom provider section title": "Provider IA personalizzati",
@@ -612,8 +611,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },
