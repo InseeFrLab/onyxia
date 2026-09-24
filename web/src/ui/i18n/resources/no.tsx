@@ -147,7 +147,6 @@ export const translations: Translations<"no"> = {
         "api key": "API-nøkkel",
         "refresh credentials": "Oppdater legitimasjon",
         "test connection": "Test tilkoblingen",
-        "edit provider": "Rediger leverandør",
         "delete provider": "Slett leverandør",
         cancel: "Avbryt",
         "save changes": "Lagre endringer"

@@ -39,17 +39,6 @@ export const thunks = {
             );
         },
 
-    testConnection:
-        (params: { providerName: string }) =>
-        async (...[dispatch]): Promise<void> => {
-            await dispatch(
-                privateThunks.runProviderOperation({
-                    providerName: params.providerName,
-                    mutate: () =>
-                        dispatch(aiProvidersManagements.thunks.refreshProvider(params))
-                })
-            );
-        },
     setSelectedModelIds:
         (params: { providerName: string; modelIds: string[] }) =>
         (...[dispatch]) => {
@@ -59,19 +48,6 @@ export const thunks = {
         () =>
         (...[dispatch]) => {
             dispatch(aiProvidersManagements.thunks.saveConfig());
-        },
-    setApiKey:
-        (params: { providerName: string; apiKey: string }) =>
-        async (...args): Promise<void> => {
-            const [dispatch] = args;
-
-            await dispatch(
-                privateThunks.runProviderOperation({
-                    providerName: params.providerName,
-                    mutate: () =>
-                        dispatch(aiProvidersManagements.thunks.setApiKey(params))
-                })
-            );
         },
     deleteUserProvider:
         (params: { providerName: string }) =>

@@ -2,10 +2,10 @@ import type { Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
-import { fetchAiModels } from "core/tools/fetchAiModels";
+import { fetchAiModels, type AiModel } from "core/tools/fetchAiModels";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
 import { providerTypeDefaultApiBase } from "./decoupledLogic/providerTypeDefaultApiBase";
-import { actions, type ChangeValueParams } from "./state";
+import { actions, type ChangeValueParams, type State } from "./state";
 import { selectors } from "./selectors";
 
 export const thunks = {
@@ -17,15 +17,16 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            assert(
-                dispatch(aiProvidersManagements.thunks.canUserCreateProviders()),
-                "the instance configuration doesn't let the user add providers"
-            );
-
             if (providerName === undefined) {
+                assert(
+                    dispatch(aiProvidersManagements.thunks.canUserCreateProviders()),
+                    "the instance configuration doesn't let the user add providers"
+                );
+
                 dispatch(
                     actions.opened({
                         providerName_current: undefined,
+                        providerOrigin: "created by user",
                         formValues: {
                             name: "",
                             providerType: undefined,
@@ -45,10 +46,6 @@ export const thunks = {
                 ?.find(aiProvider => aiProvider.name === providerName);
 
             assert(aiProvider !== undefined);
-            assert(
-                aiProvider.origin === "created by user",
-                "only the providers the user created can be edited"
-            );
 
             const { apiKeyByProviderName } =
                 aiProvidersManagements.protectedSelectors.persistedAiConfig(getState());
@@ -56,19 +53,16 @@ export const thunks = {
             dispatch(
                 actions.opened({
                     providerName_current: aiProvider.name,
+                    providerOrigin: aiProvider.origin,
                     formValues: {
                         name: aiProvider.name,
                         providerType: aiProvider.providerType,
                         apiBase: aiProvider.apiBase,
                         apiKey: apiKeyByProviderName[aiProvider.name] ?? ""
                     },
-                    connectionTest:
-                        aiProvider.models.stateDescription === "loaded"
-                            ? {
-                                  stateDescription: "succeeded",
-                                  availableModels: aiProvider.models.availableModels
-                              }
-                            : { stateDescription: "not tested" },
+                    // What we already know from talking to the provider with the saved
+                    // configuration, so that the user doesn't have to test it again.
+                    connectionTest: getConnectionTestFromRuntime({ aiProvider }),
                     selectedModelIds_draft: aiProvider.selectedModelIds
                 })
             );
@@ -90,6 +84,12 @@ export const thunks = {
             if (!form.isOpen || form.isSubmitting) {
                 return;
             }
+
+            assert(
+                form.providerOrigin === "created by user" ||
+                    (params.key === "apiKey" && form.canEditApiKey),
+                "only the API key of a provider configured by the admin can be changed"
+            );
 
             dispatch(actions.formValueChanged(params));
         },
@@ -181,6 +181,32 @@ export const thunks = {
                     selectedModelIds: [...new Set(selectedModelIds)]
                 })
             );
+
+            if (!form.isModelSelectionSavedImmediately) {
+                return;
+            }
+
+            const aiProvider = aiProvidersManagements.selectors
+                .aiProviders(getState())
+                ?.find(aiProvider => aiProvider.name === form.providerName_current);
+
+            assert(aiProvider !== undefined);
+
+            const { models } = aiProvider;
+
+            assert(models.stateDescription === "loaded");
+
+            dispatch(
+                aiProvidersManagements.thunks.setSelectedModelIds({
+                    providerName: aiProvider.name,
+                    // The provider may list other models since we tested it
+                    modelIds: selectedModelIds.filter(modelId =>
+                        models.availableModels.some(
+                            availableModel => availableModel.id === modelId
+                        )
+                    )
+                })
+            );
         },
     testConnection:
         () =>
@@ -193,37 +219,90 @@ export const thunks = {
                 return;
             }
 
-            const { formValues } = form;
+            const { formValues, providerName_current } = form;
             const { providerType } = formValues;
 
             assert(providerType !== undefined);
 
             dispatch(actions.connectionTestStarted());
 
-            const availableModels = await (async () => {
+            const connectionTest = await (async (): Promise<
+                State.ConnectionTest & {
+                    stateDescription: "succeeded" | "failed";
+                }
+            > => {
+                // Nothing the user can type in: the provider is tested with what the
+                // admin configured, which doesn't involve any unsaved value.
+                if (
+                    form.providerOrigin === "configured by admin" &&
+                    !form.canEditApiKey
+                ) {
+                    assert(providerName_current !== undefined);
+
+                    await dispatch(
+                        aiProvidersManagements.thunks.refreshProvider({
+                            providerName: providerName_current
+                        })
+                    );
+
+                    const aiProvider = aiProvidersManagements.selectors
+                        .aiProviders(getState())
+                        ?.find(aiProvider => aiProvider.name === providerName_current);
+
+                    assert(aiProvider !== undefined);
+
+                    const connectionTest = getConnectionTestFromRuntime({ aiProvider });
+
+                    return connectionTest.stateDescription === "succeeded"
+                        ? connectionTest
+                        : { stateDescription: "failed" };
+                }
+
+                let availableModels: AiModel[];
+
                 try {
-                    return await fetchAiModels({
+                    availableModels = await fetchAiModels({
                         protocol: providerType,
                         apiBase: formValues.apiBase.trim(),
                         apiKey: formValues.apiKey.trim() || undefined
                     });
                 } catch {
-                    return undefined;
+                    return { stateDescription: "failed" };
                 }
+
+                const aiProvider = aiProvidersManagements.selectors
+                    .aiProviders(getState())
+                    ?.find(aiProvider => aiProvider.name === providerName_current);
+
+                return {
+                    stateDescription: "succeeded",
+                    // The admin may have pinned the list of models
+                    availableModels:
+                        aiProvider?.origin === "configured by admin" &&
+                        aiProvider.modelIds !== undefined
+                            ? aiProvider.modelIds.map(id => ({ id }))
+                            : availableModels
+                };
             })();
 
             const form_now = selectors.main(getState());
 
             // The user may have kept typing, or closed the form, while we were fetching:
             // a result that no longer describes what is on screen must be dropped.
-            if (!form_now.isOpen || !same(form_now.formValues, formValues)) {
+            if (
+                !form_now.isOpen ||
+                form_now.providerName_current !== providerName_current ||
+                !same(form_now.formValues, formValues)
+            ) {
                 return;
             }
 
             dispatch(
-                availableModels === undefined
-                    ? actions.connectionTestFailed()
-                    : actions.connectionTestSucceeded({ availableModels })
+                connectionTest.stateDescription === "succeeded"
+                    ? actions.connectionTestSucceeded({
+                          availableModels: connectionTest.availableModels
+                      })
+                    : actions.connectionTestFailed()
             );
         },
     submit:
@@ -246,34 +325,49 @@ export const thunks = {
 
             const providerName = formValues.name.trim();
 
+            const availableModels =
+                connectionTest.stateDescription === "succeeded"
+                    ? connectionTest.availableModels
+                    : undefined;
+
             try {
-                await dispatch(
-                    aiProvidersManagements.thunks.createOrUpdateUserProvider({
-                        providerName_current: form.providerName_current,
-                        providerName,
-                        providerType,
-                        apiBase: formValues.apiBase.trim().replace(/\/+$/, ""),
-                        apiKey: formValues.apiKey.trim(),
-                        availableModels:
-                            connectionTest.stateDescription === "succeeded"
-                                ? connectionTest.availableModels
-                                : undefined
-                    })
-                );
+                if (form.providerOrigin === "configured by admin") {
+                    // Nothing else of such a provider is saved in the user's config
+                    if (form.canEditApiKey) {
+                        await dispatch(
+                            aiProvidersManagements.thunks.setApiKey({
+                                providerName,
+                                apiKey: formValues.apiKey,
+                                availableModels
+                            })
+                        );
+                    }
+                } else {
+                    await dispatch(
+                        aiProvidersManagements.thunks.createOrUpdateUserProvider({
+                            providerName_current: form.providerName_current,
+                            providerName,
+                            providerType,
+                            apiBase: formValues.apiBase.trim().replace(/\/+$/, ""),
+                            apiKey: formValues.apiKey.trim(),
+                            availableModels
+                        })
+                    );
+                }
+
+                // The models can only be selected when the provider listed them
+                if (connectionTest.stateDescription === "succeeded") {
+                    dispatch(
+                        aiProvidersManagements.thunks.setSelectedModelIds({
+                            providerName,
+                            modelIds: selectedModelIds_draft
+                        })
+                    );
+                }
             } catch {
                 dispatch(actions.submissionFailed());
 
                 return;
-            }
-
-            // The models can only be selected when the provider listed them
-            if (connectionTest.stateDescription === "succeeded") {
-                dispatch(
-                    aiProvidersManagements.thunks.setSelectedModelIds({
-                        providerName,
-                        modelIds: selectedModelIds_draft
-                    })
-                );
             }
 
             dispatch(actions.submissionSucceeded());
@@ -303,4 +397,26 @@ function getAvailableProviderName(params: {
     }
 
     return providerName;
+}
+
+function getConnectionTestFromRuntime(params: {
+    aiProvider: aiProvidersManagements.AiProviderWithRuntime;
+}): State.ConnectionTest {
+    const { aiProvider } = params;
+
+    if (aiProvider.auth.stateDescription === "error") {
+        return { stateDescription: "failed" };
+    }
+
+    switch (aiProvider.models.stateDescription) {
+        case "loaded":
+            return {
+                stateDescription: "succeeded",
+                availableModels: aiProvider.models.availableModels
+            };
+        case "error":
+            return { stateDescription: "failed" };
+        default:
+            return { stateDescription: "not tested" };
+    }
 }

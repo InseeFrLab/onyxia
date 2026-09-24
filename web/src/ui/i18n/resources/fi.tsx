@@ -147,7 +147,6 @@ export const translations: Translations<"fi"> = {
         "api key": "API-avain",
         "refresh credentials": "Päivitä tunnistetiedot",
         "test connection": "Testaa yhteys",
-        "edit provider": "Muokkaa palveluntarjoajaa",
         "delete provider": "Poista palveluntarjoaja",
         cancel: "Peruuta",
         "save changes": "Tallenna muutokset"

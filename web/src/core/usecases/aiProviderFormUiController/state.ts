@@ -4,7 +4,7 @@ import { assert } from "tsafe/assert";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import type { AiModel } from "core/tools/fetchAiModels";
 
-export const name = "aiProviderCreationFormUiController";
+export const name = "aiProviderFormUiController";
 
 export type State = State.Closed | State.Open;
 
@@ -15,6 +15,11 @@ export declare namespace State {
         stateDescription: "open";
         /** The provider being edited, undefined when one is being created. */
         providerName_current: string | undefined;
+        /**
+         * A provider configured by the admin can't be redefined: at most the user can
+         * type in their own API key, when the provider accepts one.
+         */
+        providerOrigin: "created by user" | "configured by admin";
         formValues: FormValues;
         connectionTest: ConnectionTest;
         /** The models the user ticked before saving */
@@ -54,6 +59,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     providerName_current: string | undefined;
+                    providerOrigin: State.Open["providerOrigin"];
                     formValues: State.FormValues;
                     connectionTest: State.ConnectionTest;
                     selectedModelIds_draft: string[];
@@ -62,6 +68,7 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const {
                 providerName_current,
+                providerOrigin,
                 formValues,
                 connectionTest,
                 selectedModelIds_draft
@@ -70,6 +77,7 @@ export const { reducer, actions } = createUsecaseActions({
             return id<State.Open>({
                 stateDescription: "open",
                 providerName_current,
+                providerOrigin,
                 formValues,
                 connectionTest,
                 selectedModelIds_draft,

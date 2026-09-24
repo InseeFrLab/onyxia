@@ -18,6 +18,7 @@ export type Props = {
     onSave?: () => void | Promise<void>;
     saveLabel?: string;
     disabled?: boolean;
+    errorMessage?: string;
 };
 
 export const ProviderValueField = memo((props: Props) => {
@@ -29,7 +30,8 @@ export const ProviderValueField = memo((props: Props) => {
         onChange,
         onSave,
         saveLabel,
-        disabled = false
+        disabled = false,
+        errorMessage
     } = props;
 
     const { classes, cx } = useStyles();
@@ -67,8 +69,17 @@ export const ProviderValueField = memo((props: Props) => {
                 onSave?.();
             }}
         >
-            <Text typo="label 1">{label}</Text>
-            <div className={cx(classes.codeFrame, isCopied && classes.codeFrameCopied)}>
+            <Text typo="label 1" color={isEditable ? "primary" : "secondary"}>
+                {label}
+            </Text>
+            <div
+                className={cx(
+                    classes.codeFrame,
+                    isEditable ? classes.codeFrameEditable : classes.codeFrameReadOnly,
+                    errorMessage !== undefined && classes.codeFrameError,
+                    isCopied && classes.codeFrameCopied
+                )}
+            >
                 {isEditable ? (
                     <input
                         className={classes.codeFrameInput}
@@ -77,10 +88,11 @@ export const ProviderValueField = memo((props: Props) => {
                         disabled={disabled}
                         onChange={event => onChange(event.target.value)}
                         autoComplete="off"
+                        placeholder={label}
                         aria-label={label}
                     />
                 ) : (
-                    <Text typo="body 1" className={classes.codeFrameValue}>
+                    <Text typo="label 1" className={classes.codeFrameValue}>
                         {isHidden ? "•".repeat(Math.max(value.length, 30)) : value}
                     </Text>
                 )}
@@ -114,6 +126,11 @@ export const ProviderValueField = memo((props: Props) => {
                     </Button>
                 )}
             </div>
+            {errorMessage !== undefined && (
+                <Text typo="caption" className={classes.errorMessage}>
+                    {errorMessage}
+                </Text>
+            )}
         </form>
     );
 });
@@ -125,20 +142,37 @@ const useStyles = tss.withName({ ProviderValueField }).create(({ theme }) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(0.5)
+        gap: theme.spacing(1)
     },
     codeFrame: {
         minHeight: 45,
         display: "flex",
         alignItems: "center",
-        gap: theme.spacing(1.5),
-        padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
-        borderRadius: theme.spacing(1),
+        gap: theme.spacing(2.5),
+        padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
+        borderRadius: theme.spacing(2),
         border: "1px solid transparent",
-        backgroundColor: theme.colors.useCases.surfaces.surface2,
         minWidth: 0,
         boxSizing: "border-box",
         transition: "background-color 180ms ease, border-color 180ms ease"
+    },
+    codeFrameEditable: {
+        backgroundColor: theme.colors.useCases.surfaces.background,
+        "&:hover": {
+            backgroundColor: theme.colors.useCases.surfaces.surface2
+        },
+        "&:focus-within": {
+            borderColor: theme.colors.useCases.buttons.actionActive
+        }
+    },
+    codeFrameReadOnly: {
+        borderColor: theme.colors.useCases.surfaces.surface2,
+        backgroundColor: "transparent"
+    },
+    codeFrameError: {
+        "&&": {
+            borderColor: theme.colors.useCases.alertSeverity.error.main
+        }
     },
     codeFrameCopied: {
         borderColor: alpha(theme.colors.useCases.alertSeverity.success.main, 0.36),
@@ -150,7 +184,7 @@ const useStyles = tss.withName({ ProviderValueField }).create(({ theme }) => ({
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        fontFamily: "monospace"
+        color: theme.colors.useCases.typography.textPrimary
     },
     codeFrameInput: {
         flex: 1,
@@ -160,8 +194,12 @@ const useStyles = tss.withName({ ProviderValueField }).create(({ theme }) => ({
         padding: 0,
         color: theme.colors.useCases.typography.textPrimary,
         backgroundColor: "transparent",
-        ...theme.typography.variants["body 1"].style,
-        fontFamily: "monospace",
+        ...theme.typography.variants["label 1"].style,
+        "&::placeholder": {
+            ...theme.typography.variants["body 1"].style,
+            color: theme.colors.useCases.typography.textSecondary,
+            opacity: 1
+        },
         "&:disabled": {
             color: theme.colors.useCases.typography.textDisabled
         }
@@ -184,5 +222,8 @@ const useStyles = tss.withName({ ProviderValueField }).create(({ theme }) => ({
     },
     saveButton: {
         flexShrink: 0
+    },
+    errorMessage: {
+        color: theme.colors.useCases.alertSeverity.error.main
     }
 }));

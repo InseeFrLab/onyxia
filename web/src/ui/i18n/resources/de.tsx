@@ -148,7 +148,6 @@ export const translations: Translations<"de"> = {
         "api key": "API-Schlüssel",
         "refresh credentials": "Anmeldedaten aktualisieren",
         "test connection": "Verbindung testen",
-        "edit provider": "Anbieter bearbeiten",
         "delete provider": "Anbieter löschen",
         cancel: "Abbrechen",
         "save changes": "Änderungen speichern"

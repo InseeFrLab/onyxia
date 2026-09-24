@@ -7,13 +7,14 @@ export { CustomProviderFormDialogView } from "./CustomProviderFormDialogView";
 export type { ViewProps } from "./types";
 
 export const CustomProviderFormDialog = memo(() => {
-    const form = useCoreState("aiProviderCreationFormUiController", "main");
+    const form = useCoreState("aiProviderFormUiController", "main");
 
     const {
-        functions: { aiProviderCreationFormUiController }
+        functions: { aiProviderFormUiController }
     } = getCoreSync();
 
-    if (!form.isOpen) {
+    // Existing providers, whatever their origin, are managed by `ManageProvidersDialog`
+    if (!form.isOpen || form.isEditing) {
         return null;
     }
 
@@ -40,23 +41,23 @@ export const CustomProviderFormDialog = memo(() => {
             canSave={form.canSubmit}
             canTest={form.canTestConnection}
             supportedProtocols={form.supportedProviderTypes}
-            onClose={() => aiProviderCreationFormUiController.close()}
+            onClose={() => aiProviderFormUiController.close()}
             onFieldChange={(key, value) => {
                 if (key !== "protocol")
-                    aiProviderCreationFormUiController.changeValue({ key, value });
+                    aiProviderFormUiController.changeValue({ key, value });
             }}
             onProtocolChange={protocol =>
-                aiProviderCreationFormUiController.changeProviderType({
+                aiProviderFormUiController.changeProviderType({
                     providerType: protocol
                 })
             }
-            onTest={() => aiProviderCreationFormUiController.testConnection()}
+            onTest={() => aiProviderFormUiController.testConnection()}
             onSelectedModelsChange={selectedModelIds =>
-                aiProviderCreationFormUiController.changeSelectedModelIds({
+                aiProviderFormUiController.changeSelectedModelIds({
                     selectedModelIds
                 })
             }
-            onSave={() => aiProviderCreationFormUiController.submit()}
+            onSave={() => aiProviderFormUiController.submit()}
             hasSubmissionError={form.hasSubmissionFailed}
             nameIsValid={form.isNameValid}
             apiBaseIsValid={form.isApiBaseValid}

@@ -147,7 +147,6 @@ export const translations: Translations<"es"> = {
         "api key": "Clave API",
         "refresh credentials": "Actualizar credenciales",
         "test connection": "Probar la conexión",
-        "edit provider": "Editar proveedor",
         "delete provider": "Eliminar proveedor",
         cancel: "Cancelar",
         "save changes": "Guardar cambios"

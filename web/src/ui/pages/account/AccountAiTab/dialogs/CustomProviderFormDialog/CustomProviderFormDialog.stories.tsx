@@ -3,7 +3,7 @@ import { action } from "@storybook/addon-actions";
 import { Button } from "onyxia-ui/Button";
 import { useEffect, useRef, useState } from "react";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
-import { providerTypeDefaultApiBase } from "core/usecases/aiProviderCreationFormUiController/decoupledLogic/providerTypeDefaultApiBase";
+import { providerTypeDefaultApiBase } from "core/usecases/aiProviderFormUiController/decoupledLogic/providerTypeDefaultApiBase";
 import { CustomProviderFormDialogView } from "./CustomProviderFormDialog";
 import type { AiModel, FormTest, FormValues } from "./types";
 
@@ -22,7 +22,7 @@ type MockedProps = {
 };
 
 /**
- * Mimics `aiProviderCreationFormUiController` so that every interaction of the dialog
+ * Mimics `aiProviderFormUiController` so that every interaction of the dialog
  * can be tried without a core: validation, protocol prefill, connection test, model
  * selection and submission.
  */

@@ -270,10 +270,18 @@ export const thunks = {
             void dispatch(thunks.saveConfig());
         },
     /** The key the user brings for an admin configured provider that expects one. */
+    /**
+     * `availableModels` are the models listed by a connection test made with this very
+     * key: when provided, they are trusted instead of being fetched again.
+     */
     setApiKey:
-        (params: { providerName: string; apiKey: string }) =>
+        (params: {
+            providerName: string;
+            apiKey: string;
+            availableModels: AiModel[] | undefined;
+        }) =>
         async (...args): Promise<void> => {
-            const { providerName, apiKey } = params;
+            const { providerName, apiKey, availableModels } = params;
 
             const [dispatch] = args;
 
@@ -302,7 +310,20 @@ export const thunks = {
                 })
             );
 
-            await dispatch(thunks.refreshProvider({ providerName }));
+            if (availableModels === undefined) {
+                await dispatch(thunks.refreshProvider({ providerName }));
+                return;
+            }
+
+            // No network involved: a user provided key is read from the persisted config
+            await dispatch(privateThunks.refreshProviderAuth({ providerName }));
+
+            dispatch(
+                actions.providerModelsChanged({
+                    providerName,
+                    models: { stateDescription: "loaded", availableModels }
+                })
+            );
         },
     /**
      * Creates a provider, or updates the one named `providerName_current`. Model listing

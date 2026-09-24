@@ -146,7 +146,6 @@ export const translations: Translations<"it"> = {
         "api key": "Chiave API",
         "refresh credentials": "Aggiorna credenziali",
         "test connection": "Verifica connessione",
-        "edit provider": "Modifica provider",
         "delete provider": "Elimina provider",
         cancel: "Annulla",
         "save changes": "Salva modifiche"
@@ -613,9 +612,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

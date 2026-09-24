@@ -10,7 +10,9 @@ import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { ModelsSelection } from "./shared/ModelsSelection";
 
-export type ProviderState = "connected" | "setup required" | "connection error";
+import type { ProviderConnectionState } from "core/usecases/aiProvidersManagements";
+
+export type ProviderState = ProviderConnectionState;
 
 type Props = {
     className?: string;
@@ -43,13 +45,6 @@ export function ProviderCard(props: Props) {
 
     const { classes, cx } = useStyles();
     const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
-    const { t } = useTranslation({ ProviderCard });
-
-    const stateLabel: Record<ProviderState, string> = {
-        connected: t("connected"),
-        "setup required": t("setup required"),
-        "connection error": t("connection error")
-    };
 
     return (
         <section className={cx(classes.root, className)}>
@@ -78,32 +73,7 @@ export function ProviderCard(props: Props) {
                             {subtitle}
                         </Text>
                     </div>
-                    <div
-                        className={cx(
-                            classes.status,
-                            state === "connected" && classes.statusConnected,
-                            state === "setup required" && classes.statusSetupRequired,
-                            state === "connection error" && classes.statusConnectionError
-                        )}
-                    >
-                        <span
-                            className={cx(
-                                classes.statusDot,
-                                state === "connected" && classes.statusDotConnected,
-                                state === "setup required" &&
-                                    classes.statusDotSetupRequired,
-                                state === "connection error" &&
-                                    classes.statusDotConnectionError
-                            )}
-                        />
-                        <Text
-                            className={classes.statusLabel}
-                            typo="label 2"
-                            htmlComponent="span"
-                        >
-                            {stateLabel[state]}
-                        </Text>
-                    </div>
+                    <ProviderStateChip state={state} />
                 </div>
                 <div className={classes.footer}>
                     <ModelsSelection
@@ -164,44 +134,6 @@ const useStyles = tss.withName({ ProviderCard }).create(({ theme }) => ({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
     },
-    status: {
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(1),
-        flexShrink: 0,
-        padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
-        borderRadius: 100,
-        color: theme.colors.useCases.typography.textPrimary
-    },
-    statusConnected: {
-        backgroundColor: theme.colors.useCases.alertSeverity.success.background
-    },
-    statusSetupRequired: {
-        backgroundColor: theme.colors.useCases.alertSeverity.warning.background
-    },
-    statusConnectionError: {
-        backgroundColor: theme.colors.useCases.alertSeverity.error.background
-    },
-    statusDot: {
-        width: 8,
-        height: 8,
-        borderRadius: "50%"
-    },
-    statusDotConnected: {
-        backgroundColor: theme.colors.useCases.alertSeverity.success.main
-    },
-    statusDotSetupRequired: {
-        backgroundColor: theme.colors.useCases.alertSeverity.warning.main
-    },
-    statusDotConnectionError: {
-        backgroundColor: theme.colors.useCases.alertSeverity.error.main
-    },
-    statusLabel: {
-        whiteSpace: "nowrap",
-        [`@media (max-width: ${breakpointsValues.sm}px)`]: {
-            display: "none"
-        }
-    },
     footer: {
         display: "flex",
         alignItems: "flex-end",
@@ -222,6 +154,86 @@ const useStyles = tss.withName({ ProviderCard }).create(({ theme }) => ({
         }
     }
 }));
+
+export function ProviderStateChip(props: { className?: string; state: ProviderState }) {
+    const { className, state } = props;
+
+    const { classes, cx } = useStyles_ProviderStateChip();
+    const { t } = useTranslation({ ProviderCard });
+
+    const stateLabel: Record<ProviderState, string> = {
+        connected: t("connected"),
+        "setup required": t("setup required"),
+        "connection error": t("connection error")
+    };
+
+    return (
+        <div
+            className={cx(
+                classes.status,
+                state === "connected" && classes.statusConnected,
+                state === "setup required" && classes.statusSetupRequired,
+                state === "connection error" && classes.statusConnectionError,
+                className
+            )}
+        >
+            <span
+                className={cx(
+                    classes.statusDot,
+                    state === "connected" && classes.statusDotConnected,
+                    state === "setup required" && classes.statusDotSetupRequired,
+                    state === "connection error" && classes.statusDotConnectionError
+                )}
+            />
+            <Text className={classes.statusLabel} typo="label 2" htmlComponent="span">
+                {stateLabel[state]}
+            </Text>
+        </div>
+    );
+}
+
+const useStyles_ProviderStateChip = tss
+    .withName({ ProviderStateChip })
+    .create(({ theme }) => ({
+        status: {
+            display: "flex",
+            alignItems: "center",
+            gap: theme.spacing(1),
+            flexShrink: 0,
+            padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
+            borderRadius: 100,
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        statusConnected: {
+            backgroundColor: theme.colors.useCases.alertSeverity.success.background
+        },
+        statusSetupRequired: {
+            backgroundColor: theme.colors.useCases.alertSeverity.warning.background
+        },
+        statusConnectionError: {
+            backgroundColor: theme.colors.useCases.alertSeverity.error.background
+        },
+        statusDot: {
+            width: 8,
+            height: 8,
+            borderRadius: "50%"
+        },
+        statusDotConnected: {
+            backgroundColor: theme.colors.useCases.alertSeverity.success.main
+        },
+        statusDotSetupRequired: {
+            backgroundColor: theme.colors.useCases.alertSeverity.warning.main
+        },
+        statusDotConnectionError: {
+            backgroundColor: theme.colors.useCases.alertSeverity.error.main
+        },
+        statusLabel: {
+            whiteSpace: "nowrap",
+            [`@media (max-width: ${breakpointsValues.sm}px)`]: {
+                display: "none"
+            }
+        }
+    }));
 
 const { i18n } = declareComponentKeys<
     "connected" | "setup required" | "connection error"

@@ -147,7 +147,6 @@ export const translations: Translations<"nl"> = {
         "api key": "API-sleutel",
         "refresh credentials": "Inloggegevens vernieuwen",
         "test connection": "Verbinding testen",
-        "edit provider": "Provider bewerken",
         "delete provider": "Provider verwijderen",
         cancel: "Annuleren",
         "save changes": "Wijzigingen opslaan"

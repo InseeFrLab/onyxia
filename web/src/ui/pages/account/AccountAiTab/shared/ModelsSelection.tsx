@@ -20,9 +20,15 @@ export const ModelsSelection = memo((props: Props) => {
     // (not fetched yet, fetch error...), nothing can be selected.
     const hasNoModels = props.models.length === 0;
 
+    const isReadOnly = props.disabled || hasNoModels;
+
     return (
         <Stack className={cx(classes.root, props.className)}>
-            <Text typo="label 1" componentProps={{ id: labelId }}>
+            <Text
+                typo="label 1"
+                color={isReadOnly ? "secondary" : "primary"}
+                componentProps={{ id: labelId }}
+            >
                 {t("model label")}
             </Text>
             <Autocomplete
@@ -33,7 +39,7 @@ export const ModelsSelection = memo((props: Props) => {
                 getLimitTagsText={count => t("more models", { count })}
                 options={props.models}
                 value={props.selectedModels}
-                disabled={props.disabled || hasNoModels}
+                disabled={isReadOnly}
                 clearText={t("deselect all")}
                 noOptionsText={t("no matching models")}
                 slotProps={{
@@ -43,17 +49,22 @@ export const ModelsSelection = memo((props: Props) => {
                 onChange={(_event, modelIds) => {
                     props.onSelectedModelsChange(modelIds);
                 }}
-                renderOption={(optionProps, modelId, { selected }) => (
-                    <li {...optionProps}>
-                        <Checkbox
-                            className={classes.checkbox}
-                            checked={selected}
-                            tabIndex={-1}
-                            disableRipple
-                        />
-                        <span>{modelId}</span>
-                    </li>
-                )}
+                renderOption={(optionProps, modelId, { selected }) => {
+                    // React wants the key passed directly, not spread with the rest
+                    const { key, ...optionProps_rest } = optionProps;
+
+                    return (
+                        <li key={key} {...optionProps_rest}>
+                            <Checkbox
+                                className={classes.checkbox}
+                                checked={selected}
+                                tabIndex={-1}
+                                disableRipple
+                            />
+                            <span>{modelId}</span>
+                        </li>
+                    );
+                }}
                 renderInput={params => (
                     <TextField
                         {...params}
@@ -92,10 +103,21 @@ const useStyles = tss.withName({ ModelsSelection }).create(({ theme }) => ({
             overflow: "hidden",
             padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
             borderRadius: theme.spacing(2),
-            backgroundColor: theme.colors.useCases.surfaces.surface2
+            border: "2px solid transparent",
+            backgroundColor: theme.colors.useCases.surfaces.background,
+            transition: "background-color 160ms ease, border-color 160ms ease"
         },
         "& .MuiFilledInput-root:hover, & .MuiFilledInput-root.Mui-focused": {
             backgroundColor: theme.colors.useCases.surfaces.surface2
+        },
+        "& .MuiFilledInput-root.Mui-disabled": {
+            borderColor: theme.colors.useCases.surfaces.surface2,
+            backgroundColor: "transparent"
+        },
+        "& .MuiInputBase-input::placeholder": {
+            ...theme.typography.variants["body 1"].style,
+            color: theme.colors.useCases.typography.textSecondary,
+            opacity: 1
         },
         "& .MuiAutocomplete-input": {
             minWidth: "0 !important",
@@ -107,7 +129,12 @@ const useStyles = tss.withName({ ModelsSelection }).create(({ theme }) => ({
             maxWidth: 120,
             margin: `0 ${theme.spacing(1)}px 0 0`,
             borderRadius: 100,
-            backgroundColor: theme.colors.useCases.surfaces.surface1
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
+            color: theme.colors.useCases.typography.textPrimary
+        },
+        // NOTE: Read-only, not greyed out: the selected models must stay readable
+        "& .MuiAutocomplete-tag.Mui-disabled": {
+            opacity: 1
         },
         "& .MuiChip-root.MuiAutocomplete-tag": {
             flexShrink: 1
@@ -132,6 +159,9 @@ const useStyles = tss.withName({ ModelsSelection }).create(({ theme }) => ({
         },
         "& .MuiAutocomplete-popupIndicator": {
             color: theme.colors.useCases.typography.textPrimary
+        },
+        "& .MuiAutocomplete-popupIndicator.Mui-disabled": {
+            color: theme.colors.useCases.typography.textDisabled
         }
     },
     paper: {

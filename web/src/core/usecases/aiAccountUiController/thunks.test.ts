@@ -3,7 +3,7 @@ import { createCore, createUsecaseActions } from "clean-architecture";
 import type { Context } from "core/bootstrap";
 import * as providers from "../aiProvidersManagements";
 import * as account from "./index";
-import * as form from "../aiProviderCreationFormUiController";
+import * as form from "../aiProviderFormUiController";
 const mocks = vi.hoisted(() => ({
     context: undefined as unknown,
     getTokens: vi.fn(),
@@ -78,6 +78,17 @@ function setup() {
                     documentation: undefined,
                     models: ["a"],
                     authentification: { type: "none" }
+                },
+                {
+                    name: "Keyed",
+                    providerType: "openai-compatible",
+                    apiBase: "https://keyed.example/v1",
+                    documentation: undefined,
+                    models: undefined,
+                    authentification: {
+                        type: "api-key",
+                        obtentionMethod: "user-provided"
+                    }
                 }
             ]
         },
@@ -102,7 +113,7 @@ function setup() {
         usecases: {
             aiProvidersManagements: providers,
             aiAccountUiController: account,
-            aiProviderCreationFormUiController: form,
+            aiProviderFormUiController: form,
             userConfigs
         }
     });
@@ -136,7 +147,7 @@ it("exposes the account data and refreshes only the exchange token", async () =>
     await core.functions.aiAccountUiController.load();
     const state = core.states.aiAccountUiController.getMain();
     expect(state.isReady).toBe(true);
-    expect(state.providers?.map(p => p.canRefreshToken)).toEqual([true, false]);
+    expect(state.providers?.map(p => p.canRefreshToken)).toEqual([true, false, false]);
     vi.mocked(fetch).mockClear();
     await core.functions.aiAccountUiController.refreshToken({ providerName: "Exchange" });
     expect(fetch).toHaveBeenCalledTimes(1);
@@ -160,17 +171,17 @@ it("rejects token refresh for a provider without exchange authentication", async
 it("creates a provider through the current form controller and selects its default", async () => {
     const { core, dispatch } = setup();
     await core.functions.aiAccountUiController.load();
-    const creation = core.functions.aiProviderCreationFormUiController;
+    const creation = core.functions.aiProviderFormUiController;
     creation.open({ providerName: undefined });
     creation.changeValue({ key: "name", value: "Personal" });
     creation.changeProviderType({ providerType: "openai" });
     await creation.testConnection();
-    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
         canSubmit: true,
         connectionTest: { stateDescription: "succeeded" }
     });
     await creation.submit();
-    expect(core.states.aiProviderCreationFormUiController.getMain().isOpen).toBe(false);
+    expect(core.states.aiProviderFormUiController.getMain().isOpen).toBe(false);
     await core.functions.aiAccountUiController.setSelectedModelIds({
         providerName: "Personal",
         modelIds: ["a"]
@@ -186,11 +197,11 @@ it("prefills a unique provider name and saves it when model loading fails", asyn
     const { core } = setup();
     await core.functions.aiAccountUiController.load();
 
-    const creation = core.functions.aiProviderCreationFormUiController;
+    const creation = core.functions.aiProviderFormUiController;
     creation.open({ providerName: undefined });
     creation.changeProviderType({ providerType: "mistral" });
 
-    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
         formValues: { name: "Mistral" },
         canSubmit: true
     });
@@ -198,14 +209,14 @@ it("prefills a unique provider name and saves it when model loading fails", asyn
     vi.mocked(fetch).mockRejectedValueOnce(new Error("unreachable"));
     await creation.testConnection();
 
-    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
         connectionTest: { stateDescription: "failed" },
         canSubmit: true
     });
 
     await creation.submit();
 
-    expect(core.states.aiProviderCreationFormUiController.getMain().isOpen).toBe(false);
+    expect(core.states.aiProviderFormUiController.getMain().isOpen).toBe(false);
     expect(
         core.states.aiAccountUiController
             .getMain()
@@ -217,7 +228,7 @@ it("prefills a unique provider name and saves it when model loading fails", asyn
     creation.changeProviderType({ providerType: "openai" });
     creation.changeProviderType({ providerType: "mistral" });
 
-    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
         formValues: { name: "Mistral 2" }
     });
 });
@@ -226,12 +237,12 @@ it("does not allow a custom provider to reuse an existing provider name", async 
     const { core } = setup();
     await core.functions.aiAccountUiController.load();
 
-    const creation = core.functions.aiProviderCreationFormUiController;
+    const creation = core.functions.aiProviderFormUiController;
     creation.open({ providerName: undefined });
     creation.changeProviderType({ providerType: "openai" });
     creation.changeValue({ key: "name", value: "Exchange" });
 
-    expect(core.states.aiProviderCreationFormUiController.getMain()).toMatchObject({
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
         isNameValid: false,
         canSubmit: false
     });
@@ -246,7 +257,8 @@ it("keeps provider errors when another operation succeeds", async () => {
     expect(core.states.aiAccountUiController.getMain()).toMatchObject({
         providers: [
             { name: "Exchange", operationState: "idle" },
-            { name: "Public", operationState: "error" }
+            { name: "Public", operationState: "error" },
+            { name: "Keyed", operationState: "idle" }
         ]
     });
 });
@@ -324,4 +336,112 @@ it("keeps unsaved choices in memory after failure and retries them", async () =>
     );
     expect(mocks.save).toHaveBeenCalledTimes(2);
     expect(mocks.save.mock.calls[1][0]).toBe(mocks.save.mock.calls[0][0]);
+});
+
+it("tests a typed API key without saving it, then saves it without testing again", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const edition = core.functions.aiProviderFormUiController;
+    const getKeyedProvider = () =>
+        core.states.aiAccountUiController
+            .getMain()
+            .providers?.find(provider => provider.name === "Keyed");
+
+    edition.open({ providerName: "Keyed" });
+
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        providerOrigin: "configured by admin",
+        canEditApiKey: true,
+        isApiKeyMissing: true,
+        canSubmit: false
+    });
+    expect(() => edition.changeValue({ key: "name", value: "Renamed" })).toThrow();
+
+    edition.changeValue({ key: "apiKey", value: " typed " });
+
+    expect(core.states.aiProviderFormUiController.getMain().canSubmit).toBe(true);
+
+    edition.changeValue({ key: "apiKey", value: "" });
+
+    expect(core.states.aiProviderFormUiController.getMain().canSubmit).toBe(false);
+
+    edition.changeValue({ key: "apiKey", value: " typed " });
+
+    vi.mocked(fetch).mockClear();
+    mocks.save.mockClear();
+
+    await edition.testConnection();
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith("https://keyed.example/v1/models", {
+        headers: { Authorization: "Bearer typed" },
+        signal: expect.anything()
+    });
+    expect(mocks.save).not.toHaveBeenCalled();
+    expect(getKeyedProvider()).toMatchObject({
+        auth: { stateDescription: "api-key not provided" },
+        userProvidedApiKey: ""
+    });
+
+    edition.changeSelectedModelIds({ selectedModelIds: ["a"] });
+
+    vi.mocked(fetch).mockClear();
+
+    await edition.submit();
+
+    expect(core.states.aiProviderFormUiController.getMain().isOpen).toBe(false);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(mocks.save).toHaveBeenCalled();
+    expect(getKeyedProvider()).toMatchObject({
+        auth: { stateDescription: "authenticated", apiKey: "typed" },
+        models: { stateDescription: "loaded", availableModels: [{ id: "a" }] },
+        selectedModelIds: ["a"]
+    });
+});
+
+it("saves the model selection right away when the models are the saved ones", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const edition = core.functions.aiProviderFormUiController;
+
+    edition.open({ providerName: "Public" });
+
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        isModelSelectionSavedImmediately: true,
+        canSubmit: false
+    });
+
+    edition.changeSelectedModelIds({ selectedModelIds: ["a"] });
+
+    expect(
+        core.states.aiAccountUiController
+            .getMain()
+            .providers?.find(provider => provider.name === "Public")?.selectedModelIds
+    ).toEqual(["a"]);
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        isOpen: true,
+        canSubmit: false
+    });
+});
+
+it("gives a provider without authentication the same state on its card and in its dialog", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const getCardState = () =>
+        core.states.aiAccountUiController
+            .getMain()
+            .providers?.find(provider => provider.name === "Public")?.connectionState;
+
+    const edition = core.functions.aiProviderFormUiController;
+
+    edition.open({ providerName: "Public" });
+
+    // Reachable: whether models are picked doesn't matter
+    expect(getCardState()).toBe("connected");
+    expect(core.states.aiProviderFormUiController.getMain().connectionState).toBe(
+        "connected"
+    );
 });

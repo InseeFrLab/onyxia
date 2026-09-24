@@ -147,8 +147,6 @@ export function FormSelectField(props: {
 const useStyles = tss
     .withName({ CustomProviderFormFields: FormTextField })
     .create(({ theme }) => {
-        const fieldBackground = theme.colors.useCases.surfaces.surface2;
-
         return {
             control: {
                 gap: theme.spacing(1)
@@ -166,8 +164,11 @@ const useStyles = tss
                 paddingRight: theme.spacing(2.5),
                 borderRadius: theme.spacing(2),
                 border: "2px solid transparent",
-                backgroundColor: fieldBackground,
-                transition: "border-color 160ms ease",
+                backgroundColor: theme.colors.useCases.surfaces.background,
+                transition: "background-color 160ms ease, border-color 160ms ease",
+                "&:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                },
                 "&.Mui-focused": {
                     borderColor: theme.colors.useCases.buttons.actionActive
                 },
@@ -177,19 +178,29 @@ const useStyles = tss
                 "& .MuiInputBase-input": {
                     ...theme.typography.variants["label 1"].style,
                     padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
-                    color: theme.colors.useCases.typography.textPrimary
+                    color: theme.colors.useCases.typography.textPrimary,
+                    "&::placeholder": {
+                        ...theme.typography.variants["body 1"].style,
+                        color: theme.colors.useCases.typography.textSecondary,
+                        opacity: 1
+                    }
                 }
             },
             select: {
                 "& .MuiInputBase-root": {
                     minHeight: 45,
                     borderRadius: theme.spacing(2),
-                    backgroundColor: fieldBackground,
-                    color: theme.colors.useCases.typography.textPrimary
+                    backgroundColor: theme.colors.useCases.surfaces.background,
+                    color: theme.colors.useCases.typography.textPrimary,
+                    transition: "background-color 160ms ease"
                 },
-                "& .MuiOutlinedInput-notchedOutline": {
-                    border: "2px solid transparent"
+                "& .MuiInputBase-root:hover": {
+                    backgroundColor: theme.colors.useCases.surfaces.surface2
                 },
+                "& .MuiOutlinedInput-notchedOutline, & .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline":
+                    {
+                        border: "2px solid transparent"
+                    },
                 "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: theme.colors.useCases.buttons.actionActive
                 },

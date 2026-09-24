@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreState, getCoreSync, getCore } from "core";
@@ -6,7 +5,7 @@ import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Select, MenuItem, Alert, Stack, Box } from "@mui/material";
-import { ProviderCard, type ProviderState } from "./ProviderCard";
+import { ProviderCard } from "./ProviderCard";
 import { AddCustomProviderButton } from "./AddCustomProviderButton";
 import { providerTypeLogoUrl } from "./shared/providerTypeLogoUrl";
 import { ManageProvidersDialog } from "./dialogs/ManageProvidersDialog";
@@ -37,17 +36,15 @@ export const AccountAiTab = withLoader({
 
 function Component(props: Props) {
     const {
-        functions: {
-            aiAccountUiController: account,
-            aiProviderCreationFormUiController: form
-        }
+        functions: { aiAccountUiController: account, aiProviderFormUiController: form }
     } = getCoreSync();
 
     const state = useCoreState("aiAccountUiController", "main");
+    const formState = useCoreState("aiProviderFormUiController", "main");
 
     const { t } = useTranslation({ AccountAiTab });
+    const { t: tForm } = useTranslation("CustomProviderFormDialog");
     const { classes } = useStyles();
-    const [managedProviderName, setManagedProviderName] = useState<string>();
 
     const evtOpen = useConst(() => Evt.create<UnpackEvt<ConfirmProps["evtOpen"]>>());
 
@@ -106,15 +103,6 @@ function Component(props: Props) {
                         provider.operationState === "pending" ||
                         (provider.origin === "created by user" &&
                             provider.isNameConflicting);
-                    const providerState: ProviderState =
-                        provider.auth.stateDescription === "error" ||
-                        provider.models.stateDescription === "error"
-                            ? "connection error"
-                            : provider.auth.stateDescription !== "authenticated" ||
-                                (provider.models.stateDescription === "loaded" &&
-                                    provider.selectedModelIds.length === 0)
-                              ? "setup required"
-                              : "connected";
 
                     return (
                         <ProviderCard
@@ -125,7 +113,7 @@ function Component(props: Props) {
                                     ? t("provided by organization")
                                     : t("custom providers section title")
                             }
-                            state={providerState}
+                            state={provider.connectionState}
                             logoUrl={
                                 provider.origin === "created by user"
                                     ? providerTypeLogoUrl[provider.providerType]
@@ -149,7 +137,7 @@ function Component(props: Props) {
                                     })
                             }}
                             manageLabel={t("manage")}
-                            onManage={() => setManagedProviderName(provider.name)}
+                            onManage={() => form.open({ providerName: provider.name })}
                         />
                     );
                 })}
@@ -161,85 +149,129 @@ function Component(props: Props) {
                     />
                 )}
             </Box>
-            {managedProviderName !== undefined && (
-                <ManageProvidersDialog
-                    initialProviderName={managedProviderName}
-                    providers={state.providers.map(provider => ({
-                        name: provider.name,
-                        subtitle:
-                            provider.origin === "configured by admin"
-                                ? t("provided by organization")
-                                : t("custom providers section title"),
-                        apiBase: provider.apiBase,
-                        apiKey:
-                            provider.auth.stateDescription === "authenticated"
-                                ? provider.auth.apiKey
-                                : provider.canUserProvideApiKey
-                                  ? provider.userProvidedApiKey
-                                  : undefined,
-                        isApiKeyEditable: provider.canUserProvideApiKey,
-                        availableModels:
-                            provider.models.stateDescription === "loaded"
-                                ? provider.models.availableModels.map(({ id }) => id)
-                                : undefined,
-                        selectedModelIds: provider.selectedModelIds,
-                        isModelSelectionDisabled:
-                            provider.operationState === "pending" ||
-                            (provider.origin === "created by user" &&
-                                provider.isNameConflicting),
-                        connectionError:
-                            provider.auth.stateDescription === "error" ||
-                            provider.auth.stateDescription === "api-key not provided"
-                                ? t("api-key not provided")
-                                : provider.models.stateDescription === "error"
-                                  ? t("gateway error")
-                                  : provider.operationState === "error"
-                                    ? t("save failed")
+            {/* `CustomProviderFormDialog` is only for the providers being created */}
+            {formState.isOpen &&
+                formState.isEditing &&
+                (() => {
+                    const provider = state.providers.find(
+                        provider => provider.name === formState.providerName_current
+                    );
+
+                    if (provider === undefined) {
+                        return null;
+                    }
+
+                    const { connectionTest, formValues } = formState;
+
+                    const isCreatedByUser = provider.origin === "created by user";
+
+                    return (
+                        <ManageProvidersDialog
+                            providerNames={state.providers.map(({ name }) => name)}
+                            provider={{
+                                name: provider.name,
+                                subtitle:
+                                    provider.origin === "configured by admin"
+                                        ? t("provided by organization")
+                                        : t("custom providers section title"),
+                                state: formState.connectionState,
+                                configuration: isCreatedByUser
+                                    ? {
+                                          name: formValues.name,
+                                          providerType: formValues.providerType,
+                                          supportedProviderTypes:
+                                              formState.supportedProviderTypes,
+                                          nameError:
+                                              !formState.isNameValid &&
+                                              formValues.name !== ""
+                                                  ? tForm("invalid name")
+                                                  : undefined
+                                      }
                                     : undefined,
-                        canRefreshCredentials: provider.canRefreshToken,
-                        isRefreshingCredentials:
-                            provider.operationState === "pending" ||
-                            provider.auth.stateDescription === "fetching",
-                        canEdit:
-                            provider.origin === "created by user" &&
-                            provider.operationState !== "pending",
-                        canDelete:
-                            provider.origin === "created by user" &&
-                            provider.operationState !== "pending",
-                        documentation:
-                            provider.origin === "configured by admin"
-                                ? provider.documentation
-                                : undefined
-                    }))}
-                    onClose={() => setManagedProviderName(undefined)}
-                    onRefreshCredentials={providerName =>
-                        account.refreshToken({ providerName })
-                    }
-                    onTestConnection={providerName =>
-                        account.testConnection({ providerName })
-                    }
-                    onEdit={providerName => {
-                        setManagedProviderName(undefined);
-                        form.open({ providerName });
-                    }}
-                    onDelete={async providerName => {
-                        const isConfirmed = await confirmProviderDeletion();
+                                apiBase: isCreatedByUser
+                                    ? formValues.apiBase
+                                    : provider.apiBase,
+                                isApiBaseEditable: isCreatedByUser,
+                                apiBaseError:
+                                    !formState.isApiBaseValid && formValues.apiBase !== ""
+                                        ? tForm("invalid api base")
+                                        : undefined,
+                                apiKey: formState.canEditApiKey
+                                    ? formState.formValues.apiKey
+                                    : provider.auth.stateDescription === "authenticated"
+                                      ? provider.auth.apiKey
+                                      : undefined,
+                                isApiKeyEditable: formState.canEditApiKey,
+                                availableModels:
+                                    connectionTest.stateDescription === "succeeded"
+                                        ? connectionTest.availableModels.map(
+                                              ({ id }) => id
+                                          )
+                                        : undefined,
+                                selectedModelIds: formState.selectedModelIds_draft,
+                                isModelSelectionDisabled:
+                                    formState.isSubmitting ||
+                                    provider.operationState === "pending" ||
+                                    (provider.origin === "created by user" &&
+                                        provider.isNameConflicting),
+                                connectionError: formState.isApiKeyMissing
+                                    ? t("api-key not provided")
+                                    : connectionTest.stateDescription === "failed"
+                                      ? t("gateway error")
+                                      : formState.hasSubmissionFailed
+                                        ? t("save failed")
+                                        : undefined,
+                                canTestConnection: formState.canTestConnection,
+                                canRefreshCredentials: provider.canRefreshToken,
+                                isRefreshingCredentials:
+                                    provider.operationState === "pending" ||
+                                    provider.auth.stateDescription === "fetching",
+                                canSave: formState.canSubmit,
+                                canDelete:
+                                    isCreatedByUser &&
+                                    provider.operationState !== "pending",
+                                documentation:
+                                    provider.origin === "configured by admin"
+                                        ? provider.documentation
+                                        : undefined
+                            }}
+                            onProviderChange={providerName => form.open({ providerName })}
+                            onClose={() => form.close()}
+                            onNameChange={name =>
+                                form.changeValue({ key: "name", value: name })
+                            }
+                            onProviderTypeChange={providerType =>
+                                form.changeProviderType({ providerType })
+                            }
+                            onApiBaseChange={apiBase =>
+                                form.changeValue({ key: "apiBase", value: apiBase })
+                            }
+                            onApiKeyChange={apiKey =>
+                                form.changeValue({ key: "apiKey", value: apiKey })
+                            }
+                            onSelectedModelsChange={selectedModelIds =>
+                                form.changeSelectedModelIds({ selectedModelIds })
+                            }
+                            onRefreshCredentials={() =>
+                                account.refreshToken({ providerName: provider.name })
+                            }
+                            onTestConnection={() => form.testConnection()}
+                            onSave={() => form.submit()}
+                            onDelete={async () => {
+                                const isConfirmed = await confirmProviderDeletion();
 
-                        if (!isConfirmed) {
-                            return;
-                        }
+                                if (!isConfirmed) {
+                                    return;
+                                }
 
-                        setManagedProviderName(undefined);
-                        await account.deleteUserProvider({ providerName });
-                    }}
-                    onSaveModels={({ providerName, modelIds }) =>
-                        account.setSelectedModelIds({ providerName, modelIds })
-                    }
-                    onSaveApiKey={({ providerName, apiKey }) =>
-                        account.setApiKey({ providerName, apiKey })
-                    }
-                />
-            )}
+                                form.close();
+                                await account.deleteUserProvider({
+                                    providerName: provider.name
+                                });
+                            }}
+                        />
+                    );
+                })()}
             <CustomProviderFormDialog />
             <ConfirmCustomProviderDeletionDialog evtOpen={evtOpen} />
         </Stack>

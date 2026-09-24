@@ -1,7 +1,10 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
-import { stringifyModel } from "core/usecases/aiProvidersManagements";
+import {
+    stringifyModel,
+    getProviderConnectionState
+} from "core/usecases/aiProvidersManagements";
 import { name } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
@@ -31,6 +34,20 @@ const main = createSelector(
         const providers = aiProviders.map(aiProvider => ({
             ...aiProvider,
             operationState: state.operationByProviderName[aiProvider.name] ?? "idle",
+            connectionState: getProviderConnectionState({
+                isApiKeyMissing:
+                    aiProvider.auth.stateDescription === "api-key not provided",
+                connection:
+                    aiProvider.auth.stateDescription === "error" ||
+                    aiProvider.models.stateDescription === "error"
+                        ? "failed"
+                        : aiProvider.models.stateDescription === "loaded"
+                          ? "succeeded"
+                          : aiProvider.auth.stateDescription === "fetching" ||
+                              aiProvider.models.stateDescription === "fetching"
+                            ? "testing"
+                            : "not tested"
+            }),
             userProvidedApiKey:
                 persistedAiConfig.apiKeyByProviderName[aiProvider.name] ?? "",
             canRefreshToken:

@@ -136,7 +136,6 @@ export const translations: Translations<"zh-CN"> = {
         "api key": "API 密钥",
         "refresh credentials": "刷新凭据",
         "test connection": "测试连接",
-        "edit provider": "编辑提供商",
         "delete provider": "删除提供商",
         cancel: "取消",
         "save changes": "保存更改"
