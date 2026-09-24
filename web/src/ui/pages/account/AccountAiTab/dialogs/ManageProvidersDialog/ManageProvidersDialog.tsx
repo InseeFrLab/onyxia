@@ -1,5 +1,6 @@
 import { Alert, Link, MenuItem, Select } from "@mui/material";
 import { Button } from "onyxia-ui/Button";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
@@ -37,6 +38,7 @@ export type ManagedProvider = {
     isModelSelectionDisabled: boolean;
     connectionError: string | undefined;
     canTestConnection: boolean;
+    isTestingConnection: boolean;
     canRefreshCredentials: boolean;
     isRefreshingCredentials: boolean;
     canSave: boolean;
@@ -178,14 +180,28 @@ export function ManageProvidersDialog(props: {
                             )}
                             <Button
                                 variant="ternary"
-                                className={classes.testConnectionButton}
-                                startIcon={getIconUrlByName("NetworkCheck")}
+                                className={cx(
+                                    classes.testConnectionButton,
+                                    provider.isTestingConnection &&
+                                        classes.testConnectionButton_testing
+                                )}
+                                startIcon={
+                                    provider.isTestingConnection
+                                        ? undefined
+                                        : getIconUrlByName("NetworkCheck")
+                                }
                                 disabled={
                                     !provider.canTestConnection ||
                                     provider.isRefreshingCredentials
                                 }
                                 onClick={props.onTestConnection}
                             >
+                                {provider.isTestingConnection && (
+                                    <CircularProgress
+                                        className={classes.testConnectionLoader}
+                                        size={16}
+                                    />
+                                )}
                                 {t("test connection")}
                             </Button>
                         </div>
@@ -263,8 +279,13 @@ export function ManageProvidersDialog(props: {
     );
 }
 
+/** Below this width, the provider header stacks its content */
+const narrowDialogWidth = 480;
+
 const useStyles = tss.withName({ ManageProvidersDialog }).create(({ theme }) => ({
+    // The header adapts to the width of the dialog, not to the one of the window
     root: {
+        containerType: "inline-size",
         height: "100%",
         minHeight: 0,
         display: "flex",
@@ -276,7 +297,7 @@ const useStyles = tss.withName({ ManageProvidersDialog }).create(({ theme }) => 
         alignItems: "center",
         gap: theme.spacing(1),
         paddingBottom: theme.spacing(3),
-        "@media (max-width: 600px)": {
+        [`@container (max-width: ${narrowDialogWidth}px)`]: {
             alignItems: "flex-start",
             flexDirection: "column"
         }
@@ -285,9 +306,10 @@ const useStyles = tss.withName({ ManageProvidersDialog }).create(({ theme }) => 
         minWidth: 0,
         color: theme.colors.useCases.typography.textPrimary,
         ...theme.typography.variants["object heading"].style,
-        "& .MuiSelect-select": {
+        // NOTE: As specific as MUI's rule, which reserves room for the icon
+        "& .MuiSelect-select.MuiInputBase-input": {
             padding: 0,
-            paddingRight: `${theme.spacing(4)}px !important`
+            paddingRight: theme.spacing(4)
         }
     },
     deleteButton: {
@@ -304,7 +326,7 @@ const useStyles = tss.withName({ ManageProvidersDialog }).create(({ theme }) => 
         textAlign: "right",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        "@media (max-width: 600px)": {
+        [`@container (max-width: ${narrowDialogWidth}px)`]: {
             textAlign: "left"
         }
     },
@@ -347,7 +369,7 @@ const useStyles = tss.withName({ ManageProvidersDialog }).create(({ theme }) => 
         gap: theme.spacing(2)
     },
     documentationLink: {
-        maxWidth: 350,
+        maxWidth: "100%",
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(2),
@@ -396,6 +418,18 @@ const useStyles = tss.withName({ ManageProvidersDialog }).create(({ theme }) => 
             backgroundColor: theme.colors.useCases.typography.textPrimary,
             color: theme.colors.useCases.surfaces.background,
             opacity: 0.3
+        }
+    },
+    // Disabled while testing, but not faded out: the loader has to stay visible
+    testConnectionButton_testing: {
+        "&.Mui-disabled": {
+            opacity: 1
+        }
+    },
+    testConnectionLoader: {
+        marginRight: theme.spacing(2),
+        "&&": {
+            color: "inherit"
         }
     },
     footer: {

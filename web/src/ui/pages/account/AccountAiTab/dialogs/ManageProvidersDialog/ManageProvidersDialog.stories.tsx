@@ -29,6 +29,7 @@ const meta = {
             isModelSelectionDisabled: false,
             connectionError: undefined,
             canTestConnection: true,
+            isTestingConnection: false,
             canRefreshCredentials: true,
             isRefreshingCredentials: false,
             canSave: true,
@@ -124,6 +125,16 @@ export const CustomProvider: Story = {
             canRefreshCredentials: false,
             canDelete: true,
             documentation: undefined
+        }
+    }
+};
+
+export const TestingConnection: Story = {
+    args: {
+        provider: {
+            ...meta.args.provider,
+            canTestConnection: false,
+            isTestingConnection: true
         }
     }
 };

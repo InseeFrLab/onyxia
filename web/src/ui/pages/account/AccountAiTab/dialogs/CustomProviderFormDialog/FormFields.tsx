@@ -9,6 +9,7 @@ import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useId, useState } from "react";
 import { tss } from "tss";
+import { getFieldStyle } from "../../shared/fieldStyle";
 
 export function FormTextField(props: {
     label: string;
@@ -147,6 +148,8 @@ export function FormSelectField(props: {
 const useStyles = tss
     .withName({ CustomProviderFormFields: FormTextField })
     .create(({ theme }) => {
+        const fieldStyle = getFieldStyle({ theme });
+
         return {
             control: {
                 gap: theme.spacing(1)
@@ -160,72 +163,45 @@ const useStyles = tss
                 "&&": {
                     marginTop: 0
                 },
-                minHeight: 45,
+                ...fieldStyle.frame,
                 paddingRight: theme.spacing(2.5),
-                borderRadius: theme.spacing(2),
-                border: "2px solid transparent",
-                backgroundColor: theme.colors.useCases.surfaces.background,
-                transition: "background-color 160ms ease, border-color 160ms ease",
-                "&:hover": {
-                    backgroundColor: theme.colors.useCases.surfaces.surface2
-                },
-                "&.Mui-focused": {
-                    borderColor: theme.colors.useCases.buttons.actionActive
-                },
-                "&.Mui-error": {
-                    borderColor: theme.colors.useCases.alertSeverity.error.main
-                },
+                "&:hover": fieldStyle.frame_hover,
+                "&.Mui-focused": fieldStyle.frame_focused,
+                "&.Mui-error": fieldStyle.frame_error,
                 "& .MuiInputBase-input": {
                     ...theme.typography.variants["label 1"].style,
-                    padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
+                    ...fieldStyle.padding,
+                    height: "auto",
                     color: theme.colors.useCases.typography.textPrimary,
-                    "&::placeholder": {
-                        ...theme.typography.variants["body 1"].style,
-                        color: theme.colors.useCases.typography.textSecondary,
-                        opacity: 1
-                    }
+                    "&::placeholder": fieldStyle.placeholder
                 }
             },
             select: {
                 "& .MuiInputBase-root": {
-                    minHeight: 45,
-                    borderRadius: theme.spacing(2),
-                    backgroundColor: theme.colors.useCases.surfaces.background,
-                    color: theme.colors.useCases.typography.textPrimary,
-                    transition: "background-color 160ms ease"
+                    ...fieldStyle.frame,
+                    "&:hover": fieldStyle.frame_hover,
+                    "&.Mui-focused": fieldStyle.frame_focused
                 },
-                "& .MuiInputBase-root:hover": {
-                    backgroundColor: theme.colors.useCases.surfaces.surface2
+                // The frame carries the border, MUI's outline is not used
+                "& .MuiOutlinedInput-notchedOutline": {
+                    display: "none"
                 },
-                "& .MuiOutlinedInput-notchedOutline, & .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline":
-                    {
-                        border: "2px solid transparent"
-                    },
-                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.colors.useCases.buttons.actionActive
-                },
-                "& .MuiSelect-select": {
+                // NOTE: As specific as MUI's rule, which reserves room for the icon
+                "& .MuiInputBase-root .MuiSelect-select.MuiInputBase-input": {
                     ...theme.typography.variants["label 1"].style,
+                    ...fieldStyle.padding,
+                    paddingRight: theme.spacing(6),
                     display: "flex",
                     alignItems: "center",
                     gap: theme.spacing(2),
-                    minHeight: "unset",
-                    paddingTop: theme.spacing(2),
-                    paddingBottom: theme.spacing(2),
-                    paddingLeft: theme.spacing(2.5),
-                    paddingRight: `${theme.spacing(6)}px !important`
+                    minHeight: "unset"
                 },
                 "& .MuiSelect-icon": {
                     color: theme.colors.useCases.typography.textPrimary,
                     right: theme.spacing(2.5)
                 }
             },
-            menu: {
-                marginTop: theme.spacing(1),
-                borderRadius: theme.spacing(2.5),
-                backgroundColor: theme.colors.useCases.surfaces.surface1,
-                backgroundImage: "none"
-            },
+            menu: fieldStyle.menuPaper,
             menuList: {
                 display: "flex",
                 flexDirection: "column",

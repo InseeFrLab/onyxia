@@ -65,7 +65,13 @@ export namespace AiProviderRuntime {
 /** The representation consumed by the UI and the launch context. */
 export type AiProviderWithRuntime = AiProvider & {
     auth: AiProviderRuntime.Auth;
+    /** The models offered to the user: the ones pinned by the admin, if any. */
     models: AiProviderRuntime.Models;
+    /**
+     * The outcome of asking the provider for its models, even when the admin pinned
+     * them: it tells whether the provider can be reached.
+     */
+    modelsListing: AiProviderRuntime.Models;
 };
 
 export function createInitialAiProviderRuntime(): AiProviderRuntime {
@@ -136,6 +142,8 @@ export function createAiProvidersWithRuntime(params: {
     return aiProviders.map(aiProvider => {
         const runtime =
             runtimeByProviderName[aiProvider.name] ?? createInitialAiProviderRuntime();
+        // The models pinned by the admin are offered whether or not the provider can be
+        // reached from the browser: the services may reach it when we can't.
         const models =
             aiProvider.origin === "configured by admin" &&
             aiProvider.modelIds !== undefined
@@ -161,6 +169,7 @@ export function createAiProvidersWithRuntime(params: {
             ...aiProvider,
             auth,
             models,
+            modelsListing: runtime.models,
             selectedModelIds:
                 models.stateDescription !== "loaded"
                     ? aiProvider.selectedModelIds

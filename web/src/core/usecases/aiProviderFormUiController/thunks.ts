@@ -161,17 +161,15 @@ export const thunks = {
                 return;
             }
 
-            const { connectionTest } = form;
+            const { availableModels } = form;
 
             assert(
-                connectionTest.stateDescription === "succeeded",
-                "models can only be selected once the connection test listed them"
+                availableModels !== undefined,
+                "models can only be selected once they are known"
             );
             assert(
                 selectedModelIds.every(modelId =>
-                    connectionTest.availableModels.some(
-                        availableModel => availableModel.id === modelId
-                    )
+                    availableModels.some(availableModel => availableModel.id === modelId)
                 ),
                 "a model that the provider doesn't expose can't be selected"
             );
@@ -239,6 +237,8 @@ export const thunks = {
                 ) {
                     assert(providerName_current !== undefined);
 
+                    // Obtains the key when needed (token exchange) and calls the provider,
+                    // even when its models are pinned
                     await dispatch(
                         aiProvidersManagements.thunks.refreshProvider({
                             providerName: providerName_current
@@ -355,8 +355,8 @@ export const thunks = {
                     );
                 }
 
-                // The models can only be selected when the provider listed them
-                if (connectionTest.stateDescription === "succeeded") {
+                // The models can only be selected when they are known
+                if (form.availableModels !== undefined) {
                     dispatch(
                         aiProvidersManagements.thunks.setSelectedModelIds({
                             providerName,
@@ -408,11 +408,16 @@ function getConnectionTestFromRuntime(params: {
         return { stateDescription: "failed" };
     }
 
-    switch (aiProvider.models.stateDescription) {
+    // Whether the provider could be reached, even if its models are pinned
+    switch (aiProvider.modelsListing.stateDescription) {
         case "loaded":
             return {
                 stateDescription: "succeeded",
-                availableModels: aiProvider.models.availableModels
+                // The models offered: the ones pinned by the admin, if any
+                availableModels:
+                    aiProvider.models.stateDescription === "loaded"
+                        ? aiProvider.models.availableModels
+                        : aiProvider.modelsListing.availableModels
             };
         case "error":
             return { stateDescription: "failed" };

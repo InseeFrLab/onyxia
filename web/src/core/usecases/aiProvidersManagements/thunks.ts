@@ -10,7 +10,6 @@ import * as userConfigs from "core/usecases/userConfigs";
 import { actions, name } from "./state";
 import { protectedSelectors, selectors } from "./selectors";
 import {
-    getConfiguredProviders,
     type AiProviderRuntime,
     type AiProviderWithRuntime
 } from "./decoupledLogic/aiProviders";
@@ -316,7 +315,14 @@ export const thunks = {
             }
 
             // No network involved: a user provided key is read from the persisted config
-            await dispatch(privateThunks.refreshProviderAuth({ providerName }));
+            const auth = await dispatch(
+                privateThunks.refreshProviderAuth({ providerName })
+            );
+
+            // Without a key, the provider can't be used whatever the test said
+            if (auth === undefined) {
+                return;
+            }
 
             dispatch(
                 actions.providerModelsChanged({
@@ -498,7 +504,19 @@ const privateThunks = {
 
                 dispatch(actions.providerAuthChanged({ providerName, auth }));
 
-                return auth.stateDescription === "authenticated" ? auth : undefined;
+                if (auth.stateDescription !== "authenticated") {
+                    // What was listed with a key that is gone no longer tells anything
+                    dispatch(
+                        actions.providerModelsChanged({
+                            providerName,
+                            models: { stateDescription: "not loaded" }
+                        })
+                    );
+
+                    return undefined;
+                }
+
+                return auth;
             }
 
             dispatch(
@@ -560,7 +578,7 @@ const privateThunks = {
         async (...args): Promise<void> => {
             const { providerName, apiKey } = params;
 
-            const [dispatch, , rootContext] = args;
+            const [dispatch] = args;
 
             const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
@@ -568,14 +586,8 @@ const privateThunks = {
                 return;
             }
 
-            const isModelListPinnedByAdmin =
-                getConfiguredProviders({ aiConfig: rootContext.aiConfig }).find(
-                    provider_config => provider_config.name === providerName
-                )?.models !== undefined;
-
-            if (isModelListPinnedByAdmin) {
-                return;
-            }
+            // NOTE: Called even when the admin pinned the models: it's how we know
+            // whether the provider can be reached.
 
             dispatch(
                 actions.providerModelsChanged({

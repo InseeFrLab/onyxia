@@ -18,6 +18,7 @@ function createConfiguredAiProvider(
         modelIds: undefined,
         auth: { stateDescription: "not required" },
         models: { stateDescription: "loaded", availableModels: [] },
+        modelsListing: { stateDescription: "loaded", availableModels: [] },
         selectedModelIds: [],
         ...params
     };
@@ -35,6 +36,7 @@ function createUserAiProvider(
         isNameConflicting: false,
         auth: { stateDescription: "authenticated", apiKey: "key of my llm" },
         models: { stateDescription: "loaded", availableModels: [] },
+        modelsListing: { stateDescription: "loaded", availableModels: [] },
         selectedModelIds: [],
         ...params
     };

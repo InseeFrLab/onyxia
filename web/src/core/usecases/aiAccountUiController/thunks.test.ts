@@ -445,3 +445,104 @@ it("gives a provider without authentication the same state on its card and in it
         "connected"
     );
 });
+
+it("actually calls a provider whose models are pinned by the admin when testing it", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const edition = core.functions.aiProviderFormUiController;
+
+    edition.open({ providerName: "Public" });
+
+    vi.mocked(fetch).mockClear();
+
+    await edition.testConnection();
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith("https://public.example/v1/models", {
+        headers: {},
+        signal: expect.anything()
+    });
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        connectionTest: { stateDescription: "succeeded", availableModels: [{ id: "a" }] }
+    });
+
+    vi.mocked(fetch).mockRejectedValueOnce(new Error("unreachable"));
+
+    await edition.testConnection();
+
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        connectionTest: { stateDescription: "failed" },
+        connectionState: "connection error"
+    });
+});
+
+it("reports an unreachable provider with pinned models, whose models stay selectable", async () => {
+    const { core } = setup();
+
+    vi.mocked(fetch).mockImplementation(async (url: string | URL | Request) => {
+        if (String(url) === "https://public.example/v1/models") {
+            throw new Error("unreachable");
+        }
+
+        return new Response(
+            JSON.stringify(
+                String(url).endsWith("/models")
+                    ? { data: [{ id: "a" }] }
+                    : { token: "exchanged" }
+            )
+        );
+    });
+
+    await core.functions.aiAccountUiController.load();
+
+    const getPublic = () =>
+        core.states.aiAccountUiController
+            .getMain()
+            .providers?.find(provider => provider.name === "Public");
+
+    // The card tells the truth, but still offers the models pinned by the admin
+    expect(getPublic()).toMatchObject({
+        connectionState: "connection error",
+        models: { stateDescription: "loaded", availableModels: [{ id: "a" }] }
+    });
+
+    const edition = core.functions.aiProviderFormUiController;
+
+    edition.open({ providerName: "Public" });
+
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        connectionTest: { stateDescription: "failed" },
+        connectionState: "connection error",
+        availableModels: [{ id: "a" }]
+    });
+
+    edition.changeSelectedModelIds({ selectedModelIds: ["a"] });
+
+    expect(getPublic()?.selectedModelIds).toEqual(["a"]);
+});
+
+it("doesn't report a provider as connected once its API key is removed", async () => {
+    const { core } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const edition = core.functions.aiProviderFormUiController;
+    const getCardState = () =>
+        core.states.aiAccountUiController
+            .getMain()
+            .providers?.find(provider => provider.name === "Keyed")?.connectionState;
+
+    edition.open({ providerName: "Keyed" });
+    edition.changeValue({ key: "apiKey", value: "typed" });
+    await edition.testConnection();
+    await edition.submit();
+
+    expect(getCardState()).toBe("connected");
+
+    edition.open({ providerName: "Keyed" });
+    edition.changeValue({ key: "apiKey", value: "" });
+    await edition.submit();
+
+    // What was listed with the removed key must not be taken for a connection
+    expect(getCardState()).toBe("setup required");
+});

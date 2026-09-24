@@ -35,16 +35,15 @@ const main = createSelector(
             ...aiProvider,
             operationState: state.operationByProviderName[aiProvider.name] ?? "idle",
             connectionState: getProviderConnectionState({
-                isApiKeyMissing:
-                    aiProvider.auth.stateDescription === "api-key not provided",
+                // Whether the provider could be reached, even if its models are pinned
                 connection:
                     aiProvider.auth.stateDescription === "error" ||
-                    aiProvider.models.stateDescription === "error"
+                    aiProvider.modelsListing.stateDescription === "error"
                         ? "failed"
-                        : aiProvider.models.stateDescription === "loaded"
+                        : aiProvider.modelsListing.stateDescription === "loaded"
                           ? "succeeded"
                           : aiProvider.auth.stateDescription === "fetching" ||
-                              aiProvider.models.stateDescription === "fetching"
+                              aiProvider.modelsListing.stateDescription === "fetching"
                             ? "testing"
                             : "not tested"
             }),

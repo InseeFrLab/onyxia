@@ -259,6 +259,7 @@ describe(symToStr({ getDefaultModel }), () => {
             modelIds: undefined,
             auth: { stateDescription: "not required" },
             models: loadedModels,
+            modelsListing: loadedModels,
             selectedModelIds: ["gpt-5"]
         }
     ];

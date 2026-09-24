@@ -44,7 +44,7 @@ function Component(props: Props) {
 
     const { t } = useTranslation({ AccountAiTab });
     const { t: tForm } = useTranslation("CustomProviderFormDialog");
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     const evtOpen = useConst(() => Evt.create<UnpackEvt<ConfirmProps["evtOpen"]>>());
 
@@ -65,7 +65,7 @@ function Component(props: Props) {
         return <CircularProgress />;
     }
     return (
-        <Stack className={props.className} spacing={4}>
+        <Stack className={cx(classes.root, props.className)} spacing={4}>
             {state.configSaveState === "error" && (
                 <Alert
                     severity="error"
@@ -202,12 +202,9 @@ function Component(props: Props) {
                                       ? provider.auth.apiKey
                                       : undefined,
                                 isApiKeyEditable: formState.canEditApiKey,
-                                availableModels:
-                                    connectionTest.stateDescription === "succeeded"
-                                        ? connectionTest.availableModels.map(
-                                              ({ id }) => id
-                                          )
-                                        : undefined,
+                                availableModels: formState.availableModels?.map(
+                                    ({ id }) => id
+                                ),
                                 selectedModelIds: formState.selectedModelIds_draft,
                                 isModelSelectionDisabled:
                                     formState.isSubmitting ||
@@ -222,6 +219,8 @@ function Component(props: Props) {
                                         ? t("save failed")
                                         : undefined,
                                 canTestConnection: formState.canTestConnection,
+                                isTestingConnection:
+                                    connectionTest.stateDescription === "testing",
                                 canRefreshCredentials: provider.canRefreshToken,
                                 isRefreshingCredentials:
                                     provider.operationState === "pending" ||
@@ -279,25 +278,23 @@ function Component(props: Props) {
 }
 
 const useStyles = tss.withName({ AccountAiTab }).create(({ theme }) => {
-    const gridGap = theme.spacing(1.25);
-
     return {
+        // The grid adapts to the width of the tab, not to the one of the window
+        root: {
+            containerType: "inline-size"
+        },
         providerGrid: {
             display: "grid",
             gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: gridGap,
-            "@media (max-width: 760px)": {
+            gap: theme.spacing(2),
+            // Below, two cards side by side would be too narrow
+            "@container (max-width: 760px)": {
                 gridTemplateColumns: "1fr"
             }
         },
         addCustomProviderButton: {
-            // Always on its own row, below the providers, but as wide as one of them.
-            gridColumn: "1 / -1",
-            justifySelf: "start",
-            width: `calc((100% - ${gridGap}px) / 2)`,
-            "@media (max-width: 760px)": {
-                width: "100%"
-            }
+            // Always on its own row, below the providers, across the whole tab
+            gridColumn: "1 / -1"
         }
     };
 });

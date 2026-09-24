@@ -72,6 +72,18 @@ const main = createSelector(
                 (persistedAiConfig.apiKeyByProviderName[aiProvider_current.name] ?? "");
 
         /**
+         * The models the user can pick from: the ones listed by the last successful
+         * test, or else the ones pinned by the admin, which are offered anyway.
+         */
+        const availableModels =
+            state.connectionTest.stateDescription === "succeeded"
+                ? state.connectionTest.availableModels
+                : aiProvider_current?.origin === "configured by admin" &&
+                    aiProvider_current.modelIds !== undefined
+                  ? aiProvider_current.modelIds.map(id => ({ id }))
+                  : undefined;
+
+        /**
          * When the listed models are the ones of the saved configuration, picking some is
          * saved right away, like from the provider card. Otherwise the selection depends
          * on unsaved values and is saved along with them.
@@ -80,7 +92,7 @@ const main = createSelector(
             isConnectionSaved &&
             aiProvider_current !== undefined &&
             aiProvider_current.models.stateDescription === "loaded" &&
-            state.connectionTest.stateDescription === "succeeded";
+            availableModels !== undefined;
 
         const hasChanges = (() => {
             // Nothing is saved yet, there is nothing to compare with
@@ -115,8 +127,6 @@ const main = createSelector(
 
         /** The same as on the card, but for what is on screen, saved or not */
         const connectionState = aiProvidersManagements.getProviderConnectionState({
-            isApiKeyMissing:
-                isConfiguredByAdmin && canEditApiKey && formValues.apiKey.trim() === "",
             connection: state.connectionTest.stateDescription
         });
 
@@ -145,6 +155,7 @@ const main = createSelector(
             canTestConnection,
             hasChanges,
             connectionState,
+            availableModels,
             isModelSelectionSavedImmediately,
             canSubmit:
                 hasChanges &&

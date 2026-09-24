@@ -2,15 +2,9 @@
 export type ProviderConnectionState = "connected" | "setup required" | "connection error";
 
 export function getProviderConnectionState(params: {
-    /** The provider needs a key from the user and there is none */
-    isApiKeyMissing: boolean;
     connection: "not tested" | "testing" | "failed" | "succeeded";
 }): ProviderConnectionState {
-    const { isApiKeyMissing, connection } = params;
-
-    if (isApiKeyMissing) {
-        return "setup required";
-    }
+    const { connection } = params;
 
     switch (connection) {
         case "failed":

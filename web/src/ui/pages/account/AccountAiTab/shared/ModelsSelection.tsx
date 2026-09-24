@@ -3,6 +3,7 @@ import { Autocomplete, Checkbox, Stack, TextField } from "@mui/material";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
+import { getFieldStyle } from "./fieldStyle";
 
 export type Props = {
     className?: string;
@@ -92,108 +93,105 @@ export const ModelsSelection = memo((props: Props) => {
     );
 });
 
-const useStyles = tss.withName({ ModelsSelection }).create(({ theme }) => ({
-    root: {
-        gap: theme.spacing(1)
-    },
-    autocomplete: {
-        "& .MuiFilledInput-root": {
-            minHeight: 45,
-            flexWrap: "nowrap",
-            overflow: "hidden",
-            padding: `${theme.spacing(2)}px ${theme.spacing(2.5)}px`,
-            borderRadius: theme.spacing(2),
-            border: "2px solid transparent",
-            backgroundColor: theme.colors.useCases.surfaces.background,
-            transition: "background-color 160ms ease, border-color 160ms ease"
-        },
-        "& .MuiFilledInput-root:hover, & .MuiFilledInput-root.Mui-focused": {
-            backgroundColor: theme.colors.useCases.surfaces.surface2
-        },
-        "& .MuiFilledInput-root.Mui-disabled": {
-            borderColor: theme.colors.useCases.surfaces.surface2,
-            backgroundColor: "transparent"
-        },
-        "& .MuiInputBase-input::placeholder": {
-            ...theme.typography.variants["body 1"].style,
-            color: theme.colors.useCases.typography.textSecondary,
-            opacity: 1
-        },
-        "& .MuiAutocomplete-input": {
-            minWidth: "0 !important",
-            width: "0 !important",
-            padding: "0 !important"
-        },
-        "& .MuiAutocomplete-tag": {
-            height: 28,
-            maxWidth: 120,
-            margin: `0 ${theme.spacing(1)}px 0 0`,
-            borderRadius: 100,
-            backgroundColor: theme.colors.useCases.surfaces.surface2,
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        // NOTE: Read-only, not greyed out: the selected models must stay readable
-        "& .MuiAutocomplete-tag.Mui-disabled": {
-            opacity: 1
-        },
-        "& .MuiChip-root.MuiAutocomplete-tag": {
-            flexShrink: 1
-        },
-        "& span.MuiAutocomplete-tag": {
-            height: "auto",
-            maxWidth: "none",
-            flexShrink: 0,
-            marginRight: theme.spacing(1),
-            padding: 0,
-            borderRadius: 0,
-            ...theme.typography.variants["body 1"].style,
-            color: theme.colors.useCases.typography.textPrimary,
-            backgroundColor: "transparent",
-            whiteSpace: "nowrap"
-        },
+const useStyles = tss.withName({ ModelsSelection }).create(({ theme }) => {
+    const fieldStyle = getFieldStyle({ theme });
 
-        "& .MuiAutocomplete-clearIndicator": {
-            visibility: "visible",
-            opacity: 1,
-            color: theme.colors.useCases.typography.textPrimary
+    return {
+        root: {
+            gap: theme.spacing(1)
         },
-        "& .MuiAutocomplete-popupIndicator": {
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        "& .MuiAutocomplete-popupIndicator.Mui-disabled": {
-            color: theme.colors.useCases.typography.textDisabled
-        }
-    },
-    paper: {
-        marginTop: theme.spacing(1),
-        borderRadius: theme.spacing(2.5),
-        backgroundColor: theme.colors.useCases.surfaces.surface1,
-        backgroundImage: "none",
-        boxShadow: "0 4px 8px rgba(34, 38, 47, 0.1)"
-    },
-    listbox: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(1),
-        padding: `${theme.spacing(2)}px !important`,
-        "& .MuiAutocomplete-option": {
-            minHeight: "32px !important",
-            alignItems: "center",
-            gap: theme.spacing(3),
-            padding: `${theme.spacing(1)}px ${theme.spacing(2)}px !important`,
-            borderRadius: theme.spacing(2),
-            ...theme.typography.variants["label 1"].style,
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        "& .MuiAutocomplete-option.Mui-focused, & .MuiAutocomplete-option[aria-selected='true'], & .MuiAutocomplete-option[aria-selected='true'].Mui-focused":
-            {
-                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+        autocomplete: {
+            "& .MuiFilledInput-root": {
+                ...fieldStyle.frame,
+                ...fieldStyle.padding,
+                flexWrap: "nowrap",
+                overflow: "hidden"
+            },
+            "& .MuiFilledInput-root:hover, & .MuiFilledInput-root.Mui-focused":
+                fieldStyle.frame_hover,
+            "& .MuiFilledInput-root.Mui-disabled": fieldStyle.frame_readOnly,
+            "& .MuiInputBase-input::placeholder": fieldStyle.placeholder,
+            // NOTE: As specific as MUI's rules: the text input only takes the room left
+            "& .MuiFilledInput-root .MuiAutocomplete-input.MuiInputBase-input": {
+                minWidth: 0,
+                width: 0,
+                padding: 0
+            },
+            "& .MuiAutocomplete-tag": {
+                ...fieldStyle.pill,
+                ...fieldStyle.embeddedControl,
+                height: "auto",
+                marginLeft: 0,
+                marginRight: theme.spacing(1),
+                "& .MuiChip-label": {
+                    paddingTop: theme.spacing(1),
+                    paddingBottom: theme.spacing(1)
+                },
+                backgroundColor: theme.colors.useCases.surfaces.surface2,
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            // NOTE: Read-only, not greyed out: the selected models must stay readable
+            "& .MuiAutocomplete-tag.Mui-disabled": {
+                opacity: 1
+            },
+            // A long model name is truncated only when there is no room left
+            "& .MuiChip-root.MuiAutocomplete-tag": {
+                flexShrink: 1,
+                minWidth: 0
+            },
+            "& span.MuiAutocomplete-tag": {
+                height: "auto",
+                flexShrink: 0,
+                marginRight: theme.spacing(1),
+                padding: 0,
+                borderRadius: 0,
+                ...theme.typography.variants["body 1"].style,
+                color: theme.colors.useCases.typography.textPrimary,
+                backgroundColor: "transparent",
+                whiteSpace: "nowrap"
+            },
+            "& .MuiAutocomplete-clearIndicator": {
+                visibility: "visible",
+                opacity: 1,
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            "& .MuiAutocomplete-popupIndicator": {
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            "& .MuiAutocomplete-popupIndicator.Mui-disabled": {
+                color: theme.colors.useCases.typography.textDisabled
             }
-    },
-    checkbox: {
-        padding: 0
-    }
-}));
+        },
+        paper: fieldStyle.menuPaper,
+        listbox: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(1),
+            // NOTE: Doubled class, to win over MUI's listbox and option rules
+            "&&": {
+                padding: theme.spacing(2)
+            },
+            "& .MuiAutocomplete-option.MuiAutocomplete-option": {
+                minHeight: "auto",
+                // In a scrolling flex column: its height is its content's, never less
+                flexShrink: 0,
+                alignItems: "center",
+                gap: theme.spacing(3),
+                padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+                borderRadius: theme.spacing(2),
+                ...theme.typography.variants["label 1"].style,
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            "& .MuiAutocomplete-option.Mui-focused, & .MuiAutocomplete-option[aria-selected='true'], & .MuiAutocomplete-option[aria-selected='true'].Mui-focused":
+                {
+                    backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+                }
+        },
+        checkbox: {
+            padding: 0
+        }
+    };
+});
 const { i18n } = declareComponentKeys<
     | "model label"
     | "not defined"

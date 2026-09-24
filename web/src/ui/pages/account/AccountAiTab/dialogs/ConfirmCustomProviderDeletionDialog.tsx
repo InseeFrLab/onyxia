@@ -37,7 +37,8 @@ export const ConfirmCustomProviderDeletionDialog = memo((props: Props) => {
         <Dialog
             isOpen={state !== undefined}
             onClose={onCloseFactory(false)}
-            maxWidth={false}
+            maxWidth="sm"
+            fullWidth={true}
             className={classes.paper}
             title={t("dialog title")}
             body={t("dialog body")}
@@ -68,10 +69,10 @@ const { i18n } = declareComponentKeys<
 >()({ ConfirmCustomProviderDeletionDialog });
 export type I18n = typeof i18n;
 
-const useStyles = tss.withName({ ConfirmCustomProviderDeletionDialog }).create(() => ({
-    paper: {
-        width: 650,
-        maxWidth: "calc(100vw - 48px)",
-        borderRadius: 12
-    }
-}));
+const useStyles = tss
+    .withName({ ConfirmCustomProviderDeletionDialog })
+    .create(({ theme }) => ({
+        paper: {
+            borderRadius: theme.spacing(2.5)
+        }
+    }));

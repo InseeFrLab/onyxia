@@ -1,12 +1,9 @@
 import { getIconUrlByName } from "lazy-icons";
-import {
-    breakpointsValues,
-    type ThemedAssetUrl,
-    useResolveThemedAssetUrl
-} from "onyxia-ui";
+import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
+import { getFieldStyle } from "./shared/fieldStyle";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { ModelsSelection } from "./shared/ModelsSelection";
 
@@ -97,8 +94,13 @@ export function ProviderCard(props: Props) {
     );
 }
 
+/** Below this width, the card stacks its content */
+const narrowCardWidth = 420;
+
 const useStyles = tss.withName({ ProviderCard }).create(({ theme }) => ({
+    // Its layout adapts to its own width, whatever the grid it is in
     root: {
+        containerType: "inline-size",
         boxSizing: "border-box",
         padding: theme.spacing(4),
         border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
@@ -138,7 +140,7 @@ const useStyles = tss.withName({ ProviderCard }).create(({ theme }) => ({
         display: "flex",
         alignItems: "flex-end",
         gap: theme.spacing(2),
-        [`@media (max-width: ${breakpointsValues.sm}px)`]: {
+        [`@container (max-width: ${narrowCardWidth}px)`]: {
             alignItems: "stretch",
             flexDirection: "column"
         }
@@ -149,7 +151,7 @@ const useStyles = tss.withName({ ProviderCard }).create(({ theme }) => ({
     },
     manageButton: {
         flexShrink: 0,
-        [`@media (max-width: ${breakpointsValues.sm}px)`]: {
+        [`@container (max-width: ${narrowCardWidth}px)`]: {
             alignSelf: "flex-end"
         }
     }
@@ -201,7 +203,7 @@ const useStyles_ProviderStateChip = tss
             gap: theme.spacing(1),
             flexShrink: 0,
             padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`,
-            borderRadius: 100,
+            ...getFieldStyle({ theme }).pill,
             color: theme.colors.useCases.typography.textPrimary
         },
         statusConnected: {
@@ -229,7 +231,8 @@ const useStyles_ProviderStateChip = tss
         },
         statusLabel: {
             whiteSpace: "nowrap",
-            [`@media (max-width: ${breakpointsValues.sm}px)`]: {
+            // Only the colored dot is left when the card is narrow
+            [`@container (max-width: ${narrowCardWidth}px)`]: {
                 display: "none"
             }
         }

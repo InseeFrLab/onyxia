@@ -1,11 +1,16 @@
+import { useId, type ReactNode } from "react";
+import Drawer from "@mui/material/Drawer";
 import { alpha } from "@mui/material/styles";
 import { getIconUrlByName } from "lazy-icons";
+import { breakpointsValues } from "onyxia-ui";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Text } from "onyxia-ui/Text";
-import { useEffect, type MouseEvent, type ReactNode } from "react";
-import { keyframes } from "tss-react";
 import { tss } from "tss";
 
+/**
+ * A panel floating on the right of the screen. The focus trap, the scroll lock,
+ * closing with Escape or by clicking outside are handled by MUI's Drawer.
+ */
 export function SideDialog(props: {
     title: ReactNode;
     closeLabel: string;
@@ -14,98 +19,66 @@ export function SideDialog(props: {
 }) {
     const { children, title, closeLabel, onClose } = props;
     const { classes } = useStyles();
-
-    useEffect(() => {
-        const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Escape") {
-                onClose();
-            }
-        };
-
-        window.addEventListener("keydown", onKeyDown);
-
-        return () => window.removeEventListener("keydown", onKeyDown);
-    }, [onClose]);
-
-    const onRootClick = (event: MouseEvent<HTMLDivElement>) => {
-        if (event.target === event.currentTarget) {
-            onClose();
-        }
-    };
+    const titleId = useId();
 
     return (
-        <div className={classes.root} onClick={onRootClick}>
-            <div
-                className={classes.panel}
-                role="dialog"
-                aria-modal="true"
-                aria-label={typeof title === "string" ? title : undefined}
-            >
-                <div className={classes.header}>
-                    <Text typo="section heading" className={classes.title}>
-                        {title}
-                    </Text>
-                    <IconButton
-                        className={classes.closeButton}
-                        size="default"
-                        icon={getIconUrlByName("Close")}
-                        aria-label={closeLabel}
-                        onClick={onClose}
-                    />
-                </div>
-
-                <div className={classes.childrenWrapper}>{children}</div>
+        <Drawer
+            open={true}
+            anchor="right"
+            onClose={onClose}
+            PaperProps={{
+                className: classes.panel,
+                "aria-labelledby": titleId
+            }}
+            slotProps={{ backdrop: { className: classes.backdrop } }}
+        >
+            <div className={classes.header}>
+                <Text
+                    typo="section heading"
+                    className={classes.title}
+                    componentProps={{ id: titleId }}
+                >
+                    {title}
+                </Text>
+                <IconButton
+                    className={classes.closeButton}
+                    size="default"
+                    icon={getIconUrlByName("Close")}
+                    aria-label={closeLabel}
+                    onClick={onClose}
+                />
             </div>
-        </div>
+
+            <div className={classes.childrenWrapper}>{children}</div>
+        </Drawer>
     );
 }
 
 const useStyles = tss.withName({ SideDialog }).create(({ theme }) => ({
-    root: {
-        position: "fixed",
-        inset: 0,
-        height: "100%",
-        minHeight: 0,
-        zIndex: theme.muiTheme.zIndex.modal,
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "stretch",
-        overflow: "hidden",
-        padding: `64px ${theme.spacing(4)}px ${theme.spacing(6)}px 0`,
-        boxSizing: "border-box",
+    backdrop: {
         backgroundColor: alpha(theme.colors.useCases.surfaces.background, 0.7),
-        backdropFilter: "blur(1px)",
-        "@media (max-width: 720px)": {
-            padding: 0
-        }
+        backdropFilter: "blur(1px)"
     },
+    // NOTE: Positioned by its insets, its size follows from the viewport it floats in
     panel: {
+        top: theme.spacing(4),
+        right: theme.spacing(4),
+        bottom: theme.spacing(4),
+        height: "auto",
+        // The width of the mockup, as long as the screen is wide enough
         width: 657,
-        height: 976,
         maxWidth: "100%",
-        maxHeight: "100%",
-        minHeight: 0,
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(3),
-        overflow: "hidden",
         boxSizing: "border-box",
         padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
         borderRadius: theme.spacing(3),
         backgroundColor: theme.colors.useCases.surfaces.surface1,
-        boxShadow: "0 6px 10px 0 rgba(44, 50, 63, 0.07)",
-        animation: `${keyframes`
-            from {
-                opacity: 0;
-                transform: translateX(28px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        `} 340ms cubic-bezier(0.2, 0, 0, 1)`,
-        "@media (max-width: 720px)": {
-            height: "100%",
+        backgroundImage: "none",
+        boxShadow: theme.shadows[1],
+        [`@media (max-width: ${breakpointsValues.sm}px)`]: {
+            inset: 0,
             borderRadius: 0,
             padding: `${theme.spacing(4)}px ${theme.spacing(3)}px`
         }

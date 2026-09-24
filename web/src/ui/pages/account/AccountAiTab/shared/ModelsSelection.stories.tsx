@@ -48,3 +48,11 @@ export const NoModels: Story = {
 export const Disabled: Story = {
     args: { disabled: true }
 };
+
+/** Enough models for the list to scroll */
+export const ManyModels: Story = {
+    args: {
+        models: Array.from({ length: 40 }, (_, i) => `model-${i + 1}`),
+        selectedModels: ["model-1", "model-2", "model-3", "model-4", "model-5"]
+    }
+};
