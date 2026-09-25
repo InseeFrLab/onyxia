@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeHelmValues } from "./computeHelmValues";
+import { computeHelmValues, type JSONSchemaLike } from "./computeHelmValues";
 import YAML from "yaml";
 import { symToStr } from "tsafe/symToStr";
 
@@ -77,6 +77,66 @@ describe(symToStr({ computeHelmValues }), () => {
         };
 
         expect(got).toStrictEqual(expected);
+    });
+
+    it("Injects the AI context and providers using the current contract", () => {
+        const provider = {
+            name: "OpenAI",
+            type: "openai",
+            apiBase: "https://api.openai.com/v1",
+            apiKey: "sk-test",
+            models: ["gpt-4.1", "gpt-4.1-mini"]
+        };
+        const ai = {
+            enabled: true,
+            defaultModel: "OpenAI/gpt-4.1",
+            listModels: ["OpenAI/gpt-4.1", "OpenAI/gpt-4.1-mini"],
+            providers: [provider]
+        };
+        const xOnyxiaContext = { ai, s3: undefined };
+        const providerProperties: Record<string, JSONSchemaLike> = {
+            name: { type: "string", default: "" },
+            type: { type: "string", default: "" },
+            apiBase: { type: "string", default: "" },
+            apiKey: { type: "string", default: "" },
+            models: { type: "array", default: [], items: { type: "string" } }
+        };
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    ai: {
+                        type: "object",
+                        default: {},
+                        properties: {
+                            enabled: { type: "boolean", default: false },
+                            defaultModel: { type: "string", default: "" },
+                            listModels: {
+                                type: "array",
+                                default: [],
+                                items: { type: "string" }
+                            },
+                            providers: {
+                                type: "array",
+                                default: [],
+                                items: { type: "object", properties: providerProperties }
+                            }
+                        },
+                        "x-onyxia": { overwriteDefaultWith: "{{ai}}" }
+                    },
+                    providers: {
+                        type: "array",
+                        default: [],
+                        items: { type: "object", properties: providerProperties },
+                        "x-onyxia": { overwriteDefaultWith: "{{ai.providers}}" }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+        expect(got.helmValues).toStrictEqual({ ai, providers: [provider] });
     });
 
     it("Use default", () => {
@@ -999,6 +1059,93 @@ describe(symToStr({ computeHelmValues }), () => {
                                 }
                             },
                             required: ["p", "q", "c"],
+                            additionalProperties: false
+                        }
+                    }
+                },
+                required: ["r"],
+                additionalProperties: false
+            },
+            isChartUsingS3: false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("array mapping with overwriteListEnumWith", () => {
+        const xOnyxiaContext = {
+            s3: {},
+            a: {
+                b: [
+                    { p: "foo", q_x: "xxx_1", q_options: ["xxx_1", "yyy_1"] },
+                    { p: "bar", q_x: "xxx_2", q_options: ["xxx_2", "yyy_2"] },
+                    { p: "baz", q_x: "xxx_3", q_options: ["xxx_3", "yyy_3"] }
+                ]
+            }
+        };
+
+        const got = computeHelmValues({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        "x-onyxia": {
+                            overwriteDefaultWith: "{{a.b}}"
+                        },
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                },
+                                q: {
+                                    type: "string",
+                                    listEnum: [],
+                                    "x-onyxia": {
+                                        overwriteDefaultWith: "{{q_x}}",
+                                        overwriteListEnumWith: "{{q_options}}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext,
+            infoAmountInHelmValues: "user provided"
+        });
+
+        const expected = {
+            helmValues: {
+                r: [
+                    { p: "foo", q: "xxx_1" },
+                    { p: "bar", q: "xxx_2" },
+                    { p: "baz", q: "xxx_3" }
+                ]
+            },
+            helmValuesSchema_forDataTextEditor: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        default: [
+                            { p: "foo", q: "xxx_1" },
+                            { p: "bar", q: "xxx_2" },
+                            { p: "baz", q: "xxx_3" }
+                        ],
+                        items: {
+                            type: "object",
+                            properties: {
+                                p: {
+                                    type: "string"
+                                },
+                                q: {
+                                    type: "string"
+                                }
+                            },
+                            required: ["p", "q"],
                             additionalProperties: false
                         }
                     }

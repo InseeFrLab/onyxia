@@ -18,7 +18,8 @@ export const translations: Translations<"no"> = {
         text3: "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
         "personal tokens tooltip":
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -95,6 +96,108 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
+    },
+    AccountAiTab: {
+        "ai providers title": "KI-leverandører",
+        "default model": "Velg en standardmodell",
+        retry: "Prøv igjen",
+        "provided by organization": "Levert av organisasjonen din",
+        manage: "Administrer",
+        "custom providers section title": "Tilpassede AI-leverandører",
+        "add custom ai provider": "Legg til tilpasset AI-leverandør",
+        "save failed": "Kunne ikke lagre endringene.",
+        "save failed details":
+            "Endringene dine beholdes på denne siden. Prøv igjen om litt.",
+        "api-key not provided": "API-nøkkel kreves.",
+        "api-key not provided details":
+            "Denne leverandøren trenger din egen API-nøkkel før den kan brukes.",
+        "gateway error": "Kunne ikke initialisere AI-gatewayen.",
+        "gateway error details": "Sjekk tilkoblingen din og prøv igjen.",
+        "unreadable config title": "AI-konfigurasjonen din kan ikke leses.",
+        "unreadable config":
+            "Tilbakestilling sletter dine egne leverandører, API-nøkler og modellvalg.",
+        "reset config": "Tilbakestill AI-konfigurasjonen min",
+        "refresh failed": "Kunne ikke fornye påloggingsinformasjonen.",
+        "refresh failed details":
+            "Prøv igjen, eller kontakt administratoren hvis problemet vedvarer.",
+        "connection failed": "Tilkoblingen mislyktes.",
+        "connection failed details":
+            "Kontroller påloggingsinformasjonen eller endepunktet."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Slett denne egendefinerte KI-leverandøren",
+        "dialog body":
+            "Dette fjerner leverandøren og den lagrede påloggingsinformasjonen permanent fra nettleseren. Handlingen kan ikke angres.",
+        cancel: "Avbryt",
+        "delete provider": "Slett leverandør"
+    },
+    ProviderValueField: {
+        copy: "Kopier",
+        copied: "Kopiert"
+    },
+    ProviderCard: {
+        connected: "Tilkoblet",
+        "setup required": "Oppsett kreves",
+        "connection error": "Tilkoblingsfeil"
+    },
+    ModelsSelection: {
+        "model label": "Modell",
+        "no models available": "Ingen modeller tilgjengelig",
+        "no matching models": "Ingen samsvarende modeller",
+        "deselect all": "Fjern alle valg",
+        "more models": ({ count }) => `+${count} modeller`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Administrer leverandører",
+        "close aria label": "Lukk",
+        "provider selector aria label": "Leverandør",
+        "documentation title": "Dokumentasjon",
+        "connection details title": "Tilkoblingsdetaljer",
+        "connection details helper":
+            "Vis og administrer hvordan Onyxia kobler til denne leverandøren.",
+        "manage models title": "Administrer modeller",
+        "manage models helper": "Velg modellene som er tilgjengelige i tjenestene dine.",
+        "api base url": "API-grunn-URL",
+        "api key": "API-nøkkel",
+        "refresh credentials": "Oppdater legitimasjon",
+        "test connection": "Test tilkoblingen",
+        "delete provider": "Slett leverandør",
+        cancel: "Avbryt",
+        "save changes": "Lagre endringer"
+    },
+    CustomProviderFormDialog: {
+        "invalid name": "Velg et unikt leverandørnavn uten skråstrek (/).",
+        "invalid api base": "Skriv inn en gyldig HTTP(S)-URL.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Tilpassede AI-leverandører",
+        "edit custom provider title": "Rediger AI-leverandør",
+        "custom provider section title": "Tilpassede AI-leverandører",
+        "custom provider label field": "Etikett",
+        "custom provider type field": "API-protokoll",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-kompatibel",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
+        "credentials section title": "Leverandørlegitimasjon",
+        "credentials section subtitle":
+            "Skriv inn legitimasjonen din. Den lagres i nettleseren.",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-nøkkel",
+        "verification section title": "Bekreft og last inn modeller",
+        "verification section subtitle":
+            "Bekreft legitimasjonen og finn tilgjengelige modeller automatisk.",
+        "provider test": "Test tilkobling",
+        "provider testing": "Tester tilkobling...",
+        "provider test success": "Tilkobling vellykket. Leverandøren er klar til bruk.",
+        "provider save": "Legg til",
+        "provider update": "Lagre",
+        "provider cancel": "Avbryt",
+        "close aria label": "Lukk",
+        "submission error": "Kunne ikke lagre denne leverandøren.",
+        "submission error details": "Prøv igjen om litt.",
+        "provider test error": "Tilkoblingen mislyktes.",
+        "provider test error details":
+            "Kontroller påloggingsinformasjonen eller endepunktet."
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

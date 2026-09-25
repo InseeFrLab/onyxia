@@ -60,6 +60,7 @@ type ImportMetaEnv = {
   VAULT_DOCUMENTATION_LINK: string
   DISABLE_DISPLAY_ALL_CATALOG: string
   S3: string
+  AI: string
   ONYXIA_API_URL: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
@@ -68,15 +69,15 @@ type ImportMetaEnv = {
   OIDC_DISABLE_DPOP: string
   OIDC_SESSION_RESTORATION_METHOD: string
   // @user-defined-start
-  /*
-   * Here you can define your own special variables
-   * that would be available on `import.meta.env` but
-   * that vite-envs does not know about.
-   * This section will be preserved thanks to the special comments.
-   * Example:
-   */
-  // SSR: boolean;
-  // @user-defined-end
+    /*
+     * Here you can define your own special variables
+     * that would be available on `import.meta.env` but
+     * that vite-envs does not know about.
+     * This section will be preserved thanks to the special comments.
+     * Example:
+     */
+    // SSR: boolean;
+    // @user-defined-end
 }
 
 interface ImportMeta {
@@ -92,5 +93,5 @@ interface ImportMeta {
 }
 
 interface Window {
-  kcContext?: import("./keycloak-theme/login/KcContext").KcContext;
+    kcContext?: import("./keycloak-theme/login/KcContext").KcContext;
 }

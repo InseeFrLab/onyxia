@@ -17,7 +17,8 @@ export const translations: Translations<"nl"> = {
         text2: "Toegang tot uw accountgegevens.",
         text3: "Uw gebruikersnamen, e-mails, wachtwoorden en persoonlijke toegangstokens die direct verbonden zijn aan uw diensten configureren.",
         "personal tokens tooltip": 'Of "token" in het Engels.',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "Account-ID",
@@ -95,6 +96,107 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
+    },
+    AccountAiTab: {
+        "ai providers title": "AI-providers",
+        "default model": "Kies een standaardmodel",
+        retry: "Opnieuw proberen",
+        "provided by organization": "Aangeboden door uw organisatie",
+        manage: "Beheren",
+        "custom providers section title": "Aangepaste AI-providers",
+        "add custom ai provider": "Aangepaste AI-provider toevoegen",
+        "save failed": "Kan uw wijzigingen niet opslaan.",
+        "save failed details":
+            "Uw wijzigingen blijven op deze pagina bewaard. Probeer het zo opnieuw.",
+        "api-key not provided": "API-sleutel vereist.",
+        "api-key not provided details":
+            "Deze provider heeft uw eigen API-sleutel nodig voordat hij gebruikt kan worden.",
+        "gateway error": "Kan de AI-gateway niet initialiseren.",
+        "gateway error details": "Controleer uw verbinding en probeer het opnieuw.",
+        "unreadable config title": "Uw AI-configuratie kan niet worden gelezen.",
+        "unreadable config":
+            "Opnieuw instellen verwijdert uw eigen providers, API-sleutels en modelselecties.",
+        "reset config": "Mijn AI-configuratie opnieuw instellen",
+        "refresh failed": "Kan de inloggegevens niet vernieuwen.",
+        "refresh failed details":
+            "Probeer het opnieuw of neem contact op met uw beheerder als het probleem aanhoudt.",
+        "connection failed": "Verbinding mislukt.",
+        "connection failed details": "Controleer uw inloggegevens of het endpoint."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Deze aangepaste AI-provider verwijderen",
+        "dialog body":
+            "Hiermee worden de provider en de in je browser opgeslagen inloggegevens permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+        cancel: "Annuleren",
+        "delete provider": "Provider verwijderen"
+    },
+    ProviderValueField: {
+        copy: "Kopiëren",
+        copied: "Gekopieerd"
+    },
+    ProviderCard: {
+        connected: "Verbonden",
+        "setup required": "Configuratie vereist",
+        "connection error": "Verbindingsfout"
+    },
+    ModelsSelection: {
+        "model label": "Model",
+        "no models available": "Geen modellen beschikbaar",
+        "no matching models": "Geen overeenkomende modellen",
+        "deselect all": "Alles deselecteren",
+        "more models": ({ count }) => `+${count} modellen`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Providers beheren",
+        "close aria label": "Sluiten",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentatie",
+        "connection details title": "Verbindingsgegevens",
+        "connection details helper":
+            "Bekijk en beheer hoe Onyxia verbinding maakt met deze provider.",
+        "manage models title": "Modellen beheren",
+        "manage models helper": "Kies de modellen die beschikbaar zijn in je diensten.",
+        "api base url": "API-basis-URL",
+        "api key": "API-sleutel",
+        "refresh credentials": "Inloggegevens vernieuwen",
+        "test connection": "Verbinding testen",
+        "delete provider": "Provider verwijderen",
+        cancel: "Annuleren",
+        "save changes": "Wijzigingen opslaan"
+    },
+    CustomProviderFormDialog: {
+        "invalid name": "Kies een unieke providernaam zonder schuine streep (/).",
+        "invalid api base": "Voer een geldige HTTP(S)-URL in.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Aangepaste AI-providers",
+        "edit custom provider title": "AI-provider bewerken",
+        "custom provider section title": "Aangepaste AI-providers",
+        "custom provider label field": "Label",
+        "custom provider type field": "API-protocol",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-compatibel",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
+        "credentials section title": "Providerreferenties",
+        "credentials section subtitle":
+            "Voer uw referenties in. Ze worden in uw browser opgeslagen.",
+        "custom provider api base field": "API-basis-URL",
+        "custom provider api key field": "API-sleutel",
+        "verification section title": "Modellen verifiëren en laden",
+        "verification section subtitle":
+            "Verifieer uw referenties en ontdek automatisch de beschikbare modellen.",
+        "provider test": "Verbinding testen",
+        "provider testing": "Verbinding testen...",
+        "provider test success":
+            "Verbinding geslaagd. De provider is klaar voor gebruik.",
+        "provider save": "Toevoegen",
+        "provider update": "Opslaan",
+        "provider cancel": "Annuleren",
+        "close aria label": "Sluiten",
+        "submission error": "Kan deze provider niet opslaan.",
+        "submission error details": "Probeer het zo opnieuw.",
+        "provider test error": "Verbinding mislukt.",
+        "provider test error details": "Controleer uw inloggegevens of het endpoint."
     },
     AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",

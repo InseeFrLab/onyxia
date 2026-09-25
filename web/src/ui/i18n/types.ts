@@ -57,6 +57,13 @@ export type ComponentKey =
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n
     | import("ui/pages/account/AccountVaultTab").I18n
+    | import("ui/pages/account/AccountAiTab/AccountAiTab").I18n
+    | import("ui/pages/account/AccountAiTab/dialogs/ManageProvidersDialog/ProviderValueField").I18n
+    | import("ui/pages/account/AccountAiTab/shared/ModelsSelection").I18n
+    | import("ui/pages/account/AccountAiTab/ProviderCard").I18n
+    | import("ui/pages/account/AccountAiTab/dialogs/ManageProvidersDialog/ManageProvidersDialog").I18n
+    | import("ui/pages/account/AccountAiTab/dialogs/CustomProviderFormDialog/CustomProviderFormDialog").I18n
+    | import("ui/pages/account/AccountAiTab/dialogs/ConfirmCustomProviderDeletionDialog").I18n
     | import("ui/App/Footer").I18n
     | import("ui/pages/catalog/Page").I18n
     | import("ui/pages/catalog/CatalogChartCard").I18n

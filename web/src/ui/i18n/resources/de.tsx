@@ -17,7 +17,8 @@ export const translations: Translations<"de"> = {
         text2: "Greifen Sie auf Ihre verschiedenen Kontoinformationen zu.",
         text3: "Konfigurieren Sie Ihre persönlichen Logins, E-Mails, Passwörter und persönlichen Zugriffstoken, die direkt mit Ihren Diensten verbunden sind.",
         "personal tokens tooltip": 'Oder auf Englisch "Token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "KI"
     },
     AccountProfileTab: {
         "account id": "Kontoidentifikator",
@@ -96,6 +97,111 @@ export const translations: Translations<"de"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
+    },
+    AccountAiTab: {
+        "ai providers title": "KI-Anbieter",
+        "default model": "Standardmodell auswählen",
+        retry: "Erneut versuchen",
+        "provided by organization": "Von Ihrer Organisation bereitgestellt",
+        manage: "Verwalten",
+        "custom providers section title": "Benutzerdefinierte KI-Anbieter",
+        "add custom ai provider": "Benutzerdefinierten KI-Anbieter hinzufügen",
+        "save failed": "Ihre Änderungen konnten nicht gespeichert werden.",
+        "save failed details":
+            "Ihre Änderungen bleiben auf dieser Seite erhalten. Versuchen Sie es gleich noch einmal.",
+        "api-key not provided": "API-Schlüssel erforderlich.",
+        "api-key not provided details":
+            "Dieser Anbieter benötigt Ihren eigenen API-Schlüssel, bevor er verwendet werden kann.",
+        "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
+        "gateway error details":
+            "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "unreadable config title": "Ihre KI-Konfiguration kann nicht gelesen werden.",
+        "unreadable config":
+            "Beim Zurücksetzen werden Ihre eigenen Anbieter, API-Schlüssel und Modellauswahlen gelöscht.",
+        "reset config": "Meine KI-Konfiguration zurücksetzen",
+        "refresh failed": "Die Zugangsdaten konnten nicht erneuert werden.",
+        "refresh failed details":
+            "Versuchen Sie es erneut oder wenden Sie sich an Ihren Administrator, falls das Problem weiterhin besteht.",
+        "connection failed": "Verbindung fehlgeschlagen.",
+        "connection failed details":
+            "Bitte überprüfen Sie Ihre Zugangsdaten oder den Endpunkt."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Diesen benutzerdefinierten KI-Anbieter löschen",
+        "dialog body":
+            "Dadurch werden der Anbieter und die im Browser gespeicherten Zugangsdaten dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+        cancel: "Abbrechen",
+        "delete provider": "Anbieter löschen"
+    },
+    ProviderValueField: {
+        copy: "Kopieren",
+        copied: "Kopiert"
+    },
+    ProviderCard: {
+        connected: "Verbunden",
+        "setup required": "Einrichtung erforderlich",
+        "connection error": "Verbindungsfehler"
+    },
+    ModelsSelection: {
+        "model label": "Modell",
+        "no models available": "Keine Modelle verfügbar",
+        "no matching models": "Keine passenden Modelle",
+        "deselect all": "Alle abwählen",
+        "more models": ({ count }) => `+${count} Modelle`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Anbieter verwalten",
+        "close aria label": "Schließen",
+        "provider selector aria label": "Anbieter",
+        "documentation title": "Dokumentation",
+        "connection details title": "Verbindungsdetails",
+        "connection details helper":
+            "Anzeigen und verwalten, wie Onyxia eine Verbindung zu diesem Anbieter herstellt.",
+        "manage models title": "Modelle verwalten",
+        "manage models helper": "Wählen Sie die in Ihren Diensten verfügbaren Modelle.",
+        "api base url": "API-Basis-URL",
+        "api key": "API-Schlüssel",
+        "refresh credentials": "Anmeldedaten aktualisieren",
+        "test connection": "Verbindung testen",
+        "delete provider": "Anbieter löschen",
+        cancel: "Abbrechen",
+        "save changes": "Änderungen speichern"
+    },
+    CustomProviderFormDialog: {
+        "invalid name":
+            "Wählen Sie einen eindeutigen Anbieternamen ohne Schrägstrich (/).",
+        "invalid api base": "Geben Sie eine gültige HTTP(S)-URL ein.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Benutzerdefinierte KI-Anbieter",
+        "edit custom provider title": "KI-Anbieter bearbeiten",
+        "custom provider section title": "Benutzerdefinierte KI-Anbieter",
+        "custom provider label field": "Name",
+        "custom provider type field": "API-Protokoll",
+        "openai provider option": "OpenAI (nativ)",
+        "openai compatible provider option": "OpenAI-kompatibel",
+        "mistral provider option": "Mistral (nativ)",
+        "anthropic provider option": "Anthropic (nativ)",
+        "credentials section title": "Anmeldedaten des Anbieters",
+        "credentials section subtitle":
+            "Geben Sie Ihre Anmeldedaten ein. Sie werden in Ihrem Browser gespeichert.",
+        "custom provider api base field": "API-Basis-URL",
+        "custom provider api key field": "API-Schlüssel",
+        "verification section title": "Modelle prüfen und laden",
+        "verification section subtitle":
+            "Prüfen Sie Ihre Anmeldedaten und laden Sie automatisch die verfügbaren Modelle.",
+        "provider test": "Verbindung testen",
+        "provider testing": "Verbindung wird getestet...",
+        "provider test success":
+            "Verbindung erfolgreich. Der Anbieter ist einsatzbereit.",
+        "provider save": "Hinzufügen",
+        "provider update": "Speichern",
+        "provider cancel": "Abbrechen",
+        "close aria label": "Schließen",
+        "submission error": "Dieser Anbieter konnte nicht gespeichert werden.",
+        "submission error details": "Bitte versuchen Sie es gleich noch einmal.",
+        "provider test error": "Verbindung fehlgeschlagen.",
+        "provider test error details":
+            "Bitte überprüfen Sie Ihre Zugangsdaten oder den Endpunkt."
     },
     AccountVaultTab: {
         "credentials section title": "Vault-Anmeldeinformationen",

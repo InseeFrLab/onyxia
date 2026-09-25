@@ -1,6 +1,7 @@
 export const accountTabIds = [
     "profile",
     "git",
+    "ai",
     "k8sCodeSnippets",
     "vault",
     "user-interface"

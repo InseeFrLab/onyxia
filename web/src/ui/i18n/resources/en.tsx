@@ -17,7 +17,8 @@ export const translations: Translations<"en"> = {
         text3: "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
         "personal tokens tooltip":
             "Password that are generated for you and that have a given validity period",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "AI"
     },
     AccountProfileTab: {
         "account id": "Account identifier",
@@ -94,6 +95,106 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `These credentials are valid for the next ${howMuchTime}`
+    },
+    AccountAiTab: {
+        "ai providers title": "AI Providers",
+        "default model": "Choose a default model",
+        retry: "Retry",
+        "provided by organization": "Provided by your organization",
+        manage: "Manage",
+        "custom providers section title": "Custom AI providers",
+        "add custom ai provider": "Add a new custom AI provider",
+        "save failed": "Unable to save your changes.",
+        "save failed details":
+            "Your changes are kept on this page. Try again in a moment.",
+        "api-key not provided": "API key required.",
+        "api-key not provided details":
+            "This provider needs your own API key before it can be used.",
+        "gateway error": "Unable to initialize the AI gateway.",
+        "gateway error details": "Check your connection and try again.",
+        "unreadable config title": "Your AI configuration can't be read.",
+        "unreadable config":
+            "Resetting it deletes your custom providers, API keys and model selections.",
+        "reset config": "Reset my AI configuration",
+        "refresh failed": "Unable to renew the credentials.",
+        "refresh failed details":
+            "Try again, or contact your administrator if the problem persists.",
+        "connection failed": "Connection failed.",
+        "connection failed details": "Please check your credentials or endpoint."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Delete this Custom AI Provider",
+        "dialog body":
+            "This will permanently remove the provider and its stored credentials from your browser. This action cannot be undone.",
+        cancel: "Cancel",
+        "delete provider": "Delete provider"
+    },
+    ProviderValueField: {
+        copy: "Copy",
+        copied: "Copied"
+    },
+    ProviderCard: {
+        connected: "Connected",
+        "setup required": "Setup required",
+        "connection error": "Connection error"
+    },
+    ModelsSelection: {
+        "model label": "Selected models",
+        "no models available": "No models available",
+        "no matching models": "No matching models",
+        "deselect all": "Deselect all",
+        "more models": ({ count }) => `+${count} Models`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Manage providers",
+        "close aria label": "Close",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentation",
+        "connection details title": "Connection details",
+        "connection details helper":
+            "View and manage how Onyxia connects to this provider.",
+        "manage models title": "Manage models",
+        "manage models helper": "Choose the models available in your services.",
+        "api base url": "API Base URL",
+        "api key": "API Key",
+        "refresh credentials": "Refresh credentials",
+        "test connection": "Test connection",
+        "delete provider": "Delete provider",
+        cancel: "Cancel",
+        "save changes": "Save changes"
+    },
+    CustomProviderFormDialog: {
+        "invalid name": "Choose a unique provider name without a slash (/).",
+        "invalid api base": "Enter a valid HTTP(S) URL.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Add a new custom AI provider",
+        "edit custom provider title": "Edit AI provider",
+        "custom provider section title": "Configure AI provider",
+        "custom provider label field": "Define a custom name",
+        "custom provider type field": "Provider API",
+        "openai provider option": "OpenAI (native)",
+        "openai compatible provider option": "OpenAI-compatible",
+        "mistral provider option": "Mistral (native)",
+        "anthropic provider option": "Anthropic (native)",
+        "credentials section title": "Provider Credentials",
+        "credentials section subtitle":
+            "Enter your credentials to save them with your account settings. Leave the API key empty if the provider requires no authentication.",
+        "custom provider api base field": "API Base URL",
+        "custom provider api key field": "API Key",
+        "verification section title": "Verify & Load Models",
+        "verification section subtitle":
+            "Verify your credentials and automatically discover the available models.",
+        "provider test": "Test connection",
+        "provider testing": "Testing connection...",
+        "provider test success": "Connection successful. Your provider is ready to use.",
+        "provider save": "Add Custom AI Providers",
+        "provider update": "Save changes",
+        "provider cancel": "Cancel",
+        "close aria label": "Close",
+        "submission error": "Unable to save this provider.",
+        "submission error details": "Please try again in a moment.",
+        "provider test error": "Connection failed.",
+        "provider test error details": "Please check your credentials or endpoint."
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

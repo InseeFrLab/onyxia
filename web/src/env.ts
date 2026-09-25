@@ -1280,6 +1280,11 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
+        envName: "AI",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => envValue
+    },
+    {
         envName: "VAULT_DOCUMENTATION_LINK",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue }) => {

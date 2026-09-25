@@ -18,7 +18,8 @@ export const translations: Translations<"es"> = {
         text3: "Configura tus nombres de usuario, correos electrónicos, contraseñas y tokens de acceso personal directamente conectados a tus servicios.",
         "personal tokens tooltip":
             "Contraseñas que se generan para ti y que tienen un período de validez determinado",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificador de cuenta",
@@ -95,6 +96,106 @@ export const translations: Translations<"es"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Estas credenciales son válidas por los próximos ${howMuchTime}`
+    },
+    AccountAiTab: {
+        "ai providers title": "Proveedores de IA",
+        "default model": "Elegir un modelo predeterminado",
+        retry: "Reintentar",
+        "provided by organization": "Proporcionado por su organización",
+        manage: "Gestionar",
+        "custom providers section title": "Proveedores de IA personalizados",
+        "add custom ai provider": "Añadir un proveedor de IA personalizado",
+        "save failed": "No se pudieron guardar los cambios.",
+        "save failed details":
+            "Sus cambios se conservan en esta página. Inténtelo de nuevo en un momento.",
+        "api-key not provided": "Se requiere una clave API.",
+        "api-key not provided details":
+            "Este proveedor necesita su propia clave API antes de poder usarse.",
+        "gateway error": "No se pudo inicializar la pasarela de IA.",
+        "gateway error details": "Compruebe su conexión e inténtelo de nuevo.",
+        "unreadable config title": "No se puede leer su configuración de IA.",
+        "unreadable config":
+            "Al restablecerla se eliminan sus proveedores personalizados, claves API y selecciones de modelos.",
+        "reset config": "Restablecer mi configuración de IA",
+        "refresh failed": "No se pudieron renovar las credenciales.",
+        "refresh failed details":
+            "Inténtelo de nuevo o contacte con su administrador si el problema persiste.",
+        "connection failed": "Error de conexión.",
+        "connection failed details": "Compruebe sus credenciales o el endpoint."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Eliminar este proveedor de IA personalizado",
+        "dialog body":
+            "Esto eliminará permanentemente el proveedor y las credenciales almacenadas en tu navegador. Esta acción no se puede deshacer.",
+        cancel: "Cancelar",
+        "delete provider": "Eliminar proveedor"
+    },
+    ProviderValueField: {
+        copy: "Copiar",
+        copied: "Copiado"
+    },
+    ProviderCard: {
+        connected: "Conectado",
+        "setup required": "Configuración requerida",
+        "connection error": "Error de conexión"
+    },
+    ModelsSelection: {
+        "model label": "Modelo",
+        "no models available": "No hay modelos disponibles",
+        "no matching models": "Ningún modelo coincide",
+        "deselect all": "Deseleccionar todo",
+        "more models": ({ count }) => `+${count} modelos`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Gestionar proveedores",
+        "close aria label": "Cerrar",
+        "provider selector aria label": "Proveedor",
+        "documentation title": "Documentación",
+        "connection details title": "Detalles de conexión",
+        "connection details helper":
+            "Consulta y gestiona cómo se conecta Onyxia a este proveedor.",
+        "manage models title": "Gestionar modelos",
+        "manage models helper": "Elige los modelos disponibles en tus servicios.",
+        "api base url": "URL base de la API",
+        "api key": "Clave API",
+        "refresh credentials": "Actualizar credenciales",
+        "test connection": "Probar la conexión",
+        "delete provider": "Eliminar proveedor",
+        cancel: "Cancelar",
+        "save changes": "Guardar cambios"
+    },
+    CustomProviderFormDialog: {
+        "invalid name": "Elija un nombre de proveedor único sin barra (/).",
+        "invalid api base": "Introduzca una URL HTTP(S) válida.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Proveedores de IA personalizados",
+        "edit custom provider title": "Editar proveedor de IA",
+        "custom provider section title": "Proveedores de IA personalizados",
+        "custom provider label field": "Etiqueta",
+        "custom provider type field": "Protocolo API",
+        "openai provider option": "OpenAI (nativo)",
+        "openai compatible provider option": "Compatible con OpenAI",
+        "mistral provider option": "Mistral (nativo)",
+        "anthropic provider option": "Anthropic (nativo)",
+        "credentials section title": "Credenciales del proveedor",
+        "credentials section subtitle":
+            "Introduzca sus credenciales. Se almacenarán en su navegador.",
+        "custom provider api base field": "URL base de la API",
+        "custom provider api key field": "Clave API",
+        "verification section title": "Verificar y cargar modelos",
+        "verification section subtitle":
+            "Verifique sus credenciales y descubra automáticamente los modelos disponibles.",
+        "provider test": "Probar conexión",
+        "provider testing": "Probando conexión...",
+        "provider test success": "Conexión exitosa. El proveedor está listo para usar.",
+        "provider save": "Añadir",
+        "provider update": "Guardar",
+        "provider cancel": "Cancelar",
+        "close aria label": "Cerrar",
+        "submission error": "No se pudo guardar este proveedor.",
+        "submission error details": "Inténtelo de nuevo en un momento.",
+        "provider test error": "Error de conexión.",
+        "provider test error details": "Compruebe sus credenciales o el endpoint."
     },
     AccountVaultTab: {
         "credentials section title": "Credenciales de Vault",

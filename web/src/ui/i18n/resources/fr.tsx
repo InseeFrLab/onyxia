@@ -17,7 +17,8 @@ export const translations: Translations<"fr"> = {
         text2: "Accédez à vos différentes informations de compte.",
         text3: "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
         "personal tokens tooltip": 'Ou en anglais "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identifiant de compte",
@@ -96,6 +97,106 @@ export const translations: Translations<"fr"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Ces identifiants sont valables pour les ${howMuchTime} prochaines`
+    },
+    AccountAiTab: {
+        "ai providers title": "Fournisseurs d'IA",
+        "default model": "Choisir un modèle par défaut",
+        retry: "Réessayer",
+        "provided by organization": "Fourni par votre organisation",
+        manage: "Gérer",
+        "custom providers section title": "Providers IA personnalisés",
+        "add custom ai provider": "Ajouter un provider IA personnalisé",
+        "save failed": "Impossible d’enregistrer les modifications.",
+        "save failed details":
+            "Vos modifications sont conservées sur cette page. Réessayez dans un instant.",
+        "api-key not provided": "Clé API requise.",
+        "api-key not provided details":
+            "Ce provider nécessite votre propre clé API avant de pouvoir être utilisé.",
+        "gateway error": "Impossible d'initialiser la passerelle IA.",
+        "gateway error details": "Vérifiez votre connexion puis réessayez.",
+        "unreadable config title": "Votre configuration IA est illisible.",
+        "unreadable config":
+            "La réinitialiser supprime vos providers personnalisés, vos clés API et vos sélections de modèles.",
+        "reset config": "Réinitialiser ma configuration IA",
+        "refresh failed": "Impossible de renouveler les identifiants.",
+        "refresh failed details":
+            "Réessayez, ou contactez votre administrateur si le problème persiste.",
+        "connection failed": "Échec de la connexion.",
+        "connection failed details": "Vérifiez vos identifiants ou l’URL de l’API."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Supprimer ce fournisseur d’IA personnalisé",
+        "dialog body":
+            "Cette action supprimera définitivement le fournisseur et les identifiants enregistrés dans votre navigateur. Cette action est irréversible.",
+        cancel: "Annuler",
+        "delete provider": "Supprimer le fournisseur"
+    },
+    ProviderValueField: {
+        copy: "Copier",
+        copied: "Copié"
+    },
+    ProviderCard: {
+        connected: "Connecté",
+        "setup required": "Configuration requise",
+        "connection error": "Erreur de connexion"
+    },
+    ModelsSelection: {
+        "model label": "Modèles présélectionnés",
+        "no models available": "Aucun modèle disponible",
+        "no matching models": "Aucun modèle correspondant",
+        "deselect all": "Tout désélectionner",
+        "more models": ({ count }) => `+${count} modèles`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Gérer les providers",
+        "close aria label": "Fermer",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentation",
+        "connection details title": "Détails de connexion",
+        "connection details helper":
+            "Consultez et gérez la manière dont Onyxia se connecte à ce provider.",
+        "manage models title": "Gérer les modèles",
+        "manage models helper": "Choisissez les modèles disponibles dans vos services.",
+        "api base url": "URL de base de l'API",
+        "api key": "Clé API",
+        "refresh credentials": "Rafraîchir les identifiants",
+        "test connection": "Tester la connexion",
+        "delete provider": "Supprimer le provider",
+        cancel: "Annuler",
+        "save changes": "Enregistrer les modifications"
+    },
+    CustomProviderFormDialog: {
+        "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
+        "invalid api base": "Saisissez une URL HTTP(S) valide.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Ajouter un provider IA personnalisé",
+        "edit custom provider title": "Modifier le provider IA",
+        "custom provider section title": "Configurer le provider IA",
+        "custom provider label field": "Nom",
+        "custom provider type field": "API du provider",
+        "openai provider option": "OpenAI (natif)",
+        "openai compatible provider option": "Compatible OpenAI",
+        "mistral provider option": "Mistral (natif)",
+        "anthropic provider option": "Anthropic (natif)",
+        "credentials section title": "Identifiants du provider",
+        "credentials section subtitle":
+            "Saisissez vos identifiants pour les enregistrer dans les paramètres de votre compte. Laissez la clé API vide si le provider ne nécessite pas d’authentification.",
+        "custom provider api base field": "URL de base de l'API",
+        "custom provider api key field": "Clé API",
+        "verification section title": "Vérifier et charger les modèles",
+        "verification section subtitle":
+            "Vérifiez vos identifiants et découvrez automatiquement les modèles disponibles.",
+        "provider test": "Tester la connexion",
+        "provider testing": "Test de la connexion...",
+        "provider test success": "Connexion réussie. Votre provider est prêt à l'emploi.",
+        "provider save": "Ajouter",
+        "provider update": "Enregistrer",
+        "provider cancel": "Annuler",
+        "close aria label": "Fermer",
+        "submission error": "Impossible d’enregistrer ce provider.",
+        "submission error details": "Réessayez dans un instant.",
+        "provider test error": "Échec de la connexion.",
+        "provider test error details": "Vérifiez vos identifiants ou l’URL de l’API."
     },
     AccountVaultTab: {
         "credentials section title": "Identifiants Vault",

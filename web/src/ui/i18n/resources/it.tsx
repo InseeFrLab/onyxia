@@ -17,7 +17,8 @@ export const translations: Translations<"it"> = {
         text2: "Accedi alle diverse informazioni del tuo account.",
         text3: "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
         "personal tokens tooltip": 'O in inglese solo "token".',
-        vault: "Vault"
+        vault: "Vault",
+        ai: "IA"
     },
     AccountProfileTab: {
         "account id": "Identificatore dell'account",
@@ -94,6 +95,106 @@ export const translations: Translations<"it"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Queste credenziali sono valide per i prossimi ${howMuchTime}`
+    },
+    AccountAiTab: {
+        "ai providers title": "Provider di IA",
+        "default model": "Scegli un modello predefinito",
+        retry: "Riprova",
+        "provided by organization": "Fornito dalla tua organizzazione",
+        manage: "Gestisci",
+        "custom providers section title": "Provider IA personalizzati",
+        "add custom ai provider": "Aggiungi un provider IA personalizzato",
+        "save failed": "Impossibile salvare le modifiche.",
+        "save failed details":
+            "Le modifiche restano su questa pagina. Riprova tra un momento.",
+        "api-key not provided": "Chiave API richiesta.",
+        "api-key not provided details":
+            "Questo provider richiede la tua chiave API prima di poter essere utilizzato.",
+        "gateway error": "Impossibile inizializzare il gateway IA.",
+        "gateway error details": "Controlla la connessione e riprova.",
+        "unreadable config title": "Impossibile leggere la configurazione IA.",
+        "unreadable config":
+            "Reimpostarla elimina i provider personalizzati, le chiavi API e le selezioni dei modelli.",
+        "reset config": "Reimposta la mia configurazione IA",
+        "refresh failed": "Impossibile rinnovare le credenziali.",
+        "refresh failed details":
+            "Riprova o contatta l'amministratore se il problema persiste.",
+        "connection failed": "Connessione non riuscita.",
+        "connection failed details": "Controlla le credenziali o l'endpoint."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Elimina questo provider IA personalizzato",
+        "dialog body":
+            "Il provider e le credenziali memorizzate nel browser verranno eliminati definitivamente. Questa azione non può essere annullata.",
+        cancel: "Annulla",
+        "delete provider": "Elimina provider"
+    },
+    ProviderValueField: {
+        copy: "Copia",
+        copied: "Copiato"
+    },
+    ProviderCard: {
+        connected: "Connesso",
+        "setup required": "Configurazione richiesta",
+        "connection error": "Errore di connessione"
+    },
+    ModelsSelection: {
+        "model label": "Modello",
+        "no models available": "Nessun modello disponibile",
+        "no matching models": "Nessun modello corrispondente",
+        "deselect all": "Deseleziona tutto",
+        "more models": ({ count }) => `+${count} modelli`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Gestisci provider",
+        "close aria label": "Chiudi",
+        "provider selector aria label": "Provider",
+        "documentation title": "Documentazione",
+        "connection details title": "Dettagli di connessione",
+        "connection details helper":
+            "Visualizza e gestisci il modo in cui Onyxia si connette a questo provider.",
+        "manage models title": "Gestisci modelli",
+        "manage models helper": "Scegli i modelli disponibili nei tuoi servizi.",
+        "api base url": "URL di base API",
+        "api key": "Chiave API",
+        "refresh credentials": "Aggiorna credenziali",
+        "test connection": "Verifica connessione",
+        "delete provider": "Elimina provider",
+        cancel: "Annulla",
+        "save changes": "Salva modifiche"
+    },
+    CustomProviderFormDialog: {
+        "invalid name": "Scegli un nome di provider univoco senza barra (/).",
+        "invalid api base": "Inserisci un URL HTTP(S) valido.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Provider IA personalizzati",
+        "edit custom provider title": "Modifica provider IA",
+        "custom provider section title": "Provider IA personalizzati",
+        "custom provider label field": "Etichetta",
+        "custom provider type field": "Protocollo API",
+        "openai provider option": "OpenAI (nativo)",
+        "openai compatible provider option": "Compatibile con OpenAI",
+        "mistral provider option": "Mistral (nativo)",
+        "anthropic provider option": "Anthropic (nativo)",
+        "credentials section title": "Credenziali del provider",
+        "credentials section subtitle":
+            "Inserisci le credenziali. Verranno memorizzate nel browser.",
+        "custom provider api base field": "URL base API",
+        "custom provider api key field": "Chiave API",
+        "verification section title": "Verifica e carica i modelli",
+        "verification section subtitle":
+            "Verifica le credenziali e individua automaticamente i modelli disponibili.",
+        "provider test": "Testa connessione",
+        "provider testing": "Test della connessione...",
+        "provider test success": "Connessione riuscita. Il provider è pronto all'uso.",
+        "provider save": "Aggiungi",
+        "provider update": "Salva",
+        "provider cancel": "Annulla",
+        "close aria label": "Chiudi",
+        "submission error": "Impossibile salvare questo provider.",
+        "submission error details": "Riprova tra un momento.",
+        "provider test error": "Connessione non riuscita.",
+        "provider test error details": "Controlla le credenziali o l'endpoint."
     },
     AccountVaultTab: {
         "credentials section title": "Credenziali Vault",
@@ -524,9 +625,10 @@ export const translations: Translations<"it"> = {
                 <MuiLink href={docHref} target="_blank">
                     la nostra documentazione
                 </MuiLink>
-                {". \u00a0"}
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                {"."}
+                . &nbsp;
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

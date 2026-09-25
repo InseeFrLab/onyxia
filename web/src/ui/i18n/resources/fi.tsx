@@ -18,7 +18,8 @@ export const translations: Translations<"fi"> = {
         text3: "Määritä käyttäjänimesi, sähköpostiosoitteesi, salasanat ja henkilökohtaiset pääsytunnukset, jotka ovat suoraan yhteydessä palveluihisi.",
         "personal tokens tooltip":
             "Sinulle generoidut salasanat, joilla on määritelty voimassaoloaika",
-        vault: "Vault"
+        vault: "Vault",
+        ai: "Tekoäly"
     },
     AccountProfileTab: {
         "account id": "Tilin tunniste",
@@ -95,6 +96,107 @@ export const translations: Translations<"fi"> = {
         ),
         "expires in": ({ howMuchTime }) =>
             `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
+    },
+    AccountAiTab: {
+        "ai providers title": "Tekoälypalveluntarjoajat",
+        "default model": "Valitse oletusmalli",
+        retry: "Yritä uudelleen",
+        "provided by organization": "Organisaatiosi tarjoama",
+        manage: "Hallinnoi",
+        "custom providers section title": "Mukautetut tekoälyntarjoajat",
+        "add custom ai provider": "Lisää mukautettu tekoälyntarjoaja",
+        "save failed": "Muutoksia ei voitu tallentaa.",
+        "save failed details":
+            "Muutoksesi säilyvät tällä sivulla. Yritä hetken kuluttua uudelleen.",
+        "api-key not provided": "API-avain vaaditaan.",
+        "api-key not provided details":
+            "Tämä palveluntarjoaja tarvitsee oman API-avaimesi ennen kuin sitä voi käyttää.",
+        "gateway error": "Tekoälyyhdyskäytävää ei voitu alustaa.",
+        "gateway error details": "Tarkista yhteytesi ja yritä uudelleen.",
+        "unreadable config title": "Tekoälymääritystäsi ei voida lukea.",
+        "unreadable config":
+            "Nollaus poistaa omat palveluntarjoajasi, API-avaimesi ja mallivalintasi.",
+        "reset config": "Nollaa tekoälymääritykseni",
+        "refresh failed": "Tunnistetietoja ei voitu uusia.",
+        "refresh failed details":
+            "Yritä uudelleen tai ota yhteyttä ylläpitäjään, jos ongelma jatkuu.",
+        "connection failed": "Yhteys epäonnistui.",
+        "connection failed details": "Tarkista tunnistetietosi tai päätepiste."
+    },
+    ConfirmCustomProviderDeletionDialog: {
+        "dialog title": "Poista tämä mukautettu tekoälypalveluntarjoaja",
+        "dialog body":
+            "Tämä poistaa palveluntarjoajan ja selaimeen tallennetut tunnistetiedot pysyvästi. Toimintoa ei voi kumota.",
+        cancel: "Peruuta",
+        "delete provider": "Poista palveluntarjoaja"
+    },
+    ProviderValueField: {
+        copy: "Kopioi",
+        copied: "Kopioitu"
+    },
+    ProviderCard: {
+        connected: "Yhdistetty",
+        "setup required": "Määritys vaaditaan",
+        "connection error": "Yhteysvirhe"
+    },
+    ModelsSelection: {
+        "model label": "Malli",
+        "no models available": "Malleja ei ole saatavilla",
+        "no matching models": "Ei vastaavia malleja",
+        "deselect all": "Poista kaikki valinnat",
+        "more models": ({ count }) => `+${count} mallia`
+    },
+    ManageProvidersDialog: {
+        "dialog title": "Hallitse palveluntarjoajia",
+        "close aria label": "Sulje",
+        "provider selector aria label": "Palveluntarjoaja",
+        "documentation title": "Dokumentaatio",
+        "connection details title": "Yhteyden tiedot",
+        "connection details helper":
+            "Tarkastele ja hallitse Onyxian yhteyttä tähän palveluntarjoajaan.",
+        "manage models title": "Hallitse malleja",
+        "manage models helper": "Valitse palveluissasi käytettävissä olevat mallit.",
+        "api base url": "API:n perus-URL",
+        "api key": "API-avain",
+        "refresh credentials": "Päivitä tunnistetiedot",
+        "test connection": "Testaa yhteys",
+        "delete provider": "Poista palveluntarjoaja",
+        cancel: "Peruuta",
+        "save changes": "Tallenna muutokset"
+    },
+    CustomProviderFormDialog: {
+        "invalid name":
+            "Valitse yksilöllinen palveluntarjoajan nimi ilman kauttaviivaa (/).",
+        "invalid api base": "Anna kelvollinen HTTP(S)-URL.",
+        "deepseek provider option": "DeepSeek",
+        "add custom provider title": "Mukautetut tekoälyntarjoajat",
+        "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
+        "custom provider section title": "Mukautetut tekoälyntarjoajat",
+        "custom provider label field": "Tunniste",
+        "custom provider type field": "API-protokolla",
+        "openai provider option": "OpenAI (natiivi)",
+        "openai compatible provider option": "OpenAI-yhteensopiva",
+        "mistral provider option": "Mistral (natiivi)",
+        "anthropic provider option": "Anthropic (natiivi)",
+        "credentials section title": "Palveluntarjoajan tunnistetiedot",
+        "credentials section subtitle":
+            "Anna tunnistetietosi. Ne tallennetaan selaimeesi.",
+        "custom provider api base field": "API-perus-URL",
+        "custom provider api key field": "API-avain",
+        "verification section title": "Vahvista ja lataa mallit",
+        "verification section subtitle":
+            "Vahvista tunnistetietosi ja etsi käytettävissä olevat mallit automaattisesti.",
+        "provider test": "Testaa yhteys",
+        "provider testing": "Testataan yhteyttä...",
+        "provider test success": "Yhteys onnistui. Palveluntarjoaja on käyttövalmis.",
+        "provider save": "Lisää",
+        "provider update": "Tallenna",
+        "provider cancel": "Peruuta",
+        "close aria label": "Sulje",
+        "submission error": "Tätä palveluntarjoajaa ei voitu tallentaa.",
+        "submission error details": "Yritä hetken kuluttua uudelleen.",
+        "provider test error": "Yhteys epäonnistui.",
+        "provider test error details": "Tarkista tunnistetietosi tai päätepiste."
     },
     AccountVaultTab: {
         "credentials section title": "Vault-todennustiedot",

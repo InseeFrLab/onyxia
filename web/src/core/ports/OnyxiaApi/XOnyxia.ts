@@ -198,6 +198,18 @@ export type XOnyxiaContext = {
         useCertManager: boolean;
         certManagerClusterIssuer: string | undefined;
     };
+    ai: {
+        enabled: boolean;
+        models: string[]; // <providerName>/<model>[]
+        defaultModel: string | undefined; // <providerName>/<model>
+        providers: {
+            name: string; //Needs to be unique
+            apiBase: string;
+            apiKey: string | undefined;
+            models: string[];
+            type: "openai-compatible" | "openai" | "anthropic" | "mistral" | "deepseek";
+        }[];
+    };
     proxyInjection:
         | {
               enabled: boolean | undefined;

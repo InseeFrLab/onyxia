@@ -16,6 +16,7 @@ import { createOnyxiaApi } from "core/adapters/onyxiaApi";
 import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
+import { type AiConfig, parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -33,6 +34,7 @@ export type ParamsOfBootstrapCore = {
     disableDisplayAllCatalog: boolean;
     getIsDarkModeEnabled: () => boolean;
     S3_envValue: string;
+    AI_envValue: string;
 };
 
 export type Context = {
@@ -42,6 +44,7 @@ export type Context = {
     secretsManager: SecretsManager;
     sqlOlap: SqlOlap;
     s3Config: S3Config;
+    aiConfig: AiConfig;
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -64,6 +67,8 @@ export async function bootstrapCore(
     const s3Config = parseS3ConfigFromEnvValue({
         envValue: params.S3_envValue
     });
+
+    const aiConfig = parseAiConfigFromEnvValue({ envValue: params.AI_envValue });
 
     let oidc: Oidc | undefined = undefined;
 
@@ -183,7 +188,6 @@ export async function bootstrapCore(
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
-        // NOTE: Never reached
     }
 
     const context: Context = {
@@ -200,7 +204,8 @@ export async function bootstrapCore(
                     usecases.s3ProfilesManagement.protectedThunks.getAmbientS3ProfileAndClient()
                 )
         }),
-        s3Config
+        s3Config,
+        aiConfig
     };
 
     setRootContext(context);
