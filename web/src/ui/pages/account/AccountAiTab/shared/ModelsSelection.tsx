@@ -1,4 +1,4 @@
-import { memo, useId } from "react";
+import { memo, useId, useState } from "react";
 import { Autocomplete, Checkbox, Stack, TextField } from "@mui/material";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation, declareComponentKeys } from "ui/i18n";
@@ -23,6 +23,8 @@ export const ModelsSelection = memo((props: Props) => {
 
     const isReadOnly = props.disabled || hasNoModels;
 
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <Stack className={cx(classes.root, props.className)}>
             <Text
@@ -36,6 +38,9 @@ export const ModelsSelection = memo((props: Props) => {
                 className={classes.autocomplete}
                 multiple
                 disableCloseOnSelect
+                open={isOpen}
+                onOpen={() => setIsOpen(true)}
+                onClose={() => setIsOpen(false)}
                 limitTags={3}
                 getLimitTagsText={count => t("more models", { count })}
                 options={props.models}
@@ -80,7 +85,26 @@ export const ModelsSelection = memo((props: Props) => {
                                 : undefined;
                         })()}
                         slotProps={{
-                            input: { disableUnderline: true, ...params.InputProps },
+                            input: {
+                                disableUnderline: true,
+                                ...params.InputProps,
+                                onMouseDown: event => {
+                                    params.InputProps.onMouseDown?.(event);
+
+                                    // NOTE: MUI only opens on a press on the field itself,
+                                    // the tags cover most of it.
+                                    if (
+                                        !isReadOnly &&
+                                        event.target instanceof Element &&
+                                        event.target.closest(".MuiAutocomplete-tag") !==
+                                            null &&
+                                        event.target.closest(".MuiChip-deleteIcon") ===
+                                            null
+                                    ) {
+                                        setIsOpen(true);
+                                    }
+                                }
+                            },
                             htmlInput: {
                                 ...params.inputProps,
                                 "aria-labelledby": labelId
