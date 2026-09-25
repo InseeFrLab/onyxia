@@ -1,6 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
+import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
@@ -814,7 +815,7 @@ export const protectedThunks = {
                     certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
                 ai: !doInjectPersonalInfos
-                    ? aiProvidersManagements.emptyAiContext
+                    ? emptyAiContext
                     : await dispatch(
                           aiProvidersManagements.protectedThunks.getAiContext()
                       ),

@@ -4,6 +4,7 @@ import { same } from "evt/tools/inDepth/same";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import { fetchAiModels, type AiModel } from "core/tools/fetchAiModels";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
+import type { AiProviderWithRuntime } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import { providerTypeDefaultApiBase } from "./decoupledLogic/providerTypeDefaultApiBase";
 import { actions, type ChangeValueParams, type State } from "./state";
 import { selectors } from "./selectors";
@@ -404,7 +405,7 @@ function getAvailableProviderName(params: {
 }
 
 function getConnectionTestFromRuntime(params: {
-    aiProvider: aiProvidersManagements.AiProviderWithRuntime;
+    aiProvider: AiProviderWithRuntime;
 }): State.ConnectionTest {
     const { aiProvider } = params;
 

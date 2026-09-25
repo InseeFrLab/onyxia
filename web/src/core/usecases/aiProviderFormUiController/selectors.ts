@@ -1,7 +1,11 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
-import { supportedAiProviderTypes } from "core/usecases/aiProvidersManagements";
+import {
+    supportedAiProviderTypes,
+    getSelectedModelIds,
+    getProviderConnectionState
+} from "core/usecases/aiProvidersManagements/decoupledLogic";
 import { name } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
@@ -91,7 +95,7 @@ const main = createSelector(
         const selectedModelIds_draft =
             availableModels === undefined
                 ? []
-                : aiProvidersManagements.getSelectedModelIds({
+                : getSelectedModelIds({
                       availableModels,
                       excludedModelIds: state.excludedModelIds_draft
                   });
@@ -132,7 +136,7 @@ const main = createSelector(
         })();
 
         /** The same as on the card, but for what is on screen, saved or not */
-        const connectionState = aiProvidersManagements.getProviderConnectionState({
+        const connectionState = getProviderConnectionState({
             connection: state.connectionTest.stateDescription
         });
 

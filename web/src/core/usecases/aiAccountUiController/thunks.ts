@@ -1,6 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
-import { parseModel } from "core/usecases/aiProvidersManagements";
+import { parseModel } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import { assert } from "tsafe/assert";
 import { actions, name } from "./state";
 

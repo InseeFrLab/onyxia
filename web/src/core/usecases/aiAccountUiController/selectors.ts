@@ -4,7 +4,7 @@ import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
 import {
     stringifyModel,
     getProviderConnectionState
-} from "core/usecases/aiProvidersManagements";
+} from "core/usecases/aiProvidersManagements/decoupledLogic";
 import { getRootContext } from "core/rootContext";
 import { name } from "./state";
 

@@ -7,7 +7,7 @@ import { getFieldStyle } from "./shared/fieldStyle";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { ModelsSelection } from "./shared/ModelsSelection";
 
-import type { ProviderConnectionState } from "core/usecases/aiProvidersManagements";
+import type { ProviderConnectionState } from "core/usecases/aiProvidersManagements/decoupledLogic";
 
 export type ProviderState = ProviderConnectionState;
 
