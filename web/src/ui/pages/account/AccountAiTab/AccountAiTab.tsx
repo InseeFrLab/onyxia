@@ -230,9 +230,30 @@ function Component(props: Props) {
                                     (provider.origin === "created by user" &&
                                         provider.isNameConflicting),
                                 connectionError: (() => {
+                                    if (formState.hasSubmissionFailed) {
+                                        return {
+                                            title: t("save failed"),
+                                            message: t("save failed details")
+                                        };
+                                    }
+                                    // The test describes what is on screen, it prevails
+                                    // over the state of the saved configuration.
+                                    switch (connectionTest.stateDescription) {
+                                        case "failed":
+                                            return {
+                                                title: t("connection failed"),
+                                                message: t("connection failed details")
+                                            };
+                                        case "testing":
+                                        case "succeeded":
+                                            return undefined;
+                                        case "not tested":
+                                            break;
+                                    }
                                     if (
                                         provider.auth.stateDescription ===
-                                        "api-key not provided"
+                                            "api-key not provided" &&
+                                        formValues.apiKey.trim() === ""
                                     ) {
                                         return {
                                             title: t("api-key not provided"),
@@ -243,18 +264,6 @@ function Component(props: Props) {
                                         return {
                                             title: t("refresh failed"),
                                             message: t("refresh failed details")
-                                        };
-                                    }
-                                    if (connectionTest.stateDescription === "failed") {
-                                        return {
-                                            title: t("connection failed"),
-                                            message: t("connection failed details")
-                                        };
-                                    }
-                                    if (formState.hasSubmissionFailed) {
-                                        return {
-                                            title: t("save failed"),
-                                            message: t("save failed details")
                                         };
                                     }
                                     return undefined;
