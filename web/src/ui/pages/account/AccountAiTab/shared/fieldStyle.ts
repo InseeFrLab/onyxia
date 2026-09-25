@@ -32,7 +32,8 @@ export function getFieldStyle(params: { theme: Theme }) {
             borderColor: theme.colors.useCases.alertSeverity.error.main
         },
         frame_readOnly: {
-            borderColor: theme.colors.useCases.surfaces.surface2,
+            // NOTE: Not surface2: in dark mode it is darker than the card, the border would not show
+            borderColor: theme.colors.useCases.surfaces.surface3,
             backgroundColor: "transparent"
         },
         /**

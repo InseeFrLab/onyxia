@@ -19,8 +19,14 @@ export declare namespace State {
 
     export type Loading = { stateDescription: "loading" };
 
-    /** The user's persisted config could not be read back, nothing can be shown. */
-    export type Error = { stateDescription: "error" };
+    export type Error = {
+        stateDescription: "error";
+        /**
+         * "unreadable config": the user's persisted config could not be read back, it
+         * has to be reset before anything can be shown.
+         */
+        reason: "unreadable config" | "loading failed";
+    };
 
     export type Ready = {
         stateDescription: "ready";
@@ -55,7 +61,10 @@ export const { reducer, actions } = createUsecaseActions({
             state.configSaveState = "error";
         },
         loadingStarted: () => id<State.Loading>({ stateDescription: "loading" }),
-        loadingFailed: () => id<State.Error>({ stateDescription: "error" }),
+        loadingFailed: (
+            _state,
+            { payload }: { payload: { reason: State.Error["reason"] } }
+        ) => id<State.Error>({ stateDescription: "error", reason: payload.reason }),
         loaded: () =>
             id<State.Ready>({
                 stateDescription: "ready",

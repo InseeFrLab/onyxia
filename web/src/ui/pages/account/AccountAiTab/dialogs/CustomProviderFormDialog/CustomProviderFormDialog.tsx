@@ -68,6 +68,7 @@ export const CustomProviderFormDialog = memo(() => {
 
 const { i18n } = declareComponentKeys<
     | "submission error"
+    | "submission error details"
     | "invalid name"
     | "invalid api base"
     | "deepseek provider option"
@@ -90,6 +91,7 @@ const { i18n } = declareComponentKeys<
     | "provider testing"
     | "provider test success"
     | "provider test error"
+    | "provider test error details"
     | "provider save"
     | "provider update"
     | "provider cancel"

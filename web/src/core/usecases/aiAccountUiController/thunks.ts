@@ -20,6 +20,14 @@ export const thunks = {
 
             await dispatch(aiProvidersManagements.thunks.load());
         },
+    /** Only when the stored config can't be read back: everything it held is lost. */
+    resetConfig:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch] = args;
+
+            await dispatch(aiProvidersManagements.thunks.resetConfig());
+        },
     canUserCreateProviders:
         () =>
         (...args): boolean => {

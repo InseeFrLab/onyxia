@@ -13,22 +13,24 @@ const state = (rootState: RootState) => rootState[name];
 const main = createSelector(
     state,
     aiProvidersManagements.selectors.stateDescription,
+    aiProvidersManagements.selectors.errorReason,
     aiProvidersManagements.selectors.aiProviders,
     aiProvidersManagements.selectors.defaultModel,
-    aiProvidersManagements.protectedSelectors.persistedAiConfig,
     aiProvidersManagements.selectors.configSaveState,
     (
         state,
         stateDescription,
+        errorReason,
         aiProviders,
         defaultModel,
-        persistedAiConfig,
         configSaveState
     ) => {
         if (aiProviders === undefined) {
             return {
                 stateDescription,
-                isReady: false as const
+                isReady: false as const,
+                /** The stored config can't be read back, it can only be reset. */
+                isConfigUnreadable: errorReason === "unreadable config"
             };
         }
 
@@ -48,20 +50,7 @@ const main = createSelector(
                             ? "testing"
                             : "not tested"
             }),
-            userProvidedApiKey:
-                persistedAiConfig.apiKeyByProviderName[aiProvider.name] ?? "",
             canRefreshToken:
-                aiProvider.origin === "configured by admin" &&
-                aiProvider.authentification.type === "api-key" &&
-                aiProvider.authentification.obtentionMethod ===
-                    "open-webui-oidc-token-exchange",
-            /** The user has a key to type in for this provider. */
-            canUserProvideApiKey:
-                aiProvider.origin === "configured by admin" &&
-                aiProvider.authentification.type === "api-key" &&
-                aiProvider.authentification.obtentionMethod === "user-provided",
-            /** The user has to go through this provider's own login flow. */
-            canUserLogIn:
                 aiProvider.origin === "configured by admin" &&
                 aiProvider.authentification.type === "api-key" &&
                 aiProvider.authentification.obtentionMethod ===

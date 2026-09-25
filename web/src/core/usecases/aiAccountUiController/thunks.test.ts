@@ -34,13 +34,14 @@ vi.mock("core/usecases/userConfigs", () => ({
             }
     }
 }));
-function setup() {
+function setup(params?: { aiConfigStr: string | null }) {
+    const { aiConfigStr = null } = params ?? {};
     const userConfigs = {
         thunks: {},
         selectors: {},
         ...createUsecaseActions({
             name: "userConfigs",
-            initialState: { aiConfigStr: null as string | null },
+            initialState: { aiConfigStr },
             reducers: {
                 valueChanged: (state, { payload }: { payload: string }) => {
                     state.aiConfigStr = payload;
@@ -189,7 +190,40 @@ it("creates a provider through the current form controller and selects its defau
     await core.functions.aiAccountUiController.setDefaultModel({ model: "Personal/a" });
     expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
         defaultModel: "Personal/a",
-        models: ["Personal/a"]
+        models: ["Exchange/a", "Public/a", "Personal/a"]
+    });
+});
+
+it("selects every model of the providers absent from the user config, and the first one as default", async () => {
+    const { core, dispatch } = setup();
+    await core.functions.aiAccountUiController.load();
+
+    const creation = core.functions.aiProviderFormUiController;
+    creation.open({ providerName: undefined });
+    creation.changeValue({ key: "name", value: "Personal" });
+    creation.changeProviderType({ providerType: "openai" });
+    await creation.testConnection();
+    expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
+        selectedModelIds_draft: ["a"]
+    });
+    await creation.submit();
+
+    expect(core.states.aiAccountUiController.getMain()).toMatchObject({
+        defaultModel: "Exchange/a"
+    });
+    expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
+        defaultModel: "Exchange/a",
+        models: ["Exchange/a", "Public/a", "Personal/a"]
+    });
+
+    // Once the user filtered, their choice sticks
+    await core.functions.aiAccountUiController.setSelectedModelIds({
+        providerName: "Exchange",
+        modelIds: []
+    });
+    expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
+        defaultModel: "Public/a",
+        models: ["Public/a", "Personal/a"]
     });
 });
 
@@ -313,7 +347,7 @@ it("updates selections immediately and saves the latest snapshot after an in-fli
     );
     expect(mocks.save).toHaveBeenCalledTimes(2);
     expect(JSON.parse(mocks.save.mock.calls[1][0])).toMatchObject({
-        selectedModelIdsByProviderName: { Exchange: ["a"] },
+        excludedModelIdsByProviderName: { Exchange: [] },
         defaultModel: { providerName: "Exchange", modelId: "a" }
     });
 });
@@ -353,7 +387,6 @@ it("tests a typed API key without saving it, then saves it without testing again
     expect(core.states.aiProviderFormUiController.getMain()).toMatchObject({
         providerOrigin: "configured by admin",
         canEditApiKey: true,
-        isApiKeyMissing: true,
         canSubmit: false
     });
     expect(() => edition.changeValue({ key: "name", value: "Renamed" })).toThrow();
@@ -380,8 +413,7 @@ it("tests a typed API key without saving it, then saves it without testing again
     });
     expect(mocks.save).not.toHaveBeenCalled();
     expect(getKeyedProvider()).toMatchObject({
-        auth: { stateDescription: "api-key not provided" },
-        userProvidedApiKey: ""
+        auth: { stateDescription: "api-key not provided" }
     });
 
     edition.changeSelectedModelIds({ selectedModelIds: ["a"] });
@@ -552,11 +584,28 @@ it("groups the default model options by provider, leaving out the ones without m
     await core.functions.aiAccountUiController.load();
 
     await core.functions.aiAccountUiController.setSelectedModelIds({
-        providerName: "Public",
-        modelIds: ["a"]
+        providerName: "Exchange",
+        modelIds: []
     });
 
     expect(core.states.aiAccountUiController.getMain().defaultModelOptionGroups).toEqual([
         { providerName: "Public", options: [{ value: "Public/a", modelId: "a" }] }
     ]);
+});
+
+it("requires the user to reset a stored config that can't be read back", async () => {
+    const { core } = setup({ aiConfigStr: "{ not json" });
+    await core.functions.aiAccountUiController.load();
+
+    expect(core.states.aiAccountUiController.getMain()).toMatchObject({
+        isReady: false,
+        isConfigUnreadable: true
+    });
+    // Nothing is overwritten behind the user's back
+    expect(mocks.save).not.toHaveBeenCalled();
+
+    await core.functions.aiAccountUiController.resetConfig();
+
+    expect(mocks.save).toHaveBeenCalledTimes(1);
+    expect(core.states.aiAccountUiController.getMain().isReady).toBe(true);
 });

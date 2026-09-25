@@ -1,10 +1,10 @@
-import Alert from "@mui/material/Alert";
 import { Button } from "onyxia-ui/Button";
 import { memo, type FormEventHandler, useState } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { CredentialsSection, ProviderSection, VerificationSection } from "./FormSections";
 import { SideDialog } from "../../shared/SideDialog";
+import { AiAlert } from "../../shared/AiAlert";
 import type { ViewProps } from "./types";
 
 export const CustomProviderFormDialogView = memo((props: ViewProps) => {
@@ -28,7 +28,7 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
         isSubmitting
     } = props;
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
     const { t } = useTranslation("CustomProviderFormDialog");
     const [isApiBaseValidationVisible, setIsApiBaseValidationVisible] = useState(false);
 
@@ -88,27 +88,20 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                         onSelectedModelsChange={onSelectedModelsChange}
                     />
                     {hasSubmissionError && (
-                        <Alert severity="error">{t("submission error")}</Alert>
+                        <AiAlert
+                            title={t("submission error")}
+                            message={t("submission error details")}
+                        />
                     )}
                 </fieldset>
 
                 <div className={classes.footer}>
-                    <div className={classes.actions}>
-                        <Button
-                            variant="secondary"
-                            className={cx(classes.compactButton, classes.cancelButton)}
-                            onClick={onClose}
-                        >
-                            {t("provider cancel")}
-                        </Button>
-                        <Button
-                            type="submit"
-                            className={cx(classes.compactButton, classes.saveButton)}
-                            disabled={!canSave}
-                        >
-                            {t(isEditing ? "provider update" : "provider save")}
-                        </Button>
-                    </div>
+                    <Button variant="secondary" onClick={onClose}>
+                        {t("provider cancel")}
+                    </Button>
+                    <Button type="submit" disabled={!canSave}>
+                        {t(isEditing ? "provider update" : "provider save")}
+                    </Button>
                 </div>
             </form>
         </SideDialog>
@@ -139,32 +132,9 @@ const useStyles = tss.withName({ CustomProviderFormDialogView }).create(({ theme
     footer: {
         flex: "none",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: theme.spacing(3),
-        paddingTop: theme.spacing(4)
-    },
-    actions: {
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(2)
-    },
-    compactButton: {
-        ...theme.typography.variants["label 2"].style,
-        borderWidth: 0,
-        padding: `${theme.spacing(1)}px ${theme.spacing(2.5)}px`
-    },
-    cancelButton: {
-        backgroundColor: theme.colors.useCases.surfaces.surface2,
-        color: theme.colors.useCases.typography.textPrimary
-    },
-    saveButton: {
-        backgroundColor: theme.colors.useCases.buttons.actionActive,
-        color: theme.colors.useCases.surfaces.background,
-        "&.Mui-disabled": {
-            backgroundColor: theme.colors.useCases.buttons.actionActive,
-            color: theme.colors.useCases.surfaces.background,
-            opacity: 0.3
-        }
+        justifyContent: "flex-end",
+        gap: theme.spacing(1),
+        paddingTop: theme.spacing(3),
+        borderTop: `1px solid ${theme.colors.useCases.surfaces.surface3}`
     }
 }));

@@ -34,7 +34,7 @@ export const thunks = {
                             apiKey: ""
                         },
                         connectionTest: { stateDescription: "not tested" },
-                        selectedModelIds_draft: []
+                        excludedModelIds_draft: []
                     })
                 );
 
@@ -47,7 +47,7 @@ export const thunks = {
 
             assert(aiProvider !== undefined);
 
-            const { apiKeyByProviderName } =
+            const { apiKeyByProviderName, excludedModelIdsByProviderName } =
                 aiProvidersManagements.protectedSelectors.persistedAiConfig(getState());
 
             dispatch(
@@ -63,7 +63,8 @@ export const thunks = {
                     // What we already know from talking to the provider with the saved
                     // configuration, so that the user doesn't have to test it again.
                     connectionTest: getConnectionTestFromRuntime({ aiProvider }),
-                    selectedModelIds_draft: aiProvider.selectedModelIds
+                    excludedModelIds_draft:
+                        excludedModelIdsByProviderName[aiProvider.name] ?? []
                 })
             );
         },
@@ -175,8 +176,10 @@ export const thunks = {
             );
 
             dispatch(
-                actions.selectedModelIdsChanged({
-                    selectedModelIds: [...new Set(selectedModelIds)]
+                actions.excludedModelIdsChanged({
+                    excludedModelIds: availableModels
+                        .map(({ id }) => id)
+                        .filter(modelId => !selectedModelIds.includes(modelId))
                 })
             );
 
@@ -355,7 +358,8 @@ export const thunks = {
                     );
                 }
 
-                // The models can only be selected when they are known
+                // The models can only be selected when they are known. Otherwise the saved
+                // exclusions are left as they are.
                 if (form.availableModels !== undefined) {
                     dispatch(
                         aiProvidersManagements.thunks.setSelectedModelIds({

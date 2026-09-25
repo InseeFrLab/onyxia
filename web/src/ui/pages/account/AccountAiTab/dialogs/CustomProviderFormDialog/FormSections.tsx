@@ -9,6 +9,7 @@ import { useTranslation } from "ui/i18n";
 import { ModelsSelection } from "../../shared/ModelsSelection";
 import { providerTypeLogoUrl } from "../../shared/providerTypeLogoUrl";
 import { FormSelectField, FormTextField } from "../../shared/FormFields";
+import { AiAlert } from "../../shared/AiAlert";
 import type { FormTest } from "./types";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 
@@ -154,13 +155,14 @@ export function VerificationSection(props: {
             )}
 
             {test.stateDescription === "success" && (
-                <StatusMessage severity="success">
-                    {t("provider test success")}
-                </StatusMessage>
+                <SuccessMessage>{t("provider test success")}</SuccessMessage>
             )}
 
             {test.stateDescription === "error" && (
-                <StatusMessage severity="error">{t("provider test error")}</StatusMessage>
+                <AiAlert
+                    title={t("provider test error")}
+                    message={t("provider test error details")}
+                />
             )}
         </FormSection>
     );
@@ -214,24 +216,13 @@ function SectionHeading(props: { title: string; subtitle: string | undefined }) 
     );
 }
 
-function StatusMessage(props: { severity: "success" | "error"; children: ReactNode }) {
-    const { severity, children } = props;
-    const { classes, cx } = useStyles_StatusMessage();
+function SuccessMessage(props: { children: ReactNode }) {
+    const { children } = props;
+    const { classes } = useStyles_SuccessMessage();
 
     return (
-        <div
-            className={cx(
-                classes.root,
-                severity === "success" ? classes.success : classes.error
-            )}
-            role={severity === "error" ? "alert" : "status"}
-        >
-            <span
-                className={cx(
-                    classes.dot,
-                    severity === "success" ? classes.dotSuccess : classes.dotError
-                )}
-            />
+        <div className={classes.root} role="status">
+            <span className={classes.dot} />
             <Text typo="label 1">{children}</Text>
         </div>
     );
@@ -309,7 +300,7 @@ const useStyles_SectionHeading = tss.withName({ SectionHeading }).create(({ them
     }
 }));
 
-const useStyles_StatusMessage = tss.withName({ StatusMessage }).create(({ theme }) => ({
+const useStyles_SuccessMessage = tss.withName({ SuccessMessage }).create(({ theme }) => ({
     root: {
         display: "flex",
         alignItems: "center",
@@ -317,24 +308,14 @@ const useStyles_StatusMessage = tss.withName({ StatusMessage }).create(({ theme 
         padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
         borderRadius: theme.spacing(2),
         boxSizing: "border-box",
-        color: theme.colors.useCases.typography.textPrimary
-    },
-    success: {
+        color: theme.colors.useCases.typography.textPrimary,
         backgroundColor: alpha(theme.colors.useCases.alertSeverity.success.main, 0.2)
-    },
-    error: {
-        backgroundColor: alpha(theme.colors.useCases.alertSeverity.error.main, 0.2)
     },
     dot: {
         flex: "none",
         width: theme.spacing(3),
         height: theme.spacing(3),
-        borderRadius: "50%"
-    },
-    dotSuccess: {
+        borderRadius: "50%",
         backgroundColor: theme.colors.useCases.alertSeverity.success.main
-    },
-    dotError: {
-        backgroundColor: theme.colors.useCases.alertSeverity.error.main
     }
 }));

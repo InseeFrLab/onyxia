@@ -49,10 +49,11 @@ export function createAiContext(params: {
     return {
         enabled: models.length > 0,
         models,
+        // When the selected model can't be injected, the first one that can stands in.
         defaultModel:
             defaultModel_str !== undefined && models.includes(defaultModel_str)
                 ? defaultModel_str
-                : undefined,
+                : models[0],
         providers: aiProviders_usable.map(aiProvider => ({
             name: aiProvider.name,
             apiBase: aiProvider.apiBase,

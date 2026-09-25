@@ -101,15 +101,30 @@ export const translations: Translations<"de"> = {
     AccountAiTab: {
         "ai providers title": "KI-Anbieter",
         "default model": "Standardmodell auswählen",
-        "save failed":
-            "Ihre Änderungen konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
         retry: "Erneut versuchen",
-        "api-key not provided": "Für diesen Anbieter ist ein API-Schlüssel erforderlich.",
         "provided by organization": "Von Ihrer Organisation bereitgestellt",
         manage: "Verwalten",
-        "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
         "custom providers section title": "Benutzerdefinierte KI-Anbieter",
-        "add custom ai provider": "Benutzerdefinierten KI-Anbieter hinzufügen"
+        "add custom ai provider": "Benutzerdefinierten KI-Anbieter hinzufügen",
+        "save failed": "Ihre Änderungen konnten nicht gespeichert werden.",
+        "save failed details":
+            "Ihre Änderungen bleiben auf dieser Seite erhalten. Versuchen Sie es gleich noch einmal.",
+        "api-key not provided": "API-Schlüssel erforderlich.",
+        "api-key not provided details":
+            "Dieser Anbieter benötigt Ihren eigenen API-Schlüssel, bevor er verwendet werden kann.",
+        "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
+        "gateway error details":
+            "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "unreadable config title": "Ihre KI-Konfiguration kann nicht gelesen werden.",
+        "unreadable config":
+            "Beim Zurücksetzen werden Ihre eigenen Anbieter, API-Schlüssel und Modellauswahlen gelöscht.",
+        "reset config": "Meine KI-Konfiguration zurücksetzen",
+        "refresh failed": "Die Zugangsdaten konnten nicht erneuert werden.",
+        "refresh failed details":
+            "Versuchen Sie es erneut oder wenden Sie sich an Ihren Administrator, falls das Problem weiterhin besteht.",
+        "connection failed": "Verbindung fehlgeschlagen.",
+        "connection failed details":
+            "Bitte überprüfen Sie Ihre Zugangsdaten oder den Endpunkt."
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Diesen benutzerdefinierten KI-Anbieter löschen",
@@ -153,8 +168,6 @@ export const translations: Translations<"de"> = {
         "save changes": "Änderungen speichern"
     },
     CustomProviderFormDialog: {
-        "submission error":
-            "Dieser Anbieter konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
         "invalid name":
             "Wählen Sie einen eindeutigen Anbieternamen ohne Schrägstrich (/).",
         "invalid api base": "Geben Sie eine gültige HTTP(S)-URL ein.",
@@ -180,12 +193,15 @@ export const translations: Translations<"de"> = {
         "provider testing": "Verbindung wird getestet...",
         "provider test success":
             "Verbindung erfolgreich. Der Anbieter ist einsatzbereit.",
-        "provider test error":
-            "Verbindung fehlgeschlagen — URL und API-Schlüssel prüfen.",
         "provider save": "Hinzufügen",
         "provider update": "Speichern",
         "provider cancel": "Abbrechen",
-        "close aria label": "Schließen"
+        "close aria label": "Schließen",
+        "submission error": "Dieser Anbieter konnte nicht gespeichert werden.",
+        "submission error details": "Bitte versuchen Sie es gleich noch einmal.",
+        "provider test error": "Verbindung fehlgeschlagen.",
+        "provider test error details":
+            "Bitte überprüfen Sie Ihre Zugangsdaten oder den Endpunkt."
     },
     AccountVaultTab: {
         "credentials section title": "Vault-Anmeldeinformationen",

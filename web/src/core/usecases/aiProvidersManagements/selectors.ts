@@ -20,6 +20,11 @@ const state = (rootState: RootState) => rootState[name];
 
 const stateDescription = createSelector(state, state => state.stateDescription);
 
+/** undefined unless the use case failed to load. */
+const errorReason = createSelector(state, state =>
+    state.stateDescription === "error" ? state.reason : undefined
+);
+
 /**
  * Unsaved edits take precedence over userConfigs, including while userConfigs performs
  * its own optimistic update or rolls back a failed write.
@@ -104,6 +109,7 @@ const aiContext = createSelector(
 
 export const selectors = {
     stateDescription,
+    errorReason,
     configSaveState: createSelector(state, state =>
         state.stateDescription === "ready" ? state.configSaveState : "idle"
     ),

@@ -1,11 +1,11 @@
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreState, getCoreSync, getCore } from "core";
-import { Button } from "onyxia-ui/Button";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { Alert, Stack, Box } from "@mui/material";
+import { Stack, Box } from "@mui/material";
 import { ProviderCard } from "./ProviderCard";
 import { FormSelectField } from "./shared/FormFields";
+import { AiAlert } from "./shared/AiAlert";
 import { Text } from "onyxia-ui/Text";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { AddCustomProviderButton } from "./AddCustomProviderButton";
@@ -57,26 +57,35 @@ function Component(props: Props) {
     }
 
     if (!state.isReady) {
+        if (state.isConfigUnreadable)
+            return (
+                <AiAlert
+                    title={t("unreadable config title")}
+                    message={t("unreadable config")}
+                    action={{
+                        label: t("reset config"),
+                        onClick: () => account.resetConfig()
+                    }}
+                />
+            );
         if (state.stateDescription === "error")
             return (
-                <Stack spacing={2}>
-                    <Alert severity="error">{t("gateway error")}</Alert>
-                    <Button onClick={() => account.load()}>{t("retry")}</Button>
-                </Stack>
+                <AiAlert
+                    title={t("gateway error")}
+                    message={t("gateway error details")}
+                    action={{ label: t("retry"), onClick: () => account.load() }}
+                />
             );
         return <CircularProgress />;
     }
     return (
         <Stack className={cx(classes.root, props.className)} spacing={4}>
             {state.configSaveState === "error" && (
-                <Alert
-                    severity="error"
-                    action={
-                        <Button onClick={() => account.retrySave()}>{t("retry")}</Button>
-                    }
-                >
-                    {t("save failed")}
-                </Alert>
+                <AiAlert
+                    title={t("save failed")}
+                    message={t("save failed details")}
+                    action={{ label: t("retry"), onClick: () => account.retrySave() }}
+                />
             )}
             <Stack spacing={1}>
                 <Text typo="section heading">{t("ai providers title")}</Text>
@@ -220,13 +229,36 @@ function Component(props: Props) {
                                     provider.operationState === "pending" ||
                                     (provider.origin === "created by user" &&
                                         provider.isNameConflicting),
-                                connectionError: formState.isApiKeyMissing
-                                    ? t("api-key not provided")
-                                    : connectionTest.stateDescription === "failed"
-                                      ? t("gateway error")
-                                      : formState.hasSubmissionFailed
-                                        ? t("save failed")
-                                        : undefined,
+                                connectionError: (() => {
+                                    if (
+                                        provider.auth.stateDescription ===
+                                        "api-key not provided"
+                                    ) {
+                                        return {
+                                            title: t("api-key not provided"),
+                                            message: t("api-key not provided details")
+                                        };
+                                    }
+                                    if (provider.operationState === "error") {
+                                        return {
+                                            title: t("refresh failed"),
+                                            message: t("refresh failed details")
+                                        };
+                                    }
+                                    if (connectionTest.stateDescription === "failed") {
+                                        return {
+                                            title: t("connection failed"),
+                                            message: t("connection failed details")
+                                        };
+                                    }
+                                    if (formState.hasSubmissionFailed) {
+                                        return {
+                                            title: t("save failed"),
+                                            message: t("save failed details")
+                                        };
+                                    }
+                                    return undefined;
+                                })(),
                                 canTestConnection: formState.canTestConnection,
                                 isTestingConnection:
                                     connectionTest.stateDescription === "testing",
@@ -319,12 +351,22 @@ const { i18n } = declareComponentKeys<
     | "ai providers title"
     | "default model"
     | "save failed"
+    | "save failed details"
     | "retry"
     | "api-key not provided"
+    | "api-key not provided details"
     | "provided by organization"
     | "manage"
     | "gateway error"
+    | "gateway error details"
     | "custom providers section title"
     | "add custom ai provider"
+    | "unreadable config title"
+    | "unreadable config"
+    | "reset config"
+    | "refresh failed"
+    | "refresh failed details"
+    | "connection failed"
+    | "connection failed details"
 >()({ AccountAiTab });
 export type I18n = typeof i18n;

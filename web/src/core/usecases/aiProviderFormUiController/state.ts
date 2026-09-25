@@ -22,8 +22,11 @@ export declare namespace State {
         providerOrigin: "created by user" | "configured by admin";
         formValues: FormValues;
         connectionTest: ConnectionTest;
-        /** The models the user ticked before saving */
-        selectedModelIds_draft: string[];
+        /**
+         * The models the user unticked before saving. Every other listed model is
+         * selected, so that the ones a new test reveals are ticked by default.
+         */
+        excludedModelIds_draft: string[];
         isSubmitting: boolean;
         hasSubmissionFailed: boolean;
     };
@@ -62,7 +65,7 @@ export const { reducer, actions } = createUsecaseActions({
                     providerOrigin: State.Open["providerOrigin"];
                     formValues: State.FormValues;
                     connectionTest: State.ConnectionTest;
-                    selectedModelIds_draft: string[];
+                    excludedModelIds_draft: string[];
                 };
             }
         ) => {
@@ -71,7 +74,7 @@ export const { reducer, actions } = createUsecaseActions({
                 providerOrigin,
                 formValues,
                 connectionTest,
-                selectedModelIds_draft
+                excludedModelIds_draft
             } = payload;
 
             return id<State.Open>({
@@ -80,7 +83,7 @@ export const { reducer, actions } = createUsecaseActions({
                 providerOrigin,
                 formValues,
                 connectionTest,
-                selectedModelIds_draft,
+                excludedModelIds_draft,
                 isSubmitting: false,
                 hasSubmissionFailed: false
             });
@@ -120,21 +123,16 @@ export const { reducer, actions } = createUsecaseActions({
             assert(state.stateDescription === "open");
 
             state.connectionTest = { stateDescription: "succeeded", availableModels };
-
-            // Keep the selection made before a new test, as long as the models still exist
-            state.selectedModelIds_draft = state.selectedModelIds_draft.filter(modelId =>
-                availableModels.some(availableModel => availableModel.id === modelId)
-            );
         },
-        selectedModelIdsChanged: (
+        excludedModelIdsChanged: (
             state,
-            { payload }: { payload: { selectedModelIds: string[] } }
+            { payload }: { payload: { excludedModelIds: string[] } }
         ) => {
-            const { selectedModelIds } = payload;
+            const { excludedModelIds } = payload;
 
             assert(state.stateDescription === "open");
 
-            state.selectedModelIds_draft = selectedModelIds;
+            state.excludedModelIds_draft = excludedModelIds;
         },
         connectionTestFailed: state => {
             assert(state.stateDescription === "open");

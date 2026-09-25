@@ -99,14 +99,28 @@ export const translations: Translations<"en"> = {
     AccountAiTab: {
         "ai providers title": "AI Providers",
         "default model": "Choose a default model",
-        "save failed": "Unable to save your changes. Please try again.",
         retry: "Retry",
-        "api-key not provided": "An API key is required for this provider.",
         "provided by organization": "Provided by your organization",
         manage: "Manage",
-        "gateway error": "Unable to initialize the AI gateway.",
         "custom providers section title": "Custom AI providers",
-        "add custom ai provider": "Add a new custom AI provider"
+        "add custom ai provider": "Add a new custom AI provider",
+        "save failed": "Unable to save your changes.",
+        "save failed details":
+            "Your changes are kept on this page. Try again in a moment.",
+        "api-key not provided": "API key required.",
+        "api-key not provided details":
+            "This provider needs your own API key before it can be used.",
+        "gateway error": "Unable to initialize the AI gateway.",
+        "gateway error details": "Check your connection and try again.",
+        "unreadable config title": "Your AI configuration can't be read.",
+        "unreadable config":
+            "Resetting it deletes your custom providers, API keys and model selections.",
+        "reset config": "Reset my AI configuration",
+        "refresh failed": "Unable to renew the credentials.",
+        "refresh failed details":
+            "Try again, or contact your administrator if the problem persists.",
+        "connection failed": "Connection failed.",
+        "connection failed details": "Please check your credentials or endpoint."
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Delete this Custom AI Provider",
@@ -150,7 +164,6 @@ export const translations: Translations<"en"> = {
         "save changes": "Save changes"
     },
     CustomProviderFormDialog: {
-        "submission error": "Unable to save this provider. Please try again.",
         "invalid name": "Choose a unique provider name without a slash (/).",
         "invalid api base": "Enter a valid HTTP(S) URL.",
         "deepseek provider option": "DeepSeek",
@@ -174,12 +187,14 @@ export const translations: Translations<"en"> = {
         "provider test": "Test connection",
         "provider testing": "Testing connection...",
         "provider test success": "Connection successful. Your provider is ready to use.",
-        "provider test error":
-            "Connection failed. Please check your credentials or endpoint.",
         "provider save": "Add Custom AI Providers",
         "provider update": "Save changes",
         "provider cancel": "Cancel",
-        "close aria label": "Close"
+        "close aria label": "Close",
+        "submission error": "Unable to save this provider.",
+        "submission error details": "Please try again in a moment.",
+        "provider test error": "Connection failed.",
+        "provider test error details": "Please check your credentials or endpoint."
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

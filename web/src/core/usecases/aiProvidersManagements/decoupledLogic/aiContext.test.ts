@@ -57,7 +57,7 @@ describe(symToStr({ createAiContext }), () => {
         expect(got).toStrictEqual({
             enabled: true,
             models: ["Corporate/gpt-5", "Corporate/meta-llama/Llama-3"],
-            defaultModel: undefined,
+            defaultModel: "Corporate/gpt-5",
             providers: [
                 {
                     name: "Corporate",
@@ -153,7 +153,26 @@ describe(symToStr({ createAiContext }), () => {
         expect(got.defaultModel).toBe("Corporate/gpt-5");
     });
 
-    it("drops a default model that isn't exposed", () => {
+    it("falls back to the first exposed model when the default one isn't exposed", () => {
+        const got = createAiContext({
+            aiProviders: [
+                createConfiguredAiProvider({
+                    name: "Needs a key",
+                    auth: { stateDescription: "api-key not provided" },
+                    selectedModelIds: ["gpt-5"]
+                }),
+                createConfiguredAiProvider({
+                    name: "Corporate",
+                    selectedModelIds: ["meta-llama/Llama-3"]
+                })
+            ],
+            defaultModel: { providerName: "Needs a key", modelId: "gpt-5" }
+        });
+
+        expect(got.defaultModel).toBe("Corporate/meta-llama/Llama-3");
+    });
+
+    it("has no default model when nothing is exposed", () => {
         const got = createAiContext({
             aiProviders: [
                 createConfiguredAiProvider({

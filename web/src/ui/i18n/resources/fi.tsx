@@ -100,14 +100,28 @@ export const translations: Translations<"fi"> = {
     AccountAiTab: {
         "ai providers title": "Tekoälypalveluntarjoajat",
         "default model": "Valitse oletusmalli",
-        "save failed": "Muutosten tallentaminen epäonnistui. Yritä uudelleen.",
         retry: "Yritä uudelleen",
-        "api-key not provided": "Tämä palveluntarjoaja vaatii API-avaimen.",
         "provided by organization": "Organisaatiosi tarjoama",
         manage: "Hallinnoi",
-        "gateway error": "Tekoäly-yhdyskäytävän alustus epäonnistui.",
         "custom providers section title": "Mukautetut tekoälyntarjoajat",
-        "add custom ai provider": "Lisää mukautettu tekoälyntarjoaja"
+        "add custom ai provider": "Lisää mukautettu tekoälyntarjoaja",
+        "save failed": "Muutoksia ei voitu tallentaa.",
+        "save failed details":
+            "Muutoksesi säilyvät tällä sivulla. Yritä hetken kuluttua uudelleen.",
+        "api-key not provided": "API-avain vaaditaan.",
+        "api-key not provided details":
+            "Tämä palveluntarjoaja tarvitsee oman API-avaimesi ennen kuin sitä voi käyttää.",
+        "gateway error": "Tekoälyyhdyskäytävää ei voitu alustaa.",
+        "gateway error details": "Tarkista yhteytesi ja yritä uudelleen.",
+        "unreadable config title": "Tekoälymääritystäsi ei voida lukea.",
+        "unreadable config":
+            "Nollaus poistaa omat palveluntarjoajasi, API-avaimesi ja mallivalintasi.",
+        "reset config": "Nollaa tekoälymääritykseni",
+        "refresh failed": "Tunnistetietoja ei voitu uusia.",
+        "refresh failed details":
+            "Yritä uudelleen tai ota yhteyttä ylläpitäjään, jos ongelma jatkuu.",
+        "connection failed": "Yhteys epäonnistui.",
+        "connection failed details": "Tarkista tunnistetietosi tai päätepiste."
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Poista tämä mukautettu tekoälypalveluntarjoaja",
@@ -151,8 +165,6 @@ export const translations: Translations<"fi"> = {
         "save changes": "Tallenna muutokset"
     },
     CustomProviderFormDialog: {
-        "submission error":
-            "Palveluntarjoajan tallentaminen epäonnistui. Yritä uudelleen.",
         "invalid name":
             "Valitse yksilöllinen palveluntarjoajan nimi ilman kauttaviivaa (/).",
         "invalid api base": "Anna kelvollinen HTTP(S)-URL.",
@@ -177,11 +189,14 @@ export const translations: Translations<"fi"> = {
         "provider test": "Testaa yhteys",
         "provider testing": "Testataan yhteyttä...",
         "provider test success": "Yhteys onnistui. Palveluntarjoaja on käyttövalmis.",
-        "provider test error": "Yhteyttä ei voi muodostaa — tarkista URL ja API-avain.",
         "provider save": "Lisää",
         "provider update": "Tallenna",
         "provider cancel": "Peruuta",
-        "close aria label": "Sulje"
+        "close aria label": "Sulje",
+        "submission error": "Tätä palveluntarjoajaa ei voitu tallentaa.",
+        "submission error details": "Yritä hetken kuluttua uudelleen.",
+        "provider test error": "Yhteys epäonnistui.",
+        "provider test error details": "Tarkista tunnistetietosi tai päätepiste."
     },
     AccountVaultTab: {
         "credentials section title": "Vault-todennustiedot",

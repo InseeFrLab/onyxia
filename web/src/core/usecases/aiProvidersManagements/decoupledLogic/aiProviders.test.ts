@@ -152,13 +152,13 @@ describe(symToStr({ createAiProviders }), () => {
         expect(aiProvider.auth).toStrictEqual({ stateDescription: "not required" });
     });
 
-    it("filters the selection against what the provider actually exposes", () => {
+    it("selects the exposed models the user didn't exclude", () => {
         const [aiProvider] = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
-                selectedModelIdsByProviderName: {
-                    Corporate: ["gpt-5", "a model that is gone"]
+                excludedModelIdsByProviderName: {
+                    Corporate: ["meta-llama/Llama-3", "a model that is gone"]
                 }
             },
             runtimeByProviderName: {
@@ -172,13 +172,56 @@ describe(symToStr({ createAiProviders }), () => {
         expect(aiProvider.selectedModelIds).toStrictEqual(["gpt-5"]);
     });
 
-    it("preserves the selection while the models are being fetched", () => {
+    it("selects every model of a provider the user never filtered", () => {
+        const [aiProvider] = createProviders({
+            aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
+            persistedAiConfig: createEmptyPersistedAiConfig(),
+            runtimeByProviderName: {
+                Corporate: {
+                    auth: { stateDescription: "not loaded" },
+                    models: loadedModels
+                }
+            }
+        });
+
+        expect(aiProvider.selectedModelIds).toStrictEqual([
+            "gpt-5",
+            "meta-llama/Llama-3"
+        ]);
+    });
+
+    it("selects the models a provider starts exposing after the user filtered", () => {
         const [aiProvider] = createProviders({
             aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
             persistedAiConfig: {
                 ...createEmptyPersistedAiConfig(),
-                selectedModelIdsByProviderName: { Corporate: ["gpt-5"] }
+                excludedModelIdsByProviderName: { Corporate: ["gpt-5"] }
             },
+            runtimeByProviderName: {
+                Corporate: {
+                    auth: { stateDescription: "not loaded" },
+                    models: {
+                        stateDescription: "loaded",
+                        availableModels: [
+                            { id: "gpt-5" },
+                            { id: "meta-llama/Llama-3" },
+                            { id: "a new model" }
+                        ]
+                    }
+                }
+            }
+        });
+
+        expect(aiProvider.selectedModelIds).toStrictEqual([
+            "meta-llama/Llama-3",
+            "a new model"
+        ]);
+    });
+
+    it("selects nothing while the models are being fetched", () => {
+        const [aiProvider] = createProviders({
+            aiConfig: createAiConfig([createConfiguredProvider({ name: "Corporate" })]),
+            persistedAiConfig: createEmptyPersistedAiConfig(),
             runtimeByProviderName: {
                 Corporate: {
                     auth: { stateDescription: "not loaded" },
@@ -187,7 +230,7 @@ describe(symToStr({ createAiProviders }), () => {
             }
         });
 
-        expect(aiProvider.selectedModelIds).toStrictEqual(["gpt-5"]);
+        expect(aiProvider.selectedModelIds).toStrictEqual([]);
     });
 
     it("flags a user created provider whose name the admin later took", () => {
@@ -262,13 +305,36 @@ describe(symToStr({ getDefaultModel }), () => {
             models: loadedModels,
             modelsListing: loadedModels,
             selectedModelIds: ["gpt-5"]
+        },
+        {
+            origin: "created by user",
+            name: "My LLM",
+            providerType: "openai",
+            apiBase: "https://api.openai.com/v1",
+            isNameConflicting: false,
+            auth: { stateDescription: "not required" },
+            models: loadedModels,
+            modelsListing: loadedModels,
+            selectedModelIds: ["meta-llama/Llama-3"]
         }
     ];
 
-    it("returns undefined when the user elected none", () => {
-        expect(getDefaultModel({ aiProviders, defaultModel_persisted: null })).toBe(
-            undefined
-        );
+    it("falls back to the first selected model when the user elected none", () => {
+        expect(
+            getDefaultModel({ aiProviders, defaultModel_persisted: null })
+        ).toStrictEqual({ providerName: "Corporate", modelId: "gpt-5" });
+    });
+
+    it("returns undefined when no model is selected at all", () => {
+        expect(
+            getDefaultModel({
+                aiProviders: aiProviders.map(aiProvider => ({
+                    ...aiProvider,
+                    selectedModelIds: []
+                })),
+                defaultModel_persisted: null
+            })
+        ).toBe(undefined);
     });
 
     it("returns the elected model when it is still selected", () => {
@@ -279,7 +345,7 @@ describe(symToStr({ getDefaultModel }), () => {
         );
     });
 
-    it("returns undefined when the elected model is no longer selected", () => {
+    it("falls back to the first selected model when the elected one no longer is", () => {
         expect(
             getDefaultModel({
                 aiProviders,
@@ -288,16 +354,16 @@ describe(symToStr({ getDefaultModel }), () => {
                     modelId: "meta-llama/Llama-3"
                 }
             })
-        ).toBe(undefined);
+        ).toStrictEqual({ providerName: "Corporate", modelId: "gpt-5" });
     });
 
-    it("returns undefined when the provider it belonged to is gone", () => {
+    it("falls back to the first selected model when its provider is gone", () => {
         expect(
             getDefaultModel({
                 aiProviders,
                 defaultModel_persisted: { providerName: "Gone", modelId: "gpt-5" }
             })
-        ).toBe(undefined);
+        ).toStrictEqual({ providerName: "Corporate", modelId: "gpt-5" });
     });
 });
 

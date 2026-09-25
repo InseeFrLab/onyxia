@@ -11,10 +11,12 @@ import { actions, name } from "./state";
 import { protectedSelectors, selectors } from "./selectors";
 import {
     type AiProviderRuntime,
-    type AiProviderWithRuntime
+    type AiProviderWithRuntime,
+    getExcludedModelIds
 } from "./decoupledLogic/aiProviders";
 import { emptyAiContext } from "./decoupledLogic/aiContext";
 import {
+    createEmptyPersistedAiConfig,
     parseAiConfigStr,
     removeProviderFromPersistedAiConfig,
     renameProviderInPersistedAiConfig,
@@ -89,15 +91,17 @@ export const thunks = {
             const prLoad = (async () => {
                 dispatch(actions.loadingStarted());
 
-                report_unreadable_config: {
+                {
                     const { aiConfigStr } = userConfigs.selectors.userConfigs(getState());
 
-                    if (aiConfigStr === null) {
-                        break report_unreadable_config;
-                    }
-
-                    if (parseAiConfigStr({ aiConfigStr }) !== undefined) {
-                        break report_unreadable_config;
+                    // Starting over from an empty config would overwrite what is stored
+                    // on the first edit: the user has to agree to it, see `resetConfig`.
+                    if (
+                        aiConfigStr !== null &&
+                        parseAiConfigStr({ aiConfigStr }) === undefined
+                    ) {
+                        dispatch(actions.loadingFailed({ reason: "unreadable config" }));
+                        return;
                     }
                 }
 
@@ -121,10 +125,30 @@ export const thunks = {
             try {
                 await prLoad;
             } catch {
-                dispatch(actions.loadingFailed());
+                dispatch(actions.loadingFailed({ reason: "loading failed" }));
             } finally {
                 globalContext.prLoad = undefined;
             }
+        },
+    /**
+     * Discards a persisted config that can't be read back, then loads again. Every user
+     * created provider, API key and selection it held is lost.
+     */
+    resetConfig:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            assert(selectors.errorReason(getState()) === "unreadable config");
+
+            await dispatch(
+                userConfigs.thunks.changeValue({
+                    key: "aiConfigStr",
+                    value: serializeAiConfig({ aiConfig: createEmptyPersistedAiConfig() })
+                })
+            );
+
+            await dispatch(thunks.load());
         },
     /**
      * Obtains the provider's API key, then the models it exposes. Concurrent calls for a
@@ -137,64 +161,51 @@ export const thunks = {
 
             const [dispatch] = args;
 
-            const prRefresh_pending =
-                globalContext.prRefreshByProviderName.get(providerName);
+            await runOncePerProvider({
+                providerName,
+                run: async () => {
+                    const auth = await dispatch(
+                        privateThunks.refreshProviderAuth({ providerName })
+                    );
 
-            if (prRefresh_pending !== undefined) {
-                return prRefresh_pending;
-            }
+                    if (auth === undefined) {
+                        return;
+                    }
 
-            const prRefresh = (async () => {
-                const auth = await dispatch(
-                    privateThunks.refreshProviderAuth({ providerName })
-                );
-
-                if (auth === undefined) {
-                    return;
+                    await dispatch(
+                        privateThunks.refreshProviderModels({
+                            providerName,
+                            apiKey:
+                                auth.stateDescription === "authenticated"
+                                    ? auth.apiKey
+                                    : undefined
+                        })
+                    );
                 }
-
-                await dispatch(
-                    privateThunks.refreshProviderModels({
-                        providerName,
-                        apiKey:
-                            auth.stateDescription === "authenticated"
-                                ? auth.apiKey
-                                : undefined
-                    })
-                );
-            })();
-
-            globalContext.prRefreshByProviderName.set(providerName, prRefresh);
-
-            try {
-                await prRefresh;
-            } finally {
-                globalContext.prRefreshByProviderName.delete(providerName);
-            }
+            });
         },
     /** Refreshes only the exchanged token, leaving the model list untouched. */
     refreshToken:
         (params: { providerName: string }) =>
-        async (...[dispatch]): Promise<void> => {
-            const provider = dispatch(
-                privateThunks.getAiProvider({ providerName: params.providerName })
+        async (...args): Promise<void> => {
+            const { providerName } = params;
+
+            const [dispatch] = args;
+
+            const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
+
+            assert(
+                aiProvider !== undefined && isAuthenticatedByTokenExchange(aiProvider)
             );
-            assert(provider !== undefined && isAuthenticatedByTokenExchange(provider));
-            const pending = globalContext.prRefreshByProviderName.get(
-                params.providerName
-            );
-            if (pending !== undefined) return pending;
-            const request = Promise.resolve().then(async () => {
-                await dispatch(privateThunks.refreshProviderAuth(params));
+
+            await runOncePerProvider({
+                providerName,
+                run: async () => {
+                    await dispatch(privateThunks.refreshProviderAuth({ providerName }));
+                }
             });
-            globalContext.prRefreshByProviderName.set(params.providerName, request);
-            try {
-                await request;
-            } finally {
-                globalContext.prRefreshByProviderName.delete(params.providerName);
-            }
         },
-    /** The models the user ticked in a provider's multi select. */
+    /** The models the user ticked in a provider's multi select, persisted as the ones left out. */
     setSelectedModelIds:
         (params: { providerName: string; modelIds: string[] }) =>
         (...args): void => {
@@ -222,9 +233,13 @@ export const thunks = {
                 privateThunks.updateConfigInMemory({
                     mutate: aiConfig => ({
                         ...aiConfig,
-                        selectedModelIdsByProviderName: {
-                            ...aiConfig.selectedModelIdsByProviderName,
-                            [providerName]: [...new Set(modelIds)]
+                        // Excluded models the provider no longer lists are dropped
+                        excludedModelIdsByProviderName: {
+                            ...aiConfig.excludedModelIdsByProviderName,
+                            [providerName]: getExcludedModelIds({
+                                availableModels: models.availableModels,
+                                selectedModelIds: modelIds
+                            })
                         }
                     })
                 })
@@ -268,8 +283,8 @@ export const thunks = {
             );
             void dispatch(thunks.saveConfig());
         },
-    /** The key the user brings for an admin configured provider that expects one. */
     /**
+     * The key the user brings for an admin configured provider that expects one.
      * `availableModels` are the models listed by a connection test made with this very
      * key: when provided, they are trusted instead of being fetched again.
      */
@@ -699,6 +714,33 @@ const globalContext = {
     prRefreshByProviderName: new Map<string, Promise<void>>(),
     mutex: new Mutex()
 };
+
+/**
+ * Talking to a same provider twice at once is pointless: a call made while another one
+ * is in flight waits for it instead.
+ */
+async function runOncePerProvider(params: {
+    providerName: string;
+    run: () => Promise<void>;
+}): Promise<void> {
+    const { providerName, run } = params;
+
+    const pr_pending = globalContext.prRefreshByProviderName.get(providerName);
+
+    if (pr_pending !== undefined) {
+        return pr_pending;
+    }
+
+    const pr = run();
+
+    globalContext.prRefreshByProviderName.set(providerName, pr);
+
+    try {
+        await pr;
+    } finally {
+        globalContext.prRefreshByProviderName.delete(providerName);
+    }
+}
 
 function isAuthenticatedByTokenExchange(aiProvider: AiProviderWithRuntime): boolean {
     if (aiProvider.origin !== "configured by admin") {

@@ -101,14 +101,28 @@ export const translations: Translations<"fr"> = {
     AccountAiTab: {
         "ai providers title": "Fournisseurs d'IA",
         "default model": "Choisir un modèle par défaut",
-        "save failed": "Impossible d’enregistrer les modifications. Réessayez.",
         retry: "Réessayer",
-        "api-key not provided": "Une clé API est nécessaire pour ce provider.",
         "provided by organization": "Fourni par votre organisation",
         manage: "Gérer",
-        "gateway error": "Impossible d'initialiser la passerelle IA.",
         "custom providers section title": "Providers IA personnalisés",
-        "add custom ai provider": "Ajouter un provider IA personnalisé"
+        "add custom ai provider": "Ajouter un provider IA personnalisé",
+        "save failed": "Impossible d’enregistrer les modifications.",
+        "save failed details":
+            "Vos modifications sont conservées sur cette page. Réessayez dans un instant.",
+        "api-key not provided": "Clé API requise.",
+        "api-key not provided details":
+            "Ce provider nécessite votre propre clé API avant de pouvoir être utilisé.",
+        "gateway error": "Impossible d'initialiser la passerelle IA.",
+        "gateway error details": "Vérifiez votre connexion puis réessayez.",
+        "unreadable config title": "Votre configuration IA est illisible.",
+        "unreadable config":
+            "La réinitialiser supprime vos providers personnalisés, vos clés API et vos sélections de modèles.",
+        "reset config": "Réinitialiser ma configuration IA",
+        "refresh failed": "Impossible de renouveler les identifiants.",
+        "refresh failed details":
+            "Réessayez, ou contactez votre administrateur si le problème persiste.",
+        "connection failed": "Échec de la connexion.",
+        "connection failed details": "Vérifiez vos identifiants ou l’URL de l’API."
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Supprimer ce fournisseur d’IA personnalisé",
@@ -152,7 +166,6 @@ export const translations: Translations<"fr"> = {
         "save changes": "Enregistrer les modifications"
     },
     CustomProviderFormDialog: {
-        "submission error": "Impossible d’enregistrer ce provider. Réessayez.",
         "invalid name": "Choisissez un nom de provider unique, sans barre oblique (/).",
         "invalid api base": "Saisissez une URL HTTP(S) valide.",
         "deepseek provider option": "DeepSeek",
@@ -176,12 +189,14 @@ export const translations: Translations<"fr"> = {
         "provider test": "Tester la connexion",
         "provider testing": "Test de la connexion...",
         "provider test success": "Connexion réussie. Votre provider est prêt à l'emploi.",
-        "provider test error":
-            "Impossible de se connecter — vérifiez l'URL et la clé API.",
         "provider save": "Ajouter",
         "provider update": "Enregistrer",
         "provider cancel": "Annuler",
-        "close aria label": "Fermer"
+        "close aria label": "Fermer",
+        "submission error": "Impossible d’enregistrer ce provider.",
+        "submission error details": "Réessayez dans un instant.",
+        "provider test error": "Échec de la connexion.",
+        "provider test error details": "Vérifiez vos identifiants ou l’URL de l’API."
     },
     AccountVaultTab: {
         "credentials section title": "Identifiants Vault",

@@ -19,8 +19,12 @@ export type PersistedAiConfig = {
      * their own.
      */
     apiKeyByProviderName: Record<string, string>;
-    /** Model ids ticked by the user in the multi select of each provider. */
-    selectedModelIdsByProviderName: Record<string, string[]>;
+    /**
+     * Model ids the user unticked in the multi select of each provider. We keep what
+     * was filtered out rather than what was kept so that the models a provider starts
+     * exposing afterwards are selected by default.
+     */
+    excludedModelIdsByProviderName: Record<string, string[]>;
     /** null, and not undefined, so that it round trips through JSON. */
     defaultModel: { providerName: string; modelId: string } | null;
 };
@@ -45,7 +49,7 @@ const zPersistedAiConfig = (() => {
             })
         ),
         apiKeyByProviderName: z.record(z.string(), z.string()),
-        selectedModelIdsByProviderName: z.record(z.string(), z.array(z.string())),
+        excludedModelIdsByProviderName: z.record(z.string(), z.array(z.string())),
         defaultModel: z
             .object({ providerName: z.string(), modelId: z.string() })
             .nullable()
@@ -62,7 +66,7 @@ export function createEmptyPersistedAiConfig(): PersistedAiConfig {
     return {
         customProviders: [],
         apiKeyByProviderName: {},
-        selectedModelIdsByProviderName: {},
+        excludedModelIdsByProviderName: {},
         defaultModel: null
     };
 }
@@ -135,8 +139,8 @@ export function renameProviderInPersistedAiConfig(params: {
                 : customProvider
         ),
         apiKeyByProviderName: renameKey(aiConfig.apiKeyByProviderName),
-        selectedModelIdsByProviderName: renameKey(
-            aiConfig.selectedModelIdsByProviderName
+        excludedModelIdsByProviderName: renameKey(
+            aiConfig.excludedModelIdsByProviderName
         ),
         defaultModel:
             aiConfig.defaultModel?.providerName === providerName_current
@@ -163,8 +167,8 @@ export function removeProviderFromPersistedAiConfig(params: {
             customProvider => customProvider.name !== providerName
         ),
         apiKeyByProviderName: removeKey(aiConfig.apiKeyByProviderName),
-        selectedModelIdsByProviderName: removeKey(
-            aiConfig.selectedModelIdsByProviderName
+        excludedModelIdsByProviderName: removeKey(
+            aiConfig.excludedModelIdsByProviderName
         ),
         defaultModel:
             aiConfig.defaultModel?.providerName === providerName

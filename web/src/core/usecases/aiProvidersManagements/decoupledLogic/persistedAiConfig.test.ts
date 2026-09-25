@@ -17,7 +17,7 @@ const aiConfig: PersistedAiConfig = {
         }
     ],
     apiKeyByProviderName: { "My LLM": "key of my llm", Corporate: "key of corporate" },
-    selectedModelIdsByProviderName: {
+    excludedModelIdsByProviderName: {
         "My LLM": ["mistral-small", "mistral-large"],
         Corporate: ["gpt-5"]
     },
@@ -87,7 +87,7 @@ describe(symToStr({ renameProviderInPersistedAiConfig }), () => {
                 "My renamed LLM": "key of my llm",
                 Corporate: "key of corporate"
             },
-            selectedModelIdsByProviderName: {
+            excludedModelIdsByProviderName: {
                 "My renamed LLM": ["mistral-small", "mistral-large"],
                 Corporate: ["gpt-5"]
             },
@@ -131,7 +131,7 @@ describe(symToStr({ removeProviderFromPersistedAiConfig }), () => {
         const expected: PersistedAiConfig = {
             customProviders: [],
             apiKeyByProviderName: { Corporate: "key of corporate" },
-            selectedModelIdsByProviderName: { Corporate: ["gpt-5"] },
+            excludedModelIdsByProviderName: { Corporate: ["gpt-5"] },
             defaultModel: null
         };
 

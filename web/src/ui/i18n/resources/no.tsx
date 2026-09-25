@@ -100,14 +100,29 @@ export const translations: Translations<"no"> = {
     AccountAiTab: {
         "ai providers title": "KI-leverandører",
         "default model": "Velg en standardmodell",
-        "save failed": "Kunne ikke lagre endringene. Prøv igjen.",
         retry: "Prøv igjen",
-        "api-key not provided": "Denne leverandøren krever en API-nøkkel.",
         "provided by organization": "Levert av organisasjonen din",
         manage: "Administrer",
-        "gateway error": "Kunne ikke initialisere AI-gatewayen.",
         "custom providers section title": "Tilpassede AI-leverandører",
-        "add custom ai provider": "Legg til tilpasset AI-leverandør"
+        "add custom ai provider": "Legg til tilpasset AI-leverandør",
+        "save failed": "Kunne ikke lagre endringene.",
+        "save failed details":
+            "Endringene dine beholdes på denne siden. Prøv igjen om litt.",
+        "api-key not provided": "API-nøkkel kreves.",
+        "api-key not provided details":
+            "Denne leverandøren trenger din egen API-nøkkel før den kan brukes.",
+        "gateway error": "Kunne ikke initialisere AI-gatewayen.",
+        "gateway error details": "Sjekk tilkoblingen din og prøv igjen.",
+        "unreadable config title": "AI-konfigurasjonen din kan ikke leses.",
+        "unreadable config":
+            "Tilbakestilling sletter dine egne leverandører, API-nøkler og modellvalg.",
+        "reset config": "Tilbakestill AI-konfigurasjonen min",
+        "refresh failed": "Kunne ikke fornye påloggingsinformasjonen.",
+        "refresh failed details":
+            "Prøv igjen, eller kontakt administratoren hvis problemet vedvarer.",
+        "connection failed": "Tilkoblingen mislyktes.",
+        "connection failed details":
+            "Kontroller påloggingsinformasjonen eller endepunktet."
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Slett denne egendefinerte KI-leverandøren",
@@ -151,7 +166,6 @@ export const translations: Translations<"no"> = {
         "save changes": "Lagre endringer"
     },
     CustomProviderFormDialog: {
-        "submission error": "Kunne ikke lagre denne leverandøren. Prøv igjen.",
         "invalid name": "Velg et unikt leverandørnavn uten skråstrek (/).",
         "invalid api base": "Skriv inn en gyldig HTTP(S)-URL.",
         "deepseek provider option": "DeepSeek",
@@ -175,11 +189,15 @@ export const translations: Translations<"no"> = {
         "provider test": "Test tilkobling",
         "provider testing": "Tester tilkobling...",
         "provider test success": "Tilkobling vellykket. Leverandøren er klar til bruk.",
-        "provider test error": "Kan ikke koble til — sjekk URL og API-nøkkel.",
         "provider save": "Legg til",
         "provider update": "Lagre",
         "provider cancel": "Avbryt",
-        "close aria label": "Lukk"
+        "close aria label": "Lukk",
+        "submission error": "Kunne ikke lagre denne leverandøren.",
+        "submission error details": "Prøv igjen om litt.",
+        "provider test error": "Tilkoblingen mislyktes.",
+        "provider test error details":
+            "Kontroller påloggingsinformasjonen eller endepunktet."
     },
     AccountVaultTab: {
         "credentials section title": "Vault credentials",

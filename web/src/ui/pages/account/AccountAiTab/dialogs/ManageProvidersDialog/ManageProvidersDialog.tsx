@@ -1,4 +1,4 @@
-import { Alert, Link, MenuItem, Select } from "@mui/material";
+import { Link, MenuItem, Select } from "@mui/material";
 import { Button } from "onyxia-ui/Button";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Icon } from "onyxia-ui/Icon";
@@ -13,6 +13,7 @@ import { ProviderValueField } from "./ProviderValueField";
 import { ProviderStateChip, type ProviderState } from "../../ProviderCard";
 import { ProviderSection } from "../CustomProviderFormDialog/FormSections";
 import { SideDialog } from "../../shared/SideDialog";
+import { AiAlert } from "../../shared/AiAlert";
 
 export type ManagedProvider = {
     name: string;
@@ -36,7 +37,7 @@ export type ManagedProvider = {
     availableModels: string[] | undefined;
     selectedModelIds: string[];
     isModelSelectionDisabled: boolean;
-    connectionError: string | undefined;
+    connectionError: { title: string; message: string } | undefined;
     canTestConnection: boolean;
     isTestingConnection: boolean;
     canRefreshCredentials: boolean;
@@ -163,7 +164,10 @@ export function ManageProvidersDialog(props: {
                             )}
                         </div>
                         {provider.connectionError !== undefined && (
-                            <Alert severity="warning">{provider.connectionError}</Alert>
+                            <AiAlert
+                                title={provider.connectionError.title}
+                                message={provider.connectionError.message}
+                            />
                         )}
                         <div className={classes.sectionActions}>
                             {/* NOTE: Only for the OIDC token exchange authentication */}

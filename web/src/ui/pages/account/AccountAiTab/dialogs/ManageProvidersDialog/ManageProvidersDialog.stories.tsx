@@ -138,3 +138,16 @@ export const TestingConnection: Story = {
         }
     }
 };
+
+export const ConnectionFailed: Story = {
+    args: {
+        provider: {
+            ...meta.args.provider,
+            state: "connection error",
+            connectionError: {
+                title: "Connection failed.",
+                message: "Please check your credentials or endpoint."
+            }
+        }
+    }
+};

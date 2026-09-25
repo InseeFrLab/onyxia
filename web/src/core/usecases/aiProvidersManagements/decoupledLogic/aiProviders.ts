@@ -2,6 +2,9 @@ import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import type { AiModel } from "core/tools/fetchAiModels";
 import type { PersistedAiConfig } from "./persistedAiConfig";
 
+/** Omit applied to each member of a union, so that it stays discriminated. */
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
 export type AiProvider = AiProvider.ConfiguredByAdmin | AiProvider.CreatedByUser;
 
 export namespace AiProvider {
@@ -11,10 +14,10 @@ export namespace AiProvider {
         providerType: AiConfig.SupportedAiProviderType;
         apiBase: string;
         /**
-         * What the user ticked in the models multi select. Always a subset of the
-         * available models once the runtime has loaded them.
+         * What the user unticked in the models multi select. Every other model the
+         * provider exposes is selected, including the ones it starts exposing later.
          */
-        selectedModelIds: string[];
+        excludedModelIds: string[];
     };
 
     /** Provisioned by the instance configuration (the `AI` env). */
@@ -63,7 +66,12 @@ export namespace AiProviderRuntime {
 }
 
 /** The representation consumed by the UI and the launch context. */
-export type AiProviderWithRuntime = AiProvider & {
+export type AiProviderWithRuntime = DistributiveOmit<AiProvider, "excludedModelIds"> & {
+    /**
+     * The available models the user didn't exclude. Empty as long as the models
+     * aren't known.
+     */
+    selectedModelIds: string[];
     auth: AiProviderRuntime.Auth;
     /** The models offered to the user: the ones pinned by the admin, if any. */
     models: AiProviderRuntime.Models;
@@ -98,8 +106,8 @@ export function createAiProviders(params: {
                 logoUrl: provider_config.logoUrl,
                 authentification: provider_config.authentification,
                 modelIds: provider_config.models,
-                selectedModelIds:
-                    persistedAiConfig.selectedModelIdsByProviderName[
+                excludedModelIds:
+                    persistedAiConfig.excludedModelIdsByProviderName[
                         provider_config.name
                     ] ?? []
             };
@@ -120,8 +128,8 @@ export function createAiProviders(params: {
                 isNameConflicting: providerNames_configuredByAdmin.has(
                     customProvider.name
                 ),
-                selectedModelIds:
-                    persistedAiConfig.selectedModelIdsByProviderName[
+                excludedModelIds:
+                    persistedAiConfig.excludedModelIdsByProviderName[
                         customProvider.name
                     ] ?? []
             };
@@ -165,25 +173,49 @@ export function createAiProvidersWithRuntime(params: {
                 : ({ stateDescription: "authenticated", apiKey } as const);
         })();
 
+        const { excludedModelIds, ...rest } = aiProvider;
+
         return {
-            ...aiProvider,
+            ...rest,
             auth,
             models,
             modelsListing: runtime.models,
             selectedModelIds:
-                models.stateDescription !== "loaded"
-                    ? aiProvider.selectedModelIds
-                    : aiProvider.selectedModelIds.filter(modelId =>
-                          models.availableModels.some(model => model.id === modelId)
-                      )
+                models.stateDescription === "loaded"
+                    ? getSelectedModelIds({
+                          availableModels: models.availableModels,
+                          excludedModelIds
+                      })
+                    : []
         };
     });
 }
 
+export function getSelectedModelIds(params: {
+    availableModels: AiModel[];
+    excludedModelIds: string[];
+}): string[] {
+    const { availableModels, excludedModelIds } = params;
+
+    return availableModels
+        .map(({ id }) => id)
+        .filter(modelId => !excludedModelIds.includes(modelId));
+}
+
+/** Inverse of `getSelectedModelIds`, for the models listed by the provider. */
+export function getExcludedModelIds(params: {
+    availableModels: AiModel[];
+    selectedModelIds: string[];
+}): string[] {
+    const { availableModels, selectedModelIds } = params;
+
+    return availableModels
+        .map(({ id }) => id)
+        .filter(modelId => !selectedModelIds.includes(modelId));
+}
+
 /** The instance config accepts a single provider as well as an array of them. */
-export function getConfiguredProviders(params: {
-    aiConfig: AiConfig;
-}): AiConfig.Provider[] {
+function getConfiguredProviders(params: { aiConfig: AiConfig }): AiConfig.Provider[] {
     const { aiConfig } = params;
 
     return Array.isArray(aiConfig.providers) ? aiConfig.providers : [aiConfig.providers];
@@ -192,31 +224,38 @@ export function getConfiguredProviders(params: {
 /**
  * The default model is picked among the models the user ticked, so a selection change
  * can invalidate it. Rather than trying to keep the persisted value in sync on every
- * mutation, we validate it on read.
+ * mutation, we validate it on read. When the user elected none, or when what they
+ * elected is no longer selected, the first selected model stands in for it.
  */
 export function getDefaultModel(params: {
-    aiProviders: AiProvider[];
+    aiProviders: AiProviderWithRuntime[];
     defaultModel_persisted: PersistedAiConfig["defaultModel"];
 }): { providerName: string; modelId: string } | undefined {
     const { aiProviders, defaultModel_persisted } = params;
 
-    if (defaultModel_persisted === null) {
-        return undefined;
+    if (
+        defaultModel_persisted !== null &&
+        aiProviders.some(
+            aiProvider =>
+                aiProvider.name === defaultModel_persisted.providerName &&
+                aiProvider.selectedModelIds.includes(defaultModel_persisted.modelId)
+        )
+    ) {
+        return defaultModel_persisted;
     }
 
-    const aiProvider = aiProviders.find(
-        aiProvider => aiProvider.name === defaultModel_persisted.providerName
+    const aiProvider_first = aiProviders.find(
+        aiProvider => aiProvider.selectedModelIds.length !== 0
     );
 
-    if (aiProvider === undefined) {
+    if (aiProvider_first === undefined) {
         return undefined;
     }
 
-    if (!aiProvider.selectedModelIds.includes(defaultModel_persisted.modelId)) {
-        return undefined;
-    }
-
-    return defaultModel_persisted;
+    return {
+        providerName: aiProvider_first.name,
+        modelId: aiProvider_first.selectedModelIds[0]
+    };
 }
 
 /** `<providerName>/<modelId>`, the form the launch context and the UI selects use. */

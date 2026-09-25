@@ -1,7 +1,7 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
-import { supportedAiProviderTypes } from "core/usecases/aiProvidersManagements/decoupledLogic/supportedAiProviderTypes";
+import { supportedAiProviderTypes } from "core/usecases/aiProvidersManagements";
 import { name } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
@@ -88,6 +88,14 @@ const main = createSelector(
          * saved right away, like from the provider card. Otherwise the selection depends
          * on unsaved values and is saved along with them.
          */
+        const selectedModelIds_draft =
+            availableModels === undefined
+                ? []
+                : aiProvidersManagements.getSelectedModelIds({
+                      availableModels,
+                      excludedModelIds: state.excludedModelIds_draft
+                  });
+
         const isModelSelectionSavedImmediately =
             isConnectionSaved &&
             aiProvider_current !== undefined &&
@@ -100,13 +108,11 @@ const main = createSelector(
                 return true;
             }
 
-            const selectedModelIds_draft = new Set(state.selectedModelIds_draft);
-
             if (
-                selectedModelIds_draft.size !==
+                selectedModelIds_draft.length !==
                     aiProvider_current.selectedModelIds.length ||
                 aiProvider_current.selectedModelIds.some(
-                    modelId => !selectedModelIds_draft.has(modelId)
+                    modelId => !selectedModelIds_draft.includes(modelId)
                 )
             ) {
                 return true;
@@ -142,12 +148,9 @@ const main = createSelector(
             providerOrigin,
             isEditing: providerName_current !== undefined,
             canEditApiKey,
-            /** The provider needs a key from the user and none has been typed in */
-            isApiKeyMissing:
-                isConfiguredByAdmin && canEditApiKey && formValues.apiKey.trim() === "",
             formValues,
             connectionTest: state.connectionTest,
-            selectedModelIds_draft: state.selectedModelIds_draft,
+            selectedModelIds_draft,
             isSubmitting: state.isSubmitting,
             hasSubmissionFailed: state.hasSubmissionFailed,
             isNameValid,
