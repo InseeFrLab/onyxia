@@ -20,6 +20,32 @@ This repository contains the source code for the Docker image [inseefrlab/onyxia
 - **UI Layer:** This project utilizes React, but solely as a UI library. The React-specific code is isolated to [src/ui](./src/ui).
 - **Core Logic:** The bulk of the application's functionality resides in [src/core](./src/core). Importantly, the core logic is entirely agnostic to React.
 
+## Embedding Onyxia in another application
+
+The image serves `frame-ancestors 'self'`, so a browser refuses to render it inside
+a page on any other origin. Set `CSP_FRAME_ANCESTORS` to widen that, and the
+entrypoint rewrites the directive before nginx starts — no rebuilt image, and every
+other directive in the policy is left alone:
+
+```bash
+docker run -it -p 8083:8080 \
+    --env ONYXIA_API_URL='https://datalab.sspcloud.fr/api' \
+    --env CSP_FRAME_ANCESTORS="'self' https://portal.example.com" \
+    inseefrlab/onyxia-web:main
+```
+
+Under the Helm chart it is an ordinary entry in `web.env`, needing no chart support:
+
+```yaml
+web:
+    env:
+        CSP_FRAME_ANCESTORS: "'self' https://portal.example.com"
+```
+
+The value is written into the header verbatim. `frame-ancestors` takes a
+space-separated source list, so quote the whole thing and keep the quotes around
+`'self'` — they are part of the CSP grammar, not shell syntax.
+
 ## Run the Docker image locally
 
 ```bash
