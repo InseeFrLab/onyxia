@@ -249,6 +249,18 @@ Expected behavior:
 - Double click may trigger navigation
 - Clicking the item label may also trigger navigation
 
+### Dragging rows out
+
+Rows are draggable, so an object or a prefix can be dragged out of the explorer and dropped somewhere else — a text field, an editor, or an application embedding Onyxia.
+
+Rules:
+
+- A drag publishes the S3 URIs under both `text/plain` (newline separated) and `application/x-onyxia-s3-objects` (JSON). The plain text is what makes a drop onto an ordinary text field useful without the target knowing anything about Onyxia
+- Dragging a row that is part of the selection drags the whole selection; dragging a row that is not drags that row alone and leaves the selection untouched
+- Rows that are uploading or being deleted are not draggable, and are dropped from a multi-row drag rather than refusing it
+- A drag that begins on the checkbox or a row action button belongs to that control and must not become a row drag
+- The drag moves nothing. Only the URIs travel; no bytes are read and no object is modified
+
 ### Row actions
 
 Each row can expose contextual actions on hover.
