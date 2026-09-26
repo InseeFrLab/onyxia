@@ -498,6 +498,7 @@ export const translations: Translations<"nl"> = {
         public: "Openbaar",
         deleting: "Bezig met verwijderen...",
         uploading: "Bezig met uploaden",
+        "drop to copy here": "Laat los om hier te kopiëren",
         "drag and drop to import files": "Sleep bestanden hierheen om ze te importeren",
         "go back": "Terug",
         "no objects found": "Geen objecten gevonden",

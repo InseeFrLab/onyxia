@@ -512,6 +512,7 @@ export const translations: Translations<"de"> = {
         public: "Öffentlich",
         deleting: "Wird gelöscht...",
         uploading: "Wird hochgeladen",
+        "drop to copy here": "Zum Kopieren hier ablegen",
         "drag and drop to import files": "Dateien per Drag-and-drop importieren",
         "go back": "Zurück",
         "no objects found": "Keine Objekte gefunden",

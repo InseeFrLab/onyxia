@@ -389,6 +389,7 @@ export const translations: Translations<"en"> = {
         deleting: "Deleting...",
         uploading: "Uploading",
         "drag and drop to import files": "Drag and drop to import files",
+        "drop to copy here": "Drop to copy here",
         "go back": "Go back",
         "no objects found": "No objects found",
         "no objects found description": ({ s3UriStr }) =>

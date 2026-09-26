@@ -6,6 +6,7 @@ import {
 import { assert, is, typeGuard, type Equals } from "tsafe";
 import type { Oidc } from "core/ports/Oidc";
 import { getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
+import { getCopySource } from "./getCopySource";
 import { exclude, id } from "tsafe";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import type { OidcParams_Partial } from "core/ports/OnyxiaApi";
@@ -515,6 +516,21 @@ export function createS3Client(
                 new (await import("@aws-sdk/client-s3")).DeleteObjectCommand({
                     Bucket: s3Uri.bucket,
                     Key: getS3UriKey(s3Uri)
+                })
+            );
+        },
+        copyObject: async ({ sourceS3Uri, destinationS3Uri }) => {
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            await awsS3Client.send(
+                new (await import("@aws-sdk/client-s3")).CopyObjectCommand({
+                    Bucket: destinationS3Uri.bucket,
+                    Key: getS3UriKey(destinationS3Uri),
+                    // The SDK does NOT encode this one: it is a header value,
+                    // not a path parameter. See getCopySource.
+                    CopySource: getCopySource(sourceS3Uri)
                 })
             );
         },
