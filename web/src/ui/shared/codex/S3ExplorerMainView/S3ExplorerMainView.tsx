@@ -30,6 +30,8 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
+import { setS3ObjectsDragData } from "./s3ObjectsDragData";
+import { getS3UrisToDrag } from "./getS3UrisToDrag";
 import { S3SelectionActionBar } from "ui/shared/codex/S3SelectionActionBar";
 import {
     S3DialogItemSummary,
@@ -518,6 +520,40 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
             files: objectsToUpload
         });
     });
+
+    const handleItemDragStart = useConstCallback(
+        (params: {
+            event: DragEvent<HTMLTableRowElement>;
+            item: S3ExplorerMainViewProps.Item;
+        }) => {
+            const { event, item } = params;
+
+            // A drag begun on the checkbox or a row action button is that
+            // control's own gesture, not a drag of the row.
+            if (getIsEventFromInteractiveRowElement(event)) {
+                event.preventDefault();
+                return;
+            }
+
+            const s3Uris = getS3UrisToDrag({
+                draggedItem: item,
+                selectedItems,
+                getIsDraggable: getIsItemActionAvailable,
+                getItemKey
+            });
+
+            if (s3Uris === undefined) {
+                event.preventDefault();
+                return;
+            }
+
+            setS3ObjectsDragData({ dataTransfer: event.dataTransfer, s3Uris });
+
+            // Nothing here consumes the drag, so the only honest effect to
+            // advertise is "copy": the objects stay where they are.
+            event.dataTransfer.effectAllowed = "copy";
+        }
+    );
 
     const handleFileInputChange = useConstCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
@@ -1139,6 +1175,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isStriped={virtualRow.index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     isSelectionLocked={isSelectionLocked}
+                                                    onDragStart={handleItemDragStart}
                                                     onRowClick={onRowClickFactory(
                                                         itemKey
                                                     )}
@@ -2441,6 +2478,10 @@ type ItemRowProps = {
     isStriped: boolean;
     showRowActions: boolean;
     isSelectionLocked: boolean;
+    onDragStart: (params: {
+        event: DragEvent<HTMLTableRowElement>;
+        item: S3ExplorerMainViewProps.Item;
+    }) => void;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
@@ -2463,6 +2504,7 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         isStriped,
         showRowActions,
         isSelectionLocked,
+        onDragStart,
         onRowClick,
         onNavigate,
         onDelete,
@@ -2529,6 +2571,8 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                 isSelected && classes.tableRowSelected,
                 item.isDeleting && classes.tableRowBusy
             )}
+            draggable
+            onDragStart={event => onDragStart({ event, item })}
             onClick={onRowClick}
             onDoubleClick={event => {
                 if (getIsEventFromInteractiveRowElement(event)) {
@@ -2950,6 +2994,7 @@ function areItemRowPropsEqual(
         previousProps.isStriped === nextProps.isStriped &&
         previousProps.showRowActions === nextProps.showRowActions &&
         previousProps.isSelectionLocked === nextProps.isSelectionLocked &&
+        previousProps.onDragStart === nextProps.onDragStart &&
         previousProps.onRowClick === nextProps.onRowClick &&
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
