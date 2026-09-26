@@ -502,6 +502,7 @@ export const translations: Translations<"fr"> = {
         public: "Public",
         deleting: "Suppression...",
         uploading: "Téléversement",
+        "drop to copy here": "Déposer pour copier ici",
         "drag and drop to import files": "Glissez-déposez pour importer des fichiers",
         "go back": "Retour",
         "no objects found": "Aucun objet trouvé",

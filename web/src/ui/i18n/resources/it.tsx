@@ -498,6 +498,7 @@ export const translations: Translations<"it"> = {
         public: "Pubblico",
         deleting: "Eliminazione...",
         uploading: "Caricamento",
+        "drop to copy here": "Rilascia per copiare qui",
         "drag and drop to import files": "Trascina e rilascia per importare file",
         "go back": "Indietro",
         "no objects found": "Nessun oggetto trovato",
@@ -626,9 +627,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

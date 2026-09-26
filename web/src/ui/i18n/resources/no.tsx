@@ -496,6 +496,7 @@ export const translations: Translations<"no"> = {
         public: "Offentlig",
         deleting: "Sletter...",
         uploading: "Laster opp",
+        "drop to copy here": "Slipp for å kopiere hit",
         "drag and drop to import files": "Dra og slipp for å importere filer",
         "go back": "Gå tilbake",
         "no objects found": "Ingen objekter funnet",

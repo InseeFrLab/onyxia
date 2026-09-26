@@ -27,6 +27,7 @@ import {
 import { downloadS3UrisAsZip } from "./decoupledLogic/downloadAsZip";
 import { triggerBrowserDownload } from "core/tools/triggerBrowserDownload";
 import { shellQuote } from "core/tools/shellQuote";
+import { getCopyRefusalReason, getCopyDestinationS3Uri } from "./decoupledLogic/copyPlan";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -863,6 +864,120 @@ export const thunks = {
                     dispatch(actions.deletionCompleted({ profileName, s3Uri }));
                 })
             );
+        },
+    /**
+     * Server-side copy of objects and prefixes into a destination prefix.
+     *
+     * No bytes travel through the browser — this is CopyObject, so the cost to
+     * the client is one request per object regardless of size. A "prefix" is
+     * crawled first, exactly as delete does, because S3 has no directories and
+     * there is nothing else to copy.
+     */
+    copy:
+        (params: { s3Uris: S3Uri[]; destinationS3Uri: S3Uri.TerminatedByDelimiter }) =>
+        async (...args): Promise<void> => {
+            const { s3Uris, destinationS3Uri } = params;
+
+            const [dispatch, getState] = args;
+
+            if (
+                getCopyRefusalReason({ sourceS3Uris: s3Uris, destinationS3Uri }) !==
+                undefined
+            ) {
+                // The view refuses these while the drag is still in the air, so
+                // reaching here means the listing changed under the drag. There
+                // is nothing to tell the user that would not be noise.
+                return;
+            }
+
+            const profileName = privateSelectors.profileName(getState());
+
+            assert(profileName !== undefined);
+
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+            );
+
+            const crawl = async (params: {
+                s3UriPrefix: S3Uri.TerminatedByDelimiter;
+            }): Promise<S3Uri.NonTerminatedByDelimiter[]> => {
+                const { s3UriPrefix } = params;
+
+                const result = await s3Client.listObjects({ s3Uri: s3UriPrefix });
+
+                assert(result.isSuccess);
+
+                return [
+                    ...result.objects.map(({ s3Uri }) => s3Uri),
+                    ...(
+                        await Promise.all(
+                            result.prefixes.map(s3Uri => crawl({ s3UriPrefix: s3Uri }))
+                        )
+                    ).flat()
+                ];
+            };
+
+            const copyObject = async (params: {
+                sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+                destinationS3Uri: S3Uri.NonTerminatedByDelimiter;
+            }) => {
+                const { sourceS3Uri, destinationS3Uri } = params;
+
+                const cmdId = Date.now() + Math.random();
+
+                dispatch(
+                    actions.commandLogIssued({
+                        cmds: [
+                            {
+                                cmdId,
+                                cmd: `aws s3 cp ${shellQuote(stringifyS3Uri(sourceS3Uri))} ${shellQuote(stringifyS3Uri(destinationS3Uri))}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
+                            }
+                        ]
+                    })
+                );
+
+                await s3Client.copyObject({ sourceS3Uri, destinationS3Uri });
+
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        resp: `copy: ${stringifyS3Uri(sourceS3Uri)} to ${stringifyS3Uri(destinationS3Uri)}`
+                    })
+                );
+            };
+
+            await Promise.all(
+                s3Uris.map(async draggedS3Uri => {
+                    const sourceS3Uris = draggedS3Uri.isDelimiterTerminated
+                        ? await crawl({ s3UriPrefix: draggedS3Uri })
+                        : [draggedS3Uri];
+
+                    await Promise.all(
+                        sourceS3Uris.map(sourceS3Uri =>
+                            copyObject({
+                                sourceS3Uri,
+                                destinationS3Uri: getCopyDestinationS3Uri({
+                                    sourceS3Uri,
+                                    draggedS3Uri,
+                                    destinationS3Uri
+                                })
+                            })
+                        )
+                    );
+                })
+            );
+
+            // Show the result. Only worth doing when the destination is what is
+            // on screen: copying into some other prefix has nothing to refresh.
+            const s3Uri_listed = privateSelectors.s3Uri(getState());
+
+            if (s3Uri_listed !== undefined && same(s3Uri_listed, destinationS3Uri)) {
+                dispatch(actions.listingCleared({ profileName }));
+
+                await dispatch(
+                    thunks.listPrefix({ s3Uri: destinationS3Uri, debounce: false })
+                );
+            }
         },
     downloadObject:
         (props: { s3Uri: S3Uri.NonTerminatedByDelimiter }) =>

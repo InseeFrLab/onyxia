@@ -492,6 +492,7 @@ export const translations: Translations<"fi"> = {
         public: "Julkinen",
         deleting: "Poistetaan...",
         uploading: "Ladataan",
+        "drop to copy here": "Pudota kopioidaksesi tähän",
         "drag and drop to import files": "Vedä ja pudota tiedostoja tuodaksesi ne",
         "go back": "Takaisin",
         "no objects found": "Objekteja ei löytynyt",

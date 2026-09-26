@@ -30,6 +30,13 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { getIconUrlByName } from "lazy-icons";
 import { type S3Uri, stringifyS3Uri } from "core/tools/S3Uri";
+import {
+    setS3ObjectsDragData,
+    getS3ObjectsDragData,
+    getHasS3ObjectsDragData
+} from "./s3ObjectsDragData";
+import { getS3UrisToDrag } from "./getS3UrisToDrag";
+import { getCopyRefusalReason } from "core/usecases/s3ExplorerUiController/decoupledLogic/copyPlan";
 import { S3SelectionActionBar } from "ui/shared/codex/S3SelectionActionBar";
 import {
     S3DialogItemSummary,
@@ -77,6 +84,18 @@ export type S3ExplorerMainViewProps = {
     onCreateDirectory: (params: { prefixSegment: string }) => void;
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
+
+    /**
+     * Copy objects or prefixes dragged out of an explorer into a destination
+     * prefix, server side. Undefined disables the explorer as a drop target for
+     * S3 objects — dragging OUT still works, there is just nowhere here to drop.
+     */
+    onCopyObjects:
+        | ((params: {
+              s3Uris: S3Uri[];
+              destinationS3Uri: S3Uri.TerminatedByDelimiter;
+          }) => void)
+        | undefined;
 
     onDownload: (params: { s3Uris: S3Uri[] }) => void;
 
@@ -142,6 +161,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects,
         onCreateDirectory,
         onDelete,
+        onCopyObjects,
         onDownload,
         onShareObject,
         onSharePrefix,
@@ -163,6 +183,15 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         DeleteDialogState | undefined
     >(undefined);
     const [isDragActive, setIsDragActive] = useState(false);
+    // Where an in-flight drag of S3 objects would land: `undefined` when no such
+    // drag is over the explorer, `null` when it is over the surface (so the
+    // destination is the listed prefix), and an item key when it is over that
+    // prefix row. Kept apart from `isDragActive` because that one means "files
+    // from outside, which will be uploaded" — a different gesture with a
+    // different outcome, and conflating them makes the overlay lie.
+    const [s3DropTargetItemKey, setS3DropTargetItemKey] = useState<
+        string | null | undefined
+    >(undefined);
 
     const lastSelectedItemKeyRef = useRef<string | undefined>(undefined);
     const pendingPreSelectedS3UriRef = useRef<S3Uri.NonTerminatedByDelimiter | undefined>(
@@ -183,6 +212,148 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         isUploadDisabled ||
         listedPrefix.isErrored ||
         !listedPrefix.s3Uri.isDelimiterTerminated;
+
+    const listedPrefixCopyDestination = listedPrefix.s3Uri.isDelimiterTerminated
+        ? listedPrefix.s3Uri
+        : undefined;
+
+    const getCopyDestinationForItemKey = useConstCallback(
+        (itemKey: string | null): S3Uri.TerminatedByDelimiter | undefined => {
+            if (itemKey === null) {
+                return listedPrefixCopyDestination;
+            }
+
+            const item = itemByKey.get(itemKey);
+
+            return item !== undefined && item.type === "prefix segment"
+                ? item.s3Uri
+                : undefined;
+        }
+    );
+
+    const getCanDropS3ObjectsOn = useConstCallback((itemKey: string | null): boolean => {
+        if (onCopyObjects === undefined) {
+            return false;
+        }
+
+        const destinationS3Uri = getCopyDestinationForItemKey(itemKey);
+
+        if (destinationS3Uri === undefined) {
+            return false;
+        }
+
+        // What is being dragged cannot be read while the drag is in flight
+        // (protected mode), so "would this particular drop be a no-op?" is
+        // settled at drop time, not here. Everything knowable from the
+        // destination alone is settled here.
+        return true;
+    });
+
+    const handleS3ObjectsDrop = useConstCallback(
+        (params: { event: DragEvent<HTMLElement>; itemKey: string | null }) => {
+            const { event, itemKey } = params;
+
+            setS3DropTargetItemKey(undefined);
+
+            const destinationS3Uri = getCopyDestinationForItemKey(itemKey);
+
+            if (onCopyObjects === undefined || destinationS3Uri === undefined) {
+                return;
+            }
+
+            const dragData = getS3ObjectsDragData({
+                dataTransfer: event.dataTransfer,
+                delimiter: destinationS3Uri.delimiter
+            });
+
+            if (dragData === undefined) {
+                return;
+            }
+
+            if (
+                getCopyRefusalReason({
+                    sourceS3Uris: dragData.s3Uris,
+                    destinationS3Uri
+                }) !== undefined
+            ) {
+                return;
+            }
+
+            onCopyObjects({ s3Uris: dragData.s3Uris, destinationS3Uri });
+        }
+    );
+
+    const handleRowS3ObjectsDragOver = useConstCallback(
+        (params: {
+            event: DragEvent<HTMLTableRowElement>;
+            item: S3ExplorerMainViewProps.Item;
+        }) => {
+            const { event, item } = params;
+
+            if (!getHasS3ObjectsDragData(event.dataTransfer)) {
+                return;
+            }
+
+            const itemKey = getItemKey(item);
+
+            if (!getCanDropS3ObjectsOn(itemKey)) {
+                // An object row is not a destination. Leave the event alone so
+                // it bubbles to the surface, which drops into the listed prefix
+                // — dragging over a file on the way to the background should not
+                // make the whole explorer refuse the drop.
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            event.dataTransfer.dropEffect = "copy";
+            setS3DropTargetItemKey(itemKey);
+        }
+    );
+
+    const handleRowS3ObjectsDragLeave = useConstCallback(
+        (params: { event: DragEvent<HTMLTableRowElement> }) => {
+            const { event } = params;
+
+            if (!getHasS3ObjectsDragData(event.dataTransfer)) {
+                return;
+            }
+
+            if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                return;
+            }
+
+            // Back to the surface, not out of the explorer: the surface's own
+            // dragover will set this again on the next tick.
+            setS3DropTargetItemKey(current =>
+                current === undefined ? undefined : null
+            );
+        }
+    );
+
+    const handleRowS3ObjectsDrop = useConstCallback(
+        (params: {
+            event: DragEvent<HTMLTableRowElement>;
+            item: S3ExplorerMainViewProps.Item;
+        }) => {
+            const { event, item } = params;
+
+            if (!getHasS3ObjectsDragData(event.dataTransfer)) {
+                return;
+            }
+
+            const itemKey = getItemKey(item);
+
+            if (!getCanDropS3ObjectsOn(itemKey)) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            handleS3ObjectsDrop({ event, itemKey });
+        }
+    );
 
     const openFilePicker = useConstCallback(() => {
         if (isUploadToListedPrefixDisabled) {
@@ -519,6 +690,40 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         });
     });
 
+    const handleItemDragStart = useConstCallback(
+        (params: {
+            event: DragEvent<HTMLTableRowElement>;
+            item: S3ExplorerMainViewProps.Item;
+        }) => {
+            const { event, item } = params;
+
+            // A drag begun on the checkbox or a row action button is that
+            // control's own gesture, not a drag of the row.
+            if (getIsEventFromInteractiveRowElement(event)) {
+                event.preventDefault();
+                return;
+            }
+
+            const s3Uris = getS3UrisToDrag({
+                draggedItem: item,
+                selectedItems,
+                getIsDraggable: getIsItemActionAvailable,
+                getItemKey
+            });
+
+            if (s3Uris === undefined) {
+                event.preventDefault();
+                return;
+            }
+
+            setS3ObjectsDragData({ dataTransfer: event.dataTransfer, s3Uris });
+
+            // Nothing here consumes the drag, so the only honest effect to
+            // advertise is "copy": the objects stay where they are.
+            event.dataTransfer.effectAllowed = "copy";
+        }
+    );
+
     const handleFileInputChange = useConstCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
             const files = Array.from(event.target.files ?? []);
@@ -854,6 +1059,16 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                 <div
                     className={classes.surface}
                     onDragEnter={(event: DragEvent<HTMLDivElement>) => {
+                        if (getHasS3ObjectsDragData(event.dataTransfer)) {
+                            if (getCanDropS3ObjectsOn(null)) {
+                                event.preventDefault();
+                                setS3DropTargetItemKey(current =>
+                                    current === undefined ? null : current
+                                );
+                            }
+                            return;
+                        }
+
                         if (!getHasDraggedFiles(event.dataTransfer)) {
                             return;
                         }
@@ -870,6 +1085,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                         setIsDragActive(true);
                     }}
                     onDragOver={(event: DragEvent<HTMLDivElement>) => {
+                        if (getHasS3ObjectsDragData(event.dataTransfer)) {
+                            if (!getCanDropS3ObjectsOn(null)) {
+                                return;
+                            }
+
+                            event.preventDefault();
+                            event.dataTransfer.dropEffect = "copy";
+                            setS3DropTargetItemKey(current =>
+                                current === undefined ? null : current
+                            );
+                            return;
+                        }
+
                         if (!getHasDraggedFiles(event.dataTransfer)) {
                             return;
                         }
@@ -887,6 +1115,21 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                         setIsDragActive(true);
                     }}
                     onDragLeave={(event: DragEvent<HTMLDivElement>) => {
+                        if (getHasS3ObjectsDragData(event.dataTransfer)) {
+                            if (event.currentTarget.contains(
+                                event.relatedTarget as Node | null
+                            )) {
+                                // Moving between children of the surface, not
+                                // leaving it. dragleave fires on every such
+                                // crossing, so without this the overlay flickers
+                                // off and on for the whole traversal.
+                                return;
+                            }
+
+                            setS3DropTargetItemKey(undefined);
+                            return;
+                        }
+
                         if (!getHasDraggedFiles(event.dataTransfer)) {
                             return;
                         }
@@ -905,21 +1148,35 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             setIsDragActive(false);
                         }
                     }}
-                    onDrop={handleDrop}
+                    onDrop={event => {
+                        if (getHasS3ObjectsDragData(event.dataTransfer)) {
+                            event.preventDefault();
+                            handleS3ObjectsDrop({ event, itemKey: null });
+                            return;
+                        }
+
+                        handleDrop(event);
+                    }}
                 >
                     {isListing && <LinearProgress className={classes.listingProgress} />}
-                    {isDragActive && (
+                    {(isDragActive || s3DropTargetItemKey === null) && (
                         <div className={classes.dropOverlay}>
                             <div className={classes.dropOverlayFrame}>
                                 <div className={classes.dropOverlayCard}>
                                     <div className={classes.dropOverlayIcon}>
                                         <Icon
-                                            icon={getS3ObjectIconUrl("")}
+                                            icon={
+                                                s3DropTargetItemKey === null
+                                                    ? getIconUrlByName("ContentCopy")
+                                                    : getS3ObjectIconUrl("")
+                                            }
                                             size="large"
                                         />
                                     </div>
                                     <div className={classes.dropOverlayTitle}>
-                                        {t("drag and drop to import files")}
+                                        {s3DropTargetItemKey === null
+                                            ? t("drop to copy here")
+                                            : t("drag and drop to import files")}
                                     </div>
                                 </div>
                             </div>
@@ -1139,6 +1396,19 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     isStriped={virtualRow.index % 2 === 0}
                                                     showRowActions={showRowActions}
                                                     isSelectionLocked={isSelectionLocked}
+                                                    onDragStart={handleItemDragStart}
+                                                    isS3DropTarget={
+                                                        s3DropTargetItemKey === itemKey
+                                                    }
+                                                    onS3ObjectsDragOver={
+                                                        handleRowS3ObjectsDragOver
+                                                    }
+                                                    onS3ObjectsDragLeave={
+                                                        handleRowS3ObjectsDragLeave
+                                                    }
+                                                    onS3ObjectsDrop={
+                                                        handleRowS3ObjectsDrop
+                                                    }
                                                     onRowClick={onRowClickFactory(
                                                         itemKey
                                                     )}
@@ -1497,6 +1767,14 @@ const useStyles = tss
         tableRowStriped: {
             backgroundColor: theme.colors.useCases.surfaces.surface2
         },
+        tableRowS3DropTarget: {
+            // Deliberately an outline rather than a fill: the row underneath may
+            // already be selected or striped, and a second background colour on
+            // top of those reads as a third state rather than as "drop here".
+            outline: `2px solid ${theme.colors.useCases.buttons.actionActive}`,
+            outlineOffset: -2,
+            borderRadius: theme.spacing(1)
+        },
         tableRowSelected: {
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
             [`&:hover`]: {
@@ -1841,6 +2119,7 @@ const { i18n } = declareComponentKeys<
     | "deleting"
     | "uploading"
     | "drag and drop to import files"
+    | "drop to copy here"
     | "go back"
     | "no objects found"
     | { K: "no objects found description"; P: { s3UriStr: string }; R: string }
@@ -2441,6 +2720,22 @@ type ItemRowProps = {
     isStriped: boolean;
     showRowActions: boolean;
     isSelectionLocked: boolean;
+    onDragStart: (params: {
+        event: DragEvent<HTMLTableRowElement>;
+        item: S3ExplorerMainViewProps.Item;
+    }) => void;
+    isS3DropTarget: boolean;
+    onS3ObjectsDragOver: (params: {
+        event: DragEvent<HTMLTableRowElement>;
+        item: S3ExplorerMainViewProps.Item;
+    }) => void;
+    onS3ObjectsDragLeave: (params: {
+        event: DragEvent<HTMLTableRowElement>;
+    }) => void;
+    onS3ObjectsDrop: (params: {
+        event: DragEvent<HTMLTableRowElement>;
+        item: S3ExplorerMainViewProps.Item;
+    }) => void;
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
@@ -2463,6 +2758,11 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         isStriped,
         showRowActions,
         isSelectionLocked,
+        onDragStart,
+        isS3DropTarget,
+        onS3ObjectsDragOver,
+        onS3ObjectsDragLeave,
+        onS3ObjectsDrop,
         onRowClick,
         onNavigate,
         onDelete,
@@ -2527,8 +2827,15 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                 classes.tableRow,
                 isStriped && classes.tableRowStriped,
                 isSelected && classes.tableRowSelected,
+                isS3DropTarget && classes.tableRowS3DropTarget,
                 item.isDeleting && classes.tableRowBusy
             )}
+            draggable
+            onDragStart={event => onDragStart({ event, item })}
+            onDragEnter={event => onS3ObjectsDragOver({ event, item })}
+            onDragOver={event => onS3ObjectsDragOver({ event, item })}
+            onDragLeave={event => onS3ObjectsDragLeave({ event })}
+            onDrop={event => onS3ObjectsDrop({ event, item })}
             onClick={onRowClick}
             onDoubleClick={event => {
                 if (getIsEventFromInteractiveRowElement(event)) {
@@ -2950,6 +3257,11 @@ function areItemRowPropsEqual(
         previousProps.isStriped === nextProps.isStriped &&
         previousProps.showRowActions === nextProps.showRowActions &&
         previousProps.isSelectionLocked === nextProps.isSelectionLocked &&
+        previousProps.onDragStart === nextProps.onDragStart &&
+        previousProps.isS3DropTarget === nextProps.isS3DropTarget &&
+        previousProps.onS3ObjectsDragOver === nextProps.onS3ObjectsDragOver &&
+        previousProps.onS3ObjectsDragLeave === nextProps.onS3ObjectsDragLeave &&
+        previousProps.onS3ObjectsDrop === nextProps.onS3ObjectsDrop &&
         previousProps.onRowClick === nextProps.onRowClick &&
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&

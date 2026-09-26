@@ -249,6 +249,31 @@ Expected behavior:
 - Double click may trigger navigation
 - Clicking the item label may also trigger navigation
 
+### Dragging rows out
+
+Rows are draggable, so an object or a prefix can be dragged out of the explorer and dropped somewhere else — a text field, an editor, or an application embedding Onyxia.
+
+Rules:
+
+- A drag publishes the S3 URIs under both `text/plain` (newline separated) and `application/x-onyxia-s3-objects` (JSON). The plain text is what makes a drop onto an ordinary text field useful without the target knowing anything about Onyxia
+- Dragging a row that is part of the selection drags the whole selection; dragging a row that is not drags that row alone and leaves the selection untouched
+- Rows that are uploading or being deleted are not draggable, and are dropped from a multi-row drag rather than refusing it
+- A drag that begins on the checkbox or a row action button belongs to that control and must not become a row drag
+- The drag moves nothing. Only the URIs travel; no bytes are read and no object is modified
+
+### Dropping rows in
+
+Objects and prefixes dragged out of an explorer can be dropped back into one, which copies them server side through `onCopyObjects`. Leaving `onCopyObjects` undefined turns the explorer into a source only.
+
+Rules:
+
+- The drop destination is the prefix row under the pointer, or the listed prefix when the pointer is over the surface between rows
+- An object row is not a destination. Dragging across one on the way to the background must not refuse the drop; it falls through to the listed prefix
+- The highlight is an outline on the destination row, not a fill — the row underneath may already be selected or striped
+- A drop that would be a no-op (back into the prefix the item already lives in) or impossible (a prefix into itself or into its own descendant, two items landing on one name) is refused
+- Nothing is read into the browser. The size of what is copied costs the client nothing
+- A drag of files from outside the browser remains an upload, and must stay visually distinct from a copy: they are different gestures with different outcomes
+
 ### Row actions
 
 Each row can expose contextual actions on hover.

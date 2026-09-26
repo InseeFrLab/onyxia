@@ -629,6 +629,7 @@ function S3Explorer() {
                                         s3ExplorerUiController.createDirectory
                                     }
                                     onDelete={s3ExplorerUiController.delete}
+                                    onCopyObjects={s3ExplorerUiController.copy}
                                     onDownload={onDownload}
                                     onChangePrefixPolicy={async ({ action, s3Uri }) => {
                                         const dDoProceed = new Deferred<boolean>();

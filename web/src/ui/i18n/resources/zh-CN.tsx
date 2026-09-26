@@ -461,6 +461,7 @@ export const translations: Translations<"zh-CN"> = {
         public: "公开",
         deleting: "正在删除...",
         uploading: "正在上传",
+        "drop to copy here": "拖放到此处以复制",
         "drag and drop to import files": "拖放以导入文件",
         "go back": "返回",
         "no objects found": "未找到对象",
