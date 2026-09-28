@@ -107,20 +107,12 @@ export const translations: Translations<"en"> = {
         "save failed": "Unable to save your changes.",
         "save failed details":
             "Your changes are kept on this page. Try again in a moment.",
-        "api-key not provided": "API key required.",
-        "api-key not provided details":
-            "This provider needs your own API key before it can be used.",
         "gateway error": "Unable to initialize the AI gateway.",
         "gateway error details": "Check your connection and try again.",
         "unreadable config title": "Your AI configuration can't be read.",
         "unreadable config":
             "Resetting it deletes your custom providers, API keys and model selections.",
-        "reset config": "Reset my AI configuration",
-        "refresh failed": "Unable to renew the credentials.",
-        "refresh failed details":
-            "Try again, or contact your administrator if the problem persists.",
-        "connection failed": "Connection failed.",
-        "connection failed details": "Please check your credentials or endpoint."
+        "reset config": "Reset my AI configuration"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Delete this Custom AI Provider",
@@ -161,14 +153,21 @@ export const translations: Translations<"en"> = {
         "test connection": "Test connection",
         "delete provider": "Delete provider",
         cancel: "Cancel",
-        "save changes": "Save changes"
+        "save changes": "Save changes",
+        "save failed": "Unable to save your changes.",
+        "save failed details":
+            "Your changes are kept on this page. Try again in a moment.",
+        "api-key not provided": "API key required.",
+        "api-key not provided details":
+            "This provider needs your own API key before it can be used.",
+        "connection failed": "Connection failed.",
+        "connection failed details": "Please check your credentials or endpoint."
     },
     CustomProviderFormDialog: {
         "invalid name": "Choose a unique provider name without a slash (/).",
         "invalid api base": "Enter a valid HTTP(S) URL.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Add a new custom AI provider",
-        "edit custom provider title": "Edit AI provider",
         "custom provider section title": "Configure AI provider",
         "custom provider label field": "Define a custom name",
         "custom provider type field": "Provider API",
@@ -188,7 +187,6 @@ export const translations: Translations<"en"> = {
         "provider testing": "Testing connection...",
         "provider test success": "Connection successful. Your provider is ready to use.",
         "provider save": "Add Custom AI Providers",
-        "provider update": "Save changes",
         "provider cancel": "Cancel",
         "close aria label": "Close",
         "submission error": "Unable to save this provider.",

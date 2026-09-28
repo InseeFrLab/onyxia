@@ -6,62 +6,31 @@ import { CustomProviderFormDialogView } from "./CustomProviderFormDialogView";
 export { CustomProviderFormDialogView } from "./CustomProviderFormDialogView";
 export type { ViewProps } from "./types";
 
+/** Only for a provider being created, the existing ones are managed by `ManageProvidersDialog` */
 export const CustomProviderFormDialog = memo(() => {
-    const form = useCoreState("aiProviderFormUiController", "main");
+    const view = useCoreState("aiProviderFormUiController", "createDialog");
 
     const {
-        functions: { aiProviderFormUiController }
+        functions: { aiProviderFormUiController: form }
     } = getCoreSync();
 
-    // Existing providers, whatever their origin, are managed by `ManageProvidersDialog`
-    if (!form.isOpen || form.isEditing) {
+    if (!view.isOpen) {
         return null;
     }
 
     return (
         <CustomProviderFormDialogView
-            isEditing={form.isEditing}
-            values={{ ...form.formValues, protocol: form.formValues.providerType ?? "" }}
-            test={
-                form.connectionTest.stateDescription === "succeeded"
-                    ? {
-                          stateDescription: "success",
-                          models: form.connectionTest.availableModels
-                      }
-                    : {
-                          stateDescription:
-                              form.connectionTest.stateDescription === "not tested"
-                                  ? "idle"
-                                  : form.connectionTest.stateDescription === "failed"
-                                    ? "error"
-                                    : "testing"
-                      }
+            view={view}
+            onClose={form.close}
+            onFieldChange={(key, value) => form.changeValue({ key, value })}
+            onProviderTypeChange={providerType =>
+                form.changeProviderType({ providerType })
             }
-            selectedModels={form.selectedModelIds_draft}
-            canSave={form.canSubmit}
-            canTest={form.canTestConnection}
-            supportedProtocols={form.supportedProviderTypes}
-            onClose={() => aiProviderFormUiController.close()}
-            onFieldChange={(key, value) => {
-                if (key !== "protocol")
-                    aiProviderFormUiController.changeValue({ key, value });
-            }}
-            onProtocolChange={protocol =>
-                aiProviderFormUiController.changeProviderType({
-                    providerType: protocol
-                })
-            }
-            onTest={() => aiProviderFormUiController.testConnection()}
+            onTest={form.testConnection}
             onSelectedModelsChange={selectedModelIds =>
-                aiProviderFormUiController.changeSelectedModelIds({
-                    selectedModelIds
-                })
+                form.changeSelectedModelIds({ selectedModelIds })
             }
-            onSave={() => aiProviderFormUiController.submit()}
-            hasSubmissionError={form.hasSubmissionFailed}
-            nameIsValid={form.isNameValid}
-            apiBaseIsValid={form.isApiBaseValid}
-            isSubmitting={form.isSubmitting}
+            onSave={form.submit}
         />
     );
 });
@@ -73,7 +42,6 @@ const { i18n } = declareComponentKeys<
     | "invalid api base"
     | "deepseek provider option"
     | "add custom provider title"
-    | "edit custom provider title"
     | "custom provider section title"
     | "custom provider label field"
     | "custom provider type field"
@@ -93,7 +61,6 @@ const { i18n } = declareComponentKeys<
     | "provider test error"
     | "provider test error details"
     | "provider save"
-    | "provider update"
     | "provider cancel"
     | "close aria label"
 >()({ CustomProviderFormDialog });

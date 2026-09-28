@@ -9,23 +9,13 @@ import type { ViewProps } from "./types";
 
 export const CustomProviderFormDialogView = memo((props: ViewProps) => {
     const {
-        isEditing,
-        values,
-        test,
-        selectedModels,
-        canSave,
-        canTest,
-        supportedProtocols,
+        view,
         onClose,
         onFieldChange,
-        onProtocolChange,
+        onProviderTypeChange,
         onTest,
         onSelectedModelsChange,
-        onSave,
-        hasSubmissionError,
-        nameIsValid,
-        apiBaseIsValid,
-        isSubmitting
+        onSave
     } = props;
 
     const { classes } = useStyles();
@@ -35,59 +25,51 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
     const onSubmit: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault();
 
-        if (canSave) {
+        if (view.canSave) {
             onSave();
         }
     };
 
     return (
         <SideDialog
-            title={t(
-                isEditing ? "edit custom provider title" : "add custom provider title"
-            )}
+            title={t("add custom provider title")}
             closeLabel={t("close aria label")}
             onClose={onClose}
         >
             <form className={classes.root} onSubmit={onSubmit} noValidate={true}>
-                <fieldset className={classes.body} disabled={isSubmitting}>
+                <fieldset className={classes.body} disabled={view.isSaving}>
                     <ProviderSection
-                        name={values.name}
-                        protocol={values.protocol}
-                        supportedProtocols={supportedProtocols}
+                        name={view.name.value}
+                        protocol={view.providerType.value ?? ""}
+                        supportedProtocols={view.providerType.options}
                         onNameChange={value => onFieldChange("name", value)}
-                        onProtocolChange={onProtocolChange}
-                        nameError={
-                            nameIsValid === false && values.name !== ""
-                                ? t("invalid name")
-                                : undefined
-                        }
+                        onProtocolChange={onProviderTypeChange}
+                        nameError={view.name.isInvalid ? t("invalid name") : undefined}
                     />
 
                     <CredentialsSection
-                        apiBase={values.apiBase}
-                        apiKey={values.apiKey}
+                        apiBase={view.apiBase.value}
+                        apiKey={view.apiKey.value}
                         onFieldChange={(key, value) => {
                             if (key === "apiBase") setIsApiBaseValidationVisible(false);
                             onFieldChange(key, value);
                         }}
                         onApiBaseBlur={() => setIsApiBaseValidationVisible(true)}
                         apiBaseError={
-                            isApiBaseValidationVisible &&
-                            apiBaseIsValid === false &&
-                            values.apiBase !== ""
+                            // Not while the user is still typing it
+                            isApiBaseValidationVisible && view.apiBase.isInvalid
                                 ? t("invalid api base")
                                 : undefined
                         }
                     />
 
                     <VerificationSection
-                        test={test}
-                        canTest={canTest}
+                        connectionTest={view.connectionTest}
+                        models={view.models}
                         onTest={onTest}
-                        selectedModels={selectedModels}
                         onSelectedModelsChange={onSelectedModelsChange}
                     />
-                    {hasSubmissionError && (
+                    {view.hasSaveFailed && (
                         <AiAlert
                             title={t("submission error")}
                             message={t("submission error details")}
@@ -99,8 +81,8 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                     <Button variant="secondary" onClick={onClose}>
                         {t("provider cancel")}
                     </Button>
-                    <Button type="submit" disabled={!canSave}>
-                        {t(isEditing ? "provider update" : "provider save")}
+                    <Button type="submit" disabled={!view.canSave}>
+                        {t("provider save")}
                     </Button>
                 </div>
             </form>

@@ -10,48 +10,79 @@ import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { ModelsSelection } from "../../shared/ModelsSelection";
 import { ProviderValueField } from "./ProviderValueField";
-import { ProviderStateChip, type ProviderState } from "../../ProviderCard";
+import { ProviderStateChip } from "../../ProviderCard";
 import { ProviderSection } from "../CustomProviderFormDialog/FormSections";
 import { SideDialog } from "../../shared/SideDialog";
 import { AiAlert } from "../../shared/AiAlert";
+import {
+    ConfirmCustomProviderDeletionDialog,
+    type Props as ConfirmProps
+} from "../ConfirmCustomProviderDeletionDialog";
+import { memo } from "react";
+import { useCoreState, getCoreSync } from "core";
+import type { ManageDialogView } from "core/usecases/aiProviderFormUiController";
+import { Evt, type UnpackEvt } from "evt";
+import { Deferred } from "evt/tools/Deferred";
+import { useConst } from "powerhooks/useConst";
 
-export type ManagedProvider = {
-    name: string;
-    subtitle: string;
-    state: ProviderState;
-    /** Only for the providers created by the user, which can be redefined */
-    configuration:
-        | {
-              name: string;
-              providerType: AiConfig.SupportedAiProviderType | undefined;
-              supportedProviderTypes: readonly AiConfig.SupportedAiProviderType[];
-              nameError: string | undefined;
-          }
-        | undefined;
-    apiBase: string;
-    isApiBaseEditable: boolean;
-    apiBaseError: string | undefined;
-    apiKey: string | undefined;
-    isApiKeyEditable: boolean;
-    /** undefined as long as the connection hasn't been successfully tested */
-    availableModels: string[] | undefined;
-    selectedModelIds: string[];
-    isModelSelectionDisabled: boolean;
-    connectionError: { title: string; message: string } | undefined;
-    canTestConnection: boolean;
-    isTestingConnection: boolean;
-    canRefreshCredentials: boolean;
-    isRefreshingCredentials: boolean;
-    canSave: boolean;
-    canDelete: boolean;
-    /** Written by the admin in the instance configuration */
-    documentation: AiConfig.Documentation | undefined;
-};
+/** Existing providers, whatever their origin. The ones being created have their own dialog. */
+export const ManageProvidersDialog = memo(() => {
+    const view = useCoreState("aiProviderFormUiController", "manageDialog");
 
-/** Nothing is saved before `onSave`: the edits are held by the caller until then. */
-export function ManageProvidersDialog(props: {
-    providerNames: string[];
-    provider: ManagedProvider;
+    const {
+        functions: { aiProviderFormUiController: form }
+    } = getCoreSync();
+
+    const evtConfirmDeletion = useConst(() =>
+        Evt.create<UnpackEvt<ConfirmProps["evtOpen"]>>()
+    );
+
+    return (
+        <>
+            {view.isOpen && (
+                <ManageProvidersDialogView
+                    view={view}
+                    onProviderChange={providerName => form.open({ providerName })}
+                    onClose={form.close}
+                    onNameChange={name => form.changeValue({ key: "name", value: name })}
+                    onProviderTypeChange={providerType =>
+                        form.changeProviderType({ providerType })
+                    }
+                    onApiBaseChange={apiBase =>
+                        form.changeValue({ key: "apiBase", value: apiBase })
+                    }
+                    onApiKeyChange={apiKey =>
+                        form.changeValue({ key: "apiKey", value: apiKey })
+                    }
+                    onSelectedModelsChange={selectedModelIds =>
+                        form.changeSelectedModelIds({ selectedModelIds })
+                    }
+                    onRefreshCredentials={form.refreshCredentials}
+                    onTestConnection={form.testConnection}
+                    onSave={form.submit}
+                    onDelete={async () => {
+                        const confirmation = new Deferred<boolean>();
+
+                        evtConfirmDeletion.post({
+                            resolveDoProceed: confirmation.resolve
+                        });
+
+                        if (!(await confirmation.pr)) {
+                            return;
+                        }
+
+                        await form.deleteProvider();
+                    }}
+                />
+            )}
+            <ConfirmCustomProviderDeletionDialog evtOpen={evtConfirmDeletion} />
+        </>
+    );
+});
+
+/** Nothing is saved before `onSave`, except the models when they are the saved ones. */
+export function ManageProvidersDialogView(props: {
+    view: ManageDialogView.Open;
     onProviderChange: (providerName: string) => void;
     onClose: () => void;
     onNameChange: (name: string) => void;
@@ -59,17 +90,20 @@ export function ManageProvidersDialog(props: {
     onApiBaseChange: (apiBase: string) => void;
     onApiKeyChange: (apiKey: string) => void;
     onSelectedModelsChange: (modelIds: string[]) => void;
-    onRefreshCredentials: () => void | Promise<void>;
-    onTestConnection: () => void | Promise<void>;
-    onSave: () => void | Promise<void>;
-    onDelete: () => void | Promise<void>;
+    onRefreshCredentials: () => void;
+    onTestConnection: () => void;
+    onSave: () => void;
+    onDelete: () => void;
 }) {
+    const { view, onClose } = props;
+
     const { t } = useTranslation({ ManageProvidersDialog });
+    const { t: tAccount } = useTranslation("AccountAiTab");
+    const { t: tForm } = useTranslation("CustomProviderFormDialog");
     const { classes, cx } = useStyles();
     const { resolveLocalizedString } = useResolveLocalizedString();
-    const { provider } = props;
 
-    const onClose = props.onClose;
+    const isRefreshingCredentials = view.credentialsRefresh?.isRefreshing ?? false;
 
     return (
         <SideDialog
@@ -81,22 +115,24 @@ export function ManageProvidersDialog(props: {
                 <div className={classes.providerHeader}>
                     <Select
                         className={classes.providerSelect}
-                        value={provider.name}
+                        value={view.providerName}
                         variant="standard"
                         disableUnderline
                         inputProps={{ "aria-label": t("provider selector aria label") }}
                         onChange={event => props.onProviderChange(event.target.value)}
                     >
-                        {props.providerNames.map(providerName => (
+                        {view.providerNames.map(providerName => (
                             <MenuItem key={providerName} value={providerName}>
                                 {providerName}
                             </MenuItem>
                         ))}
                     </Select>
                     <Text typo="body 1" className={classes.providerSubtitle}>
-                        {provider.subtitle}
+                        {view.origin === "configured by admin"
+                            ? tAccount("provided by organization")
+                            : tAccount("custom providers section title")}
                     </Text>
-                    {provider.canDelete && (
+                    {view.canDelete && (
                         <Button
                             variant="ternary"
                             className={classes.deleteButton}
@@ -109,16 +145,18 @@ export function ManageProvidersDialog(props: {
                 </div>
 
                 <div className={classes.scrollableContent}>
-                    {provider.configuration !== undefined && (
+                    {view.configuration !== undefined && (
                         <ProviderSection
-                            name={provider.configuration.name}
-                            protocol={provider.configuration.providerType ?? ""}
-                            supportedProtocols={
-                                provider.configuration.supportedProviderTypes
-                            }
+                            name={view.configuration.name.value}
+                            protocol={view.configuration.providerType.value ?? ""}
+                            supportedProtocols={view.configuration.providerType.options}
                             onNameChange={props.onNameChange}
                             onProtocolChange={props.onProviderTypeChange}
-                            nameError={provider.configuration.nameError}
+                            nameError={
+                                view.configuration.name.isInvalid
+                                    ? tForm("invalid name")
+                                    : undefined
+                            }
                         />
                     )}
                     <section className={classes.section}>
@@ -127,7 +165,7 @@ export function ManageProvidersDialog(props: {
                                 <Text typo="object heading">
                                     {t("connection details title")}
                                 </Text>
-                                <ProviderStateChip state={provider.state} />
+                                <ProviderStateChip state={view.connectionState} />
                             </div>
                             <Text typo="body 1" className={classes.sectionHelper}>
                                 {t("connection details helper")}
@@ -136,47 +174,50 @@ export function ManageProvidersDialog(props: {
                         <div className={classes.fields}>
                             <ProviderValueField
                                 label={t("api base url")}
-                                value={provider.apiBase}
+                                value={view.apiBase.value}
                                 onChange={
-                                    provider.isApiBaseEditable
+                                    view.apiBase.isEditable
                                         ? props.onApiBaseChange
                                         : undefined
                                 }
-                                errorMessage={provider.apiBaseError}
-                                onRequestCopy={() => copyToClipboard(provider.apiBase)}
+                                errorMessage={
+                                    view.apiBase.isInvalid
+                                        ? tForm("invalid api base")
+                                        : undefined
+                                }
+                                onRequestCopy={() => copyToClipboard(view.apiBase.value)}
                             />
-                            {(provider.apiKey !== undefined ||
-                                provider.isApiKeyEditable) && (
+                            {view.apiKey !== undefined && (
                                 <ProviderValueField
                                     label={t("api key")}
-                                    value={provider.apiKey ?? ""}
+                                    value={view.apiKey.value}
                                     isSensitiveInformation
                                     onChange={
-                                        provider.isApiKeyEditable
+                                        view.apiKey.isEditable
                                             ? props.onApiKeyChange
                                             : undefined
                                     }
-                                    disabled={provider.isRefreshingCredentials}
+                                    disabled={isRefreshingCredentials}
                                     onRequestCopy={() =>
-                                        copyToClipboard(provider.apiKey ?? "")
+                                        copyToClipboard(view.apiKey?.value ?? "")
                                     }
                                 />
                             )}
                         </div>
-                        {provider.connectionError !== undefined && (
+                        {view.alert !== undefined && (
                             <AiAlert
-                                title={provider.connectionError.title}
-                                message={provider.connectionError.message}
+                                title={t(view.alert)}
+                                message={t(`${view.alert} details`)}
                             />
                         )}
                         <div className={classes.sectionActions}>
                             {/* NOTE: Only for the OIDC token exchange authentication */}
-                            {provider.canRefreshCredentials && (
+                            {view.credentialsRefresh !== undefined && (
                                 <Button
                                     variant="ternary"
                                     className={classes.refreshCredentialsButton}
                                     startIcon={getIconUrlByName("Refresh")}
-                                    disabled={provider.isRefreshingCredentials}
+                                    disabled={isRefreshingCredentials}
                                     onClick={props.onRefreshCredentials}
                                 >
                                     {t("refresh credentials")}
@@ -186,21 +227,18 @@ export function ManageProvidersDialog(props: {
                                 variant="ternary"
                                 className={cx(
                                     classes.testConnectionButton,
-                                    provider.isTestingConnection &&
+                                    view.connectionTest.isTesting &&
                                         classes.testConnectionButton_testing
                                 )}
                                 startIcon={
-                                    provider.isTestingConnection
+                                    view.connectionTest.isTesting
                                         ? undefined
                                         : getIconUrlByName("NetworkCheck")
                                 }
-                                disabled={
-                                    !provider.canTestConnection ||
-                                    provider.isRefreshingCredentials
-                                }
+                                disabled={!view.connectionTest.canTest}
                                 onClick={props.onTestConnection}
                             >
-                                {provider.isTestingConnection && (
+                                {view.connectionTest.isTesting && (
                                     <CircularProgress
                                         className={classes.testConnectionLoader}
                                         size={16}
@@ -219,13 +257,13 @@ export function ManageProvidersDialog(props: {
                             </Text>
                         </div>
                         <ModelsSelection
-                            models={provider.availableModels ?? []}
-                            selectedModels={provider.selectedModelIds}
-                            disabled={provider.isModelSelectionDisabled}
+                            models={view.models.available}
+                            selectedModels={view.models.selected}
+                            disabled={view.models.isDisabled}
                             onSelectedModelsChange={props.onSelectedModelsChange}
                         />
                     </section>
-                    {provider.documentation !== undefined && (
+                    {view.documentation !== undefined && (
                         <section
                             className={cx(classes.section, classes.documentationSection)}
                         >
@@ -234,14 +272,12 @@ export function ManageProvidersDialog(props: {
                                     {t("documentation title")}
                                 </Text>
                                 <Text typo="body 1" className={classes.sectionHelper}>
-                                    {resolveLocalizedString(
-                                        provider.documentation.mainText
-                                    )}
+                                    {resolveLocalizedString(view.documentation.mainText)}
                                 </Text>
                             </div>
-                            {provider.documentation.links.length !== 0 && (
+                            {view.documentation.links.length !== 0 && (
                                 <div className={classes.documentationLinks}>
-                                    {provider.documentation.links.map(link => (
+                                    {view.documentation.links.map(link => (
                                         <Link
                                             key={link.url}
                                             className={classes.documentationLink}
@@ -271,10 +307,7 @@ export function ManageProvidersDialog(props: {
                     <Button variant="secondary" onClick={onClose}>
                         {t("cancel")}
                     </Button>
-                    <Button
-                        disabled={!provider.canSave || provider.isRefreshingCredentials}
-                        onClick={props.onSave}
-                    >
+                    <Button disabled={!view.canSave} onClick={props.onSave}>
                         {t("save changes")}
                     </Button>
                 </div>
@@ -462,5 +495,11 @@ const { i18n } = declareComponentKeys<
     | "delete provider"
     | "cancel"
     | "save changes"
+    | "save failed"
+    | "save failed details"
+    | "api-key not provided"
+    | "api-key not provided details"
+    | "connection failed"
+    | "connection failed details"
 >()({ ManageProvidersDialog });
 export type I18n = typeof i18n;

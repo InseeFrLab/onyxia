@@ -1,16 +1,19 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
+import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
 import {
     supportedAiProviderTypes,
     getSelectedModelIds,
-    getProviderConnectionState
+    getProviderConnectionState,
+    type ProviderConnectionState
 } from "core/usecases/aiProvidersManagements/decoupledLogic";
-import { name } from "./state";
+import { name, type State } from "./state";
 
 const state = (rootState: RootState) => rootState[name];
 
-const main = createSelector(
+/** Shared by the thunks and the selectors of the dialogs */
+const form = createSelector(
     state,
     aiProvidersManagements.selectors.aiProviders,
     aiProvidersManagements.protectedSelectors.persistedAiConfig,
@@ -140,14 +143,20 @@ const main = createSelector(
             connection: state.connectionTest.stateDescription
         });
 
+        /** Only for the OIDC token exchange authentication */
+        const isRefreshingCredentials =
+            aiProvider_current?.auth.stateDescription === "fetching";
+
         const canTestConnection =
             formValues.providerType !== undefined &&
+            !isRefreshingCredentials &&
             isApiBaseValid &&
             !state.isSubmitting &&
             state.connectionTest.stateDescription !== "testing";
 
         return {
             isOpen: true as const,
+            aiProvider_current,
             providerName_current,
             providerOrigin,
             isEditing: providerName_current !== undefined,
@@ -164,16 +173,232 @@ const main = createSelector(
             connectionState,
             availableModels,
             isModelSelectionSavedImmediately,
+            isRefreshingCredentials,
             canSubmit:
                 hasChanges &&
+                !isRefreshingCredentials &&
                 isNameValid &&
                 formValues.providerType !== undefined &&
                 isApiBaseValid &&
                 !state.isSubmitting &&
-                state.connectionTest.stateDescription !== "testing",
-            supportedProviderTypes: supportedAiProviderTypes
+                state.connectionTest.stateDescription !== "testing"
         };
     }
 );
 
-export const selectors = { main };
+export const privateSelectors = { form };
+
+/** What `CustomProviderFormDialog` displays: a provider being created. */
+export type CreateDialogView = CreateDialogView.Closed | CreateDialogView.Open;
+
+export declare namespace CreateDialogView {
+    export type Closed = { isOpen: false };
+
+    export type Open = {
+        isOpen: true;
+        name: { value: string; isInvalid: boolean };
+        providerType: ProviderTypeField;
+        apiBase: { value: string; isInvalid: boolean };
+        apiKey: { value: string };
+        connectionTest: {
+            state: State.ConnectionTest["stateDescription"];
+            canTest: boolean;
+        };
+        models: ModelsField;
+        hasSaveFailed: boolean;
+        isSaving: boolean;
+        canSave: boolean;
+    };
+}
+
+/** What `ManageProvidersDialog` displays: a provider that already exists. */
+export type ManageDialogView = ManageDialogView.Closed | ManageDialogView.Open;
+
+export declare namespace ManageDialogView {
+    export type Closed = { isOpen: false };
+
+    export type Open = {
+        isOpen: true;
+        /** The saved name, the one to pick in the providers select */
+        providerName: string;
+        providerNames: string[];
+        origin: "configured by admin" | "created by user";
+        connectionState: ProviderConnectionState;
+        /** Only for the providers created by the user, which can be redefined */
+        configuration:
+            | {
+                  name: { value: string; isInvalid: boolean };
+                  providerType: ProviderTypeField;
+              }
+            | undefined;
+        apiBase: { value: string; isEditable: boolean; isInvalid: boolean };
+        /** undefined when there is no key to show nor to type in */
+        apiKey: { value: string; isEditable: boolean } | undefined;
+        /** The one thing that prevents the provider from working, if any */
+        alert: ManageDialogView.Alert | undefined;
+        connectionTest: { isTesting: boolean; canTest: boolean };
+        /** Only for the OIDC token exchange authentication */
+        credentialsRefresh: { isRefreshing: boolean } | undefined;
+        models: ModelsField;
+        canSave: boolean;
+        canDelete: boolean;
+        /** Written by the admin in the instance configuration */
+        documentation: AiConfig.Documentation | undefined;
+    };
+
+    export type Alert = "save failed" | "connection failed" | "api-key not provided";
+}
+
+export type ProviderTypeField = {
+    value: AiConfig.SupportedAiProviderType | undefined;
+    options: readonly AiConfig.SupportedAiProviderType[];
+};
+
+export type ModelsField = {
+    available: string[];
+    selected: string[];
+    isDisabled: boolean;
+};
+
+const createDialog = createSelector(form, (form): CreateDialogView => {
+    if (!form.isOpen || form.isEditing) {
+        return { isOpen: false };
+    }
+
+    const { formValues, connectionTest } = form;
+
+    return {
+        isOpen: true,
+        name: {
+            value: formValues.name,
+            // Nothing to blame the user for as long as they haven't typed anything
+            isInvalid: !form.isNameValid && formValues.name !== ""
+        },
+        providerType: {
+            value: formValues.providerType,
+            options: supportedAiProviderTypes
+        },
+        apiBase: {
+            value: formValues.apiBase,
+            isInvalid: !form.isApiBaseValid && formValues.apiBase !== ""
+        },
+        apiKey: { value: formValues.apiKey },
+        connectionTest: {
+            state: connectionTest.stateDescription,
+            canTest: form.canTestConnection
+        },
+        models: {
+            available: form.availableModels?.map(({ id }) => id) ?? [],
+            selected: form.selectedModelIds_draft,
+            isDisabled: connectionTest.stateDescription !== "succeeded"
+        },
+        hasSaveFailed: form.hasSubmissionFailed,
+        isSaving: form.isSubmitting,
+        canSave: form.canSubmit
+    };
+});
+
+const manageDialog = createSelector(
+    form,
+    aiProvidersManagements.selectors.aiProviders,
+    (form, aiProviders): ManageDialogView => {
+        if (!form.isOpen || !form.isEditing) {
+            return { isOpen: false };
+        }
+
+        const { aiProvider_current: aiProvider, formValues, connectionTest } = form;
+
+        // The provider may have just been deleted
+        if (aiProvider === undefined) {
+            return { isOpen: false };
+        }
+
+        const isCreatedByUser = aiProvider.origin === "created by user";
+
+        const alert = ((): ManageDialogView.Alert | undefined => {
+            if (form.hasSubmissionFailed) {
+                return "save failed";
+            }
+
+            // The test describes what is on screen, it prevails over the state of the
+            // saved configuration.
+            switch (connectionTest.stateDescription) {
+                case "failed":
+                    return "connection failed";
+                case "testing":
+                case "succeeded":
+                    return undefined;
+                case "not tested":
+                    break;
+            }
+
+            if (
+                aiProvider.auth.stateDescription === "api-key not provided" &&
+                formValues.apiKey.trim() === ""
+            ) {
+                return "api-key not provided";
+            }
+
+            return undefined;
+        })();
+
+        return {
+            isOpen: true,
+            providerName: aiProvider.name,
+            providerNames: (aiProviders ?? []).map(({ name }) => name),
+            origin: aiProvider.origin,
+            connectionState: form.connectionState,
+            configuration: isCreatedByUser
+                ? {
+                      name: {
+                          value: formValues.name,
+                          isInvalid: !form.isNameValid && formValues.name !== ""
+                      },
+                      providerType: {
+                          value: formValues.providerType,
+                          options: supportedAiProviderTypes
+                      }
+                  }
+                : undefined,
+            apiBase: {
+                value: formValues.apiBase,
+                isEditable: isCreatedByUser,
+                isInvalid: !form.isApiBaseValid && formValues.apiBase !== ""
+            },
+            apiKey: form.canEditApiKey
+                ? { value: formValues.apiKey, isEditable: true }
+                : aiProvider.auth.stateDescription === "authenticated"
+                  ? { value: aiProvider.auth.apiKey, isEditable: false }
+                  : undefined,
+            alert,
+            connectionTest: {
+                isTesting: connectionTest.stateDescription === "testing",
+                canTest: form.canTestConnection
+            },
+            credentialsRefresh:
+                aiProvider.origin === "configured by admin" &&
+                aiProvider.authentification.type === "api-key" &&
+                aiProvider.authentification.obtentionMethod ===
+                    "open-webui-oidc-token-exchange"
+                    ? { isRefreshing: form.isRefreshingCredentials }
+                    : undefined,
+            models: {
+                available: form.availableModels?.map(({ id }) => id) ?? [],
+                selected: form.selectedModelIds_draft,
+                isDisabled:
+                    form.isSubmitting ||
+                    form.isRefreshingCredentials ||
+                    (aiProvider.origin === "created by user" &&
+                        aiProvider.isNameConflicting)
+            },
+            canSave: form.canSubmit,
+            canDelete: isCreatedByUser && !form.isSubmitting,
+            documentation:
+                aiProvider.origin === "configured by admin"
+                    ? aiProvider.documentation
+                    : undefined
+        };
+    }
+);
+
+export const selectors = { createDialog, manageDialog };

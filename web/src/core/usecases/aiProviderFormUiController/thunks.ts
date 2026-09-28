@@ -7,7 +7,7 @@ import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
 import type { AiProviderWithRuntime } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import { providerTypeDefaultApiBase } from "./decoupledLogic/providerTypeDefaultApiBase";
 import { actions, type ChangeValueParams, type State } from "./state";
-import { selectors } from "./selectors";
+import { privateSelectors } from "./selectors";
 
 export const thunks = {
     /** `providerName` undefined opens the form for a provider to be created. */
@@ -81,7 +81,7 @@ export const thunks = {
         (...args): void => {
             const [dispatch, getState] = args;
 
-            const form = selectors.main(getState());
+            const form = privateSelectors.form(getState());
 
             if (!form.isOpen || form.isSubmitting) {
                 return;
@@ -103,7 +103,7 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const form = selectors.main(getState());
+            const form = privateSelectors.form(getState());
 
             if (!form.isOpen || form.isSubmitting) {
                 return;
@@ -157,7 +157,7 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const form = selectors.main(getState());
+            const form = privateSelectors.form(getState());
 
             if (!form.isOpen || form.isSubmitting) {
                 return;
@@ -215,7 +215,7 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch, getState] = args;
 
-            const form = selectors.main(getState());
+            const form = privateSelectors.form(getState());
 
             if (!form.isOpen || !form.canTestConnection) {
                 return;
@@ -289,7 +289,7 @@ export const thunks = {
                 };
             })();
 
-            const form_now = selectors.main(getState());
+            const form_now = privateSelectors.form(getState());
 
             // The user may have kept typing, or closed the form, while we were fetching:
             // a result that no longer describes what is on screen must be dropped.
@@ -309,12 +309,80 @@ export const thunks = {
                     : actions.connectionTestFailed()
             );
         },
+    /** Only for the OIDC token exchange authentication: obtains a new API key. */
+    refreshCredentials:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            const form = privateSelectors.form(getState());
+
+            if (!form.isOpen || form.isRefreshingCredentials) {
+                return;
+            }
+
+            const { providerName_current } = form;
+
+            assert(providerName_current !== undefined);
+
+            await dispatch(
+                aiProvidersManagements.thunks.refreshToken({
+                    providerName: providerName_current
+                })
+            );
+
+            const form_now = privateSelectors.form(getState());
+
+            if (
+                !form_now.isOpen ||
+                form_now.providerName_current !== providerName_current ||
+                form_now.aiProvider_current === undefined
+            ) {
+                return;
+            }
+
+            // Nothing of such a provider can be typed in: what is on screen is what is
+            // saved, so the outcome of the refresh is the one of the connection.
+            dispatch(
+                actions.connectionTestUpdated({
+                    connectionTest: getConnectionTestFromRuntime({
+                        aiProvider: form_now.aiProvider_current
+                    })
+                })
+            );
+        },
+    /** Only for the providers created by the user. Confirming is up to the caller. */
+    deleteProvider:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            const form = privateSelectors.form(getState());
+
+            if (!form.isOpen || form.isSubmitting) {
+                return;
+            }
+
+            const { providerName_current } = form;
+
+            assert(providerName_current !== undefined);
+            assert(form.providerOrigin === "created by user");
+
+            dispatch(actions.closed());
+
+            // A failed save is reported on the tab, where it can be retried
+            await dispatch(
+                aiProvidersManagements.thunks.deleteUserProvider({
+                    providerName: providerName_current
+                })
+            ).catch(() => {});
+        },
     submit:
         () =>
         async (...args): Promise<void> => {
             const [dispatch, getState] = args;
 
-            const form = selectors.main(getState());
+            const form = privateSelectors.form(getState());
 
             if (!form.isOpen || !form.canSubmit) {
                 return;

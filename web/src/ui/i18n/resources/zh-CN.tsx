@@ -98,17 +98,11 @@ export const translations: Translations<"zh-CN"> = {
         "add custom ai provider": "添加自定义 AI 提供商",
         "save failed": "无法保存您的更改。",
         "save failed details": "您的更改保留在此页面上。请稍后重试。",
-        "api-key not provided": "需要 API 密钥。",
-        "api-key not provided details": "此提供商需要您自己的 API 密钥才能使用。",
         "gateway error": "无法初始化 AI 网关。",
         "gateway error details": "请检查您的网络连接后重试。",
         "unreadable config title": "无法读取您的 AI 配置。",
         "unreadable config": "重置将删除您的自定义提供商、API 密钥和模型选择。",
-        "reset config": "重置我的 AI 配置",
-        "refresh failed": "无法更新凭据。",
-        "refresh failed details": "请重试，如果问题仍然存在，请联系管理员。",
-        "connection failed": "连接失败。",
-        "connection failed details": "请检查您的凭据或端点。"
+        "reset config": "重置我的 AI 配置"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "删除此自定义 AI 提供商",
@@ -147,14 +141,19 @@ export const translations: Translations<"zh-CN"> = {
         "test connection": "测试连接",
         "delete provider": "删除提供商",
         cancel: "取消",
-        "save changes": "保存更改"
+        "save changes": "保存更改",
+        "save failed": "无法保存您的更改。",
+        "save failed details": "您的更改保留在此页面上。请稍后重试。",
+        "api-key not provided": "需要 API 密钥。",
+        "api-key not provided details": "此提供商需要您自己的 API 密钥才能使用。",
+        "connection failed": "连接失败。",
+        "connection failed details": "请检查您的凭据或端点。"
     },
     CustomProviderFormDialog: {
         "invalid name": "请选择一个不含斜杠 (/) 的唯一提供商名称。",
         "invalid api base": "请输入有效的 HTTP(S) URL。",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "自定义 AI 提供商",
-        "edit custom provider title": "编辑 AI 提供商",
         "custom provider section title": "自定义 AI 提供商",
         "custom provider label field": "标签",
         "custom provider type field": "API 协议",
@@ -172,7 +171,6 @@ export const translations: Translations<"zh-CN"> = {
         "provider testing": "正在测试连接...",
         "provider test success": "连接成功。提供商已准备就绪。",
         "provider save": "添加",
-        "provider update": "保存",
         "provider cancel": "取消",
         "close aria label": "关闭",
         "submission error": "无法保存此提供商。",

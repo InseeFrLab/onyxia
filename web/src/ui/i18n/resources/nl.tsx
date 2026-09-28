@@ -108,20 +108,12 @@ export const translations: Translations<"nl"> = {
         "save failed": "Kan uw wijzigingen niet opslaan.",
         "save failed details":
             "Uw wijzigingen blijven op deze pagina bewaard. Probeer het zo opnieuw.",
-        "api-key not provided": "API-sleutel vereist.",
-        "api-key not provided details":
-            "Deze provider heeft uw eigen API-sleutel nodig voordat hij gebruikt kan worden.",
         "gateway error": "Kan de AI-gateway niet initialiseren.",
         "gateway error details": "Controleer uw verbinding en probeer het opnieuw.",
         "unreadable config title": "Uw AI-configuratie kan niet worden gelezen.",
         "unreadable config":
             "Opnieuw instellen verwijdert uw eigen providers, API-sleutels en modelselecties.",
-        "reset config": "Mijn AI-configuratie opnieuw instellen",
-        "refresh failed": "Kan de inloggegevens niet vernieuwen.",
-        "refresh failed details":
-            "Probeer het opnieuw of neem contact op met uw beheerder als het probleem aanhoudt.",
-        "connection failed": "Verbinding mislukt.",
-        "connection failed details": "Controleer uw inloggegevens of het endpoint."
+        "reset config": "Mijn AI-configuratie opnieuw instellen"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Deze aangepaste AI-provider verwijderen",
@@ -162,14 +154,21 @@ export const translations: Translations<"nl"> = {
         "test connection": "Verbinding testen",
         "delete provider": "Provider verwijderen",
         cancel: "Annuleren",
-        "save changes": "Wijzigingen opslaan"
+        "save changes": "Wijzigingen opslaan",
+        "save failed": "Kan uw wijzigingen niet opslaan.",
+        "save failed details":
+            "Uw wijzigingen blijven op deze pagina bewaard. Probeer het zo opnieuw.",
+        "api-key not provided": "API-sleutel vereist.",
+        "api-key not provided details":
+            "Deze provider heeft uw eigen API-sleutel nodig voordat hij gebruikt kan worden.",
+        "connection failed": "Verbinding mislukt.",
+        "connection failed details": "Controleer uw inloggegevens of het endpoint."
     },
     CustomProviderFormDialog: {
         "invalid name": "Kies een unieke providernaam zonder schuine streep (/).",
         "invalid api base": "Voer een geldige HTTP(S)-URL in.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Aangepaste AI-providers",
-        "edit custom provider title": "AI-provider bewerken",
         "custom provider section title": "Aangepaste AI-providers",
         "custom provider label field": "Label",
         "custom provider type field": "API-protocol",
@@ -190,7 +189,6 @@ export const translations: Translations<"nl"> = {
         "provider test success":
             "Verbinding geslaagd. De provider is klaar voor gebruik.",
         "provider save": "Toevoegen",
-        "provider update": "Opslaan",
         "provider cancel": "Annuleren",
         "close aria label": "Sluiten",
         "submission error": "Kan deze provider niet opslaan.",

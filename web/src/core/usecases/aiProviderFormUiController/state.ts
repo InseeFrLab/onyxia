@@ -124,6 +124,16 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.connectionTest = { stateDescription: "succeeded", availableModels };
         },
+        connectionTestUpdated: (
+            state,
+            { payload }: { payload: { connectionTest: State.ConnectionTest } }
+        ) => {
+            const { connectionTest } = payload;
+
+            assert(state.stateDescription === "open");
+
+            state.connectionTest = connectionTest;
+        },
         excludedModelIdsChanged: (
             state,
             { payload }: { payload: { excludedModelIds: string[] } }

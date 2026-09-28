@@ -83,8 +83,9 @@ const aiProviders = createSelector(
 );
 
 /**
- * The model the user elected among everything they ticked, undefined when they elected
- * none or when what they had elected is no longer selected.
+ * The model the user elected among everything they ticked. When they elected none, or
+ * when what they had elected is no longer selected, the first selected model stands in.
+ * undefined only when no model is selected at all.
  */
 const defaultModel = createSelector(
     aiProviders,

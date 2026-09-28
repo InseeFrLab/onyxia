@@ -108,20 +108,12 @@ export const translations: Translations<"fi"> = {
         "save failed": "Muutoksia ei voitu tallentaa.",
         "save failed details":
             "Muutoksesi säilyvät tällä sivulla. Yritä hetken kuluttua uudelleen.",
-        "api-key not provided": "API-avain vaaditaan.",
-        "api-key not provided details":
-            "Tämä palveluntarjoaja tarvitsee oman API-avaimesi ennen kuin sitä voi käyttää.",
         "gateway error": "Tekoälyyhdyskäytävää ei voitu alustaa.",
         "gateway error details": "Tarkista yhteytesi ja yritä uudelleen.",
         "unreadable config title": "Tekoälymääritystäsi ei voida lukea.",
         "unreadable config":
             "Nollaus poistaa omat palveluntarjoajasi, API-avaimesi ja mallivalintasi.",
-        "reset config": "Nollaa tekoälymääritykseni",
-        "refresh failed": "Tunnistetietoja ei voitu uusia.",
-        "refresh failed details":
-            "Yritä uudelleen tai ota yhteyttä ylläpitäjään, jos ongelma jatkuu.",
-        "connection failed": "Yhteys epäonnistui.",
-        "connection failed details": "Tarkista tunnistetietosi tai päätepiste."
+        "reset config": "Nollaa tekoälymääritykseni"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Poista tämä mukautettu tekoälypalveluntarjoaja",
@@ -162,7 +154,15 @@ export const translations: Translations<"fi"> = {
         "test connection": "Testaa yhteys",
         "delete provider": "Poista palveluntarjoaja",
         cancel: "Peruuta",
-        "save changes": "Tallenna muutokset"
+        "save changes": "Tallenna muutokset",
+        "save failed": "Muutoksia ei voitu tallentaa.",
+        "save failed details":
+            "Muutoksesi säilyvät tällä sivulla. Yritä hetken kuluttua uudelleen.",
+        "api-key not provided": "API-avain vaaditaan.",
+        "api-key not provided details":
+            "Tämä palveluntarjoaja tarvitsee oman API-avaimesi ennen kuin sitä voi käyttää.",
+        "connection failed": "Yhteys epäonnistui.",
+        "connection failed details": "Tarkista tunnistetietosi tai päätepiste."
     },
     CustomProviderFormDialog: {
         "invalid name":
@@ -170,7 +170,6 @@ export const translations: Translations<"fi"> = {
         "invalid api base": "Anna kelvollinen HTTP(S)-URL.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Mukautetut tekoälyntarjoajat",
-        "edit custom provider title": "Muokkaa tekoälyntarjoajaa",
         "custom provider section title": "Mukautetut tekoälyntarjoajat",
         "custom provider label field": "Tunniste",
         "custom provider type field": "API-protokolla",
@@ -190,7 +189,6 @@ export const translations: Translations<"fi"> = {
         "provider testing": "Testataan yhteyttä...",
         "provider test success": "Yhteys onnistui. Palveluntarjoaja on käyttövalmis.",
         "provider save": "Lisää",
-        "provider update": "Tallenna",
         "provider cancel": "Peruuta",
         "close aria label": "Sulje",
         "submission error": "Tätä palveluntarjoajaa ei voitu tallentaa.",

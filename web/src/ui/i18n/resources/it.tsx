@@ -107,20 +107,12 @@ export const translations: Translations<"it"> = {
         "save failed": "Impossibile salvare le modifiche.",
         "save failed details":
             "Le modifiche restano su questa pagina. Riprova tra un momento.",
-        "api-key not provided": "Chiave API richiesta.",
-        "api-key not provided details":
-            "Questo provider richiede la tua chiave API prima di poter essere utilizzato.",
         "gateway error": "Impossibile inizializzare il gateway IA.",
         "gateway error details": "Controlla la connessione e riprova.",
         "unreadable config title": "Impossibile leggere la configurazione IA.",
         "unreadable config":
             "Reimpostarla elimina i provider personalizzati, le chiavi API e le selezioni dei modelli.",
-        "reset config": "Reimposta la mia configurazione IA",
-        "refresh failed": "Impossibile rinnovare le credenziali.",
-        "refresh failed details":
-            "Riprova o contatta l'amministratore se il problema persiste.",
-        "connection failed": "Connessione non riuscita.",
-        "connection failed details": "Controlla le credenziali o l'endpoint."
+        "reset config": "Reimposta la mia configurazione IA"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Elimina questo provider IA personalizzato",
@@ -161,14 +153,21 @@ export const translations: Translations<"it"> = {
         "test connection": "Verifica connessione",
         "delete provider": "Elimina provider",
         cancel: "Annulla",
-        "save changes": "Salva modifiche"
+        "save changes": "Salva modifiche",
+        "save failed": "Impossibile salvare le modifiche.",
+        "save failed details":
+            "Le modifiche restano su questa pagina. Riprova tra un momento.",
+        "api-key not provided": "Chiave API richiesta.",
+        "api-key not provided details":
+            "Questo provider richiede la tua chiave API prima di poter essere utilizzato.",
+        "connection failed": "Connessione non riuscita.",
+        "connection failed details": "Controlla le credenziali o l'endpoint."
     },
     CustomProviderFormDialog: {
         "invalid name": "Scegli un nome di provider univoco senza barra (/).",
         "invalid api base": "Inserisci un URL HTTP(S) valido.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Provider IA personalizzati",
-        "edit custom provider title": "Modifica provider IA",
         "custom provider section title": "Provider IA personalizzati",
         "custom provider label field": "Etichetta",
         "custom provider type field": "Protocollo API",
@@ -188,7 +187,6 @@ export const translations: Translations<"it"> = {
         "provider testing": "Test della connessione...",
         "provider test success": "Connessione riuscita. Il provider è pronto all'uso.",
         "provider save": "Aggiungi",
-        "provider update": "Salva",
         "provider cancel": "Annulla",
         "close aria label": "Chiudi",
         "submission error": "Impossibile salvare questo provider.",

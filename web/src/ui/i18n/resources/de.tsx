@@ -109,22 +109,13 @@ export const translations: Translations<"de"> = {
         "save failed": "Ihre Änderungen konnten nicht gespeichert werden.",
         "save failed details":
             "Ihre Änderungen bleiben auf dieser Seite erhalten. Versuchen Sie es gleich noch einmal.",
-        "api-key not provided": "API-Schlüssel erforderlich.",
-        "api-key not provided details":
-            "Dieser Anbieter benötigt Ihren eigenen API-Schlüssel, bevor er verwendet werden kann.",
         "gateway error": "Das KI-Gateway konnte nicht initialisiert werden.",
         "gateway error details":
             "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
         "unreadable config title": "Ihre KI-Konfiguration kann nicht gelesen werden.",
         "unreadable config":
             "Beim Zurücksetzen werden Ihre eigenen Anbieter, API-Schlüssel und Modellauswahlen gelöscht.",
-        "reset config": "Meine KI-Konfiguration zurücksetzen",
-        "refresh failed": "Die Zugangsdaten konnten nicht erneuert werden.",
-        "refresh failed details":
-            "Versuchen Sie es erneut oder wenden Sie sich an Ihren Administrator, falls das Problem weiterhin besteht.",
-        "connection failed": "Verbindung fehlgeschlagen.",
-        "connection failed details":
-            "Bitte überprüfen Sie Ihre Zugangsdaten oder den Endpunkt."
+        "reset config": "Meine KI-Konfiguration zurücksetzen"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Diesen benutzerdefinierten KI-Anbieter löschen",
@@ -165,7 +156,16 @@ export const translations: Translations<"de"> = {
         "test connection": "Verbindung testen",
         "delete provider": "Anbieter löschen",
         cancel: "Abbrechen",
-        "save changes": "Änderungen speichern"
+        "save changes": "Änderungen speichern",
+        "save failed": "Ihre Änderungen konnten nicht gespeichert werden.",
+        "save failed details":
+            "Ihre Änderungen bleiben auf dieser Seite erhalten. Versuchen Sie es gleich noch einmal.",
+        "api-key not provided": "API-Schlüssel erforderlich.",
+        "api-key not provided details":
+            "Dieser Anbieter benötigt Ihren eigenen API-Schlüssel, bevor er verwendet werden kann.",
+        "connection failed": "Verbindung fehlgeschlagen.",
+        "connection failed details":
+            "Bitte überprüfen Sie Ihre Zugangsdaten oder den Endpunkt."
     },
     CustomProviderFormDialog: {
         "invalid name":
@@ -173,7 +173,6 @@ export const translations: Translations<"de"> = {
         "invalid api base": "Geben Sie eine gültige HTTP(S)-URL ein.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Benutzerdefinierte KI-Anbieter",
-        "edit custom provider title": "KI-Anbieter bearbeiten",
         "custom provider section title": "Benutzerdefinierte KI-Anbieter",
         "custom provider label field": "Name",
         "custom provider type field": "API-Protokoll",
@@ -194,7 +193,6 @@ export const translations: Translations<"de"> = {
         "provider test success":
             "Verbindung erfolgreich. Der Anbieter ist einsatzbereit.",
         "provider save": "Hinzufügen",
-        "provider update": "Speichern",
         "provider cancel": "Abbrechen",
         "close aria label": "Schließen",
         "submission error": "Dieser Anbieter konnte nicht gespeichert werden.",

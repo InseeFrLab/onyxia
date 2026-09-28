@@ -10,3 +10,4 @@ export {
     type ProviderConnectionState
 } from "./providerConnectionState";
 export { supportedAiProviderTypes } from "./supportedAiProviderTypes";
+export { providerTypeLogoUrl } from "./providerTypeLogoUrl";

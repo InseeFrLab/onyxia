@@ -3,7 +3,7 @@ import { action } from "@storybook/addon-actions";
 import { useState } from "react";
 import type { ThemedAssetUrl } from "onyxia-ui";
 import { ProviderCard, type ProviderState } from "./ProviderCard";
-import { providerTypeLogoUrl } from "./shared/providerTypeLogoUrl";
+import { providerTypeLogoUrl } from "core/usecases/aiProvidersManagements/decoupledLogic";
 
 const models = [
     "gemma4-26b-moe",

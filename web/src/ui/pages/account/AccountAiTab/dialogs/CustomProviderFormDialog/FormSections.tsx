@@ -7,10 +7,13 @@ import type { ReactNode } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { ModelsSelection } from "../../shared/ModelsSelection";
-import { providerTypeLogoUrl } from "../../shared/providerTypeLogoUrl";
+import { providerTypeLogoUrl } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import { FormSelectField, FormTextField } from "../../shared/FormFields";
 import { AiAlert } from "../../shared/AiAlert";
-import type { FormTest } from "./types";
+import type {
+    CreateDialogView,
+    ModelsField
+} from "core/usecases/aiProviderFormUiController";
 import type { AiConfig } from "core/ports/OnyxiaApi/AiConfig";
 
 export function ProviderSection(props: {
@@ -110,13 +113,12 @@ export function CredentialsSection(props: {
 }
 
 export function VerificationSection(props: {
-    test: FormTest;
-    canTest: boolean;
+    connectionTest: CreateDialogView.Open["connectionTest"];
+    models: ModelsField;
     onTest: () => void;
-    selectedModels: string[];
     onSelectedModelsChange: (models: string[]) => void;
 }) {
-    const { test, canTest, onTest, selectedModels, onSelectedModelsChange } = props;
+    const { connectionTest, models, onTest, onSelectedModelsChange } = props;
     const { t } = useTranslation("CustomProviderFormDialog");
     const { classes, theme } = useStyles();
 
@@ -129,7 +131,7 @@ export function VerificationSection(props: {
                     variant="ternary"
                     className={classes.testButton}
                     startIcon={getIconUrlByName("NetworkCheck")}
-                    disabled={!canTest}
+                    disabled={!connectionTest.canTest}
                     onClick={onTest}
                 >
                     {t("provider test")}
@@ -137,28 +139,24 @@ export function VerificationSection(props: {
             }
         >
             <ModelsSelection
-                models={
-                    test.stateDescription === "success"
-                        ? test.models.map(model => model.id)
-                        : []
-                }
-                selectedModels={selectedModels}
-                disabled={test.stateDescription !== "success"}
+                models={models.available}
+                selectedModels={models.selected}
+                disabled={models.isDisabled}
                 onSelectedModelsChange={onSelectedModelsChange}
             />
 
-            {test.stateDescription === "testing" && (
+            {connectionTest.state === "testing" && (
                 <div className={classes.testingMessage} role="status">
                     <CircularProgress size={theme.spacing(3)} />
                     <Text typo="label 1">{t("provider testing")}</Text>
                 </div>
             )}
 
-            {test.stateDescription === "success" && (
+            {connectionTest.state === "succeeded" && (
                 <SuccessMessage>{t("provider test success")}</SuccessMessage>
             )}
 
-            {test.stateDescription === "error" && (
+            {connectionTest.state === "failed" && (
                 <AiAlert
                     title={t("provider test error")}
                     message={t("provider test error details")}

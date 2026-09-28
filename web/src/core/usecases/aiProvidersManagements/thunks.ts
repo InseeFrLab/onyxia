@@ -541,9 +541,7 @@ const privateThunks = {
                 })
             );
 
-            // OIDC is already authenticated at this point: `autoLogin` redirects as
-            // needed, so token exchange never transitions through "api-key not provided".
-            const auth = await (async (): Promise<AiProviderRuntime["auth"]> => {
+            const getOidcAccessToken = async (): Promise<string> => {
                 const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
                 assert(oidcParams !== undefined);
@@ -566,6 +564,21 @@ const privateThunks = {
                 });
 
                 const { accessToken } = await oidc.getTokens();
+
+                return accessToken;
+            };
+
+            // OIDC is already authenticated at this point: `autoLogin` redirects as
+            // needed, so token exchange never transitions through "api-key not provided".
+            const auth = await (async (): Promise<AiProviderRuntime["auth"]> => {
+                let accessToken: string;
+
+                // The credentials can't be obtained, whatever went wrong on the way
+                try {
+                    accessToken = await getOidcAccessToken();
+                } catch {
+                    return { stateDescription: "error" };
+                }
 
                 let apiKey: string;
 

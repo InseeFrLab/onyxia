@@ -1,37 +1,39 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ManageProvidersDialog } from "./ManageProvidersDialog";
+import { ManageProvidersDialogView } from "./ManageProvidersDialog";
 
 const meta = {
     title: "Pages/Account/IA/ManageProvidersDialog",
-    component: ManageProvidersDialog,
+    component: ManageProvidersDialogView,
     parameters: {
         layout: "fullscreen"
     },
     args: {
-        providerNames: ["SSP Cloud LLM", "OpenAI"],
-        provider: {
-            name: "SSP Cloud LLM",
-            subtitle: "Provided by your organization",
-            state: "connected",
+        view: {
+            isOpen: true,
+            providerName: "SSP Cloud LLM",
+            providerNames: ["SSP Cloud LLM", "OpenAI"],
+            origin: "configured by admin",
+            connectionState: "connected",
             configuration: undefined,
-            apiBase: "https://llm.example.test/api",
-            isApiBaseEditable: false,
-            apiBaseError: undefined,
-            apiKey: "storybook-api-key",
-            isApiKeyEditable: false,
-            availableModels: [
-                "gemma4-26b-moe",
-                "qwen3-6-35b-moe",
-                "llama-3.3-70b",
-                "mistral-small"
-            ],
-            selectedModelIds: ["gemma4-26b-moe", "qwen3-6-35b-moe"],
-            isModelSelectionDisabled: false,
-            connectionError: undefined,
-            canTestConnection: true,
-            isTestingConnection: false,
-            canRefreshCredentials: true,
-            isRefreshingCredentials: false,
+            apiBase: {
+                value: "https://llm.example.test/api",
+                isEditable: false,
+                isInvalid: false
+            },
+            apiKey: { value: "storybook-api-key", isEditable: false },
+            alert: undefined,
+            connectionTest: { isTesting: false, canTest: true },
+            credentialsRefresh: { isRefreshing: false },
+            models: {
+                available: [
+                    "gemma4-26b-moe",
+                    "qwen3-6-35b-moe",
+                    "llama-3.3-70b",
+                    "mistral-small"
+                ],
+                selected: ["gemma4-26b-moe", "qwen3-6-35b-moe"],
+                isDisabled: false
+            },
             canSave: true,
             canDelete: false,
             documentation: {
@@ -76,7 +78,7 @@ const meta = {
         onSave: () => {},
         onDelete: () => {}
     }
-} satisfies Meta<typeof ManageProvidersDialog>;
+} satisfies Meta<typeof ManageProvidersDialogView>;
 
 export default meta;
 
@@ -86,15 +88,14 @@ export const Default: Story = {};
 
 export const EditableCredentials: Story = {
     args: {
-        provider: {
-            ...meta.args.provider,
-            name: "OpenAI",
-            subtitle: "Provided by your organization",
-            apiKey: "",
-            isApiKeyEditable: true,
-            availableModels: undefined,
-            selectedModelIds: [],
-            canRefreshCredentials: false,
+        view: {
+            ...meta.args.view,
+            providerName: "OpenAI",
+            apiKey: { value: "", isEditable: true },
+            alert: "api-key not provided",
+            connectionState: "setup required",
+            credentialsRefresh: undefined,
+            models: { available: [], selected: [], isDisabled: false },
             documentation: undefined
         }
     }
@@ -102,27 +103,30 @@ export const EditableCredentials: Story = {
 
 export const CustomProvider: Story = {
     args: {
-        provider: {
-            ...meta.args.provider,
-            name: "OpenAI",
-            subtitle: "Custom AI providers",
+        view: {
+            ...meta.args.view,
+            providerName: "OpenAI",
+            origin: "created by user",
             configuration: {
-                name: "OpenAI",
-                providerType: "openai",
-                supportedProviderTypes: [
-                    "openai",
-                    "openai-compatible",
-                    "mistral",
-                    "anthropic",
-                    "deepseek"
-                ],
-                nameError: undefined
+                name: { value: "OpenAI", isInvalid: false },
+                providerType: {
+                    value: "openai",
+                    options: [
+                        "openai",
+                        "openai-compatible",
+                        "mistral",
+                        "anthropic",
+                        "deepseek"
+                    ]
+                }
             },
-            apiBase: "https://api.openai.com/v1",
-            isApiBaseEditable: true,
-            apiKey: "",
-            isApiKeyEditable: true,
-            canRefreshCredentials: false,
+            apiBase: {
+                value: "https://api.openai.com/v1",
+                isEditable: true,
+                isInvalid: false
+            },
+            apiKey: { value: "", isEditable: true },
+            credentialsRefresh: undefined,
             canDelete: true,
             documentation: undefined
         }
@@ -131,23 +135,19 @@ export const CustomProvider: Story = {
 
 export const TestingConnection: Story = {
     args: {
-        provider: {
-            ...meta.args.provider,
-            canTestConnection: false,
-            isTestingConnection: true
+        view: {
+            ...meta.args.view,
+            connectionTest: { isTesting: true, canTest: false }
         }
     }
 };
 
 export const ConnectionFailed: Story = {
     args: {
-        provider: {
-            ...meta.args.provider,
-            state: "connection error",
-            connectionError: {
-                title: "Connection failed.",
-                message: "Please check your credentials or endpoint."
-            }
+        view: {
+            ...meta.args.view,
+            connectionState: "connection error",
+            alert: "connection failed"
         }
     }
 };

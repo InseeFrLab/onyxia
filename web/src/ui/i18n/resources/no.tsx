@@ -108,21 +108,12 @@ export const translations: Translations<"no"> = {
         "save failed": "Kunne ikke lagre endringene.",
         "save failed details":
             "Endringene dine beholdes på denne siden. Prøv igjen om litt.",
-        "api-key not provided": "API-nøkkel kreves.",
-        "api-key not provided details":
-            "Denne leverandøren trenger din egen API-nøkkel før den kan brukes.",
         "gateway error": "Kunne ikke initialisere AI-gatewayen.",
         "gateway error details": "Sjekk tilkoblingen din og prøv igjen.",
         "unreadable config title": "AI-konfigurasjonen din kan ikke leses.",
         "unreadable config":
             "Tilbakestilling sletter dine egne leverandører, API-nøkler og modellvalg.",
-        "reset config": "Tilbakestill AI-konfigurasjonen min",
-        "refresh failed": "Kunne ikke fornye påloggingsinformasjonen.",
-        "refresh failed details":
-            "Prøv igjen, eller kontakt administratoren hvis problemet vedvarer.",
-        "connection failed": "Tilkoblingen mislyktes.",
-        "connection failed details":
-            "Kontroller påloggingsinformasjonen eller endepunktet."
+        "reset config": "Tilbakestill AI-konfigurasjonen min"
     },
     ConfirmCustomProviderDeletionDialog: {
         "dialog title": "Slett denne egendefinerte KI-leverandøren",
@@ -163,14 +154,22 @@ export const translations: Translations<"no"> = {
         "test connection": "Test tilkoblingen",
         "delete provider": "Slett leverandør",
         cancel: "Avbryt",
-        "save changes": "Lagre endringer"
+        "save changes": "Lagre endringer",
+        "save failed": "Kunne ikke lagre endringene.",
+        "save failed details":
+            "Endringene dine beholdes på denne siden. Prøv igjen om litt.",
+        "api-key not provided": "API-nøkkel kreves.",
+        "api-key not provided details":
+            "Denne leverandøren trenger din egen API-nøkkel før den kan brukes.",
+        "connection failed": "Tilkoblingen mislyktes.",
+        "connection failed details":
+            "Kontroller påloggingsinformasjonen eller endepunktet."
     },
     CustomProviderFormDialog: {
         "invalid name": "Velg et unikt leverandørnavn uten skråstrek (/).",
         "invalid api base": "Skriv inn en gyldig HTTP(S)-URL.",
         "deepseek provider option": "DeepSeek",
         "add custom provider title": "Tilpassede AI-leverandører",
-        "edit custom provider title": "Rediger AI-leverandør",
         "custom provider section title": "Tilpassede AI-leverandører",
         "custom provider label field": "Etikett",
         "custom provider type field": "API-protokoll",
@@ -190,7 +189,6 @@ export const translations: Translations<"no"> = {
         "provider testing": "Tester tilkobling...",
         "provider test success": "Tilkobling vellykket. Leverandøren er klar til bruk.",
         "provider save": "Legg til",
-        "provider update": "Lagre",
         "provider cancel": "Avbryt",
         "close aria label": "Lukk",
         "submission error": "Kunne ikke lagre denne leverandøren.",
