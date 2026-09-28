@@ -175,6 +175,7 @@ export function ManageProvidersDialogView(props: {
                             <ProviderValueField
                                 label={t("api base url")}
                                 value={view.apiBase.value}
+                                autoComplete="url"
                                 onChange={
                                     view.apiBase.isEditable
                                         ? props.onApiBaseChange

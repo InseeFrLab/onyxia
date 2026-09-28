@@ -15,6 +15,8 @@ export type Props = {
     value: string;
     onRequestCopy: () => void | Promise<void>;
     isSensitiveInformation?: boolean;
+    /** Default "off" */
+    autoComplete?: string;
     onChange?: (value: string) => void;
     onSave?: () => void | Promise<void>;
     saveLabel?: string;
@@ -28,6 +30,7 @@ export const ProviderValueField = memo((props: Props) => {
         value,
         onRequestCopy,
         isSensitiveInformation = false,
+        autoComplete = "off",
         onChange,
         onSave,
         saveLabel,
@@ -88,7 +91,7 @@ export const ProviderValueField = memo((props: Props) => {
                         value={value}
                         disabled={disabled}
                         onChange={event => onChange(event.target.value)}
-                        autoComplete="off"
+                        autoComplete={autoComplete}
                         placeholder={label}
                         aria-label={label}
                     />
