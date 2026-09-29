@@ -294,15 +294,13 @@ function S3Explorer() {
         s3ExplorerUiController.createDirectory({ prefixSegment });
     };
 
-    const onRequestFiles = mainView.isRequestFilesEnabled
-        ? ({ s3Uri }: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
-              dialogProps.evtS3FileRequestCreationDialogOpen.post({
-                  s3Uri,
-                  onCreateEmptyFolder: () => {
-                      void openDirectoryCreationDialog();
-                  }
-              })
-        : undefined;
+    const onRequestFiles = ({ s3Uri }: { s3Uri: S3Uri.TerminatedByDelimiter }) =>
+        dialogProps.evtS3FileRequestCreationDialogOpen.post({
+            s3Uri,
+            onCreateEmptyFolder: () => {
+                void openDirectoryCreationDialog();
+            }
+        });
 
     return (
         <>
@@ -592,6 +590,9 @@ function S3Explorer() {
                                                 mainView.profileNameForSharing
                                         });
                                     }}
+                                    shouldShowRequestFilesAction={
+                                        mainView.uriBar.shouldShowRequestFilesAction
+                                    }
                                     onRequestFiles={onRequestFiles}
                                     evtAction={evtS3UriBarAction}
                                 />
@@ -665,6 +666,9 @@ function S3Explorer() {
                                     isListing={mainView.isListing}
                                     listedPrefix={mainView.listedPrefix}
                                     profileNameForSharing={mainView.profileNameForSharing}
+                                    canRequestFilesIfEmpty={
+                                        mainView.uriBar.shouldShowRequestFilesAction
+                                    }
                                     onNavigateBack={s3ExplorerUiController.navigateBack}
                                     onNavigate={({ s3Uri }) =>
                                         s3ExplorerUiController.listPrefix({

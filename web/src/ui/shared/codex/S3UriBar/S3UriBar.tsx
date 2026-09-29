@@ -58,9 +58,8 @@ export type S3UriBarProps = {
     }) => void;
     shouldShowShareAction: boolean;
     onSharePrefix: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
-    onRequestFiles:
-        | ((params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void)
-        | undefined;
+    shouldShowRequestFilesAction: boolean;
+    onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
     evtAction: NonPostableEvt<{
         action: "display copy feedback";
         s3Uri: S3Uri;
@@ -80,6 +79,7 @@ export function S3UriBar(props: S3UriBarProps) {
         onChangePrefixPolicy,
         shouldShowShareAction,
         onSharePrefix,
+        shouldShowRequestFilesAction,
         onRequestFiles,
         evtAction
     } = props;
@@ -1462,8 +1462,8 @@ export function S3UriBar(props: S3UriBarProps) {
                             </div>
                         </Tooltip>
                     )}
-                    {currentS3Uri?.isDelimiterTerminated &&
-                        onRequestFiles !== undefined && (
+                    {shouldShowRequestFilesAction &&
+                        currentS3Uri?.isDelimiterTerminated && (
                             <Tooltip title={t("request files")}>
                                 <div data-s3-uri-ignore-edit="true">
                                     <IconButton

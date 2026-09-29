@@ -83,7 +83,8 @@ const baseArgs: S3UriBarProps = {
     onChangePrefixPolicy: action("changePrefixPolicy"),
     shouldShowShareAction: false,
     onSharePrefix: action("sharePrefix"),
-    onRequestFiles: undefined,
+    shouldShowRequestFilesAction: false,
+    onRequestFiles: action("requestFiles"),
     evtAction: Evt.create<{
         action: "display copy feedback";
         s3Uri: S3Uri;

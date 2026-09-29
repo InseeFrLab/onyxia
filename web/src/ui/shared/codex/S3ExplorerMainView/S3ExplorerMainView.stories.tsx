@@ -22,6 +22,7 @@ type MockNode =
           isDeleting: boolean;
           publicAccessAction: "make public" | "make private" | undefined;
           shouldShowShareAction: boolean;
+          shouldShowRequestFilesAction: boolean;
       }
     | {
           type: "object";
@@ -76,7 +77,8 @@ const baseNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         publicAccessAction: "make private",
-        shouldShowShareAction: true
+        shouldShowShareAction: true,
+        shouldShowRequestFilesAction: true
     },
     {
         type: "prefix segment",
@@ -84,7 +86,8 @@ const baseNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         publicAccessAction: "make public",
-        shouldShowShareAction: false
+        shouldShowShareAction: false,
+        shouldShowRequestFilesAction: true
     },
     {
         type: "prefix segment",
@@ -92,7 +95,8 @@ const baseNodes: MockNode[] = [
         uploadProgressPercent: 42,
         isDeleting: false,
         publicAccessAction: undefined,
-        shouldShowShareAction: false
+        shouldShowShareAction: false,
+        shouldShowRequestFilesAction: true
     },
     {
         type: "object",
@@ -127,7 +131,8 @@ const nestedNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         publicAccessAction: "make public",
-        shouldShowShareAction: false
+        shouldShowShareAction: false,
+        shouldShowRequestFilesAction: true
     },
     {
         type: "prefix segment",
@@ -135,7 +140,8 @@ const nestedNodes: MockNode[] = [
         uploadProgressPercent: undefined,
         isDeleting: false,
         publicAccessAction: "make private",
-        shouldShowShareAction: true
+        shouldShowShareAction: true,
+        shouldShowRequestFilesAction: true
     },
     {
         type: "object",
@@ -158,6 +164,7 @@ const nestedNodes: MockNode[] = [
 const placeholderArgs: S3ExplorerMainViewProps = {
     isListing: false,
     profileNameForSharing: "anonymous",
+    canRequestFilesIfEmpty: true,
     listedPrefix: {
         s3Uri: defaultPrefix,
         isErrored: false,
@@ -295,7 +302,8 @@ function StatefulExplorer(
                             uploadProgressPercent: undefined,
                             isDeleting: false,
                             publicAccessAction: "make public",
-                            shouldShowShareAction: false
+                            shouldShowShareAction: false,
+                            shouldShowRequestFilesAction: true
                         }
                     ]);
                 }}
@@ -396,12 +404,19 @@ function StatefulExplorer(
 
 export const Playground: Story = {
     args: placeholderArgs,
-    render: ({ className, isListing, isUploadDisabled, profileNameForSharing }) => (
+    render: ({
+        className,
+        isListing,
+        isUploadDisabled,
+        profileNameForSharing,
+        canRequestFilesIfEmpty
+    }) => (
         <StatefulExplorer
             className={className}
             isListing={isListing}
             isUploadDisabled={isUploadDisabled}
             profileNameForSharing={profileNameForSharing}
+            canRequestFilesIfEmpty={canRequestFilesIfEmpty}
         />
     )
 };
@@ -411,21 +426,35 @@ export const ListingInProgress: Story = {
         ...placeholderArgs,
         isListing: true
     },
-    render: ({ className, isListing, isUploadDisabled, profileNameForSharing }) => (
+    render: ({
+        className,
+        isListing,
+        isUploadDisabled,
+        profileNameForSharing,
+        canRequestFilesIfEmpty
+    }) => (
         <StatefulExplorer
             className={className}
             isListing={isListing}
             isUploadDisabled={isUploadDisabled}
             profileNameForSharing={profileNameForSharing}
+            canRequestFilesIfEmpty={canRequestFilesIfEmpty}
         />
     )
 };
 
-export const RequestFilesDisabled: Story = {
+export const RequestFilesUnavailable: Story = {
     args: {
         ...placeholderArgs,
-        listedPrefix: toListedItems(baseNodes, defaultPrefix),
-        onRequestFiles: undefined
+        canRequestFilesIfEmpty: false,
+        listedPrefix: toListedItems(
+            baseNodes.map(node =>
+                node.type === "prefix segment"
+                    ? { ...node, shouldShowRequestFilesAction: false }
+                    : node
+            ),
+            defaultPrefix
+        )
     },
     render: args => (
         <div style={{ maxWidth: 1200, padding: 24 }}>
@@ -438,6 +467,7 @@ export const EmptyPrefix: Story = {
     args: {
         isListing: false,
         profileNameForSharing: "anonymous",
+        canRequestFilesIfEmpty: true,
         listedPrefix: {
             s3Uri: defaultPrefix,
             isErrored: false,
@@ -459,6 +489,24 @@ export const EmptyPrefix: Story = {
         onDisplayCopyFeedback: action("onDisplayCopyFeedback"),
         evtAction: Evt.create<"CHOSE FILES TO UPLOAD">(),
         isUploadDisabled: false
+    },
+    render: args => (
+        <div style={{ maxWidth: 1200, padding: 24 }}>
+            <S3ExplorerMainView {...args} />
+        </div>
+    )
+};
+
+export const EmptyPrefixWithoutRequestFiles: Story = {
+    args: {
+        ...placeholderArgs,
+        canRequestFilesIfEmpty: false,
+        listedPrefix: {
+            s3Uri: defaultPrefix,
+            isErrored: false,
+            items: [],
+            isFullyQualifiedUri: false
+        }
     },
     render: args => (
         <div style={{ maxWidth: 1200, padding: 24 }}>
@@ -518,6 +566,7 @@ export const FullyQualifiedObject: Story = {
     args: {
         isListing: false,
         profileNameForSharing: "anonymous",
+        canRequestFilesIfEmpty: false,
         listedPrefix: {
             s3Uri: fullyQualifiedObject.s3Uri,
             isErrored: false,
@@ -547,6 +596,7 @@ export const AccessDenied: Story = {
     args: {
         isListing: false,
         profileNameForSharing: "anonymous",
+        canRequestFilesIfEmpty: false,
         listedPrefix: {
             s3Uri: defaultPrefix,
             isErrored: true,

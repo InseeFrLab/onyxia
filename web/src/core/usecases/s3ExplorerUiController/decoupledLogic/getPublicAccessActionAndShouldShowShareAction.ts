@@ -1,5 +1,6 @@
 import {
     type BucketPoliciesByBucket,
+    getHasBucketPolicies,
     getHasPrefixBeMadePublic,
     getIsWithinPrefixThatHasBeenMadePublic
 } from "./bucketPolicies";
@@ -22,10 +23,14 @@ export function getPublicAccessActionAndShouldShowShareAction(params: {
         isAnonymousS3Profile
     } = params;
 
-    const hasBeenMadePublic = getHasPrefixBeMadePublic({
-        s3Uri,
-        bucketPoliciesByBucket
-    });
+    const hasBucketPolicies = getHasBucketPolicies({ s3Uri, bucketPoliciesByBucket });
+
+    const getHasPrefixBeMadePublic_local = memoize(() =>
+        getHasPrefixBeMadePublic({
+            s3Uri,
+            bucketPoliciesByBucket
+        })
+    );
 
     const getIsWithinPrefixThatHasBeenMadePublic_local = memoize(
         () =>
@@ -36,11 +41,15 @@ export function getPublicAccessActionAndShouldShowShareAction(params: {
     );
 
     const publicAccessAction = (() => {
+        if (!hasBucketPolicies) {
+            return undefined;
+        }
+
         if (isAnonymousS3Profile) {
             return undefined;
         }
 
-        if (hasBeenMadePublic) {
+        if (getHasPrefixBeMadePublic_local()) {
             return "make private" as const;
         }
 
@@ -51,11 +60,29 @@ export function getPublicAccessActionAndShouldShowShareAction(params: {
         return "make public";
     })();
 
-    const shouldShowShareAction =
-        isSharingPublicFolderFeatureEnabled &&
-        (isAnonymousS3Profile ||
-            hasBeenMadePublic ||
-            getIsWithinPrefixThatHasBeenMadePublic_local());
+    const shouldShowShareAction = (() => {
+        if (!isSharingPublicFolderFeatureEnabled) {
+            return false;
+        }
+
+        if (isAnonymousS3Profile) {
+            return true;
+        }
+
+        if (!hasBucketPolicies) {
+            return false;
+        }
+
+        if (getHasPrefixBeMadePublic_local()) {
+            return true;
+        }
+
+        if (getIsWithinPrefixThatHasBeenMadePublic_local()) {
+            return true;
+        }
+
+        return false;
+    })();
 
     return { publicAccessAction, shouldShowShareAction };
 }
