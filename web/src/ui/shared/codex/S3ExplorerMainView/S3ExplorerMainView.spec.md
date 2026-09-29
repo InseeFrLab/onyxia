@@ -47,6 +47,8 @@ export type S3ExplorerMainViewProps = {
 
     profileNameForSharing: string | undefined;
 
+    canRequestFilesIfEmpty: boolean;
+
     onNavigate: (params: { s3Uri: S3Uri }) => void;
 
     onNavigateBack: () => void;
@@ -71,6 +73,8 @@ export type S3ExplorerMainViewProps = {
         s3Uri: S3Uri.TerminatedByDelimiter;
         anonymousProfileName: string;
     }) => void;
+
+    onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
 
     onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
@@ -103,6 +107,7 @@ export namespace S3ExplorerMainViewProps {
             s3Uri: S3Uri.TerminatedByDelimiter;
             publicAccessAction: "make public" | "make private" | undefined;
             shouldShowShareAction: boolean;
+            shouldShowRequestFilesAction: boolean;
         };
 
         export type Object = Common & {
@@ -212,6 +217,7 @@ The component renders `S3SelectionActionBar` above the list.
 - `delete`
 - `bookmark`
 - `share`
+- `requestFiles`
 - `accessPolicy`
 - `onClear`
 
@@ -226,6 +232,8 @@ for the current selection:
   have an unfinished upload progress state
 - share is available for one selected object or one prefix whose
   `shouldShowShareAction` is `true`
+- request files is available for one selected prefix whose
+  `shouldShowRequestFilesAction` is `true`
 - make public is available when the selected prefix has
   `publicAccessAction === "make public"`
 - make private is available when the selected prefix has
@@ -329,6 +337,21 @@ onSharePrefix({
 
 The resulting UI or side effect is owned by the caller.
 
+### Request files
+
+Request files is available as a row action for prefix rows whose
+`shouldShowRequestFilesAction` is `true`, provided that the item is not deleting
+and does not have an unfinished upload progress state.
+
+Clicking Request files triggers:
+
+```ts
+onRequestFiles({ s3Uri: item.s3Uri });
+```
+
+The callback is always present. `shouldShowRequestFilesAction`, rather than
+callback optionality, controls whether the action is displayed.
+
 ### Download
 
 Download is available for object and folder rows when the item is not deleting and
@@ -395,13 +418,13 @@ Rules:
 When the listed prefix is empty, present two distinct ways to add files:
 
 - upload files from the current device through `onPutObjects`
-- create a shareable upload link through `onRequestFiles`, when that callback is
-  available
+- create a shareable upload link through `onRequestFiles`, when
+  `canRequestFilesIfEmpty` is `true`
 
 The upload-link action must pass the currently listed prefix to
 `onRequestFiles`. Each action should include concise supporting text, while the
 back action remains visually secondary. Do not render the upload-link choice
-when `onRequestFiles` is undefined.
+when `canRequestFilesIfEmpty` is `false`.
 
 # Error state
 

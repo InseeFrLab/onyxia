@@ -74,6 +74,7 @@ export function computeUploadStatusAtPrefix(params: {
                 isDeleting: false,
                 publicAccessAction: undefined,
                 shouldShowShareAction: false,
+                shouldShowRequestFilesAction: false,
                 uploadProgressPercent: NaN
             });
         }

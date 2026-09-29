@@ -7,7 +7,10 @@ import { assert, type Equals, id } from "tsafe";
 import { same } from "evt/tools/inDepth/same";
 import { computeUploadStatusAtPrefix } from "./decoupledLogic/computeUploadStatusAtPrefix";
 import { name, type State } from "./state";
-import { getIsWithinPrefixThatHasBeenMadePublic } from "./decoupledLogic/bucketPolicies";
+import {
+    getIsWithinPrefixThatHasBeenMadePublic,
+    getHasBucketPolicies
+} from "./decoupledLogic/bucketPolicies";
 import { type ObjectRendering } from "./decoupledLogic/objectRendering";
 import { getPublicAccessActionAndShouldShowShareAction } from "./decoupledLogic/getPublicAccessActionAndShouldShowShareAction";
 import { getRootContext } from "core/rootContext";
@@ -65,6 +68,7 @@ export type MainView = {
               };
         publicAccessAction: "make public" | "make private" | undefined;
         shouldShowShareAction: boolean;
+        shouldShowRequestFilesAction: boolean;
     };
 
     isBackButtonDisabled: boolean;
@@ -101,8 +105,6 @@ export type MainView = {
     commandLogsEntries: State.CommandLogsEntry[];
 
     profileNameForSharing: string | undefined;
-
-    isRequestFilesEnabled: boolean;
 };
 
 export namespace MainView {
@@ -120,6 +122,7 @@ export namespace MainView {
             s3Uri: S3Uri.TerminatedByDelimiter;
             publicAccessAction: "make public" | "make private" | undefined;
             shouldShowShareAction: boolean;
+            shouldShowRequestFilesAction: boolean;
         };
 
         export type Object = Common & {
@@ -328,6 +331,21 @@ const isAnonymousS3Profile = createSelector(
     }
 );
 
+const isRequestFilesAllowed = createSelector(
+    s3ProfilesManagement.selectors.ambientS3Profile,
+    (s3Profile): boolean => {
+        if (s3Profile === undefined) {
+            return false;
+        }
+
+        return getIsKnownS3ServerUrl({
+            s3ServerUrl: s3Profile.paramsOfCreateS3Client.url,
+            pathStyleAccess: s3Profile.paramsOfCreateS3Client.pathStyleAccess,
+            s3Config: getRootContext().s3Config
+        });
+    }
+);
+
 const items = createSelector(
     listedPrefix_state,
     uploads_profile,
@@ -338,13 +356,15 @@ const items = createSelector(
         profileName_anonymous,
         profileName_anonymous => profileName_anonymous !== undefined
     ),
+    isRequestFilesAllowed,
     (
         listedPrefix_state,
         uploads_profile,
         deletions_profile,
         bucketPoliciesByBucket,
         isAnonymousS3Profile,
-        isSharingPublicFolderFeatureEnabled
+        isSharingPublicFolderFeatureEnabled,
+        isRequestFilesAllowed
     ): MainView.Item[] | undefined => {
         if (listedPrefix_state === undefined) {
             return undefined;
@@ -400,7 +420,9 @@ const items = createSelector(
                             uploadProgressPercent: undefined,
                             isDeleting: false,
                             publicAccessAction,
-                            shouldShowShareAction
+                            shouldShowShareAction,
+                            shouldShowRequestFilesAction:
+                                isRequestFilesAllowed && !isAnonymousS3Profile
                         });
                     }
                     default:
@@ -581,6 +603,10 @@ const uriBar = createSelector(
                 return undefined;
             }
 
+            if (!getHasBucketPolicies({ s3Uri, bucketPoliciesByBucket })) {
+                return undefined;
+            }
+
             const { isWithinPrefixThatHasBeenMadePublic, s3Uri_publicPrefix } =
                 getIsWithinPrefixThatHasBeenMadePublic({
                     s3Uri,
@@ -603,6 +629,7 @@ const uriBar = createSelector(
         profileName_anonymous,
         profileName_anonymous => profileName_anonymous !== undefined
     ),
+    isRequestFilesAllowed,
     (
         s3Uri,
         s3Uri_publicPrefix,
@@ -611,7 +638,8 @@ const uriBar = createSelector(
         isListing,
         bucketPoliciesByBucket,
         isAnonymousS3Profile,
-        isSharingPublicFolderFeatureEnabled
+        isSharingPublicFolderFeatureEnabled,
+        isRequestFilesAllowed
     ): MainView["uriBar"] => {
         const sortHints = (
             hints: MainView["uriBar"]["hints"]
@@ -648,7 +676,8 @@ const uriBar = createSelector(
                     isBookmarked: false
                 },
                 publicAccessAction: undefined,
-                shouldShowShareAction: false
+                shouldShowShareAction: false,
+                shouldShowRequestFilesAction: false
             };
         }
 
@@ -720,7 +749,8 @@ const uriBar = createSelector(
                 hints: sortHints(hints),
                 bookmarkStatus,
                 publicAccessAction: undefined,
-                shouldShowShareAction: false
+                shouldShowShareAction: false,
+                shouldShowRequestFilesAction: false
             };
         }
 
@@ -774,12 +804,17 @@ const uriBar = createSelector(
                   isSharingPublicFolderFeatureEnabled
               });
 
+        const shouldShowRequestFilesAction = !s3Uri.isDelimiterTerminated
+            ? false
+            : isRequestFilesAllowed && !isAnonymousS3Profile;
+
         return {
             s3Uri: { s3Uri, s3Uri_publicPrefix },
             hints: sortHints(hints),
             bookmarkStatus,
             publicAccessAction,
-            shouldShowShareAction
+            shouldShowShareAction,
+            shouldShowRequestFilesAction
         };
     }
 );
@@ -787,21 +822,6 @@ const uriBar = createSelector(
 const commandLogsEntries = createSelector(
     state,
     (state): MainView["commandLogsEntries"] => state.commandLogsEntries
-);
-
-const isRequestFilesEnabled = createSelector(
-    s3ProfilesManagement.selectors.ambientS3Profile,
-    (s3Profile): MainView["isRequestFilesEnabled"] => {
-        if (s3Profile === undefined) {
-            return false;
-        }
-
-        return getIsKnownS3ServerUrl({
-            s3ServerUrl: s3Profile.paramsOfCreateS3Client.url,
-            pathStyleAccess: s3Profile.paramsOfCreateS3Client.pathStyleAccess,
-            s3Config: getRootContext().s3Config
-        });
-    }
 );
 
 const mainView = createSelector(
@@ -817,7 +837,6 @@ const mainView = createSelector(
     listedPrefix,
     commandLogsEntries,
     profileName_anonymous,
-    isRequestFilesEnabled,
     (
         profileSelect,
         bookmarks,
@@ -830,8 +849,7 @@ const mainView = createSelector(
         isListing,
         listedPrefix,
         commandLogsEntries,
-        profileNameForSharing,
-        isRequestFilesEnabled
+        profileNameForSharing
     ): MainView => ({
         profileSelect,
         bookmarks,
@@ -844,8 +862,7 @@ const mainView = createSelector(
         isListing,
         listedPrefix,
         commandLogsEntries,
-        profileNameForSharing,
-        isRequestFilesEnabled
+        profileNameForSharing
     })
 );
 

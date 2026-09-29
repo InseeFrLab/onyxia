@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { assert } from "tsafe/assert";
 import { parseS3Uri, type S3Uri } from "core/tools/S3Uri";
 import {
+    getHasBucketPolicies,
     getHasPrefixBeMadePublic,
     getIsWithinPrefixThatHasBeenMadePublic,
     makePrefixPublic,
@@ -34,22 +35,45 @@ function getBucketPoliciesByBucket(bucketPolicies: BucketPolicies) {
 }
 
 describe("bucketPolicies", () => {
-    it("assumes private when the bucket policy is unavailable", () => {
+    it("reports unavailable bucket policies and rejects operations that require them", () => {
         const s3Uri = parsePrefix("s3://mybucket/public/");
 
         expect(
-            getHasPrefixBeMadePublic({
+            getHasBucketPolicies({
                 s3Uri,
                 bucketPoliciesByBucket: {}
             })
         ).toBe(false);
 
         expect(
+            getHasBucketPolicies({
+                s3Uri,
+                bucketPoliciesByBucket: {
+                    mybucket: { bucketPolicies: undefined }
+                }
+            })
+        ).toBe(false);
+
+        expect(
+            getHasBucketPolicies({
+                s3Uri,
+                bucketPoliciesByBucket: getBucketPoliciesByBucket({})
+            })
+        ).toBe(true);
+
+        expect(() =>
+            getHasPrefixBeMadePublic({
+                s3Uri,
+                bucketPoliciesByBucket: {}
+            })
+        ).toThrow();
+
+        expect(() =>
             getIsWithinPrefixThatHasBeenMadePublic({
                 s3Uri,
                 bucketPoliciesByBucket: {}
             })
-        ).toStrictEqual({ isWithinPrefixThatHasBeenMadePublic: false });
+        ).toThrow();
 
         expect(() =>
             makePrefixPublic({

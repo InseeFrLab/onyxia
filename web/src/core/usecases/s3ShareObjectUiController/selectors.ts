@@ -3,7 +3,10 @@ import { name, type State } from "./state";
 import { createSelector } from "clean-architecture";
 import { assert, id } from "tsafe";
 import * as s3ExplorerUiController from "core/usecases/s3ExplorerUiController";
-import { getIsWithinPrefixThatHasBeenMadePublic } from "core/usecases/s3ExplorerUiController/decoupledLogic/bucketPolicies";
+import {
+    getIsWithinPrefixThatHasBeenMadePublic,
+    getHasBucketPolicies
+} from "core/usecases/s3ExplorerUiController/decoupledLogic/bucketPolicies";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 
 const state = (rootState: RootState) => rootState[name];
@@ -42,6 +45,10 @@ const isPublic = createSelector(
     (s3Uri, bucketPoliciesByBucket, isAnonymousProfile) => {
         if (isAnonymousProfile) {
             return true;
+        }
+
+        if (!getHasBucketPolicies({ s3Uri, bucketPoliciesByBucket })) {
+            return false;
         }
 
         const { isWithinPrefixThatHasBeenMadePublic } =

@@ -169,6 +169,21 @@ export type S3UriBarProps = {
      */
     onToggleBookmark?: (props: { s3Uri: S3Uri }) => void;
 
+    publicAccessAction: "make public" | "make private" | undefined;
+
+    onChangePrefixPolicy: (params: {
+        action: "make public" | "undo make public";
+        s3Uri: S3Uri.TerminatedByDelimiter;
+    }) => void;
+
+    shouldShowShareAction: boolean;
+
+    onSharePrefix: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
+
+    shouldShowRequestFilesAction: boolean;
+
+    onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
+
     /**
      * Optional imperative action bus.
      *
@@ -192,6 +207,9 @@ export type S3UriBarProps = {
     - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/b/`, the public marker starts on `b`, because `b/` is the last crumb of the public prefix.
     - For `s3://bucket/a/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because the current crumb is the public prefix itself.
     - Copy button click => stringify the current S3 URI and copy it with `copyToClipboard`.
+    - Show Share only when `shouldShowShareAction` is `true`.
+    - Show Request files only when `shouldShowRequestFilesAction` is `true` and the current URI is a delimiter-terminated prefix.
+    - Clicking Request files calls `onRequestFiles` with the current prefix.
     - Copied feedback is internal to the component and should reset after a short delay or when the current S3 URI changes.
     - `evtAction` `{ action: "display copy feedback", s3Uri }` => stringify the provided S3 URI and display copied feedback without calling `copyToClipboard`.
     - Home/root button short click => enter editing mode with `s3://` as the draft.

@@ -22,7 +22,8 @@ import {
     getHasPrefixBeMadePublic,
     makePrefixPublic,
     undoMakePrefixPublic,
-    getIsWithinPrefixThatHasBeenMadePublic
+    getIsWithinPrefixThatHasBeenMadePublic,
+    getHasBucketPolicies
 } from "./decoupledLogic/bucketPolicies";
 import { downloadS3UrisAsZip } from "./decoupledLogic/downloadAsZip";
 import { triggerBrowserDownload } from "core/tools/triggerBrowserDownload";
@@ -1294,12 +1295,15 @@ export const protectedThunks = {
                     break with_signature;
                 }
 
-                const { isWithinPrefixThatHasBeenMadePublic } =
+                const bucketPoliciesByBucket =
+                    protectedSelectors.bucketPoliciesByBucket(getState());
+
+                const isWithinPrefixThatHasBeenMadePublic =
+                    getHasBucketPolicies({ s3Uri, bucketPoliciesByBucket }) &&
                     getIsWithinPrefixThatHasBeenMadePublic({
                         s3Uri,
-                        bucketPoliciesByBucket:
-                            protectedSelectors.bucketPoliciesByBucket(getState())
-                    });
+                        bucketPoliciesByBucket
+                    }).isWithinPrefixThatHasBeenMadePublic;
 
                 if (isWithinPrefixThatHasBeenMadePublic) {
                     break with_signature;

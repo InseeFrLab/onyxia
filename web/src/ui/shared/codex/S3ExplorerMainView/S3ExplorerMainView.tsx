@@ -70,6 +70,8 @@ export type S3ExplorerMainViewProps = {
 
     profileNameForSharing: string | undefined;
 
+    canRequestFilesIfEmpty: boolean;
+
     onNavigate: (params: { s3Uri: S3Uri }) => void;
 
     onNavigateBack: () => void;
@@ -95,9 +97,7 @@ export type S3ExplorerMainViewProps = {
         anonymousProfileName: string;
     }) => void;
 
-    onRequestFiles:
-        | ((params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void)
-        | undefined;
+    onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
 
     onBookmark: ((params: { s3Uri: S3Uri }) => void) | undefined;
 
@@ -130,6 +130,7 @@ export namespace S3ExplorerMainViewProps {
             s3Uri: S3Uri.TerminatedByDelimiter;
             publicAccessAction: "make public" | "make private" | undefined;
             shouldShowShareAction: boolean;
+            shouldShowRequestFilesAction: boolean;
         };
 
         export type Object = Common & {
@@ -150,6 +151,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         isListing,
         listedPrefix,
         profileNameForSharing,
+        canRequestFilesIfEmpty,
         onNavigate,
         onNavigateBack,
         onPutObjects,
@@ -593,7 +595,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
 
     const requestFilesForPrefix = useConstCallback(
         (item: S3ExplorerMainViewProps.Item.PrefixSegment) => {
-            if (!getIsItemActionAvailable(item) || onRequestFiles === undefined) {
+            if (!getIsItemActionAvailable(item) || !item.shouldShowRequestFilesAction) {
                 return;
             }
 
@@ -873,7 +875,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                             }
                             requestFiles={
                                 selectedPrefixForSingleItemAction === undefined ||
-                                onRequestFiles === undefined ||
+                                !selectedPrefixForSingleItemAction.shouldShowRequestFilesAction ||
                                 !getIsItemActionAvailable(
                                     selectedPrefixForSingleItemAction
                                 )
@@ -1049,7 +1051,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     )}
                                                 </div>
                                             </div>
-                                            {onRequestFiles === undefined ? null : (
+                                            {canRequestFilesIfEmpty ? (
                                                 <div className={classes.emptyStateChoice}>
                                                     <Button
                                                         className={
@@ -1082,7 +1084,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         )}
                                                     </div>
                                                 </div>
-                                            )}
+                                            ) : null}
                                         </div>
                                         <div className={classes.emptyStateDropHint}>
                                             {t("drop files here hint")}
@@ -1261,7 +1263,7 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                     }
                                                     onRequestFiles={
                                                         item.type === "prefix segment" &&
-                                                        onRequestFiles !== undefined
+                                                        item.shouldShowRequestFilesAction
                                                             ? onRequestFilesFactory(
                                                                   itemKey
                                                               )
@@ -2995,6 +2997,8 @@ function areItemsRenderEqual(
     return (
         nextItem.type === "prefix segment" &&
         previousItem.publicAccessAction === nextItem.publicAccessAction &&
-        previousItem.shouldShowShareAction === nextItem.shouldShowShareAction
+        previousItem.shouldShowShareAction === nextItem.shouldShowShareAction &&
+        previousItem.shouldShowRequestFilesAction ===
+            nextItem.shouldShowRequestFilesAction
     );
 }

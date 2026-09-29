@@ -40,6 +40,17 @@ type ManagedPrefixKeysByKind = {
     listBucket: string[];
 };
 
+export function getHasBucketPolicies(params: {
+    s3Uri: S3Uri;
+    bucketPoliciesByBucket: BucketPoliciesByBucket;
+}): boolean {
+    const { s3Uri, bucketPoliciesByBucket } = params;
+
+    const bucketPolicies = getBucketPolicies({ s3Uri, bucketPoliciesByBucket });
+
+    return bucketPolicies !== undefined;
+}
+
 export function getHasPrefixBeMadePublic(params: {
     s3Uri: S3Uri.TerminatedByDelimiter;
     bucketPoliciesByBucket: BucketPoliciesByBucket;
@@ -48,9 +59,7 @@ export function getHasPrefixBeMadePublic(params: {
 
     const bucketPolicies = getBucketPolicies({ s3Uri, bucketPoliciesByBucket });
 
-    if (bucketPolicies === undefined) {
-        return false;
-    }
+    assert(bucketPolicies !== undefined);
 
     const prefixKey = getS3UriKey(s3Uri);
 
@@ -76,9 +85,7 @@ export function getIsWithinPrefixThatHasBeenMadePublic(params: {
 
     const bucketPolicies = getBucketPolicies({ s3Uri, bucketPoliciesByBucket });
 
-    if (bucketPolicies === undefined) {
-        return { isWithinPrefixThatHasBeenMadePublic: false };
-    }
+    assert(bucketPolicies !== undefined);
 
     const s3UriKey = getS3UriKey(s3Uri);
 
