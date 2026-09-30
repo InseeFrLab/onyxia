@@ -18,13 +18,7 @@ export async function createOidc<AutoLogin extends boolean>(
         getCurrentLang: () => Language;
         autoLogin: AutoLogin;
         enableDebugLogs: boolean;
-        /**
-         * Opt this specific OIDC client instance out of DPoP.
-         * Use it when the access token has to be handed over to a third party that
-         * will use it on the user's behalf (e.g. an OpenWebUI token exchange): such
-         * a party cannot present a DPoP proof, so the token must not be sender-constrained.
-         */
-        disableDPoP?: true;
+        disableDPoP?: boolean;
     }
 ): Promise<AutoLogin extends true ? Oidc.LoggedIn : Oidc> {
     const {
@@ -108,7 +102,7 @@ export async function createOidc<AutoLogin extends boolean>(
         idleSessionLifetimeInSeconds,
         debugLogs: enableDebugLogs,
         autoLogin,
-        ...(disableDPoP ? { disableDPoP } : {})
+        disableDPoP: disableDPoP || undefined
     });
 
     return oidc;

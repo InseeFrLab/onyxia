@@ -182,7 +182,21 @@ export async function bootstrapCore(
             transformBeforeRedirectForKeycloakTheme,
             getCurrentLang,
             autoLogin: false,
-            enableDebugLogs: enableOidcDebugLogs
+            enableDebugLogs: enableOidcDebugLogs,
+            // NOTE: Open WebUI uses the userinfo endpoint to get the claim of the Access Token.
+            // As a result the token used for token exchange with Open WebUI cannot be DPoP bound because
+            // the secret required to generate the proof lives on the browser.
+            // So, as a temporary workaround until we update oidc-spa we disable DPoP here if we know we're going
+            // to be reusing this oidc client instance to request tokens.
+            disableDPoP:
+                !aiConfig.disable &&
+                aiConfig.providers.some(
+                    provider =>
+                        provider.authentification.type === "api-key" &&
+                        provider.authentification.obtentionMethod ===
+                            "open-webui-oidc-token-exchange" &&
+                        provider.authentification.oidcParams.clientId === undefined
+                )
         });
     })();
 
