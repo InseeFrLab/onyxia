@@ -51,7 +51,7 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `                obtentionMethod: "open-webui-oidc-token-exchange",`,
                 `                allowFallbackToUserProvidedApiKey: false,`,
                 `                oidcConfiguration: {`,
-                `                  clientID: "onyxia-token-exchange-bridge",`,
+                `                  clientID: "onyxia_openwebui",`,
                 `                },`,
                 `              },`,
                 `            },`,
