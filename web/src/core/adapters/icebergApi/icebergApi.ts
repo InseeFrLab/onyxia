@@ -32,7 +32,7 @@ export function createDuckDbIcebergApi(params: {
     // Eagerly install the iceberg extension, create secrets and attach all
     // catalogs in a single connection so everything is ready before the first query.
     const prDb = (async () => {
-        const { db } = await sqlOlap.getConfiguredAsyncDuckDb();
+        const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
         const conn = await db.connect();
         try {

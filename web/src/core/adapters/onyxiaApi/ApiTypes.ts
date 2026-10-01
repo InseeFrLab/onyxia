@@ -1,3 +1,4 @@
+import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
 
 export type ApiTypes = {
