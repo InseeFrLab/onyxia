@@ -29,52 +29,56 @@ export function createDuckDbIcebergApi(params: {
         return `iceberg_${catalogName}`;
     }
 
-    // Eagerly install the iceberg extension, create secrets and attach all
-    // catalogs in a single connection so everything is ready before the first query.
-    const prDb = (async () => {
-        const db = await sqlOlap.getConfiguredAsyncDuckDb();
+    // Lazily (on first use) install the iceberg extension, create secrets and attach
+    // all catalogs in a single connection. Must not run at creation time: the sqlOlap
+    // depends on project configs that are not yet initialized during bootstrap.
+    let prDb: Promise<import("@duckdb/duckdb-wasm").AsyncDuckDB> | undefined;
 
-        const conn = await db.connect();
-        try {
-            await conn.query("INSTALL iceberg;\nLOAD iceberg;");
+    const getDb = () =>
+        (prDb ??= (async () => {
+            const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
-            for (const catalogConfig of catalogs) {
-                const token = await catalogConfig.getAccessToken();
+            const conn = await db.connect();
+            try {
+                await conn.query("INSTALL iceberg;\nLOAD iceberg;");
 
-                if (token !== undefined) {
-                    await conn.query(
-                        [
-                            `CREATE OR REPLACE SECRET "${secretName(catalogConfig.name)}" (`,
-                            `    TYPE iceberg,`,
-                            `    TOKEN '${token}'`,
-                            ");"
-                        ].join("\n")
-                    );
+                for (const catalogConfig of catalogs) {
+                    const token = await catalogConfig.getAccessToken();
+
+                    if (token !== undefined) {
+                        await conn.query(
+                            [
+                                `CREATE OR REPLACE SECRET "${secretName(catalogConfig.name)}" (`,
+                                `    TYPE iceberg,`,
+                                `    TOKEN '${token}'`,
+                                ");"
+                            ].join("\n")
+                        );
+                    }
+
+                    const attachLines = [
+                        `ATTACH '${catalogConfig.warehouse}' AS "${catalogConfig.name}" (`,
+                        `    TYPE iceberg,`,
+                        ...(token !== undefined
+                            ? [`    SECRET '${secretName(catalogConfig.name)}',`]
+                            : []),
+                        `    ENDPOINT '${catalogConfig.endpoint}'`,
+                        ");"
+                    ];
+                    await conn.query(attachLines.join("\n"));
                 }
-
-                const attachLines = [
-                    `ATTACH '${catalogConfig.warehouse}' AS "${catalogConfig.name}" (`,
-                    `    TYPE iceberg,`,
-                    ...(token !== undefined
-                        ? [`    SECRET '${secretName(catalogConfig.name)}',`]
-                        : []),
-                    `    ENDPOINT '${catalogConfig.endpoint}'`,
-                    ");"
-                ];
-                await conn.query(attachLines.join("\n"));
+            } finally {
+                await conn.close();
             }
-        } finally {
-            await conn.close();
-        }
 
-        return db;
-    })();
+            return db;
+        })());
 
     return {
         listAllTables: async () => {
             let db: import("@duckdb/duckdb-wasm").AsyncDuckDB;
             try {
-                db = await prDb;
+                db = await getDb();
             } catch {
                 return id<IcebergApi.ListAllTablesResult.Failed>({
                     errorCause: "network error"
@@ -116,7 +120,7 @@ export function createDuckDbIcebergApi(params: {
 
             let db: import("@duckdb/duckdb-wasm").AsyncDuckDB;
             try {
-                db = await prDb;
+                db = await getDb();
             } catch {
                 return id<IcebergApi.FetchTablePreviewResult.Failed>({
                     errorCause: "network error"
