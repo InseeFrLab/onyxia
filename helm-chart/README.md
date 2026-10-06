@@ -99,6 +99,26 @@ api:
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v4.12.0/README.md#configuration)
 -   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.8.1/web/.env)
 
+When `api.enabled` is `true`, the chart forwards `api.regions[0].data.S3` and
+`api.regions[0].AI` to the web application's `S3` and `AI` environment variables
+as JSON. Only the first region is used. Explicit `web.env.S3` and `web.env.AI`
+values take precedence independently, including empty strings.
+
+For example, AI can be configured alongside the other regional services:
+
+```yaml
+api:
+  regions:
+    - AI:
+        providers:
+          - name: Open WebUI
+            providerType: openai-compatible
+            apiBase: https://open-webui.my-domain.net/api
+            authentification:
+              type: api-key
+              obtentionMethod: open-webui-oidc-token-exchange
+```
+
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
 ```diff

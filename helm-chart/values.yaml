@@ -154,6 +154,9 @@ api:
   tolerations: []
   affinity: {}
   env: #authentication.mode: "openidconnect"
+  # When api.enabled=true, the first region's data.S3 and AI configurations are
+  # passed as JSON to the web application's S3 and AI environment variables.
+  # Explicit web.env.S3 and web.env.AI values take precedence, even when empty.
   regions:
     #[
     #   {

@@ -1,11 +1,16 @@
 {{- $webEnv := deepCopy (.Values.web.env | default dict) -}}
-{{- if and .Values.api.enabled (not (hasKey $webEnv "S3")) -}}
+{{- if .Values.api.enabled -}}
   {{- $regions := .Values.api.regions | default list -}}
   {{- if gt (len $regions) 0 -}}
     {{- $firstRegion := index $regions 0 -}}
-    {{- $data := get $firstRegion "data" | default dict -}}
-    {{- if hasKey $data "S3" -}}
-      {{- $_ := set $webEnv "S3" (get $data "S3" | toJson) -}}
+    {{- if not (hasKey $webEnv "S3") -}}
+      {{- $data := get $firstRegion "data" | default dict -}}
+      {{- if hasKey $data "S3" -}}
+        {{- $_ := set $webEnv "S3" (get $data "S3" | toJson) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (not (hasKey $webEnv "AI")) (hasKey $firstRegion "AI") -}}
+      {{- $_ := set $webEnv "AI" (get $firstRegion "AI" | toJson) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
