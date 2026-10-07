@@ -55,6 +55,7 @@ export function createOnyxiaApi(params: {
                     ingressClassName: THROW_IF_ACCESSED,
                     initScriptUrl: THROW_IF_ACCESSED,
                     istio: THROW_IF_ACCESSED,
+                    iceberg: [],
                     kafka: THROW_IF_ACCESSED,
                     kubernetesClusterDomain: THROW_IF_ACCESSED,
                     kubernetesClusterIngressPort: THROW_IF_ACCESSED,
