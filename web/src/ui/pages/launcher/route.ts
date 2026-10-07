@@ -46,7 +46,7 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                             "escapedDotsPlaceholder_xKdMzIdVmT";
                         const arrayIndexPrefix = "arrayIndexPrefix_xKdMzIdVmT_";
 
-                        return queryParamKey
+                        return decodeURIComponent(queryParamKey)
                             .replace(
                                 escapedDotInHelmValuesPathPattern,
                                 escapedDotsPlaceholder
