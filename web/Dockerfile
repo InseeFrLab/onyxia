@@ -50,11 +50,17 @@ if [ -n "$CUSTOM_RESOURCES" ]; then                                             
 fi                                                                                                              \n\
 cd html                                                                                                         \n\
 npx vite-envs                                                                                                   \n\
+if [ -n "$CSP_FRAME_ANCESTORS" ]; then                                                                          \n\
+    sed -i "s|frame-ancestors [^;]*;|frame-ancestors $CSP_FRAME_ANCESTORS;|" /etc/nginx/conf.d/default.conf      \n\
+fi                                                                                                              \n\
 exec nginx -g "daemon off;"                                                                                     \n\
 ' > /usr/share/nginx/entrypoint.sh
 
 # Ensure non-root user has ownership of necessary directories
-RUN chown -R $NGINX_USER_ID:$NGINX_GROUP_ID /usr/share/nginx /usr/share/nginx/entrypoint.sh && \
+# /etc/nginx/conf.d is in here because the entrypoint rewrites `frame-ancestors`
+# in the served config when CSP_FRAME_ANCESTORS is set, and the entrypoint runs as
+# the unprivileged user.
+RUN chown -R $NGINX_USER_ID:$NGINX_GROUP_ID /usr/share/nginx /usr/share/nginx/entrypoint.sh /etc/nginx/conf.d && \
     chmod +x /usr/share/nginx/entrypoint.sh
 
 # Switch back to non-root user for security
