@@ -14,6 +14,7 @@ import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
 import { env } from "env";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -102,7 +103,7 @@ function Account() {
                 maxTabCount={5}
                 onRequestChangeActiveTab={onRequestChangeActiveTab}
             >
-                <Suspense>
+                <Suspense fallback={<CircularProgress />}>
                     {(() => {
                         switch (activeTabId) {
                             case "profile":

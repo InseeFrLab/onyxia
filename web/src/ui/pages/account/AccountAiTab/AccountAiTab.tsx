@@ -24,7 +24,6 @@ export const AccountAiTab = withLoader({
 
         await account.load();
     },
-    FallbackComponent: () => null,
     Component
 });
 
