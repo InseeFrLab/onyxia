@@ -139,7 +139,7 @@ function setup(params?: { aiConfigStr: string | null }) {
         getCreateDialog,
         getManageDialog,
         dispatch: dispatch as unknown as Parameters<
-            ReturnType<typeof providers.protectedThunks.getAiContext>
+            ReturnType<typeof providers.thunks.getAiContext>
         >[0]
     };
 }
@@ -211,7 +211,7 @@ it("creates a provider through the current form controller and selects its defau
         modelIds: ["a"]
     });
     await core.functions.aiAccountUiController.setDefaultModel({ model: "Personal/a" });
-    expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
+    expect(await dispatch(providers.thunks.getAiContext())).toMatchObject({
         defaultModel: "Personal/a",
         models: ["Exchange/a", "Public/a", "Personal/a"]
     });
@@ -234,7 +234,7 @@ it("selects every model of the providers absent from the user config, and the fi
     expect(core.states.aiAccountUiController.getMain()).toMatchObject({
         defaultModel: { value: "Exchange/a" }
     });
-    expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
+    expect(await dispatch(providers.thunks.getAiContext())).toMatchObject({
         defaultModel: "Exchange/a",
         models: ["Exchange/a", "Public/a", "Personal/a"]
     });
@@ -244,7 +244,7 @@ it("selects every model of the providers absent from the user config, and the fi
         providerName: "Exchange",
         modelIds: []
     });
-    expect(await dispatch(providers.protectedThunks.getAiContext())).toMatchObject({
+    expect(await dispatch(providers.thunks.getAiContext())).toMatchObject({
         defaultModel: "Public/a",
         models: ["Public/a", "Personal/a"]
     });

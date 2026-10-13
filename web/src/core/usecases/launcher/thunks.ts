@@ -816,9 +816,7 @@ export const protectedThunks = {
                 },
                 ai: !doInjectPersonalInfos
                     ? emptyAiContext
-                    : await dispatch(
-                          aiProvidersManagements.protectedThunks.getAiContext()
-                      ),
+                    : await dispatch(aiProvidersManagements.thunks.getAiContext()),
                 proxyInjection: region.proxyInjection,
                 packageRepositoryInjection: region.packageRepositoryInjection,
                 certificateAuthorityInjection: region.certificateAuthorityInjection

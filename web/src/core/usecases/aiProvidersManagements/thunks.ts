@@ -454,6 +454,55 @@ export const thunks = {
             );
 
             dispatch(actions.userProviderDeleted({ providerName }));
+        },
+    /**
+     * The launch context, as `.ai` of the XOnyxia context. Loads the use case if that
+     * hasn't happened yet: nothing is initialized at bootstrap.
+     */
+    getAiContext:
+        () =>
+        async (...args): Promise<XOnyxiaContext["ai"]> => {
+            const [dispatch, getState] = args;
+
+            if (!dispatch(thunks.isAvailable())) {
+                return emptyAiContext;
+            }
+
+            const wasLoaded = selectors.stateDescription(getState()) === "ready";
+
+            await dispatch(thunks.load());
+
+            if (selectors.stateDescription(getState()) !== "ready") {
+                return emptyAiContext;
+            }
+
+            renew_exchanged_keys: {
+                if (!wasLoaded) {
+                    // They were just obtained by `load()`.
+                    break renew_exchanged_keys;
+                }
+
+                const aiProviders = selectors.aiProviders(getState());
+
+                assert(aiProviders !== undefined);
+
+                // Keys obtained by exchange are short lived: what we injected into a
+                // service launched an hour ago isn't what we should inject now.
+                await Promise.all(
+                    aiProviders.filter(isAuthenticatedByTokenExchange).map(aiProvider =>
+                        dispatch(
+                            thunks.refreshToken({
+                                providerName: aiProvider.name
+                            })
+                        )
+                    )
+                );
+            }
+
+            // A refresh started elsewhere, from the account tab, may still be in flight.
+            await Promise.all(globalContext.prRefreshByProviderName.values());
+
+            return protectedSelectors.aiContext(getState());
         }
 } satisfies Thunks;
 
@@ -667,58 +716,6 @@ const privateThunks = {
             if (!isSaved) {
                 throw new Error("Could not save AI configuration");
             }
-        }
-} satisfies Thunks;
-
-export const protectedThunks = {
-    /**
-     * The launch context, as `.ai` of the XOnyxia context. Loads the use case if that
-     * hasn't happened yet: nothing is initialized at bootstrap.
-     */
-    getAiContext:
-        () =>
-        async (...args): Promise<XOnyxiaContext["ai"]> => {
-            const [dispatch, getState] = args;
-
-            if (!dispatch(thunks.isAvailable())) {
-                return emptyAiContext;
-            }
-
-            const wasLoaded = selectors.stateDescription(getState()) === "ready";
-
-            await dispatch(thunks.load());
-
-            if (selectors.stateDescription(getState()) !== "ready") {
-                return emptyAiContext;
-            }
-
-            renew_exchanged_keys: {
-                if (!wasLoaded) {
-                    // They were just obtained by `load()`.
-                    break renew_exchanged_keys;
-                }
-
-                const aiProviders = selectors.aiProviders(getState());
-
-                assert(aiProviders !== undefined);
-
-                // Keys obtained by exchange are short lived: what we injected into a
-                // service launched an hour ago isn't what we should inject now.
-                await Promise.all(
-                    aiProviders.filter(isAuthenticatedByTokenExchange).map(aiProvider =>
-                        dispatch(
-                            thunks.refreshToken({
-                                providerName: aiProvider.name
-                            })
-                        )
-                    )
-                );
-            }
-
-            // A refresh started elsewhere, from the account tab, may still be in flight.
-            await Promise.all(globalContext.prRefreshByProviderName.values());
-
-            return protectedSelectors.aiContext(getState());
         }
 } satisfies Thunks;
 
