@@ -6,35 +6,138 @@ import JSON5 from "json5";
 import type { ApiTypes } from "core/adapters/onyxiaApi/ApiTypes";
 import type { OidcParams_Partial } from "./OidcParams";
 
+/**
+ * JSON5 configuration accepted by the `AI` environment variable. Controls the
+ * Account > AI tab and the `ai` launch context that charts can inject into services.
+ * AI is available only to logged-in users.
+ *
+ * An empty environment value enables AI with no admin-provided providers and lets
+ * users add their own. When an object is supplied, `providers` is required, even
+ * when disabling AI: use `{ disable: true, providers: [] }`.
+ *
+ * This configuration is exposed to the browser. API keys are supplied by users or
+ * obtained through token exchange at runtime, rather than stored here.
+ */
 type AI_EnvValue_ExpectedShape = {
+    /**
+     * Hides Account > AI and supplies an empty, disabled `ai` launch context.
+     * @default false
+     */
     disable?: boolean;
+    /**
+     * Prevents users from adding their own providers. Admin-provided providers can
+     * still be configured by users, and previously saved personal providers remain
+     * available; this does not restrict the provider list to the ones declared here.
+     * @default false
+     */
     disallowUserToAddProviders?: boolean;
+    /**
+     * Markdown displayed below the "AI Providers" heading in Account > AI. Accepts
+     * a string or translations such as `{ en: "...", fr: "..." }`. Omit to show no
+     * introduction.
+     */
     description?: LocalizedString;
+    /**
+     * Providers provisioned by the administrator, as a single object or an array.
+     * Use `[]` to provision none. They appear before personal providers; this order
+     * also determines the fallback default model when the user has not chosen one.
+     */
     providers: ArrayOrNot<AI_EnvValue_ExpectedShape.Provider>;
 };
 
 namespace AI_EnvValue_ExpectedShape {
+    /**
+     * An admin-provided connection whose name, protocol and API base users cannot
+     * edit. Users can select its models and supply an API key when requested.
+     */
     export type Provider = {
+        /**
+         * Display name and persistent provider identifier. Trimmed on parsing, must
+         * be unique among configured providers, and cannot contain `/` because launch
+         * model identifiers use `<providerName>/<modelId>`.
+         *
+         * Keep this stable: saved API keys, excluded models and the user's default
+         * model refer to it by name. A personal provider with the same name remains
+         * visible for renaming or deletion but is excluded from the launch context.
+         */
         name: string;
+        /**
+         * Protocol used to list models and exposed to charts as `ai.providers[].type`.
+         * `anthropic` uses Anthropic headers; all other types use OpenAI-compatible
+         * model listing with Bearer authentication when a key is available.
+         */
         providerType: AiConfig.SupportedAiProviderType;
+        /**
+         * Absolute API root, including any required prefix such as `/v1`. Trailing
+         * slashes are removed, and model discovery requests `<apiBase>/models`
+         * directly from the browser. The same root is passed to launched services.
+         */
         apiBase: string;
+        /** Help displayed in this provider's management dialog. Omit to hide it. */
         documentation?: {
+            /**
+             * Plain text, either a string or translations such as
+             * `{ en: "...", fr: "..." }`.
+             */
             mainText: LocalizedString;
+            /**
+             * Links opened in a new tab, with localized labels and absolute URLs.
+             * Defaults to an empty list.
+             */
             links?: AiConfig.Documentation.Link[];
         };
+        /**
+         * Image displayed on the provider card: one absolute URL for both themes or
+         * `{ light: "https://...", dark: "https://..." }`. Omit to show no logo;
+         * admin-provided providers do not fall back to the protocol's built-in logo.
+         */
         logoUrl?: AiConfig.LogoUrl;
+        /**
+         * How the provider's credentials are obtained. An authenticated provider
+         * with at least one selected model is included in the launch context along
+         * with its API key; `none` providers are included without a key.
+         */
         authentification:
-            | { type: "none" }
+            | {
+                  /** No credentials required; model requests omit the API key. */
+                  type: "none";
+              }
             | {
                   type: "api-key";
+                  /** The user enters their own API key in the provider's management dialog. */
                   obtentionMethod: "user-provided";
               }
             | {
                   type: "api-key";
+                  /**
+                   * Exchanges an OIDC access token for an Open WebUI API token via
+                   * `POST <apiBase>/v1/auths/oauth/oidc/token/exchange`. The resulting
+                   * token is refreshed before subsequent service launches.
+                   */
                   obtentionMethod: "open-webui-oidc-token-exchange";
+                  /**
+                   * Overrides Onyxia's login OIDC settings for this provider; omitted
+                   * fields inherit the instance settings. For example, set only
+                   * `clientID` to use a dedicated client on the same issuer.
+                   *
+                   * Accepts `issuerURI`, `clientID`, `extraQueryParams` (URL query
+                   * string), `scope` (space-separated), and
+                   * `idleSessionLifetimeInSeconds` (number or numeric string).
+                   */
                   oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
               };
-        models?: string[] /** When undefined, the models will be fetched from the provider model endpoint */;
+        /**
+         * Explicit model IDs offered instead of the discovered list. Duplicates are
+         * removed, preserving order. Omit to use the provider's `/models` response;
+         * `[]` deliberately offers no models and excludes this provider from launches.
+         *
+         * Model discovery is still attempted to report connection status, but an
+         * explicit list remains selectable if that request fails (for example, when
+         * only launched services can reach the provider). Authentication must still
+         * succeed. All offered models are selected by default unless the user has
+         * excluded them; the first selected model is a fallback for the default.
+         */
+        models?: string[];
     };
 }
 
