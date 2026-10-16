@@ -32,7 +32,7 @@ export function initPluginSystem() {
             if (value_new !== undefined) {
                 value_new(onyxiaCtx);
             }
-            value = value_new;
+            value = undefined;
         }
     });
 }
