@@ -34,6 +34,9 @@ export declare namespace State {
         stateDescription: "ready";
         catalogId: string;
         chartName: string;
+        // NOTE: When defined, the launcher is in "upgrade" mode: the release name is
+        // fixed to this value and the launch performs a helm upgrade instead of an install.
+        helmReleaseName_pinned: string | undefined;
         chartVersion: string;
         chartVersion_default: string;
         xOnyxiaContext: XOnyxiaContext;

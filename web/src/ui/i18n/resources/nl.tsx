@@ -1034,11 +1034,13 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         back: "Terug",
         "external monitoring": "Externe monitoring",
         "helm values": "Helm waarden",
-        reduce: "Verminderen"
+        reduce: "Verminderen",
+        modify: "Wijzigen"
     },
     LauncherMainCard: {
         "friendly name": "Gepersonaliseerde naam",
         launch: "Opstarten",
+        upgrade: "Upgraden",
         "problem with": "Probleem met:",
         cancel: "Annuleren",
         "copy auto launch url": "URL voor automatisch starten kopiëren",
@@ -1145,6 +1147,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "container starting": "Container start",
         failed: "Mislukt",
         "suspend service tooltip": "Onderbreek de dienst en bevrijd de middelen",
+        "modify service tooltip": "De dienst wijzigen",
         "resume service tooltip": "Hervat de dienst",
         suspended: "Opgeschort",
         suspending: "Opschorten",

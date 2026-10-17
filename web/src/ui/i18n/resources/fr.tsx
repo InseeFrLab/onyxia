@@ -1037,11 +1037,13 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         back: "Retour",
         "external monitoring": "Surveillance externe",
         "helm values": "Valeurs de Helm",
-        reduce: "Réduire"
+        reduce: "Réduire",
+        modify: "Modifier"
     },
     LauncherMainCard: {
         "friendly name": "Nom personnalisé",
         launch: "Lancer",
+        upgrade: "Mettre à jour",
         "problem with": "Problème avec :",
         cancel: "Annuler",
         "copy auto launch url": "Copier l'URL de lancement automatique",
@@ -1150,6 +1152,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "container starting": "Démarrage du conteneur",
         failed: "Échoué",
         "suspend service tooltip": "Suspendre le service et libérer les ressources",
+        "modify service tooltip": "Modifier le service",
         "resume service tooltip": "Reprendre le service",
         suspended: "Suspendu",
         suspending: "En suspension",

@@ -16,7 +16,8 @@ export const Default: Story = {
         monitoringUrl: undefined, // Monitoring URL is not provided
         onClickBack: action("Back button clicked"),
         areHelmValuesShown: false,
-        onClickHelmValues: action("Helm Values button clicked")
+        onClickHelmValues: action("Helm Values button clicked"),
+        onClickModify: undefined
     }
 };
 
