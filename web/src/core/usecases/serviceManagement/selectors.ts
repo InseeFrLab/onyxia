@@ -21,7 +21,10 @@ const isReady = createSelector(state, state => state.stateDescription === "ready
 
 export type Service = {
     helmReleaseName: string;
+    catalogId: string;
     chartName: string;
+    chartVersion: string;
+    helmValues: Record<string, string>;
     friendlyName: string;
     iconUrl: string | undefined;
     startedAt: number;
@@ -95,7 +98,10 @@ const services = createSelector(
                     postInstallInstructions_patched
                 }): Service => ({
                     helmReleaseName: helmRelease.helmReleaseName,
+                    catalogId: helmRelease.catalogId,
                     chartName: helmRelease.chartName,
+                    chartVersion: helmRelease.chartVersion,
+                    helmValues: helmRelease.values,
                     ownership,
                     friendlyName: helmRelease.friendlyName ?? helmRelease.chartName,
                     iconUrl: logoUrlByReleaseName[helmRelease.helmReleaseName],
