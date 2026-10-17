@@ -88,6 +88,7 @@ export function createOnyxiaApi(params: {
         getQuotas: THROW_IF_ACCESSED,
         getUserProfileJsonSchema: THROW_IF_ACCESSED,
         helmInstall: THROW_IF_ACCESSED,
+        helmUpgrade: THROW_IF_ACCESSED,
         helmUninstall: THROW_IF_ACCESSED,
         helmUpgradeGlobalSuspend: THROW_IF_ACCESSED,
         kubectlLogs: THROW_IF_ACCESSED,

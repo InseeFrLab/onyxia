@@ -16,7 +16,11 @@ import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
-import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
+import {
+    computeHelmValues,
+    coerceHelmValuesPatch,
+    type FormFieldValue
+} from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
 import type { DeepPartial } from "core/tools/DeepPartial";
 
@@ -35,6 +39,8 @@ type RestorableServiceConfigLike = {
               value: StringifyableAtomic | undefined;
           }[]
         | undefined;
+    // NOTE: When defined, the launcher is in "upgrade" mode for this release.
+    helmReleaseName: string | undefined;
 };
 
 {
@@ -45,6 +51,8 @@ type RestorableServiceConfigLike = {
             : Key extends "catalogId"
               ? RestorableServiceConfig[Key]
               : RestorableServiceConfig[Key] | undefined;
+    } & {
+        helmReleaseName: string | undefined;
     };
 
     assert<Equals<Got, Expected>>;
@@ -123,7 +131,8 @@ export const thunks = {
                         friendlyName,
                         isShared,
                         s3ProfileName: s3ProfileName_pinned,
-                        helmValuesPatch
+                        helmValuesPatch,
+                        helmReleaseName: helmReleaseName_pinned
                     },
                     autoLaunch
                 } = params;
@@ -275,6 +284,7 @@ export const thunks = {
                         readyState: {
                             catalogId,
                             chartName,
+                            helmReleaseName_pinned,
                             chartVersion,
                             chartVersion_default,
                             xOnyxiaContext,
@@ -311,7 +321,10 @@ export const thunks = {
                             availableChartVersions,
                             infoAmountInHelmValues
                         },
-                        helmValuesPatch: helmValuesPatch ?? []
+                        helmValuesPatch: coerceHelmValuesPatch({
+                            helmValuesPatch: helmValuesPatch ?? [],
+                            helmValuesSchema
+                        })
                     })
                 );
 
@@ -367,7 +380,8 @@ export const thunks = {
                         friendlyName: undefined,
                         helmValuesPatch: undefined,
                         isShared: undefined,
-                        s3ProfileName: undefined
+                        s3ProfileName: undefined,
+                        helmReleaseName: undefined
                     },
                     autoLaunch: false
                 })
@@ -393,7 +407,10 @@ export const thunks = {
                 thunks.initialize({
                     restorableConfig: {
                         ...restorableConfig,
-                        chartVersion
+                        chartVersion,
+                        helmReleaseName:
+                            privateSelectors.helmReleaseName_pinned(getState()) ??
+                            undefined
                     },
                     autoLaunch: false
                 })
@@ -419,7 +436,10 @@ export const thunks = {
                 thunks.initialize({
                     restorableConfig: {
                         ...restorableConfig,
-                        s3ProfileName
+                        s3ProfileName,
+                        helmReleaseName:
+                            privateSelectors.helmReleaseName_pinned(getState()) ??
+                            undefined
                     },
                     autoLaunch: false
                 })
@@ -524,14 +544,17 @@ export const thunks = {
             dispatch(actions.launchStarted());
 
             const helmReleaseName = privateSelectors.helmReleaseName(getState());
+            const helmReleaseName_pinned =
+                privateSelectors.helmReleaseName_pinned(getState());
             const helmValues = privateSelectors.helmValues(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(helmReleaseName !== null);
+            assert(helmReleaseName_pinned !== null);
             assert(helmValues !== null);
             assert(restorableConfig !== null);
 
-            await onyxiaApi.helmInstall({
+            const launchParams = {
                 helmReleaseName,
                 catalogId: restorableConfig.catalogId,
                 chartName: restorableConfig.chartName,
@@ -539,7 +562,13 @@ export const thunks = {
                 friendlyName: restorableConfig.friendlyName,
                 isShared: restorableConfig.isShared,
                 values: helmValues
-            });
+            };
+
+            if (helmReleaseName_pinned !== undefined) {
+                await onyxiaApi.helmUpgrade(launchParams);
+            } else {
+                await onyxiaApi.helmInstall(launchParams);
+            }
 
             dispatch(actions.launchCompleted());
         },
