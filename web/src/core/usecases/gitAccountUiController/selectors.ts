@@ -1,9 +1,12 @@
 import { createSelector } from "clean-architecture";
+import type { State as RootState } from "core/bootstrap";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import type { GitUser } from "core/ports/GitProvider";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { getRootContext } from "core/rootContext";
 import { assert } from "tsafe/assert";
+import { name, initialCardUiState, type CardError, type PendingAction } from "./state";
 
 /** What the Git tab of the account page displays. */
 export type AccountView = AccountView.NotReady | AccountView.Ready;
@@ -19,8 +22,6 @@ export declare namespace AccountView {
         isReady: true;
         /** Markdown written by the admin in the instance configuration */
         description: LocalizedString | undefined;
-        /** undefined: no choice and nothing connected */
-        favoriteProviderId: string | undefined;
         providerCards: ProviderCard[];
     };
 
@@ -32,30 +33,78 @@ export declare namespace AccountView {
         /** undefined: the default logo of the type */
         logoUrl: GitProvidersConfig.LogoUrl | undefined;
         documentation: GitProvidersConfig.Documentation | undefined;
-        /** Its identity (connection.user) is the one used when launching a service */
-        isFavorite: boolean;
-        connection: gitProvidersManagement.Connection;
+        /** "connecting": a spinner in place of the chip */
+        status: "connected" | "setup required" | "connection error" | "connecting";
+        /** undefined while connecting */
+        message: ProviderCard.Message | undefined;
+        /** undefined unless connected */
+        gitIdentity:
+            | {
+                  name: string;
+                  /** undefined: private on the provider, the Onyxia account's is used */
+                  email: string | undefined;
+                  /** It is the favorite provider: this identity is used at launch */
+                  isUsedAtLaunch: boolean;
+              }
+            | undefined;
+        favorite: "is favorite" | "can be set as favorite";
+        /** How the last action failed */
+        error: CardError | undefined;
+        /** Where the user revokes Onyxia on the provider, and why it is shown */
+        authorizedApplications:
+            | {
+                  url: string;
+                  reason: "signed out without revocation" | "grant scope conflict";
+              }
+            | undefined;
+        pendingAction: PendingAction | undefined;
         authentication:
             | {
                   type: "oauth";
-                  /**
-                   * undefined: signing out revokes the grant on the provider. Otherwise,
-                   * where the user revokes it themselves (Forgejo).
-                   */
-                  authorizedApplicationsUrl: string | undefined;
+                  /** undefined: signed in, the sign out button is shown instead */
+                  signIn: { label: "sign in" | "sign in again" } | undefined;
+                  isDisabled: boolean;
               }
             | {
                   type: "personal-access-token";
                   personalAccessTokenCreationUrl: string;
+                  /** The input and the save button */
+                  isFormShown: boolean;
+                  isReplaceButtonShown: boolean;
+                  isCancelButtonShown: boolean;
+                  isRemoveButtonShown: boolean;
+                  isDisabled: boolean;
               };
     };
+
+    export namespace ProviderCard {
+        export type Message =
+            | { type: "connected as"; user: GitUser }
+            | { type: "not connected" }
+            | {
+                  type: "error";
+                  reason: Extract<
+                      gitProvidersManagement.Connection,
+                      { status: "error" }
+                  >["reason"];
+              };
+    }
 }
+
+const cardUiStateByProviderId = (rootState: RootState) =>
+    rootState[name].cardUiStateByProviderId;
 
 const main = createSelector(
     gitProvidersManagement.selectors.errorReason,
     gitProvidersManagement.selectors.connections,
     gitProvidersManagement.selectors.favoriteProviderId,
-    (errorReason, connections, favoriteProviderId): AccountView => {
+    cardUiStateByProviderId,
+    (
+        errorReason,
+        connections,
+        favoriteProviderId,
+        cardUiStateByProviderId
+    ): AccountView => {
         if (connections === undefined) {
             return {
                 isReady: false,
@@ -74,6 +123,15 @@ const main = createSelector(
 
                 assert(gitProvider !== undefined && config !== undefined);
 
+                const cardUiState =
+                    cardUiStateByProviderId[providerId] ?? initialCardUiState;
+
+                const isFavorite = providerId === favoriteProviderId;
+
+                const isDisabled =
+                    cardUiState.pendingAction !== undefined ||
+                    connection.status === "connecting";
+
                 return {
                     id: providerId,
                     displayName: gitProvider.displayName,
@@ -81,22 +139,102 @@ const main = createSelector(
                     url: gitProvider.url,
                     logoUrl: config.logoUrl,
                     documentation: config.documentation,
-                    isFavorite: providerId === favoriteProviderId,
-                    connection,
-                    authentication:
-                        gitProvider.ui.type === "oauth"
-                            ? {
-                                  type: "oauth",
-                                  authorizedApplicationsUrl:
-                                      gitProvider.ui.oauth.revokeTokens === undefined
-                                          ? gitProvider.ui.oauth.authorizedApplicationsUrl
-                                          : undefined
-                              }
+                    status: (() => {
+                        switch (connection.status) {
+                            case "connected":
+                                return "connected";
+                            case "connecting":
+                                return "connecting";
+                            case "error":
+                                return "connection error";
+                            case "not connected":
+                                return "setup required";
+                        }
+                    })(),
+                    message: (() => {
+                        switch (connection.status) {
+                            case "connected":
+                                return { type: "connected as", user: connection.user };
+                            case "not connected":
+                                return { type: "not connected" };
+                            case "error":
+                                return { type: "error", reason: connection.reason };
+                            case "connecting":
+                                return undefined;
+                        }
+                    })(),
+                    gitIdentity:
+                        connection.status !== "connected"
+                            ? undefined
                             : {
-                                  type: "personal-access-token",
-                                  personalAccessTokenCreationUrl:
-                                      gitProvider.ui.personalAccessTokenCreationUrl
-                              }
+                                  name: connection.user.name,
+                                  email: connection.user.email,
+                                  isUsedAtLaunch: isFavorite
+                              },
+                    favorite: isFavorite ? "is favorite" : "can be set as favorite",
+                    error: cardUiState.error,
+                    authorizedApplications: (() => {
+                        if (gitProvider.ui.type !== "oauth") {
+                            return undefined;
+                        }
+
+                        const { oauth } = gitProvider.ui;
+
+                        if (cardUiState.error?.type === "grant scope conflict") {
+                            return {
+                                url: oauth.authorizedApplicationsUrl,
+                                reason: "grant scope conflict"
+                            };
+                        }
+
+                        if (cardUiState.isRevocationHintShown) {
+                            return {
+                                url: oauth.authorizedApplicationsUrl,
+                                reason: "signed out without revocation"
+                            };
+                        }
+
+                        return undefined;
+                    })(),
+                    pendingAction: cardUiState.pendingAction,
+                    authentication: (() => {
+                        switch (gitProvider.ui.type) {
+                            case "oauth":
+                                return {
+                                    type: "oauth",
+                                    signIn:
+                                        connection.status === "connected"
+                                            ? undefined
+                                            : {
+                                                  label:
+                                                      connection.status === "error"
+                                                          ? "sign in again"
+                                                          : "sign in"
+                                              },
+                                    isDisabled
+                                };
+                            case "personal-access-token": {
+                                const isConnected = connection.status === "connected";
+                                const { isReplacingPersonalAccessToken } = cardUiState;
+
+                                return {
+                                    type: "personal-access-token",
+                                    personalAccessTokenCreationUrl:
+                                        gitProvider.ui.personalAccessTokenCreationUrl,
+                                    isFormShown:
+                                        !isConnected || isReplacingPersonalAccessToken,
+                                    isReplaceButtonShown:
+                                        isConnected && !isReplacingPersonalAccessToken,
+                                    isCancelButtonShown: isReplacingPersonalAccessToken,
+                                    // A saved token, accepted or not
+                                    isRemoveButtonShown:
+                                        connection.status !== "not connected" &&
+                                        !isReplacingPersonalAccessToken,
+                                    isDisabled
+                                };
+                            }
+                        }
+                    })()
                 };
             }
         );
@@ -104,7 +242,6 @@ const main = createSelector(
         return {
             isReady: true,
             description: gitProvidersConfig.description,
-            favoriteProviderId,
             providerCards
         };
     }

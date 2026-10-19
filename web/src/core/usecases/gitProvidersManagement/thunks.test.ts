@@ -290,6 +290,17 @@ async function setup(params?: {
         return view;
     };
 
+    const getCard = (providerId: string) => {
+        const card = getView().providerCards.find(({ id }) => id === providerId);
+        assert(card !== undefined);
+        return card;
+    };
+
+    const getFavorites = () =>
+        getView()
+            .providerCards.filter(({ favorite }) => favorite === "is favorite")
+            .map(({ id }) => id);
+
     return {
         core,
         dispatch,
@@ -300,7 +311,9 @@ async function setup(params?: {
         authorizeInPopupSpy,
         getConnection,
         getPersisted,
-        getView
+        getView,
+        getCard,
+        getFavorites
     };
 }
 
@@ -311,7 +324,7 @@ beforeEach(() => {
 
 describe("gitProvidersManagement", () => {
     it("migrates the former GitHub token once and checks it", async () => {
-        const { core, getConnection, getPersisted, getView } = await setup({
+        const { core, getConnection, getPersisted, getFavorites } = await setup({
             githubPersonalAccessToken: "ghp_valid"
         });
 
@@ -327,7 +340,7 @@ describe("gitProvidersManagement", () => {
         });
         expect(getConnection("gitlab")).toStrictEqual({ status: "not connected" });
         // The first connected provider stands in for the favorite
-        expect(getView().favoriteProviderId).toBe("github");
+        expect(getFavorites()).toStrictEqual(["github"]);
     });
 
     it("doesn't migrate again once gitConfigStr exists", async () => {
@@ -456,14 +469,14 @@ describe("gitProvidersManagement", () => {
         await core.functions.gitProvidersManagement.load();
 
         await expect(
-            core.functions.gitAccountUiController.signIn({ providerId: "gitlab" })
+            core.functions.gitProvidersManagement.signIn({ providerId: "gitlab" })
         ).rejects.toMatchObject({ reason: "popup blocked" });
 
         expect(getConnection("gitlab")).toStrictEqual({ status: "not connected" });
     });
 
     it("revokes on sign out when the provider supports it", async () => {
-        const { core, gitLab, refreshTokenByProviderId, getConnection, getView } =
+        const { core, gitLab, refreshTokenByProviderId, getConnection, getCard } =
             await setup({ sessions: { gitlab: "refresh-0", forgejo: "refresh-0" } });
 
         await core.functions.gitProvidersManagement.load();
@@ -474,12 +487,15 @@ describe("gitProvidersManagement", () => {
         expect(refreshTokenByProviderId.has("gitlab")).toBe(false);
         expect(getConnection("gitlab")).toStrictEqual({ status: "not connected" });
 
-        const forgejoCard = getView().providerCards.find(({ id }) => id === "forgejo");
+        // GitLab revoked the grant itself: nothing for the user to do
+        expect(getCard("gitlab").authorizedApplications).toBe(undefined);
 
-        assert(forgejoCard?.authentication.type === "oauth");
-        expect(forgejoCard.authentication.authorizedApplicationsUrl).toBe(
-            "https://forgejo/applications"
-        );
+        await core.functions.gitAccountUiController.signOut({ providerId: "forgejo" });
+
+        expect(getCard("forgejo").authorizedApplications).toStrictEqual({
+            url: "https://forgejo/applications",
+            reason: "signed out without revocation"
+        });
     });
 
     it("saves a PAT only once the provider accepted it", async () => {
@@ -488,7 +504,7 @@ describe("gitProvidersManagement", () => {
         await core.functions.gitProvidersManagement.load();
 
         expect(
-            await core.functions.gitAccountUiController.setPersonalAccessToken({
+            await core.functions.gitProvidersManagement.setPersonalAccessToken({
                 providerId: "github",
                 personalAccessToken: "ghp_wrong"
             })
@@ -496,7 +512,7 @@ describe("gitProvidersManagement", () => {
         expect(getPersisted()).toBe(null);
 
         expect(
-            await core.functions.gitAccountUiController.setPersonalAccessToken({
+            await core.functions.gitProvidersManagement.setPersonalAccessToken({
                 providerId: "github",
                 personalAccessToken: " ghp_valid "
             })
@@ -509,7 +525,7 @@ describe("gitProvidersManagement", () => {
             user: user_gitHub
         });
 
-        await core.functions.gitAccountUiController.removePersonalAccessToken({
+        await core.functions.gitProvidersManagement.removePersonalAccessToken({
             providerId: "github"
         });
 
@@ -534,7 +550,7 @@ describe("gitProvidersManagement", () => {
     });
 
     it("keeps the explicit favorite, even when not connected", async () => {
-        const { core, getView, getPersisted } = await setup({
+        const { core, getFavorites, getPersisted } = await setup({
             githubPersonalAccessToken: "ghp_valid"
         });
 
@@ -545,14 +561,7 @@ describe("gitProvidersManagement", () => {
         });
 
         expect(getPersisted().favoriteProviderId).toBe("forgejo");
-        expect(getView().favoriteProviderId).toBe("forgejo");
-        expect(
-            getView().providerCards.map(({ id, isFavorite }) => [id, isFavorite])
-        ).toStrictEqual([
-            ["gitlab", false],
-            ["forgejo", true],
-            ["github", false]
-        ]);
+        expect(getFavorites()).toStrictEqual(["forgejo"]);
     });
 
     describe("getGitContext", () => {
@@ -630,6 +639,175 @@ describe("gitProvidersManagement", () => {
             // GitLab comes first in the configuration: it is the favorite
             expect(gitContext.name).toBe(user_gitLab.name);
             expect(gitContext.token).toBe("ghp_legacy");
+        });
+    });
+
+    describe("gitAccountUiController", () => {
+        it("shows a blocked popup on the card, without rejecting", async () => {
+            const { core, getCard } = await setup({
+                authorizeInPopup: () =>
+                    Promise.reject(
+                        new OAuthAuthorizationError("popup blocked", "blocked")
+                    )
+            });
+
+            await core.functions.gitProvidersManagement.load();
+
+            const prSignIn = core.functions.gitAccountUiController.signIn({
+                providerId: "gitlab"
+            });
+
+            expect(getCard("gitlab").pendingAction).toBe("sign in");
+            assert(getCard("gitlab").authentication.type === "oauth");
+            expect(getCard("gitlab").authentication.isDisabled).toBe(true);
+
+            await prSignIn;
+
+            expect(getCard("gitlab")).toMatchObject({
+                pendingAction: undefined,
+                error: { type: "popup blocked" },
+                status: "setup required",
+                authentication: { signIn: { label: "sign in" }, isDisabled: false }
+            });
+        });
+
+        it("explains a Forgejo grant given with other scopes", async () => {
+            const { core, getCard } = await setup({
+                authorizeInPopup: () =>
+                    Promise.reject(
+                        new OAuthAuthorizationError(
+                            "denied",
+                            "denied",
+                            "a grant exists with different scope"
+                        )
+                    )
+            });
+
+            await core.functions.gitProvidersManagement.load();
+
+            await core.functions.gitAccountUiController.signIn({ providerId: "forgejo" });
+
+            expect(getCard("forgejo")).toMatchObject({
+                error: { type: "grant scope conflict" },
+                authorizedApplications: {
+                    url: "https://forgejo/applications",
+                    reason: "grant scope conflict"
+                }
+            });
+        });
+
+        it("keeps the provider's reason of a denial", async () => {
+            const { core, getCard } = await setup({
+                authorizeInPopup: () =>
+                    Promise.reject(
+                        new OAuthAuthorizationError("denied", "denied", "access_denied")
+                    )
+            });
+
+            await core.functions.gitProvidersManagement.load();
+
+            await core.functions.gitAccountUiController.signIn({ providerId: "gitlab" });
+
+            expect(getCard("gitlab").error).toStrictEqual({
+                type: "sign in denied",
+                providerError: "access_denied"
+            });
+        });
+
+        it("offers to sign in again when the session expired", async () => {
+            const { core, gitLab, getCard } = await setup({
+                sessions: { gitlab: "refresh-0" }
+            });
+
+            gitLab.behavior.isRefreshRejected = true;
+
+            await core.functions.gitProvidersManagement.load();
+
+            expect(getCard("gitlab")).toMatchObject({
+                status: "connection error",
+                message: { type: "error", reason: "session expired" },
+                authentication: { signIn: { label: "sign in again" } }
+            });
+        });
+
+        it("shows the git identity of the favorite as the one used at launch", async () => {
+            const { core, getCard } = await setup({
+                githubPersonalAccessToken: "ghp_valid",
+                sessions: { gitlab: "refresh-0" }
+            });
+
+            await core.functions.gitProvidersManagement.load();
+
+            expect(getCard("gitlab").gitIdentity).toStrictEqual({
+                name: user_gitLab.name,
+                email: user_gitLab.email,
+                isUsedAtLaunch: true
+            });
+            expect(getCard("github").gitIdentity).toStrictEqual({
+                name: user_gitHub.name,
+                email: undefined,
+                isUsedAtLaunch: false
+            });
+            expect(getCard("forgejo").gitIdentity).toBe(undefined);
+        });
+
+        it("walks through the personal access token form", async () => {
+            const { core, getCard, getPersisted } = await setup();
+
+            await core.functions.gitProvidersManagement.load();
+
+            expect(getCard("github").authentication).toMatchObject({
+                isFormShown: true,
+                isReplaceButtonShown: false,
+                isRemoveButtonShown: false
+            });
+
+            await core.functions.gitAccountUiController.setPersonalAccessToken({
+                providerId: "github",
+                personalAccessToken: "ghp_wrong"
+            });
+
+            expect(getCard("github").error).toStrictEqual({
+                type: "personal access token rejected"
+            });
+            expect(getCard("github").authentication).toMatchObject({ isFormShown: true });
+            expect(getPersisted()).toBe(null);
+
+            await core.functions.gitAccountUiController.setPersonalAccessToken({
+                providerId: "github",
+                personalAccessToken: "ghp_valid"
+            });
+
+            expect(getCard("github")).toMatchObject({
+                error: undefined,
+                status: "connected",
+                authentication: {
+                    isFormShown: false,
+                    isReplaceButtonShown: true,
+                    isCancelButtonShown: false,
+                    isRemoveButtonShown: true
+                }
+            });
+
+            core.functions.gitAccountUiController.startReplacingPersonalAccessToken({
+                providerId: "github"
+            });
+
+            expect(getCard("github").authentication).toMatchObject({
+                isFormShown: true,
+                isReplaceButtonShown: false,
+                isCancelButtonShown: true,
+                isRemoveButtonShown: false
+            });
+
+            core.functions.gitAccountUiController.cancelReplacingPersonalAccessToken({
+                providerId: "github"
+            });
+
+            expect(getCard("github").authentication).toMatchObject({
+                isFormShown: false,
+                isReplaceButtonShown: true
+            });
         });
     });
 });

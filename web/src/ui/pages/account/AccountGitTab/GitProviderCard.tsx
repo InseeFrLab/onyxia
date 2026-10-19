@@ -8,21 +8,20 @@ import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
 import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
-import type { AccountView } from "core/usecases/gitAccountUiController";
-import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
-import { ProviderStateChip, type ProviderState } from "../AccountAiTab/ProviderCard";
+import type { AccountView, CardError } from "core/usecases/gitAccountUiController";
+import { ProviderStateChip } from "../AccountAiTab/ProviderCard";
 import { FormTextField } from "../AccountAiTab/shared/FormFields";
 
 type Props = {
     className?: string;
     card: AccountView.ProviderCard;
     /** Must open the popup synchronously, it is called from the click handler */
-    onSignIn: () => Promise<void>;
-    onSignOut: () => Promise<void>;
-    onSetPersonalAccessToken: (params: {
-        personalAccessToken: string;
-    }) => Promise<{ isAccepted: boolean }>;
-    onRemovePersonalAccessToken: () => Promise<void>;
+    onSignIn: () => void;
+    onSignOut: () => void;
+    onSetPersonalAccessToken: (params: { personalAccessToken: string }) => void;
+    onStartReplacingPersonalAccessToken: () => void;
+    onCancelReplacingPersonalAccessToken: () => void;
+    onRemovePersonalAccessToken: () => void;
     onSetFavorite: () => void;
 };
 
@@ -33,6 +32,8 @@ export function GitProviderCard(props: Props) {
         onSignIn,
         onSignOut,
         onSetPersonalAccessToken,
+        onStartReplacingPersonalAccessToken,
+        onCancelReplacingPersonalAccessToken,
         onRemovePersonalAccessToken,
         onSetFavorite
     } = props;
@@ -42,115 +43,7 @@ export function GitProviderCard(props: Props) {
     const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
     const { resolveLocalizedString } = useResolveLocalizedString();
 
-    const { connection, authentication } = card;
-
-    /** What went wrong with the last action, cleared by the next one */
-    const [actionError, setActionError] = useState<string | undefined>(undefined);
-    const [isBusy, setIsBusy] = useState(false);
-    const [isRevocationHintShown, setIsRevocationHintShown] = useState(false);
-
-    const [personalAccessToken, setPersonalAccessToken] = useState("");
-    const [isReplacingToken, setIsReplacingToken] = useState(false);
-
-    const runAction = (params: {
-        action: () => Promise<void>;
-        getErrorMessage: (error: unknown) => string;
-    }) => {
-        const { action, getErrorMessage } = params;
-
-        setActionError(undefined);
-        setIsRevocationHintShown(false);
-        setIsBusy(true);
-
-        // NOTE: Called synchronously, the sign in popup opens in the click handler.
-        action()
-            .catch(error => setActionError(getErrorMessage(error)))
-            .finally(() => setIsBusy(false));
-    };
-
-    const submitPersonalAccessToken = () => {
-        if (personalAccessToken.trim() === "") {
-            return;
-        }
-
-        runAction({
-            action: async () => {
-                const { isAccepted } = await onSetPersonalAccessToken({
-                    personalAccessToken
-                });
-
-                if (!isAccepted) {
-                    throw new TokenRejectedError();
-                }
-
-                setPersonalAccessToken("");
-                setIsReplacingToken(false);
-            },
-            getErrorMessage: error =>
-                error instanceof TokenRejectedError
-                    ? t("token rejected")
-                    : t("token check failed")
-        });
-    };
-
-    const getSignInErrorMessage = (error: unknown) => {
-        if (error instanceof OAuthAuthorizationError) {
-            switch (error.reason) {
-                case "popup blocked":
-                    return t("popup blocked");
-                case "popup closed":
-                    return t("sign in cancelled");
-                case "denied":
-                    return error.providerError === undefined
-                        ? t("sign in denied")
-                        : `${t("sign in denied")} (${error.providerError})`;
-                case "timeout":
-                    return t("sign in failed");
-            }
-        }
-        return t("sign in failed");
-    };
-
-    const state: ProviderState = (() => {
-        switch (connection.status) {
-            case "connected":
-                return "connected";
-            case "error":
-                return "connection error";
-            case "not connected":
-            case "connecting":
-                return "setup required";
-        }
-    })();
-
-    const isConnected = connection.status === "connected";
-
-    const connectionMessage = (() => {
-        switch (connection.status) {
-            case "connected":
-                return t("connected as", {
-                    name: connection.user.name,
-                    username: connection.user.username
-                });
-            case "not connected":
-                return t("not connected");
-            case "connecting":
-                return undefined;
-            case "error":
-                switch (connection.reason) {
-                    case "personal access token rejected":
-                        return t("personal access token rejected");
-                    case "session expired":
-                        return t("session expired");
-                    case "loading failed":
-                        return t("loading failed");
-                }
-        }
-    })();
-
-    const isTokenFormShown =
-        authentication.type === "personal-access-token" &&
-        (!isConnected || isReplacingToken);
+    const { authentication } = card;
 
     return (
         <section className={cx(classes.root, className)}>
@@ -186,32 +79,47 @@ export function GitProviderCard(props: Props) {
                         {card.url.replace(/^https?:\/\//, "")}
                     </Link>
                 </div>
-                {connection.status === "connecting" ? (
+                {card.status === "connecting" ? (
                     <CircularProgress size={20} />
                 ) : (
-                    <ProviderStateChip state={state} />
+                    <ProviderStateChip state={card.status} />
                 )}
             </div>
 
-            {connectionMessage !== undefined && (
-                <Text typo="body 1" color={isConnected ? "primary" : "secondary"}>
-                    {connectionMessage}
+            {card.message !== undefined && (
+                <Text
+                    typo="body 1"
+                    color={card.message.type === "connected as" ? "primary" : "secondary"}
+                >
+                    {(() => {
+                        switch (card.message.type) {
+                            case "connected as":
+                                return t("connected as", {
+                                    name: card.message.user.name,
+                                    username: card.message.user.username
+                                });
+                            case "not connected":
+                                return t("not connected");
+                            case "error":
+                                return t(card.message.reason);
+                        }
+                    })()}
                 </Text>
             )}
 
-            {connection.status === "connected" && (
+            {card.gitIdentity !== undefined && (
                 <div className={classes.gitIdentity}>
                     <Text typo="body 2" color="secondary">
-                        {connection.user.email === undefined
+                        {card.gitIdentity.email === undefined
                             ? t("git identity without email", {
-                                  name: connection.user.name
+                                  name: card.gitIdentity.name
                               })
                             : t("git identity", {
-                                  name: connection.user.name,
-                                  email: connection.user.email
+                                  name: card.gitIdentity.name,
+                                  email: card.gitIdentity.email
                               })}
                     </Text>
-                    {card.isFavorite && (
+                    {card.gitIdentity.isUsedAtLaunch && (
                         <Text typo="body 2" color="secondary">
                             {t("git identity used at launch")}
                         </Text>
@@ -243,165 +151,131 @@ export function GitProviderCard(props: Props) {
                 </div>
             )}
 
-            {isTokenFormShown && authentication.type === "personal-access-token" && (
-                <form
-                    className={classes.tokenForm}
-                    onSubmit={event => {
-                        event.preventDefault();
-
-                        submitPersonalAccessToken();
-                    }}
-                >
-                    <FormTextField
-                        label={t("personal access token")}
-                        value={personalAccessToken}
-                        onChange={setPersonalAccessToken}
-                        autoComplete="off"
-                        isSensitive={true}
+            {authentication.type === "personal-access-token" &&
+                authentication.isFormShown && (
+                    <PersonalAccessTokenForm
+                        providerName={card.displayName}
+                        personalAccessTokenCreationUrl={
+                            authentication.personalAccessTokenCreationUrl
+                        }
+                        isDisabled={authentication.isDisabled}
+                        isChecking={card.pendingAction === "set personal access token"}
+                        onSubmit={onSetPersonalAccessToken}
                     />
-                    <Link
-                        className={classes.inlineLink}
-                        href={authentication.personalAccessTokenCreationUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        underline="hover"
-                    >
-                        {t("create a token", { providerName: card.displayName })}
-                        <Icon icon={getIconUrlByName("OpenInNew")} size="extra small" />
-                    </Link>
-                </form>
-            )}
+                )}
 
-            {actionError !== undefined && (
+            {card.error !== undefined && (
                 <div role="alert">
                     <Text typo="body 2" className={classes.error}>
-                        {actionError}
+                        <CardErrorMessage
+                            error={card.error}
+                            providerName={card.displayName}
+                        />
                     </Text>
                 </div>
             )}
 
-            {isRevocationHintShown &&
-                authentication.type === "oauth" &&
-                authentication.authorizedApplicationsUrl !== undefined && (
-                    <Text typo="body 2" color="secondary">
-                        {t("revoke on provider", { providerName: card.displayName })}{" "}
-                        <Link
-                            href={authentication.authorizedApplicationsUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            underline="hover"
-                        >
-                            {t("authorized applications")}
-                        </Link>
-                    </Text>
-                )}
+            {card.authorizedApplications !== undefined && (
+                <Text typo="body 2" color="secondary">
+                    {(() => {
+                        switch (card.authorizedApplications.reason) {
+                            case "grant scope conflict":
+                                return t("revoke previous grant", {
+                                    providerName: card.displayName
+                                });
+                            case "signed out without revocation":
+                                return t("revoke on provider", {
+                                    providerName: card.displayName
+                                });
+                        }
+                    })()}{" "}
+                    <Link
+                        href={card.authorizedApplications.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        underline="hover"
+                    >
+                        {t("authorized applications")}
+                    </Link>
+                </Text>
+            )}
 
             <div className={classes.footer}>
-                {card.isFavorite ? (
-                    <div className={classes.favorite}>
-                        <Icon icon={getIconUrlByName("Star")} size="small" />
-                        <Text typo="label 2">{t("favorite")}</Text>
-                    </div>
-                ) : (
-                    <Button
-                        variant="ternary"
-                        startIcon={getIconUrlByName("StarBorder")}
-                        onClick={onSetFavorite}
-                    >
-                        {t("set as favorite")}
-                    </Button>
-                )}
+                {(() => {
+                    switch (card.favorite) {
+                        case "is favorite":
+                            return (
+                                <div className={classes.favorite}>
+                                    <Icon icon={getIconUrlByName("Star")} size="small" />
+                                    <Text typo="label 2">{t("favorite")}</Text>
+                                </div>
+                            );
+                        case "can be set as favorite":
+                            return (
+                                <Button
+                                    variant="ternary"
+                                    startIcon={getIconUrlByName("StarBorder")}
+                                    onClick={onSetFavorite}
+                                >
+                                    {t("set as favorite")}
+                                </Button>
+                            );
+                    }
+                })()}
 
                 <div className={classes.actions}>
                     {(() => {
                         switch (authentication.type) {
                             case "oauth":
-                                return isConnected ? (
+                                return authentication.signIn === undefined ? (
                                     <Button
                                         variant="secondary"
-                                        disabled={isBusy}
-                                        onClick={() =>
-                                            runAction({
-                                                action: async () => {
-                                                    await onSignOut();
-                                                    setIsRevocationHintShown(true);
-                                                },
-                                                getErrorMessage: () =>
-                                                    t("sign out failed")
-                                            })
-                                        }
+                                        disabled={authentication.isDisabled}
+                                        onClick={onSignOut}
                                     >
                                         {t("sign out")}
                                     </Button>
                                 ) : (
                                     <Button
                                         variant="primary"
-                                        disabled={
-                                            isBusy || connection.status === "connecting"
-                                        }
-                                        onClick={() =>
-                                            runAction({
-                                                action: onSignIn,
-                                                getErrorMessage: getSignInErrorMessage
-                                            })
-                                        }
+                                        disabled={authentication.isDisabled}
+                                        onClick={onSignIn}
                                     >
-                                        {connection.status === "error"
-                                            ? t("sign in again")
-                                            : t("sign in")}
+                                        {t(authentication.signIn.label)}
                                     </Button>
                                 );
                             case "personal-access-token":
                                 return (
                                     <>
-                                        {isConnected && !isReplacingToken && (
+                                        {authentication.isReplaceButtonShown && (
                                             <Button
                                                 variant="ternary"
-                                                disabled={isBusy}
-                                                onClick={() => setIsReplacingToken(true)}
+                                                disabled={authentication.isDisabled}
+                                                onClick={
+                                                    onStartReplacingPersonalAccessToken
+                                                }
                                             >
                                                 {t("replace")}
                                             </Button>
                                         )}
-                                        {isReplacingToken && (
+                                        {authentication.isCancelButtonShown && (
                                             <Button
                                                 variant="ternary"
-                                                disabled={isBusy}
-                                                onClick={() => {
-                                                    setIsReplacingToken(false);
-                                                    setPersonalAccessToken("");
-                                                    setActionError(undefined);
-                                                }}
+                                                disabled={authentication.isDisabled}
+                                                onClick={
+                                                    onCancelReplacingPersonalAccessToken
+                                                }
                                             >
                                                 {t("cancel")}
                                             </Button>
                                         )}
-                                        {connection.status !== "not connected" &&
-                                            !isReplacingToken && (
-                                                <Button
-                                                    variant="secondary"
-                                                    disabled={isBusy}
-                                                    onClick={() =>
-                                                        runAction({
-                                                            action: onRemovePersonalAccessToken,
-                                                            getErrorMessage: () =>
-                                                                t("remove failed")
-                                                        })
-                                                    }
-                                                >
-                                                    {t("remove")}
-                                                </Button>
-                                            )}
-                                        {isTokenFormShown && (
+                                        {authentication.isRemoveButtonShown && (
                                             <Button
-                                                variant="primary"
-                                                disabled={
-                                                    isBusy ||
-                                                    personalAccessToken.trim() === ""
-                                                }
-                                                onClick={submitPersonalAccessToken}
+                                                variant="secondary"
+                                                disabled={authentication.isDisabled}
+                                                onClick={onRemovePersonalAccessToken}
                                             >
-                                                {isBusy ? t("checking") : t("save")}
+                                                {t("remove")}
                                             </Button>
                                         )}
                                     </>
@@ -414,7 +288,99 @@ export function GitProviderCard(props: Props) {
     );
 }
 
-class TokenRejectedError extends Error {}
+/**
+ * The token being typed stays here, not in the core state: it is a secret. The form
+ * unmounts once the token is saved, which empties it.
+ */
+function PersonalAccessTokenForm(props: {
+    providerName: string;
+    personalAccessTokenCreationUrl: string;
+    isDisabled: boolean;
+    isChecking: boolean;
+    onSubmit: (params: { personalAccessToken: string }) => void;
+}) {
+    const {
+        providerName,
+        personalAccessTokenCreationUrl,
+        isDisabled,
+        isChecking,
+        onSubmit
+    } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ GitProviderCard });
+
+    const [personalAccessToken, setPersonalAccessToken] = useState("");
+
+    return (
+        <form
+            className={classes.tokenForm}
+            onSubmit={event => {
+                event.preventDefault();
+                onSubmit({ personalAccessToken });
+            }}
+        >
+            <FormTextField
+                label={t("personal access token")}
+                value={personalAccessToken}
+                onChange={setPersonalAccessToken}
+                autoComplete="off"
+                isSensitive={true}
+            />
+            <div className={classes.tokenFormFooter}>
+                <Link
+                    className={classes.inlineLink}
+                    href={personalAccessTokenCreationUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    underline="hover"
+                >
+                    {t("create a token", { providerName })}
+                    <Icon icon={getIconUrlByName("OpenInNew")} size="extra small" />
+                </Link>
+                <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={isDisabled || personalAccessToken.trim() === ""}
+                >
+                    {isChecking ? t("checking") : t("save")}
+                </Button>
+            </div>
+        </form>
+    );
+}
+
+function CardErrorMessage(props: { error: CardError; providerName: string }) {
+    const { error, providerName } = props;
+
+    const { t } = useTranslation({ GitProviderCard });
+
+    switch (error.type) {
+        case "popup blocked":
+            return <>{t("popup blocked")}</>;
+        case "sign in cancelled":
+            return <>{t("sign in cancelled")}</>;
+        case "sign in denied":
+            return (
+                <>
+                    {t("sign in denied")}
+                    {error.providerError !== undefined && ` (${error.providerError})`}
+                </>
+            );
+        case "grant scope conflict":
+            return <>{t("grant scope conflict", { providerName })}</>;
+        case "sign in failed":
+            return <>{t("sign in failed")}</>;
+        case "sign out failed":
+            return <>{t("sign out failed")}</>;
+        case "personal access token rejected":
+            return <>{t("token rejected")}</>;
+        case "personal access token check failed":
+            return <>{t("token check failed")}</>;
+        case "remove failed":
+            return <>{t("remove failed")}</>;
+    }
+}
 
 const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     root: {
@@ -479,6 +445,13 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         flexDirection: "column",
         gap: theme.spacing(1.5)
     },
+    tokenFormFooter: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: theme.spacing(2)
+    },
     error: {
         color: theme.colors.useCases.alertSeverity.error.main
     },
@@ -521,6 +494,8 @@ const { i18n } = declareComponentKeys<
     | "sign in failed"
     | "sign out failed"
     | { K: "revoke on provider"; P: { providerName: string } }
+    | { K: "grant scope conflict"; P: { providerName: string } }
+    | { K: "revoke previous grant"; P: { providerName: string } }
     | "authorized applications"
     | "personal access token"
     | { K: "create a token"; P: { providerName: string } }

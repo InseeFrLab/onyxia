@@ -106,6 +106,10 @@ export const translations: Translations<"es"> = {
         "sign out failed": "El cierre de sesión falló.",
         "revoke on provider": ({ providerName }) =>
             `Ha cerrado la sesión en Onyxia. Para revocar completamente su acceso, vaya a sus aplicaciones autorizadas en ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia ya fue autorizado en ${providerName} con otros permisos.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
         "authorized applications": "aplicaciones autorizadas",
         "personal access token": "Token de acceso personal",
         "create a token": ({ providerName }) => `Crear un token en ${providerName}`,

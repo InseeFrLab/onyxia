@@ -105,6 +105,10 @@ export const translations: Translations<"no"> = {
         "sign out failed": "Utlogging mislyktes.",
         "revoke on provider": ({ providerName }) =>
             `Du er logget ut av Onyxia. For å trekke tilbake tilgangen helt, gå til de autoriserte applikasjonene dine på ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia er allerede autorisert på ${providerName} med andre tillatelser.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Trekk tilbake den autorisasjonen på ${providerName}, og logg deretter inn på nytt:`,
         "authorized applications": "autoriserte applikasjoner",
         "personal access token": "Personlig tilgangstoken",
         "create a token": ({ providerName }) => `Opprett et token på ${providerName}`,
