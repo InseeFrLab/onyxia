@@ -107,6 +107,10 @@ export const translations: Translations<"fr"> = {
         "sign out failed": "La déconnexion a échoué.",
         "revoke on provider": ({ providerName }) =>
             `Vous êtes déconnecté d'Onyxia. Pour révoquer complètement son accès sur ${providerName}, ouvrez vos`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia a déjà été autorisé sur ${providerName} avec d'autres droits.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Révoquez cette autorisation sur ${providerName}, puis reconnectez-vous :`,
         "authorized applications": "applications autorisées",
         "personal access token": "Token d'accès personnel",
         "create a token": ({ providerName }) => `Créer un token sur ${providerName}`,

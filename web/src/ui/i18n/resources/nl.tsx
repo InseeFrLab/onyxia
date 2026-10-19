@@ -105,6 +105,10 @@ export const translations: Translations<"nl"> = {
         "sign out failed": "Afmelden mislukt.",
         "revoke on provider": ({ providerName }) =>
             `U bent afgemeld bij Onyxia. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia is op ${providerName} al geautoriseerd met andere rechten.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Trek die autorisatie in op ${providerName} en meld u daarna opnieuw aan:`,
         "authorized applications": "geautoriseerde applicaties",
         "personal access token": "Persoonlijk toegangstoken",
         "create a token": ({ providerName }) => `Een token aanmaken op ${providerName}`,

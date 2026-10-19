@@ -118,6 +118,16 @@ function GitProviders() {
                                 personalAccessToken
                             })
                         }
+                        onStartReplacingPersonalAccessToken={() =>
+                            gitAccountUiController.startReplacingPersonalAccessToken({
+                                providerId: card.id
+                            })
+                        }
+                        onCancelReplacingPersonalAccessToken={() =>
+                            gitAccountUiController.cancelReplacingPersonalAccessToken({
+                                providerId: card.id
+                            })
+                        }
                         onRemovePersonalAccessToken={() =>
                             gitAccountUiController.removePersonalAccessToken({
                                 providerId: card.id

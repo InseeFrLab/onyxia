@@ -105,6 +105,10 @@ export const translations: Translations<"de"> = {
         "sign out failed": "Abmeldung fehlgeschlagen.",
         "revoke on provider": ({ providerName }) =>
             `Sie sind von Onyxia abgemeldet. Um den Zugriff vollständig zu widerrufen, öffnen Sie Ihre autorisierten Anwendungen auf ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia wurde auf ${providerName} bereits mit anderen Berechtigungen autorisiert.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Widerrufen Sie diese Autorisierung auf ${providerName} und melden Sie sich dann erneut an:`,
         "authorized applications": "autorisierte Anwendungen",
         "personal access token": "Persönliches Zugriffstoken",
         "create a token": ({ providerName }) => `Token auf ${providerName} erstellen`,

@@ -108,6 +108,10 @@ export const translations: Translations<"fi"> = {
         "sign out failed": "Uloskirjautuminen epäonnistui.",
         "revoke on provider": ({ providerName }) =>
             `Olet kirjautunut ulos Onyxiasta. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia on jo valtuutettu palvelussa ${providerName} eri oikeuksilla.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
         "authorized applications": "valtuutetut sovellukset",
         "personal access token": "Henkilökohtainen käyttötunnus",
         "create a token": ({ providerName }) => `Luo tunnus palvelussa ${providerName}`,

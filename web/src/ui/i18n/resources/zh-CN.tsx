@@ -98,6 +98,10 @@ export const translations: Translations<"zh-CN"> = {
         "sign out failed": "退出登录失败。",
         "revoke on provider": ({ providerName }) =>
             `您已退出 Onyxia。要完全撤销其访问权限，请前往 ${providerName} 上的已授权应用：`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia 已在 ${providerName} 上以其他权限获得授权。`,
+        "revoke previous grant": ({ providerName }) =>
+            `请先在 ${providerName} 上撤销该授权，然后重新登录：`,
         "authorized applications": "已授权应用",
         "personal access token": "个人访问令牌",
         "create a token": ({ providerName }) => `在 ${providerName} 上创建令牌`,
