@@ -104,6 +104,17 @@ describe("GIT_PROVIDERS environment configuration", () => {
         expect(() => parse({ providers: [gitLab, gitLab] })).toThrow(/git\.example\.com/);
     });
 
+    it("tells the format of the proof of concept changed", () => {
+        expect(() =>
+            parse({
+                initScriptUrl: "https://example.com/init.sh",
+                providers: [
+                    { type: "gitlab", url: "https://git.example.com", oauthClientId: "x" }
+                ]
+            })
+        ).toThrow(/no longer supported/);
+    });
+
     it("refuses an invalid JSON5", () => {
         expect(() => parseGitProvidersConfigFromEnvValue({ envValue: "{" })).toThrow(
             /JSON5/
