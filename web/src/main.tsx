@@ -12,9 +12,24 @@ if (import.meta.env.DEV) {
 }
 */
 
+import { GIT_OAUTH_CALLBACK_PATH } from "core/ports/OAuthAuthorization";
+
 (async () => {
     if (window.kcContext !== undefined) {
         import("keycloak-theme/main");
+        return;
+    }
+
+    // NOTE: Must run before oidc-spa, the callback URL carries an OAuth code and state
+    // that aren't meant for it.
+    if (
+        window.location.pathname ===
+        `${import.meta.env.BASE_URL}${GIT_OAUTH_CALLBACK_PATH}`
+    ) {
+        const { handleOAuthAuthorizationCallback } = await import(
+            "core/adapters/oauthAuthorization/oauthAuthorization"
+        );
+        handleOAuthAuthorizationCallback();
         return;
     }
 
