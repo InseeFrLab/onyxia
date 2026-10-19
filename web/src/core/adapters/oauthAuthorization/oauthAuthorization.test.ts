@@ -61,14 +61,17 @@ describe("createOAuthAuthorization", () => {
     });
 
     it("fails when the user denies", async () => {
-        mockPopup({ callbackSearch: state => `error=access_denied&state=${state}` });
+        mockPopup({
+            callbackSearch: state =>
+                `error=invalid_scope&error_description=unknown+scope&state=${state}`
+        });
 
         await expect(
             createOAuthAuthorization({ redirectUri }).authorizeInPopup({
                 getAuthorizationUrl: ({ state }) =>
                     `https://git.example.com/authorize?state=${state}`
             })
-        ).rejects.toMatchObject({ reason: "denied" });
+        ).rejects.toMatchObject({ reason: "denied", providerError: "unknown scope" });
     });
 
     it("fails explicitly when the popup is blocked", async () => {

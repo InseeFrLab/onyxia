@@ -72,7 +72,53 @@ export const translations: Translations<"it"> = {
                 Questo token sarà anche disponibile come variabile d'ambiente:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Provider Git",
+        "unreadable config title": "Le tue impostazioni Git non sono leggibili",
+        "unreadable config":
+            "Le tue impostazioni Git salvate sono danneggiate. Reimpostarle rimuove i tuoi token di accesso personali e il provider preferito.",
+        "reset config": "Reimposta",
+        "loading failed title": "Provider Git non disponibili",
+        "loading failed": "Non è stato possibile caricare i tuoi provider Git.",
+        retry: "Riprova"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `Connesso come ${name} (@${username})`,
+        "not connected": "Non connesso.",
+        "git identity": ({ name, email }) => `Identità Git: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Identità Git: ${name}, con l'email del tuo account Onyxia (l'email è privata sul provider)`,
+        "git identity used at launch":
+            "È l'identità usata da git nei tuoi servizi, perché è il tuo provider preferito.",
+        "personal access token rejected":
+            "Il tuo token salvato non è più accettato, sostituiscilo.",
+        "session expired": "La tua sessione è scaduta, accedi di nuovo.",
+        "loading failed": "Il provider non è raggiungibile.",
+        "sign in": "Accedi",
+        "sign in again": "Accedi di nuovo",
+        "sign out": "Esci",
+        "popup blocked":
+            "La finestra di accesso è stata bloccata: consenti i popup per questo sito e riprova.",
+        "sign in cancelled": "La finestra di accesso è stata chiusa prima del termine.",
+        "sign in denied": "L'accesso è stato negato dal provider.",
+        "sign in failed": "Accesso non riuscito.",
+        "sign out failed": "Uscita non riuscita.",
+        "revoke on provider": ({ providerName }) =>
+            `Sei uscito da Onyxia. Per revocarne completamente l'accesso, vai alle tue applicazioni autorizzate su ${providerName}:`,
+        "authorized applications": "applicazioni autorizzate",
+        "personal access token": "Token di accesso personale",
+        "create a token": ({ providerName }) => `Crea un token su ${providerName}`,
+        save: "Salva",
+        checking: "Verifica in corso…",
+        replace: "Sostituisci",
+        cancel: "Annulla",
+        remove: "Rimuovi",
+        "remove failed": "Impossibile rimuovere il token.",
+        "token rejected":
+            "Questo token è stato rifiutato dal provider, non è stato salvato nulla.",
+        "token check failed": "Impossibile verificare il token, riprova.",
+        favorite: "Preferito",
+        "set as favorite": "Imposta come preferito"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connetti al cluster Kubernetes",
@@ -679,9 +725,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

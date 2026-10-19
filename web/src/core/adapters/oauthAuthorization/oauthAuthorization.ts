@@ -62,9 +62,15 @@ export function createOAuthAuthorization(params: {
             const code = callbackUrl.searchParams.get("code");
 
             if (callbackUrl.searchParams.has("error") || code === null) {
+                const providerError =
+                    callbackUrl.searchParams.get("error_description") ??
+                    callbackUrl.searchParams.get("error") ??
+                    "no code returned";
+
                 throw new OAuthAuthorizationError(
                     "denied",
-                    `Authorization denied: ${callbackUrl.searchParams.get("error_description") ?? callbackUrl.searchParams.get("error") ?? "no code returned"}`
+                    `Authorization denied: ${providerError}`,
+                    providerError
                 );
             }
 

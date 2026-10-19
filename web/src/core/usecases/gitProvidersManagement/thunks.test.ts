@@ -23,6 +23,12 @@ vi.mock("core/rootContext", () => ({ getRootContext: () => mocks.context }));
 vi.mock("core/ports/GitProvider", async importOriginal => await importOriginal());
 vi.mock("core/ports/OAuthAuthorization", async importOriginal => await importOriginal());
 
+vi.mock("core/usecases/userAuthentication", () => ({
+    selectors: {
+        main: (state: { userAuthentication: unknown }) => state.userAuthentication
+    }
+}));
+
 vi.mock("core/usecases/userConfigs", () => ({
     selectors: {
         userConfigs: (state: { userConfigs: Record<string, unknown> }) =>
@@ -39,6 +45,7 @@ vi.mock("core/usecases/userConfigs", () => ({
 }));
 
 const user_gitLab: GitUser = { username: "jdoe", name: "J. Doe", email: "j@lab" };
+const user_onyxia = { username: "kc-jdoe", email: "jdoe@insee.fr" };
 const user_gitHub: GitUser = { username: "jdoe-gh", name: "Jane", email: undefined };
 
 function createFakeOAuthProvider(params: { id: string; withRevoke: boolean }) {
@@ -160,7 +167,10 @@ const toConfig = (
             gitProvider.ui.type === "oauth"
                 ? { type: "oauth", clientId: "x" }
                 : { type: "personal-access-token" },
-        service: { type: "personal-access-token" }
+        service:
+            gitProvider.service.type === "personal-access-token"
+                ? { type: "personal-access-token" }
+                : { type: "scoped-access-token", lifetimeDays: 30 }
     }
 });
 
@@ -169,14 +179,32 @@ async function setup(params?: {
     gitConfigStr?: string | null;
     githubPersonalAccessToken?: string | null;
     sessions?: Record<string, string>;
+    gitName?: string;
+    gitEmail?: string;
     authorizeInPopup?: () => Promise<{ code: string; codeVerifier: string }>;
 }) {
     const {
         gitConfigStr = null,
         githubPersonalAccessToken = null,
         sessions = {},
+        gitName = "",
+        gitEmail = "",
         authorizeInPopup = async () => ({ code: "the-code", codeVerifier: "v" })
     } = params ?? {};
+
+    const userAuthentication = {
+        thunks: {},
+        selectors: {},
+        ...createUsecaseActions({
+            name: "userAuthentication",
+            initialState: {
+                isUserLoggedIn: true,
+                isKeycloak: true,
+                user: user_onyxia
+            },
+            reducers: {}
+        })
+    };
 
     const userConfigs = {
         thunks: {},
@@ -185,8 +213,11 @@ async function setup(params?: {
             name: "userConfigs",
             initialState: {
                 gitConfigStr,
-                githubPersonalAccessToken
-            } as Record<string, string | null>,
+                githubPersonalAccessToken,
+                gitName,
+                gitEmail,
+                gitCredentialCacheDuration: 0
+            } as Record<string, string | number | null>,
             reducers: {
                 valueChanged: (
                     state,
@@ -237,7 +268,8 @@ async function setup(params?: {
         usecases: {
             gitProvidersManagement: management,
             gitAccountUiController: account,
-            userConfigs
+            userConfigs,
+            userAuthentication
         }
     });
 
@@ -296,7 +328,6 @@ describe("gitProvidersManagement", () => {
         expect(getConnection("gitlab")).toStrictEqual({ status: "not connected" });
         // The first connected provider stands in for the favorite
         expect(getView().favoriteProviderId).toBe("github");
-        expect(getView().identityPlaceholder).toStrictEqual(user_gitHub);
     });
 
     it("doesn't migrate again once gitConfigStr exists", async () => {
@@ -515,7 +546,6 @@ describe("gitProvidersManagement", () => {
 
         expect(getPersisted().favoriteProviderId).toBe("forgejo");
         expect(getView().favoriteProviderId).toBe("forgejo");
-        expect(getView().identityPlaceholder).toBe(undefined);
         expect(
             getView().providerCards.map(({ id, isFavorite }) => [id, isFavorite])
         ).toStrictEqual([
@@ -523,5 +553,83 @@ describe("gitProvidersManagement", () => {
             ["forgejo", true],
             ["github", false]
         ]);
+    });
+
+    describe("getGitContext", () => {
+        it("takes the favorite's PAT and identity, the email of the Onyxia account when it's private", async () => {
+            const { core } = await setup({
+                githubPersonalAccessToken: "ghp_valid"
+            });
+
+            expect(
+                await core.functions.gitProvidersManagement.getGitContext()
+            ).toStrictEqual({
+                name: user_gitHub.name,
+                email: user_onyxia.email,
+                credentials_cache_duration: 0,
+                token: "ghp_valid"
+            });
+        });
+
+        it("ignores the former name and email fields", async () => {
+            const { core } = await setup({
+                githubPersonalAccessToken: "ghp_valid",
+                gitName: "Me",
+                gitEmail: "me@example.com"
+            });
+
+            expect(
+                await core.functions.gitProvidersManagement.getGitContext()
+            ).toMatchObject({ name: user_gitHub.name, email: user_onyxia.email });
+        });
+
+        it("has no token when the favorite isn't connected", async () => {
+            const { core } = await setup({
+                githubPersonalAccessToken: "ghp_valid"
+            });
+
+            await core.functions.gitProvidersManagement.load();
+            await core.functions.gitProvidersManagement.setFavoriteProvider({
+                providerId: "forgejo"
+            });
+
+            expect(
+                (await core.functions.gitProvidersManagement.getGitContext()).token
+            ).toBe(undefined);
+        });
+
+        it("uses the Onyxia account when nothing is connected", async () => {
+            const { core } = await setup({ gitName: "Me", gitEmail: "me@example.com" });
+
+            expect(
+                await core.functions.gitProvidersManagement.getGitContext()
+            ).toStrictEqual({
+                name: user_onyxia.username,
+                email: user_onyxia.email,
+                credentials_cache_duration: 0,
+                token: undefined
+            });
+        });
+
+        it("falls back to the former field until tokens are created at launch (phase 3)", async () => {
+            const { core, gitLab } = await setup({
+                githubPersonalAccessToken: "ghp_legacy",
+                sessions: { gitlab: "refresh-0" }
+            });
+
+            gitLab.gitProvider.service = {
+                type: "scoped-access-token",
+                createAccessToken: async () => {
+                    throw new Error("not in phase 2");
+                }
+            };
+
+            const gitContext =
+                await core.functions.gitProvidersManagement.getGitContext();
+
+            // GitLab comes first in the configuration: it is the favorite
+            expect(gitContext.name).toBe(user_gitLab.name);
+            expect(gitContext.token).toBe("ghp_legacy");
+        });
     });
 });

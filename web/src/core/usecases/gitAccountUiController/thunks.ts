@@ -11,10 +11,11 @@ export const thunks = {
             return dispatch(gitProvidersManagement.thunks.isAvailable());
         },
     /**
-     * The former "GitHub personal access token" field is hidden as soon as GIT_PROVIDERS
-     * isn't empty: the admin who wants GitHub adds it to the configuration.
+     * The former fields (git name, git email, GitHub personal access token) are hidden
+     * as soon as GIT_PROVIDERS isn't empty: the identity comes from the favorite
+     * provider, and the admin who wants GitHub adds it to the configuration.
      */
-    isLegacyGitHubPersonalAccessTokenFieldVisible:
+    isLegacySectionVisible:
         () =>
         (...args): boolean => {
             const [, , { gitProvidersConfig }] = args;

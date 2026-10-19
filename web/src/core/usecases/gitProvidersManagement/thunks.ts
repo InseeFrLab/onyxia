@@ -2,13 +2,16 @@ import type { Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { Mutex } from "async-mutex";
+import { AccessError } from "clean-architecture";
 import {
     GitProviderUnauthorizedError,
     type GitProvider,
     type GitRepository,
     type GitUser
 } from "core/ports/GitProvider";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import * as userConfigs from "core/usecases/userConfigs";
+import * as userAuthentication from "core/usecases/userAuthentication";
 import { actions, type Connection } from "./state";
 import { protectedSelectors, selectors } from "./selectors";
 import {
@@ -387,10 +390,113 @@ export const thunks = {
                     })
                 })
             );
+        },
+    /**
+     * `.git` of the XOnyxia context, called when the launcher opens. Loads the use case
+     * if that hasn't happened yet.
+     * - Identity: the favorite provider's, the Onyxia (Keycloak) account's for what it
+     *   doesn't give (nothing connected, private email). The former name / email fields
+     *   are only used when GIT_PROVIDERS is empty.
+     * - git.token: the favorite's PAT when it is what the services get.
+     *
+     * TODO(phase 3): credentials, repositories, and the tokens created at launch
+     * (scoped-access-token, service oauth) with getServiceGitCredentials. Until then,
+     * those fall back to the former githubPersonalAccessToken field.
+     */
+    getGitContext:
+        () =>
+        async (...args): Promise<XOnyxiaContext["git"]> => {
+            const [dispatch, getState] = args;
+
+            const {
+                gitName,
+                gitEmail,
+                gitCredentialCacheDuration,
+                githubPersonalAccessToken
+            } = userConfigs.selectors.userConfigs(getState());
+
+            const token_legacy = githubPersonalAccessToken ?? undefined;
+
+            if (!dispatch(thunks.isAvailable())) {
+                return {
+                    name: gitName,
+                    email: gitEmail,
+                    credentials_cache_duration: gitCredentialCacheDuration,
+                    token: token_legacy
+                };
+            }
+
+            const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
+
+            await dispatch(thunks.load());
+
+            if (selectors.stateDescription(getState()) !== "ready") {
+                return {
+                    ...identity_onyxia,
+                    credentials_cache_duration: gitCredentialCacheDuration,
+                    token: token_legacy
+                };
+            }
+
+            const favoriteProviderId = selectors.favoriteProviderId(getState());
+            const favoriteUser = selectors.favoriteUser(getState());
+
+            const token = (() => {
+                if (favoriteProviderId === undefined || favoriteUser === undefined) {
+                    return undefined;
+                }
+
+                const gitProvider = dispatch(
+                    privateThunks.getGitProvider({ providerId: favoriteProviderId })
+                );
+
+                switch (gitProvider.service.type) {
+                    case "personal-access-token":
+                        return protectedSelectors.persistedGitConfig(getState())
+                            .personalAccessTokenByProviderId[favoriteProviderId];
+                    case "scoped-access-token":
+                    case "oauth":
+                        return token_legacy;
+                }
+            })();
+
+            return {
+                name: favoriteUser?.name || identity_onyxia.name,
+                email: favoriteUser?.email || identity_onyxia.email,
+                credentials_cache_duration: gitCredentialCacheDuration,
+                token
+            };
         }
 } satisfies Thunks;
 
 const privateThunks = {
+    /** The user's Onyxia (Keycloak) account, what git.name / git.email used to default to */
+    getOnyxiaIdentity:
+        () =>
+        (...[, getState]): { name: string; email: string } => {
+            const authentication = userAuthentication.selectors.main(getState());
+
+            assert(authentication.isUserLoggedIn);
+
+            const { user } = authentication;
+
+            // NOTE: Same defaults as userConfigs, some fields can't be read on mock users.
+            const readOrDefault = (read: () => string, defaultValue: string) => {
+                try {
+                    return read();
+                } catch (error) {
+                    if (error instanceof AccessError) {
+                        return defaultValue;
+                    }
+                    throw error;
+                }
+            };
+
+            return {
+                name: readOrDefault(() => user.username, "unknown"),
+                email: readOrDefault(() => user.email, "unknown@unknown.net")
+            };
+        },
     getGitProvider:
         (params: { providerId: string }) =>
         (...args): GitProvider => {

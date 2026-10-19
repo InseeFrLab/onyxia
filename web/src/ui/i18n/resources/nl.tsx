@@ -72,7 +72,54 @@ export const translations: Translations<"nl"> = {
                 Dit token zal ook beschikbaar zijn als een omgevingsvariabele:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-providers",
+        "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
+        "unreadable config":
+            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en favoriete provider.",
+        "reset config": "Herstellen",
+        "loading failed title": "Git-providers niet beschikbaar",
+        "loading failed": "Uw Git-providers konden niet worden geladen.",
+        retry: "Opnieuw proberen"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `Verbonden als ${name} (@${username})`,
+        "not connected": "Niet verbonden.",
+        "git identity": ({ name, email }) => `Git-identiteit: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-identiteit: ${name}, met het e-mailadres van uw Onyxia-account (het e-mailadres is privé bij de provider)`,
+        "git identity used at launch":
+            "Dit is de identiteit die git in uw services gebruikt, omdat dit uw favoriete provider is.",
+        "personal access token rejected":
+            "Uw opgeslagen token wordt niet meer geaccepteerd, vervang het.",
+        "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
+        "loading failed": "De provider kon niet worden bereikt.",
+        "sign in": "Aanmelden",
+        "sign in again": "Opnieuw aanmelden",
+        "sign out": "Afmelden",
+        "popup blocked":
+            "Het aanmeldvenster is geblokkeerd: sta pop-ups toe voor deze site en probeer het opnieuw.",
+        "sign in cancelled": "Het aanmeldvenster is gesloten voordat het klaar was.",
+        "sign in denied": "De toegang is geweigerd door de provider.",
+        "sign in failed": "Aanmelden mislukt.",
+        "sign out failed": "Afmelden mislukt.",
+        "revoke on provider": ({ providerName }) =>
+            `U bent afgemeld bij Onyxia. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${providerName}:`,
+        "authorized applications": "geautoriseerde applicaties",
+        "personal access token": "Persoonlijk toegangstoken",
+        "create a token": ({ providerName }) => `Een token aanmaken op ${providerName}`,
+        save: "Opslaan",
+        checking: "Controleren…",
+        replace: "Vervangen",
+        cancel: "Annuleren",
+        remove: "Verwijderen",
+        "remove failed": "Het token kon niet worden verwijderd.",
+        "token rejected":
+            "Dit token is geweigerd door de provider, er is niets opgeslagen.",
+        "token check failed":
+            "Het token kon niet worden gecontroleerd, probeer het opnieuw.",
+        favorite: "Favoriet",
+        "set as favorite": "Als favoriet instellen"
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",

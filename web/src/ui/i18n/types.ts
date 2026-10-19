@@ -56,7 +56,8 @@ export type ComponentKey =
     | import("ui/pages/account/AccountProfileTab/AccountProfileTab").I18n
     | import("ui/pages/account/AccountProfileTab/UserProfileForm").I18n
     | import("ui/pages/account/AccountProfileTab/ConfirmNavigationDialog").I18n
-    | import("ui/pages/account/AccountGitTab").I18n
+    | import("ui/pages/account/AccountGitTab/AccountGitTab").I18n
+    | import("ui/pages/account/AccountGitTab/GitProviderCard").I18n
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n
     | import("ui/pages/account/AccountVaultTab").I18n
