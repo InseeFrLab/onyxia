@@ -72,7 +72,54 @@ export const translations: Translations<"de"> = {
                 Dieser Token ist auch als Umgebungsvariable verfügbar:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-Anbieter",
+        "unreadable config title": "Ihre Git-Einstellungen sind nicht lesbar",
+        "unreadable config":
+            "Ihre gespeicherten Git-Einstellungen sind beschädigt. Beim Zurücksetzen werden Ihre gespeicherten Zugriffstoken und Ihr bevorzugter Anbieter entfernt.",
+        "reset config": "Zurücksetzen",
+        "loading failed title": "Git-Anbieter nicht verfügbar",
+        "loading failed": "Ihre Git-Anbieter konnten nicht geladen werden.",
+        retry: "Erneut versuchen"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `Verbunden als ${name} (@${username})`,
+        "not connected": "Nicht verbunden.",
+        "git identity": ({ name, email }) => `Git-Identität: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-Identität: ${name}, mit der E-Mail Ihres Onyxia-Kontos (die E-Mail ist beim Anbieter privat)`,
+        "git identity used at launch":
+            "Diese Identität verwendet git in Ihren Diensten, da dies Ihr bevorzugter Anbieter ist.",
+        "personal access token rejected":
+            "Ihr gespeichertes Token wird nicht mehr akzeptiert, ersetzen Sie es.",
+        "session expired": "Ihre Sitzung ist abgelaufen, melden Sie sich erneut an.",
+        "loading failed": "Der Anbieter ist nicht erreichbar.",
+        "sign in": "Anmelden",
+        "sign in again": "Erneut anmelden",
+        "sign out": "Abmelden",
+        "popup blocked":
+            "Das Anmeldefenster wurde blockiert: Erlauben Sie Pop-ups für diese Seite und versuchen Sie es erneut.",
+        "sign in cancelled": "Das Anmeldefenster wurde vorzeitig geschlossen.",
+        "sign in denied": "Der Zugriff wurde beim Anbieter verweigert.",
+        "sign in failed": "Anmeldung fehlgeschlagen.",
+        "sign out failed": "Abmeldung fehlgeschlagen.",
+        "revoke on provider": ({ providerName }) =>
+            `Sie sind von Onyxia abgemeldet. Um den Zugriff vollständig zu widerrufen, öffnen Sie Ihre autorisierten Anwendungen auf ${providerName}:`,
+        "authorized applications": "autorisierte Anwendungen",
+        "personal access token": "Persönliches Zugriffstoken",
+        "create a token": ({ providerName }) => `Token auf ${providerName} erstellen`,
+        save: "Speichern",
+        checking: "Wird geprüft…",
+        replace: "Ersetzen",
+        cancel: "Abbrechen",
+        remove: "Entfernen",
+        "remove failed": "Das Token konnte nicht entfernt werden.",
+        "token rejected":
+            "Dieses Token wurde vom Anbieter abgelehnt, nichts wurde gespeichert.",
+        "token check failed":
+            "Das Token konnte nicht geprüft werden, versuchen Sie es erneut.",
+        favorite: "Bevorzugt",
+        "set as favorite": "Als bevorzugt festlegen"
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbindung zum Kubernetes-Cluster herstellen",

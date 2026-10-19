@@ -72,7 +72,53 @@ export const translations: Translations<"no"> = {
                 Dette tokenet vil også være tilgjengelig som en miljøvariabel:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-leverandører",
+        "unreadable config title": "Git-innstillingene dine kan ikke leses",
+        "unreadable config":
+            "De lagrede Git-innstillingene dine er ødelagt. Tilbakestilling fjerner de lagrede personlige tilgangstokenene og favorittleverandøren din.",
+        "reset config": "Tilbakestill",
+        "loading failed title": "Git-leverandører utilgjengelige",
+        "loading failed": "Git-leverandørene dine kunne ikke lastes inn.",
+        retry: "Prøv igjen"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `Tilkoblet som ${name} (@${username})`,
+        "not connected": "Ikke tilkoblet.",
+        "git identity": ({ name, email }) => `Git-identitet: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-identitet: ${name}, med e-posten til Onyxia-kontoen din (e-posten er privat hos leverandøren)`,
+        "git identity used at launch":
+            "Dette er identiteten git bruker i tjenestene dine, fordi dette er favorittleverandøren din.",
+        "personal access token rejected":
+            "Det lagrede tokenet ditt godtas ikke lenger, erstatt det.",
+        "session expired": "Økten din har utløpt, logg inn på nytt.",
+        "loading failed": "Leverandøren kunne ikke nås.",
+        "sign in": "Logg inn",
+        "sign in again": "Logg inn på nytt",
+        "sign out": "Logg ut",
+        "popup blocked":
+            "Innloggingsvinduet ble blokkert: tillat popup-vinduer for dette nettstedet og prøv igjen.",
+        "sign in cancelled": "Innloggingsvinduet ble lukket før det var ferdig.",
+        "sign in denied": "Tilgang ble nektet hos leverandøren.",
+        "sign in failed": "Innlogging mislyktes.",
+        "sign out failed": "Utlogging mislyktes.",
+        "revoke on provider": ({ providerName }) =>
+            `Du er logget ut av Onyxia. For å trekke tilbake tilgangen helt, gå til de autoriserte applikasjonene dine på ${providerName}:`,
+        "authorized applications": "autoriserte applikasjoner",
+        "personal access token": "Personlig tilgangstoken",
+        "create a token": ({ providerName }) => `Opprett et token på ${providerName}`,
+        save: "Lagre",
+        checking: "Sjekker…",
+        replace: "Erstatt",
+        cancel: "Avbryt",
+        remove: "Fjern",
+        "remove failed": "Tokenet kunne ikke fjernes.",
+        "token rejected":
+            "Dette tokenet ble avvist av leverandøren, ingenting ble lagret.",
+        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen.",
+        favorite: "Favoritt",
+        "set as favorite": "Angi som favoritt"
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",

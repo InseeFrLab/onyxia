@@ -67,7 +67,50 @@ export const translations: Translations<"zh-CN"> = {
                 此令牌还将作为环境变量提供：&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git 托管平台",
+        "unreadable config title": "无法读取您的 Git 设置",
+        "unreadable config":
+            "您保存的 Git 设置已损坏。重置将删除您保存的个人访问令牌和首选平台。",
+        "reset config": "重置",
+        "loading failed title": "Git 托管平台不可用",
+        "loading failed": "无法加载您的 Git 托管平台。",
+        retry: "重试"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `已连接为 ${name} (@${username})`,
+        "not connected": "未连接。",
+        "git identity": ({ name, email }) => `Git 身份：${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git 身份：${name}，使用您 Onyxia 账户的邮箱（该邮箱在平台上不公开）`,
+        "git identity used at launch":
+            "这是 git 在您的服务中使用的身份，因为这是您的首选平台。",
+        "personal access token rejected": "您保存的令牌已不再被接受，请替换。",
+        "session expired": "您的会话已过期，请重新登录。",
+        "loading failed": "无法连接到该平台。",
+        "sign in": "登录",
+        "sign in again": "重新登录",
+        "sign out": "退出登录",
+        "popup blocked": "登录窗口被拦截：请允许此网站的弹出窗口后重试。",
+        "sign in cancelled": "登录窗口在完成前被关闭。",
+        "sign in denied": "平台拒绝了访问。",
+        "sign in failed": "登录失败。",
+        "sign out failed": "退出登录失败。",
+        "revoke on provider": ({ providerName }) =>
+            `您已退出 Onyxia。要完全撤销其访问权限，请前往 ${providerName} 上的已授权应用：`,
+        "authorized applications": "已授权应用",
+        "personal access token": "个人访问令牌",
+        "create a token": ({ providerName }) => `在 ${providerName} 上创建令牌`,
+        save: "保存",
+        checking: "正在验证…",
+        replace: "替换",
+        cancel: "取消",
+        remove: "移除",
+        "remove failed": "无法移除令牌。",
+        "token rejected": "该令牌被平台拒绝，未保存任何内容。",
+        "token check failed": "无法验证令牌，请重试。",
+        favorite: "首选",
+        "set as favorite": "设为首选"
     },
     AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",

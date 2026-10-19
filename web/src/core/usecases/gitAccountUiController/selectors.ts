@@ -1,7 +1,6 @@
 import { createSelector } from "clean-architecture";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import type { GitUser } from "core/ports/GitProvider";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { getRootContext } from "core/rootContext";
 import { assert } from "tsafe/assert";
@@ -22,11 +21,6 @@ export declare namespace AccountView {
         description: LocalizedString | undefined;
         /** undefined: no choice and nothing connected */
         favoriteProviderId: string | undefined;
-        /**
-         * Placeholder of the git name and email fields: when left empty, the identity of
-         * the favorite provider is used at launch.
-         */
-        identityPlaceholder: GitUser | undefined;
         providerCards: ProviderCard[];
     };
 
@@ -38,6 +32,7 @@ export declare namespace AccountView {
         /** undefined: the default logo of the type */
         logoUrl: GitProvidersConfig.LogoUrl | undefined;
         documentation: GitProvidersConfig.Documentation | undefined;
+        /** Its identity (connection.user) is the one used when launching a service */
         isFavorite: boolean;
         connection: gitProvidersManagement.Connection;
         authentication:
@@ -60,8 +55,7 @@ const main = createSelector(
     gitProvidersManagement.selectors.errorReason,
     gitProvidersManagement.selectors.connections,
     gitProvidersManagement.selectors.favoriteProviderId,
-    gitProvidersManagement.selectors.favoriteUser,
-    (errorReason, connections, favoriteProviderId, favoriteUser): AccountView => {
+    (errorReason, connections, favoriteProviderId): AccountView => {
         if (connections === undefined) {
             return {
                 isReady: false,
@@ -111,7 +105,6 @@ const main = createSelector(
             isReady: true,
             description: gitProvidersConfig.description,
             favoriteProviderId,
-            identityPlaceholder: favoriteUser,
             providerCards
         };
     }

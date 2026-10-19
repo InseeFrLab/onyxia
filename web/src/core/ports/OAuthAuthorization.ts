@@ -19,7 +19,9 @@ export type OAuthAuthorization = {
 export class OAuthAuthorizationError extends Error {
     constructor(
         public readonly reason: "popup blocked" | "popup closed" | "denied" | "timeout",
-        message: string
+        message: string,
+        /** "denied" only: what the provider said, its error_description or error code */
+        public readonly providerError?: string
     ) {
         super(message);
         this.name = "OAuthAuthorizationError";

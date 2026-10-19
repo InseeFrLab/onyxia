@@ -72,7 +72,52 @@ export const translations: Translations<"en"> = {
                 This token will also be available as an environment variable:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git providers",
+        "unreadable config title": "Your Git settings can't be read",
+        "unreadable config":
+            "Your saved Git settings are corrupted. Resetting them removes your saved personal access tokens and favorite provider.",
+        "reset config": "Reset",
+        "loading failed title": "Git providers unavailable",
+        "loading failed": "Your Git providers could not be loaded.",
+        retry: "Retry"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `Connected as ${name} (@${username})`,
+        "not connected": "Not connected.",
+        "git identity": ({ name, email }) => `Git identity: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git identity: ${name}, with the email of your Onyxia account (the email is private on the provider)`,
+        "git identity used at launch":
+            "This is the identity used by git in your services, as it is your favorite provider.",
+        "personal access token rejected":
+            "Your saved token is no longer accepted, replace it.",
+        "session expired": "Your session has expired, sign in again.",
+        "loading failed": "The provider could not be reached.",
+        "sign in": "Sign in",
+        "sign in again": "Sign in again",
+        "sign out": "Sign out",
+        "popup blocked":
+            "The sign in window was blocked: allow popups for this site and try again.",
+        "sign in cancelled": "The sign in window was closed before completion.",
+        "sign in denied": "Access was denied on the provider.",
+        "sign in failed": "Sign in failed.",
+        "sign out failed": "Sign out failed.",
+        "revoke on provider": ({ providerName }) =>
+            `You are signed out of Onyxia. To fully revoke its access on ${providerName}, open your`,
+        "authorized applications": "authorized applications",
+        "personal access token": "Personal access token",
+        "create a token": ({ providerName }) => `Create a token on ${providerName}`,
+        save: "Save",
+        checking: "Checking…",
+        replace: "Replace",
+        cancel: "Cancel",
+        remove: "Remove",
+        "remove failed": "The token could not be removed.",
+        "token rejected": "This token was rejected by the provider, nothing was saved.",
+        "token check failed": "The token could not be checked, try again.",
+        favorite: "Favorite",
+        "set as favorite": "Set as favorite"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",

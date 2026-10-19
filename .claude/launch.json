@@ -12,6 +12,21 @@
             "runtimeExecutable": "yarn",
             "runtimeArgs": ["--cwd", "web", "dev"],
             "port": 5173
+        },
+        {
+            "name": "web-mock",
+            "runtimeExecutable": "env",
+            "runtimeArgs": [
+                "ONYXIA_API_URL=",
+                "yarn",
+                "--cwd",
+                "web",
+                "dev",
+                "--port",
+                "5175",
+                "--strictPort"
+            ],
+            "port": 5175
         }
     ]
 }

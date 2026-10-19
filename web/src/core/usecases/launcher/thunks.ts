@@ -1,11 +1,11 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
+import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
-import * as userConfigsUsecase from "core/usecases/userConfigs";
 import * as userProfileForm from "core/usecases/userProfileForm";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
@@ -591,8 +591,6 @@ export const protectedThunks = {
 
             const { user } = await onyxiaApi.getUserAndProjects();
 
-            const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
-
             const region =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
@@ -753,13 +751,7 @@ export const protectedThunks = {
                           credentials_cache_duration: 0,
                           token: undefined
                       }
-                    : {
-                          name: userConfigs.gitName,
-                          email: userConfigs.gitEmail,
-                          credentials_cache_duration:
-                              userConfigs.gitCredentialCacheDuration,
-                          token: userConfigs.githubPersonalAccessToken ?? undefined
-                      },
+                    : await dispatch(gitProvidersManagement.thunks.getGitContext()),
                 vault: await (async () => {
                     const { vault } = region;
 

@@ -73,7 +73,53 @@ export const translations: Translations<"fr"> = {
                 d'environnement:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Forges Git",
+        "unreadable config title": "Vos paramètres Git sont illisibles",
+        "unreadable config":
+            "Vos paramètres Git enregistrés sont corrompus. Les réinitialiser supprime vos tokens d'accès personnels et votre forge favorite.",
+        "reset config": "Réinitialiser",
+        "loading failed title": "Forges Git indisponibles",
+        "loading failed": "Vos forges Git n'ont pas pu être chargées.",
+        retry: "Réessayer"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) =>
+            `Connecté en tant que ${name} (@${username})`,
+        "not connected": "Non connecté.",
+        "git identity": ({ name, email }) => `Identité Git : ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Identité Git : ${name}, avec l'email de votre compte Onyxia (l'email est privé sur la forge)`,
+        "git identity used at launch":
+            "C'est l'identité utilisée par git dans vos services, car c'est votre forge favorite.",
+        "personal access token rejected":
+            "Votre token enregistré n'est plus accepté, remplacez-le.",
+        "session expired": "Votre session a expiré, reconnectez-vous.",
+        "loading failed": "La forge n'a pas pu être jointe.",
+        "sign in": "Se connecter",
+        "sign in again": "Se reconnecter",
+        "sign out": "Se déconnecter",
+        "popup blocked":
+            "La fenêtre de connexion a été bloquée : autorisez les popups pour ce site et réessayez.",
+        "sign in cancelled": "La fenêtre de connexion a été fermée avant la fin.",
+        "sign in denied": "L'accès a été refusé sur la forge.",
+        "sign in failed": "La connexion a échoué.",
+        "sign out failed": "La déconnexion a échoué.",
+        "revoke on provider": ({ providerName }) =>
+            `Vous êtes déconnecté d'Onyxia. Pour révoquer complètement son accès sur ${providerName}, ouvrez vos`,
+        "authorized applications": "applications autorisées",
+        "personal access token": "Token d'accès personnel",
+        "create a token": ({ providerName }) => `Créer un token sur ${providerName}`,
+        save: "Enregistrer",
+        checking: "Vérification…",
+        replace: "Remplacer",
+        cancel: "Annuler",
+        remove: "Retirer",
+        "remove failed": "Le token n'a pas pu être retiré.",
+        "token rejected": "Ce token a été refusé par la forge, rien n'a été enregistré.",
+        "token check failed": "Le token n'a pas pu être vérifié, réessayez.",
+        favorite: "Favorite",
+        "set as favorite": "Définir comme favorite"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connection au cluster Kubernetes",
