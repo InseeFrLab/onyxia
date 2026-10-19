@@ -152,6 +152,17 @@ export function parseGitProvidersConfigFromEnvValue(params: {
         throw new Error("The GIT_PROVIDERS env is not a valid JSON5");
     }
 
+    if (getIsPocFormat(parsedValue)) {
+        throw new Error(
+            [
+                "The GIT_PROVIDERS env uses a format that is no longer supported:",
+                "initScriptUrl is gone, and oauthClientId is replaced by",
+                'authentication: { ui: { type: "oauth", clientId }, service: { ... } }.',
+                "See the GIT_PROVIDERS entry of the .env file."
+            ].join(" ")
+        );
+    }
+
     let config: GIT_PROVIDERS_EnvValue_ExpectedShape;
 
     try {
@@ -248,4 +259,19 @@ function getUnsupportedCombinationReason(params: {
     }
 
     return undefined;
+}
+
+/** The format of the proof of concept: `initScriptUrl`, `oauthClientId` per provider */
+function getIsPocFormat(parsedValue: unknown): boolean {
+    return z
+        .object({
+            initScriptUrl: z.unknown().optional(),
+            providers: z.array(z.object({}).passthrough())
+        })
+        .refine(
+            ({ initScriptUrl, providers }) =>
+                initScriptUrl !== undefined ||
+                providers.some(provider => "oauthClientId" in provider)
+        )
+        .safeParse(parsedValue).success;
 }
