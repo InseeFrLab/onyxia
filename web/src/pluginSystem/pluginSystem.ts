@@ -18,21 +18,20 @@ export function initPluginSystem() {
         declareComponent
     };
 
-    if (window.onOnyxiaCtxReady !== undefined) {
-        window.onOnyxiaCtxReady(onyxiaCtx);
-    }
+    const onOnyxiaCtxReady = window.onOnyxiaCtxReady;
 
-    let value = window.onOnyxiaCtxReady;
-
+    // Consume the startup callback before invoking it. A later plugin may chain
+    // the current value, which must not replay plugins that are already running.
     Object.defineProperty(window, "onOnyxiaCtxReady", {
         configurable: false,
         enumerable: true,
-        get: () => value,
+        get: () => undefined,
         set: (value_new: ((onyxiaCtx: OnyxiaCtx) => void) | undefined) => {
             if (value_new !== undefined) {
                 value_new(onyxiaCtx);
             }
-            value = undefined;
         }
     });
+
+    onOnyxiaCtxReady?.(onyxiaCtx);
 }
