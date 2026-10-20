@@ -6,4 +6,5 @@ export {
     mutateHelmValues_removeArrayItem
 } from "./mutateHelmValues";
 export { computeAutocompleteOptions } from "./computeAutocompleteOptions";
+export { coerceHelmValuesPatch } from "./coerceHelmValuesPatch";
 export type * from "./formTypes";

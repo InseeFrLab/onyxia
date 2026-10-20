@@ -1031,11 +1031,13 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         back: "Indietro",
         "external monitoring": "Monitoraggio esterno",
         "helm values": "Valori Helm",
-        reduce: "Riduci"
+        reduce: "Riduci",
+        modify: "Modifica"
     },
     LauncherMainCard: {
         "friendly name": "Nome personalizzato",
         launch: "Avviare",
+        upgrade: "Aggiorna",
         "problem with": "Problema con:",
         cancel: "Annullare",
         "copy auto launch url": "Copia URL di avvio automatico",
@@ -1142,6 +1144,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "container starting": "Avvio del contenitore",
         failed: "Fallito",
         "suspend service tooltip": "Sospendi il servizio e rilascia le risorse",
+        "modify service tooltip": "Modifica il servizio",
         "resume service tooltip": "Riprendi il servizio",
         suspended: "Sospeso",
         suspending: "Sospensione in corso",

@@ -119,6 +119,10 @@ const privateThunks = {
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
                     podNames: helmRelease.podNames,
                     helmValues: helmRelease.values,
+                    catalogId: helmRelease.catalogId,
+                    chartName: helmRelease.chartName,
+                    chartVersion: helmRelease.chartVersion,
+                    isShared: helmRelease.isShared,
                     monitoringUrl: (() => {
                         const { helmReleaseName } = params;
 

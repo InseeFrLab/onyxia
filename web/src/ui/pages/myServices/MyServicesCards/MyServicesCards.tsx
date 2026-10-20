@@ -21,6 +21,7 @@ export type Props = {
     catalogExplorerLink: Link;
     onRequestDelete(params: { helmReleaseName: string }): void;
     onRequestPauseOrResume: (params: { helmReleaseName: string }) => void;
+    onRequestUpgrade: (params: { helmReleaseName: string }) => void;
     onRequestLogHelmGetNotes: (params: { helmReleaseName: string }) => void;
     onRequestChangeFriendlyName: (params: {
         helmReleaseName: string;
@@ -50,6 +51,7 @@ export const MyServicesCards = memo((props: Props) => {
         isUpdating,
         onRequestDelete,
         onRequestPauseOrResume,
+        onRequestUpgrade,
         onRequestLogHelmGetNotes,
         onRequestChangeFriendlyName,
         evtAction,
@@ -72,6 +74,7 @@ export const MyServicesCards = memo((props: Props) => {
                     onRequestLogHelmGetNotes({ helmReleaseName }),
                 onRequestDelete: () => onRequestDelete({ helmReleaseName }),
                 onRequestPauseOrResume: () => onRequestPauseOrResume({ helmReleaseName }),
+                onRequestUpgrade: () => onRequestUpgrade({ helmReleaseName }),
                 onRequestChangeFriendlyName: (friendlyName: string) =>
                     onRequestChangeFriendlyName({ helmReleaseName, friendlyName }),
                 myServiceLink: getMyServiceLink({ helmReleaseName }),
@@ -84,6 +87,7 @@ export const MyServicesCards = memo((props: Props) => {
             onRequestChangeFriendlyName,
             onRequestDelete,
             onRequestPauseOrResume,
+            onRequestUpgrade,
             onRequestChangeSharedStatus,
             getMyServiceLink
         ]
@@ -134,6 +138,7 @@ export const MyServicesCards = memo((props: Props) => {
                             onRequestChangeFriendlyName,
                             onRequestDelete,
                             onRequestPauseOrResume,
+                            onRequestUpgrade,
                             onRequestChangeSharedStatus,
                             myServiceLink,
                             evtAction
@@ -145,6 +150,7 @@ export const MyServicesCards = memo((props: Props) => {
                                 evtAction={evtAction}
                                 onRequestDelete={onRequestDelete}
                                 onRequestPauseOrResume={onRequestPauseOrResume}
+                                onRequestUpgrade={onRequestUpgrade}
                                 onRequestLogHelmGetNotes={onRequestLogHelmGetNotes}
                                 onRequestChangeFriendlyName={onRequestChangeFriendlyName}
                                 myServiceLink={myServiceLink}

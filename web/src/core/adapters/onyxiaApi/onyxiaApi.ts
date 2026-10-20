@@ -534,6 +534,20 @@ export function createOnyxiaApi(params: {
                 }
             }
         },
+        helmUpgrade: async ({
+            helmReleaseName,
+            chartVersion,
+            friendlyName,
+            isShared,
+            values
+        }) => {
+            await axiosInstance.put(`/my-lab/app/${helmReleaseName}`, {
+                packageVersion: chartVersion,
+                friendlyName,
+                share: isShared ?? false,
+                options: values
+            });
+        },
         changeHelmReleaseFriendlyName: ({ helmReleaseName, friendlyName }) =>
             axiosInstance.post("/my-lab/app/rename", {
                 serviceID: helmReleaseName,

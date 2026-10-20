@@ -11,6 +11,9 @@ export type Props = {
     onClickBack: () => void;
     areHelmValuesShown: boolean;
     onClickHelmValues: () => void;
+    // NOTE: When defined, a "modify" button is displayed to open the launcher in
+    // "upgrade" mode for this service.
+    onClickModify: (() => void) | undefined;
 };
 
 export const MyServiceButtonBar = memo((props: Props) => {
@@ -19,7 +22,8 @@ export const MyServiceButtonBar = memo((props: Props) => {
         monitoringUrl,
         onClickBack,
         areHelmValuesShown,
-        onClickHelmValues
+        onClickHelmValues,
+        onClickModify
     } = props;
 
     const { t } = useTranslation({ MyServiceButtonBar });
@@ -54,7 +58,16 @@ export const MyServiceButtonBar = memo((props: Props) => {
                     buttonId: "helmValues",
                     icon: getIconUrlByName("Code"),
                     label: areHelmValuesShown ? t("reduce") : t("helm values")
-                }
+                },
+                ...(onClickModify === undefined
+                    ? []
+                    : [
+                          {
+                              buttonId: "modify",
+                              icon: getIconUrlByName("Edit"),
+                              label: t("modify")
+                          }
+                      ])
             ]}
             onClick={buttonId => {
                 switch (buttonId) {
@@ -68,6 +81,10 @@ export const MyServiceButtonBar = memo((props: Props) => {
                     case "helmValues":
                         onClickHelmValues();
                         break;
+                    case "modify":
+                        assert(onClickModify !== undefined);
+                        onClickModify();
+                        break;
                 }
             }}
         />
@@ -75,6 +92,6 @@ export const MyServiceButtonBar = memo((props: Props) => {
 });
 
 const { i18n } = declareComponentKeys<
-    "back" | "external monitoring" | "reduce" | "helm values"
+    "back" | "external monitoring" | "reduce" | "helm values" | "modify"
 >()({ MyServiceButtonBar });
 export type I18n = typeof i18n;
