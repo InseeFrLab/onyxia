@@ -5,7 +5,7 @@ import https from "https";
 
 const DUCKDB_ENGINE_VERSION = "v1.4.3";
 
-const DEFAULT_EXTS = ["parquet", "json", "httpfs"];
+const DEFAULT_EXTS = ["parquet", "json", "httpfs", "iceberg", "avro"];
 
 const OUTPUT_DIR = path.join(
     process.cwd(),

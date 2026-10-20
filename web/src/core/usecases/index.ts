@@ -29,6 +29,7 @@ import * as s3ProfilesCreationUiController from "./s3ProfilesCreationUiControlle
 import * as s3ExplorerUiController from "./s3ExplorerUiController";
 import * as s3FileRequestUiController from "./s3FileRequestUiController";
 import * as s3FileRequestCreationUiController from "./s3FileRequestCreationUiController";
+import * as icebergCatalog from "./icebergCatalog";
 
 export const usecases = {
     aiProvidersManagements,
@@ -61,5 +62,6 @@ export const usecases = {
     s3ProfilesCreationUiController,
     s3ExplorerUiController,
     s3FileRequestUiController,
-    s3FileRequestCreationUiController
+    s3FileRequestCreationUiController,
+    icebergCatalog
 };
