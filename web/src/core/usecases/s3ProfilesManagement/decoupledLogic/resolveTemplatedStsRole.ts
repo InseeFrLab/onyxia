@@ -85,13 +85,41 @@ export function resolveTemplatedStsRole(params: {
             const substituteTemplateString = (str: string) =>
                 str.replace(/\$(\d+)/g, (_, i) => match[parseInt(i)] ?? "");
 
-            return id<StsRole>({
+            const stsRole = id<StsRole>({
                 roleARN: substituteTemplateString(stsRole_fromConfig.roleARN),
                 roleSessionName: substituteTemplateString(
                     stsRole_fromConfig.roleSessionName
                 ),
                 profileName: substituteTemplateString(stsRole_fromConfig.profileName)
             });
+
+            const { roleARN, roleSessionName } = stsRole;
+
+            // Empty values configured by the admin are omitted from the STS request
+            // (MinIO supports this). A nonempty template must resolve to a valid value.
+            if (
+                stsRole_fromConfig.roleSessionName !== "" &&
+                (roleSessionName.length < 2 ||
+                    roleSessionName.length > 64 ||
+                    /[^\w+=,.@-]/.test(roleSessionName))
+            ) {
+                return undefined;
+            }
+
+            // Check IAM role ARN structure without requiring an AWS partition or
+            // account ID: MinIO uses e.g. arn:minio:iam:::role/<resource-id>.
+            if (
+                stsRole_fromConfig.roleARN !== "" &&
+                (roleARN.length < 20 ||
+                    roleARN.length > 2048 ||
+                    roleARN.match(
+                        /^arn:[a-z0-9-]+:iam:[a-z0-9-]*:[a-zA-Z0-9-]*:role\/(?:[\x21-\x7e]+\/)?[\w+=,.@-]+$/
+                    )?.[0] !== roleARN)
+            ) {
+                return undefined;
+            }
+
+            return stsRole;
         })
         .filter(x => x !== undefined);
 }

@@ -3,7 +3,7 @@ import { id } from "tsafe/id";
 import type { LocalizedString } from "ui/i18n";
 import { z } from "zod";
 import { getValueAtPath } from "core/tools/Stringifyable";
-import { type S3Uri, parseS3Uri } from "core/tools/S3Uri";
+import { type S3Uri, getS3UriKey, parseS3Uri } from "core/tools/S3Uri";
 
 export type ResolvedTemplatedBookmark = {
     title: LocalizedString;
@@ -100,11 +100,58 @@ export function resolveTemplatedBookmark(params: {
                 );
             };
 
-            return id<ResolvedTemplatedBookmark>({
-                s3Uri: parseS3Uri({
-                    value: substituteTemplateString(bookmark_fromConfig.s3UriStr),
+            const s3UriStr = substituteTemplateString(bookmark_fromConfig.s3UriStr);
+
+            let s3Uri: S3Uri;
+
+            try {
+                s3Uri = parseS3Uri({
+                    value: s3UriStr,
                     delimiter: "/"
-                }),
+                });
+            } catch {
+                return undefined;
+            }
+
+            const { bucket } = s3Uri;
+
+            // Validate the resolved bucket, not the claim: underscores, uppercase
+            // letters and Unicode are valid in object keys but not bucket names.
+            if (
+                bucket.length < 3 ||
+                bucket.length > 63 ||
+                /[^a-z0-9.-]/.test(bucket) ||
+                !/^[a-z0-9]/.test(bucket) ||
+                !/[a-z0-9]$/.test(bucket) ||
+                /\.\.|\.-|-\./.test(bucket) ||
+                /^(\d+\.){3}\d+$/.test(bucket)
+            ) {
+                return undefined;
+            }
+
+            const key = s3UriStr.slice(`s3://${bucket}/`.length);
+
+            // The parser must preserve the whole key, including any final character.
+            if (getS3UriKey(s3Uri) !== key) {
+                return undefined;
+            }
+
+            // Object keys must be valid UTF-8 and fit within 1,024 bytes,
+            // including prefixes and the trailing delimiter.
+            if (
+                /[\uD800-\uDFFF]/u.test(key) ||
+                new TextEncoder().encode(key).length > 1024
+            ) {
+                return undefined;
+            }
+
+            // URL handling can normalize these segments to a different destination.
+            if (s3Uri.keySegments.some(segment => segment === "." || segment === "..")) {
+                return undefined;
+            }
+
+            return id<ResolvedTemplatedBookmark>({
+                s3Uri,
                 title: substituteLocalizedString(bookmark_fromConfig.title),
                 forProfileNames: bookmark_fromConfig.forProfileNames.map(profileName =>
                     substituteTemplateString(profileName)
