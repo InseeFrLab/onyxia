@@ -73,7 +73,56 @@ export const translations: Translations<"es"> = {
                 Este token también estará disponible como una variable de entorno:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Proveedores Git",
+        "unreadable config title": "No se puede leer su configuración de Git",
+        "unreadable config":
+            "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal y su proveedor favorito.",
+        "reset config": "Restablecer",
+        "loading failed title": "Proveedores Git no disponibles",
+        "loading failed": "No se pudieron cargar sus proveedores Git.",
+        retry: "Reintentar"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) => `Conectado como ${name} (@${username})`,
+        "not connected": "No conectado.",
+        "git identity": ({ name, email }) => `Identidad Git: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Identidad Git: ${name}, con el correo de su cuenta de Onyxia (el correo es privado en el proveedor)`,
+        "git identity used at launch":
+            "Es la identidad que usa git en sus servicios, porque es su proveedor favorito.",
+        "personal access token rejected":
+            "Su token guardado ya no es aceptado, reemplácelo.",
+        "session expired": "Su sesión ha caducado, vuelva a iniciar sesión.",
+        "loading failed": "No se pudo contactar con el proveedor.",
+        "sign in": "Iniciar sesión",
+        "sign in again": "Volver a iniciar sesión",
+        "sign out": "Cerrar sesión",
+        "popup blocked":
+            "La ventana de inicio de sesión fue bloqueada: permita las ventanas emergentes para este sitio e inténtelo de nuevo.",
+        "sign in cancelled": "La ventana de inicio de sesión se cerró antes de terminar.",
+        "sign in denied": "El acceso fue denegado en el proveedor.",
+        "sign in failed": "El inicio de sesión falló.",
+        "sign out failed": "El cierre de sesión falló.",
+        "revoke on provider": ({ providerName }) =>
+            `Ha cerrado la sesión en Onyxia. Para revocar completamente su acceso, vaya a sus aplicaciones autorizadas en ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia ya fue autorizado en ${providerName} con otros permisos.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
+        "authorized applications": "aplicaciones autorizadas",
+        "personal access token": "Token de acceso personal",
+        "create a token": ({ providerName }) => `Crear un token en ${providerName}`,
+        save: "Guardar",
+        checking: "Comprobando…",
+        replace: "Reemplazar",
+        cancel: "Cancelar",
+        remove: "Quitar",
+        "remove failed": "No se pudo quitar el token.",
+        "token rejected": "El proveedor rechazó este token, no se guardó nada.",
+        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo.",
+        favorite: "Favorito",
+        "set as favorite": "Marcar como favorito"
     },
     AccountKubernetesTab: {
         "credentials section title": "Conéctate al clúster de Kubernetes",

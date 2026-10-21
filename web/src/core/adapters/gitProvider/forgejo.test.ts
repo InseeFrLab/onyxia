@@ -1,0 +1,122 @@
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { assert } from "tsafe/assert";
+import { createForgejoProvider } from "./forgejo";
+import { createProviderConfig, mockFetch, redirectUri } from "./testUtils";
+
+const forgejo = createForgejoProvider({
+    config: createProviderConfig({
+        type: "forgejo",
+        url: "https://forgejo.example.com",
+        authentication: {
+            ui: { type: "oauth", clientId: "onyxia-app" },
+            service: { type: "oauth", clientId: "services-app" }
+        }
+    })
+});
+
+describe("createForgejoProvider", () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("has no revocation, the user is sent to their applications", () => {
+        assert(forgejo.ui.type === "oauth");
+
+        expect(forgejo.ui.oauth.revokeTokens).toBe(undefined);
+        expect(forgejo.ui.oauth.authorizedApplicationsUrl).toBe(
+            "https://forgejo.example.com/user/settings/applications"
+        );
+    });
+
+    it("authorizes the services with their own application, without device flow", () => {
+        assert(forgejo.service.type === "oauth");
+
+        const { authorization, helperConfig } = forgejo.service;
+
+        assert(authorization !== undefined);
+
+        expect(
+            new URL(
+                authorization.getAuthorizationUrl({
+                    redirectUri,
+                    state: "s",
+                    codeChallenge: "c"
+                })
+            ).searchParams.get("client_id")
+        ).toBe("services-app");
+        expect(helperConfig.deviceAuthorizationUrl).toBe(undefined);
+        expect(helperConfig.tokenUrl).toBe(
+            "https://forgejo.example.com/login/oauth/access_token"
+        );
+    });
+
+    it("fails when the service gets no refresh token", async () => {
+        mockFetch(
+            () =>
+                new Response(
+                    JSON.stringify({
+                        access_token: "a",
+                        token_type: "bearer",
+                        expires_in: 3600
+                    })
+                )
+        );
+
+        assert(forgejo.service.type === "oauth");
+        assert(forgejo.service.authorization !== undefined);
+
+        await expect(
+            forgejo.service.authorization.exchangeAuthorizationCode({
+                code: "c",
+                codeVerifier: "v",
+                redirectUri
+            })
+        ).rejects.toThrow(/refresh token/);
+    });
+
+    it("maps the user", async () => {
+        mockFetch(
+            () =>
+                new Response(JSON.stringify({ login: "jdoe", full_name: "", email: "" }))
+        );
+
+        expect(await forgejo.getUser({ accessToken: "t" })).toStrictEqual({
+            username: "jdoe",
+            name: "jdoe",
+            email: undefined
+        });
+    });
+
+    it("lists repositories with the total count", async () => {
+        const { calls } = mockFetch(
+            () =>
+                new Response(
+                    JSON.stringify({
+                        data: [
+                            {
+                                id: 1,
+                                name: "r",
+                                full_name: "jdoe/r",
+                                html_url: "https://forgejo.example.com/jdoe/r",
+                                clone_url: "https://forgejo.example.com/jdoe/r.git",
+                                default_branch: "main"
+                            }
+                        ]
+                    }),
+                    { headers: { "x-total-count": "21" } }
+                )
+        );
+
+        const { repositories, hasNextPage } = await forgejo.listRepositories({
+            accessToken: "t",
+            search: "r",
+            page: 1
+        });
+
+        expect(new URL(calls[0].url).searchParams.get("q")).toBe("r");
+        expect(repositories[0].httpCloneUrl).toBe(
+            "https://forgejo.example.com/jdoe/r.git"
+        );
+        expect(hasNextPage).toBe(true);
+    });
+});

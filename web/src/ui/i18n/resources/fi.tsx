@@ -73,7 +73,59 @@ export const translations: Translations<"fi"> = {
                 Tämä avain on myös saatavilla ympäristömuuttujana:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-palveluntarjoajat",
+        "unreadable config title": "Git-asetuksiasi ei voi lukea",
+        "unreadable config":
+            "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja suosikkipalveluntarjoajasi.",
+        "reset config": "Palauta",
+        "loading failed title": "Git-palveluntarjoajat eivät ole käytettävissä",
+        "loading failed": "Git-palveluntarjoajiasi ei voitu ladata.",
+        retry: "Yritä uudelleen"
+    },
+    GitProviderCard: {
+        "connected as": ({ name, username }) =>
+            `Yhdistetty käyttäjänä ${name} (@${username})`,
+        "not connected": "Ei yhdistetty.",
+        "git identity": ({ name, email }) => `Git-identiteetti: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-identiteetti: ${name}, Onyxia-tilisi sähköpostilla (sähköposti on yksityinen palveluntarjoajalla)`,
+        "git identity used at launch":
+            "Tätä identiteettiä git käyttää palveluissasi, koska tämä on suosikkipalveluntarjoajasi.",
+        "personal access token rejected":
+            "Tallennettua tunnustasi ei enää hyväksytä, korvaa se.",
+        "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
+        "loading failed": "Palveluntarjoajaan ei saatu yhteyttä.",
+        "sign in": "Kirjaudu",
+        "sign in again": "Kirjaudu uudelleen",
+        "sign out": "Kirjaudu ulos",
+        "popup blocked":
+            "Kirjautumisikkuna estettiin: salli ponnahdusikkunat tälle sivustolle ja yritä uudelleen.",
+        "sign in cancelled":
+            "Kirjautumisikkuna suljettiin ennen kuin kirjautuminen valmistui.",
+        "sign in denied": "Palveluntarjoaja epäsi pääsyn.",
+        "sign in failed": "Kirjautuminen epäonnistui.",
+        "sign out failed": "Uloskirjautuminen epäonnistui.",
+        "revoke on provider": ({ providerName }) =>
+            `Olet kirjautunut ulos Onyxiasta. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia on jo valtuutettu palvelussa ${providerName} eri oikeuksilla.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
+        "authorized applications": "valtuutetut sovellukset",
+        "personal access token": "Henkilökohtainen käyttötunnus",
+        "create a token": ({ providerName }) => `Luo tunnus palvelussa ${providerName}`,
+        save: "Tallenna",
+        checking: "Tarkistetaan…",
+        replace: "Korvaa",
+        cancel: "Peruuta",
+        remove: "Poista",
+        "remove failed": "Tunnusta ei voitu poistaa.",
+        "token rejected":
+            "Palveluntarjoaja hylkäsi tämän tunnuksen, mitään ei tallennettu.",
+        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen.",
+        favorite: "Suosikki",
+        "set as favorite": "Aseta suosikiksi"
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
