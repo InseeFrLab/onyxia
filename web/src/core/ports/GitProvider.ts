@@ -89,7 +89,11 @@ export namespace GitProvider {
             state: string;
             codeChallenge: string;
         }) => string;
-        /** The access token goes to git.token (first clone), the refresh token to git.credentials */
+        /**
+         * The refresh token goes to git.providers[].credentials.refreshToken, the service
+         * gets its access tokens from it. Issued for the services' OAuth application, the
+         * one git-credential-oauth refreshes with.
+         */
         exchangeAuthorizationCode: (params: {
             code: string;
             codeVerifier: string;

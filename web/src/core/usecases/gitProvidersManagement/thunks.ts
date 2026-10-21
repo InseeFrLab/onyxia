@@ -1,6 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
+import { exclude } from "tsafe/exclude";
 import { Mutex } from "async-mutex";
 import { AccessError } from "clean-architecture";
 import {
@@ -394,16 +395,16 @@ export const thunks = {
     /**
      * `.git` of the XOnyxia context, called when the launcher opens. Loads the use case
      * if that hasn't happened yet.
-     * - Identity: the favorite provider's, the Onyxia (Keycloak) account's for what it
-     *   doesn't give (nothing connected, private email). The former name / email fields
-     *   are only used when GIT_PROVIDERS is empty.
-     * - git.token: the favorite's PAT when it is what the services get.
+     * - git.providers: the connected providers, see getProvidersContext.
      * - git.enabled: at least one Git provider is connected (always true without
      *   GIT_PROVIDERS, as before).
+     * - The deprecated single forge fields (name, email, token): the favorite's, the
+     *   Onyxia (Keycloak) account's when nothing is connected. The former name / email
+     *   fields are only used when GIT_PROVIDERS is empty.
      *
-     * TODO(phase 3): credentials, repositories, and the tokens created at launch
-     * (scoped-access-token, service oauth) with getServiceGitCredentials. Until then,
-     * those fall back to the former githubPersonalAccessToken field.
+     * TODO(phase 3): repositories, and the tokens created at launch (scoped-access-token,
+     * refresh token of the service oauth). Until then, git.token falls back to the former
+     * githubPersonalAccessToken field for those.
      */
     getGitContext:
         () =>
@@ -422,6 +423,7 @@ export const thunks = {
             if (!dispatch(thunks.isAvailable())) {
                 return {
                     enabled: true,
+                    providers: [],
                     name: gitName,
                     email: gitEmail,
                     credentials_cache_duration: gitCredentialCacheDuration,
@@ -436,46 +438,38 @@ export const thunks = {
             if (selectors.stateDescription(getState()) !== "ready") {
                 return {
                     enabled: false,
+                    providers: [],
                     ...identity_onyxia,
                     credentials_cache_duration: gitCredentialCacheDuration,
                     token: token_legacy
                 };
             }
 
+            const providers = dispatch(privateThunks.getProvidersContext());
+
             const favoriteProviderId = selectors.favoriteProviderId(getState());
-            const favoriteUser = selectors.favoriteUser(getState());
 
-            const token = (() => {
-                if (favoriteProviderId === undefined || favoriteUser === undefined) {
-                    return undefined;
-                }
-
-                const gitProvider = dispatch(
-                    privateThunks.getGitProvider({ providerId: favoriteProviderId })
-                );
-
-                switch (gitProvider.service.type) {
-                    case "personal-access-token":
-                        return protectedSelectors.persistedGitConfig(getState())
-                            .personalAccessTokenByProviderId[favoriteProviderId];
-                    case "scoped-access-token":
-                    case "oauth":
-                        return token_legacy;
-                }
-            })();
-
-            const connections = selectors.connections(getState());
-
-            assert(connections !== undefined);
+            const favorite = providers.find(({ id }) => id === favoriteProviderId);
 
             return {
-                enabled: connections.some(
-                    ({ connection }) => connection.status === "connected"
-                ),
-                name: favoriteUser?.name || identity_onyxia.name,
-                email: favoriteUser?.email || identity_onyxia.email,
+                enabled: providers.length !== 0,
+                providers,
+                name: favorite?.user.name ?? identity_onyxia.name,
+                email: favorite?.user.email ?? identity_onyxia.email,
                 credentials_cache_duration: gitCredentialCacheDuration,
-                token
+                token: (() => {
+                    if (favorite === undefined) {
+                        return undefined;
+                    }
+
+                    switch (favorite.credentials?.type) {
+                        case "token":
+                            return favorite.credentials.token;
+                        case "oauth":
+                        case undefined:
+                            return token_legacy;
+                    }
+                })()
             };
         }
 } satisfies Thunks;
@@ -507,6 +501,94 @@ const privateThunks = {
                 name: readOrDefault(() => user.username, "unknown"),
                 email: readOrDefault(() => user.email, "unknown@unknown.net")
             };
+        },
+    /**
+     * git.providers: the connected providers, in the order of the configuration.
+     * Identity: the provider's user, the Onyxia (Keycloak) account's for what it doesn't
+     * give (private email). Credentials:
+     * - personal-access-token: the user's PAT.
+     * - oauth: the helper config, without refresh token for now, so only when the
+     *   provider has a device flow.
+     * - scoped-access-token: none until the tokens are created at launch (phase 3).
+     */
+    getProvidersContext:
+        () =>
+        (...args): XOnyxiaContext["git"]["providers"] => {
+            const [dispatch, getState] = args;
+
+            const connections = selectors.connections(getState());
+
+            assert(connections !== undefined);
+
+            const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
+
+            return connections
+                .map(
+                    ({
+                        providerId,
+                        connection
+                    }): XOnyxiaContext["git"]["providers"][number] | undefined => {
+                        if (connection.status !== "connected") {
+                            return undefined;
+                        }
+
+                        const gitProvider = dispatch(
+                            privateThunks.getGitProvider({ providerId })
+                        );
+
+                        const credentials =
+                            ((): XOnyxiaContext["git"]["providers"][number]["credentials"] => {
+                                switch (gitProvider.service.type) {
+                                    case "personal-access-token": {
+                                        const personalAccessToken =
+                                            protectedSelectors.persistedGitConfig(
+                                                getState()
+                                            ).personalAccessTokenByProviderId[providerId];
+
+                                        if (personalAccessToken === undefined) {
+                                            return undefined;
+                                        }
+
+                                        return {
+                                            type: "token",
+                                            username: connection.user.username,
+                                            token: personalAccessToken,
+                                            expirationTime: undefined
+                                        };
+                                    }
+                                    case "oauth": {
+                                        const { helperConfig } = gitProvider.service;
+
+                                        if (
+                                            helperConfig.deviceAuthorizationUrl ===
+                                            undefined
+                                        ) {
+                                            return undefined;
+                                        }
+
+                                        return {
+                                            type: "oauth",
+                                            ...helperConfig,
+                                            refreshToken: undefined
+                                        };
+                                    }
+                                    case "scoped-access-token":
+                                        return undefined;
+                                }
+                            })();
+
+                        return {
+                            id: providerId,
+                            url: gitProvider.url,
+                            user: {
+                                name: connection.user.name || identity_onyxia.name,
+                                email: connection.user.email || identity_onyxia.email
+                            },
+                            credentials
+                        };
+                    }
+                )
+                .filter(exclude(undefined));
         },
     getGitProvider:
         (params: { providerId: string }) =>

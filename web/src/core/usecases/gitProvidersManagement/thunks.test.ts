@@ -581,6 +581,19 @@ describe("gitProvidersManagement", () => {
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
                 enabled: true,
+                providers: [
+                    {
+                        id: "github",
+                        url: "https://github.com",
+                        user: { name: user_gitHub.name, email: user_onyxia.email },
+                        credentials: {
+                            type: "token",
+                            username: user_gitHub.username,
+                            token: "ghp_valid",
+                            expirationTime: undefined
+                        }
+                    }
+                ],
                 name: user_gitHub.name,
                 email: user_onyxia.email,
                 credentials_cache_duration: 0,
@@ -622,6 +635,7 @@ describe("gitProvidersManagement", () => {
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
                 enabled: false,
+                providers: [],
                 name: user_onyxia.username,
                 email: user_onyxia.email,
                 credentials_cache_duration: 0,
@@ -649,10 +663,84 @@ describe("gitProvidersManagement", () => {
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
                 enabled: true,
+                providers: [],
                 name: "Me",
                 email: "me@example.com",
                 credentials_cache_duration: 0,
                 token: "ghp_legacy"
+            });
+        });
+
+        it("has an entry per connected provider, with what the service can use", async () => {
+            const { core, gitLab, forgejo } = await setup({
+                githubPersonalAccessToken: "ghp_valid",
+                sessions: { gitlab: "refresh-0", forgejo: "refresh-0" }
+            });
+
+            const helperConfig = {
+                clientId: "service-client",
+                scopes: ["read_repository", "write_repository"],
+                authorizationUrl: "https://gitlab/oauth/authorize",
+                tokenUrl: "https://gitlab/oauth/token",
+                deviceAuthorizationUrl: "https://gitlab/oauth/authorize_device"
+            };
+
+            gitLab.gitProvider.service = {
+                type: "oauth",
+                helperConfig,
+                authorization: undefined
+            };
+
+            // NOTE: Neither a device flow nor a refresh token yet (phase 3): no credentials.
+            forgejo.gitProvider.service = {
+                type: "oauth",
+                helperConfig: { ...helperConfig, deviceAuthorizationUrl: undefined },
+                authorization: undefined
+            };
+
+            await core.functions.gitProvidersManagement.load();
+            await core.functions.gitProvidersManagement.setFavoriteProvider({
+                providerId: "github"
+            });
+
+            const gitContext =
+                await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(gitContext.providers).toStrictEqual([
+                {
+                    id: "gitlab",
+                    url: "https://gitlab",
+                    user: { name: user_gitLab.name, email: user_gitLab.email },
+                    credentials: {
+                        type: "oauth",
+                        ...helperConfig,
+                        refreshToken: undefined
+                    }
+                },
+                {
+                    id: "forgejo",
+                    url: "https://forgejo",
+                    user: { name: user_gitLab.name, email: user_gitLab.email },
+                    credentials: undefined
+                },
+                {
+                    id: "github",
+                    url: "https://github.com",
+                    user: { name: user_gitHub.name, email: user_onyxia.email },
+                    credentials: {
+                        type: "token",
+                        username: user_gitHub.username,
+                        token: "ghp_valid",
+                        expirationTime: undefined
+                    }
+                }
+            ]);
+
+            // NOTE: The deprecated single forge fields follow the favorite.
+            expect(gitContext).toMatchObject({
+                name: user_gitHub.name,
+                email: user_onyxia.email,
+                token: "ghp_valid"
             });
         });
 
@@ -675,6 +763,7 @@ describe("gitProvidersManagement", () => {
             // GitLab comes first in the configuration: it is the favorite
             expect(gitContext.name).toBe(user_gitLab.name);
             expect(gitContext.token).toBe("ghp_legacy");
+            expect(gitContext.providers[0]?.credentials).toBe(undefined);
         });
     });
 
