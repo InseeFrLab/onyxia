@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
+import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import {
     S3SelectionActionBar,
     type S3SelectionActionBarProps
@@ -41,6 +42,106 @@ const baseArgs: S3SelectionActionBarProps = {
 export const SingleObject: Story = {
     args: {
         ...baseArgs
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        // The five actions and the separate clear-selection button.
+        await expect(canvas.getAllByRole("button")).toHaveLength(6);
+        await expect(
+            canvas.queryByRole("button", { name: "More actions" })
+        ).not.toBeInTheDocument();
+    }
+};
+
+export const WithSixActions: Story = {
+    args: {
+        ...baseArgs,
+        accessPolicy: { callback: fn(), isPublic: false }
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const trigger = canvas.getByRole("button", { name: "More actions" });
+        await expect(canvas.getAllByRole("button")).toHaveLength(7);
+        await expect(
+            canvas.queryByRole("button", { name: "Make public" })
+        ).not.toBeInTheDocument();
+        await userEvent.click(trigger);
+        const menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(menu.getAllByRole("menuitem")).toHaveLength(1);
+        await expect(trigger).toHaveAttribute("aria-expanded", "true");
+        await userEvent.click(menu.getByRole("menuitem", { name: "Make public" }));
+        await expect(args.accessPolicy?.callback).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
+        await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    }
+};
+
+export const WithSevenActions: Story = {
+    args: {
+        ...baseArgs,
+        requestFiles: { callback: fn() },
+        accessPolicy: { callback: fn(), isPublic: true }
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const trigger = canvas.getByRole("button", { name: "More actions" });
+        await expect(canvas.getAllByRole("button")).toHaveLength(7);
+        await expect(
+            canvas.queryByRole("button", { name: "Request files" })
+        ).not.toBeInTheDocument();
+        await userEvent.click(trigger);
+        const menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(menu.getAllByRole("menuitem").map(item => item.textContent)).toEqual(
+            ["Request files", "Make private"]
+        );
+        await userEvent.click(menu.getByRole("menuitem", { name: "Request files" }));
+        await expect(args.requestFiles?.callback).toHaveBeenCalledTimes(1);
+        await expect(args.accessPolicy?.callback).not.toHaveBeenCalled();
+        await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
+    }
+};
+
+export const OverflowKeyboardNavigation: Story = {
+    args: {
+        ...baseArgs,
+        bookmark: { callback: undefined, isBookmarked: true },
+        onClear: undefined,
+        requestFiles: { callback: fn() },
+        accessPolicy: { callback: fn(), isPublic: true }
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const trigger = canvas.getByRole("button", { name: "More actions" });
+        await expect(
+            canvas.queryByRole("button", { name: "Clear selection" })
+        ).not.toBeInTheDocument();
+        await expect(
+            canvas.getByRole("button", { name: "Delete from bookmarks" })
+        ).toBeDisabled();
+
+        // Five actions occupy the tab order: the disabled bookmark is skipped.
+        for (let i = 0; i < 5; i++) {
+            await userEvent.tab();
+        }
+        await expect(trigger).toHaveFocus();
+        await userEvent.keyboard("{ArrowDown}");
+        let menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(menu.getByRole("menuitem", { name: "Request files" })).toHaveFocus();
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(trigger).toHaveFocus());
+        await expect(args.requestFiles?.callback).not.toHaveBeenCalled();
+        await expect(args.accessPolicy?.callback).not.toHaveBeenCalled();
+
+        await userEvent.keyboard("{Enter}");
+        menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await userEvent.keyboard("{ArrowDown}");
+        await expect(menu.getByRole("menuitem", { name: "Make private" })).toHaveFocus();
+        await userEvent.keyboard("{Enter}");
+        await expect(args.accessPolicy?.callback).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
     }
 };
 

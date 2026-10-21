@@ -343,6 +343,7 @@ export const translations: Translations<"zh-CN"> = {
         "new s3 profile": "新建 S3 配置文件"
     },
     S3SelectionActionBar: {
+        "more actions": "更多操作",
         "request files": "请求文件",
         download: "下载",
         delete: "删除",

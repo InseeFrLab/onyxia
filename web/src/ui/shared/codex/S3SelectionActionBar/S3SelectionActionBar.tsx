@@ -1,7 +1,9 @@
-import { useEffect, useState, type ReactElement, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactElement, type ReactNode } from "react";
 import { getIconUrlByName, getIconUrl } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import MuiTooltip from "@mui/material/Tooltip";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -62,6 +64,8 @@ type Action = {
     isActive?: boolean;
 };
 
+const maxVisibleActions = 5;
+
 export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const {
         className,
@@ -79,6 +83,9 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const { classes, cx } = useStyles();
     const { t } = useTranslation({ S3SelectionActionBar });
     const [isS3UriCopied, setIsS3UriCopied] = useState(false);
+    const [overflowAnchorEl, setOverflowAnchorEl] = useState<HTMLElement | null>(null);
+    const overflowMenuId = useId();
+    const overflowButtonId = useId();
 
     useEffect(() => {
         setIsS3UriCopied(false);
@@ -225,6 +232,13 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const actions = actionCandidates.filter(
         (action): action is Action => action !== undefined
     );
+    const visibleActions = actions.slice(0, maxVisibleActions);
+    const overflowActions = actions.slice(maxVisibleActions);
+    const overflowActionKeys = overflowActions.map(action => action.key).join("|");
+
+    useEffect(() => {
+        setOverflowAnchorEl(null);
+    }, [selectionCount, copyS3Uri?.s3UriStr, overflowActionKeys]);
 
     const selectedLabel =
         selectionCount === 1
@@ -256,7 +270,7 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                 <span className={classes.summaryLabel}>{selectedLabel}</span>
             </div>
             <div className={classes.actions}>
-                {actions.map(action => {
+                {visibleActions.map(action => {
                     const button = (
                         <button
                             type="button"
@@ -303,7 +317,67 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
                         </MuiTooltip>
                     );
                 })}
+                {overflowActions.length > 0 && (
+                    <MuiTooltip title={t("more actions")}>
+                        <button
+                            id={overflowButtonId}
+                            type="button"
+                            className={classes.moreButton}
+                            aria-label={t("more actions")}
+                            aria-haspopup="menu"
+                            aria-expanded={overflowAnchorEl !== null}
+                            aria-controls={
+                                overflowAnchorEl === null ? undefined : overflowMenuId
+                            }
+                            onClick={event => setOverflowAnchorEl(event.currentTarget)}
+                            onKeyDown={event => {
+                                if (event.key === "ArrowDown") {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setOverflowAnchorEl(event.currentTarget);
+                                }
+                            }}
+                        >
+                            <Icon icon={getIconUrlByName("MoreVert")} size="small" />
+                        </button>
+                    </MuiTooltip>
+                )}
             </div>
+            <Menu
+                open={overflowAnchorEl !== null && overflowActions.length > 0}
+                anchorEl={overflowAnchorEl}
+                onClose={() => setOverflowAnchorEl(null)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+                slotProps={{ paper: { className: classes.overflowPaper } }}
+                MenuListProps={{
+                    id: overflowMenuId,
+                    "aria-labelledby": overflowButtonId,
+                    className: classes.overflowList
+                }}
+            >
+                {overflowActions.map(action => (
+                    <MenuItem
+                        key={action.key}
+                        className={classes.overflowItem}
+                        disabled={action.onClick === undefined}
+                        onClick={() => {
+                            setOverflowAnchorEl(null);
+                            action.onClick?.();
+                        }}
+                    >
+                        <span
+                            className={cx(
+                                classes.overflowIcon,
+                                action.isActive && classes.actionIconFrameActive
+                            )}
+                        >
+                            {action.icon}
+                        </span>
+                        {action.label}
+                    </MenuItem>
+                ))}
+            </Menu>
         </div>
     );
 }
@@ -374,6 +448,67 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
             gap: theme.spacing(1.5),
             flexWrap: "nowrap",
             minWidth: 0
+        },
+        moreButton: {
+            border: "none",
+            background: "transparent",
+            color: theme.colors.useCases.typography.textPrimary,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 36,
+            height: 36,
+            padding: theme.spacing(1),
+            borderRadius: 9999,
+            flexShrink: 0,
+            cursor: "pointer",
+            "&:hover, &[aria-expanded='true']": {
+                backgroundColor: theme.colors.useCases.surfaces.surface3
+            },
+            "&:focus-visible": {
+                outline: `2px solid ${theme.colors.useCases.typography.textFocus}`,
+                outlineOffset: 2
+            }
+        },
+        overflowPaper: {
+            marginTop: theme.spacing(1),
+            width: 300,
+            maxWidth: "calc(100vw - 32px)",
+            borderRadius: 12,
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            backgroundImage: "none",
+            color: theme.colors.useCases.typography.textPrimary,
+            boxShadow: theme.shadows[4]
+        },
+        overflowList: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(1),
+            padding: theme.spacing(2)
+        },
+        overflowItem: {
+            ...label1Style,
+            minHeight: 32,
+            gap: theme.spacing(1),
+            padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+            borderRadius: 8,
+            whiteSpace: "normal",
+            "&:hover, &.Mui-focusVisible": {
+                backgroundColor: theme.colors.useCases.surfaces.surface2
+            }
+        },
+        overflowIcon: {
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 16,
+            height: 16,
+            flexShrink: 0,
+            "& .MuiSvgIcon-root": {
+                width: 16,
+                height: 16,
+                fontSize: 16
+            }
         },
         tooltipAnchor: {
             display: "inline-flex",
@@ -496,5 +631,6 @@ const { i18n } = declareComponentKeys<
     | "one selected"
     | { K: "many selected"; P: { count: number }; R: string }
     | "clear selection"
+    | "more actions"
 >()({ S3SelectionActionBar });
 export type I18n = typeof i18n;

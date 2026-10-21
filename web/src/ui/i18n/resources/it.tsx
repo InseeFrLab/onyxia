@@ -374,6 +374,7 @@ export const translations: Translations<"it"> = {
         "new s3 profile": "Nuovo profilo S3"
     },
     S3SelectionActionBar: {
+        "more actions": "Altre azioni",
         "request files": "Richiedi file",
         download: "Scarica",
         delete: "Elimina",
@@ -679,8 +680,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

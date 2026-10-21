@@ -372,6 +372,7 @@ export const translations: Translations<"fi"> = {
         "new s3 profile": "Uusi S3-profiili"
     },
     S3SelectionActionBar: {
+        "more actions": "Lisää toimintoja",
         "request files": "Pyydä tiedostoja",
         download: "Lataa",
         delete: "Poista",

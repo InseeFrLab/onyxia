@@ -373,6 +373,7 @@ export const translations: Translations<"no"> = {
         "new s3 profile": "Ny S3-profil"
     },
     S3SelectionActionBar: {
+        "more actions": "Flere handlinger",
         "request files": "Be om filer",
         download: "Last ned",
         delete: "Slett",

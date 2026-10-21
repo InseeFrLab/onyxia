@@ -116,6 +116,30 @@ The component does not inspect selected S3 URIs or decide action availability fr
 
 Each action button is rendered only when its action object prop is defined.
 
+### Overflow menu
+
+- Keep the existing action order: Download, Delete, Copy S3 URI, Bookmark, Share,
+  Request files, Access policy. Filter out undefined action objects before counting.
+- Show at most five action buttons inline. A defined but disabled action still
+  occupies its position. The selection summary/clear control is separate from this limit.
+- With five or fewer actions, show all of them and no overflow trigger.
+- With more than five actions, append an icon-only `MoreVert` button labelled
+  `More actions`. Only the remaining actions appear in its popup, in the same order.
+- Overflow rows reuse the existing labels, icons, state, availability, and callbacks.
+  Selecting an enabled item closes the popup and invokes its callback exactly once.
+- The rounded popup opens below the three-dot button, uses the existing S3 menu
+  surfaces, typography, padding, and shadows, and stays inside the viewport.
+- The trigger exposes `aria-haspopup="menu"`, `aria-expanded`, and `aria-controls`.
+  Pointer activation, Enter, Space, and ArrowDown open it; arrow keys navigate;
+  Enter/Space activate an item. Escape, Tab, and outside clicks dismiss it and
+  restore focus through MUI's menu behavior.
+- Close the popup when the selection count, single-selection URI, or set of
+  overflow actions changes. A cleared selection renders neither the bar nor its popup.
+- The component's props and parent callbacks are unchanged.
+
+Stories cover the five-action boundary, six and seven actions, callback dispatch,
+disabled bookmarks, locked selection, keyboard navigation, and focus restoration.
+
 ### Optional actions
 
 - Download → rendered when `download !== undefined`
@@ -123,6 +147,7 @@ Each action button is rendered only when its action object prop is defined.
 - Copy S3 URI → rendered when `copyS3Uri !== undefined`
 - Bookmark → rendered when `bookmark !== undefined`
 - Share → rendered when `share !== undefined`
+- Request files → rendered when `requestFiles !== undefined`
 - Access policy → rendered when `accessPolicy !== undefined`
 
 Clicking an enabled rendered action calls the matching action object's `callback`, except for Copy S3 URI. A bookmark whose callback is undefined is disabled and cannot be clicked.

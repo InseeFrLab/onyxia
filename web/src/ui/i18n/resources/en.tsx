@@ -531,6 +531,7 @@ export const translations: Translations<"en"> = {
         "new s3 profile": "New S3 Profile"
     },
     S3SelectionActionBar: {
+        "more actions": "More actions",
         download: "Download",
         delete: "Delete",
         "copy s3 uri": "Copy S3 URI",
