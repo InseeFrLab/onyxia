@@ -68,25 +68,11 @@ const favoriteProviderId = createSelector(
               })
 );
 
-/** The identity used when git.name / git.email are left empty. */
-const favoriteUser = createSelector(
-    connections,
-    favoriteProviderId,
-    (connections, favoriteProviderId) => {
-        const connection = connections?.find(
-            ({ providerId }) => providerId === favoriteProviderId
-        )?.connection;
-
-        return connection?.status === "connected" ? connection.user : undefined;
-    }
-);
-
 export const selectors = {
     stateDescription,
     errorReason,
     connections,
-    favoriteProviderId,
-    favoriteUser
+    favoriteProviderId
 };
 
 export const protectedSelectors = {

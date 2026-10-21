@@ -94,14 +94,48 @@ export type XOnyxiaContext = {
         basic: string;
     };
     git: {
-        /**
-         * Whether git should be set up in the service. With GIT_PROVIDERS: at least one
-         * Git provider is connected. Without: true, as charts have always assumed.
-         */
         enabled: boolean;
+        providers: {
+            /** The id of the provider in GIT_PROVIDERS */
+            id: string;
+            /** Without trailing slash: git config credential.<url> */
+            url: string;
+            /** Commit identity on this forge (git config user.name / user.email) */
+            user: {
+                name: string;
+                email: string;
+            };
+            credentials:
+                | {
+                      type: "token";
+                      username: string;
+                      token: string;
+                      /** Unix time in ms. undefined: doesn't expire (personal access token) */
+                      expirationTime: number | undefined;
+                  }
+                | {
+                      type: "oauth";
+                      clientId: string;
+                      scopes: string[];
+                      authorizationUrl: string;
+                      tokenUrl: string;
+                      /** undefined: no device flow, the service relies on refreshToken only */
+                      deviceAuthorizationUrl: string | undefined;
+                      /**
+                       * Obtained by Onyxia at launch. undefined: the user goes through
+                       * the device flow from a terminal of the service.
+                       */
+                      refreshToken: string | undefined;
+                  }
+                | undefined;
+        }[];
+        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
         name: string;
+        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
         email: string;
+        /** @deprecated Only meaningful for the former cache credential helper */
         credentials_cache_duration: number;
+        /** @deprecated Single forge format, the favorite's token: use git.providers */
         token: string | undefined;
     };
     vault:
