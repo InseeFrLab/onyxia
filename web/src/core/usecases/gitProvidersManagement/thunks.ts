@@ -398,6 +398,8 @@ export const thunks = {
      *   doesn't give (nothing connected, private email). The former name / email fields
      *   are only used when GIT_PROVIDERS is empty.
      * - git.token: the favorite's PAT when it is what the services get.
+     * - git.enabled: at least one Git provider is connected (always true without
+     *   GIT_PROVIDERS, as before).
      *
      * TODO(phase 3): credentials, repositories, and the tokens created at launch
      * (scoped-access-token, service oauth) with getServiceGitCredentials. Until then,
@@ -419,6 +421,7 @@ export const thunks = {
 
             if (!dispatch(thunks.isAvailable())) {
                 return {
+                    enabled: true,
                     name: gitName,
                     email: gitEmail,
                     credentials_cache_duration: gitCredentialCacheDuration,
@@ -432,6 +435,7 @@ export const thunks = {
 
             if (selectors.stateDescription(getState()) !== "ready") {
                 return {
+                    enabled: false,
                     ...identity_onyxia,
                     credentials_cache_duration: gitCredentialCacheDuration,
                     token: token_legacy
@@ -460,7 +464,14 @@ export const thunks = {
                 }
             })();
 
+            const connections = selectors.connections(getState());
+
+            assert(connections !== undefined);
+
             return {
+                enabled: connections.some(
+                    ({ connection }) => connection.status === "connected"
+                ),
                 name: favoriteUser?.name || identity_onyxia.name,
                 email: favoriteUser?.email || identity_onyxia.email,
                 credentials_cache_duration: gitCredentialCacheDuration,

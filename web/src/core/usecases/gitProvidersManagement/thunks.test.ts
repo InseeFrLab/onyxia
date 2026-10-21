@@ -181,6 +181,8 @@ async function setup(params?: {
     sessions?: Record<string, string>;
     gitName?: string;
     gitEmail?: string;
+    /** GIT_PROVIDERS empty */
+    isIntegrationDisabled?: boolean;
     authorizeInPopup?: () => Promise<{ code: string; codeVerifier: string }>;
 }) {
     const {
@@ -189,6 +191,7 @@ async function setup(params?: {
         sessions = {},
         gitName = "",
         gitEmail = "",
+        isIntegrationDisabled = false,
         authorizeInPopup = async () => ({ code: "the-code", codeVerifier: "v" })
     } = params ?? {};
 
@@ -238,17 +241,21 @@ async function setup(params?: {
 
     const authorizeInPopupSpy = vi.fn(authorizeInPopup);
 
-    const gitProviders = [gitLab.gitProvider, forgejo.gitProvider, gitHub.gitProvider];
+    const gitProviders = isIntegrationDisabled
+        ? []
+        : [gitLab.gitProvider, forgejo.gitProvider, gitHub.gitProvider];
 
     const context = {
         oidc: { isUserLoggedIn: true },
         gitProvidersConfig: {
             description: undefined,
-            providers: [
-                toConfig(gitLab.gitProvider, "gitlab"),
-                toConfig(forgejo.gitProvider, "forgejo"),
-                toConfig(gitHub.gitProvider, "github")
-            ]
+            providers: isIntegrationDisabled
+                ? []
+                : [
+                      toConfig(gitLab.gitProvider, "gitlab"),
+                      toConfig(forgejo.gitProvider, "forgejo"),
+                      toConfig(gitHub.gitProvider, "github")
+                  ]
         },
         gitProviders,
         oauthAuthorization: {
@@ -573,6 +580,7 @@ describe("gitProvidersManagement", () => {
             expect(
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
+                enabled: true,
                 name: user_gitHub.name,
                 email: user_onyxia.email,
                 credentials_cache_duration: 0,
@@ -613,10 +621,38 @@ describe("gitProvidersManagement", () => {
             expect(
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
+                enabled: false,
                 name: user_onyxia.username,
                 email: user_onyxia.email,
                 credentials_cache_duration: 0,
                 token: undefined
+            });
+        });
+
+        it("is enabled once a provider is connected", async () => {
+            const { core } = await setup({ sessions: { gitlab: "refresh-0" } });
+
+            expect(
+                (await core.functions.gitProvidersManagement.getGitContext()).enabled
+            ).toBe(true);
+        });
+
+        it("keeps the former behavior without GIT_PROVIDERS", async () => {
+            const { core } = await setup({
+                isIntegrationDisabled: true,
+                gitName: "Me",
+                gitEmail: "me@example.com",
+                githubPersonalAccessToken: "ghp_legacy"
+            });
+
+            expect(
+                await core.functions.gitProvidersManagement.getGitContext()
+            ).toStrictEqual({
+                enabled: true,
+                name: "Me",
+                email: "me@example.com",
+                credentials_cache_duration: 0,
+                token: "ghp_legacy"
             });
         });
 

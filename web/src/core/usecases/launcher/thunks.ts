@@ -746,6 +746,7 @@ export const protectedThunks = {
                 },
                 git: !doInjectPersonalInfos
                     ? {
+                          enabled: false,
                           name: "",
                           email: "",
                           credentials_cache_duration: 0,
