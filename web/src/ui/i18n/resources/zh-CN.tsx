@@ -447,6 +447,7 @@ export const translations: Translations<"zh-CN"> = {
         "make private": "设为私有"
     },
     S3ExplorerMainView: {
+        "more actions": "更多操作",
         "request files": "请求文件",
         "create prefix dialog title": "创建前缀",
         "create prefix dialog subtitle": "在当前 S3 位置内创建一个新前缀。",

@@ -283,6 +283,37 @@ Typical row actions include:
 - Actions remain secondary compared to the bulk action bar
 - Actions are hidden when not relevant for the row type
 
+### Row action overflow
+
+- Show at most three contextual action buttons inline, followed by a `MoreVert`
+  icon button labelled `More actions` when there are additional actions.
+- Preserve the existing order: Download, Delete, Copy S3 URI, Bookmark, Share,
+  Request files, Access policy. Omit undefined actions before splitting the list;
+  defined but disabled actions retain their position and disabled state.
+- The popup lists only the remaining actions, in order, with the same labels,
+  icons, bookmark state, and callbacks. No additional S3 operations are introduced.
+- Use the same rounded, themed popup appearance as the directory and selection
+  action menus. Render it in a portal so the table cell and virtualized scroller
+  cannot clip it.
+- Opening, closing, or using the row menu must not select/deselect the row,
+  navigate into it, or invoke another row's action. Enabled items close the menu
+  and invoke their own callback exactly once.
+- Keep the originating row's actions visible while its menu is open, including
+  when focus or the pointer moves into the popup.
+- The trigger exposes `aria-haspopup`, `aria-expanded`, and `aria-controls`.
+  Enter, Space, and ArrowDown open it. Arrow keys navigate enabled menu items;
+  Enter/Space activate them. Escape, Tab, and outside clicks dismiss it, with
+  focus restored through MUI's menu behavior.
+- Close the popup when the row URI or set of overflow actions changes, when row
+  actions become hidden for multiple selection, or when virtualization unmounts
+  the row. Updating upload/deletion state immediately updates disabled actions.
+- Keep the existing row visibility, selection, copy tooltip/feedback, and
+  confirmation-dialog behavior.
+
+Stories cover folder/object overflow, callback URI routing without navigation or
+selection changes, keyboard/focus behavior, read-only bookmarks, busy rows, and
+the existing multiple-selection rule.
+
 ### Public access action
 
 Rules:

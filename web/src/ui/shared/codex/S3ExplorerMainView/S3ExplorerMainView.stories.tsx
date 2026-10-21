@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
+import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import { useEffect, useState } from "react";
 import { Evt } from "evt";
 import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
@@ -461,6 +462,179 @@ export const RequestFilesUnavailable: Story = {
             <S3ExplorerMainView {...args} />
         </div>
     )
+};
+
+export const RowActionOverflow: Story = {
+    args: {
+        ...placeholderArgs,
+        listedPrefix: toListedItems([baseNodes[0], baseNodes[3]], defaultPrefix),
+        onNavigate: fn(),
+        onRequestFiles: fn(),
+        onChangePrefixPolicy: fn()
+    },
+    render: args => (
+        <div style={{ maxWidth: 1200, padding: 24 }}>
+            <S3ExplorerMainView {...args} />
+        </div>
+    ),
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const checkbox = await canvas.findByRole("checkbox", { name: "Select exports" });
+        await userEvent.click(checkbox);
+        const row = within(checkbox.closest("tr")!);
+        // Filename, three inline actions, and the separate overflow trigger.
+        await expect(row.getAllByRole("button")).toHaveLength(5);
+        for (const name of ["Download", "Delete", "Copy S3 URI"]) {
+            await expect(row.getByRole("button", { name })).toBeVisible();
+        }
+        await expect(
+            row.queryByRole("button", { name: "Add to bookmarks" })
+        ).not.toBeInTheDocument();
+        await userEvent.click(row.getByRole("button", { name: "More actions" }));
+        const menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(menu.getAllByRole("menuitem").map(item => item.textContent)).toEqual(
+            ["Add to bookmarks", "Share", "Request files", "Make private"]
+        );
+        await expect(checkbox).toBeChecked();
+        await userEvent.click(menu.getByRole("menuitem", { name: "Request files" }));
+        await expect(args.onRequestFiles).toHaveBeenCalledTimes(1);
+        await expect(args.onRequestFiles).toHaveBeenCalledWith({
+            s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/")
+        });
+        await expect(args.onNavigate).not.toHaveBeenCalled();
+        await expect(args.onChangePrefixPolicy).not.toHaveBeenCalled();
+        await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
+        await expect(checkbox).toBeChecked();
+    }
+};
+
+export const ObjectRowOverflow: Story = {
+    ...RowActionOverflow,
+    args: {
+        ...placeholderArgs,
+        listedPrefix: toListedItems([baseNodes[3]], defaultPrefix),
+        onBookmark: fn(),
+        onNavigate: fn()
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const checkbox = await canvas.findByRole("checkbox", {
+            name: "Select README.md"
+        });
+        await userEvent.click(checkbox);
+        const row = within(checkbox.closest("tr")!);
+        await expect(row.getAllByRole("button")).toHaveLength(5);
+        await userEvent.click(row.getByRole("button", { name: "More actions" }));
+        const menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(menu.getAllByRole("menuitem").map(item => item.textContent)).toEqual(
+            ["Add to bookmarks", "Share"]
+        );
+        await userEvent.click(menu.getByRole("menuitem", { name: "Add to bookmarks" }));
+        await expect(args.onBookmark).toHaveBeenCalledTimes(1);
+        await expect(args.onBookmark).toHaveBeenCalledWith({
+            s3Uri: parseObjectOrThrow("s3://analytics-data/README.md")
+        });
+        await expect(args.onNavigate).not.toHaveBeenCalled();
+        await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
+        await expect(checkbox).toBeChecked();
+    }
+};
+
+export const RowOverflowKeyboardNavigation: Story = {
+    ...RowActionOverflow,
+    args: {
+        ...RowActionOverflow.args,
+        onBookmark: undefined,
+        bookmarkedS3Uris: [parsePrefixOrThrow("s3://analytics-data/exports/")],
+        onSharePrefix: fn()
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const checkbox = await canvas.findByRole("checkbox", { name: "Select exports" });
+        await userEvent.click(checkbox);
+        const row = within(checkbox.closest("tr")!);
+        const trigger = row.getByRole("button", { name: "More actions" });
+        for (let i = 0; i < 5; i++) {
+            await userEvent.tab();
+        }
+        await expect(trigger).toHaveFocus();
+        await userEvent.keyboard("{ArrowDown}");
+        let menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(
+            menu.getByRole("menuitem", { name: "Delete from bookmarks" })
+        ).toHaveAttribute("aria-disabled", "true");
+        await expect(menu.getByRole("menuitem", { name: "Share" })).toHaveFocus();
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(trigger).toHaveFocus());
+        await expect(args.onSharePrefix).not.toHaveBeenCalled();
+        await userEvent.keyboard("{Enter}");
+        menu = within(await body.findByRole("menu", { name: "More actions" }));
+        await expect(menu.getByRole("menuitem", { name: "Share" })).toHaveFocus();
+        await userEvent.keyboard("{Enter}");
+        await expect(args.onSharePrefix).toHaveBeenCalledTimes(1);
+        await expect(args.onSharePrefix).toHaveBeenCalledWith({
+            s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/"),
+            anonymousProfileName: "anonymous"
+        });
+        await expect(checkbox).toBeChecked();
+    }
+};
+
+export const BusyRowOverflow: Story = {
+    ...RowActionOverflow,
+    args: {
+        ...placeholderArgs,
+        listedPrefix: toListedItems([baseNodes[5]], defaultPrefix),
+        onShareObject: fn(),
+        onBookmark: fn()
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+        const checkbox = await canvas.findByRole("checkbox", {
+            name: "Select new-upload.parquet"
+        });
+        await userEvent.click(checkbox);
+        const row = within(checkbox.closest("tr")!);
+        await expect(row.getByRole("button", { name: "Download" })).toBeDisabled();
+        await userEvent.click(row.getByRole("button", { name: "More actions" }));
+        const menu = within(await body.findByRole("menu", { name: "More actions" }));
+        for (const item of menu.getAllByRole("menuitem")) {
+            await expect(item).toHaveAttribute("aria-disabled", "true");
+        }
+        await expect(args.onShareObject).not.toHaveBeenCalled();
+        await expect(args.onBookmark).not.toHaveBeenCalled();
+        await userEvent.keyboard("{Escape}");
+    }
+};
+
+export const MultipleSelectionHidesRowOverflow: Story = {
+    ...RowActionOverflow,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        const prefixCheckbox = await canvas.findByRole("checkbox", {
+            name: "Select exports"
+        });
+        const objectCheckbox = canvas.getByRole("checkbox", { name: "Select README.md" });
+        await userEvent.click(prefixCheckbox);
+        await expect(
+            within(prefixCheckbox.closest("tr")!).getByRole("button", {
+                name: "More actions"
+            })
+        ).toBeVisible();
+        await userEvent.click(objectCheckbox);
+        for (const checkbox of [prefixCheckbox, objectCheckbox]) {
+            await expect(checkbox).toBeChecked();
+            await expect(
+                within(checkbox.closest("tr")!).queryByRole("button", {
+                    name: "More actions"
+                })
+            ).not.toBeInTheDocument();
+        }
+    }
 };
 
 export const EmptyPrefix: Story = {

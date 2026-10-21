@@ -480,6 +480,7 @@ export const translations: Translations<"no"> = {
         "make private": "Gjør privat"
     },
     S3ExplorerMainView: {
+        "more actions": "Flere handlinger",
         "request files": "Be om filer",
         "create prefix dialog title": "Opprett prefiks",
         "create prefix dialog subtitle":

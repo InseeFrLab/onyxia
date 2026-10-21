@@ -482,6 +482,7 @@ export const translations: Translations<"nl"> = {
         "make private": "Privé maken"
     },
     S3ExplorerMainView: {
+        "more actions": "Meer acties",
         "request files": "Bestanden aanvragen",
         "create prefix dialog title": "Prefix aanmaken",
         "create prefix dialog subtitle":

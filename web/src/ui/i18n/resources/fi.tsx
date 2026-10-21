@@ -478,6 +478,7 @@ export const translations: Translations<"fi"> = {
         "make private": "Tee yksityiseksi"
     },
     S3ExplorerMainView: {
+        "more actions": "Lisää toimintoja",
         "request files": "Pyydä tiedostoja",
         "create prefix dialog title": "Luo etuliite",
         "create prefix dialog subtitle": "Luo uusi etuliite nykyiseen S3-sijaintiin.",

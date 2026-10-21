@@ -343,6 +343,7 @@ export const translations: Translations<"en"> = {
         "make private": "Make private"
     },
     S3ExplorerMainView: {
+        "more actions": "More actions",
         "create prefix dialog title": "Create prefix",
         "create prefix dialog subtitle":
             "Create a new prefix inside the current S3 location.",

@@ -496,6 +496,7 @@ export const translations: Translations<"de"> = {
         "make private": "Privat machen"
     },
     S3ExplorerMainView: {
+        "more actions": "Weitere Aktionen",
         "request files": "Dateien anfordern",
         "create prefix dialog title": "Präfix erstellen",
         "create prefix dialog subtitle":

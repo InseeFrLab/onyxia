@@ -482,6 +482,7 @@ export const translations: Translations<"it"> = {
         "make private": "Rendi privato"
     },
     S3ExplorerMainView: {
+        "more actions": "Altre azioni",
         "request files": "Richiedi file",
         "create prefix dialog title": "Crea prefisso",
         "create prefix dialog subtitle":
@@ -680,9 +681,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
