@@ -94,6 +94,11 @@ export type XOnyxiaContext = {
         basic: string;
     };
     git: {
+        /**
+         * Whether git should be set up in the service. With GIT_PROVIDERS: at least one
+         * Git provider is connected. Without: true, as charts have always assumed.
+         */
+        enabled: boolean;
         name: string;
         email: string;
         credentials_cache_duration: number;
