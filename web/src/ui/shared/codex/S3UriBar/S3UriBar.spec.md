@@ -31,7 +31,7 @@ The component is responsible for:
 
 The component has two modes:
 
-- Navigation mode: breadcrumb-like path with clickable segments.
+- Navigation mode: breadcrumb-like path with clickable segments and a current-directory actions popup.
 - Editing mode: text input with optional keyboard-navigable hints and loading feedback in the hints overlay.
 
 ## Props Contract
@@ -109,7 +109,8 @@ export type S3UriBarProps = {
      * Called when:
      * - user selects a hint
      * - user validates input externally (if you wire that)
-     * - user clicks a breadcrumb segment in navigation mode
+     * - user clicks an ancestor breadcrumb segment in navigation mode
+     * - user selects Refresh in the directory menu
      */
     onS3UriChange: (params: {
         s3Uri: S3Uri | undefined;
@@ -184,6 +185,10 @@ export type S3UriBarProps = {
 
     onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
 
+    /** Existing external toolbar actions, also exposed in the directory menu. */
+    uploadFiles?: { callback: () => void; disabled: boolean };
+    createDirectory?: { callback: () => void; disabled: boolean };
+
     /**
      * Optional imperative action bus.
      *
@@ -202,6 +207,7 @@ export type S3UriBarProps = {
 ## Interaction Summary
 
 - Navigation mode:
+    - Hovering any path segment shows a rounded, visible highlight over its existing background. It remains visible when surface theme tokens share a color and preserves the public-path tint.
     - When a public prefix is present, show a small `Public` icon next to the first public breadcrumb crumb and visually group the public tail of the path.
     - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because `a/` is the public prefix itself.
     - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/b/`, the public marker starts on `b`, because `b/` is the last crumb of the public prefix.
@@ -214,7 +220,16 @@ export type S3UriBarProps = {
     - `evtAction` `{ action: "display copy feedback", s3Uri }` => stringify the provided S3 URI and display copied feedback without calling `copyToClipboard`.
     - Home/root button short click => enter editing mode with `s3://` as the draft.
     - Key icon short click => enter editing mode and select the object-key portion of the URI, from after `s3://bucket/` to the end.
-    - Segment short click => request navigation (`onS3UriChange`).
+    - Ancestor segment short click => request navigation (`onS3UriChange`).
+    - Current directory segment short click => open `S3DirectoryMenu`, anchored below that segment, without requesting navigation or reloading the directory. This includes the bucket segment at bucket root and prefixes using a custom delimiter.
+    - The current directory trigger shows a dropdown chevron and exposes `aria-haspopup`, `aria-expanded`, and the menu's `aria-controls`. Enter, Space, and ArrowDown open it; Escape dismisses it and restores focus.
+    - The menu duplicates the existing copy, bookmark, policy, upload, create folder, request files, and share actions, honoring exactly the same visibility and disabled states as the toolbar. The toolbar buttons remain unchanged.
+    - Refresh in the menu preserves the former current-segment action by requesting the current URI through `onS3UriChange(..., isHintSelection: false)`.
+    - Upload/create actions are omitted when their optional props are absent; supplied disabled actions remain visible but disabled.
+    - Copy from the menu shares the bar's existing clipboard write and copied feedback. The menu itself does not write to the clipboard.
+    - The popup closes after an action, when the canonical URI changes, when editing starts, or when the copied-path feedback replaces the breadcrumbs.
+    - Non-delimiter-terminated object paths retain navigation behavior and do not open the directory menu. Undefined-location states expose no directory menu.
+    - Only currently implemented directory actions appear; no download, delete, move, or prefix clipboard operations are introduced.
     - Segment long press (`>= 270ms`) => enter edit mode (internal state).
 - Editing mode:
     - Input updates are handled by parent via requested prefix changes.

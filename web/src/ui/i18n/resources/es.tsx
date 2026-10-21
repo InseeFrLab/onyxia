@@ -1468,6 +1468,11 @@ export const translations: Translations<"es"> = {
         "edit from s3 root": "Editar desde la raíz S3",
         "edit object key": "Editar clave del objeto",
         "object key": "Clave del objeto",
+        "upload files": "Subir archivos",
+        "create new folder": "Crear nueva carpeta",
+        refresh: "Actualizar",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Público. " : ""}Acciones de la carpeta ${s3Uri}`,
         listing: "Listando..."
     }
 };

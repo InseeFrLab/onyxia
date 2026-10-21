@@ -1382,6 +1382,11 @@ ${
         "edit from s3 root": "从 S3 根目录编辑",
         "edit object key": "编辑对象键",
         "object key": "对象键",
+        "upload files": "上传文件",
+        "create new folder": "创建新文件夹",
+        refresh: "刷新",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "公开。 " : ""}目录操作： ${s3Uri}`,
         listing: "正在列出..."
     }
 };

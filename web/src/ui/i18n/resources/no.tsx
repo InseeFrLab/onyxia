@@ -1461,6 +1461,11 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "edit from s3 root": "Rediger fra S3-rot",
         "edit object key": "Rediger objektnøkkel",
         "object key": "Objektnøkkel",
+        "upload files": "Last opp filer",
+        "create new folder": "Opprett ny mappe",
+        refresh: "Oppdater",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Offentlig. " : ""}Mappehandlinger for ${s3Uri}`,
         listing: "Lister..."
     }
 };

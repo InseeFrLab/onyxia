@@ -1469,6 +1469,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "edit from s3 root": "Bewerken vanaf S3-root",
         "edit object key": "Objectsleutel bewerken",
         "object key": "Objectsleutel",
+        "upload files": "Bestanden uploaden",
+        "create new folder": "Nieuwe map maken",
+        refresh: "Vernieuwen",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Openbaar. " : ""}Mapacties voor ${s3Uri}`,
         listing: "Lijst wordt geladen..."
     }
 };

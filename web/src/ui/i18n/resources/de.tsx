@@ -1487,6 +1487,11 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "edit from s3 root": "Ab S3-Wurzel bearbeiten",
         "edit object key": "Objektschlüssel bearbeiten",
         "object key": "Objektschlüssel",
+        "upload files": "Dateien hochladen",
+        "create new folder": "Neuen Ordner erstellen",
+        refresh: "Aktualisieren",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Öffentlich. " : ""}Ordneraktionen für ${s3Uri}`,
         listing: "Auflistung..."
     }
 };

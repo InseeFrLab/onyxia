@@ -1478,6 +1478,11 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "edit from s3 root": "Modifier depuis la racine S3",
         "edit object key": "Modifier la clé de l'objet",
         "object key": "Clé de l'objet",
+        "upload files": "Téléverser des fichiers",
+        "create new folder": "Créer un nouveau dossier",
+        refresh: "Actualiser",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Public. " : ""}Actions du dossier ${s3Uri}`,
         listing: "Chargement de la liste..."
     }
 };

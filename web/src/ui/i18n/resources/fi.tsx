@@ -1453,6 +1453,11 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "edit from s3 root": "Muokkaa S3-juuresta",
         "edit object key": "Muokkaa objektin avainta",
         "object key": "Objektin avain",
+        "upload files": "Lataa tiedostoja",
+        "create new folder": "Luo uusi kansio",
+        refresh: "Päivitä",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Julkinen. " : ""}Kansion toiminnot: ${s3Uri}`,
         listing: "Listataan..."
     }
 };

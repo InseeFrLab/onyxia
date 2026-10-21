@@ -679,9 +679,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -1466,6 +1465,11 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "edit from s3 root": "Modifica dalla radice S3",
         "edit object key": "Modifica chiave dell'oggetto",
         "object key": "Chiave dell'oggetto",
+        "upload files": "Carica file",
+        "create new folder": "Crea nuova cartella",
+        refresh: "Aggiorna",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Pubblico. " : ""}Azioni della cartella ${s3Uri}`,
         listing: "Elenco..."
     }
 };

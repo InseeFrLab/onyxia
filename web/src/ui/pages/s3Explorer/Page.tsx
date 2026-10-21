@@ -594,6 +594,20 @@ function S3Explorer() {
                                         mainView.uriBar.shouldShowRequestFilesAction
                                     }
                                     onRequestFiles={onRequestFiles}
+                                    uploadFiles={{
+                                        disabled: mainView.isUploadButtonDisabled,
+                                        callback: () =>
+                                            evtS3ExplorerMainViewAction.post(
+                                                "CHOSE FILES TO UPLOAD"
+                                            )
+                                    }}
+                                    createDirectory={{
+                                        disabled:
+                                            mainView.directoryCreationButton.isDisabled,
+                                        callback: () => {
+                                            void openDirectoryCreationDialog();
+                                        }
+                                    }}
                                     evtAction={evtS3UriBarAction}
                                 />
                                 <S3ContextActionButton

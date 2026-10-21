@@ -1454,6 +1454,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "edit from s3 root": "Edit from S3 root",
         "edit object key": "Edit object key",
         "object key": "Object key",
+        "upload files": "Upload files",
+        "create new folder": "Create new folder",
+        refresh: "Refresh",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Public. " : ""}Directory actions for ${s3Uri}`,
         listing: "Listing..."
     }
 };
