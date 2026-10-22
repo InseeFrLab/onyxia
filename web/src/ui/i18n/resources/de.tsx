@@ -1086,6 +1086,20 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Die Git-Zugangsdaten des Dienstes konnten nicht abgerufen werden",
+        "popup blocked": ({ providerName }) =>
+            `Ihr Browser hat das Autorisierungsfenster von ${providerName} blockiert. Erlauben Sie Pop-ups für diese Seite und starten Sie den Dienst erneut.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Die Autorisierung bei ${providerName} wurde abgebrochen. Starten Sie den Dienst erneut, um es noch einmal zu versuchen.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} hat die Autorisierung abgelehnt.`,
+        "sign in required": ({ providerName }) =>
+            `Ihre ${providerName}-Sitzung ist abgelaufen. Melden Sie sich unter Mein Konto → Git erneut an und starten Sie den Dienst erneut.`,
+        "request failed": ({ providerName }) =>
+            `Die Anfrage an ${providerName} ist fehlgeschlagen, es wurde nichts gestartet.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Überwachung`

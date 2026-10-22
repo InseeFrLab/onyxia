@@ -995,6 +995,19 @@ ${
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
         ok: "是"
     },
+    GitCredentialsErrorDialog: {
+        title: "无法获取服务的 Git 凭据",
+        "popup blocked": ({ providerName }) =>
+            `浏览器阻止了 ${providerName} 的授权窗口。请允许此网站的弹出窗口，然后重新启动服务。`,
+        "authorization cancelled": ({ providerName }) =>
+            `${providerName} 授权已取消。请重新启动服务以重试。`,
+        "authorization denied": ({ providerName }) => `${providerName} 拒绝了授权。`,
+        "sign in required": ({ providerName }) =>
+            `您的 ${providerName} 会话已过期。请在 我的账户 → Git 中重新登录，然后重新启动服务。`,
+        "request failed": ({ providerName }) =>
+            `对 ${providerName} 的请求失败，未启动任何服务。`,
+        ok: "确定"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`
     },

@@ -1059,6 +1059,20 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Palvelun Git-tunnistetietoja ei saatu",
+        "popup blocked": ({ providerName }) =>
+            `Selain esti palvelun ${providerName} valtuutusikkunan. Salli ponnahdusikkunat tälle sivustolle ja käynnistä palvelu uudelleen.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Valtuutus palvelussa ${providerName} peruttiin. Yritä uudelleen käynnistämällä palvelu.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} hylkäsi valtuutuksen.`,
+        "sign in required": ({ providerName }) =>
+            `${providerName}-istuntosi on vanhentunut. Kirjaudu uudelleen kohdassa Oma tili → Git ja käynnistä palvelu uudelleen.`,
+        "request failed": ({ providerName }) =>
+            `Pyyntö palveluun ${providerName} epäonnistui, mitään ei käynnistetty.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Valvonta`

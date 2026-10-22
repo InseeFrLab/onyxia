@@ -10,6 +10,7 @@ import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
 import type { GitSessionStore } from "core/ports/GitSessionStore";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { assert } from "tsafe/assert";
+import { createServiceCredentialsMarker } from "./decoupledLogic/serviceCredentialsMarkers";
 
 const mocks = vi.hoisted(() => ({
     context: undefined as unknown,
@@ -743,27 +744,252 @@ describe("gitProvidersManagement", () => {
                 token: "ghp_valid"
             });
         });
+    });
 
-        it("falls back to the former field until tokens are created at launch (phase 3)", async () => {
-            const { core, gitLab } = await setup({
-                githubPersonalAccessToken: "ghp_legacy",
-                sessions: { gitlab: "refresh-0" }
-            });
+    describe("getServiceGitCredentials", () => {
+        const marker = (
+            kind: "access-token" | "username" | "refresh-token",
+            providerId: string
+        ) => createServiceCredentialsMarker({ kind, providerId });
 
-            gitLab.gitProvider.service = {
+        const helperConfig = {
+            clientId: "service-client",
+            scopes: ["read_repository", "write_repository"],
+            authorizationUrl: "https://gitlab/oauth/authorize",
+            tokenUrl: "https://gitlab/oauth/token",
+            deviceAuthorizationUrl: "https://gitlab/oauth/authorize_device"
+        };
+
+        const setScopedAccessToken = (gitProvider: GitProvider) => {
+            const createAccessToken = vi.fn<
+                Extract<
+                    GitProvider["service"],
+                    { type: "scoped-access-token" }
+                >["createAccessToken"]
+            >(async ({ expirationTime }) => ({
+                id: "42",
+                token: "glpat-created",
+                gitUsername: "oauth2",
+                expirationTime
+            }));
+
+            gitProvider.service = {
                 type: "scoped-access-token",
-                createAccessToken: async () => {
-                    throw new Error("not in phase 2");
+                lifetimeDays: 30,
+                createAccessToken
+            };
+
+            return { createAccessToken };
+        };
+
+        const setServiceOAuth = (gitProvider: GitProvider) => {
+            const exchangeAuthorizationCode = vi.fn(
+                async ({ code }: { code: string }) => ({
+                    accessToken: `service-access-from-${code}`,
+                    refreshToken: `service-refresh-from-${code}`,
+                    expirationTime: Date.now() + 3600_000
+                })
+            );
+
+            gitProvider.service = {
+                type: "oauth",
+                helperConfig,
+                authorization: {
+                    getAuthorizationUrl: ({ state }) =>
+                        `https://${gitProvider.id}/service-authorize?${state}`,
+                    exchangeAuthorizationCode
                 }
             };
+
+            return { exchangeAuthorizationCode };
+        };
+
+        it("puts markers for the token created at launch, then creates it", async () => {
+            const { core, gitLab } = await setup({ sessions: { gitlab: "refresh-0" } });
+
+            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
 
             const gitContext =
                 await core.functions.gitProvidersManagement.getGitContext();
 
+            const credentials = gitContext.providers[0]?.credentials;
+
+            assert(credentials?.type === "token");
+
             // GitLab comes first in the configuration: it is the favorite
-            expect(gitContext.name).toBe(user_gitLab.name);
-            expect(gitContext.token).toBe("ghp_legacy");
-            expect(gitContext.providers[0]?.credentials).toBe(undefined);
+            expect(gitContext.token).toBe(marker("access-token", "gitlab"));
+            expect(credentials).toMatchObject({
+                username: marker("username", "gitlab"),
+                token: marker("access-token", "gitlab")
+            });
+            expect(createAccessToken).not.toHaveBeenCalled();
+
+            const result =
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [
+                        marker("access-token", "gitlab"),
+                        marker("username", "gitlab")
+                    ]
+                });
+
+            expect(createAccessToken).toHaveBeenCalledWith({
+                accessToken: "access-1",
+                name: "onyxia-vscode-123",
+                repositories: "all",
+                permission: "read-write",
+                expirationTime: credentials.expirationTime
+            });
+            expect(result).toStrictEqual({
+                isSuccess: true,
+                valueByMarker: {
+                    [marker("access-token", "gitlab")]: "glpat-created",
+                    [marker("username", "gitlab")]: "oauth2"
+                }
+            });
+        });
+
+        it("creates nothing and opens no popup when no marker is left", async () => {
+            const { core, gitLab, authorizeInPopupSpy } = await setup({
+                sessions: { gitlab: "refresh-0" }
+            });
+
+            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+
+            await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: []
+                })
+            ).toStrictEqual({ isSuccess: true, valueByMarker: {} });
+            expect(createAccessToken).not.toHaveBeenCalled();
+            expect(authorizeInPopupSpy).not.toHaveBeenCalled();
+        });
+
+        it("authorizes the service of the favorite in a popup, before anything is awaited", async () => {
+            const { core, gitLab, forgejo, authorizeInPopupSpy } = await setup({
+                sessions: { gitlab: "refresh-0", forgejo: "refresh-0" }
+            });
+
+            setServiceOAuth(gitLab.gitProvider);
+            setServiceOAuth(forgejo.gitProvider);
+
+            const gitContext =
+                await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(gitContext.token).toBe(marker("access-token", "gitlab"));
+            expect(
+                gitContext.providers.map(({ credentials }) => credentials)
+            ).toStrictEqual([
+                {
+                    type: "oauth",
+                    ...helperConfig,
+                    refreshToken: marker("refresh-token", "gitlab")
+                },
+                // NOTE: Not the favorite, the device flow is all it has.
+                { type: "oauth", ...helperConfig, refreshToken: undefined }
+            ]);
+
+            authorizeInPopupSpy.mockClear();
+
+            const prResult =
+                core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [
+                        marker("access-token", "gitlab"),
+                        marker("refresh-token", "gitlab")
+                    ]
+                });
+
+            expect(authorizeInPopupSpy).toHaveBeenCalledTimes(1);
+
+            expect(await prResult).toStrictEqual({
+                isSuccess: true,
+                valueByMarker: {
+                    [marker("access-token", "gitlab")]: "service-access-from-the-code",
+                    [marker("refresh-token", "gitlab")]: "service-refresh-from-the-code"
+                }
+            });
+        });
+
+        it("reports a blocked popup", async () => {
+            const { core, gitLab } = await setup({
+                sessions: { gitlab: "refresh-0" },
+                authorizeInPopup: () =>
+                    Promise.reject(
+                        new OAuthAuthorizationError("popup blocked", "blocked")
+                    )
+            });
+
+            const { exchangeAuthorizationCode } = setServiceOAuth(gitLab.gitProvider);
+
+            await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [marker("refresh-token", "gitlab")]
+                })
+            ).toStrictEqual({
+                isSuccess: false,
+                error: {
+                    providerId: "gitlab",
+                    providerDisplayName: "gitlab",
+                    reason: "popup blocked",
+                    detail: undefined
+                }
+            });
+            expect(exchangeAuthorizationCode).not.toHaveBeenCalled();
+        });
+
+        it("reports a token GitLab refuses to create, with its message", async () => {
+            const { core, gitLab } = await setup({ sessions: { gitlab: "refresh-0" } });
+
+            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+
+            createAccessToken.mockRejectedValue(new Error("needs the api scope"));
+
+            await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [marker("access-token", "gitlab")]
+                })
+            ).toMatchObject({
+                isSuccess: false,
+                error: { reason: "request failed", detail: "needs the api scope" }
+            });
+        });
+
+        it("asks to sign in again when the session expired", async () => {
+            const { core, gitLab, getConnection } = await setup({
+                sessions: { gitlab: "refresh-0" }
+            });
+
+            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+
+            await core.functions.gitProvidersManagement.getGitContext();
+
+            // NOTE: The access token is rejected, then the refresh token.
+            createAccessToken.mockRejectedValue(new GitProviderUnauthorizedError());
+            gitLab.behavior.isRefreshRejected = true;
+
+            expect(
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [marker("access-token", "gitlab")]
+                })
+            ).toMatchObject({
+                isSuccess: false,
+                error: { reason: "sign in required" }
+            });
+            expect(getConnection("gitlab")).toStrictEqual({
+                status: "error",
+                reason: "session expired"
+            });
         });
     });
 

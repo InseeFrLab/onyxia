@@ -1066,6 +1066,20 @@ export const translations: Translations<"es"> = {
             "Haz clic en el icono de marcador nuevamente para actualizar tu configuración guardada",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "No se pudieron obtener las credenciales Git del servicio",
+        "popup blocked": ({ providerName }) =>
+            `Tu navegador bloqueó la ventana de autorización de ${providerName}. Permite las ventanas emergentes para este sitio y vuelve a lanzar el servicio.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Se canceló la autorización de ${providerName}. Vuelve a lanzar el servicio para intentarlo de nuevo.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} rechazó la autorización.`,
+        "sign in required": ({ providerName }) =>
+            `Tu sesión de ${providerName} ha caducado. Vuelve a iniciar sesión en Mi cuenta → Git y lanza el servicio de nuevo.`,
+        "request failed": ({ providerName }) =>
+            `La solicitud a ${providerName} falló, no se lanzó nada.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `Monitoreo de ${helmReleaseFriendlyName}`

@@ -6,6 +6,13 @@ import {
     serializeGitConfig
 } from "./persistedGitConfig";
 import { getFavoriteProviderId } from "./favoriteProvider";
+import {
+    collectServiceCredentialsMarkers,
+    createServiceCredentialsMarker,
+    parseServiceCredentialsMarker,
+    replaceServiceCredentialsMarkers
+} from "./serviceCredentialsMarkers";
+import type { Stringifyable } from "core/tools/Stringifyable";
 
 const createProvider = (params: {
     id: string;
@@ -121,5 +128,62 @@ describe("getFavoriteProviderId", () => {
                 favoriteProviderId_persisted: "removed"
             })
         ).toBe(undefined);
+    });
+});
+
+describe("serviceCredentialsMarkers", () => {
+    const token = createServiceCredentialsMarker({
+        kind: "access-token",
+        providerId: "git.example.com:8443"
+    });
+    const refreshToken = createServiceCredentialsMarker({
+        kind: "refresh-token",
+        providerId: "forgejo"
+    });
+
+    it("parses back a marker, the provider id can contain ':'", () => {
+        expect(parseServiceCredentialsMarker(token)).toStrictEqual({
+            kind: "access-token",
+            providerId: "git.example.com:8443"
+        });
+        expect(parseServiceCredentialsMarker("ghp_xxx")).toBe(undefined);
+        expect(
+            parseServiceCredentialsMarker("onyxia-git-created-at-launch:other:gitlab")
+        ).toBe(undefined);
+    });
+
+    const helmValues: Record<string, Stringifyable> = {
+        git: {
+            token,
+            providers: [
+                { url: "https://forgejo", credentials: { refreshToken } },
+                { url: "https://github.com", credentials: { token: "ghp_xxx" } }
+            ]
+        },
+        other: [1, true, null]
+    };
+
+    it("collects the markers in depth, each once", () => {
+        expect(
+            collectServiceCredentialsMarkers({ ...helmValues, again: token })
+        ).toStrictEqual([token, refreshToken]);
+    });
+
+    it("replaces the markers in depth, keeps everything else", () => {
+        expect(
+            replaceServiceCredentialsMarkers({
+                value: helmValues,
+                valueByMarker: { [token]: "glpat", [refreshToken]: "refresh" }
+            })
+        ).toStrictEqual({
+            git: {
+                token: "glpat",
+                providers: [
+                    { url: "https://forgejo", credentials: { refreshToken: "refresh" } },
+                    { url: "https://github.com", credentials: { token: "ghp_xxx" } }
+                ]
+            },
+            other: [1, true, null]
+        });
     });
 });

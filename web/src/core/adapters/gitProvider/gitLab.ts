@@ -153,6 +153,7 @@ export function createGitLabProvider(params: {
             case "scoped-access-token":
                 return {
                     type: "scoped-access-token",
+                    lifetimeDays: authentication.service.lifetimeDays,
                     // NOTE: Fine-grained personal access token, GitLab >= 19.2.
                     // https://docs.gitlab.com/api/user_tokens/#create-a-personal-access-token
                     createAccessToken: async ({

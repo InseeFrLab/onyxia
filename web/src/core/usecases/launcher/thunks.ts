@@ -3,6 +3,10 @@ import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
+import {
+    collectServiceCredentialsMarkers,
+    replaceServiceCredentialsMarkers
+} from "core/usecases/gitProvidersManagement/decoupledLogic/serviceCredentialsMarkers";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
@@ -521,15 +525,41 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
-            dispatch(actions.launchStarted());
-
             const helmReleaseName = privateSelectors.helmReleaseName(getState());
-            const helmValues = privateSelectors.helmValues(getState());
+            const helmValues_withMarkers = privateSelectors.helmValues(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(helmReleaseName !== null);
-            assert(helmValues !== null);
+            assert(helmValues_withMarkers !== null);
             assert(restorableConfig !== null);
+
+            // NOTE: Before any await, it may open a popup (OAuth authorization of the
+            // service), see getServiceGitCredentials.
+            const prGitCredentials = dispatch(
+                gitProvidersManagement.thunks.getServiceGitCredentials({
+                    serviceName: helmReleaseName,
+                    markers: collectServiceCredentialsMarkers(helmValues_withMarkers)
+                })
+            );
+
+            dispatch(actions.launchStarted());
+
+            const gitCredentials = await prGitCredentials;
+
+            if (!gitCredentials.isSuccess) {
+                dispatch(
+                    actions.launchFailedOnGitCredentials({
+                        gitCredentialsError: gitCredentials.error
+                    })
+                );
+                return;
+            }
+
+            // NOTE: Only in what is sent, the form's state keeps the markers.
+            const helmValues = replaceServiceCredentialsMarkers({
+                value: helmValues_withMarkers,
+                valueByMarker: gitCredentials.valueByMarker
+            });
 
             await onyxiaApi.helmInstall({
                 helmReleaseName,
