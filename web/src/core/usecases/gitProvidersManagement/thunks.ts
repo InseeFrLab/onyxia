@@ -11,6 +11,7 @@ import {
     type GitUser
 } from "core/ports/GitProvider";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { actions, type Connection } from "./state";
@@ -22,9 +23,16 @@ import {
     serializeGitConfig,
     type PersistedGitConfig
 } from "./decoupledLogic/persistedGitConfig";
+import {
+    createServiceCredentialsMarker,
+    parseServiceCredentialsMarker,
+    type ServiceCredentialsMarker
+} from "./decoupledLogic/serviceCredentialsMarkers";
 
 /** An access token this close to its expiration is refreshed before being used */
 const ACCESS_TOKEN_EXPIRATION_MARGIN_MS = 60_000;
+
+const DAY_MS = 24 * 3600_000;
 
 export const thunks = {
     isAvailable:
@@ -401,10 +409,9 @@ export const thunks = {
      * - The deprecated single forge fields (name, email, token): the favorite's, the
      *   Onyxia (Keycloak) account's when nothing is connected. The former name / email
      *   fields are only used when GIT_PROVIDERS is empty.
+     * - What is created at launch is a marker, replaced by getServiceGitCredentials.
      *
-     * TODO(phase 3): repositories, and the tokens created at launch (scoped-access-token,
-     * refresh token of the service oauth). Until then, git.token falls back to the former
-     * githubPersonalAccessToken field for those.
+     * TODO(phase 3): repositories.
      */
     getGitContext:
         () =>
@@ -466,13 +473,233 @@ export const thunks = {
                         case "token":
                             return favorite.credentials.token;
                         case "oauth":
+                            // NOTE: The access token of the service's authorization, enough
+                            // for the first clone with the current images. None with the
+                            // device flow (GitHub).
+                            return favorite.credentials.refreshToken === undefined
+                                ? undefined
+                                : createServiceCredentialsMarker({
+                                      kind: "access-token",
+                                      providerId: favorite.id
+                                  });
                         case undefined:
-                            return token_legacy;
+                            return undefined;
                     }
                 })()
             };
+        },
+    /**
+     * When "Launch" is clicked, the values of the markers left in the helm values (see
+     * getGitContext): the tokens are created (scoped-access-token, named
+     * onyxia-<serviceName>) and the service is authorized (oauth, popup). No marker
+     * left: nothing is created, no popup.
+     *
+     * Must be dispatched synchronously from the click handler: the popup is opened
+     * before anything is awaited. Never rejects.
+     */
+    getServiceGitCredentials:
+        (params: { serviceName: string; markers: string[] }) =>
+        async (
+            ...args
+        ): Promise<
+            | { isSuccess: true; valueByMarker: Record<string, string> }
+            | { isSuccess: false; error: ServiceGitCredentialsError }
+        > => {
+            const { serviceName } = params;
+
+            const [dispatch, , { oauthAuthorization }] = args;
+
+            const providerIds = [
+                ...new Set(
+                    params.markers
+                        .map(parseServiceCredentialsMarker)
+                        .filter(exclude(undefined))
+                        .map(({ providerId }) => providerId)
+                )
+            ];
+
+            // NOTE: No await before this map, the popups are opened in it.
+            const prResults = providerIds.map(
+                async (
+                    providerId
+                ): Promise<
+                    | {
+                          isSuccess: true;
+                          valueByKind: Partial<
+                              Record<ServiceCredentialsMarker.Kind, string>
+                          >;
+                      }
+                    | { isSuccess: false; error: ServiceGitCredentialsError }
+                > => {
+                    const gitProvider = dispatch(
+                        privateThunks.getGitProvider({ providerId })
+                    );
+
+                    const createError = (
+                        reason: ServiceGitCredentialsError["reason"],
+                        detail?: string
+                    ) => ({
+                        isSuccess: false as const,
+                        error: {
+                            providerId,
+                            providerDisplayName: gitProvider.displayName,
+                            reason,
+                            detail
+                        }
+                    });
+
+                    const { service } = gitProvider;
+
+                    switch (service.type) {
+                        case "oauth": {
+                            const { authorization } = service;
+
+                            assert(authorization !== undefined);
+
+                            const { redirectUri } = oauthAuthorization;
+
+                            const prAuthorization = oauthAuthorization.authorizeInPopup({
+                                getAuthorizationUrl: ({ state, codeChallenge }) =>
+                                    authorization.getAuthorizationUrl({
+                                        redirectUri,
+                                        state,
+                                        codeChallenge
+                                    })
+                            });
+
+                            let code: string;
+                            let codeVerifier: string;
+
+                            try {
+                                ({ code, codeVerifier } = await prAuthorization);
+                            } catch (error) {
+                                if (!(error instanceof OAuthAuthorizationError)) {
+                                    return createError("request failed", String(error));
+                                }
+
+                                switch (error.reason) {
+                                    case "popup blocked":
+                                        return createError("popup blocked");
+                                    case "denied":
+                                        return createError(
+                                            "authorization denied",
+                                            error.providerError
+                                        );
+                                    case "popup closed":
+                                    case "timeout":
+                                        return createError("authorization cancelled");
+                                }
+                            }
+
+                            try {
+                                const tokens =
+                                    await authorization.exchangeAuthorizationCode({
+                                        code,
+                                        codeVerifier,
+                                        redirectUri
+                                    });
+
+                                return {
+                                    isSuccess: true,
+                                    valueByKind: {
+                                        "access-token": tokens.accessToken,
+                                        "refresh-token": tokens.refreshToken
+                                    }
+                                };
+                            } catch (error) {
+                                return createError("request failed", String(error));
+                            }
+                        }
+                        case "scoped-access-token": {
+                            const expirationTime =
+                                globalContext.scopedAccessTokenExpirationTimeByProviderId.get(
+                                    providerId
+                                ) ?? Date.now() + service.lifetimeDays * DAY_MS;
+
+                            try {
+                                // NOTE: Refreshed and retried once when rejected.
+                                const { token, gitUsername } = await dispatch(
+                                    privateThunks.callWithAccessToken({
+                                        providerId,
+                                        call: accessToken =>
+                                            service.createAccessToken({
+                                                accessToken,
+                                                name: `onyxia-${serviceName}`,
+                                                // NOTE: All the repositories for now, the
+                                                // port already allows { urls }.
+                                                repositories: "all",
+                                                permission: "read-write",
+                                                expirationTime
+                                            })
+                                    })
+                                );
+
+                                return {
+                                    isSuccess: true,
+                                    valueByKind: {
+                                        "access-token": token,
+                                        username: gitUsername
+                                    }
+                                };
+                            } catch (error) {
+                                if (
+                                    dispatch(privateThunks.getConnection({ providerId }))
+                                        .status !== "connected"
+                                ) {
+                                    return createError("sign in required");
+                                }
+
+                                return createError(
+                                    "request failed",
+                                    error instanceof Error ? error.message : String(error)
+                                );
+                            }
+                        }
+                        case "personal-access-token":
+                            // NOTE: The PAT is in the context, never a marker.
+                            assert(false);
+                    }
+                }
+            );
+
+            const results = await Promise.all(prResults);
+
+            const valueByMarker: Record<string, string> = {};
+
+            for (const [i, result] of results.entries()) {
+                if (!result.isSuccess) {
+                    return result;
+                }
+
+                const providerId = providerIds[i];
+
+                for (const [kind, value] of Object.entries(result.valueByKind)) {
+                    valueByMarker[
+                        createServiceCredentialsMarker({
+                            kind: kind as ServiceCredentialsMarker.Kind,
+                            providerId
+                        })
+                    ] = value;
+                }
+            }
+
+            return { isSuccess: true, valueByMarker };
         }
 } satisfies Thunks;
+
+export type ServiceGitCredentialsError = {
+    providerId: string;
+    providerDisplayName: string;
+    /** sign in required: the session expired or the PAT was rejected, see Account → Git */
+    reason:
+        | "popup blocked"
+        | "authorization cancelled"
+        | "authorization denied"
+        | "sign in required"
+        | "request failed";
+    /** authorization denied: what the provider said. request failed: the error */
+    detail: string | undefined;
+};
 
 const privateThunks = {
     /** The user's Onyxia (Keycloak) account, what git.name / git.email used to default to */
@@ -507,9 +734,10 @@ const privateThunks = {
      * Identity: the provider's user, the Onyxia (Keycloak) account's for what it doesn't
      * give (private email). Credentials:
      * - personal-access-token: the user's PAT.
-     * - oauth: the helper config, without refresh token for now, so only when the
-     *   provider has a device flow.
-     * - scoped-access-token: none until the tokens are created at launch (phase 3).
+     * - scoped-access-token: markers, the token is created at launch.
+     * - oauth: the helper config. For the favorite, a marker for the refresh token
+     *   Onyxia gets at launch (popup). For the others, nothing: they only get
+     *   credentials when the provider has a device flow.
      */
     getProvidersContext:
         () =>
@@ -521,6 +749,8 @@ const privateThunks = {
             assert(connections !== undefined);
 
             const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
+
+            const favoriteProviderId = selectors.favoriteProviderId(getState());
 
             return connections
                 .map(
@@ -557,11 +787,22 @@ const privateThunks = {
                                         };
                                     }
                                     case "oauth": {
-                                        const { helperConfig } = gitProvider.service;
+                                        const { helperConfig, authorization } =
+                                            gitProvider.service;
+
+                                        const refreshToken =
+                                            authorization !== undefined &&
+                                            providerId === favoriteProviderId
+                                                ? createServiceCredentialsMarker({
+                                                      kind: "refresh-token",
+                                                      providerId
+                                                  })
+                                                : undefined;
 
                                         if (
+                                            refreshToken === undefined &&
                                             helperConfig.deviceAuthorizationUrl ===
-                                            undefined
+                                                undefined
                                         ) {
                                             return undefined;
                                         }
@@ -569,11 +810,32 @@ const privateThunks = {
                                         return {
                                             type: "oauth",
                                             ...helperConfig,
-                                            refreshToken: undefined
+                                            refreshToken
                                         };
                                     }
-                                    case "scoped-access-token":
-                                        return undefined;
+                                    case "scoped-access-token": {
+                                        const expirationTime =
+                                            Date.now() +
+                                            gitProvider.service.lifetimeDays * DAY_MS;
+
+                                        globalContext.scopedAccessTokenExpirationTimeByProviderId.set(
+                                            providerId,
+                                            expirationTime
+                                        );
+
+                                        return {
+                                            type: "token",
+                                            username: createServiceCredentialsMarker({
+                                                kind: "username",
+                                                providerId
+                                            }),
+                                            token: createServiceCredentialsMarker({
+                                                kind: "access-token",
+                                                providerId
+                                            }),
+                                            expirationTime
+                                        };
+                                    }
                                 }
                             })();
 
@@ -894,5 +1156,7 @@ const globalContext = {
         { accessToken: string; expirationTime: number }
     >(),
     prRefreshByProviderId: new Map<string, Promise<string>>(),
-    mutex: new Mutex()
+    mutex: new Mutex(),
+    /** The one announced in the XOnyxia context, the token is created with it at launch */
+    scopedAccessTokenExpirationTimeByProviderId: new Map<string, number>()
 };

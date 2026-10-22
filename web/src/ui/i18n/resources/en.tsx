@@ -1000,6 +1000,20 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Couldn't get the Git credentials of the service",
+        "popup blocked": ({ providerName }) =>
+            `Your browser blocked the ${providerName} authorization window. Allow popups for this site, then launch the service again.`,
+        "authorization cancelled": ({ providerName }) =>
+            `The ${providerName} authorization was cancelled. Launch the service again to retry.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} refused the authorization.`,
+        "sign in required": ({ providerName }) =>
+            `Your ${providerName} session has expired. Sign in again in My account → Git, then launch the service again.`,
+        "request failed": ({ providerName }) =>
+            `The request to ${providerName} failed, nothing was launched.`,
+        ok: "Ok"
+    },
     FormFieldWrapper: {
         "reset to default": "Reset to default"
     },

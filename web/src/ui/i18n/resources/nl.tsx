@@ -1070,6 +1070,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "De Git-inloggegevens van de dienst konden niet worden opgehaald",
+        "popup blocked": ({ providerName }) =>
+            `Je browser heeft het autorisatievenster van ${providerName} geblokkeerd. Sta pop-ups toe voor deze site en start de dienst opnieuw.`,
+        "authorization cancelled": ({ providerName }) =>
+            `De autorisatie bij ${providerName} is geannuleerd. Start de dienst opnieuw om het nog eens te proberen.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} heeft de autorisatie geweigerd.`,
+        "sign in required": ({ providerName }) =>
+            `Je ${providerName}-sessie is verlopen. Meld je opnieuw aan in Mijn account → Git en start de dienst opnieuw.`,
+        "request failed": ({ providerName }) =>
+            `Het verzoek aan ${providerName} is mislukt, er is niets gestart.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`

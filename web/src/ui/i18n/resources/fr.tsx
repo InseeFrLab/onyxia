@@ -1072,6 +1072,20 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Impossible d'obtenir les identifiants Git du service",
+        "popup blocked": ({ providerName }) =>
+            `Le navigateur a bloqué la fenêtre d'autorisation de ${providerName}. Autorisez les popups pour ce site, puis relancez le service.`,
+        "authorization cancelled": ({ providerName }) =>
+            `L'autorisation de ${providerName} a été annulée. Relancez le service pour réessayer.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} a refusé l'autorisation.`,
+        "sign in required": ({ providerName }) =>
+            `Votre session ${providerName} a expiré. Reconnectez-vous dans Mon compte → Git, puis relancez le service.`,
+        "request failed": ({ providerName }) =>
+            `La requête à ${providerName} a échoué, rien n'a été lancé.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Surveillance`

@@ -52,6 +52,7 @@ function Launcher() {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtNoLongerBookmarkedDialogOpen,
+        evtGitCredentialsErrorDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = useConst(() => ({
         evtAcknowledgeSharingOfConfigConfirmDialogOpen:
@@ -67,6 +68,10 @@ function Launcher() {
         evtNoLongerBookmarkedDialogOpen:
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtNoLongerBookmarkedDialogOpen"]>
+            >(),
+        evtGitCredentialsErrorDialogOpen:
+            Evt.create<
+                UnpackEvt<LauncherDialogsProps["evtGitCredentialsErrorDialogOpen"]>
             >(),
         evtMaybeAcknowledgeConfigVolatilityDialogOpen:
             Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
@@ -191,6 +196,13 @@ function Launcher() {
                         routes
                             .myServices({ autoOpenHelmReleaseName: helmReleaseName })
                             .push();
+                    }
+                )
+                .attach(
+                    event => event.eventName === "launchFailedOnGitCredentials",
+                    ({ gitCredentialsError }) => {
+                        hideSplashScreen();
+                        evtGitCredentialsErrorDialogOpen.post(gitCredentialsError);
                     }
                 ),
         []
@@ -558,6 +570,7 @@ function Launcher() {
                 }
                 evtAutoLaunchDisabledDialogOpen={evtAutoLaunchDisabledDialogOpen}
                 evtNoLongerBookmarkedDialogOpen={evtNoLongerBookmarkedDialogOpen}
+                evtGitCredentialsErrorDialogOpen={evtGitCredentialsErrorDialogOpen}
             />
             <MaybeAcknowledgeConfigVolatilityDialog
                 evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}

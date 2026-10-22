@@ -1065,6 +1065,20 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Kunne ikke hente Git-legitimasjonen til tjenesten",
+        "popup blocked": ({ providerName }) =>
+            `Nettleseren blokkerte autorisasjonsvinduet til ${providerName}. Tillat popup-vinduer for dette nettstedet, og start tjenesten på nytt.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Autorisasjonen hos ${providerName} ble avbrutt. Start tjenesten på nytt for å prøve igjen.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} avslo autorisasjonen.`,
+        "sign in required": ({ providerName }) =>
+            `${providerName}-økten din har utløpt. Logg inn igjen under Min konto → Git, og start tjenesten på nytt.`,
+        "request failed": ({ providerName }) =>
+            `Forespørselen til ${providerName} mislyktes, ingenting ble startet.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Overvåking`

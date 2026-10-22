@@ -1065,6 +1065,20 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Clicca nuovamente sull'icona del segnalibro per aggiornare la configurazione salvata.",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Impossibile ottenere le credenziali Git del servizio",
+        "popup blocked": ({ providerName }) =>
+            `Il browser ha bloccato la finestra di autorizzazione di ${providerName}. Consenti i popup per questo sito, poi avvia di nuovo il servizio.`,
+        "authorization cancelled": ({ providerName }) =>
+            `L'autorizzazione di ${providerName} è stata annullata. Avvia di nuovo il servizio per riprovare.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} ha rifiutato l'autorizzazione.`,
+        "sign in required": ({ providerName }) =>
+            `La tua sessione ${providerName} è scaduta. Accedi di nuovo in Il mio account → Git, poi avvia di nuovo il servizio.`,
+        "request failed": ({ providerName }) =>
+            `La richiesta a ${providerName} non è riuscita, non è stato avviato nulla.`,
+        ok: "Ok"
+    },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoraggio`

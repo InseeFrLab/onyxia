@@ -77,6 +77,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n
+    | import("ui/pages/launcher/LauncherDialogs/GitCredentialsErrorDialog").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/shared/FormFieldWrapper").I18n
     | import("ui/pages/launcher/RootFormComponent/ConfigurationTopLevelGroup").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/YamlCodeBlockFormField").I18n

@@ -25,6 +25,8 @@ export type GitProvider = {
         | { type: "personal-access-token" }
         | {
               type: "scoped-access-token";
+              /** Of the tokens created at launch, service.lifetimeDays of the configuration */
+              lifetimeDays: number;
               /** accessToken: the user's OAuth access token or PAT (scope api) */
               createAccessToken: (params: {
                   accessToken: string;

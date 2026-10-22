@@ -7,6 +7,10 @@ import {
     type Props as AutoLaunchDisabledDialogProps
 } from "./AutoLaunchDisabledDialog";
 import {
+    GitCredentialsErrorDialog,
+    type Props as GitCredentialsErrorDialogProps
+} from "./GitCredentialsErrorDialog";
+import {
     NoLongerBookmarkedDialog,
     type Props as NoLongerBookmarkedDialogProps
 } from "./NoLongerBookmarkedDialog";
@@ -15,13 +19,15 @@ export type Props = {
     evtAcknowledgeSharingOfConfigConfirmDialogOpen: AcknowledgeSharingOfConfigConfirmDialogProps["evtOpen"];
     evtAutoLaunchDisabledDialogOpen: AutoLaunchDisabledDialogProps["evtOpen"];
     evtNoLongerBookmarkedDialogOpen: NoLongerBookmarkedDialogProps["evtOpen"];
+    evtGitCredentialsErrorDialogOpen: GitCredentialsErrorDialogProps["evtOpen"];
 };
 
 export function LauncherDialogs(props: Props) {
     const {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
-        evtNoLongerBookmarkedDialogOpen
+        evtNoLongerBookmarkedDialogOpen,
+        evtGitCredentialsErrorDialogOpen
     } = props;
 
     return (
@@ -31,6 +37,7 @@ export function LauncherDialogs(props: Props) {
             />
             <AutoLaunchDisabledDialog evtOpen={evtAutoLaunchDisabledDialogOpen} />
             <NoLongerBookmarkedDialog evtOpen={evtNoLongerBookmarkedDialogOpen} />
+            <GitCredentialsErrorDialog evtOpen={evtGitCredentialsErrorDialogOpen} />
         </>
     );
 }
