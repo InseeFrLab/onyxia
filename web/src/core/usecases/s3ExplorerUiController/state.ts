@@ -11,6 +11,7 @@ import type { S3Client } from "core/ports/S3Client";
 export type State = {
     commandLogsEntries: State.CommandLogsEntry[];
     uploads: State.Upload[];
+    fileOperations: State.FileOperation[];
     deletions: State.Deletion[];
     listedPrefixByProfile: Record<string, State.ListedPrefix | undefined>;
     bucketPoliciesByBucket: Record<
@@ -39,6 +40,64 @@ export namespace State {
         profileName: string;
         s3Uri: S3Uri;
     };
+
+    /** One rename, copy, or move request, potentially covering many objects. */
+    export type FileOperation =
+        | FileOperation.Rename
+        | FileOperation.Copy
+        | FileOperation.Move;
+
+    export namespace FileOperation {
+        type Common = {
+            operationId: string;
+            profileName: string;
+            operationStartTime: number;
+            status: "running" | "completed" | "errored" | "canceled";
+            /** Totals remain unknown until recursive enumeration finishes. */
+            isListingComplete: boolean;
+            objects: FileOperation.Object[];
+            erroredErrorMessage: string | undefined;
+        };
+
+        export type Rename = Common & Request.Rename;
+
+        export type Copy = Common & Request.Copy;
+
+        export type Move = Common & Request.Move;
+
+        export type Request = Request.Rename | Request.Copy | Request.Move;
+
+        export namespace Request {
+            type Common = {
+                s3Uris: S3Uri[];
+                destinationS3Uri: S3Uri.TerminatedByDelimiter;
+            };
+
+            export type Rename = {
+                type: "rename";
+                s3Uri: S3Uri;
+                newBasename: string;
+            };
+
+            export type Copy = Common & {
+                type: "copy";
+            };
+
+            export type Move = Common & {
+                type: "move";
+            };
+        }
+
+        export type Object = {
+            sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+            destinationS3Uri: S3Uri.NonTerminatedByDelimiter;
+            size: number;
+            copyCompletionPercent: number;
+            /** For rename/move, true only after the source has also been deleted. */
+            isCompleted: boolean;
+            erroredErrorMessage: string | undefined;
+        };
+    }
 
     export type ListedPrefix = {
         next:
@@ -84,11 +143,223 @@ export const { reducer, actions } = createUsecaseActions({
     initialState: id<State>({
         commandLogsEntries: [],
         uploads: [],
+        fileOperations: [],
         deletions: [],
         listedPrefixByProfile: {},
         bucketPoliciesByBucket: {}
     }),
     reducers: {
+        fileOperationStarted: (
+            state,
+            {
+                payload
+            }: {
+                payload: State.FileOperation.Request & {
+                    operationId: string;
+                    profileName: string;
+                };
+            }
+        ) => {
+            assert(
+                !state.fileOperations.some(op => op.operationId === payload.operationId)
+            );
+            state.fileOperations.push({
+                ...payload,
+                operationStartTime: Date.now(),
+                status: "running",
+                isListingComplete: false,
+                objects: [],
+                erroredErrorMessage: undefined
+            });
+        },
+        fileOperationObjectsListed: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    operationId: string;
+                    objects: Pick<
+                        State.FileOperation.Object,
+                        "sourceS3Uri" | "destinationS3Uri" | "size"
+                    >[];
+                };
+            }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            assert(!operation.isListingComplete);
+            const objectsBySource = new Map(
+                operation.objects.map(object => [
+                    stringifyS3Uri(object.sourceS3Uri),
+                    object
+                ])
+            );
+
+            for (const object of payload.objects) {
+                assert(Number.isSafeInteger(object.size) && object.size >= 0);
+                const key = stringifyS3Uri(object.sourceS3Uri);
+                const existing = objectsBySource.get(key);
+
+                if (existing !== undefined) {
+                    assert(same(existing.destinationS3Uri, object.destinationS3Uri));
+                    assert(existing.size === object.size);
+                    continue;
+                }
+
+                const entry: State.FileOperation.Object = {
+                    ...object,
+                    copyCompletionPercent: 0,
+                    isCompleted: false,
+                    erroredErrorMessage: undefined
+                };
+                operation.objects.push(entry);
+                objectsBySource.set(key, entry);
+            }
+        },
+        fileOperationListingCompleted: (
+            state,
+            { payload }: { payload: { operationId: string } }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            assert(!operation.isListingComplete);
+            operation.isListingComplete = true;
+        },
+        fileOperationObjectProgressReported: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    operationId: string;
+                    sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+                    completionPercent: number;
+                };
+            }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            const object = operation.objects.find(object =>
+                same(object.sourceS3Uri, payload.sourceS3Uri)
+            );
+            assert(object !== undefined);
+            assert(!object.isCompleted && object.erroredErrorMessage === undefined);
+            assert(
+                Number.isFinite(payload.completionPercent) &&
+                    payload.completionPercent >= object.copyCompletionPercent &&
+                    payload.completionPercent <= 100
+            );
+            object.copyCompletionPercent = payload.completionPercent;
+        },
+        fileOperationObjectCompleted: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    operationId: string;
+                    sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+                };
+            }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            const object = operation.objects.find(object =>
+                same(object.sourceS3Uri, payload.sourceS3Uri)
+            );
+            assert(object !== undefined);
+            assert(!object.isCompleted && object.erroredErrorMessage === undefined);
+            assert(object.copyCompletionPercent === 100);
+            object.isCompleted = true;
+        },
+        fileOperationObjectErrored: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    operationId: string;
+                    sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+                    erroredErrorMessage: string;
+                };
+            }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            const object = operation.objects.find(object =>
+                same(object.sourceS3Uri, payload.sourceS3Uri)
+            );
+            assert(object !== undefined);
+            assert(!object.isCompleted && object.erroredErrorMessage === undefined);
+            object.erroredErrorMessage = payload.erroredErrorMessage;
+        },
+        fileOperationCompleted: (
+            state,
+            { payload }: { payload: { operationId: string } }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            assert(operation.isListingComplete);
+            assert(
+                operation.objects.every(
+                    object =>
+                        object.isCompleted || object.erroredErrorMessage !== undefined
+                )
+            );
+            operation.status = operation.objects.some(
+                object => object.erroredErrorMessage !== undefined
+            )
+                ? "errored"
+                : "completed";
+        },
+        fileOperationErrored: (
+            state,
+            { payload }: { payload: { operationId: string; erroredErrorMessage: string } }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            operation.status = "errored";
+            operation.erroredErrorMessage = payload.erroredErrorMessage;
+        },
+        fileOperationCanceled: (
+            state,
+            { payload }: { payload: { operationId: string } }
+        ) => {
+            const operation = state.fileOperations.find(
+                operation => operation.operationId === payload.operationId
+            );
+            assert(operation !== undefined);
+            assert(operation.status === "running");
+            operation.status = "canceled";
+        },
+        /** Dismiss finished feedback without discarding ongoing work. */
+        fileOperationsFlushed: state => {
+            state.fileOperations = state.fileOperations.filter(
+                op => op.status === "running"
+            );
+        },
         bucketPoliciesUpdated: (
             state,
             {

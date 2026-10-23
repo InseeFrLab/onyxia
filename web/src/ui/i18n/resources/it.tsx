@@ -7,6 +7,72 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"it"> = {
+    S3FileOperationDestinationDialog: {
+        "copy title": undefined,
+        "move title": undefined,
+        "destination path": undefined,
+        "edit path": undefined,
+        go: undefined,
+        "invalid path": undefined,
+        "invalid destination": undefined,
+        loading: undefined,
+        retry: undefined,
+        "parent folder": undefined,
+        "empty directory": undefined,
+        "folder name": undefined,
+        "invalid folder name": undefined,
+        create: undefined,
+        "create folder": undefined,
+        cancel: undefined,
+        "copy items": undefined,
+        "move items": undefined
+    },
+    S3RenameDialog: {
+        "rename folder": undefined,
+        "rename file": undefined,
+        "new name": undefined,
+        "invalid name": undefined,
+        cancel: undefined,
+        rename: undefined
+    },
+    S3FileOperationConflictDialog: {
+        "directory exists": undefined,
+        "object exists": undefined,
+        "merge explanation": undefined,
+        "overwrite explanation": undefined,
+        source: undefined,
+        destination: undefined,
+        "skipped sources remain": undefined,
+        "remember directories": undefined,
+        "remember objects": undefined,
+        "cancel all": undefined,
+        skip: undefined,
+        merge: undefined,
+        overwrite: undefined
+    },
+    S3FileOperations: {
+        "file operations": undefined,
+        expand: undefined,
+        collapse: undefined,
+        close: undefined,
+        copy: undefined,
+        move: undefined,
+        rename: undefined,
+        listing: undefined,
+        copying: undefined,
+        deleting: undefined,
+        completed: undefined,
+        errored: undefined,
+        canceled: undefined,
+        progress: undefined,
+        "object count": undefined,
+        "cancel operation": undefined,
+        errors: undefined,
+        "cancel all title": undefined,
+        "cancel all body": undefined,
+        continue: undefined,
+        "cancel all": undefined
+    },
     /* spell-checker: disable */
     Account: {
         profile: "Profilo",
@@ -374,6 +440,10 @@ export const translations: Translations<"it"> = {
         "new s3 profile": "Nuovo profilo S3"
     },
     S3SelectionActionBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
+        "more actions": "Altre azioni",
         "request files": "Richiedi file",
         download: "Scarica",
         delete: "Elimina",
@@ -481,6 +551,10 @@ export const translations: Translations<"it"> = {
         "make private": "Rendi privato"
     },
     S3ExplorerMainView: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
+        "more actions": "Altre azioni",
         "request files": "Richiedi file",
         "create prefix dialog title": "Crea prefisso",
         "create prefix dialog subtitle":
@@ -679,9 +753,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                {"."}
             </>
         )
     },
@@ -1442,6 +1515,9 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "datasets parsing error": "Impossibile analizzare i dataset del catalogo."
     },
     S3UriBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
         explore: "Esplora..",
         "copy s3 path": "Copia percorso S3",
         copied: "Copiato",
@@ -1466,6 +1542,11 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "edit from s3 root": "Modifica dalla radice S3",
         "edit object key": "Modifica chiave dell'oggetto",
         "object key": "Chiave dell'oggetto",
+        "upload files": "Carica file",
+        "create new folder": "Crea nuova cartella",
+        refresh: "Aggiorna",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Pubblico. " : ""}Azioni della cartella ${s3Uri}`,
         listing: "Elenco..."
     }
 };

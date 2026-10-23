@@ -17,6 +17,7 @@ import { evtIsScreenScalerOutOfBound } from "screen-scaler";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { evtTheme } from "ui/theme";
 import { Uploads } from "ui/pages/s3Explorer/Uploads";
+import { FileOperations } from "ui/pages/s3Explorer/FileOperations";
 
 triggerCoreBootstrap({
     onyxiaApiUrl: env.ONYXIA_API_URL,
@@ -79,7 +80,10 @@ export function App() {
                 </section>
                 <Footer className={classes.footer} />
             </div>
-            <Uploads />
+            <div className={classes.transfers}>
+                <Uploads />
+                <FileOperations />
+            </div>
             <AutoLogoutCountdown />
         </>
     );
@@ -94,6 +98,19 @@ const useStyles = tss
         const rootRightLeftMargin = theme.spacing(4);
 
         return {
+            transfers: {
+                position: "fixed",
+                bottom: theme.spacing(6),
+                right: theme.spacing(4),
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: theme.spacing(2),
+                maxHeight: "calc(100vh - 160px)",
+                overflowY: "auto",
+                maxWidth: "calc(100vw - 32px)",
+                zIndex: 1200
+            },
             root: {
                 height: isScreenScalerEnabled ? "100%" : "100vh",
                 display: "flex",

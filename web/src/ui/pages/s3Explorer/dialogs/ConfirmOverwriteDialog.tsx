@@ -10,11 +10,12 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { useConst } from "powerhooks/useConst";
 import * as runExclusive from "run-exclusive";
+import type { OverwriteConfirmationResponse } from "core/usecases/s3ExplorerUiController";
 
 export type ConfirmOverwriteDialogProps = {
     evtOpen: Evt<{
         s3Uri: S3Uri.NonTerminatedByDelimiter;
-        resolveResponse: (params: { doOverwrite: boolean }) => void;
+        resolveResponse: (response: OverwriteConfirmationResponse) => void;
     }>;
 };
 
@@ -53,7 +54,10 @@ export const ConfirmOverwriteDialog = memo((props: ConfirmOverwriteDialogProps) 
     const close = (doOverwrite: boolean) => {
         assert(evtState.state !== undefined);
 
-        evtState.state.resolveResponse({ doOverwrite });
+        evtState.state.resolveResponse({
+            action: doOverwrite ? "overwrite" : "skip",
+            doRememberChoice: false
+        });
 
         evtState.state = undefined;
     };

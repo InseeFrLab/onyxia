@@ -7,6 +7,80 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"en"> = {
+    S3FileOperationDestinationDialog: {
+        "copy title": ({ count }) => `Copy ${count} item${count === 1 ? "" : "s"} to…`,
+        "move title": ({ count }) => `Move ${count} item${count === 1 ? "" : "s"} to…`,
+        "destination path": "Destination path",
+        "edit path": "Edit destination path",
+        go: "Go",
+        "invalid path": "Enter an S3 directory, for example s3://bucket/folder/.",
+        "invalid destination":
+            "Choose a different destination. An item cannot be copied or moved onto itself or inside its own directory.",
+        loading: "Loading folders…",
+        retry: "Retry",
+        "parent folder": "Go to parent folder",
+        "empty directory": "No subfolders. You can use this destination.",
+        "folder name": "New folder name",
+        "invalid folder name": "Enter a unique, nonempty name without a path separator.",
+        create: "Create",
+        "create folder": "Create new prefix",
+        cancel: "Cancel",
+        "copy items": "Copy items",
+        "move items": "Move items"
+    },
+    S3RenameDialog: {
+        "rename folder": "Rename directory",
+        "rename file": "Rename file",
+        "new name": "New name",
+        "invalid name": "Enter a nonempty name without a path separator.",
+        cancel: "Cancel",
+        rename: "Rename"
+    },
+    S3FileOperationConflictDialog: {
+        "directory exists": "A directory already exists at this destination",
+        "object exists": "A file already exists at this destination",
+        "merge explanation":
+            "Merge these directories? Files with the same paths will be overwritten. Other destination files will be kept.",
+        "overwrite explanation":
+            "Overwrite the existing file with the source file, or skip it to keep the existing file?",
+        source: "Source",
+        destination: "Destination",
+        "skipped sources remain":
+            "Skipped files and directories will remain at their source.",
+        "remember directories":
+            "Remember my choice for remaining directory conflicts in this operation",
+        "remember objects":
+            "Remember my choice for remaining file conflicts in this operation",
+        "cancel all": "Cancel all",
+        skip: "Skip (keep existing)",
+        merge: "Merge",
+        overwrite: "Overwrite"
+    },
+    S3FileOperations: {
+        "file operations": "File operations",
+        expand: "Expand operations",
+        collapse: "Collapse operations",
+        close: "Close operations",
+        copy: "Copy",
+        move: "Move",
+        rename: "Rename",
+        listing: "Preparing and checking conflicts…",
+        copying: "Copying…",
+        deleting: "Removing source files…",
+        completed: "Completed",
+        errored: "Failed",
+        canceled: "Canceled",
+        progress: "Operation progress",
+        "object count": ({ completed, total }) => `${completed} / ${total} files`,
+        "cancel operation": ({ name }) => `Cancel operation for ${name}`,
+        errors: ({ count }) => `${count} error${count === 1 ? "" : "s"}`,
+        "cancel all title": "Cancel ongoing operations?",
+        "cancel all body":
+            "Completed copies and moves will be kept. Canceling does not undo changes already made.",
+        continue: "Continue operations",
+        "cancel all": "Cancel all"
+    },
+
     Account: {
         profile: "Profile",
         git: "Git",
@@ -343,6 +417,10 @@ export const translations: Translations<"en"> = {
         "make private": "Make private"
     },
     S3ExplorerMainView: {
+        "copy to": "Copy to…",
+        "move to": "Move to…",
+        rename: "Rename",
+        "more actions": "More actions",
         "create prefix dialog title": "Create prefix",
         "create prefix dialog subtitle":
             "Create a new prefix inside the current S3 location.",
@@ -531,6 +609,10 @@ export const translations: Translations<"en"> = {
         "new s3 profile": "New S3 Profile"
     },
     S3SelectionActionBar: {
+        "copy to": "Copy to…",
+        "move to": "Move to…",
+        rename: "Rename",
+        "more actions": "More actions",
         download: "Download",
         delete: "Delete",
         "copy s3 uri": "Copy S3 URI",
@@ -1430,6 +1512,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
         ok: "Ok"
     },
     S3UriBar: {
+        "copy to": "Copy to…",
+        "move to": "Move to…",
+        rename: "Rename",
         explore: "Explore..",
         "copy s3 path": "Copy S3 path",
         copied: "Copied",
@@ -1454,6 +1539,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "edit from s3 root": "Edit from S3 root",
         "edit object key": "Edit object key",
         "object key": "Object key",
+        "upload files": "Upload files",
+        "create new folder": "Create new folder",
+        refresh: "Refresh",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Public. " : ""}Directory actions for ${s3Uri}`,
         listing: "Listing..."
     }
 };

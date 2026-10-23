@@ -7,6 +7,72 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"nl"> = {
+    S3FileOperationDestinationDialog: {
+        "copy title": undefined,
+        "move title": undefined,
+        "destination path": undefined,
+        "edit path": undefined,
+        go: undefined,
+        "invalid path": undefined,
+        "invalid destination": undefined,
+        loading: undefined,
+        retry: undefined,
+        "parent folder": undefined,
+        "empty directory": undefined,
+        "folder name": undefined,
+        "invalid folder name": undefined,
+        create: undefined,
+        "create folder": undefined,
+        cancel: undefined,
+        "copy items": undefined,
+        "move items": undefined
+    },
+    S3RenameDialog: {
+        "rename folder": undefined,
+        "rename file": undefined,
+        "new name": undefined,
+        "invalid name": undefined,
+        cancel: undefined,
+        rename: undefined
+    },
+    S3FileOperationConflictDialog: {
+        "directory exists": undefined,
+        "object exists": undefined,
+        "merge explanation": undefined,
+        "overwrite explanation": undefined,
+        source: undefined,
+        destination: undefined,
+        "skipped sources remain": undefined,
+        "remember directories": undefined,
+        "remember objects": undefined,
+        "cancel all": undefined,
+        skip: undefined,
+        merge: undefined,
+        overwrite: undefined
+    },
+    S3FileOperations: {
+        "file operations": undefined,
+        expand: undefined,
+        collapse: undefined,
+        close: undefined,
+        copy: undefined,
+        move: undefined,
+        rename: undefined,
+        listing: undefined,
+        copying: undefined,
+        deleting: undefined,
+        completed: undefined,
+        errored: undefined,
+        canceled: undefined,
+        progress: undefined,
+        "object count": undefined,
+        "cancel operation": undefined,
+        errors: undefined,
+        "cancel all title": undefined,
+        "cancel all body": undefined,
+        continue: undefined,
+        "cancel all": undefined
+    },
     /* spell-checker: disable */
     Account: {
         profile: "Profiel",
@@ -376,6 +442,10 @@ export const translations: Translations<"nl"> = {
         "new s3 profile": "Nieuw S3-profiel"
     },
     S3SelectionActionBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
+        "more actions": "Meer acties",
         "request files": "Bestanden aanvragen",
         download: "Downloaden",
         delete: "Verwijderen",
@@ -481,6 +551,10 @@ export const translations: Translations<"nl"> = {
         "make private": "Privé maken"
     },
     S3ExplorerMainView: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
+        "more actions": "Meer acties",
         "request files": "Bestanden aanvragen",
         "create prefix dialog title": "Prefix aanmaken",
         "create prefix dialog subtitle":
@@ -1445,6 +1519,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "De datasets uit de catalogus konden niet worden geparseerd."
     },
     S3UriBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
         explore: "Verkennen..",
         "copy s3 path": "S3-pad kopiëren",
         copied: "Gekopieerd",
@@ -1469,6 +1546,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "edit from s3 root": "Bewerken vanaf S3-root",
         "edit object key": "Objectsleutel bewerken",
         "object key": "Objectsleutel",
+        "upload files": "Bestanden uploaden",
+        "create new folder": "Nieuwe map maken",
+        refresh: "Vernieuwen",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Openbaar. " : ""}Mapacties voor ${s3Uri}`,
         listing: "Lijst wordt geladen..."
     }
 };

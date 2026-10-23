@@ -8,6 +8,7 @@ import {
     useState,
     type FocusEvent,
     type KeyboardEvent,
+    type MouseEvent,
     type PointerEvent
 } from "react";
 import { tss } from "tss";
@@ -15,6 +16,7 @@ import { Tooltip } from "onyxia-ui/Tooltip";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Icon } from "onyxia-ui/Icon";
 import LinearProgress from "@mui/material/LinearProgress";
+import { alpha } from "@mui/material/styles";
 import FolderIcon from "@mui/icons-material/Folder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
@@ -30,6 +32,7 @@ import { assert } from "tsafe";
 import { type NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { getS3ObjectIconUrl } from "ui/shared/codex/getS3ObjectIconUrl";
+import { S3DirectoryMenu, type S3DirectoryMenuProps } from "../S3DirectoryMenu";
 
 export type S3UriBarProps = {
     className?: string;
@@ -60,6 +63,11 @@ export type S3UriBarProps = {
     onSharePrefix: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
     shouldShowRequestFilesAction: boolean;
     onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
+    uploadFiles?: { callback: () => void; disabled: boolean };
+    createDirectory?: { callback: () => void; disabled: boolean };
+    onCopy?: (s3Uri: S3Uri) => void;
+    onMove?: (s3Uri: S3Uri) => void;
+    onRename?: (s3Uri: S3Uri) => void;
     evtAction: NonPostableEvt<{
         action: "display copy feedback";
         s3Uri: S3Uri;
@@ -81,6 +89,11 @@ export function S3UriBar(props: S3UriBarProps) {
         onSharePrefix,
         shouldShowRequestFilesAction,
         onRequestFiles,
+        uploadFiles,
+        createDirectory,
+        onCopy,
+        onMove,
+        onRename,
         evtAction
     } = props;
 
@@ -159,6 +172,15 @@ export function S3UriBar(props: S3UriBarProps) {
         left: hintsPanelHorizontalEdgePaddingPx,
         top: 0
     });
+
+    const [directoryMenuAnchorEl, setDirectoryMenuAnchorEl] =
+        useState<HTMLElement | null>(null);
+    const directoryMenuId = useId();
+    const directoryMenuTriggerId = useId();
+
+    useEffect(() => {
+        setDirectoryMenuAnchorEl(null);
+    }, [canonicalS3Uri, isEditing, isCopied]);
 
     const inputId = useId();
     const hintsPanelId = useId();
@@ -902,6 +924,213 @@ export function S3UriBar(props: S3UriBarProps) {
                 <Icon size="extra small" icon={getIconUrlByName("Public")} />
             </span>
         ) : null;
+    const copyCurrentS3Uri = async () => {
+        assert(currentS3Uri !== undefined);
+        await copyToClipboard(stringifyS3Uri(currentS3Uri));
+        displayCopyFeedback(currentS3Uri);
+    };
+
+    const getIsDirectoryMenuTrigger = (crumb: NavigationCrumb) =>
+        crumb.isCurrent && currentS3Uri?.isDelimiterTerminated === true;
+
+    const renderDirectoryMenuChevron = (crumb: NavigationCrumb) =>
+        getIsDirectoryMenuTrigger(crumb) ? (
+            <Icon
+                className={classes.directoryMenuChevron}
+                icon={getIconUrlByName("ArrowDropDown")}
+            />
+        ) : null;
+
+    const getCrumbButtonProps = (crumb: NavigationCrumb, isPublicStart: boolean) => {
+        const isMenuTrigger = getIsDirectoryMenuTrigger(crumb);
+
+        return {
+            id: isMenuTrigger ? directoryMenuTriggerId : undefined,
+            "aria-haspopup": isMenuTrigger ? ("menu" as const) : undefined,
+            "aria-expanded": isMenuTrigger ? directoryMenuAnchorEl !== null : undefined,
+            "aria-controls":
+                isMenuTrigger && directoryMenuAnchorEl !== null
+                    ? directoryMenuId
+                    : undefined,
+            "aria-label":
+                crumb.kind === "root"
+                    ? t("edit from s3 root")
+                    : t(isMenuTrigger ? "directory actions" : "go to s3 uri", {
+                          s3Uri: stringifyS3Uri(crumb.s3Uri),
+                          isPublic: isPublicStart
+                      }),
+            onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
+                if (isMenuTrigger && event.key === "ArrowDown") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setDirectoryMenuAnchorEl(event.currentTarget);
+                }
+            },
+            onClick: (event: MouseEvent<HTMLButtonElement>) => {
+                event.stopPropagation();
+
+                if (longPressTriggeredRef.current) {
+                    longPressTriggeredRef.current = false;
+                    return;
+                }
+
+                if (crumb.kind === "root") {
+                    enterRootEditing();
+                    return;
+                }
+
+                if (isMenuTrigger) {
+                    setDirectoryMenuAnchorEl(event.currentTarget);
+                    return;
+                }
+
+                emitS3UriChange({ s3Uri: crumb.s3Uri, isHintSelection: false });
+            }
+        };
+    };
+
+    const directoryMenuActionGroups: S3DirectoryMenuProps["actionGroups"] =
+        currentS3Uri?.isDelimiterTerminated
+            ? [
+                  currentS3Uri.keySegments.length === 0
+                      ? []
+                      : [
+                            ...(onCopy === undefined
+                                ? []
+                                : [
+                                      {
+                                          id: "copy-object",
+                                          label: t("copy to"),
+                                          icon: getIconUrlByName("ContentCopy"),
+                                          onClick: () => onCopy(currentS3Uri)
+                                      }
+                                  ]),
+                            ...(onMove === undefined
+                                ? []
+                                : [
+                                      {
+                                          id: "move-object",
+                                          label: t("move to"),
+                                          icon: getIconUrlByName("DriveFileMove"),
+                                          onClick: () => onMove(currentS3Uri)
+                                      }
+                                  ]),
+                            ...(onRename === undefined
+                                ? []
+                                : [
+                                      {
+                                          id: "rename-object",
+                                          label: t("rename"),
+                                          icon: getIconUrlByName(
+                                              "DriveFileRenameOutline"
+                                          ),
+                                          onClick: () => onRename(currentS3Uri)
+                                      }
+                                  ])
+                        ],
+                  [
+                      {
+                          id: "copy",
+                          label: t("copy s3 path"),
+                          icon: getIconUrlByName("ContentCopy"),
+                          onClick: copyCurrentS3Uri
+                      },
+                      {
+                          id: "bookmark",
+                          label: isBookmarked
+                              ? onToggleBookmark === undefined
+                                  ? t("pinned storage location")
+                                  : t("delete from bookmarks")
+                              : t("add to bookmarks"),
+                          icon: bookmarkIcon,
+                          onClick:
+                              onToggleBookmark === undefined
+                                  ? undefined
+                                  : () => onToggleBookmark({ s3Uri: currentS3Uri })
+                      }
+                  ],
+                  publicAccessAction === undefined
+                      ? []
+                      : [
+                            {
+                                id: "access-policy",
+                                label: t(publicAccessAction),
+                                icon: getIconUrlByName(
+                                    publicAccessAction === "make public"
+                                        ? "Public"
+                                        : "PublicOff"
+                                ),
+                                onClick: () =>
+                                    onChangePrefixPolicy({
+                                        action:
+                                            publicAccessAction === "make private"
+                                                ? "undo make public"
+                                                : "make public",
+                                        s3Uri: currentS3Uri
+                                    })
+                            }
+                        ],
+                  createDirectory === undefined
+                      ? []
+                      : [
+                            {
+                                id: "create-directory",
+                                label: t("create new folder"),
+                                icon: getIconUrlByName("CreateNewFolderOutlined"),
+                                onClick: createDirectory.disabled
+                                    ? undefined
+                                    : createDirectory.callback
+                            }
+                        ],
+                  [
+                      ...(uploadFiles === undefined
+                          ? []
+                          : [
+                                {
+                                    id: "upload",
+                                    label: t("upload files"),
+                                    icon: getIconUrlByName("UploadFileOutlined"),
+                                    onClick: uploadFiles.disabled
+                                        ? undefined
+                                        : uploadFiles.callback
+                                }
+                            ]),
+                      ...(shouldShowRequestFilesAction
+                          ? [
+                                {
+                                    id: "request-files",
+                                    label: t("request files"),
+                                    icon: getIconUrlByName("DriveFolderUpload"),
+                                    onClick: () => onRequestFiles({ s3Uri: currentS3Uri })
+                                }
+                            ]
+                          : []),
+                      ...(shouldShowShareAction
+                          ? [
+                                {
+                                    id: "share",
+                                    label: t("share"),
+                                    icon: getIconUrlByName("Share"),
+                                    onClick: () => onSharePrefix({ s3Uri: currentS3Uri })
+                                }
+                            ]
+                          : [])
+                  ],
+                  [
+                      {
+                          id: "refresh",
+                          label: t("refresh"),
+                          icon: getIconUrlByName("Refresh"),
+                          onClick: () =>
+                              emitS3UriChange({
+                                  s3Uri: currentS3Uri,
+                                  isHintSelection: false
+                              })
+                      }
+                  ]
+              ]
+            : [];
+
     const renderKeyCrumbItem = (
         item: DisplayCrumbItem,
         keyIndex: number,
@@ -947,26 +1176,11 @@ export function S3UriBar(props: S3UriBarProps) {
                             onPointerCancel={() => {
                                 clearLongPressTimeout();
                             }}
-                            onClick={event => {
-                                event.stopPropagation();
-
-                                if (longPressTriggeredRef.current) {
-                                    longPressTriggeredRef.current = false;
-                                    return;
-                                }
-
-                                emitS3UriChange({
-                                    s3Uri: crumb.s3Uri,
-                                    isHintSelection: false
-                                });
-                            }}
-                            aria-label={t("go to s3 uri", {
-                                s3Uri: stringifyS3Uri(crumb.s3Uri),
-                                isPublic: isPublicStart
-                            })}
+                            {...getCrumbButtonProps(crumb, isPublicStart)}
                         >
                             {renderPublicMarker(isPublicStart)}
                             <span className={classes.segmentLabel}>{crumb.label}</span>
+                            {renderDirectoryMenuChevron(crumb)}
                         </button>
                     )}
                 </span>
@@ -1117,37 +1331,10 @@ export function S3UriBar(props: S3UriBarProps) {
                                                     onPointerCancel={() => {
                                                         clearLongPressTimeout();
                                                     }}
-                                                    onClick={event => {
-                                                        event.stopPropagation();
-
-                                                        if (
-                                                            longPressTriggeredRef.current
-                                                        ) {
-                                                            longPressTriggeredRef.current =
-                                                                false;
-                                                            return;
-                                                        }
-
-                                                        if (crumb.kind === "root") {
-                                                            enterRootEditing();
-                                                            return;
-                                                        }
-
-                                                        emitS3UriChange({
-                                                            s3Uri: crumb.s3Uri,
-                                                            isHintSelection: false
-                                                        });
-                                                    }}
-                                                    aria-label={
-                                                        crumb.kind === "root"
-                                                            ? t("edit from s3 root")
-                                                            : t("go to s3 uri", {
-                                                                  s3Uri: stringifyS3Uri(
-                                                                      crumb.s3Uri
-                                                                  ),
-                                                                  isPublic: isPublicStart
-                                                              })
-                                                    }
+                                                    {...getCrumbButtonProps(
+                                                        crumb,
+                                                        isPublicStart
+                                                    )}
                                                 >
                                                     {crumb.kind === "bucket" && (
                                                         <span
@@ -1186,6 +1373,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                             {crumb.label}
                                                         </span>
                                                     )}
+                                                    {renderDirectoryMenuChevron(crumb)}
                                                 </button>
                                             )}
                                         </span>
@@ -1338,6 +1526,7 @@ export function S3UriBar(props: S3UriBarProps) {
                                                             {crumb.label}
                                                         </span>
                                                     )}
+                                                    {renderDirectoryMenuChevron(crumb)}
                                                 </span>
                                             </span>
                                             {shouldShowSeparatorAtIndex(
@@ -1393,13 +1582,9 @@ export function S3UriBar(props: S3UriBarProps) {
                                     aria-label={t("copy s3 path")}
                                     icon={getIconUrlByName("ContentCopy")}
                                     size="default"
-                                    onClick={async event => {
+                                    onClick={event => {
                                         event.stopPropagation();
-                                        assert(currentS3Uri !== undefined);
-                                        const value = stringifyS3Uri(currentS3Uri);
-
-                                        await copyToClipboard(value);
-                                        displayCopyFeedback(currentS3Uri);
+                                        void copyCurrentS3Uri();
                                     }}
                                     className={classes.actionButton}
                                 />
@@ -1526,6 +1711,14 @@ export function S3UriBar(props: S3UriBarProps) {
                 </div>
             </div>
 
+            <S3DirectoryMenu
+                id={directoryMenuId}
+                labelledBy={directoryMenuTriggerId}
+                anchorEl={directoryMenuAnchorEl}
+                onClose={() => setDirectoryMenuAnchorEl(null)}
+                actionGroups={directoryMenuActionGroups}
+            />
+
             {isHintsPanelVisible && (
                 <div
                     className={classes.hintsPanel}
@@ -1643,6 +1836,10 @@ const useStyles = tss
         const labelStyle = theme.typography.variants["label 1"].style;
         const publicColor = theme.colors.useCases.typography.textFocus;
         const publicSurfaceColor = theme.colors.useCases.surfaces.surfaceFocus1;
+        const segmentHoverOverlay = alpha(
+            theme.colors.useCases.typography.textPrimary,
+            0.08
+        );
 
         return {
             root: {
@@ -1815,7 +2012,9 @@ const useStyles = tss
                 cursor: "pointer",
                 textDecoration: "none",
                 "&:hover": {
-                    backgroundColor: theme.colors.useCases.surfaces.surface3
+                    // Surface tokens can have identical colors. Overlay the segment's
+                    // existing background so private and public paths both highlight.
+                    backgroundImage: `linear-gradient(${segmentHoverOverlay}, ${segmentHoverOverlay})`
                 }
             },
             segmentRoot: {
@@ -1833,24 +2032,23 @@ const useStyles = tss
                 borderColor: theme.colors.useCases.surfaces.surface2,
                 backgroundColor: theme.colors.useCases.surfaces.background
             },
+            directoryMenuChevron: {
+                width: 16,
+                height: 16,
+                flexShrink: 0
+            },
             segmentCurrent: {
                 fontWeight: 700
             },
             segmentPublic: {
                 color: theme.colors.useCases.typography.textPrimary,
                 borderColor: publicSurfaceColor,
-                backgroundColor: publicSurfaceColor,
-                "&:hover": {
-                    backgroundColor: publicSurfaceColor
-                }
+                backgroundColor: publicSurfaceColor
             },
             segmentPublicInsideKeyGroup: {
                 color: theme.colors.useCases.typography.textPrimary,
                 borderColor: "transparent",
-                backgroundColor: "transparent",
-                "&:hover": {
-                    backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
-                }
+                backgroundColor: "transparent"
             },
             segmentKeyFirst: {
                 paddingLeft: "6px"
@@ -2103,6 +2301,9 @@ const useStyles = tss
     });
 
 const { i18n } = declareComponentKeys<
+    | "copy to"
+    | "move to"
+    | "rename"
     | "explore"
     | "copy s3 path"
     | "copied"
@@ -2127,6 +2328,10 @@ const { i18n } = declareComponentKeys<
     | "edit object key"
     | "object key"
     | "listing"
+    | "upload files"
+    | "create new folder"
+    | "refresh"
+    | { K: "directory actions"; P: { s3Uri: string; isPublic: boolean }; R: string }
 >()({ S3UriBar });
 export type I18n = typeof i18n;
 

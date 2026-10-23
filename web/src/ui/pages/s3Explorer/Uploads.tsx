@@ -68,12 +68,10 @@ function Uploads_2() {
     );
 }
 
-const useStyles = tss.withName({ Uploads }).create(({ theme }) => ({
+const useStyles = tss.withName({ Uploads }).create(() => ({
     root: {
-        position: "fixed",
-        bottom: theme.spacing(6),
-        right: theme.spacing(4),
         width: 500,
-        maxHeight: `min(${window.innerHeight - 200}px, 700px)`
+        maxHeight: "min(40vh, 500px)",
+        flexShrink: 0
     }
 }));

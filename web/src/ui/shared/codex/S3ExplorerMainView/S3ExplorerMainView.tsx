@@ -1,6 +1,7 @@
 import {
     memo,
     useEffect,
+    useId,
     useMemo,
     useRef,
     useState,
@@ -18,6 +19,8 @@ import bytes from "bytes";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
 import MuiTooltip from "@mui/material/Tooltip";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { alpha } from "@mui/material/styles";
@@ -25,7 +28,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Dialog } from "onyxia-ui/Dialog";
-import { Icon } from "onyxia-ui/Icon";
+import { Icon, type IconProps } from "onyxia-ui/Icon";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { getIconUrlByName } from "lazy-icons";
@@ -87,6 +90,9 @@ export type S3ExplorerMainViewProps = {
     onCreateDirectory: (params: { prefixSegment: string }) => void;
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
+    onCopy?: (params: { s3Uris: S3Uri[] }) => void;
+    onMove?: (params: { s3Uris: S3Uri[] }) => void;
+    onRename?: (params: { s3Uri: S3Uri }) => void;
 
     onDownload: (params: { s3Uris: S3Uri[] }) => void;
 
@@ -143,6 +149,7 @@ export namespace S3ExplorerMainViewProps {
 }
 
 const S3_EXPLORER_ROW_ESTIMATED_HEIGHT = 58;
+const S3_EXPLORER_MAX_INLINE_ROW_ACTIONS = 3;
 const S3_EXPLORER_ITEM_ICON_SIZE_FACTOR = 4 / 3;
 
 export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
@@ -157,6 +164,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects,
         onCreateDirectory,
         onDelete,
+        onCopy,
+        onMove,
+        onRename,
         onDownload,
         onShareObject,
         onSharePrefix,
@@ -806,6 +816,42 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     {selectedItems.length > 0 && (
                         <S3SelectionActionBar
                             selectionCount={selectedItems.length}
+                            copy={
+                                onCopy === undefined ||
+                                !selectedItems.every(getIsItemActionAvailable)
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              onCopy({
+                                                  s3Uris: selectedItems.map(
+                                                      item => item.s3Uri
+                                                  )
+                                              })
+                                      }
+                            }
+                            move={
+                                onMove === undefined ||
+                                !selectedItems.every(getIsItemActionAvailable)
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              onMove({
+                                                  s3Uris: selectedItems.map(
+                                                      item => item.s3Uri
+                                                  )
+                                              })
+                                      }
+                            }
+                            rename={
+                                onRename === undefined ||
+                                selectedItems.length !== 1 ||
+                                !selectedItems.every(getIsItemActionAvailable)
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              onRename({ s3Uri: selectedItems[0].s3Uri })
+                                      }
+                            }
                             onClear={isSelectionLocked ? undefined : clearSelection}
                             download={
                                 !selectedItems.every(getIsItemActionAvailable)
@@ -1255,6 +1301,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         itemKey
                                                     )}
                                                     onDelete={onDeleteFactory(itemKey)}
+                                                    onCopy={onCopy}
+                                                    onMove={onMove}
+                                                    onRename={onRename}
                                                     onShare={
                                                         item.type === "object" ||
                                                         item.shouldShowShareAction
@@ -1829,6 +1878,46 @@ const useStyles = tss
             flexShrink: 0,
             paddingRight: theme.spacing(4)
         },
+        rowActionsOpen: {
+            opacity: 1,
+            visibility: "visible",
+            pointerEvents: "auto"
+        },
+        rowMenuPaper: {
+            marginTop: theme.spacing(1),
+            width: 300,
+            maxWidth: "calc(100vw - 32px)",
+            borderRadius: 12,
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            backgroundImage: "none",
+            color: theme.colors.useCases.typography.textPrimary,
+            boxShadow: theme.shadows[4]
+        },
+        rowMenuList: {
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing(1),
+            padding: theme.spacing(2)
+        },
+        rowMenuItem: {
+            ...theme.typography.variants["label 1"].style,
+            minHeight: 32,
+            gap: theme.spacing(1),
+            padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+            borderRadius: 8,
+            whiteSpace: "normal",
+            "&:hover, &.Mui-focusVisible": {
+                backgroundColor: theme.colors.useCases.surfaces.surface2
+            }
+        },
+        rowMenuIcon: {
+            width: 16,
+            height: 16,
+            flexShrink: 0
+        },
+        rowMenuIconActive: {
+            color: theme.colors.useCases.typography.textFocus
+        },
         rowActionButton: {
             border: "none",
             backgroundColor: "transparent",
@@ -1943,6 +2032,9 @@ const useStyles = tss
     }));
 
 const { i18n } = declareComponentKeys<
+    | "copy to"
+    | "move to"
+    | "rename"
     | "create prefix dialog title"
     | "create prefix dialog subtitle"
     | "prefix name field label"
@@ -1955,6 +2047,7 @@ const { i18n } = declareComponentKeys<
     | "delete"
     | "share"
     | "request files"
+    | "more actions"
     | "download"
     | "copy s3 uri"
     | "copied"
@@ -2418,6 +2511,9 @@ type ItemRowProps = {
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
+    onCopy?: S3ExplorerMainViewProps["onCopy"];
+    onMove?: S3ExplorerMainViewProps["onMove"];
+    onRename?: S3ExplorerMainViewProps["onRename"];
     onShare: (() => void) | undefined;
     onRequestFiles: (() => void) | undefined;
     onChangePrefixPolicy: (() => void) | undefined;
@@ -2425,6 +2521,14 @@ type ItemRowProps = {
     onBookmark: (() => void) | undefined;
     onCheckboxChange: () => void;
     onDisplayCopyFeedback: (params: { s3Uri: S3Uri }) => void;
+};
+
+type ItemRowAction = {
+    key: string;
+    label: string;
+    icon: IconProps["icon"];
+    onClick: (() => void) | undefined;
+    isActive?: boolean;
 };
 
 const ItemRow = memo(function ItemRow(props: ItemRowProps) {
@@ -2442,6 +2546,9 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         onNavigate,
         onDelete,
         onShare,
+        onCopy,
+        onMove,
+        onRename,
         onRequestFiles,
         onChangePrefixPolicy,
         onDownload,
@@ -2465,6 +2572,9 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     const { t } = useTranslation({ S3ExplorerMainView });
     const s3UriStr = stringifyS3Uri(item.s3Uri);
     const [isS3UriCopied, setIsS3UriCopied] = useState(false);
+    const [overflowAnchorEl, setOverflowAnchorEl] = useState<HTMLElement | null>(null);
+    const overflowButtonId = useId();
+    const overflowMenuId = useId();
     const itemKindLabelCapitalized =
         item.type === "prefix segment" ? t("folder") : t("object");
     const itemIconLabel =
@@ -2493,6 +2603,112 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
 
         return () => window.clearTimeout(timeoutId);
     }, [isS3UriCopied]);
+
+    const actionCandidates: (ItemRowAction | undefined)[] = [
+        onCopy === undefined
+            ? undefined
+            : {
+                  key: "copy-object",
+                  label: t("copy to"),
+                  icon: getIconUrlByName("ContentCopy"),
+                  onClick: isItemActionAvailable
+                      ? () => onCopy({ s3Uris: [item.s3Uri] })
+                      : undefined
+              },
+        onMove === undefined
+            ? undefined
+            : {
+                  key: "move-object",
+                  label: t("move to"),
+                  icon: getIconUrlByName("DriveFileMove"),
+                  onClick: isItemActionAvailable
+                      ? () => onMove({ s3Uris: [item.s3Uri] })
+                      : undefined
+              },
+        onRename === undefined
+            ? undefined
+            : {
+                  key: "rename-object",
+                  label: t("rename"),
+                  icon: getIconUrlByName("DriveFileRenameOutline"),
+                  onClick: isItemActionAvailable
+                      ? () => onRename({ s3Uri: item.s3Uri })
+                      : undefined
+              },
+        onDownload === undefined
+            ? undefined
+            : {
+                  key: "download",
+                  label: t("download"),
+                  icon: getIconUrlByName("FileDownload"),
+                  onClick: isDownloadAvailable ? onDownload : undefined
+              },
+        {
+            key: "delete",
+            label: t("delete"),
+            icon: getIconUrlByName("Delete"),
+            onClick: item.isDeleting ? undefined : onDelete
+        },
+        {
+            key: "copy",
+            label: t("copy s3 uri"),
+            icon: getIconUrlByName("ContentCopy"),
+            onClick: !isCopyAvailable
+                ? undefined
+                : async () => {
+                      await copyToClipboard(s3UriStr);
+                      setIsS3UriCopied(true);
+                      onDisplayCopyFeedback({ s3Uri: item.s3Uri });
+                  }
+        },
+        {
+            key: "bookmark",
+            label: isBookmarked ? t("delete from bookmarks") : t("add to bookmarks"),
+            icon: isBookmarked ? StarIcon : StarBorderIcon,
+            isActive: isBookmarked,
+            onClick: isItemActionAvailable ? onBookmark : undefined
+        },
+        onShare === undefined
+            ? undefined
+            : {
+                  key: "share",
+                  label: t("share"),
+                  icon: getIconUrlByName("Share"),
+                  onClick: isShareAvailable ? onShare : undefined
+              },
+        onRequestFiles === undefined
+            ? undefined
+            : {
+                  key: "request-files",
+                  label: t("request files"),
+                  icon: getIconUrlByName("DriveFolderUpload"),
+                  onClick: isRequestFilesAvailable ? onRequestFiles : undefined
+              },
+        prefixPolicyAction === undefined || onChangePrefixPolicy === undefined
+            ? undefined
+            : {
+                  key: "access-policy",
+                  label: getPrefixPolicyActionLabel(prefixPolicyAction, t),
+                  icon: getIconUrlByName(
+                      getPrefixPolicyActionIconName(prefixPolicyAction)
+                  ),
+                  onClick: isPrefixPolicyActionAvailable
+                      ? onChangePrefixPolicy
+                      : undefined
+              }
+    ];
+    const actions = actionCandidates.filter(
+        (action): action is ItemRowAction => action !== undefined
+    );
+    const visibleActions = actions.slice(0, S3_EXPLORER_MAX_INLINE_ROW_ACTIONS);
+    const overflowActions = actions.slice(S3_EXPLORER_MAX_INLINE_ROW_ACTIONS);
+    const overflowActionKeys = overflowActions.map(action => action.key).join("|");
+    const isOverflowOpen =
+        showRowActions && overflowAnchorEl !== null && overflowActions.length > 0;
+
+    useEffect(() => {
+        setOverflowAnchorEl(null);
+    }, [s3UriStr, showRowActions, overflowActionKeys]);
 
     return (
         <tr
@@ -2653,248 +2869,172 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
                             </div>
                         </div>
                     </div>
-                    <div className={classes.rowActions}>
+                    <div
+                        className={cx(
+                            classes.rowActions,
+                            isOverflowOpen && classes.rowActionsOpen
+                        )}
+                    >
                         {showRowActions && (
                             <>
-                                {onDownload !== undefined && (
-                                    <Tooltip title={t("download")}>
+                                {visibleActions.map(action => {
+                                    const button = (
                                         <span
                                             className={classes.inlineActionWrapper}
                                             data-s3-row-interactive="true"
                                         >
                                             <IconButton
-                                                className={classes.rowActionButton}
-                                                icon={getIconUrlByName("FileDownload")}
-                                                aria-label={t("download")}
-                                                disabled={!isDownloadAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (
-                                                        !isDownloadAvailable ||
-                                                        onDownload === undefined
-                                                    ) {
-                                                        return;
-                                                    }
-
-                                                    onDownload();
-                                                }}
-                                            />
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                <Tooltip title={t("delete")}>
-                                    <span
-                                        className={classes.inlineActionWrapper}
-                                        data-s3-row-interactive="true"
-                                    >
-                                        <IconButton
-                                            className={classes.rowActionButton}
-                                            icon={getIconUrlByName("Delete")}
-                                            aria-label={t("delete")}
-                                            disabled={item.isDeleting}
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                onDelete();
-                                            }}
-                                        />
-                                    </span>
-                                </Tooltip>
-                                <MuiTooltip
-                                    title={
-                                        <span className={classes.tooltipText}>
-                                            {isS3UriCopied ? (
-                                                <span className={classes.copiedTooltip}>
-                                                    <Icon
-                                                        className={
-                                                            classes.copiedTooltipIcon
-                                                        }
-                                                        icon={getIconUrlByName("Check")}
-                                                        size="extra small"
-                                                    />
-                                                    {t("copied")}
-                                                </span>
-                                            ) : (
-                                                <span className={classes.copyTooltip}>
-                                                    {t("copy s3 uri tooltip", {
-                                                        s3UriStr
-                                                    })}
-                                                </span>
-                                            )}
-                                        </span>
-                                    }
-                                    classes={{
-                                        tooltip: cx(
-                                            classes.tooltipBubble,
-                                            classes.copyTooltipBubble
-                                        )
-                                    }}
-                                >
-                                    <span
-                                        className={classes.inlineActionWrapper}
-                                        data-s3-row-interactive="true"
-                                    >
-                                        <IconButton
-                                            className={classes.rowActionButton}
-                                            icon={getIconUrlByName("ContentCopy")}
-                                            aria-label={t("copy s3 uri")}
-                                            disabled={!isCopyAvailable}
-                                            onClick={async event => {
-                                                event.stopPropagation();
-
-                                                if (!isCopyAvailable) {
-                                                    return;
-                                                }
-
-                                                await copyToClipboard(s3UriStr);
-                                                setIsS3UriCopied(true);
-                                                onDisplayCopyFeedback({
-                                                    s3Uri: item.s3Uri
-                                                });
-                                            }}
-                                        />
-                                    </span>
-                                </MuiTooltip>
-                                <Tooltip
-                                    title={
-                                        isBookmarked
-                                            ? t("delete from bookmarks")
-                                            : t("add to bookmarks")
-                                    }
-                                >
-                                    <span
-                                        className={classes.inlineActionWrapper}
-                                        data-s3-row-interactive="true"
-                                    >
-                                        <button
-                                            type="button"
-                                            className={cx(
-                                                classes.rowActionButton,
-                                                isBookmarked &&
-                                                    classes.rowActionButtonActive
-                                            )}
-                                            aria-label={
-                                                isBookmarked
-                                                    ? t("delete from bookmarks")
-                                                    : t("add to bookmarks")
-                                            }
-                                            disabled={
-                                                !isItemActionAvailable ||
-                                                onBookmark === undefined
-                                            }
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                assert(isItemActionAvailable);
-                                                assert(onBookmark !== undefined);
-                                                onBookmark();
-                                            }}
-                                        >
-                                            {isBookmarked ? (
-                                                <StarIcon fontSize="small" />
-                                            ) : (
-                                                <StarBorderIcon fontSize="small" />
-                                            )}
-                                        </button>
-                                    </span>
-                                </Tooltip>
-                                {onShare !== undefined && (
-                                    <Tooltip title={t("share")}>
-                                        <span
-                                            className={classes.inlineActionWrapper}
-                                            data-s3-row-interactive="true"
-                                        >
-                                            <IconButton
-                                                className={classes.rowActionButton}
-                                                icon={getIconUrlByName("Share")}
-                                                aria-label={t("share")}
-                                                disabled={!isShareAvailable}
-                                                onClick={event => {
-                                                    event.stopPropagation();
-
-                                                    if (
-                                                        !isShareAvailable ||
-                                                        onShare === undefined
-                                                    ) {
-                                                        return;
-                                                    }
-
-                                                    onShare();
-                                                }}
-                                            />
-                                        </span>
-                                    </Tooltip>
-                                )}
-                                {onRequestFiles !== undefined && (
-                                    <Tooltip title={t("request files")}>
-                                        <span
-                                            className={classes.inlineActionWrapper}
-                                            data-s3-row-interactive="true"
-                                        >
-                                            <IconButton
-                                                className={classes.rowActionButton}
-                                                icon={getIconUrlByName(
-                                                    "DriveFolderUpload"
+                                                className={cx(
+                                                    classes.rowActionButton,
+                                                    action.isActive &&
+                                                        classes.rowActionButtonActive
                                                 )}
-                                                aria-label={t("request files")}
-                                                disabled={!isRequestFilesAvailable}
+                                                icon={action.icon}
+                                                aria-label={action.label}
+                                                disabled={action.onClick === undefined}
                                                 onClick={event => {
                                                     event.stopPropagation();
-
-                                                    if (!isRequestFilesAvailable) {
-                                                        return;
-                                                    }
-
-                                                    onRequestFiles();
+                                                    action.onClick?.();
                                                 }}
                                             />
                                         </span>
+                                    );
+
+                                    return action.key === "copy" ? (
+                                        <MuiTooltip
+                                            key={action.key}
+                                            title={
+                                                <span className={classes.tooltipText}>
+                                                    {isS3UriCopied ? (
+                                                        <span
+                                                            className={
+                                                                classes.copiedTooltip
+                                                            }
+                                                        >
+                                                            <Icon
+                                                                className={
+                                                                    classes.copiedTooltipIcon
+                                                                }
+                                                                icon={getIconUrlByName(
+                                                                    "Check"
+                                                                )}
+                                                                size="extra small"
+                                                            />
+                                                            {t("copied")}
+                                                        </span>
+                                                    ) : (
+                                                        <span
+                                                            className={
+                                                                classes.copyTooltip
+                                                            }
+                                                        >
+                                                            {t("copy s3 uri tooltip", {
+                                                                s3UriStr
+                                                            })}
+                                                        </span>
+                                                    )}
+                                                </span>
+                                            }
+                                            classes={{
+                                                tooltip: cx(
+                                                    classes.tooltipBubble,
+                                                    classes.copyTooltipBubble
+                                                )
+                                            }}
+                                        >
+                                            {button}
+                                        </MuiTooltip>
+                                    ) : (
+                                        <Tooltip key={action.key} title={action.label}>
+                                            {button}
+                                        </Tooltip>
+                                    );
+                                })}
+                                {overflowActions.length > 0 && (
+                                    <Tooltip title={t("more actions")}>
+                                        <span
+                                            className={classes.inlineActionWrapper}
+                                            data-s3-row-interactive="true"
+                                        >
+                                            <button
+                                                id={overflowButtonId}
+                                                type="button"
+                                                className={classes.rowActionButton}
+                                                aria-label={t("more actions")}
+                                                aria-haspopup="menu"
+                                                aria-expanded={isOverflowOpen}
+                                                aria-controls={
+                                                    isOverflowOpen
+                                                        ? overflowMenuId
+                                                        : undefined
+                                                }
+                                                onClick={event => {
+                                                    event.stopPropagation();
+                                                    setOverflowAnchorEl(
+                                                        event.currentTarget
+                                                    );
+                                                }}
+                                                onDoubleClick={event =>
+                                                    event.stopPropagation()
+                                                }
+                                                onKeyDown={event => {
+                                                    if (event.key === "ArrowDown") {
+                                                        event.preventDefault();
+                                                        event.stopPropagation();
+                                                        setOverflowAnchorEl(
+                                                            event.currentTarget
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                <Icon
+                                                    icon={getIconUrlByName("MoreVert")}
+                                                    size="small"
+                                                />
+                                            </button>
+                                        </span>
                                     </Tooltip>
                                 )}
-                                {prefixPolicyAction !== undefined &&
-                                    onChangePrefixPolicy !== undefined && (
-                                        <Tooltip
-                                            title={getPrefixPolicyActionLabel(
-                                                prefixPolicyAction,
-                                                t
-                                            )}
-                                        >
-                                            <span
-                                                className={classes.inlineActionWrapper}
-                                                data-s3-row-interactive="true"
-                                            >
-                                                <IconButton
-                                                    className={classes.rowActionButton}
-                                                    icon={getIconUrlByName(
-                                                        getPrefixPolicyActionIconName(
-                                                            prefixPolicyAction
-                                                        )
-                                                    )}
-                                                    aria-label={getPrefixPolicyActionLabel(
-                                                        prefixPolicyAction,
-                                                        t
-                                                    )}
-                                                    disabled={
-                                                        !isPrefixPolicyActionAvailable
-                                                    }
-                                                    onClick={event => {
-                                                        event.stopPropagation();
-
-                                                        if (
-                                                            !isPrefixPolicyActionAvailable ||
-                                                            onChangePrefixPolicy ===
-                                                                undefined
-                                                        ) {
-                                                            return;
-                                                        }
-
-                                                        onChangePrefixPolicy();
-                                                    }}
-                                                />
-                                            </span>
-                                        </Tooltip>
-                                    )}
                             </>
                         )}
+                        <Menu
+                            open={isOverflowOpen}
+                            anchorEl={overflowAnchorEl}
+                            onClose={() => setOverflowAnchorEl(null)}
+                            onClick={event => event.stopPropagation()}
+                            onDoubleClick={event => event.stopPropagation()}
+                            data-s3-row-interactive="true"
+                            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                            transformOrigin={{ vertical: "top", horizontal: "left" }}
+                            slotProps={{ paper: { className: classes.rowMenuPaper } }}
+                            MenuListProps={{
+                                id: overflowMenuId,
+                                "aria-labelledby": overflowButtonId,
+                                className: classes.rowMenuList
+                            }}
+                        >
+                            {overflowActions.map(action => (
+                                <MenuItem
+                                    key={action.key}
+                                    className={classes.rowMenuItem}
+                                    disabled={action.onClick === undefined}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        setOverflowAnchorEl(null);
+                                        action.onClick?.();
+                                    }}
+                                >
+                                    <Icon
+                                        className={cx(
+                                            classes.rowMenuIcon,
+                                            action.isActive && classes.rowMenuIconActive
+                                        )}
+                                        icon={action.icon}
+                                    />
+                                    {action.label}
+                                </MenuItem>
+                            ))}
+                        </Menu>
                     </div>
                 </div>
             </td>
@@ -2957,6 +3097,9 @@ function areItemRowPropsEqual(
         previousProps.onRowClick === nextProps.onRowClick &&
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
+        previousProps.onCopy === nextProps.onCopy &&
+        previousProps.onMove === nextProps.onMove &&
+        previousProps.onRename === nextProps.onRename &&
         previousProps.onShare === nextProps.onShare &&
         previousProps.onRequestFiles === nextProps.onRequestFiles &&
         previousProps.onChangePrefixPolicy === nextProps.onChangePrefixPolicy &&

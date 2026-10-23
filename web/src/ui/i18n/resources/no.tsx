@@ -7,6 +7,72 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"no"> = {
+    S3FileOperationDestinationDialog: {
+        "copy title": undefined,
+        "move title": undefined,
+        "destination path": undefined,
+        "edit path": undefined,
+        go: undefined,
+        "invalid path": undefined,
+        "invalid destination": undefined,
+        loading: undefined,
+        retry: undefined,
+        "parent folder": undefined,
+        "empty directory": undefined,
+        "folder name": undefined,
+        "invalid folder name": undefined,
+        create: undefined,
+        "create folder": undefined,
+        cancel: undefined,
+        "copy items": undefined,
+        "move items": undefined
+    },
+    S3RenameDialog: {
+        "rename folder": undefined,
+        "rename file": undefined,
+        "new name": undefined,
+        "invalid name": undefined,
+        cancel: undefined,
+        rename: undefined
+    },
+    S3FileOperationConflictDialog: {
+        "directory exists": undefined,
+        "object exists": undefined,
+        "merge explanation": undefined,
+        "overwrite explanation": undefined,
+        source: undefined,
+        destination: undefined,
+        "skipped sources remain": undefined,
+        "remember directories": undefined,
+        "remember objects": undefined,
+        "cancel all": undefined,
+        skip: undefined,
+        merge: undefined,
+        overwrite: undefined
+    },
+    S3FileOperations: {
+        "file operations": undefined,
+        expand: undefined,
+        collapse: undefined,
+        close: undefined,
+        copy: undefined,
+        move: undefined,
+        rename: undefined,
+        listing: undefined,
+        copying: undefined,
+        deleting: undefined,
+        completed: undefined,
+        errored: undefined,
+        canceled: undefined,
+        progress: undefined,
+        "object count": undefined,
+        "cancel operation": undefined,
+        errors: undefined,
+        "cancel all title": undefined,
+        "cancel all body": undefined,
+        continue: undefined,
+        "cancel all": undefined
+    },
     /* spell-checker: disable */
     Account: {
         profile: "Profil",
@@ -373,6 +439,10 @@ export const translations: Translations<"no"> = {
         "new s3 profile": "Ny S3-profil"
     },
     S3SelectionActionBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
+        "more actions": "Flere handlinger",
         "request files": "Be om filer",
         download: "Last ned",
         delete: "Slett",
@@ -479,6 +549,10 @@ export const translations: Translations<"no"> = {
         "make private": "Gjør privat"
     },
     S3ExplorerMainView: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
+        "more actions": "Flere handlinger",
         "request files": "Be om filer",
         "create prefix dialog title": "Opprett prefiks",
         "create prefix dialog subtitle":
@@ -1437,6 +1511,9 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "datasets parsing error": "Kunne ikke tolke datasett fra katalogen."
     },
     S3UriBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
         explore: "Utforsk..",
         "copy s3 path": "Kopier S3-sti",
         copied: "Kopiert",
@@ -1461,6 +1538,11 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "edit from s3 root": "Rediger fra S3-rot",
         "edit object key": "Rediger objektnøkkel",
         "object key": "Objektnøkkel",
+        "upload files": "Last opp filer",
+        "create new folder": "Opprett ny mappe",
+        refresh: "Oppdater",
+        "directory actions": ({ s3Uri, isPublic }) =>
+            `${isPublic ? "Offentlig. " : ""}Mappehandlinger for ${s3Uri}`,
         listing: "Lister..."
     }
 };
