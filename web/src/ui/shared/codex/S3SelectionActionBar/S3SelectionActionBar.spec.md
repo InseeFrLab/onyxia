@@ -265,3 +265,7 @@ Each action is composed of:
 
 - Background: `theme.colors.useCases.surfaces.surface3`
 - Text & Color: `theme.colors.useCases.typography. textFocus`
+
+## File operations
+
+Optional callbacks expose Copy to, Move to, and Rename through the existing action menu. Copy S3 URI remains a separate clipboard action. Multi-selection supports copy/move; rename is offered only for one item. Existing action overflow limits remain unchanged. Directory/bucket roots cannot be renamed or transferred as a selected directory.

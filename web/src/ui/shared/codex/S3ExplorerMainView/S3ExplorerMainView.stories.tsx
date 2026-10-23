@@ -7,6 +7,7 @@ import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3ExplorerMainView, type S3ExplorerMainViewProps } from "./S3ExplorerMainView";
 
 const meta = {
+    tags: ["s3-file-operations"],
     title: "Shared/S3ExplorerMainView",
     component: S3ExplorerMainView
 } satisfies Meta<typeof S3ExplorerMainView>;
@@ -486,7 +487,7 @@ export const RowActionOverflow: Story = {
         // Filename, three inline actions, and the separate overflow trigger.
         await expect(row.getAllByRole("button")).toHaveLength(5);
         for (const name of ["Download", "Delete", "Copy S3 URI"]) {
-            await expect(row.getByRole("button", { name })).toBeVisible();
+            await waitFor(() => expect(row.getByRole("button", { name })).toBeVisible());
         }
         await expect(
             row.queryByRole("button", { name: "Add to bookmarks" })
@@ -620,11 +621,13 @@ export const MultipleSelectionHidesRowOverflow: Story = {
         });
         const objectCheckbox = canvas.getByRole("checkbox", { name: "Select README.md" });
         await userEvent.click(prefixCheckbox);
-        await expect(
-            within(prefixCheckbox.closest("tr")!).getByRole("button", {
-                name: "More actions"
-            })
-        ).toBeVisible();
+        await waitFor(() =>
+            expect(
+                within(prefixCheckbox.closest("tr")!).getByRole("button", {
+                    name: "More actions"
+                })
+            ).toBeVisible()
+        );
         await userEvent.click(objectCheckbox);
         for (const checkbox of [prefixCheckbox, objectCheckbox]) {
             await expect(checkbox).toBeChecked();
@@ -801,4 +804,25 @@ export const AccessDenied: Story = {
             <S3ExplorerMainView {...args} />
         </div>
     )
+};
+
+export const FileOperations: Story = {
+    ...RowActionOverflow,
+    args: { ...RowActionOverflow.args, onCopy: fn(), onMove: fn(), onRename: fn() },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        const checkbox = await canvas.findByRole("checkbox", { name: "Select exports" });
+        await userEvent.click(checkbox);
+        const row = within(checkbox.closest("tr")!);
+        await expect(row.getAllByRole("button")).toHaveLength(5);
+        await userEvent.click(row.getByRole("button", { name: "Copy to…" }));
+        await expect(args.onCopy).toHaveBeenCalledWith({
+            s3Uris: [parsePrefixOrThrow("s3://analytics-data/exports/")]
+        });
+        await userEvent.click(row.getByRole("button", { name: "Rename" }));
+        await expect(args.onRename).toHaveBeenCalledWith({
+            s3Uri: parsePrefixOrThrow("s3://analytics-data/exports/")
+        });
+        await expect(args.onNavigate).not.toHaveBeenCalled();
+    }
 };

@@ -7,6 +7,83 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"fr"> = {
+    S3FileOperationDestinationDialog: {
+        "copy title": ({ count }) =>
+            `Copier ${count} élément${count === 1 ? "" : "s"} vers…`,
+        "move title": ({ count }) =>
+            `Déplacer ${count} élément${count === 1 ? "" : "s"} vers…`,
+        "destination path": "Chemin de destination",
+        "edit path": "Modifier le chemin de destination",
+        go: "Ouvrir",
+        "invalid path": "Saisissez un répertoire S3, par exemple s3://bucket/dossier/.",
+        "invalid destination":
+            "Choisissez une autre destination. Un élément ne peut pas être copié ou déplacé sur lui-même ou dans son propre répertoire.",
+        loading: "Chargement des dossiers…",
+        retry: "Réessayer",
+        "parent folder": "Dossier parent",
+        "empty directory": "Aucun sous-dossier. Vous pouvez utiliser cette destination.",
+        "folder name": "Nom du nouveau dossier",
+        "invalid folder name":
+            "Saisissez un nom unique et non vide, sans séparateur de chemin.",
+        create: "Créer",
+        "create folder": "Créer un préfixe",
+        cancel: "Annuler",
+        "copy items": "Copier les éléments",
+        "move items": "Déplacer les éléments"
+    },
+    S3RenameDialog: {
+        "rename folder": "Renommer le répertoire",
+        "rename file": "Renommer le fichier",
+        "new name": "Nouveau nom",
+        "invalid name": "Saisissez un nom non vide, sans séparateur de chemin.",
+        cancel: "Annuler",
+        rename: "Renommer"
+    },
+    S3FileOperationConflictDialog: {
+        "directory exists": "Un répertoire existe déjà à cette destination",
+        "object exists": "Un fichier existe déjà à cette destination",
+        "merge explanation":
+            "Fusionner ces répertoires ? Les fichiers de même chemin seront écrasés. Les autres fichiers à destination seront conservés.",
+        "overwrite explanation":
+            "Écraser le fichier existant avec le fichier source, ou ignorer pour conserver le fichier existant ?",
+        source: "Source",
+        destination: "Destination",
+        "skipped sources remain":
+            "Les éléments ignorés seront conservés à leur emplacement source.",
+        "remember directories":
+            "Mémoriser mon choix pour les prochains conflits de répertoires de cette opération",
+        "remember objects":
+            "Mémoriser mon choix pour les prochains conflits de fichiers de cette opération",
+        "cancel all": "Tout annuler",
+        skip: "Ignorer (conserver l’existant)",
+        merge: "Fusionner",
+        overwrite: "Écraser"
+    },
+    S3FileOperations: {
+        "file operations": "Opérations sur les fichiers",
+        expand: "Développer les opérations",
+        collapse: "Réduire les opérations",
+        close: "Fermer les opérations",
+        copy: "Copie",
+        move: "Déplacement",
+        rename: "Renommage",
+        listing: "Préparation et vérification des conflits…",
+        copying: "Copie en cours…",
+        deleting: "Suppression des fichiers sources…",
+        completed: "Terminé",
+        errored: "Échec",
+        canceled: "Annulé",
+        progress: "Progression de l’opération",
+        "object count": ({ completed, total }) => `${completed} / ${total} fichiers`,
+        "cancel operation": ({ name }) => `Annuler l’opération pour ${name}`,
+        errors: ({ count }) => `${count} erreur${count === 1 ? "" : "s"}`,
+        "cancel all title": "Annuler les opérations en cours ?",
+        "cancel all body":
+            "Les copies et déplacements terminés seront conservés. L’annulation ne supprime pas les modifications déjà effectuées.",
+        continue: "Continuer les opérations",
+        "cancel all": "Tout annuler"
+    },
+
     /* spell-checker: disable */
     Account: {
         profile: "Profil",
@@ -377,6 +454,9 @@ export const translations: Translations<"fr"> = {
         "new s3 profile": "Nouveau profil S3"
     },
     S3SelectionActionBar: {
+        "copy to": "Copier vers…",
+        "move to": "Déplacer vers…",
+        rename: "Renommer",
         "more actions": "Plus d’actions",
         download: "Télécharger",
         delete: "Supprimer",
@@ -486,6 +566,9 @@ export const translations: Translations<"fr"> = {
         "make private": "Rendre privé"
     },
     S3ExplorerMainView: {
+        "copy to": "Copier vers…",
+        "move to": "Déplacer vers…",
+        rename: "Renommer",
         "more actions": "Plus d’actions",
         "create prefix dialog title": "Créer un préfixe",
         "create prefix dialog subtitle":
@@ -1456,6 +1539,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Impossible d'analyser les jeux de données du catalogue."
     },
     S3UriBar: {
+        "copy to": "Copier vers…",
+        "move to": "Déplacer vers…",
+        rename: "Renommer",
         explore: "Explorer..",
         "copy s3 path": "Copier le chemin S3",
         copied: "Copié",

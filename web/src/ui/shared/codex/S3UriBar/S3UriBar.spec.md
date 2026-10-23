@@ -252,3 +252,7 @@ export type S3UriBarProps = {
     - Blur returns to navigation mode when the component is not in undefined-prefix mode.
     - In undefined-prefix mode, blur keeps the component in editing mode but hides the hints overlay.
     - In undefined-prefix mode, the hints overlay reappears when focus comes back.
+
+## File operations
+
+Optional callbacks expose Copy to, Move to, and Rename through the existing action menu. Copy S3 URI remains a separate clipboard action. Multi-selection supports copy/move; rename is offered only for one item. Existing action overflow limits remain unchanged. Directory/bucket roots cannot be renamed or transferred as a selected directory.

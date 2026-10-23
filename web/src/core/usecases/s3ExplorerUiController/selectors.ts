@@ -45,6 +45,7 @@ export type MainView = {
     };
 
     uploads: State.Upload[];
+    fileOperations: MainView.FileOperation[];
 
     uriBar: {
         s3Uri:
@@ -108,6 +109,39 @@ export type MainView = {
 };
 
 export namespace MainView {
+    export type FileOperation =
+        | FileOperation.Rename
+        | FileOperation.Copy
+        | FileOperation.Move;
+
+    export namespace FileOperation {
+        type Common = {
+            phase:
+                | "listing"
+                | "copying"
+                | "deleting"
+                | "completed"
+                | "errored"
+                | "canceled";
+            isOngoing: boolean;
+            /** Undefined while enumeration is incomplete, including if it fails or is canceled. */
+            totalObjectCount: number | undefined;
+            discoveredObjectCount: number;
+            completedObjectCount: number;
+            erroredObjectCount: number;
+            totalSize: number | undefined;
+            copiedSize: number;
+            /** Byte-weighted copying progress; 100 is reserved for successful completion. */
+            completionPercent: number | undefined;
+        };
+
+        export type Rename = Common & State.FileOperation.Rename;
+
+        export type Copy = Common & State.FileOperation.Copy;
+
+        export type Move = Common & State.FileOperation.Move;
+    }
+
     export type Item = Item.PrefixSegment | Item.Object;
 
     export namespace Item {
@@ -477,6 +511,85 @@ const uploads = createSelector(
     (uploads_profile): MainView["uploads"] => uploads_profile
 );
 
+const fileOperations_allProfiles = createSelector(
+    createSelector(state, state => state.fileOperations),
+    (operations): MainView["fileOperations"] => {
+        return operations.map(operation => {
+            const { objects, status, isListingComplete } = operation;
+            const totalSize = objects.reduce((sum, object) => sum + object.size, 0);
+            const copiedSize = objects.reduce(
+                (sum, object) => sum + (object.size * object.copyCompletionPercent) / 100,
+                0
+            );
+            const completedObjectCount = objects.filter(
+                object => object.isCompleted
+            ).length;
+            const erroredObjectCount = objects.filter(
+                object => object.erroredErrorMessage !== undefined
+            ).length;
+            const phase: MainView.FileOperation["phase"] = (() => {
+                if (status !== "running") {
+                    return status;
+                }
+                if (!isListingComplete) {
+                    return "listing";
+                }
+                if (
+                    operation.type !== "copy" &&
+                    objects.some(
+                        object =>
+                            !object.isCompleted &&
+                            object.erroredErrorMessage === undefined &&
+                            object.copyCompletionPercent === 100
+                    ) &&
+                    objects.every(
+                        object =>
+                            object.copyCompletionPercent === 100 ||
+                            object.erroredErrorMessage !== undefined
+                    )
+                ) {
+                    return "deleting";
+                }
+                return "copying";
+            })();
+            const copyCompletionPercent =
+                totalSize > 0
+                    ? (copiedSize / totalSize) * 100
+                    : objects.length === 0
+                      ? 0
+                      : objects.reduce(
+                            (sum, object) => sum + object.copyCompletionPercent,
+                            0
+                        ) / objects.length;
+
+            return {
+                ...operation,
+                phase,
+                isOngoing: status === "running",
+                discoveredObjectCount: objects.length,
+                totalObjectCount: isListingComplete ? objects.length : undefined,
+                completedObjectCount,
+                erroredObjectCount,
+                totalSize: isListingComplete ? totalSize : undefined,
+                copiedSize: Math.floor(copiedSize),
+                completionPercent:
+                    status === "completed"
+                        ? 100
+                        : !isListingComplete
+                          ? undefined
+                          : Math.min(99, Math.floor(copyCompletionPercent))
+            };
+        });
+    }
+);
+
+const fileOperations = createSelector(
+    fileOperations_allProfiles,
+    profileName,
+    (operations, profileName) =>
+        operations.filter(operation => operation.profileName === profileName)
+);
+
 const listedPrefix = createSelector(
     listedPrefix_state,
     s3ProfilesManagement.selectors.ambientS3Profile,
@@ -828,6 +941,7 @@ const mainView = createSelector(
     profileSelect,
     bookmarks,
     uploads,
+    fileOperations,
     uriBar,
     isBackButtonDisabled,
     directoryCreationButton,
@@ -841,6 +955,7 @@ const mainView = createSelector(
         profileSelect,
         bookmarks,
         uploads,
+        fileOperations,
         uriBar,
         isBackButtonDisabled,
         directoryCreationButton,
@@ -854,6 +969,7 @@ const mainView = createSelector(
         profileSelect,
         bookmarks,
         uploads,
+        fileOperations,
         uriBar,
         isBackButtonDisabled,
         directoryCreationButton,
@@ -867,7 +983,9 @@ const mainView = createSelector(
 );
 
 export const selectors = {
-    mainView
+    mainView,
+    fileOperations,
+    fileOperations_allProfiles
 };
 
 const s3Uri_currentlyListing = createSelector(listedPrefix_state, listedPrefix_state => {
@@ -915,7 +1033,8 @@ export const privateSelectors = {
     doesListedPrefixHaveOngoingUpload,
     listedPrefix_state,
     objectRendering_computeMaterial,
-    uploads: createSelector(state, state => state.uploads)
+    uploads: createSelector(state, state => state.uploads),
+    fileOperations: createSelector(state, state => state.fileOperations)
 };
 
 export const protectedSelectors = {

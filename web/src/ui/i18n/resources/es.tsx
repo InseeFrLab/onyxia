@@ -7,6 +7,72 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"es"> = {
+    S3FileOperationDestinationDialog: {
+        "copy title": undefined,
+        "move title": undefined,
+        "destination path": undefined,
+        "edit path": undefined,
+        go: undefined,
+        "invalid path": undefined,
+        "invalid destination": undefined,
+        loading: undefined,
+        retry: undefined,
+        "parent folder": undefined,
+        "empty directory": undefined,
+        "folder name": undefined,
+        "invalid folder name": undefined,
+        create: undefined,
+        "create folder": undefined,
+        cancel: undefined,
+        "copy items": undefined,
+        "move items": undefined
+    },
+    S3RenameDialog: {
+        "rename folder": undefined,
+        "rename file": undefined,
+        "new name": undefined,
+        "invalid name": undefined,
+        cancel: undefined,
+        rename: undefined
+    },
+    S3FileOperationConflictDialog: {
+        "directory exists": undefined,
+        "object exists": undefined,
+        "merge explanation": undefined,
+        "overwrite explanation": undefined,
+        source: undefined,
+        destination: undefined,
+        "skipped sources remain": undefined,
+        "remember directories": undefined,
+        "remember objects": undefined,
+        "cancel all": undefined,
+        skip: undefined,
+        merge: undefined,
+        overwrite: undefined
+    },
+    S3FileOperations: {
+        "file operations": undefined,
+        expand: undefined,
+        collapse: undefined,
+        close: undefined,
+        copy: undefined,
+        move: undefined,
+        rename: undefined,
+        listing: undefined,
+        copying: undefined,
+        deleting: undefined,
+        completed: undefined,
+        errored: undefined,
+        canceled: undefined,
+        progress: undefined,
+        "object count": undefined,
+        "cancel operation": undefined,
+        errors: undefined,
+        "cancel all title": undefined,
+        "cancel all body": undefined,
+        continue: undefined,
+        "cancel all": undefined
+    },
     /* spell-checker: disable */
     Account: {
         profile: "Perfil",
@@ -374,6 +440,9 @@ export const translations: Translations<"es"> = {
         "new s3 profile": "Nuevo perfil S3"
     },
     S3SelectionActionBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
         "more actions": "Más acciones",
         "request files": "Solicitar archivos",
         download: "Descargar",
@@ -484,6 +553,9 @@ export const translations: Translations<"es"> = {
         "make private": "Hacer privado"
     },
     S3ExplorerMainView: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
         "more actions": "Más acciones",
         "request files": "Solicitar archivos",
         "create prefix dialog title": "Crear prefijo",
@@ -1446,6 +1518,9 @@ export const translations: Translations<"es"> = {
             "No se pudieron analizar los conjuntos de datos del catálogo."
     },
     S3UriBar: {
+        "copy to": undefined,
+        "move to": undefined,
+        rename: undefined,
         explore: "Explorar..",
         "copy s3 path": "Copiar ruta S3",
         copied: "Copiado",

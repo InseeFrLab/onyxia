@@ -3,7 +3,7 @@ import { Evt } from "evt";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { privateSelectors, protectedSelectors, type RouteParams } from "./selectors";
 import { Reflect, id } from "tsafe";
-import { name } from "./state";
+import { name, type State } from "./state";
 import { AccessError } from "clean-architecture";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import { assert } from "tsafe";
@@ -13,6 +13,7 @@ import {
     privateThunks,
     protectedThunks,
     evtAskOverwriteConfirmation,
+    evtFileOperationConflict,
     evtDisplayError
 } from "./thunks";
 import { getIsInside } from "core/tools/S3Uri";
@@ -22,6 +23,73 @@ import type { S3Uri } from "core/tools/S3Uri";
 import { getObjectRendering } from "./decoupledLogic/objectRendering";
 import { same } from "evt/tools/inDepth/same";
 import { shellQuote } from "core/tools/shellQuote";
+
+export type OverwriteConfirmationResponse =
+    | OverwriteConfirmationResponse.Overwrite
+    | OverwriteConfirmationResponse.Skip
+    | OverwriteConfirmationResponse.Cancel;
+
+export namespace OverwriteConfirmationResponse {
+    type Common = {
+        /** Apply this choice to remaining conflicts in the current operation. */
+        doRememberChoice: boolean;
+    };
+
+    export type Overwrite = Common & {
+        action: "overwrite";
+    };
+
+    export type Skip = Common & {
+        action: "skip";
+    };
+
+    /** Cancel the whole operation, including objects that have not been processed yet. */
+    export type Cancel = {
+        action: "cancel";
+    };
+}
+
+export type FileOperationConflict =
+    | FileOperationConflict.Directory
+    | FileOperationConflict.Object;
+
+export namespace FileOperationConflict {
+    type Common = {
+        operationId: string;
+        operationType: State.FileOperation["type"];
+    };
+
+    export type Directory = Common & {
+        type: "directory";
+        sourceS3Uri: S3Uri.TerminatedByDelimiter;
+        destinationS3Uri: S3Uri.TerminatedByDelimiter;
+        /** Merge authorizes overwrites throughout this subtree, preserving destination-only objects. */
+        resolveResponse: (response: Directory.Response) => void;
+    };
+
+    export namespace Directory {
+        export type Response =
+            | Response.Merge
+            | OverwriteConfirmationResponse.Skip
+            | OverwriteConfirmationResponse.Cancel;
+
+        export namespace Response {
+            export type Merge = {
+                action: "merge";
+                /** Apply to remaining directory conflicts in this operation only. */
+                doRememberChoice: boolean;
+            };
+        }
+    }
+
+    export type Object = Common & {
+        type: "object";
+        sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+        destinationS3Uri: S3Uri.NonTerminatedByDelimiter;
+        /** Remembered choices apply to object conflicts, independently of directory choices. */
+        resolveResponse: (response: OverwriteConfirmationResponse) => void;
+    };
+}
 
 export const createEvt = (({ evtAction, dispatch, getState }) => {
     const evt = Evt.create<
@@ -38,7 +106,11 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
         | {
               action: "ask overwrite confirmation";
               s3Uri: S3Uri.NonTerminatedByDelimiter;
-              resolveResponse: (params: { doOverwrite: boolean }) => void;
+              resolveResponse: (response: OverwriteConfirmationResponse) => void;
+          }
+        | {
+              action: "ask file operation conflict resolution";
+              conflict: FileOperationConflict;
           }
         | {
               action: "display error";
@@ -59,6 +131,10 @@ export const createEvt = (({ evtAction, dispatch, getState }) => {
             s3Uri,
             resolveResponse
         })
+    );
+
+    evtFileOperationConflict.attach(conflict =>
+        evt.post({ action: "ask file operation conflict resolution", conflict })
     );
 
     evtAction

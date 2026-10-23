@@ -65,6 +65,9 @@ export type S3UriBarProps = {
     onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
     uploadFiles?: { callback: () => void; disabled: boolean };
     createDirectory?: { callback: () => void; disabled: boolean };
+    onCopy?: (s3Uri: S3Uri) => void;
+    onMove?: (s3Uri: S3Uri) => void;
+    onRename?: (s3Uri: S3Uri) => void;
     evtAction: NonPostableEvt<{
         action: "display copy feedback";
         s3Uri: S3Uri;
@@ -88,6 +91,9 @@ export function S3UriBar(props: S3UriBarProps) {
         onRequestFiles,
         uploadFiles,
         createDirectory,
+        onCopy,
+        onMove,
+        onRename,
         evtAction
     } = props;
 
@@ -986,6 +992,42 @@ export function S3UriBar(props: S3UriBarProps) {
     const directoryMenuActionGroups: S3DirectoryMenuProps["actionGroups"] =
         currentS3Uri?.isDelimiterTerminated
             ? [
+                  currentS3Uri.keySegments.length === 0
+                      ? []
+                      : [
+                            ...(onCopy === undefined
+                                ? []
+                                : [
+                                      {
+                                          id: "copy-object",
+                                          label: t("copy to"),
+                                          icon: getIconUrlByName("ContentCopy"),
+                                          onClick: () => onCopy(currentS3Uri)
+                                      }
+                                  ]),
+                            ...(onMove === undefined
+                                ? []
+                                : [
+                                      {
+                                          id: "move-object",
+                                          label: t("move to"),
+                                          icon: getIconUrlByName("DriveFileMove"),
+                                          onClick: () => onMove(currentS3Uri)
+                                      }
+                                  ]),
+                            ...(onRename === undefined
+                                ? []
+                                : [
+                                      {
+                                          id: "rename-object",
+                                          label: t("rename"),
+                                          icon: getIconUrlByName(
+                                              "DriveFileRenameOutline"
+                                          ),
+                                          onClick: () => onRename(currentS3Uri)
+                                      }
+                                  ])
+                        ],
                   [
                       {
                           id: "copy",
@@ -2259,6 +2301,9 @@ const useStyles = tss
     });
 
 const { i18n } = declareComponentKeys<
+    | "copy to"
+    | "move to"
+    | "rename"
     | "explore"
     | "copy s3 path"
     | "copied"

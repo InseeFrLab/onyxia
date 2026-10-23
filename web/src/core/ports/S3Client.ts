@@ -29,6 +29,23 @@ export type S3Client = {
         | { status: "failed"; error: Error }
     >;
 
+    /**
+     * Copies an object server-side, leaving the source intact.
+     * The adapter handles single-request and multipart copies internally.
+     * Progress may only advance when a part or the whole copy completes.
+     * Cancellation is best-effort and does not roll back a completed copy.
+     */
+    copyObject: (params: {
+        sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+        destinationS3Uri: S3Uri.NonTerminatedByDelimiter;
+        onCopyProgress: (params: { copyPercent: number }) => void;
+        evtCancel: NonPostableEvt<void>;
+    }) => Promise<
+        | { status: "success" }
+        | { status: "canceled" }
+        | { status: "failed"; error: Error }
+    >;
+
     deleteObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => Promise<void>;
 
     getSignedObjectHttpUrl: (params: {

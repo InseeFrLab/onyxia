@@ -12,6 +12,9 @@ import StarIcon from "@mui/icons-material/Star";
 export type S3SelectionActionBarProps = {
     className?: string;
     selectionCount: number;
+    copy?: { callback: () => void };
+    move?: { callback: () => void };
+    rename?: { callback: () => void };
     /** Function to clear the selection and hide the selection action bar. Undefined when the selection is locked. */
     onClear: (() => void) | undefined;
     download:
@@ -70,6 +73,9 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     const {
         className,
         selectionCount,
+        copy,
+        move,
+        rename,
         onClear,
         download,
         delete: deleteAction,
@@ -113,6 +119,33 @@ export function S3SelectionActionBar(props: S3SelectionActionBarProps) {
     );
 
     const actionCandidates: (Action | undefined)[] = [
+        ...(
+            [
+                ["copy to", "copy-object", "ContentCopy", copy],
+                ["move to", "move-object", "DriveFileMove", move],
+                [
+                    "rename",
+                    "rename-object",
+                    "DriveFileRenameOutline",
+                    selectionCount === 1 ? rename : undefined
+                ]
+            ] as const
+        ).map(([label, key, icon, action]) =>
+            action === undefined
+                ? undefined
+                : {
+                      key,
+                      label: t(label),
+                      icon: (
+                          <Icon
+                              className={classes.actionIcon}
+                              icon={getIconUrlByName(icon)}
+                              size="small"
+                          />
+                      ),
+                      onClick: action.callback
+                  }
+        ),
         download === undefined
             ? undefined
             : {
@@ -617,6 +650,9 @@ const useStyles = tss.withName({ S3SelectionActionBar }).create(({ theme }) => {
 });
 
 const { i18n } = declareComponentKeys<
+    | "copy to"
+    | "move to"
+    | "rename"
     | "download"
     | "delete"
     | "copy s3 uri"

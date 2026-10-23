@@ -578,3 +578,7 @@ Rules:
 - Visible on hover or focus
 - Hover background feedback: `theme.colors.useCases.surfaces.surface3`
 - Must not dominate over item label and metadata
+
+## File operations
+
+Optional callbacks expose Copy to, Move to, and Rename through the existing action menu. Copy S3 URI remains a separate clipboard action. Multi-selection supports copy/move; rename is offered only for one item. Existing action overflow limits remain unchanged. Directory/bucket roots cannot be renamed or transferred as a selected directory.

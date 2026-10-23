@@ -512,6 +512,255 @@ export function createS3Client(
                 return putObjectResult;
             };
         })(),
+        copyObject: async ({
+            sourceS3Uri,
+            destinationS3Uri,
+            onCopyProgress,
+            evtCancel
+        }) => {
+            if (evtCancel.postCount !== 0) {
+                return { status: "canceled" };
+            }
+
+            const ctx = Evt.newCtx();
+            const abortController = new AbortController();
+            let isCanceled = false;
+            let uploadId: string | undefined;
+            let isCopyComplete = false;
+
+            evtCancel.attachOnce(ctx, () => {
+                isCanceled = true;
+                abortController.abort();
+            });
+
+            try {
+                const sourceKey = getS3UriKey(sourceS3Uri);
+                const destinationKey = getS3UriKey(destinationS3Uri);
+
+                assert(
+                    sourceS3Uri.bucket !== destinationS3Uri.bucket ||
+                        sourceKey !== destinationKey,
+                    "Source and destination must be different objects"
+                );
+
+                const { getAwsS3Client } = await prApi;
+                const sdk = await import("@aws-sdk/client-s3");
+                const { awsS3Client } = await getAwsS3Client();
+                abortController.signal.throwIfAborted();
+                onCopyProgress({ copyPercent: 0 });
+
+                const head = await awsS3Client.send(
+                    new sdk.HeadObjectCommand({
+                        Bucket: sourceS3Uri.bucket,
+                        Key: sourceKey
+                    }),
+                    { abortSignal: abortController.signal }
+                );
+                const size = head.ContentLength;
+                assert(
+                    size !== undefined && Number.isSafeInteger(size) && size >= 0,
+                    "Missing or invalid source object size"
+                );
+                assert(head.ETag !== undefined, "Missing source object ETag");
+
+                const copySource =
+                    [sourceS3Uri.bucket, ...sourceKey.split("/")]
+                        .map(encodeURIComponent)
+                        .join("/") +
+                    (head.VersionId === undefined
+                        ? ""
+                        : `?versionId=${encodeURIComponent(head.VersionId)}`);
+                const destination = {
+                    Bucket: destinationS3Uri.bucket,
+                    Key: destinationKey
+                };
+                const source = {
+                    CopySource: copySource,
+                    CopySourceIfMatch: head.ETag
+                };
+                const maxPartSize = 5 * 1024 ** 3;
+
+                if (size <= maxPartSize) {
+                    const result = await awsS3Client.send(
+                        new sdk.CopyObjectCommand({
+                            ...destination,
+                            ...source,
+                            MetadataDirective: "COPY",
+                            TaggingDirective: "COPY",
+                            WebsiteRedirectLocation: head.WebsiteRedirectLocation
+                        }),
+                        { abortSignal: abortController.signal }
+                    );
+                    assert(
+                        result.CopyObjectResult?.ETag !== undefined,
+                        "Missing object copy result"
+                    );
+                } else {
+                    const partSize = Math.max(64 * 1024 ** 2, Math.ceil(size / 10_000));
+                    assert(partSize <= maxPartSize, "Object is too large to copy");
+
+                    let tagging: string | undefined;
+
+                    try {
+                        const { TagSet } = await awsS3Client.send(
+                            new sdk.GetObjectTaggingCommand({
+                                Bucket: sourceS3Uri.bucket,
+                                Key: sourceKey,
+                                VersionId: head.VersionId
+                            }),
+                            { abortSignal: abortController.signal }
+                        );
+                        assert(TagSet !== undefined, "Missing source object tags");
+                        tagging = TagSet.map(({ Key, Value }) => {
+                            assert(Key !== undefined && Value !== undefined);
+                            return `${encodeURIComponent(Key)}=${encodeURIComponent(Value)}`;
+                        }).join("&");
+                    } catch (error) {
+                        // Some S3 implementations don't implement object tagging.
+                        if (
+                            !(error instanceof sdk.S3ServiceException) ||
+                            error.$metadata.httpStatusCode !== 501
+                        ) {
+                            throw error;
+                        }
+                    }
+
+                    abortController.signal.throwIfAborted();
+                    // Let initiation settle so cancellation can clean up its upload ID.
+                    const initiated = await awsS3Client.send(
+                        new sdk.CreateMultipartUploadCommand({
+                            ...destination,
+                            CacheControl: head.CacheControl,
+                            ContentDisposition: head.ContentDisposition,
+                            ContentEncoding: head.ContentEncoding,
+                            ContentLanguage: head.ContentLanguage,
+                            ContentType: head.ContentType,
+                            Expires: head.Expires,
+                            Metadata: head.Metadata,
+                            WebsiteRedirectLocation: head.WebsiteRedirectLocation,
+                            Tagging: tagging || undefined
+                        })
+                    );
+                    uploadId = initiated.UploadId;
+                    assert(uploadId !== undefined, "Missing multipart upload ID");
+
+                    const partCount = Math.ceil(size / partSize);
+                    const parts: import("@aws-sdk/client-s3").CompletedPart[] = [];
+                    let nextPartNumber = 1;
+                    let copiedBytes = 0;
+                    let failure: { error: unknown } | undefined;
+
+                    const copyParts = async () => {
+                        try {
+                            while (nextPartNumber <= partCount) {
+                                abortController.signal.throwIfAborted();
+                                const partNumber = nextPartNumber++;
+                                const start = (partNumber - 1) * partSize;
+                                const end: number = Math.min(start + partSize, size) - 1;
+                                const { awsS3Client } = await getAwsS3Client();
+                                const result: import("@aws-sdk/client-s3").UploadPartCopyCommandOutput =
+                                    await awsS3Client.send(
+                                        new sdk.UploadPartCopyCommand({
+                                            ...destination,
+                                            ...source,
+                                            UploadId: uploadId,
+                                            PartNumber: partNumber,
+                                            CopySourceRange: `bytes=${start}-${end}`
+                                        }),
+                                        { abortSignal: abortController.signal }
+                                    );
+                                assert(
+                                    result.CopyPartResult?.ETag !== undefined,
+                                    "Missing copied part ETag"
+                                );
+                                parts[partNumber - 1] = {
+                                    ...result.CopyPartResult,
+                                    PartNumber: partNumber
+                                };
+                                copiedBytes += end - start + 1;
+
+                                if (!abortController.signal.aborted) {
+                                    onCopyProgress({
+                                        copyPercent: Math.min(
+                                            99,
+                                            Math.floor((copiedBytes / size) * 100)
+                                        )
+                                    });
+                                }
+                            }
+                        } catch (error) {
+                            failure ??= { error };
+                            abortController.abort();
+                        }
+                    };
+
+                    // Settle all in-flight parts before aborting an unfinished upload.
+                    await Promise.all(
+                        Array.from({ length: Math.min(4, partCount) }, copyParts)
+                    );
+
+                    if (failure !== undefined) {
+                        throw failure.error;
+                    }
+
+                    abortController.signal.throwIfAborted();
+                    const { awsS3Client: completionClient } = await getAwsS3Client();
+                    abortController.signal.throwIfAborted();
+                    // Once committing, wait for the result: cancellation can't undo it.
+                    const result = await completionClient.send(
+                        new sdk.CompleteMultipartUploadCommand({
+                            ...destination,
+                            UploadId: uploadId,
+                            MultipartUpload: { Parts: parts }
+                        })
+                    );
+                    assert(result.ETag !== undefined, "Missing completed copy ETag");
+                }
+
+                isCopyComplete = true;
+                onCopyProgress({ copyPercent: 100 });
+                return { status: "success" };
+            } catch (error) {
+                if (uploadId !== undefined && !isCopyComplete) {
+                    try {
+                        const { getAwsS3Client } = await prApi;
+                        const { awsS3Client } = await getAwsS3Client();
+                        const { AbortMultipartUploadCommand } = await import(
+                            "@aws-sdk/client-s3"
+                        );
+                        await awsS3Client.send(
+                            new AbortMultipartUploadCommand({
+                                Bucket: destinationS3Uri.bucket,
+                                Key: getS3UriKey(destinationS3Uri),
+                                UploadId: uploadId
+                            })
+                        );
+                    } catch (cleanupError) {
+                        if (
+                            !(cleanupError instanceof Error) ||
+                            cleanupError.name !== "NoSuchUpload"
+                        ) {
+                            return {
+                                status: "failed",
+                                error: new Error(
+                                    "Could not clean up the unfinished multipart copy",
+                                    { cause: { copyError: error, cleanupError } }
+                                )
+                            };
+                        }
+                    }
+                }
+
+                return isCanceled
+                    ? { status: "canceled" }
+                    : {
+                          status: "failed",
+                          error: error instanceof Error ? error : new Error(String(error))
+                      };
+            } finally {
+                ctx.done();
+            }
+        },
         deleteObject: async ({ s3Uri }) => {
             const { getAwsS3Client } = await prApi;
 

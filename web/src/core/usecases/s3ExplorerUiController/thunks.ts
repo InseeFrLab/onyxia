@@ -28,6 +28,8 @@ import {
 import { downloadS3UrisAsZip } from "./decoupledLogic/downloadAsZip";
 import { triggerBrowserDownload } from "core/tools/triggerBrowserDownload";
 import { shellQuote } from "core/tools/shellQuote";
+import type { FileOperationConflict, OverwriteConfirmationResponse } from "./evt";
+import type { S3Client } from "core/ports/S3Client";
 
 const { waitForDebounce: waitForDebounce_notifyRouteParamsExternallyUpdated } =
     createWaitForDebounce({
@@ -46,12 +48,14 @@ const erroredUploadBlobs: {
 
 export const evtAskOverwriteConfirmation = Evt.create<{
     s3Uri: S3Uri.NonTerminatedByDelimiter;
-    resolveResponse: (params: { doOverwrite: boolean }) => void;
+    resolveResponse: (response: OverwriteConfirmationResponse) => void;
 }>();
 
 export const evtDisplayError = Evt.create<{
     errorMessage: string;
 }>();
+
+export const evtFileOperationConflict = Evt.create<FileOperationConflict>();
 
 export const thunks = {
     getIsS3ExplorerEnabled:
@@ -789,6 +793,61 @@ export const thunks = {
             );
         },
 
+    /** Reads a destination for the picker without changing explorer navigation or state. */
+    listFileOperationDestination:
+        (params: { profileName: string; s3Uri: S3Uri.TerminatedByDelimiter }) =>
+        async (...args): Promise<S3Client.ListObjectsReturn> => {
+            const [dispatch] = args;
+            const s3Client = await dispatch(
+                s3ProfilesManagement.protectedThunks.getS3Client({
+                    profileName: params.profileName
+                })
+            );
+            return s3Client.listObjects({ s3Uri: params.s3Uri });
+        },
+    /** Renames one object or directory within its current parent. */
+    rename:
+        (params: {
+            s3Uri: S3Uri;
+            /** A single name, including the extension for a file, without a path. */
+            newBasename: string;
+        }) =>
+        async (...args): Promise<void> => {
+            const [dispatch] = args;
+            await dispatch(privateThunks.runFileOperation({ type: "rename", ...params }));
+        },
+    /** Copies objects or directories into the destination directory, retaining their names. */
+    copy:
+        (params: { s3Uris: S3Uri[]; destinationS3Uri: S3Uri.TerminatedByDelimiter }) =>
+        async (...args): Promise<void> => {
+            const [dispatch] = args;
+            await dispatch(privateThunks.runFileOperation({ type: "copy", ...params }));
+        },
+    /** Moves objects or directories into the destination directory, retaining their names. */
+    move:
+        (params: { s3Uris: S3Uri[]; destinationS3Uri: S3Uri.TerminatedByDelimiter }) =>
+        async (...args): Promise<void> => {
+            const [dispatch] = args;
+            await dispatch(privateThunks.runFileOperation({ type: "move", ...params }));
+        },
+    cancelFileOperation:
+        (params: { operationId: string }) =>
+        (...args) => {
+            const [dispatch, getState] = args;
+            const operation = privateSelectors
+                .fileOperations(getState())
+                .find(operation => operation.operationId === params.operationId);
+            if (operation?.status !== "running") {
+                return;
+            }
+            dispatch(actions.fileOperationCanceled(params));
+        },
+    flushFileOperations:
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+            dispatch(actions.fileOperationsFlushed());
+        },
     delete:
         (params: { s3Uris: S3Uri[] }) =>
         async (...args): Promise<void> => {
@@ -1007,6 +1066,517 @@ export const thunks = {
 } satisfies Thunks;
 
 export const privateThunks = {
+    runFileOperation:
+        (request: State.FileOperation.Request) =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState, { evtAction }] = args;
+            if (request.type !== "rename" && request.s3Uris.length === 0) {
+                return;
+            }
+
+            const profileName = privateSelectors.profileName(getState());
+            assert(profileName !== undefined);
+            const operationId = `${Date.now()}-${Math.random()}`;
+            const ctx = Evt.newCtx();
+            const evtCancel = Evt.create<void>();
+            const dCanceled = new Deferred<undefined>();
+            evtCancel.attachOnce(ctx, () => dCanceled.resolve(undefined));
+            evtAction.attachOnce(
+                action =>
+                    action.usecaseName === name &&
+                    action.actionName === "fileOperationCanceled" &&
+                    action.payload.operationId === operationId,
+                ctx,
+                () => evtCancel.post()
+            );
+
+            dispatch(
+                actions.fileOperationStarted({ ...request, operationId, profileName })
+            );
+
+            const throwIfCanceled = () => {
+                if (evtCancel.postCount !== 0) {
+                    throw new Error("File operation canceled");
+                }
+            };
+            let didStartCopy = false;
+
+            try {
+                throwIfCanceled();
+                const sources =
+                    request.type === "rename" ? [request.s3Uri] : request.s3Uris;
+                const roots = sources
+                    .filter(
+                        (source, i) =>
+                            sources.findIndex(other => same(other, source)) === i &&
+                            !sources.some(
+                                other =>
+                                    other.isDelimiterTerminated &&
+                                    getIsInside({ s3UriPrefix: other, s3Uri: source })
+                                        .isInside
+                            )
+                    )
+                    .map(sourceS3Uri => {
+                        assert(
+                            sourceS3Uri.keySegments.length !== 0,
+                            "A bucket cannot be renamed, copied, or moved as a directory"
+                        );
+                        if (request.type === "rename") {
+                            assert(
+                                request.newBasename !== "" &&
+                                    !request.newBasename.includes(
+                                        sourceS3Uri.delimiter
+                                    ) &&
+                                    !request.newBasename.includes("/"),
+                                "The new name must be a single nonempty path segment"
+                            );
+                        }
+                        const destinationS3Uri: S3Uri =
+                            request.type === "rename"
+                                ? {
+                                      ...sourceS3Uri,
+                                      keySegments: [
+                                          ...sourceS3Uri.keySegments.slice(0, -1),
+                                          request.newBasename
+                                      ]
+                                  }
+                                : {
+                                      ...request.destinationS3Uri,
+                                      isDelimiterTerminated:
+                                          sourceS3Uri.isDelimiterTerminated,
+                                      keySegments: [
+                                          ...request.destinationS3Uri.keySegments,
+                                          sourceS3Uri.keySegments.at(-1)!
+                                      ]
+                                  };
+                        // Renaming to the existing name is harmless; copying/moving onto oneself is an error.
+                        if (
+                            request.type === "rename" &&
+                            same(sourceS3Uri, destinationS3Uri)
+                        ) {
+                            return undefined;
+                        }
+                        assert(
+                            stringifyS3Uri(sourceS3Uri) !==
+                                stringifyS3Uri(destinationS3Uri),
+                            "Source and destination must be different"
+                        );
+                        if (sourceS3Uri.isDelimiterTerminated) {
+                            assert(
+                                !getIsInside({
+                                    s3UriPrefix: sourceS3Uri,
+                                    s3Uri: destinationS3Uri
+                                }).isInside,
+                                "A directory cannot be copied or moved inside itself"
+                            );
+                        }
+                        return { sourceS3Uri, destinationS3Uri };
+                    })
+                    .filter(root => root !== undefined);
+
+                const s3Client = await dispatch(
+                    s3ProfilesManagement.protectedThunks.getS3Client({ profileName })
+                );
+                throwIfCanceled();
+                const listings = new Map<
+                    string,
+                    Promise<S3Client.ListObjectsReturn.Success>
+                >();
+                const list = (
+                    s3Uri: S3Uri
+                ): Promise<S3Client.ListObjectsReturn.Success> => {
+                    const key = stringifyS3Uri(s3Uri);
+                    let pr = listings.get(key);
+                    if (pr === undefined) {
+                        pr = (async () => {
+                            throwIfCanceled();
+                            const result = await s3Client.listObjects({ s3Uri });
+                            throwIfCanceled();
+                            if (!result.isSuccess) {
+                                throw new Error(
+                                    `Cannot list ${key}: ${result.isKnownError ? result.errorCase : result.errorMessage}`
+                                );
+                            }
+                            return result;
+                        })();
+                        listings.set(key, pr);
+                    }
+                    return pr;
+                };
+                const crawl = async (
+                    sourceS3Uri: S3Uri
+                ): Promise<S3Client.ListObjectsReturn.Success.Object[]> => {
+                    const result = await list(sourceS3Uri);
+                    if (!sourceS3Uri.isDelimiterTerminated) {
+                        const object = result.objects.find(object =>
+                            same(object.s3Uri, sourceS3Uri)
+                        );
+                        assert(
+                            object !== undefined,
+                            `Source object does not exist: ${stringifyS3Uri(sourceS3Uri)}`
+                        );
+                        return [object];
+                    }
+                    const objects = [...result.objects];
+                    for (const prefix of result.prefixes) {
+                        for (const object of await crawl(prefix)) {
+                            objects.push(object);
+                        }
+                    }
+                    return objects;
+                };
+
+                // Freeze the complete source inventory and inspect destinations before asking any questions.
+                const candidates: {
+                    sourceS3Uri: S3Uri;
+                    destinationS3Uri: S3Uri;
+                    doesDestinationExist: boolean;
+                    objects: Pick<
+                        State.FileOperation.Object,
+                        "sourceS3Uri" | "destinationS3Uri" | "size"
+                    >[];
+                }[] = [];
+                const sourceKeys = new Set<string>();
+                const destinationKeys = new Set<string>();
+                for (const { sourceS3Uri, destinationS3Uri } of roots) {
+                    const sourceObjects = await crawl(sourceS3Uri);
+                    const objects = sourceObjects.map(({ s3Uri, size }) => {
+                        const destinationObjectS3Uri: S3Uri.NonTerminatedByDelimiter = {
+                            ...destinationS3Uri,
+                            isDelimiterTerminated: false,
+                            keySegments: destinationS3Uri.isDelimiterTerminated
+                                ? [
+                                      ...destinationS3Uri.keySegments,
+                                      ...s3Uri.keySegments.slice(
+                                          sourceS3Uri.keySegments.length
+                                      )
+                                  ]
+                                : destinationS3Uri.keySegments
+                        };
+                        sourceKeys.add(stringifyS3Uri(s3Uri));
+                        const destinationKey = stringifyS3Uri(destinationObjectS3Uri);
+                        assert(
+                            !destinationKeys.has(destinationKey),
+                            `Multiple sources have the same destination: ${destinationKey}`
+                        );
+                        destinationKeys.add(destinationKey);
+                        return {
+                            sourceS3Uri: s3Uri,
+                            destinationS3Uri: destinationObjectS3Uri,
+                            size
+                        };
+                    });
+                    const destinationListing = await list(
+                        destinationS3Uri.isDelimiterTerminated
+                            ? {
+                                  ...destinationS3Uri,
+                                  keySegments: destinationS3Uri.keySegments.slice(0, -1)
+                              }
+                            : destinationS3Uri
+                    );
+                    const doesDestinationExist = destinationS3Uri.isDelimiterTerminated
+                        ? destinationListing.prefixes.some(prefix =>
+                              same(prefix, destinationS3Uri)
+                          )
+                        : destinationListing.objects.some(object =>
+                              same(object.s3Uri, destinationS3Uri)
+                          );
+                    candidates.push({
+                        sourceS3Uri,
+                        destinationS3Uri,
+                        doesDestinationExist,
+                        objects
+                    });
+                }
+                for (const key of destinationKeys) {
+                    assert(
+                        !sourceKeys.has(key),
+                        `A destination would overwrite an object selected as a source: ${key}`
+                    );
+                }
+
+                let rememberedDirectoryChoice: "merge" | "skip" | undefined;
+                let rememberedObjectChoice: "overwrite" | "skip" | undefined;
+                const plan: Pick<
+                    State.FileOperation.Object,
+                    "sourceS3Uri" | "destinationS3Uri" | "size"
+                >[] = [];
+                for (const candidate of candidates) {
+                    throwIfCanceled();
+                    const {
+                        sourceS3Uri,
+                        destinationS3Uri,
+                        doesDestinationExist,
+                        objects
+                    } = candidate;
+                    if (doesDestinationExist) {
+                        let choice: "merge" | "overwrite" | "skip";
+                        if (sourceS3Uri.isDelimiterTerminated) {
+                            assert(destinationS3Uri.isDelimiterTerminated);
+                            if (rememberedDirectoryChoice !== undefined) {
+                                choice = rememberedDirectoryChoice;
+                            } else {
+                                const dResponse =
+                                    new Deferred<FileOperationConflict.Directory.Response>();
+                                evtFileOperationConflict.post({
+                                    type: "directory",
+                                    operationId,
+                                    operationType: request.type,
+                                    sourceS3Uri,
+                                    destinationS3Uri,
+                                    resolveResponse: response =>
+                                        dResponse.resolve(response)
+                                });
+                                const response = await Promise.race([
+                                    dResponse.pr,
+                                    dCanceled.pr
+                                ]);
+                                throwIfCanceled();
+                                if (
+                                    response === undefined ||
+                                    response.action === "cancel"
+                                ) {
+                                    dispatch(
+                                        actions.fileOperationCanceled({ operationId })
+                                    );
+                                    return;
+                                }
+                                choice = response.action;
+                                if (response.doRememberChoice) {
+                                    rememberedDirectoryChoice = choice;
+                                }
+                            }
+                        } else {
+                            assert(!destinationS3Uri.isDelimiterTerminated);
+                            if (rememberedObjectChoice !== undefined) {
+                                choice = rememberedObjectChoice;
+                            } else {
+                                const dResponse =
+                                    new Deferred<OverwriteConfirmationResponse>();
+                                evtFileOperationConflict.post({
+                                    type: "object",
+                                    operationId,
+                                    operationType: request.type,
+                                    sourceS3Uri,
+                                    destinationS3Uri,
+                                    resolveResponse: response =>
+                                        dResponse.resolve(response)
+                                });
+                                const response = await Promise.race([
+                                    dResponse.pr,
+                                    dCanceled.pr
+                                ]);
+                                throwIfCanceled();
+                                if (
+                                    response === undefined ||
+                                    response.action === "cancel"
+                                ) {
+                                    dispatch(
+                                        actions.fileOperationCanceled({ operationId })
+                                    );
+                                    return;
+                                }
+                                choice = response.action;
+                                if (response.doRememberChoice) {
+                                    rememberedObjectChoice = choice;
+                                }
+                            }
+                        }
+                        if (choice === "skip") {
+                            continue;
+                        }
+                    }
+                    for (const object of objects) {
+                        plan.push(object);
+                    }
+                }
+
+                throwIfCanceled();
+                dispatch(
+                    actions.fileOperationObjectsListed({ operationId, objects: plan })
+                );
+                dispatch(actions.fileOperationListingCompleted({ operationId }));
+
+                const copiedObjects: typeof plan = [];
+                const errors: string[] = [];
+                for (const object of plan) {
+                    throwIfCanceled();
+                    const { sourceS3Uri, destinationS3Uri } = object;
+                    const cmdId = Date.now() + Math.random();
+                    dispatch(
+                        actions.commandLogIssued({
+                            cmds: [
+                                {
+                                    cmdId,
+                                    cmd: `aws s3 cp ${shellQuote(stringifyS3Uri(sourceS3Uri))} ${shellQuote(stringifyS3Uri(destinationS3Uri))}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
+                                }
+                            ]
+                        })
+                    );
+                    didStartCopy = true;
+                    try {
+                        const result = await s3Client.copyObject({
+                            sourceS3Uri,
+                            destinationS3Uri,
+                            evtCancel,
+                            onCopyProgress: ({ copyPercent }) => {
+                                if (evtCancel.postCount !== 0) {
+                                    return;
+                                }
+                                dispatch(
+                                    actions.fileOperationObjectProgressReported({
+                                        operationId,
+                                        sourceS3Uri,
+                                        completionPercent: copyPercent
+                                    })
+                                );
+                            }
+                        });
+                        if (result.status === "canceled" || evtCancel.postCount !== 0) {
+                            dispatch(actions.commandLogCancelled({ cmdId }));
+                            if (evtCancel.postCount === 0) {
+                                dispatch(actions.fileOperationCanceled({ operationId }));
+                            }
+                            return;
+                        }
+                        if (result.status === "failed") {
+                            throw result.error;
+                        }
+                        dispatch(
+                            actions.fileOperationObjectProgressReported({
+                                operationId,
+                                sourceS3Uri,
+                                completionPercent: 100
+                            })
+                        );
+                        dispatch(
+                            actions.commandLogResponseReceived({
+                                cmdId,
+                                resp: `Copied ${stringifyS3Uri(sourceS3Uri)} to ${stringifyS3Uri(destinationS3Uri)}`
+                            })
+                        );
+                        if (request.type === "copy") {
+                            dispatch(
+                                actions.fileOperationObjectCompleted({
+                                    operationId,
+                                    sourceS3Uri
+                                })
+                            );
+                        } else {
+                            copiedObjects.push(object);
+                        }
+                    } catch (error) {
+                        if (evtCancel.postCount !== 0) {
+                            dispatch(actions.commandLogCancelled({ cmdId }));
+                            return;
+                        }
+                        const errorMessage = `Failed to copy ${stringifyS3Uri(sourceS3Uri)} to ${stringifyS3Uri(destinationS3Uri)}: ${error instanceof Error ? error.message : String(error)}`;
+                        errors.push(errorMessage);
+                        dispatch(
+                            actions.commandLogResponseReceived({
+                                cmdId,
+                                resp: errorMessage
+                            })
+                        );
+                        dispatch(
+                            actions.fileOperationObjectErrored({
+                                operationId,
+                                sourceS3Uri,
+                                erroredErrorMessage: errorMessage
+                            })
+                        );
+                    }
+                }
+
+                // Never delete a skipped/failed source. Wait for the copy phase to finish first.
+                for (const { sourceS3Uri } of copiedObjects) {
+                    throwIfCanceled();
+                    const cmdId = Date.now() + Math.random();
+                    dispatch(
+                        actions.commandLogIssued({
+                            cmds: [
+                                {
+                                    cmdId,
+                                    cmd: `aws s3 rm ${shellQuote(stringifyS3Uri(sourceS3Uri))}${profileName === "default" ? "" : ` --profile ${shellQuote(profileName)}`}`
+                                }
+                            ]
+                        })
+                    );
+                    try {
+                        await s3Client.deleteObject({ s3Uri: sourceS3Uri });
+                        throwIfCanceled();
+                        dispatch(
+                            actions.commandLogResponseReceived({
+                                cmdId,
+                                resp: `Removed ${stringifyS3Uri(sourceS3Uri)}`
+                            })
+                        );
+                        dispatch(
+                            actions.fileOperationObjectCompleted({
+                                operationId,
+                                sourceS3Uri
+                            })
+                        );
+                    } catch (error) {
+                        if (evtCancel.postCount !== 0) {
+                            dispatch(actions.commandLogCancelled({ cmdId }));
+                            return;
+                        }
+                        const errorMessage = `Copied ${stringifyS3Uri(sourceS3Uri)}, but failed to delete its source: ${error instanceof Error ? error.message : String(error)}`;
+                        errors.push(errorMessage);
+                        dispatch(
+                            actions.commandLogResponseReceived({
+                                cmdId,
+                                resp: errorMessage
+                            })
+                        );
+                        dispatch(
+                            actions.fileOperationObjectErrored({
+                                operationId,
+                                sourceS3Uri,
+                                erroredErrorMessage: errorMessage
+                            })
+                        );
+                    }
+                }
+                dispatch(actions.fileOperationCompleted({ operationId }));
+                if (errors.length !== 0) {
+                    evtDisplayError.post({
+                        errorMessage: `${errors.length} object(s) failed. ${errors[0]}`
+                    });
+                }
+            } catch (error) {
+                if (evtCancel.postCount === 0) {
+                    const errorMessage =
+                        error instanceof Error ? error.message : String(error);
+                    dispatch(
+                        actions.fileOperationErrored({
+                            operationId,
+                            erroredErrorMessage: errorMessage
+                        })
+                    );
+                    evtDisplayError.post({ errorMessage });
+                }
+            } finally {
+                ctx.done();
+                // Refresh whichever location is now displayed, without switching profiles or navigating back.
+                if (
+                    didStartCopy &&
+                    privateSelectors.profileName(getState()) === profileName
+                ) {
+                    const s3Uri = privateSelectors.s3Uri(getState());
+                    if (s3Uri !== undefined) {
+                        void dispatch(
+                            thunks.listPrefix({ s3Uri, debounce: false })
+                        ).catch(error =>
+                            evtDisplayError.post({
+                                errorMessage: `Failed to refresh ${stringifyS3Uri(s3Uri)}: ${error instanceof Error ? error.message : String(error)}`
+                            })
+                        );
+                    }
+                }
+            }
+        },
     putObject:
         (params: {
             profileName: string;
@@ -1058,8 +1628,8 @@ export const privateThunks = {
 
                     evtAskOverwriteConfirmation.post({
                         s3Uri,
-                        resolveResponse: ({ doOverwrite }) => {
-                            dDoOverwrite.resolve(doOverwrite);
+                        resolveResponse: ({ action }) => {
+                            dDoOverwrite.resolve(action === "overwrite");
                         }
                     });
 

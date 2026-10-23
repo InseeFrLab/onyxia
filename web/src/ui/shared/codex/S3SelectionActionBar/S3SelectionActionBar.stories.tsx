@@ -7,6 +7,7 @@ import {
 } from "./S3SelectionActionBar";
 
 const meta = {
+    tags: ["s3-file-operations"],
     title: "Shared/S3SelectionActionBar",
     component: S3SelectionActionBar
 } satisfies Meta<typeof S3SelectionActionBar>;
@@ -195,5 +196,25 @@ export const MultipleSelection: Story = {
         bookmark: undefined,
         share: undefined,
         accessPolicy: undefined
+    }
+};
+
+export const FileOperations: Story = {
+    args: {
+        ...baseArgs,
+        copy: { callback: fn() },
+        move: { callback: fn() },
+        rename: { callback: fn() }
+    },
+    play: async ({ canvasElement, args }) => {
+        const canvas = within(canvasElement);
+        await expect(canvas.getAllByRole("button")).toHaveLength(7);
+        await userEvent.click(canvas.getByRole("button", { name: "Move to…" }));
+        await expect(args.move?.callback).toHaveBeenCalledTimes(1);
+        await userEvent.click(canvas.getByRole("button", { name: "More actions" }));
+        const menu = within(
+            await within(canvasElement.ownerDocument.body).findByRole("menu")
+        );
+        await expect(menu.getByRole("menuitem", { name: "Copy S3 URI" })).toBeVisible();
     }
 };

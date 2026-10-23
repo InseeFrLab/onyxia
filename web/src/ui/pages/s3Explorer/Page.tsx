@@ -32,6 +32,10 @@ import { CodeTextEditor } from "ui/shared/textEditor/CodeTextEditor";
 import { Icon } from "onyxia-ui/Icon";
 import { Button } from "onyxia-ui/Button";
 import { getFileBasenameFromUrl } from "core/tools/triggerBrowserDownload";
+import {
+    FileOperationDialogs,
+    type FileOperationDialogsProps
+} from "./FileOperationDialogs";
 
 const Page = withLoader({
     loader,
@@ -116,6 +120,10 @@ function S3Explorer() {
             action: "display copy feedback";
             s3Uri: S3Uri;
         }>()
+    );
+
+    const evtFileOperationDialogOpen = useConst<FileOperationDialogsProps["evtOpen"]>(
+        () => new Evt()
     );
 
     const {
@@ -305,6 +313,11 @@ function S3Explorer() {
     return (
         <>
             <S3ExplorerDialogs {...dialogProps} />
+            <FileOperationDialogs
+                evtOpen={evtFileOperationDialogOpen}
+                profileName={mainView.profileSelect?.selectedProfile.name}
+                currentLocation={mainView.uriBar.s3Uri?.s3Uri}
+            />
             <div
                 ref={ref_root}
                 className={css({
@@ -609,6 +622,24 @@ function S3Explorer() {
                                         }
                                     }}
                                     evtAction={evtS3UriBarAction}
+                                    onCopy={s3Uri =>
+                                        evtFileOperationDialogOpen.post({
+                                            type: "copy",
+                                            s3Uris: [s3Uri]
+                                        })
+                                    }
+                                    onMove={s3Uri =>
+                                        evtFileOperationDialogOpen.post({
+                                            type: "move",
+                                            s3Uris: [s3Uri]
+                                        })
+                                    }
+                                    onRename={s3Uri =>
+                                        evtFileOperationDialogOpen.post({
+                                            type: "rename",
+                                            s3Uris: [s3Uri]
+                                        })
+                                    }
                                 />
                                 <S3ContextActionButton
                                     icon={getIconUrlByName("UploadFileOutlined")}
@@ -695,6 +726,24 @@ function S3Explorer() {
                                         s3ExplorerUiController.createDirectory
                                     }
                                     onDelete={s3ExplorerUiController.delete}
+                                    onCopy={({ s3Uris }) =>
+                                        evtFileOperationDialogOpen.post({
+                                            type: "copy",
+                                            s3Uris
+                                        })
+                                    }
+                                    onMove={({ s3Uris }) =>
+                                        evtFileOperationDialogOpen.post({
+                                            type: "move",
+                                            s3Uris
+                                        })
+                                    }
+                                    onRename={({ s3Uri }) =>
+                                        evtFileOperationDialogOpen.post({
+                                            type: "rename",
+                                            s3Uris: [s3Uri]
+                                        })
+                                    }
                                     onDownload={onDownload}
                                     onChangePrefixPolicy={async ({ action, s3Uri }) => {
                                         const dDoProceed = new Deferred<boolean>();

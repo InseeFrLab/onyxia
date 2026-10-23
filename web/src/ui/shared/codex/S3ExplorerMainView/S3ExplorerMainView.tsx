@@ -90,6 +90,9 @@ export type S3ExplorerMainViewProps = {
     onCreateDirectory: (params: { prefixSegment: string }) => void;
 
     onDelete: (params: { s3Uris: S3Uri[] }) => void;
+    onCopy?: (params: { s3Uris: S3Uri[] }) => void;
+    onMove?: (params: { s3Uris: S3Uri[] }) => void;
+    onRename?: (params: { s3Uri: S3Uri }) => void;
 
     onDownload: (params: { s3Uris: S3Uri[] }) => void;
 
@@ -161,6 +164,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
         onPutObjects,
         onCreateDirectory,
         onDelete,
+        onCopy,
+        onMove,
+        onRename,
         onDownload,
         onShareObject,
         onSharePrefix,
@@ -810,6 +816,42 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                     {selectedItems.length > 0 && (
                         <S3SelectionActionBar
                             selectionCount={selectedItems.length}
+                            copy={
+                                onCopy === undefined ||
+                                !selectedItems.every(getIsItemActionAvailable)
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              onCopy({
+                                                  s3Uris: selectedItems.map(
+                                                      item => item.s3Uri
+                                                  )
+                                              })
+                                      }
+                            }
+                            move={
+                                onMove === undefined ||
+                                !selectedItems.every(getIsItemActionAvailable)
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              onMove({
+                                                  s3Uris: selectedItems.map(
+                                                      item => item.s3Uri
+                                                  )
+                                              })
+                                      }
+                            }
+                            rename={
+                                onRename === undefined ||
+                                selectedItems.length !== 1 ||
+                                !selectedItems.every(getIsItemActionAvailable)
+                                    ? undefined
+                                    : {
+                                          callback: () =>
+                                              onRename({ s3Uri: selectedItems[0].s3Uri })
+                                      }
+                            }
                             onClear={isSelectionLocked ? undefined : clearSelection}
                             download={
                                 !selectedItems.every(getIsItemActionAvailable)
@@ -1259,6 +1301,9 @@ export function S3ExplorerMainView(props: S3ExplorerMainViewProps) {
                                                         itemKey
                                                     )}
                                                     onDelete={onDeleteFactory(itemKey)}
+                                                    onCopy={onCopy}
+                                                    onMove={onMove}
+                                                    onRename={onRename}
                                                     onShare={
                                                         item.type === "object" ||
                                                         item.shouldShowShareAction
@@ -1987,6 +2032,9 @@ const useStyles = tss
     }));
 
 const { i18n } = declareComponentKeys<
+    | "copy to"
+    | "move to"
+    | "rename"
     | "create prefix dialog title"
     | "create prefix dialog subtitle"
     | "prefix name field label"
@@ -2463,6 +2511,9 @@ type ItemRowProps = {
     onRowClick: (event: MouseEvent<HTMLTableRowElement>) => void;
     onNavigate: () => void;
     onDelete: () => void;
+    onCopy?: S3ExplorerMainViewProps["onCopy"];
+    onMove?: S3ExplorerMainViewProps["onMove"];
+    onRename?: S3ExplorerMainViewProps["onRename"];
     onShare: (() => void) | undefined;
     onRequestFiles: (() => void) | undefined;
     onChangePrefixPolicy: (() => void) | undefined;
@@ -2495,6 +2546,9 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
         onNavigate,
         onDelete,
         onShare,
+        onCopy,
+        onMove,
+        onRename,
         onRequestFiles,
         onChangePrefixPolicy,
         onDownload,
@@ -2551,6 +2605,36 @@ const ItemRow = memo(function ItemRow(props: ItemRowProps) {
     }, [isS3UriCopied]);
 
     const actionCandidates: (ItemRowAction | undefined)[] = [
+        onCopy === undefined
+            ? undefined
+            : {
+                  key: "copy-object",
+                  label: t("copy to"),
+                  icon: getIconUrlByName("ContentCopy"),
+                  onClick: isItemActionAvailable
+                      ? () => onCopy({ s3Uris: [item.s3Uri] })
+                      : undefined
+              },
+        onMove === undefined
+            ? undefined
+            : {
+                  key: "move-object",
+                  label: t("move to"),
+                  icon: getIconUrlByName("DriveFileMove"),
+                  onClick: isItemActionAvailable
+                      ? () => onMove({ s3Uris: [item.s3Uri] })
+                      : undefined
+              },
+        onRename === undefined
+            ? undefined
+            : {
+                  key: "rename-object",
+                  label: t("rename"),
+                  icon: getIconUrlByName("DriveFileRenameOutline"),
+                  onClick: isItemActionAvailable
+                      ? () => onRename({ s3Uri: item.s3Uri })
+                      : undefined
+              },
         onDownload === undefined
             ? undefined
             : {
@@ -3013,6 +3097,9 @@ function areItemRowPropsEqual(
         previousProps.onRowClick === nextProps.onRowClick &&
         previousProps.onNavigate === nextProps.onNavigate &&
         previousProps.onDelete === nextProps.onDelete &&
+        previousProps.onCopy === nextProps.onCopy &&
+        previousProps.onMove === nextProps.onMove &&
+        previousProps.onRename === nextProps.onRename &&
         previousProps.onShare === nextProps.onShare &&
         previousProps.onRequestFiles === nextProps.onRequestFiles &&
         previousProps.onChangePrefixPolicy === nextProps.onChangePrefixPolicy &&

@@ -8,6 +8,7 @@ import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3UriBar, type S3UriBarProps } from "./S3UriBar";
 
 const meta = {
+    tags: ["s3-file-operations"],
     title: "Shared/S3UriBar",
     component: S3UriBar
 } satisfies Meta<typeof S3UriBar>;
@@ -241,7 +242,8 @@ export const CurrentDirectoryMenu: Story = {
         const trigger = canvas.getByRole("button", { name: /Directory actions for/ });
 
         await userEvent.click(trigger);
-        await expect(await body.findByRole("menu")).toBeVisible();
+        const menuElement = await body.findByRole("menu");
+        await waitFor(() => expect(menuElement).toBeVisible());
         await expect(args.onS3UriChange).not.toHaveBeenCalled();
         await expect(trigger).toHaveAttribute("aria-expanded", "true");
 
@@ -345,7 +347,8 @@ export const DirectoryMenuWithCustomDelimiter: Story = {
                 name: "Directory actions for s3://analytics-data/exports#2024#"
             })
         );
-        await expect(await body.findByRole("menu")).toBeVisible();
+        const menuElement = await body.findByRole("menu");
+        await waitFor(() => expect(menuElement).toBeVisible());
     }
 };
 
@@ -990,5 +993,51 @@ export const HomeInactiveFocused: Story = {
         const canvas = within(canvasElement);
         const homeInactiveTrigger = canvas.getByText(/explorer|explore/i);
         await userEvent.click(homeInactiveTrigger);
+    }
+};
+
+export const FileOperations: Story = {
+    args: {
+        ...baseArgs,
+        s3Uri: parseS3UriBarS3Uri({ s3Uri: "s3://analytics-data/exports/" }),
+        onCopy: fn(),
+        onMove: fn(),
+        onRename: fn()
+    },
+    render: args => <StatefulS3UriBar {...args} />,
+    play: async ({ canvasElement, args }) => {
+        await userEvent.click(
+            within(canvasElement).getByRole("button", {
+                name: "Directory actions for s3://analytics-data/exports/"
+            })
+        );
+        const menu = within(
+            await within(canvasElement.ownerDocument.body).findByRole("menu")
+        );
+        await userEvent.click(menu.getByRole("menuitem", { name: "Move to…" }));
+        await expect(args.onMove).toHaveBeenCalledWith(args.s3Uri?.s3Uri);
+    }
+};
+export const BucketRootWithoutFileOperations: Story = {
+    ...FileOperations,
+    args: {
+        ...FileOperations.args,
+        s3Uri: parseS3UriBarS3Uri({ s3Uri: "s3://analytics-data/" })
+    },
+    play: async ({ canvasElement }) => {
+        await userEvent.click(
+            within(canvasElement).getByRole("button", {
+                name: "Directory actions for s3://analytics-data/"
+            })
+        );
+        const menu = within(
+            await within(canvasElement.ownerDocument.body).findByRole("menu")
+        );
+        await expect(
+            menu.queryByRole("menuitem", { name: "Rename" })
+        ).not.toBeInTheDocument();
+        await expect(
+            menu.queryByRole("menuitem", { name: "Move to…" })
+        ).not.toBeInTheDocument();
     }
 };
