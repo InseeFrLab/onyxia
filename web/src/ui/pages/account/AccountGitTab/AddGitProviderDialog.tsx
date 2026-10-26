@@ -34,7 +34,9 @@ type Props = {
 const defaultUrlByType: Record<GitProvidersConfig.ProviderType, string> = {
     gitlab: "https://gitlab.com",
     github: "https://github.com",
-    forgejo: ""
+    forgejo: "",
+    // NOTE: The only one, Bitbucket Data Center isn't supported.
+    bitbucket: "https://bitbucket.org"
 };
 
 /**
@@ -93,7 +95,8 @@ export function AddGitProviderDialog(props: Props) {
                         options={[
                             { value: "gitlab", label: "GitLab" },
                             { value: "github", label: "GitHub" },
-                            { value: "forgejo", label: t("forgejo option") }
+                            { value: "forgejo", label: t("forgejo option") },
+                            { value: "bitbucket", label: "Bitbucket Cloud" }
                         ]}
                     />
 
@@ -110,9 +113,13 @@ export function AddGitProviderDialog(props: Props) {
                                     : undefined
                             }
                         />
-                        {type === "forgejo" && (
+                        {(type === "forgejo" || type === "bitbucket") && (
                             <Text typo="body 2" color="secondary">
-                                {t("forgejo cors hint")}
+                                {t(
+                                    type === "forgejo"
+                                        ? "forgejo cors hint"
+                                        : "bitbucket url hint"
+                                )}
                             </Text>
                         )}
                     </div>
@@ -138,7 +145,11 @@ export function AddGitProviderDialog(props: Props) {
                             }
                         />
                         <Text typo="body 2" color="secondary">
-                            {t("personal access token hint")}
+                            {t(
+                                type === "bitbucket"
+                                    ? "bitbucket token hint"
+                                    : "personal access token hint"
+                            )}
                         </Text>
                         {personalAccessTokenCreationUrl !== undefined && (
                             <Link
@@ -185,6 +196,8 @@ const { i18n } = declareComponentKeys<
     | "forgejo option"
     | "url"
     | "forgejo cors hint"
+    | "bitbucket url hint"
+    | "bitbucket token hint"
     | "display name"
     | "personal access token"
     | "personal access token hint"

@@ -36,7 +36,7 @@ const zGIT_PROVIDERS_EnvValue_ExpectedShape = (() => {
     type TargetType = GIT_PROVIDERS_EnvValue_ExpectedShape;
 
     const zProvider = z.object({
-        type: z.enum(["gitlab", "forgejo", "github"]),
+        type: z.enum(["gitlab", "forgejo", "github", "bitbucket"]),
         url: z.string().url(),
         id: z.string().trim().min(1).optional(),
         displayName: z.string().trim().min(1).optional(),
@@ -96,7 +96,8 @@ export type GitProvidersConfig = {
 };
 
 export namespace GitProvidersConfig {
-    export type ProviderType = "gitlab" | "forgejo" | "github";
+    /** bitbucket: Bitbucket Cloud (bitbucket.org) only */
+    export type ProviderType = "gitlab" | "forgejo" | "github" | "bitbucket";
 
     export type Provider = {
         /** Unique across the providers */
@@ -191,6 +192,12 @@ export function parseGitProvidersConfigFromEnvValue(params: {
         const url = provider.url.replace(/\/+$/, "");
         const { host } = new URL(url);
 
+        if (provider.type === "bitbucket" && !getIsBitbucketCloudUrl(url)) {
+            throw new Error(
+                `GIT_PROVIDERS env: ${url}, only Bitbucket Cloud (https://bitbucket.org) is supported`
+            );
+        }
+
         const { ui, service } = provider.authentication;
 
         {
@@ -265,6 +272,10 @@ export function parseGitProvidersConfigFromEnvValue(params: {
     };
 }
 
+export function getIsBitbucketCloudUrl(url: string): boolean {
+    return url.replace(/\/+$/, "") === "https://bitbucket.org";
+}
+
 /** undefined when the provider supports the combination */
 function getUnsupportedCombinationReason(params: {
     type: GitProvidersConfig.ProviderType;
@@ -272,6 +283,13 @@ function getUnsupportedCombinationReason(params: {
     service: GitProvidersConfig.Authentication.Service["type"];
 }): string | undefined {
     const { type, ui, service } = params;
+
+    if (
+        type === "bitbucket" &&
+        (ui !== "personal-access-token" || service !== "personal-access-token")
+    ) {
+        return "Bitbucket's token endpoint requires the client secret, even for the refresh token, use an API token";
+    }
 
     if (ui === "oauth" && type === "github") {
         return "GitHub's token endpoint requires a client secret and doesn't allow CORS, use a personal access token";

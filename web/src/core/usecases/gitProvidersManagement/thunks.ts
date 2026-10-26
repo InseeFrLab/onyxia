@@ -938,7 +938,9 @@ const privateThunks = {
 
                                         return {
                                             type: "token",
-                                            username: connection.user.username,
+                                            username:
+                                                gitProvider.service.gitUsername ??
+                                                connection.user.username,
                                             token: personalAccessToken,
                                             expirationTime: undefined
                                         };

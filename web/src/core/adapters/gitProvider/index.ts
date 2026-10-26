@@ -3,6 +3,7 @@ import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig
 import { createGitLabProvider } from "./gitLab";
 import { createForgejoProvider } from "./forgejo";
 import { createGitHubProvider } from "./gitHub";
+import { createBitbucketProvider } from "./bitbucket";
 
 export function createGitProvider(params: {
     config: GitProvidersConfig.Provider;
@@ -16,5 +17,7 @@ export function createGitProvider(params: {
             return createForgejoProvider({ config });
         case "github":
             return createGitHubProvider({ config });
+        case "bitbucket":
+            return createBitbucketProvider({ config });
     }
 }

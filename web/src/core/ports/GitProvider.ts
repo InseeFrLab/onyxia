@@ -22,7 +22,11 @@ export type GitProvider = {
 
     /** What the services get to clone and push */
     service:
-        | { type: "personal-access-token" }
+        | {
+              type: "personal-access-token";
+              /** Paired with the PAT for git over HTTPS. undefined: the user's username */
+              gitUsername?: string;
+          }
         | {
               type: "scoped-access-token";
               /** Of the tokens created at launch, service.lifetimeDays of the configuration */

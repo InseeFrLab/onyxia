@@ -221,6 +221,26 @@ describe("createUserProvider", () => {
         }
     });
 
+    it("only accepts bitbucket.org for Bitbucket", () => {
+        const create = (url: string) =>
+            createUserProvider({
+                type: "bitbucket",
+                url,
+                displayName: "",
+                gitProvidersConfig,
+                userProviders: []
+            });
+
+        expect(create("bitbucket.org/")).toMatchObject({
+            isSuccess: true,
+            userProvider: { id: "user:bitbucket.org", url: "https://bitbucket.org" }
+        });
+        expect(create("https://bitbucket.acme.org")).toStrictEqual({
+            isSuccess: false,
+            error: "invalid url"
+        });
+    });
+
     it("refuses a url already configured, by the admin or by the user", () => {
         expect(
             createUserProvider({

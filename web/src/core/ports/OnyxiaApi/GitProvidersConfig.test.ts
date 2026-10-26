@@ -30,6 +30,35 @@ describe("GIT_PROVIDERS environment configuration", () => {
         });
     });
 
+    it("accepts Bitbucket Cloud with API tokens only", () => {
+        const bitbucket = {
+            type: "bitbucket",
+            url: "https://bitbucket.org",
+            authentication: {
+                ui: { type: "personal-access-token" },
+                service: { type: "personal-access-token" }
+            }
+        };
+
+        expect(parse({ providers: [bitbucket] }).providers[0].id).toBe("bitbucket.org");
+        expect(() =>
+            parse({
+                providers: [
+                    {
+                        ...bitbucket,
+                        authentication: {
+                            ui: { type: "oauth", clientId: "x" },
+                            service: { type: "personal-access-token" }
+                        }
+                    }
+                ]
+            })
+        ).toThrow(/client secret/);
+        expect(() =>
+            parse({ providers: [{ ...bitbucket, url: "https://bitbucket.acme.org" }] })
+        ).toThrow(/Bitbucket Cloud/);
+    });
+
     it("keeps the ids of the users' providers out of the configuration", () => {
         expect(() =>
             parse({ providers: [{ ...gitLab, id: "user:gitlab.com" }] })
@@ -138,7 +167,7 @@ describe("GIT_PROVIDERS environment configuration", () => {
     });
 
     it("refuses an unknown provider type", () => {
-        expect(() => parse({ providers: [{ ...gitLab, type: "bitbucket" }] })).toThrow(
+        expect(() => parse({ providers: [{ ...gitLab, type: "gitea" }] })).toThrow(
             /not valid/
         );
     });
