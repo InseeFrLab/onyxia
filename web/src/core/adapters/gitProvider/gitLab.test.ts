@@ -122,6 +122,22 @@ describe("createGitLabProvider", () => {
         expect(body.get("client_id")).toBe("onyxia-app");
     });
 
+    it("sends the redirect URI again when refreshing", async () => {
+        const { calls } = mockFetch(() => tokenResponse("2"));
+
+        assert(gitLab_oauth_scoped.ui.type === "oauth");
+
+        await gitLab_oauth_scoped.ui.oauth.refreshTokens({
+            refreshToken: "r",
+            redirectUri
+        });
+
+        const body = new URLSearchParams(calls[0].init!.body as string);
+        expect(body.get("grant_type")).toBe("refresh_token");
+        expect(body.get("refresh_token")).toBe("r");
+        expect(body.get("redirect_uri")).toBe(redirectUri);
+    });
+
     it("throws GitProviderUnauthorizedError when the refresh token is rejected", async () => {
         mockFetch(
             () =>
@@ -131,7 +147,7 @@ describe("createGitLabProvider", () => {
         assert(gitLab_oauth_scoped.ui.type === "oauth");
 
         await expect(
-            gitLab_oauth_scoped.ui.oauth.refreshTokens({ refreshToken: "r" })
+            gitLab_oauth_scoped.ui.oauth.refreshTokens({ refreshToken: "r", redirectUri })
         ).rejects.toBeInstanceOf(GitProviderUnauthorizedError);
     });
 

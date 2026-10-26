@@ -74,7 +74,11 @@ export namespace GitProvider {
             redirectUri: string;
         }) => Promise<Tokens>;
         /** Throws GitProviderUnauthorizedError when the refresh token is rejected */
-        refreshTokens: (params: { refreshToken: string }) => Promise<Tokens>;
+        /** redirectUri: the one of the authorization, GitLab's PKCE refresh sends it again */
+        refreshTokens: (params: {
+            refreshToken: string;
+            redirectUri: string;
+        }) => Promise<Tokens>;
         /** Invalidates the grant on the provider, on sign out. undefined: not supported (Forgejo) */
         revokeTokens: ((params: { refreshToken: string }) => Promise<void>) | undefined;
         /** Where the user revokes the grant themselves when revokeTokens is undefined */

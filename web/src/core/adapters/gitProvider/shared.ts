@@ -161,13 +161,14 @@ export function createUiOAuth(params: {
                     code_verifier: codeVerifier
                 }
             }),
-        refreshTokens: ({ refreshToken }) =>
+        refreshTokens: ({ refreshToken, redirectUri }) =>
             requestOAuthTokens({
                 tokenUrl,
                 body: {
                     grant_type: "refresh_token",
                     client_id: clientId,
-                    refresh_token: refreshToken
+                    refresh_token: refreshToken,
+                    redirect_uri: redirectUri
                 }
             }),
         revokeTokens,
