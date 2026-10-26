@@ -15,6 +15,15 @@ const BROADCAST_CHANNEL_NAME = "onyxia:git-oauth-callback";
 
 const POPUP_TIMEOUT_MS = 5 * 60_000;
 
+/**
+ * A provider page sending `Cross-Origin-Opener-Policy: same-origin` (gitlab.com's
+ * Cloudflare challenge for instance) severs the popup from Onyxia: popup.closed turns
+ * true while the user is still on it. It happens as soon as the popup navigates there,
+ * a user doesn't close the popup that fast: a "closed" popup within this delay is
+ * assumed severed, the BroadcastChannel and the timeout are then the only way out.
+ */
+const COOP_SEVERANCE_DELAY_MS = 5_000;
+
 export function createOAuthAuthorization(params: {
     redirectUri: string;
 }): OAuthAuthorization {
@@ -123,15 +132,19 @@ function waitForCallbackUrl(params: {
             resolve(url);
         };
 
-        // TODO(phase 1): A provider sending `Cross-Origin-Opener-Policy: same-origin`
-        // makes popup.closed true as soon as the popup navigates to it. If one does, rely
-        // on the timeout and the BroadcastChannel only.
+        const startTime = Date.now();
+
         const intervalId = setInterval(() => {
             if (!popup.closed) {
                 return;
             }
 
             clearInterval(intervalId);
+
+            // NOTE: Severed by COOP, see COOP_SEVERANCE_DELAY_MS.
+            if (Date.now() - startTime < COOP_SEVERANCE_DELAY_MS) {
+                return;
+            }
 
             // NOTE: Let a chance to the message posted right before close to arrive.
             setTimeout(() => {

@@ -288,13 +288,14 @@ export const thunks = {
             );
         },
     /**
-     * OAuth providers only. Revokes the grant when the provider supports it, otherwise
-     * the user has to revoke it on the provider (authorizedApplicationsUrl). The
-     * favorite provider doesn't change.
+     * OAuth providers only. Revokes the grant when the provider supports it. When it
+     * doesn't, or the revocation fails, the user has to revoke it on the provider
+     * (authorizedApplicationsUrl): isGrantRevoked is false. Signed out locally anyway.
+     * The favorite provider doesn't change.
      */
     signOut:
         (params: { providerId: string }) =>
-        async (...args): Promise<void> => {
+        async (...args): Promise<{ isGrantRevoked: boolean }> => {
             const { providerId } = params;
 
             const [dispatch, , { gitSessionStore }] = args;
@@ -318,15 +319,16 @@ export const thunks = {
             const { revokeTokens } = gitProvider.ui.oauth;
 
             if (revokeTokens === undefined || session === undefined) {
-                return;
+                return { isGrantRevoked: false };
             }
 
             try {
                 await revokeTokens({ refreshToken: session.refreshToken });
             } catch {
-                // NOTE: Signed out locally anyway, the grant can still be revoked on
-                // the provider.
+                return { isGrantRevoked: false };
             }
+
+            return { isGrantRevoked: true };
         },
     /**
      * PAT providers only. The token is checked (getUser) before being saved: when the
@@ -1204,7 +1206,7 @@ const privateThunks = {
         async (...args): Promise<string> => {
             const { providerId, doForceRefresh } = params;
 
-            const [dispatch, , { gitSessionStore }] = args;
+            const [dispatch, , { gitSessionStore, oauthAuthorization }] = args;
 
             if (!doForceRefresh) {
                 const cached = globalContext.oauthAccessTokenByProviderId.get(providerId);
@@ -1244,7 +1246,8 @@ const privateThunks = {
                     }
 
                     const tokens = await oauth.refreshTokens({
-                        refreshToken: session.refreshToken
+                        refreshToken: session.refreshToken,
+                        redirectUri: oauthAuthorization.redirectUri
                     });
 
                     if (tokens.refreshToken !== undefined) {

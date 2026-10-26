@@ -58,6 +58,7 @@ function createFakeOAuthProvider(params: { id: string; withRevoke: boolean }) {
 
     const behavior = {
         isRefreshRejected: false,
+        isRevocationFailing: false,
         rejectedAccessTokens: new Set<string>()
     };
 
@@ -90,7 +91,12 @@ function createFakeOAuthProvider(params: { id: string; withRevoke: boolean }) {
                     };
                 },
                 revokeTokens: params.withRevoke
-                    ? async ({ refreshToken }) => calls.revoke(refreshToken)
+                    ? async ({ refreshToken }) => {
+                          calls.revoke(refreshToken);
+                          if (behavior.isRevocationFailing) {
+                              throw new Error("Network error");
+                          }
+                      }
                     : undefined,
                 authorizedApplicationsUrl: `https://${params.id}/applications`
             }
@@ -548,6 +554,24 @@ describe("gitProvidersManagement", () => {
 
         expect(getCard("forgejo").authorizedApplications).toStrictEqual({
             url: "https://forgejo/applications",
+            reason: "signed out without revocation"
+        });
+    });
+
+    it("tells where to revoke when the revocation failed", async () => {
+        const { core, gitLab, getConnection, getCard } = await setup({
+            sessions: { gitlab: "refresh-0" }
+        });
+
+        await core.functions.gitProvidersManagement.load();
+
+        gitLab.behavior.isRevocationFailing = true;
+
+        await core.functions.gitAccountUiController.signOut({ providerId: "gitlab" });
+
+        expect(getConnection("gitlab")).toStrictEqual({ status: "not connected" });
+        expect(getCard("gitlab").authorizedApplications).toStrictEqual({
+            url: "https://gitlab/applications",
             reason: "signed out without revocation"
         });
     });

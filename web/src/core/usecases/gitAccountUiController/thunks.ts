@@ -203,26 +203,23 @@ export const thunks = {
         async (...args): Promise<void> => {
             const { providerId } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch] = args;
+
+            let isGrantRevoked = false;
 
             await dispatch(
                 privateThunks.runCardAction({
                     providerId,
                     pendingAction: "sign out",
-                    action: () =>
-                        dispatch(gitProvidersManagement.thunks.signOut({ providerId })),
+                    action: async () => {
+                        ({ isGrantRevoked } = await dispatch(
+                            gitProvidersManagement.thunks.signOut({ providerId })
+                        ));
+                    },
                     getCardError: () => ({ type: "sign out failed" }),
-                    // NOTE: Without revocation, the grant still exists on the provider.
-                    getIsRevocationHintShown: () => {
-                        const gitProvider = gitProvidersManagement.protectedSelectors
-                            .gitProviders(getState())
-                            .find(({ config }) => config.id === providerId)?.gitProvider;
-
-                        return (
-                            gitProvider?.ui.type === "oauth" &&
-                            gitProvider.ui.oauth.revokeTokens === undefined
-                        );
-                    }
+                    // NOTE: Not revoked (unsupported or failed), the grant still exists
+                    // on the provider.
+                    getIsRevocationHintShown: () => !isGrantRevoked
                 })
             );
         },
