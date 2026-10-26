@@ -87,6 +87,10 @@ export const translations: Translations<"es"> = {
         retry: "Reintentar"
     },
     AddGitProviderDialog: {
+        "bitbucket url hint":
+            "Solo Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center no es compatible.",
+        "bitbucket token hint":
+            "Cree un token de API con ámbitos para Bitbucket, con read:user:bitbucket, read:repository:bitbucket y write:repository:bitbucket.",
         title: "Añadir un proveedor Git",
         close: "Cerrar",
         intro: "Conecte una cuenta propia con un token de acceso personal: Onyxia lo utiliza y lo transmite a sus servicios para que puedan clonar y hacer push.",

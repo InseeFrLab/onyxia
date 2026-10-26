@@ -28,7 +28,7 @@ const zPersistedGitConfig = (() => {
             .array(
                 z.object({
                     id: z.string(),
-                    type: z.enum(["gitlab", "forgejo", "github"]),
+                    type: z.enum(["gitlab", "forgejo", "github", "bitbucket"]),
                     url: z.string(),
                     displayName: z.string()
                 })

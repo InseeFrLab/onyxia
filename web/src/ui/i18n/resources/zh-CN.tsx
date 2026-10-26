@@ -81,6 +81,10 @@ export const translations: Translations<"zh-CN"> = {
         retry: "重试"
     },
     AddGitProviderDialog: {
+        "bitbucket url hint":
+            "仅支持 Bitbucket Cloud（https://bitbucket.org），不支持 Bitbucket Data Center。",
+        "bitbucket token hint":
+            "为 Bitbucket 创建带作用域的 API 令牌，包含 read:user:bitbucket、read:repository:bitbucket 和 write:repository:bitbucket。",
         title: "添加 Git 托管平台",
         close: "关闭",
         intro: "使用个人访问令牌连接您自己的账号：Onyxia 会使用它，并将其传递给您的服务以便克隆和推送。",

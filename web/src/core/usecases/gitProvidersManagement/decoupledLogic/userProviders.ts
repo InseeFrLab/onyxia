@@ -1,5 +1,6 @@
 import {
     USER_PROVIDER_ID_PREFIX,
+    getIsBitbucketCloudUrl,
     type GitProvidersConfig
 } from "core/ports/OnyxiaApi/GitProvidersConfig";
 
@@ -38,7 +39,8 @@ export function createUserProvider(params: {
 
     const url = normalizeUserProviderUrl(params.url);
 
-    if (url === undefined) {
+    // NOTE: Bitbucket Data Center is another API.
+    if (url === undefined || (type === "bitbucket" && !getIsBitbucketCloudUrl(url))) {
         return { isSuccess: false, error: "invalid url" };
     }
 
