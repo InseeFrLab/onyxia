@@ -41,6 +41,9 @@ export const translations: Translations<"de"> = {
         "continue without saving": "Ohne Speichern fortfahren"
     },
     AccountGitTab: {
+        "no git providers":
+            "Noch kein Git-Anbieter. Fügen Sie Ihr Konto auf gitlab.com, github.com oder einer anderen Forge hinzu, um aus Ihren Diensten zu klonen und zu pushen.",
+        "add git provider": "Git-Anbieter hinzufügen",
         gitName: "Benutzername für Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -82,7 +85,44 @@ export const translations: Translations<"de"> = {
         "loading failed": "Ihre Git-Anbieter konnten nicht geladen werden.",
         retry: "Erneut versuchen"
     },
+    AddGitProviderDialog: {
+        title: "Git-Anbieter hinzufügen",
+        close: "Schließen",
+        intro: "Verbinden Sie ein eigenes Konto mit einem persönlichen Zugriffstoken: Onyxia verwendet es und gibt es an Ihre Dienste weiter, damit sie klonen und pushen können.",
+        type: "Typ",
+        "forgejo option": "Forgejo (oder Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "Die Instanz muss Anfragen von Onyxia zulassen ([cors] ENABLED = true in ihrer Konfiguration).",
+        "display name": "Name (optional, standardmäßig der Host der URL)",
+        "personal access token": "Persönliches Zugriffstoken",
+        "personal access token hint":
+            "Es benötigt Lesezugriff auf Ihr Profil sowie Lese- und Schreibzugriff auf Ihre Repositories.",
+        "create a token": "Token bei diesem Anbieter erstellen",
+        "error title": "Der Anbieter konnte nicht hinzugefügt werden",
+        "invalid url": "Keine gültige URL, z. B. https://gitlab.com",
+        "already configured": "Dieser Anbieter ist bereits in Ihrer Liste.",
+        "personal access token rejected":
+            "Der Anbieter hat dieses Token abgelehnt, prüfen Sie es und seine Berechtigungen.",
+        "provider unreachable":
+            "Der Anbieter ist von Onyxia aus nicht erreichbar. Prüfen Sie URL und Typ; eine Forgejo-Instanz muss CORS erlauben.",
+        "save failed":
+            "Das Token wurde akzeptiert, konnte aber nicht gespeichert werden, versuchen Sie es erneut.",
+        cancel: "Abbrechen",
+        add: "Hinzufügen",
+        checking: "Wird geprüft…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `${providerName} entfernen?`,
+        "dialog body": ({ providerName }) =>
+            `Der Anbieter und Ihr Token werden aus Onyxia entfernt. Das Token selbst existiert weiterhin auf ${providerName}: widerrufen Sie es dort, wenn Sie es nicht mehr benötigen.`,
+        cancel: "Abbrechen",
+        "remove provider": "Entfernen"
+    },
     GitProviderCard: {
+        "added by you": "Von Ihnen hinzugefügt",
+        "remove provider": "Entfernen",
+        "remove provider failed": "Der Anbieter konnte nicht entfernt werden.",
         "connected as": ({ name, username }) => `Verbunden als ${name} (@${username})`,
         "not connected": "Nicht verbunden.",
         "git identity": ({ name, email }) => `Git-Identität: ${name} <${email}>`,

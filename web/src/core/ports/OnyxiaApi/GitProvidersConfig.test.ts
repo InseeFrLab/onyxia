@@ -14,11 +14,26 @@ const gitLab = {
 };
 
 describe("GIT_PROVIDERS environment configuration", () => {
-    it("disables the integration when the environment is empty", () => {
+    it("only lets the users add their own providers when the environment is empty", () => {
         expect(parseGitProvidersConfigFromEnvValue({ envValue: "" })).toStrictEqual({
             description: undefined,
-            providers: []
+            providers: [],
+            disallowUserToAddProviders: false
         });
+    });
+
+    it("disables the integration without providers when the users can't add theirs", () => {
+        expect(parse({ providers: [], disallowUserToAddProviders: true })).toStrictEqual({
+            description: undefined,
+            providers: [],
+            disallowUserToAddProviders: true
+        });
+    });
+
+    it("keeps the ids of the users' providers out of the configuration", () => {
+        expect(() =>
+            parse({ providers: [{ ...gitLab, id: "user:gitlab.com" }] })
+        ).toThrow(/user:/);
     });
 
     it("accepts JSON5 and fills in the defaults", () => {
@@ -51,7 +66,8 @@ describe("GIT_PROVIDERS environment configuration", () => {
                         service: { type: "scoped-access-token", lifetimeDays: 30 }
                     }
                 }
-            ]
+            ],
+            disallowUserToAddProviders: false
         });
     });
 

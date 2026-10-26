@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingField, type Props as SettingFieldProps } from "ui/shared/SettingField";
 import { useCoreState, getCoreSync, getCore } from "core";
@@ -15,6 +15,9 @@ import memoize from "memoizee";
 import { declareComponentKeys } from "i18nifty";
 import { AiAlert } from "../AccountAiTab/shared/AiAlert";
 import { GitProviderCard } from "./GitProviderCard";
+import { AddGitProviderDialog } from "./AddGitProviderDialog";
+import { ConfirmGitProviderRemovalDialog } from "./ConfirmGitProviderRemovalDialog";
+import { AddCustomProviderButton } from "../AccountAiTab/AddCustomProviderButton";
 
 export type Props = {
     className?: string;
@@ -26,7 +29,7 @@ export const AccountGitTab = withLoader({
             functions: { gitAccountUiController }
         } = await getCore();
 
-        // NOTE: Does nothing when GIT_PROVIDERS is empty.
+        // NOTE: Does nothing when the integration is disabled.
         await gitAccountUiController.load();
     },
     Component
@@ -58,9 +61,14 @@ function GitProviders() {
     } = getCoreSync();
 
     const view = useCoreState("gitAccountUiController", "main");
+    const addProviderDialog = useCoreState("gitAccountUiController", "addProviderDialog");
 
     const { t } = useTranslation({ AccountGitTab });
     const { classes } = useStyles();
+
+    const [providerIdToRemove, setProviderIdToRemove] = useState<string | undefined>(
+        undefined
+    );
 
     if (!view.isReady) {
         switch (view.stateDescription) {
@@ -101,6 +109,11 @@ function GitProviders() {
                     </LocalizedMarkdown>
                 )}
             </div>
+            {view.providerCards.length === 0 && (
+                <Text typo="body 1" color="secondary">
+                    {t("no git providers")}
+                </Text>
+            )}
             <div className={classes.providerGrid}>
                 {view.providerCards.map(card => (
                     <GitProviderCard
@@ -133,6 +146,7 @@ function GitProviders() {
                                 providerId: card.id
                             })
                         }
+                        onRemoveProvider={() => setProviderIdToRemove(card.id)}
                         onSetFavorite={() =>
                             gitAccountUiController.setFavoriteProvider({
                                 providerId: card.id
@@ -140,7 +154,37 @@ function GitProviders() {
                         }
                     />
                 ))}
+                {gitAccountUiController.canUserAddProviders() && (
+                    <AddCustomProviderButton
+                        label={t("add git provider")}
+                        onClick={gitAccountUiController.openAddProviderDialog}
+                    />
+                )}
             </div>
+            {addProviderDialog.isOpen && (
+                <AddGitProviderDialog
+                    view={addProviderDialog}
+                    onClose={gitAccountUiController.closeAddProviderDialog}
+                    onSubmit={gitAccountUiController.addProvider}
+                    getPersonalAccessTokenCreationUrl={
+                        gitAccountUiController.getPersonalAccessTokenCreationUrl
+                    }
+                />
+            )}
+            <ConfirmGitProviderRemovalDialog
+                providerName={
+                    view.providerCards.find(({ id }) => id === providerIdToRemove)
+                        ?.displayName
+                }
+                onClose={({ doProceed }) => {
+                    if (doProceed && providerIdToRemove !== undefined) {
+                        gitAccountUiController.removeProvider({
+                            providerId: providerIdToRemove
+                        });
+                    }
+                    setProviderIdToRemove(undefined);
+                }}
+            />
         </div>
     );
 }
@@ -149,7 +193,7 @@ const editableFieldKeys = ["gitName", "gitEmail", "githubPersonalAccessToken"] a
 
 type EditableFieldKey = (typeof editableFieldKeys)[number];
 
-/** Without GIT_PROVIDERS: the tab as it has always been */
+/** When the integration is disabled: the tab as it has always been */
 function LegacyGitFields() {
     const { t } = useTranslation({ AccountGitTab });
 
@@ -245,6 +289,8 @@ const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
     | "git providers title"
+    | "no git providers"
+    | "add git provider"
     | "unreadable config title"
     | "unreadable config"
     | "reset config"

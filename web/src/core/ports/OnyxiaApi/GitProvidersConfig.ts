@@ -6,6 +6,7 @@ import JSON5 from "json5";
 type GIT_PROVIDERS_EnvValue_ExpectedShape = {
     description?: LocalizedString;
     providers: GIT_PROVIDERS_EnvValue_ExpectedShape.Provider[];
+    disallowUserToAddProviders?: boolean;
 };
 
 namespace GIT_PROVIDERS_EnvValue_ExpectedShape {
@@ -71,7 +72,8 @@ const zGIT_PROVIDERS_EnvValue_ExpectedShape = (() => {
 
     const zTargetType = z.object({
         description: zLocalizedString.optional(),
-        providers: z.array(zProvider)
+        providers: z.array(zProvider),
+        disallowUserToAddProviders: z.boolean().optional()
     });
 
     type InferredType = z.infer<typeof zTargetType>;
@@ -81,11 +83,16 @@ const zGIT_PROVIDERS_EnvValue_ExpectedShape = (() => {
     return id<z.ZodType<TargetType>>(zTargetType);
 })();
 
-/** The `GIT_PROVIDERS` env. No provider: the integration is disabled. */
+/**
+ * The `GIT_PROVIDERS` env. The integration is disabled when there is no provider and the
+ * users can't add their own.
+ */
 export type GitProvidersConfig = {
     /** Markdown, written by the admin, introducing Git in the account tab */
     description: LocalizedString | undefined;
     providers: GitProvidersConfig.Provider[];
+    /** The users can't add providers of their own (gitlab.com, github.com...) in Account > Git */
+    disallowUserToAddProviders: boolean;
 };
 
 export namespace GitProvidersConfig {
@@ -135,13 +142,20 @@ export namespace GitProvidersConfig {
 
 const DEFAULT_SCOPED_ACCESS_TOKEN_LIFETIME_DAYS = 30;
 
+/** The ids of the providers the users add themselves in Account > Git start with it */
+export const USER_PROVIDER_ID_PREFIX = "user:";
+
 export function parseGitProvidersConfigFromEnvValue(params: {
     envValue: string;
 }): GitProvidersConfig {
     const { envValue } = params;
 
     if (envValue.trim() === "") {
-        return { description: undefined, providers: [] };
+        return {
+            description: undefined,
+            providers: [],
+            disallowUserToAddProviders: false
+        };
     }
 
     let parsedValue: unknown;
@@ -222,6 +236,18 @@ export function parseGitProvidersConfigFromEnvValue(params: {
     });
 
     {
+        const provider_reservedId = providers.find(({ id }) =>
+            id.startsWith(USER_PROVIDER_ID_PREFIX)
+        );
+
+        if (provider_reservedId !== undefined) {
+            throw new Error(
+                `GIT_PROVIDERS env: the id "${provider_reservedId.id}" starts with "${USER_PROVIDER_ID_PREFIX}", reserved for the providers the users add themselves`
+            );
+        }
+    }
+
+    {
         const ids = providers.map(({ id }) => id);
         const duplicateId = ids.find((id, index) => ids.indexOf(id) !== index);
 
@@ -234,7 +260,8 @@ export function parseGitProvidersConfigFromEnvValue(params: {
 
     return {
         description: config.description,
-        providers
+        providers,
+        disallowUserToAddProviders: config.disallowUserToAddProviders ?? false
     };
 }
 

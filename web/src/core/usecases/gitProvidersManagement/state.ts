@@ -24,7 +24,7 @@ export declare namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        /** Keyed by provider id, every configured provider has an entry */
+        /** Keyed by provider id, of GIT_PROVIDERS or added by the user */
         connectionByProviderId: Record<string, Connection>;
     };
 }
@@ -71,6 +71,12 @@ export const { reducer, actions } = createUsecaseActions({
             assert(state.stateDescription === "ready");
 
             state.connectionByProviderId[providerId] = connection;
+        },
+        /** A provider the user had added */
+        providerRemoved: (state, { payload }: { payload: { providerId: string } }) => {
+            assert(state.stateDescription === "ready");
+
+            delete state.connectionByProviderId[payload.providerId];
         }
     }
 });

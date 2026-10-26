@@ -16,6 +16,7 @@ const card_gitLab: AccountView.ProviderCard = {
             "Use your SSPCloud GitLab account to clone and push from your services.",
         links: [{ label: "Documentation", url: "https://docs.sspcloud.fr" }]
     },
+    isAddedByUser: false,
     status: "connected",
     message: { type: "connected as", user },
     gitIdentity: { name: user.name, email: user.email, isUsedAtLaunch: true },
@@ -23,7 +24,8 @@ const card_gitLab: AccountView.ProviderCard = {
     error: undefined,
     authorizedApplications: undefined,
     pendingAction: undefined,
-    authentication: { type: "oauth", signIn: undefined, isDisabled: false }
+    authentication: { type: "oauth", signIn: undefined, isDisabled: false },
+    removeProvider: undefined
 };
 
 const card_gitLab_notConnected: AccountView.ProviderCard = {
@@ -54,6 +56,7 @@ const card_gitHub: AccountView.ProviderCard = {
     url: "https://github.com",
     logoUrl: undefined,
     documentation: undefined,
+    isAddedByUser: false,
     status: "setup required",
     message: { type: "not connected" },
     gitIdentity: undefined,
@@ -70,7 +73,8 @@ const card_gitHub: AccountView.ProviderCard = {
         isCancelButtonShown: false,
         isRemoveButtonShown: false,
         isDisabled: false
-    }
+    },
+    removeProvider: undefined
 };
 
 const card_gitHub_connected: AccountView.ProviderCard = {
@@ -112,6 +116,7 @@ const meta = {
         onStartReplacingPersonalAccessToken: action("start replacing token"),
         onCancelReplacingPersonalAccessToken: action("cancel replacing token"),
         onRemovePersonalAccessToken: action("remove token"),
+        onRemoveProvider: action("remove provider"),
         onSetFavorite: action("set favorite")
     }
 } satisfies Meta<typeof GitProviderCard>;
@@ -247,6 +252,31 @@ export const PersonalAccessTokenNoLongerAccepted: Story = {
                 isRemoveButtonShown: true,
                 isDisabled: false
             }
+        }
+    }
+};
+
+export const AddedByUser: Story = {
+    args: {
+        card: {
+            ...card_gitHub_connected,
+            id: "user:gitlab.com",
+            displayName: "gitlab.com",
+            type: "gitlab",
+            url: "https://gitlab.com",
+            isAddedByUser: true,
+            authentication: {
+                ...card_gitHub_connected.authentication,
+                type: "personal-access-token",
+                personalAccessTokenCreationUrl:
+                    "https://gitlab.com/-/user_settings/personal_access_tokens",
+                isFormShown: false,
+                isReplaceButtonShown: true,
+                isCancelButtonShown: false,
+                isRemoveButtonShown: false,
+                isDisabled: false
+            },
+            removeProvider: { isDisabled: false }
         }
     }
 };

@@ -6,7 +6,13 @@ import type { GitUser } from "core/ports/GitProvider";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { getRootContext } from "core/rootContext";
 import { assert } from "tsafe/assert";
-import { name, initialCardUiState, type CardError, type PendingAction } from "./state";
+import {
+    name,
+    initialCardUiState,
+    type AddProviderDialogState,
+    type CardError,
+    type PendingAction
+} from "./state";
 
 /** What the Git tab of the account page displays. */
 export type AccountView = AccountView.NotReady | AccountView.Ready;
@@ -33,6 +39,8 @@ export declare namespace AccountView {
         /** undefined: the default logo of the type */
         logoUrl: GitProvidersConfig.LogoUrl | undefined;
         documentation: GitProvidersConfig.Documentation | undefined;
+        /** Added by the user, not by the admin: it can be removed */
+        isAddedByUser: boolean;
         /** "connecting": a spinner in place of the chip */
         status: "connected" | "setup required" | "connection error" | "connecting";
         /** undefined while connecting */
@@ -72,9 +80,12 @@ export declare namespace AccountView {
                   isFormShown: boolean;
                   isReplaceButtonShown: boolean;
                   isCancelButtonShown: boolean;
+                  /** Removes the token. Never for a provider added by the user, removed as a whole */
                   isRemoveButtonShown: boolean;
                   isDisabled: boolean;
               };
+        /** Removes the provider the user added, with its token. undefined: added by the admin */
+        removeProvider: { isDisabled: boolean } | undefined;
     };
 
     export namespace ProviderCard {
@@ -98,11 +109,13 @@ const main = createSelector(
     gitProvidersManagement.selectors.errorReason,
     gitProvidersManagement.selectors.connections,
     gitProvidersManagement.selectors.favoriteProviderId,
+    gitProvidersManagement.protectedSelectors.gitProviders,
     cardUiStateByProviderId,
     (
         errorReason,
         connections,
         favoriteProviderId,
+        gitProviders,
         cardUiStateByProviderId
     ): AccountView => {
         if (connections === undefined) {
@@ -112,16 +125,15 @@ const main = createSelector(
             };
         }
 
-        const { gitProviders, gitProvidersConfig } = getRootContext();
+        const { gitProvidersConfig } = getRootContext();
 
         const providerCards = connections.map(
             ({ providerId, connection }): AccountView.ProviderCard => {
-                const gitProvider = gitProviders.find(({ id }) => id === providerId);
-                const config = gitProvidersConfig.providers.find(
-                    ({ id }) => id === providerId
-                );
+                const entry = gitProviders.find(({ config }) => config.id === providerId);
 
-                assert(gitProvider !== undefined && config !== undefined);
+                assert(entry !== undefined);
+
+                const { gitProvider, config, isAddedByUser } = entry;
 
                 const cardUiState =
                     cardUiStateByProviderId[providerId] ?? initialCardUiState;
@@ -139,6 +151,7 @@ const main = createSelector(
                     url: gitProvider.url,
                     logoUrl: config.logoUrl,
                     documentation: config.documentation,
+                    isAddedByUser,
                     status: (() => {
                         switch (connection.status) {
                             case "connected":
@@ -228,13 +241,15 @@ const main = createSelector(
                                     isCancelButtonShown: isReplacingPersonalAccessToken,
                                     // A saved token, accepted or not
                                     isRemoveButtonShown:
+                                        !isAddedByUser &&
                                         connection.status !== "not connected" &&
                                         !isReplacingPersonalAccessToken,
                                     isDisabled
                                 };
                             }
                         }
-                    })()
+                    })(),
+                    removeProvider: isAddedByUser ? { isDisabled } : undefined
                 };
             }
         );
@@ -247,4 +262,8 @@ const main = createSelector(
     }
 );
 
-export const selectors = { main };
+/** The dialog where the user adds a provider of their own */
+const addProviderDialog = (rootState: RootState): AddProviderDialogState =>
+    rootState[name].addProviderDialog;
+
+export const selectors = { main, addProviderDialog };

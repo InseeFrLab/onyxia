@@ -42,6 +42,9 @@ export const translations: Translations<"es"> = {
         "continue without saving": "Continuar sin guardar"
     },
     AccountGitTab: {
+        "no git providers":
+            "Todavía no hay ningún proveedor Git. Añada su cuenta de gitlab.com, github.com u otra forja para clonar y hacer push desde sus servicios.",
+        "add git provider": "Añadir un proveedor Git",
         gitName: "Nombre de usuario para Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -83,7 +86,44 @@ export const translations: Translations<"es"> = {
         "loading failed": "No se pudieron cargar sus proveedores Git.",
         retry: "Reintentar"
     },
+    AddGitProviderDialog: {
+        title: "Añadir un proveedor Git",
+        close: "Cerrar",
+        intro: "Conecte una cuenta propia con un token de acceso personal: Onyxia lo utiliza y lo transmite a sus servicios para que puedan clonar y hacer push.",
+        type: "Tipo",
+        "forgejo option": "Forgejo (o Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "La instancia debe aceptar las peticiones de Onyxia ([cors] ENABLED = true en su configuración).",
+        "display name": "Nombre (opcional, por defecto el host de la URL)",
+        "personal access token": "Token de acceso personal",
+        "personal access token hint":
+            "Necesita acceso de lectura a su perfil y de lectura y escritura a sus repositorios.",
+        "create a token": "Crear un token en este proveedor",
+        "error title": "No se pudo añadir el proveedor",
+        "invalid url": "URL no válida, por ejemplo https://gitlab.com",
+        "already configured": "Este proveedor ya está en su lista.",
+        "personal access token rejected":
+            "El proveedor rechazó este token, compruébelo junto con sus permisos.",
+        "provider unreachable":
+            "No se pudo contactar con el proveedor desde Onyxia. Compruebe la URL y el tipo; una instancia Forgejo debe permitir CORS.",
+        "save failed":
+            "El token fue aceptado pero no se pudo guardar, inténtelo de nuevo.",
+        cancel: "Cancelar",
+        add: "Añadir",
+        checking: "Comprobando…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `¿Eliminar ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `El proveedor y su token se eliminan de Onyxia. El token sigue existiendo en ${providerName}: revóquelo allí si ya no lo necesita.`,
+        cancel: "Cancelar",
+        "remove provider": "Eliminar"
+    },
     GitProviderCard: {
+        "added by you": "Añadido por usted",
+        "remove provider": "Eliminar",
+        "remove provider failed": "No se pudo eliminar el proveedor.",
         "connected as": ({ name, username }) => `Conectado como ${name} (@${username})`,
         "not connected": "No conectado.",
         "git identity": ({ name, email }) => `Identidad Git: ${name} <${email}>`,

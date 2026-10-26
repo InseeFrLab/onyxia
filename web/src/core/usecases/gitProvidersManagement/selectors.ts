@@ -8,6 +8,9 @@ import {
     parseGitConfigStr
 } from "./decoupledLogic/persistedGitConfig";
 import { getFavoriteProviderId } from "./decoupledLogic/favoriteProvider";
+import { getUserProviderConfig } from "./decoupledLogic/userProviders";
+import type { GitProvider } from "core/ports/GitProvider";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -35,15 +38,58 @@ const persistedGitConfig = createSelector(
             : parseGitConfigStr({ gitConfigStr })) ?? createEmptyPersistedGitConfig()
 );
 
-/** undefined until the use case has been loaded. In the order of the configuration. */
+export type GitProviderEntry = {
+    config: GitProvidersConfig.Provider;
+    gitProvider: GitProvider;
+    /** Added in Account > Git, not in GIT_PROVIDERS */
+    isAddedByUser: boolean;
+};
+
+/**
+ * The providers of GIT_PROVIDERS, then the ones the user added (ignored when the admin no
+ * longer lets the users add theirs). Empty while the user isn't logged in.
+ */
+const gitProviders = createSelector(
+    createSelector(persistedGitConfig, ({ userProviders }) => userProviders),
+    (userProviders): GitProviderEntry[] => {
+        const { oidc, gitProvidersConfig, createGitProvider } = getRootContext();
+
+        if (!oidc.isUserLoggedIn) {
+            return [];
+        }
+
+        return [
+            ...gitProvidersConfig.providers.map(config => ({
+                config,
+                isAddedByUser: false
+            })),
+            ...(gitProvidersConfig.disallowUserToAddProviders ? [] : userProviders).map(
+                userProvider => ({
+                    config: getUserProviderConfig({ userProvider }),
+                    isAddedByUser: true
+                })
+            )
+        ].map(({ config, isAddedByUser }) => ({
+            config,
+            gitProvider: createGitProvider({ config }),
+            isAddedByUser
+        }));
+    }
+);
+
+/** undefined until the use case has been loaded. In the order of gitProviders. */
 const connections = createSelector(
     state,
-    (state): { providerId: string; connection: Connection }[] | undefined => {
+    gitProviders,
+    (
+        state,
+        gitProviders
+    ): { providerId: string; connection: Connection }[] | undefined => {
         if (state.stateDescription !== "ready") {
             return undefined;
         }
 
-        return getRootContext().gitProviders.map(gitProvider => ({
+        return gitProviders.map(({ gitProvider }) => ({
             providerId: gitProvider.id,
             connection: state.connectionByProviderId[gitProvider.id] ?? {
                 status: "not connected"
@@ -76,5 +122,6 @@ export const selectors = {
 };
 
 export const protectedSelectors = {
-    persistedGitConfig
+    persistedGitConfig,
+    gitProviders
 };

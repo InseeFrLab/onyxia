@@ -6,6 +6,8 @@ import {
     serializeGitConfig
 } from "./persistedGitConfig";
 import { getFavoriteProviderId } from "./favoriteProvider";
+import { createUserProvider } from "./userProviders";
+import { assert } from "tsafe/assert";
 import {
     collectServiceCredentialsMarkers,
     createServiceCredentialsMarker,
@@ -29,16 +31,48 @@ const createProvider = (params: {
     }
 });
 
+const createGitProvidersConfig = (params: {
+    providers: GitProvidersConfig.Provider[];
+    disallowUserToAddProviders?: boolean;
+}): GitProvidersConfig => ({
+    description: undefined,
+    providers: params.providers,
+    disallowUserToAddProviders: params.disallowUserToAddProviders ?? false
+});
+
 describe("persistedGitConfig", () => {
     it("round trips", () => {
         const gitConfig = {
             personalAccessTokenByProviderId: { "github.com": "ghp_x" },
-            favoriteProviderId: null
+            favoriteProviderId: null,
+            userProviders: [
+                {
+                    id: "user:gitlab.com",
+                    type: "gitlab" as const,
+                    url: "https://gitlab.com",
+                    displayName: "gitlab.com"
+                }
+            ]
         };
 
         expect(
             parseGitConfigStr({ gitConfigStr: serializeGitConfig({ gitConfig }) })
         ).toStrictEqual(gitConfig);
+    });
+
+    it("reads back what the previous versions saved, without user providers", () => {
+        expect(
+            parseGitConfigStr({
+                gitConfigStr: JSON.stringify({
+                    personalAccessTokenByProviderId: {},
+                    favoriteProviderId: "gh"
+                })
+            })
+        ).toStrictEqual({
+            personalAccessTokenByProviderId: {},
+            favoriteProviderId: "gh",
+            userProviders: []
+        });
     });
 
     it("can't read back something else", () => {
@@ -49,51 +83,171 @@ describe("persistedGitConfig", () => {
     it("migrates the former GitHub token to the github.com provider", () => {
         expect(
             createMigratedPersistedGitConfig({
-                providers: [
-                    createProvider({
-                        id: "gitlab",
-                        type: "gitlab",
-                        url: "https://git.example.com"
-                    }),
-                    createProvider({
-                        id: "gh",
-                        type: "github",
-                        url: "https://github.com"
-                    })
-                ],
+                gitProvidersConfig: createGitProvidersConfig({
+                    providers: [
+                        createProvider({
+                            id: "gitlab",
+                            type: "gitlab",
+                            url: "https://git.example.com"
+                        }),
+                        createProvider({
+                            id: "gh",
+                            type: "github",
+                            url: "https://github.com"
+                        })
+                    ]
+                }),
                 githubPersonalAccessToken: " ghp_x "
             })
         ).toStrictEqual({
             personalAccessTokenByProviderId: { gh: "ghp_x" },
-            favoriteProviderId: null
+            favoriteProviderId: null,
+            userProviders: []
         });
     });
 
-    it("doesn't migrate without github.com or without a token", () => {
+    it("adds github.com on behalf of the user when it isn't configured", () => {
         expect(
             createMigratedPersistedGitConfig({
-                providers: [
-                    createProvider({
-                        id: "ghes",
-                        type: "github",
-                        url: "https://github.acme.org"
-                    })
-                ],
+                gitProvidersConfig: createGitProvidersConfig({ providers: [] }),
+                githubPersonalAccessToken: "ghp_x"
+            })
+        ).toStrictEqual({
+            personalAccessTokenByProviderId: { "user:github.com": "ghp_x" },
+            favoriteProviderId: null,
+            userProviders: [
+                {
+                    id: "user:github.com",
+                    type: "github",
+                    url: "https://github.com",
+                    displayName: "github.com"
+                }
+            ]
+        });
+    });
+
+    it("doesn't migrate when the user can't add github.com, or without a token", () => {
+        expect(
+            createMigratedPersistedGitConfig({
+                gitProvidersConfig: createGitProvidersConfig({
+                    providers: [
+                        createProvider({
+                            id: "ghes",
+                            type: "github",
+                            url: "https://github.acme.org"
+                        })
+                    ],
+                    disallowUserToAddProviders: true
+                }),
                 githubPersonalAccessToken: "ghp_x"
             })
         ).toBe(undefined);
         expect(
             createMigratedPersistedGitConfig({
-                providers: [
-                    createProvider({
-                        id: "gh",
-                        type: "github",
-                        url: "https://github.com"
-                    })
-                ],
+                gitProvidersConfig: createGitProvidersConfig({
+                    providers: [
+                        createProvider({
+                            id: "gh",
+                            type: "github",
+                            url: "https://github.com"
+                        })
+                    ]
+                }),
                 githubPersonalAccessToken: ""
             })
         ).toBe(undefined);
+    });
+});
+
+describe("createUserProvider", () => {
+    const gitProvidersConfig = createGitProvidersConfig({
+        providers: [
+            createProvider({ id: "lab", type: "gitlab", url: "https://git.example.com" })
+        ]
+    });
+
+    it("normalizes the url and defaults the name to the host", () => {
+        expect(
+            createUserProvider({
+                type: "gitlab",
+                url: " GitLab.com/ ",
+                displayName: " ",
+                gitProvidersConfig,
+                userProviders: []
+            })
+        ).toStrictEqual({
+            isSuccess: true,
+            userProvider: {
+                id: "user:gitlab.com",
+                type: "gitlab",
+                url: "https://gitlab.com",
+                displayName: "gitlab.com"
+            }
+        });
+    });
+
+    it("keeps a port and a path", () => {
+        const result = createUserProvider({
+            type: "forgejo",
+            url: "http://localhost:3000/forgejo/",
+            displayName: "Mine",
+            gitProvidersConfig,
+            userProviders: []
+        });
+
+        assert(result.isSuccess);
+
+        expect(result.userProvider.id).toBe("user:localhost:3000/forgejo");
+        expect(result.userProvider.url).toBe("http://localhost:3000/forgejo");
+        expect(result.userProvider.displayName).toBe("Mine");
+    });
+
+    it("refuses what isn't an http(s) url", () => {
+        for (const url of [
+            "",
+            "ssh://git@gitlab.com",
+            "https://user:pw@gitlab.com",
+            "gitlab"
+        ]) {
+            expect(
+                createUserProvider({
+                    type: "gitlab",
+                    url,
+                    displayName: "",
+                    gitProvidersConfig,
+                    userProviders: []
+                })
+            ).toStrictEqual({ isSuccess: false, error: "invalid url" });
+        }
+    });
+
+    it("refuses a url already configured, by the admin or by the user", () => {
+        expect(
+            createUserProvider({
+                type: "gitlab",
+                url: "https://git.example.com/",
+                displayName: "",
+                gitProvidersConfig,
+                userProviders: []
+            })
+        ).toStrictEqual({ isSuccess: false, error: "already configured" });
+
+        expect(
+            createUserProvider({
+                type: "github",
+                url: "github.com",
+                displayName: "",
+                gitProvidersConfig,
+                userProviders: [
+                    {
+                        id: "user:github.com",
+                        type: "github",
+                        url: "https://github.com",
+                        displayName: "github.com"
+                    }
+                ]
+            })
+        ).toStrictEqual({ isSuccess: false, error: "already configured" });
     });
 });
 

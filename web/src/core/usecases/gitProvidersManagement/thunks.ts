@@ -11,6 +11,7 @@ import {
     type GitUser
 } from "core/ports/GitProvider";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
@@ -28,6 +29,11 @@ import {
     parseServiceCredentialsMarker,
     type ServiceCredentialsMarker
 } from "./decoupledLogic/serviceCredentialsMarkers";
+import {
+    createUserProvider,
+    getUserProviderConfig,
+    type UserProviderCreationError
+} from "./decoupledLogic/userProviders";
 
 /** An access token this close to its expiration is refreshed before being used */
 const ACCESS_TOKEN_EXPIRATION_MARGIN_MS = 60_000;
@@ -35,12 +41,27 @@ const ACCESS_TOKEN_EXPIRATION_MARGIN_MS = 60_000;
 const DAY_MS = 24 * 3600_000;
 
 export const thunks = {
+    /** There are providers in GIT_PROVIDERS, or the users can add theirs */
     isAvailable:
         () =>
         (...args): boolean => {
-            const [, , { gitProviders, oidc }] = args;
+            const [, , { gitProvidersConfig, oidc }] = args;
 
-            return gitProviders.length !== 0 && oidc.isUserLoggedIn;
+            return (
+                (gitProvidersConfig.providers.length !== 0 ||
+                    !gitProvidersConfig.disallowUserToAddProviders) &&
+                oidc.isUserLoggedIn
+            );
+        },
+    canUserAddProviders:
+        () =>
+        (...args): boolean => {
+            const [dispatch, , { gitProvidersConfig }] = args;
+
+            return (
+                dispatch(thunks.isAvailable()) &&
+                !gitProvidersConfig.disallowUserToAddProviders
+            );
         },
     /**
      * Idempotent, and safe to call concurrently: both the account tab and the launcher
@@ -50,7 +71,7 @@ export const thunks = {
     load:
         () =>
         async (...args): Promise<void> => {
-            const [dispatch, getState, { gitProviders }] = args;
+            const [dispatch, getState] = args;
 
             if (!dispatch(thunks.isAvailable())) {
                 return;
@@ -77,6 +98,11 @@ export const thunks = {
                         return;
                     }
                 }
+
+                // NOTE: Read after the migration, it may have added github.com.
+                const gitProviders = protectedSelectors
+                    .gitProviders(getState())
+                    .map(({ gitProvider }) => gitProvider);
 
                 dispatch(
                     actions.loaded({
@@ -381,6 +407,132 @@ export const thunks = {
                 })
             );
         },
+    /**
+     * A provider of the user's own (gitlab.com, github.com...), always with a personal
+     * access token. Nothing is saved unless the provider accepts the token: a wrong url
+     * or type, or a provider that doesn't allow CORS (Forgejo without [cors] ENABLED),
+     * is "provider unreachable".
+     */
+    addUserProvider:
+        (params: {
+            type: GitProvidersConfig.ProviderType;
+            url: string;
+            /** Empty: the host of the url */
+            displayName: string;
+            personalAccessToken: string;
+        }) =>
+        async (
+            ...args
+        ): Promise<
+            | { isSuccess: true; providerId: string }
+            | { isSuccess: false; error: AddUserProviderError }
+        > => {
+            const { type, url, displayName } = params;
+
+            const [dispatch, getState, { gitProvidersConfig, createGitProvider }] = args;
+
+            assert(dispatch(thunks.canUserAddProviders()));
+            assert(selectors.stateDescription(getState()) === "ready");
+
+            const personalAccessToken = params.personalAccessToken.trim();
+
+            const result = createUserProvider({
+                type,
+                url,
+                displayName,
+                gitProvidersConfig,
+                userProviders:
+                    protectedSelectors.persistedGitConfig(getState()).userProviders
+            });
+
+            if (!result.isSuccess) {
+                return result;
+            }
+
+            const { userProvider } = result;
+
+            let user: GitUser;
+
+            try {
+                user = await createGitProvider({
+                    config: getUserProviderConfig({ userProvider })
+                }).getUser({ accessToken: personalAccessToken });
+            } catch (error) {
+                return {
+                    isSuccess: false,
+                    error:
+                        error instanceof GitProviderUnauthorizedError
+                            ? "personal access token rejected"
+                            : "provider unreachable"
+                };
+            }
+
+            await dispatch(
+                privateThunks.mutatePersistedGitConfig({
+                    mutate: gitConfig => ({
+                        ...gitConfig,
+                        personalAccessTokenByProviderId: {
+                            ...gitConfig.personalAccessTokenByProviderId,
+                            [userProvider.id]: personalAccessToken
+                        },
+                        userProviders: [
+                            ...gitConfig.userProviders.filter(
+                                ({ id }) => id !== userProvider.id
+                            ),
+                            userProvider
+                        ]
+                    })
+                })
+            );
+
+            dispatch(
+                actions.connectionChanged({
+                    providerId: userProvider.id,
+                    connection: { status: "connected", user }
+                })
+            );
+
+            return { isSuccess: true, providerId: userProvider.id };
+        },
+    /** A provider the user added, with its token. It is no longer the favorite. */
+    removeUserProvider:
+        (params: { providerId: string }) =>
+        async (...args): Promise<void> => {
+            const { providerId } = params;
+
+            const [dispatch, getState] = args;
+
+            assert(
+                protectedSelectors
+                    .gitProviders(getState())
+                    .some(
+                        ({ config, isAddedByUser }) =>
+                            isAddedByUser && config.id === providerId
+                    )
+            );
+
+            await dispatch(
+                privateThunks.mutatePersistedGitConfig({
+                    mutate: gitConfig => {
+                        const { [providerId]: _removed, ...rest } =
+                            gitConfig.personalAccessTokenByProviderId;
+
+                        return {
+                            personalAccessTokenByProviderId: rest,
+                            favoriteProviderId:
+                                gitConfig.favoriteProviderId === providerId
+                                    ? null
+                                    : gitConfig.favoriteProviderId,
+                            userProviders: gitConfig.userProviders.filter(
+                                ({ id }) => id !== providerId
+                            )
+                        };
+                    }
+                })
+            );
+
+            dispatch(actions.providerRemoved({ providerId }));
+        },
     setFavoriteProvider:
         (params: { providerId: string }) =>
         async (...args): Promise<void> => {
@@ -404,11 +556,11 @@ export const thunks = {
      * `.git` of the XOnyxia context, called when the launcher opens. Loads the use case
      * if that hasn't happened yet.
      * - git.providers: the connected providers, see getProvidersContext.
-     * - git.enabled: at least one Git provider is connected (always true without
-     *   GIT_PROVIDERS, as before).
+     * - git.enabled: at least one Git provider is connected (always true when the
+     *   integration is disabled, as before).
      * - The deprecated single forge fields (name, email, token): the favorite's, the
      *   Onyxia (Keycloak) account's when nothing is connected. The former name / email
-     *   fields are only used when GIT_PROVIDERS is empty.
+     *   fields are only used when the integration is disabled.
      * - What is created at launch is a marker, replaced by getServiceGitCredentials.
      *
      * TODO(phase 3): repositories.
@@ -687,6 +839,11 @@ export const thunks = {
         }
 } satisfies Thunks;
 
+export type AddUserProviderError =
+    | UserProviderCreationError
+    | "personal access token rejected"
+    | "provider unreachable";
+
 export type ServiceGitCredentialsError = {
     providerId: string;
     providerDisplayName: string;
@@ -730,7 +887,7 @@ const privateThunks = {
             };
         },
     /**
-     * git.providers: the connected providers, in the order of the configuration.
+     * git.providers: the connected providers, in the order of gitProviders.
      * Identity: the provider's user, the Onyxia (Keycloak) account's for what it doesn't
      * give (private email). Credentials:
      * - personal-access-token: the user's PAT.
@@ -854,14 +1011,14 @@ const privateThunks = {
         },
     getGitProvider:
         (params: { providerId: string }) =>
-        (...args): GitProvider => {
-            const [, , { gitProviders }] = args;
+        (...[, getState]): GitProvider => {
+            const entry = protectedSelectors
+                .gitProviders(getState())
+                .find(({ config }) => config.id === params.providerId);
 
-            const gitProvider = gitProviders.find(({ id }) => id === params.providerId);
+            assert(entry !== undefined, `No git provider ${params.providerId}`);
 
-            assert(gitProvider !== undefined, `No git provider ${params.providerId}`);
-
-            return gitProvider;
+            return entry.gitProvider;
         },
     getConnection:
         (params: { providerId: string }) =>
@@ -887,7 +1044,7 @@ const privateThunks = {
             }
 
             const gitConfig_migrated = createMigratedPersistedGitConfig({
-                providers: gitProvidersConfig.providers,
+                gitProvidersConfig,
                 githubPersonalAccessToken
             });
 
