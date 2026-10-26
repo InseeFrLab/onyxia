@@ -511,6 +511,17 @@ export const thunks = {
                 })
             );
         },
+    reloadCurrentPrefix:
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const s3Uri = privateSelectors.s3Uri(getState());
+
+            assert(s3Uri !== undefined);
+
+            await dispatch(thunks.listPrefix({ s3Uri, debounce: false }));
+        },
     retryPutObject:
         (params: { profileName: string; s3Uri: S3Uri.NonTerminatedByDelimiter }) =>
         async (...args) => {

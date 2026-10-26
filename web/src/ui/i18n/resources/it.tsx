@@ -369,6 +369,7 @@ export const translations: Translations<"it"> = {
             "Crea un profilo S3 per connetterti al tuo storage ed esplorare i tuoi file.",
         "create profile": "Crea profilo",
         back: "Indietro",
+        refresh: "Aggiorna",
         upload: "Carica",
         "create new folder": "Crea nuova cartella",
         "download file": "scarica file"
@@ -1544,7 +1545,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "object key": "Chiave dell'oggetto",
         "upload files": "Carica file",
         "create new folder": "Crea nuova cartella",
-        refresh: "Aggiorna",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Pubblico. " : ""}Azioni della cartella ${s3Uri}`,
         listing: "Elenco..."

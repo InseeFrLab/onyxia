@@ -367,6 +367,7 @@ export const translations: Translations<"fi"> = {
             "Luo S3-profiili, jotta voit yhdistää tallennustilasi ja selata tiedostojasi.",
         "create profile": "Luo profiili",
         back: "Takaisin",
+        refresh: "Päivitä",
         upload: "Lataa palvelimelle",
         "create new folder": "Luo uusi kansio",
         "download file": "lataa tiedosto"
@@ -1532,7 +1533,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "object key": "Objektin avain",
         "upload files": "Lataa tiedostoja",
         "create new folder": "Luo uusi kansio",
-        refresh: "Päivitä",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Julkinen. " : ""}Kansion toiminnot: ${s3Uri}`,
         listing: "Listataan..."

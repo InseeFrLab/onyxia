@@ -36,8 +36,8 @@ surface colors, and shadows in both light and dark themes.
 
 The component owns no S3 operations, clipboard writes, policy decisions, routing,
 or dialogs. `S3UriBar` supplies only actions already implemented by its parent:
-copy path, bookmark, access policy, create folder, upload, request files, share,
-and refresh. Unavailable share/request/policy actions are absent; read-only
+copy path, bookmark, access policy, create folder, upload, request files, and share.
+Unavailable share/request/policy actions are absent; read-only
 bookmarks and disabled upload/create actions remain disabled.
 
 The Figma-only download, delete, copy/move/paste-prefix actions and an Organize

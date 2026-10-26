@@ -379,6 +379,7 @@ export const translations: Translations<"de"> = {
             "Erstellen Sie ein S3-Profil, um Ihren Speicher zu verbinden und Ihre Dateien zu durchsuchen.",
         "create profile": "Profil erstellen",
         back: "Zurück",
+        refresh: "Aktualisieren",
         upload: "Hochladen",
         "create new folder": "Neuen Ordner erstellen",
         "download file": "Datei herunterladen"
@@ -1566,7 +1567,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "object key": "Objektschlüssel",
         "upload files": "Dateien hochladen",
         "create new folder": "Neuen Ordner erstellen",
-        refresh: "Aktualisieren",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Öffentlich. " : ""}Ordneraktionen für ${s3Uri}`,
         listing: "Auflistung..."

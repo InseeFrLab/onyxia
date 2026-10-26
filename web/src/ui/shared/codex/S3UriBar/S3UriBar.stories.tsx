@@ -8,7 +8,7 @@ import { parseS3Uri, stringifyS3Uri, type S3Uri } from "core/tools/S3Uri";
 import { S3UriBar, type S3UriBarProps } from "./S3UriBar";
 
 const meta = {
-    tags: ["s3-file-operations"],
+    tags: ["s3-file-operations", "s3-navigation"],
     title: "Shared/S3UriBar",
     component: S3UriBar
 } satisfies Meta<typeof S3UriBar>;
@@ -254,6 +254,9 @@ export const CurrentDirectoryMenu: Story = {
 
         const menu = within(await body.findByRole("menu"));
         await expect(menu.getByRole("menuitem", { name: "Copy S3 path" })).toHaveFocus();
+        await expect(
+            menu.queryByRole("menuitem", { name: "Refresh" })
+        ).not.toBeInTheDocument();
         await userEvent.click(menu.getByRole("menuitem", { name: "Share" }));
         await expect(args.onSharePrefix).toHaveBeenCalledWith({
             s3Uri: args.s3Uri?.s3Uri
@@ -290,11 +293,9 @@ export const BucketRootDirectoryMenu: Story = {
         );
         const menu = within(await body.findByRole("menu"));
         await expect(args.onS3UriChange).not.toHaveBeenCalled();
-        await userEvent.click(menu.getByRole("menuitem", { name: "Refresh" }));
-        await expect(args.onS3UriChange).toHaveBeenCalledWith({
-            s3Uri: args.s3Uri?.s3Uri,
-            isHintSelection: false
-        });
+        await expect(
+            menu.queryByRole("menuitem", { name: "Refresh" })
+        ).not.toBeInTheDocument();
     }
 };
 

@@ -73,6 +73,7 @@ export type MainView = {
     };
 
     isBackButtonDisabled: boolean;
+    isReloadButtonDisabled: boolean;
 
     directoryCreationButton:
         | {
@@ -937,6 +938,11 @@ const commandLogsEntries = createSelector(
     (state): MainView["commandLogsEntries"] => state.commandLogsEntries
 );
 
+const isReloadButtonDisabled = createSelector(
+    s3Uri,
+    (s3Uri): MainView["isReloadButtonDisabled"] => s3Uri === undefined
+);
+
 const mainView = createSelector(
     profileSelect,
     bookmarks,
@@ -944,6 +950,7 @@ const mainView = createSelector(
     fileOperations,
     uriBar,
     isBackButtonDisabled,
+    isReloadButtonDisabled,
     directoryCreationButton,
     isUploadButtonDisabled,
     objectRendering,
@@ -958,6 +965,7 @@ const mainView = createSelector(
         fileOperations,
         uriBar,
         isBackButtonDisabled,
+        isReloadButtonDisabled,
         directoryCreationButton,
         isUploadButtonDisabled,
         objectRendering,
@@ -972,6 +980,7 @@ const mainView = createSelector(
         fileOperations,
         uriBar,
         isBackButtonDisabled,
+        isReloadButtonDisabled,
         directoryCreationButton,
         isUploadButtonDisabled,
         objectRendering,

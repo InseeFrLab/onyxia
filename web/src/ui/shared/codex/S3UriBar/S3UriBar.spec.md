@@ -110,7 +110,6 @@ export type S3UriBarProps = {
      * - user selects a hint
      * - user validates input externally (if you wire that)
      * - user clicks an ancestor breadcrumb segment in navigation mode
-     * - user selects Refresh in the directory menu
      */
     onS3UriChange: (params: {
         s3Uri: S3Uri | undefined;
@@ -224,7 +223,6 @@ export type S3UriBarProps = {
     - Current directory segment short click => open `S3DirectoryMenu`, anchored below that segment, without requesting navigation or reloading the directory. This includes the bucket segment at bucket root and prefixes using a custom delimiter.
     - The current directory trigger shows a dropdown chevron and exposes `aria-haspopup`, `aria-expanded`, and the menu's `aria-controls`. Enter, Space, and ArrowDown open it; Escape dismisses it and restores focus.
     - The menu duplicates the existing copy, bookmark, policy, upload, create folder, request files, and share actions, honoring exactly the same visibility and disabled states as the toolbar. The toolbar buttons remain unchanged.
-    - Refresh in the menu preserves the former current-segment action by requesting the current URI through `onS3UriChange(..., isHintSelection: false)`.
     - Upload/create actions are omitted when their optional props are absent; supplied disabled actions remain visible but disabled.
     - Copy from the menu shares the bar's existing clipboard write and copied feedback. The menu itself does not write to the clipboard.
     - The popup closes after an action, when the canonical URI changes, when editing starts, or when the copied-path feedback replaces the breadcrumbs.

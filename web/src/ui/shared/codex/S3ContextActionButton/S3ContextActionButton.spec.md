@@ -9,6 +9,7 @@ Its primary purpose is to provide a reusable visual and interaction pattern for 
 Typical usages include:
 
 - go to parent prefix
+- refresh the current location
 - upload files
 - create prefix
 
@@ -119,13 +120,14 @@ The layout and spacing relative to surrounding components are owned by the paren
 It may be used for:
 
 - parent navigation button on the left of `S3UriBar`
+- refresh button immediately to the right of the parent navigation button
 - upload button on the right of `S3UriBar`
 - create prefix button on the right of `S3UriBar`
 
 Example composition:
 
 ```ts
-[S3ContextActionButton: go to parent] [S3UriBar....................] [S3ContextActionButton: upload] [S3ContextActionButton: create prefix]
+[S3ContextActionButton: go to parent] [S3ContextActionButton: refresh] [S3UriBar....................] [S3ContextActionButton: upload] [S3ContextActionButton: create prefix]
 ```
 
 The placement of each action is not part of this component contract.

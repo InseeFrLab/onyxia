@@ -368,6 +368,7 @@ export const translations: Translations<"no"> = {
             "Opprett en S3-profil for å koble til lagringen og utforske filene dine.",
         "create profile": "Opprett profil",
         back: "Tilbake",
+        refresh: "Oppdater",
         upload: "Last opp",
         "create new folder": "Opprett ny mappe",
         "download file": "last ned fil"
@@ -1540,7 +1541,6 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "object key": "Objektnøkkel",
         "upload files": "Last opp filer",
         "create new folder": "Opprett ny mappe",
-        refresh: "Oppdater",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Offentlig. " : ""}Mappehandlinger for ${s3Uri}`,
         listing: "Lister..."

@@ -1115,18 +1115,6 @@ export function S3UriBar(props: S3UriBarProps) {
                                 }
                             ]
                           : [])
-                  ],
-                  [
-                      {
-                          id: "refresh",
-                          label: t("refresh"),
-                          icon: getIconUrlByName("Refresh"),
-                          onClick: () =>
-                              emitS3UriChange({
-                                  s3Uri: currentS3Uri,
-                                  isHintSelection: false
-                              })
-                      }
                   ]
               ]
             : [];
@@ -2330,7 +2318,6 @@ const { i18n } = declareComponentKeys<
     | "listing"
     | "upload files"
     | "create new folder"
-    | "refresh"
     | { K: "directory actions"; P: { s3Uri: string; isPublic: boolean }; R: string }
 >()({ S3UriBar });
 export type I18n = typeof i18n;

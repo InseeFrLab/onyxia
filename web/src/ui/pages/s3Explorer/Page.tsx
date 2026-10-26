@@ -490,6 +490,12 @@ function S3Explorer() {
                                     disabled={mainView.isBackButtonDisabled}
                                     onClick={s3ExplorerUiController.navigateBack}
                                 />
+                                <S3ContextActionButton
+                                    icon={getIconUrlByName("Refresh")}
+                                    label={t("refresh")}
+                                    disabled={mainView.isReloadButtonDisabled}
+                                    onClick={s3ExplorerUiController.reloadCurrentPrefix}
+                                />
                                 <S3ProfileSelect
                                     availableProfileNames={
                                         mainView.profileSelect.availableProfileNames
@@ -1065,6 +1071,7 @@ const { i18n } = declareComponentKeys<
     | "no profile description"
     | "create profile"
     | "back"
+    | "refresh"
     | "upload"
     | "create new folder"
     | "download file"

@@ -339,6 +339,7 @@ export const translations: Translations<"zh-CN"> = {
         "no profile description": "创建 S3 配置文件以连接存储并开始浏览文件。",
         "create profile": "创建配置文件",
         back: "返回",
+        refresh: "刷新",
         upload: "上传",
         "create new folder": "创建新文件夹",
         "download file": "下载文件"
@@ -1461,7 +1462,6 @@ ${
         "object key": "对象键",
         "upload files": "上传文件",
         "create new folder": "创建新文件夹",
-        refresh: "刷新",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "公开。 " : ""}目录操作： ${s3Uri}`,
         listing: "正在列出..."

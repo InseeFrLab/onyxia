@@ -96,19 +96,12 @@ const baseArgs: S3DirectoryMenuProps = {
                 icon: getIconUrlByName("Share"),
                 onClick: fn()
             }
-        ],
-        [
-            {
-                id: "refresh",
-                label: "Refresh",
-                icon: getIconUrlByName("Refresh"),
-                onClick: fn()
-            }
         ]
     ]
 };
 
 const meta = {
+    tags: ["s3-navigation"],
     title: "Shared/S3DirectoryMenu",
     component: S3DirectoryMenu,
     args: baseArgs,
@@ -124,7 +117,7 @@ export const Default: Story = {
             within(canvasElement).getByRole("button", { name: "Directory actions" })
         );
         const menu = await within(canvasElement.ownerDocument.body).findByRole("menu");
-        await expect(within(menu).getAllByRole("menuitem")).toHaveLength(8);
+        await expect(within(menu).getAllByRole("menuitem")).toHaveLength(7);
         await expect(
             within(menu).queryByRole("menuitem", { name: "Delete" })
         ).not.toBeInTheDocument();
@@ -171,8 +164,7 @@ export const RestrictedActions: Story = {
             ],
             [],
             [{ ...baseArgs.actionGroups[2][0], onClick: undefined }],
-            [{ ...baseArgs.actionGroups[3][0], onClick: undefined }],
-            baseArgs.actionGroups[4]
+            [{ ...baseArgs.actionGroups[3][0], onClick: undefined }]
         ]
     },
     play: async ({ canvasElement }) => {
@@ -191,7 +183,7 @@ export const RestrictedActions: Story = {
         await expect(
             menu.queryByRole("menuitem", { name: "Make public" })
         ).not.toBeInTheDocument();
-        await expect(menu.getAllByRole("separator")).toHaveLength(3);
+        await expect(menu.getAllByRole("separator")).toHaveLength(2);
     }
 };
 
@@ -209,7 +201,7 @@ export const KeyboardNavigation: Story = {
         );
         await expect(menu.getByRole("menuitem", { name: "Copy S3 path" })).toHaveFocus();
         await userEvent.keyboard("{ArrowDown}");
-        await expect(menu.getByRole("menuitem", { name: "Refresh" })).toHaveFocus();
+        await expect(menu.getByRole("menuitem", { name: "Copy S3 path" })).toHaveFocus();
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(trigger).toHaveFocus());
         await expect(args.onClose).toHaveBeenCalledTimes(1);

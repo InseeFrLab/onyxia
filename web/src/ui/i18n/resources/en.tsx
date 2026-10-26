@@ -538,6 +538,7 @@ export const translations: Translations<"en"> = {
             "Create an S3 profile to connect to your storage and start exploring your files.",
         "create profile": "Create Profile",
         back: "Back",
+        refresh: "Refresh",
         upload: "Upload",
         "create new folder": "Create new folder",
         "download file": "Download file"
@@ -1541,7 +1542,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "object key": "Object key",
         "upload files": "Upload files",
         "create new folder": "Create new folder",
-        refresh: "Refresh",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Public. " : ""}Directory actions for ${s3Uri}`,
         listing: "Listing..."

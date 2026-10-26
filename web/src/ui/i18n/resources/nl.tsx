@@ -371,6 +371,7 @@ export const translations: Translations<"nl"> = {
             "Maak een S3-profiel om verbinding te maken met je opslag en je bestanden te verkennen.",
         "create profile": "Profiel maken",
         back: "Terug",
+        refresh: "Vernieuwen",
         upload: "Uploaden",
         "create new folder": "Nieuwe map maken",
         "download file": "bestand downloaden"
@@ -1548,7 +1549,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "object key": "Objectsleutel",
         "upload files": "Bestanden uploaden",
         "create new folder": "Nieuwe map maken",
-        refresh: "Vernieuwen",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Openbaar. " : ""}Mapacties voor ${s3Uri}`,
         listing: "Lijst wordt geladen..."

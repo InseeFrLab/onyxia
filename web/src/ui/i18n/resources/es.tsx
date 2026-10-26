@@ -369,6 +369,7 @@ export const translations: Translations<"es"> = {
             "Crea un perfil S3 para conectarte a tu almacenamiento y explorar tus archivos.",
         "create profile": "Crear perfil",
         back: "Atrás",
+        refresh: "Actualizar",
         upload: "Subir",
         "create new folder": "Crear nueva carpeta",
         "download file": "Descargar archivo"
@@ -1547,7 +1548,6 @@ export const translations: Translations<"es"> = {
         "object key": "Clave del objeto",
         "upload files": "Subir archivos",
         "create new folder": "Crear nueva carpeta",
-        refresh: "Actualizar",
         "directory actions": ({ s3Uri, isPublic }) =>
             `${isPublic ? "Público. " : ""}Acciones de la carpeta ${s3Uri}`,
         listing: "Listando..."

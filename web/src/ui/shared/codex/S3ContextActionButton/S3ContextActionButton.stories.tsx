@@ -8,6 +8,7 @@ import { getIconUrlByName } from "lazy-icons";
 import { Evt } from "evt";
 
 const meta = {
+    tags: ["s3-navigation"],
     title: "Shared/S3ContextActionButton",
     component: S3ContextActionButton
 } satisfies Meta<typeof S3ContextActionButton>;
@@ -119,6 +120,12 @@ function ComposedHeader() {
                         setS3Uri(getS3UriBarS3Uri(parentPrefix));
                     }}
                     disabled={isAtBucketRoot}
+                />
+                <S3ContextActionButton
+                    icon={getIconUrlByName("Refresh")}
+                    label="Refresh"
+                    onClick={action("reloadCurrentPrefix")}
+                    disabled={s3Uri === undefined}
                 />
 
                 <div style={{ flex: 1, minWidth: 0 }}>
