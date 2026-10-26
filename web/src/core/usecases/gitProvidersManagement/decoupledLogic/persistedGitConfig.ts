@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { assert, type Equals, id } from "tsafe";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import { createUserProvider, type UserProvider } from "./userProviders";
 
 /**
  * The user's own Git configuration, serialized into the single `gitConfigStr` user config
@@ -12,6 +13,8 @@ export type PersistedGitConfig = {
     personalAccessTokenByProviderId: Record<string, string>;
     /** The user's explicit choice. null, and not undefined, so that it round trips through JSON. */
     favoriteProviderId: string | null;
+    /** Added by the user in Account > Git, after the ones of GIT_PROVIDERS */
+    userProviders: UserProvider[];
 };
 
 const zPersistedGitConfig = (() => {
@@ -19,20 +22,33 @@ const zPersistedGitConfig = (() => {
 
     const zTargetType = z.object({
         personalAccessTokenByProviderId: z.record(z.string(), z.string()),
-        favoriteProviderId: z.string().nullable()
+        favoriteProviderId: z.string().nullable(),
+        // NOTE: Absent from what the previous versions saved.
+        userProviders: z
+            .array(
+                z.object({
+                    id: z.string(),
+                    type: z.enum(["gitlab", "forgejo", "github"]),
+                    url: z.string(),
+                    displayName: z.string()
+                })
+            )
+            .optional()
+            .transform(userProviders => userProviders ?? [])
     });
 
     type InferredType = z.infer<typeof zTargetType>;
 
     assert<Equals<TargetType, InferredType>>();
 
-    return id<z.ZodType<TargetType>>(zTargetType);
+    return id<z.ZodType<TargetType, z.ZodTypeDef, unknown>>(zTargetType);
 })();
 
 export function createEmptyPersistedGitConfig(): PersistedGitConfig {
     return {
         personalAccessTokenByProviderId: {},
-        favoriteProviderId: null
+        favoriteProviderId: null,
+        userProviders: []
     };
 }
 
@@ -70,15 +86,18 @@ export function serializeGitConfig(params: { gitConfig: PersistedGitConfig }): s
 
 /**
  * The PAT of the former "GitHub personal access token" field goes to the github.com
- * provider, once, when gitConfigStr doesn't exist yet. The former field is left as is so
- * that going back to a previous version of Onyxia is possible.
+ * provider, once, when gitConfigStr doesn't exist yet: the one of GIT_PROVIDERS, or one
+ * added on behalf of the user when there is none and the users can add theirs. The former
+ * field is left as is so that going back to a previous version of Onyxia is possible.
  * undefined: nothing to migrate.
  */
 export function createMigratedPersistedGitConfig(params: {
-    providers: GitProvidersConfig.Provider[];
+    gitProvidersConfig: GitProvidersConfig;
     githubPersonalAccessToken: string | null;
 }): PersistedGitConfig | undefined {
-    const { providers, githubPersonalAccessToken } = params;
+    const { gitProvidersConfig, githubPersonalAccessToken } = params;
+
+    const { providers } = gitProvidersConfig;
 
     if (githubPersonalAccessToken === null || githubPersonalAccessToken.trim() === "") {
         return undefined;
@@ -91,14 +110,39 @@ export function createMigratedPersistedGitConfig(params: {
             provider.authentication.ui.type === "personal-access-token"
     );
 
-    if (provider_gitHub === undefined) {
+    if (provider_gitHub !== undefined) {
+        return {
+            ...createEmptyPersistedGitConfig(),
+            personalAccessTokenByProviderId: {
+                [provider_gitHub.id]: githubPersonalAccessToken.trim()
+            }
+        };
+    }
+
+    if (gitProvidersConfig.disallowUserToAddProviders) {
         return undefined;
     }
+
+    const result = createUserProvider({
+        type: "github",
+        url: "https://github.com",
+        displayName: "",
+        gitProvidersConfig,
+        userProviders: []
+    });
+
+    if (!result.isSuccess) {
+        // NOTE: github.com is in GIT_PROVIDERS, with an authentication other than a PAT.
+        return undefined;
+    }
+
+    const { userProvider } = result;
 
     return {
         ...createEmptyPersistedGitConfig(),
         personalAccessTokenByProviderId: {
-            [provider_gitHub.id]: githubPersonalAccessToken.trim()
-        }
+            [userProvider.id]: githubPersonalAccessToken.trim()
+        },
+        userProviders: [userProvider]
     };
 }

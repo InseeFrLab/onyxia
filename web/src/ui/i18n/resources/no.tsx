@@ -42,6 +42,9 @@ export const translations: Translations<"no"> = {
         "continue without saving": "Fortsett uten å lagre"
     },
     AccountGitTab: {
+        "no git providers":
+            "Ingen Git-leverandør ennå. Legg til kontoen din på gitlab.com, github.com eller en annen forge for å klone og pushe fra tjenestene dine.",
+        "add git provider": "Legg til en Git-leverandør",
         gitName: "Brukernavn for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -82,7 +85,43 @@ export const translations: Translations<"no"> = {
         "loading failed": "Git-leverandørene dine kunne ikke lastes inn.",
         retry: "Prøv igjen"
     },
+    AddGitProviderDialog: {
+        title: "Legg til en Git-leverandør",
+        close: "Lukk",
+        intro: "Koble til en egen konto med et personlig tilgangstoken: Onyxia bruker det og gir det videre til tjenestene dine slik at de kan klone og pushe.",
+        type: "Type",
+        "forgejo option": "Forgejo (eller Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "Instansen må tillate forespørsler fra Onyxia ([cors] ENABLED = true i konfigurasjonen).",
+        "display name": "Navn (valgfritt, verten i URL-en som standard)",
+        "personal access token": "Personlig tilgangstoken",
+        "personal access token hint":
+            "Det trenger lesetilgang til profilen din og lese- og skrivetilgang til repositoriene dine.",
+        "create a token": "Opprett et token hos denne leverandøren",
+        "error title": "Leverandøren kunne ikke legges til",
+        "invalid url": "Ikke en gyldig URL, f.eks. https://gitlab.com",
+        "already configured": "Denne leverandøren er allerede i listen din.",
+        "personal access token rejected":
+            "Leverandøren avviste dette tokenet, kontroller det og rettighetene.",
+        "provider unreachable":
+            "Leverandøren kunne ikke nås fra Onyxia. Kontroller URL-en og typen; en Forgejo-instans må tillate CORS.",
+        "save failed": "Tokenet ble godtatt, men kunne ikke lagres, prøv igjen.",
+        cancel: "Avbryt",
+        add: "Legg til",
+        checking: "Kontrollerer…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Fjerne ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `Leverandøren og tokenet ditt fjernes fra Onyxia. Selve tokenet finnes fortsatt på ${providerName}: tilbakekall det der hvis du ikke lenger trenger det.`,
+        cancel: "Avbryt",
+        "remove provider": "Fjern"
+    },
     GitProviderCard: {
+        "added by you": "Lagt til av deg",
+        "remove provider": "Fjern",
+        "remove provider failed": "Leverandøren kunne ikke fjernes.",
         "connected as": ({ name, username }) => `Tilkoblet som ${name} (@${username})`,
         "not connected": "Ikke tilkoblet.",
         "git identity": ({ name, email }) => `Git-identitet: ${name} <${email}>`,

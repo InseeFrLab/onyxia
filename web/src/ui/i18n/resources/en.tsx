@@ -41,6 +41,9 @@ export const translations: Translations<"en"> = {
         "continue without saving": "Continue without saving"
     },
     AccountGitTab: {
+        "no git providers":
+            "No Git provider yet. Add your account on gitlab.com, github.com or another forge to clone and push from your services.",
+        "add git provider": "Add a Git provider",
         gitName: "Username for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -82,7 +85,43 @@ export const translations: Translations<"en"> = {
         "loading failed": "Your Git providers could not be loaded.",
         retry: "Retry"
     },
+    AddGitProviderDialog: {
+        title: "Add a Git provider",
+        close: "Close",
+        intro: "Connect an account of your own with a personal access token: it is used by Onyxia and handed over to your services so that they can clone and push.",
+        type: "Type",
+        "forgejo option": "Forgejo (or Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "The instance must allow requests from Onyxia ([cors] ENABLED = true in its configuration).",
+        "display name": "Name (optional, the host of the URL by default)",
+        "personal access token": "Personal access token",
+        "personal access token hint":
+            "It needs read access to your profile and read and write access to your repositories.",
+        "create a token": "Create a token on this provider",
+        "error title": "The provider could not be added",
+        "invalid url": "Not a valid URL, e.g. https://gitlab.com",
+        "already configured": "This provider is already in your list.",
+        "personal access token rejected":
+            "The provider refused this token, check it and its scopes.",
+        "provider unreachable":
+            "The provider could not be reached from Onyxia. Check the URL and the type; a Forgejo instance must allow CORS.",
+        "save failed": "The token was accepted but could not be saved, try again.",
+        cancel: "Cancel",
+        add: "Add",
+        checking: "Checking…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Remove ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `The provider and your token are removed from Onyxia. The token itself still exists on ${providerName}: revoke it there if you no longer need it.`,
+        cancel: "Cancel",
+        "remove provider": "Remove"
+    },
     GitProviderCard: {
+        "added by you": "Added by you",
+        "remove provider": "Remove",
+        "remove provider failed": "The provider could not be removed.",
         "connected as": ({ name, username }) => `Connected as ${name} (@${username})`,
         "not connected": "Not connected.",
         "git identity": ({ name, email }) => `Git identity: ${name} <${email}>`,

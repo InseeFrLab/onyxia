@@ -41,6 +41,9 @@ export const translations: Translations<"nl"> = {
         "continue without saving": "Doorgaan zonder op te slaan"
     },
     AccountGitTab: {
+        "no git providers":
+            "Nog geen Git-provider. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
+        "add git provider": "Git-provider toevoegen",
         gitName: "Gebruikersnaam voor Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -82,7 +85,44 @@ export const translations: Translations<"nl"> = {
         "loading failed": "Uw Git-providers konden niet worden geladen.",
         retry: "Opnieuw proberen"
     },
+    AddGitProviderDialog: {
+        title: "Git-provider toevoegen",
+        close: "Sluiten",
+        intro: "Koppel een eigen account met een persoonlijk toegangstoken: Onyxia gebruikt het en geeft het door aan je services zodat ze kunnen clonen en pushen.",
+        type: "Type",
+        "forgejo option": "Forgejo (of Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "De instantie moet verzoeken van Onyxia toestaan ([cors] ENABLED = true in de configuratie).",
+        "display name": "Naam (optioneel, standaard de host van de URL)",
+        "personal access token": "Persoonlijk toegangstoken",
+        "personal access token hint":
+            "Het heeft leestoegang tot je profiel nodig en lees- en schrijftoegang tot je repositories.",
+        "create a token": "Token aanmaken bij deze provider",
+        "error title": "De provider kon niet worden toegevoegd",
+        "invalid url": "Geen geldige URL, bijv. https://gitlab.com",
+        "already configured": "Deze provider staat al in je lijst.",
+        "personal access token rejected":
+            "De provider heeft dit token geweigerd, controleer het en de rechten ervan.",
+        "provider unreachable":
+            "De provider is niet bereikbaar vanuit Onyxia. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
+        "save failed":
+            "Het token is geaccepteerd maar kon niet worden opgeslagen, probeer het opnieuw.",
+        cancel: "Annuleren",
+        add: "Toevoegen",
+        checking: "Controleren…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `${providerName} verwijderen?`,
+        "dialog body": ({ providerName }) =>
+            `De provider en je token worden uit Onyxia verwijderd. Het token zelf bestaat nog op ${providerName}: trek het daar in als je het niet meer nodig hebt.`,
+        cancel: "Annuleren",
+        "remove provider": "Verwijderen"
+    },
     GitProviderCard: {
+        "added by you": "Door jou toegevoegd",
+        "remove provider": "Verwijderen",
+        "remove provider failed": "De provider kon niet worden verwijderd.",
         "connected as": ({ name, username }) => `Verbonden als ${name} (@${username})`,
         "not connected": "Niet verbonden.",
         "git identity": ({ name, email }) => `Git-identiteit: ${name} <${email}>`,

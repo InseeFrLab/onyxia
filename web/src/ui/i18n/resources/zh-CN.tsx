@@ -39,6 +39,9 @@ export const translations: Translations<"zh-CN"> = {
         "continue without saving": "继续且不保存"
     },
     AccountGitTab: {
+        "no git providers":
+            "尚无 Git 托管平台。添加您在 gitlab.com、github.com 或其他平台上的账号，即可在服务中克隆和推送。",
+        "add git provider": "添加 Git 托管平台",
         gitName: "Git 用户名",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -77,7 +80,41 @@ export const translations: Translations<"zh-CN"> = {
         "loading failed": "无法加载您的 Git 托管平台。",
         retry: "重试"
     },
+    AddGitProviderDialog: {
+        title: "添加 Git 托管平台",
+        close: "关闭",
+        intro: "使用个人访问令牌连接您自己的账号：Onyxia 会使用它，并将其传递给您的服务以便克隆和推送。",
+        type: "类型",
+        "forgejo option": "Forgejo（或 Gitea）",
+        url: "URL",
+        "forgejo cors hint":
+            "该实例必须允许来自 Onyxia 的请求（其配置中 [cors] ENABLED = true）。",
+        "display name": "名称（可选，默认为 URL 的主机名）",
+        "personal access token": "个人访问令牌",
+        "personal access token hint": "它需要读取您的个人资料，并读写您的仓库。",
+        "create a token": "在该平台上创建令牌",
+        "error title": "无法添加该托管平台",
+        "invalid url": "URL 无效，例如 https://gitlab.com",
+        "already configured": "该托管平台已在您的列表中。",
+        "personal access token rejected": "该平台拒绝了此令牌，请检查令牌及其权限。",
+        "provider unreachable":
+            "无法从 Onyxia 访问该平台。请检查 URL 和类型；Forgejo 实例必须允许 CORS。",
+        "save failed": "令牌已被接受，但无法保存，请重试。",
+        cancel: "取消",
+        add: "添加",
+        checking: "正在检查…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `删除 ${providerName}？`,
+        "dialog body": ({ providerName }) =>
+            `该托管平台和您的令牌将从 Onyxia 中移除。令牌本身仍存在于 ${providerName} 上：如果不再需要，请在那里撤销它。`,
+        cancel: "取消",
+        "remove provider": "删除"
+    },
     GitProviderCard: {
+        "added by you": "由您添加",
+        "remove provider": "删除",
+        "remove provider failed": "无法删除该托管平台。",
         "connected as": ({ name, username }) => `已连接为 ${name} (@${username})`,
         "not connected": "未连接。",
         "git identity": ({ name, email }) => `Git 身份：${name} <${email}>`,

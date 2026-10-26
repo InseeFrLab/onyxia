@@ -1,5 +1,6 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
+import type { AddUserProviderError } from "core/usecases/gitProvidersManagement";
 
 export const name = "gitAccountUiController";
 
@@ -10,6 +11,24 @@ export const name = "gitAccountUiController";
  */
 export type State = {
     cardUiStateByProviderId: Record<string, CardUiState>;
+    /** Where the user adds a provider of their own, gitlab.com for instance */
+    addProviderDialog: AddProviderDialogState;
+};
+
+export type AddProviderDialogState = {
+    isOpen: boolean;
+    isSubmitting: boolean;
+    /** How the last submission failed, cleared when the next one starts */
+    error: AddProviderError | undefined;
+};
+
+/** save failed: the provider accepted the token, it couldn't be saved */
+export type AddProviderError = AddUserProviderError | "save failed";
+
+const initialAddProviderDialogState: AddProviderDialogState = {
+    isOpen: false,
+    isSubmitting: false,
+    error: undefined
 };
 
 export type CardUiState = {
@@ -26,7 +45,8 @@ export type PendingAction =
     | "sign in"
     | "sign out"
     | "set personal access token"
-    | "remove personal access token";
+    | "remove personal access token"
+    | "remove provider";
 
 export type CardError =
     | { type: "popup blocked" }
@@ -39,7 +59,8 @@ export type CardError =
     | { type: "sign out failed" }
     | { type: "personal access token rejected" }
     | { type: "personal access token check failed" }
-    | { type: "remove failed" };
+    | { type: "remove failed" }
+    | { type: "remove provider failed" };
 
 export const initialCardUiState: CardUiState = {
     pendingAction: undefined,
@@ -50,8 +71,28 @@ export const initialCardUiState: CardUiState = {
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    initialState: id<State>({ cardUiStateByProviderId: {} }),
+    initialState: id<State>({
+        cardUiStateByProviderId: {},
+        addProviderDialog: initialAddProviderDialogState
+    }),
     reducers: {
+        addProviderDialogOpened: state => {
+            state.addProviderDialog = { ...initialAddProviderDialogState, isOpen: true };
+        },
+        addProviderDialogClosed: state => {
+            state.addProviderDialog = initialAddProviderDialogState;
+        },
+        addProviderStarted: state => {
+            state.addProviderDialog.isSubmitting = true;
+            state.addProviderDialog.error = undefined;
+        },
+        addProviderFailed: (
+            state,
+            { payload }: { payload: { error: AddProviderError } }
+        ) => {
+            state.addProviderDialog.isSubmitting = false;
+            state.addProviderDialog.error = payload.error;
+        },
         actionStarted: (
             state,
             { payload }: { payload: { providerId: string; pendingAction: PendingAction } }

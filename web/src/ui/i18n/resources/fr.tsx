@@ -41,6 +41,9 @@ export const translations: Translations<"fr"> = {
         "continue without saving": "Continuer sans enregistrer"
     },
     AccountGitTab: {
+        "no git providers":
+            "Aucune forge pour l'instant. Ajoutez votre compte gitlab.com, github.com ou une autre forge pour cloner et pousser depuis vos services.",
+        "add git provider": "Ajouter une forge Git",
         gitName: "Nom d'utilisateur pour Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -83,7 +86,44 @@ export const translations: Translations<"fr"> = {
         "loading failed": "Vos forges Git n'ont pas pu être chargées.",
         retry: "Réessayer"
     },
+    AddGitProviderDialog: {
+        title: "Ajouter une forge Git",
+        close: "Fermer",
+        intro: "Connectez un compte personnel avec un token d'accès personnel : Onyxia l'utilise et le transmet à vos services pour qu'ils puissent cloner et pousser.",
+        type: "Type",
+        "forgejo option": "Forgejo (ou Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "L'instance doit accepter les requêtes d'Onyxia ([cors] ENABLED = true dans sa configuration).",
+        "display name": "Nom (facultatif, l'hôte de l'URL par défaut)",
+        "personal access token": "Token d'accès personnel",
+        "personal access token hint":
+            "Il doit pouvoir lire votre profil, et lire et écrire dans vos dépôts.",
+        "create a token": "Créer un token sur cette forge",
+        "error title": "La forge n'a pas pu être ajoutée",
+        "invalid url": "URL non valide, par exemple https://gitlab.com",
+        "already configured": "Cette forge est déjà dans votre liste.",
+        "personal access token rejected":
+            "La forge a refusé ce token, vérifiez-le ainsi que ses droits.",
+        "provider unreachable":
+            "La forge n'a pas pu être jointe depuis Onyxia. Vérifiez l'URL et le type ; une instance Forgejo doit autoriser CORS.",
+        "save failed":
+            "Le token a été accepté mais n'a pas pu être enregistré, réessayez.",
+        cancel: "Annuler",
+        add: "Ajouter",
+        checking: "Vérification…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Supprimer ${providerName} ?`,
+        "dialog body": ({ providerName }) =>
+            `La forge et votre token sont retirés d'Onyxia. Le token existe toujours sur ${providerName} : révoquez-le là-bas si vous n'en avez plus besoin.`,
+        cancel: "Annuler",
+        "remove provider": "Supprimer"
+    },
     GitProviderCard: {
+        "added by you": "Ajoutée par vous",
+        "remove provider": "Supprimer",
+        "remove provider failed": "La forge n'a pas pu être supprimée.",
         "connected as": ({ name, username }) =>
             `Connecté en tant que ${name} (@${username})`,
         "not connected": "Non connecté.",

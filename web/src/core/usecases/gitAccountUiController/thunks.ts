@@ -1,6 +1,18 @@
 import type { Thunks } from "core/bootstrap";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
-import { actions, type CardError, type PendingAction } from "./state";
+import {
+    getUserProviderConfig,
+    normalizeUserProviderUrl
+} from "core/usecases/gitProvidersManagement/decoupledLogic/userProviders";
+import { assert } from "tsafe/assert";
+import {
+    actions,
+    name,
+    type AddProviderError,
+    type CardError,
+    type PendingAction
+} from "./state";
 import { getSignInCardError } from "./decoupledLogic";
 
 /**
@@ -17,16 +29,126 @@ export const thunks = {
             return dispatch(gitProvidersManagement.thunks.isAvailable());
         },
     /**
-     * The former fields (git name, git email, GitHub personal access token) are hidden
-     * as soon as GIT_PROVIDERS isn't empty: the identity comes from the favorite
-     * provider, and the admin who wants GitHub adds it to the configuration.
+     * The former fields (git name, git email, GitHub personal access token) are only
+     * shown when the integration is disabled: otherwise the identity comes from the
+     * favorite provider, and GitHub is a provider like the others (the former token
+     * is migrated to it).
      */
     isLegacySectionVisible:
         () =>
         (...args): boolean => {
             const [, , { gitProvidersConfig }] = args;
 
-            return gitProvidersConfig.providers.length === 0;
+            return (
+                gitProvidersConfig.providers.length === 0 &&
+                gitProvidersConfig.disallowUserToAddProviders
+            );
+        },
+    canUserAddProviders:
+        () =>
+        (...args): boolean => {
+            const [dispatch] = args;
+
+            return dispatch(gitProvidersManagement.thunks.canUserAddProviders());
+        },
+    openAddProviderDialog:
+        () =>
+        (...args): void => {
+            const [dispatch] = args;
+
+            dispatch(actions.addProviderDialogOpened());
+        },
+    closeAddProviderDialog:
+        () =>
+        (...args): void => {
+            const [dispatch, getState] = args;
+
+            if (getState()[name].addProviderDialog.isSubmitting) {
+                return;
+            }
+
+            dispatch(actions.addProviderDialogClosed());
+        },
+    /** The dialog closes once the provider is added, otherwise it shows why it wasn't. */
+    addProvider:
+        (params: {
+            type: GitProvidersConfig.ProviderType;
+            url: string;
+            displayName: string;
+            personalAccessToken: string;
+        }) =>
+        async (...args): Promise<void> => {
+            const [dispatch] = args;
+
+            dispatch(actions.addProviderStarted());
+
+            let error: AddProviderError | undefined;
+
+            try {
+                const result = await dispatch(
+                    gitProvidersManagement.thunks.addUserProvider(params)
+                );
+
+                error = result.isSuccess ? undefined : result.error;
+            } catch {
+                // NOTE: The provider accepted the token, saving the config failed.
+                error = "save failed";
+            }
+
+            if (error !== undefined) {
+                dispatch(actions.addProviderFailed({ error }));
+                return;
+            }
+
+            dispatch(actions.addProviderDialogClosed());
+        },
+    /**
+     * Where the user creates the token for the url being typed, with the scopes prefilled
+     * when the provider allows it. undefined while the url isn't valid.
+     */
+    getPersonalAccessTokenCreationUrl:
+        (params: { type: GitProvidersConfig.ProviderType; url: string }) =>
+        (...args): string | undefined => {
+            const { type } = params;
+
+            const [, , { createGitProvider }] = args;
+
+            const url = normalizeUserProviderUrl(params.url);
+
+            if (url === undefined) {
+                return undefined;
+            }
+
+            const { ui } = createGitProvider({
+                config: getUserProviderConfig({
+                    userProvider: { id: url, type, url, displayName: url }
+                })
+            });
+
+            assert(ui.type === "personal-access-token");
+
+            return ui.personalAccessTokenCreationUrl;
+        },
+    removeProvider:
+        (params: { providerId: string }) =>
+        async (...args): Promise<void> => {
+            const { providerId } = params;
+
+            const [dispatch] = args;
+
+            await dispatch(
+                privateThunks.runCardAction({
+                    providerId,
+                    pendingAction: "remove provider",
+                    action: () =>
+                        dispatch(
+                            gitProvidersManagement.thunks.removeUserProvider({
+                                providerId
+                            })
+                        ),
+                    getCardError: () => ({ type: "remove provider failed" })
+                })
+            );
         },
     load:
         () =>
@@ -81,7 +203,7 @@ export const thunks = {
         async (...args): Promise<void> => {
             const { providerId } = params;
 
-            const [dispatch, , { gitProviders }] = args;
+            const [dispatch, getState] = args;
 
             await dispatch(
                 privateThunks.runCardAction({
@@ -92,9 +214,9 @@ export const thunks = {
                     getCardError: () => ({ type: "sign out failed" }),
                     // NOTE: Without revocation, the grant still exists on the provider.
                     getIsRevocationHintShown: () => {
-                        const gitProvider = gitProviders.find(
-                            ({ id }) => id === providerId
-                        );
+                        const gitProvider = gitProvidersManagement.protectedSelectors
+                            .gitProviders(getState())
+                            .find(({ config }) => config.id === providerId)?.gitProvider;
 
                         return (
                             gitProvider?.ui.type === "oauth" &&

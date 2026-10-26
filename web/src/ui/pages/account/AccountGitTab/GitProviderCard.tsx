@@ -22,6 +22,8 @@ type Props = {
     onStartReplacingPersonalAccessToken: () => void;
     onCancelReplacingPersonalAccessToken: () => void;
     onRemovePersonalAccessToken: () => void;
+    /** Only for a provider added by the user, the confirmation is the caller's */
+    onRemoveProvider: () => void;
     onSetFavorite: () => void;
 };
 
@@ -35,6 +37,7 @@ export function GitProviderCard(props: Props) {
         onStartReplacingPersonalAccessToken,
         onCancelReplacingPersonalAccessToken,
         onRemovePersonalAccessToken,
+        onRemoveProvider,
         onSetFavorite
     } = props;
 
@@ -78,6 +81,11 @@ export function GitProviderCard(props: Props) {
                     >
                         {card.url.replace(/^https?:\/\//, "")}
                     </Link>
+                    {card.isAddedByUser && (
+                        <Text typo="body 2" color="secondary">
+                            {t("added by you")}
+                        </Text>
+                    )}
                 </div>
                 {card.status === "connecting" ? (
                     <CircularProgress size={20} />
@@ -224,6 +232,16 @@ export function GitProviderCard(props: Props) {
                 })()}
 
                 <div className={classes.actions}>
+                    {card.removeProvider !== undefined && (
+                        <Button
+                            variant="ternary"
+                            startIcon={getIconUrlByName("Delete")}
+                            disabled={card.removeProvider.isDisabled}
+                            onClick={onRemoveProvider}
+                        >
+                            {t("remove provider")}
+                        </Button>
+                    )}
                     {(() => {
                         switch (authentication.type) {
                             case "oauth":
@@ -379,6 +397,8 @@ function CardErrorMessage(props: { error: CardError; providerName: string }) {
             return <>{t("token check failed")}</>;
         case "remove failed":
             return <>{t("remove failed")}</>;
+        case "remove provider failed":
+            return <>{t("remove provider failed")}</>;
     }
 }
 
@@ -471,6 +491,7 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     },
     actions: {
         display: "flex",
+        flexWrap: "wrap",
         gap: theme.spacing(2),
         marginLeft: "auto"
     }
@@ -505,6 +526,9 @@ const { i18n } = declareComponentKeys<
     | "cancel"
     | "remove"
     | "remove failed"
+    | "added by you"
+    | "remove provider"
+    | "remove provider failed"
     | "token rejected"
     | "token check failed"
     | "favorite"

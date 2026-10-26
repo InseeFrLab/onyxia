@@ -59,8 +59,11 @@ export type Context = {
     s3Config: S3Config;
     aiConfig: AiConfig;
     gitProvidersConfig: GitProvidersConfig;
-    /** One per configured provider, in the order of the configuration. Empty: integration disabled */
-    gitProviders: GitProvider[];
+    /**
+     * The adapter of a provider, of GIT_PROVIDERS or added by the user. Stateless, see
+     * gitProvidersManagement's gitProviders selector for the list.
+     */
+    createGitProvider: (params: { config: GitProvidersConfig.Provider }) => GitProvider;
     oauthAuthorization: OAuthAuthorization;
     gitSessionStore: GitSessionStore;
 };
@@ -226,41 +229,50 @@ export async function bootstrapCore(
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
     }
 
-    const { gitProviders, oauthAuthorization, gitSessionStore } = await (async () => {
-        if (gitProvidersConfig.providers.length === 0 || !oidc.isUserLoggedIn) {
+    const { createGitProvider, oauthAuthorization, gitSessionStore } =
+        await (async () => {
+            if (
+                (gitProvidersConfig.providers.length === 0 &&
+                    gitProvidersConfig.disallowUserToAddProviders) ||
+                !oidc.isUserLoggedIn
+            ) {
+                const debugMessage =
+                    "Git integration disabled (no provider, users can't add theirs), or user not logged in";
+
+                return {
+                    createGitProvider: () => {
+                        throw new Error(debugMessage);
+                    },
+                    oauthAuthorization:
+                        createObjectThatThrowsIfAccessed<OAuthAuthorization>({
+                            debugMessage
+                        }),
+                    gitSessionStore: createObjectThatThrowsIfAccessed<GitSessionStore>({
+                        debugMessage
+                    })
+                };
+            }
+
+            const [
+                { createGitProvider },
+                { createOAuthAuthorization },
+                { createGitSessionStore }
+            ] = await Promise.all([
+                import("core/adapters/gitProvider"),
+                import("core/adapters/oauthAuthorization"),
+                import("core/adapters/gitSessionStore")
+            ]);
+
             return {
-                gitProviders: [],
-                oauthAuthorization: createObjectThatThrowsIfAccessed<OAuthAuthorization>({
-                    debugMessage: "No git provider configured, or user not logged in"
+                createGitProvider,
+                oauthAuthorization: createOAuthAuthorization({
+                    redirectUri: new URL(GIT_OAUTH_CALLBACK_PATH, params.appUrl).href
                 }),
-                gitSessionStore: createObjectThatThrowsIfAccessed<GitSessionStore>({
-                    debugMessage: "No git provider configured, or user not logged in"
+                gitSessionStore: createGitSessionStore({
+                    userSub: oidc.getDecodedIdToken().sub
                 })
             };
-        }
-
-        const [
-            { createGitProvider },
-            { createOAuthAuthorization },
-            { createGitSessionStore }
-        ] = await Promise.all([
-            import("core/adapters/gitProvider"),
-            import("core/adapters/oauthAuthorization"),
-            import("core/adapters/gitSessionStore")
-        ]);
-
-        return {
-            gitProviders: gitProvidersConfig.providers.map(config =>
-                createGitProvider({ config })
-            ),
-            oauthAuthorization: createOAuthAuthorization({
-                redirectUri: new URL(GIT_OAUTH_CALLBACK_PATH, params.appUrl).href
-            }),
-            gitSessionStore: createGitSessionStore({
-                userSub: oidc.getDecodedIdToken().sub
-            })
-        };
-    })();
+        })();
 
     const context: Context = {
         paramsOfBootstrapCore: params,
@@ -279,7 +291,7 @@ export async function bootstrapCore(
         s3Config,
         aiConfig,
         gitProvidersConfig,
-        gitProviders,
+        createGitProvider,
         oauthAuthorization,
         gitSessionStore
     };

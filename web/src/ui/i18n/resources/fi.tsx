@@ -42,6 +42,9 @@ export const translations: Translations<"fi"> = {
         "continue without saving": "Jatka tallentamatta"
     },
     AccountGitTab: {
+        "no git providers":
+            "Ei vielä Git-palveluntarjoajia. Lisää tilisi gitlab.comissa, github.comissa tai muussa palvelussa kloonataksesi ja puskeaksesi palveluistasi.",
+        "add git provider": "Lisää Git-palveluntarjoaja",
         gitName: "Käyttäjänimi Gitille",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -83,7 +86,44 @@ export const translations: Translations<"fi"> = {
         "loading failed": "Git-palveluntarjoajiasi ei voitu ladata.",
         retry: "Yritä uudelleen"
     },
+    AddGitProviderDialog: {
+        title: "Lisää Git-palveluntarjoaja",
+        close: "Sulje",
+        intro: "Yhdistä oma tili henkilökohtaisella käyttötunnisteella: Onyxia käyttää sitä ja välittää sen palveluillesi, jotta ne voivat kloonata ja puskea.",
+        type: "Tyyppi",
+        "forgejo option": "Forgejo (tai Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "Instanssin on sallittava Onyxian pyynnöt ([cors] ENABLED = true sen asetuksissa).",
+        "display name": "Nimi (valinnainen, oletuksena URL:n isäntä)",
+        "personal access token": "Henkilökohtainen käyttötunniste",
+        "personal access token hint":
+            "Se tarvitsee lukuoikeuden profiiliisi sekä luku- ja kirjoitusoikeuden repositorioihisi.",
+        "create a token": "Luo tunniste tällä palveluntarjoajalla",
+        "error title": "Palveluntarjoajaa ei voitu lisätä",
+        "invalid url": "Virheellinen URL, esim. https://gitlab.com",
+        "already configured": "Tämä palveluntarjoaja on jo listallasi.",
+        "personal access token rejected":
+            "Palveluntarjoaja hylkäsi tämän tunnisteen, tarkista se ja sen oikeudet.",
+        "provider unreachable":
+            "Palveluntarjoajaan ei saatu yhteyttä Onyxiasta. Tarkista URL ja tyyppi; Forgejo-instanssin on sallittava CORS.",
+        "save failed":
+            "Tunniste hyväksyttiin, mutta sitä ei voitu tallentaa, yritä uudelleen.",
+        cancel: "Peruuta",
+        add: "Lisää",
+        checking: "Tarkistetaan…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Poistetaanko ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `Palveluntarjoaja ja tunnisteesi poistetaan Onyxiasta. Itse tunniste on yhä olemassa palvelussa ${providerName}: peru se siellä, jos et enää tarvitse sitä.`,
+        cancel: "Peruuta",
+        "remove provider": "Poista"
+    },
     GitProviderCard: {
+        "added by you": "Itse lisäämäsi",
+        "remove provider": "Poista",
+        "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
         "connected as": ({ name, username }) =>
             `Yhdistetty käyttäjänä ${name} (@${username})`,
         "not connected": "Ei yhdistetty.",

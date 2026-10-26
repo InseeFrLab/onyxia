@@ -182,8 +182,12 @@ async function setup(params?: {
     sessions?: Record<string, string>;
     gitName?: string;
     gitEmail?: string;
-    /** GIT_PROVIDERS empty */
+    /** GIT_PROVIDERS empty, and the users can't add theirs */
     isIntegrationDisabled?: boolean;
+    /** No provider in GIT_PROVIDERS, the users add theirs */
+    isWithoutAdminProviders?: boolean;
+    /** The token the user providers (fakes) accept */
+    validUserProviderToken?: string;
     authorizeInPopup?: () => Promise<{ code: string; codeVerifier: string }>;
 }) {
     const {
@@ -193,6 +197,8 @@ async function setup(params?: {
         gitName = "",
         gitEmail = "",
         isIntegrationDisabled = false,
+        isWithoutAdminProviders = false,
+        validUserProviderToken = "glpat_valid",
         authorizeInPopup = async () => ({ code: "the-code", codeVerifier: "v" })
     } = params ?? {};
 
@@ -242,23 +248,62 @@ async function setup(params?: {
 
     const authorizeInPopupSpy = vi.fn(authorizeInPopup);
 
-    const gitProviders = isIntegrationDisabled
-        ? []
-        : [gitLab.gitProvider, forgejo.gitProvider, gitHub.gitProvider];
+    const gitProviders_admin =
+        isIntegrationDisabled || isWithoutAdminProviders
+            ? []
+            : [gitLab.gitProvider, forgejo.gitProvider, gitHub.gitProvider];
+
+    /** The user providers: a PAT provider at the url, unreachable on "down" hosts */
+    const createGitProvider = vi.fn(
+        ({ config }: { config: GitProvidersConfig.Provider }): GitProvider => {
+            const gitProvider_admin = gitProviders_admin.find(
+                ({ id }) => id === config.id
+            );
+
+            if (gitProvider_admin !== undefined) {
+                return gitProvider_admin;
+            }
+
+            return {
+                id: config.id,
+                displayName: config.displayName,
+                url: config.url,
+                ui: {
+                    type: "personal-access-token",
+                    personalAccessTokenCreationUrl: `${config.url}/-/user_settings/personal_access_tokens`
+                },
+                service: { type: "personal-access-token" },
+                getUser: async ({ accessToken }) => {
+                    if (config.url.includes("down")) {
+                        throw new TypeError("Failed to fetch");
+                    }
+                    if (accessToken !== validUserProviderToken) {
+                        throw new GitProviderUnauthorizedError();
+                    }
+                    return user_gitLab;
+                },
+                listRepositories: async () => ({ repositories: [], hasNextPage: false })
+            };
+        }
+    );
 
     const context = {
         oidc: { isUserLoggedIn: true },
         gitProvidersConfig: {
             description: undefined,
-            providers: isIntegrationDisabled
-                ? []
-                : [
-                      toConfig(gitLab.gitProvider, "gitlab"),
-                      toConfig(forgejo.gitProvider, "forgejo"),
-                      toConfig(gitHub.gitProvider, "github")
-                  ]
+            providers: gitProviders_admin.map(gitProvider =>
+                toConfig(
+                    gitProvider,
+                    gitProvider.id === "github"
+                        ? "github"
+                        : gitProvider.id === "forgejo"
+                          ? "forgejo"
+                          : "gitlab"
+                )
+            ),
+            disallowUserToAddProviders: isIntegrationDisabled
         },
-        gitProviders,
+        createGitProvider,
         oauthAuthorization: {
             redirectUri: "https://onyxia/git/oauth/callback",
             authorizeInPopup: authorizeInPopupSpy
@@ -340,7 +385,8 @@ describe("gitProvidersManagement", () => {
 
         expect(getPersisted()).toStrictEqual({
             personalAccessTokenByProviderId: { github: "ghp_valid" },
-            favoriteProviderId: null
+            favoriteProviderId: null,
+            userProviders: []
         });
         expect(getConnection("github")).toStrictEqual({
             status: "connected",
@@ -652,7 +698,7 @@ describe("gitProvidersManagement", () => {
             ).toBe(true);
         });
 
-        it("keeps the former behavior without GIT_PROVIDERS", async () => {
+        it("keeps the former behavior when the integration is disabled", async () => {
             const { core } = await setup({
                 isIntegrationDisabled: true,
                 gitName: "Me",
@@ -742,6 +788,254 @@ describe("gitProvidersManagement", () => {
                 name: user_gitHub.name,
                 email: user_onyxia.email,
                 token: "ghp_valid"
+            });
+        });
+    });
+
+    describe("user providers", () => {
+        const addGitLabCom = (
+            core: Awaited<ReturnType<typeof setup>>["core"],
+            params?: { url?: string; personalAccessToken?: string }
+        ) =>
+            core.functions.gitProvidersManagement.addUserProvider({
+                type: "gitlab",
+                url: params?.url ?? "gitlab.com",
+                displayName: "",
+                personalAccessToken: params?.personalAccessToken ?? " glpat_valid "
+            });
+
+        it("is available without GIT_PROVIDERS, the former fields hidden", async () => {
+            const { core, getView } = await setup({ isWithoutAdminProviders: true });
+
+            const { gitAccountUiController } = core.functions;
+
+            expect(gitAccountUiController.isAvailable()).toBe(true);
+            expect(gitAccountUiController.isLegacySectionVisible()).toBe(false);
+            expect(gitAccountUiController.canUserAddProviders()).toBe(true);
+
+            await gitAccountUiController.load();
+
+            expect(getView().providerCards).toStrictEqual([]);
+        });
+
+        it("adds a provider once it accepts the token, after the admin's", async () => {
+            const { core, getPersisted, getView, getCard, getConnection } = await setup();
+
+            await core.functions.gitProvidersManagement.load();
+
+            expect(await addGitLabCom(core)).toStrictEqual({
+                isSuccess: true,
+                providerId: "user:gitlab.com"
+            });
+
+            expect(getPersisted()).toStrictEqual({
+                personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
+                favoriteProviderId: null,
+                userProviders: [
+                    {
+                        id: "user:gitlab.com",
+                        type: "gitlab",
+                        url: "https://gitlab.com",
+                        displayName: "gitlab.com"
+                    }
+                ]
+            });
+            expect(getConnection("user:gitlab.com")).toStrictEqual({
+                status: "connected",
+                user: user_gitLab
+            });
+            expect(getView().providerCards.map(({ id }) => id)).toStrictEqual([
+                "gitlab",
+                "forgejo",
+                "github",
+                "user:gitlab.com"
+            ]);
+            expect(getCard("user:gitlab.com")).toMatchObject({
+                isAddedByUser: true,
+                removeProvider: { isDisabled: false },
+                authentication: { isRemoveButtonShown: false }
+            });
+            expect(getCard("github").removeProvider).toBe(undefined);
+        });
+
+        it("saves nothing when the token is rejected or the provider unreachable", async () => {
+            const { core, getPersisted } = await setup();
+
+            await core.functions.gitProvidersManagement.load();
+
+            expect(
+                await addGitLabCom(core, { personalAccessToken: "wrong" })
+            ).toStrictEqual({
+                isSuccess: false,
+                error: "personal access token rejected"
+            });
+            expect(
+                await addGitLabCom(core, { url: "https://forgejo.down.example" })
+            ).toStrictEqual({ isSuccess: false, error: "provider unreachable" });
+            expect(await addGitLabCom(core, { url: "https://gitlab/" })).toStrictEqual({
+                isSuccess: false,
+                error: "invalid url"
+            });
+            expect(await addGitLabCom(core, { url: "https://github.com" })).toStrictEqual(
+                { isSuccess: false, error: "already configured" }
+            );
+
+            expect(getPersisted()).toBe(null);
+        });
+
+        it("restores it after a reload, and hands its token to the services", async () => {
+            const gitConfigStr = JSON.stringify({
+                personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
+                favoriteProviderId: "user:gitlab.com",
+                userProviders: [
+                    {
+                        id: "user:gitlab.com",
+                        type: "gitlab",
+                        url: "https://gitlab.com",
+                        displayName: "GitLab.com"
+                    }
+                ]
+            });
+
+            const { core } = await setup({ gitConfigStr, isWithoutAdminProviders: true });
+
+            const git = await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(git.providers).toStrictEqual([
+                {
+                    id: "user:gitlab.com",
+                    url: "https://gitlab.com",
+                    user: { name: user_gitLab.name, email: user_gitLab.email },
+                    credentials: {
+                        type: "token",
+                        username: user_gitLab.username,
+                        token: "glpat_valid",
+                        expirationTime: undefined
+                    }
+                }
+            ]);
+            expect(git.token).toBe("glpat_valid");
+            expect(git.enabled).toBe(true);
+        });
+
+        it("removes it with its token, it is no longer the favorite", async () => {
+            const { core, getPersisted, getView } = await setup({
+                isWithoutAdminProviders: true
+            });
+
+            const { gitProvidersManagement, gitAccountUiController } = core.functions;
+
+            await gitProvidersManagement.load();
+            await addGitLabCom(core);
+            await gitProvidersManagement.setFavoriteProvider({
+                providerId: "user:gitlab.com"
+            });
+
+            await gitAccountUiController.removeProvider({
+                providerId: "user:gitlab.com"
+            });
+
+            expect(getPersisted()).toStrictEqual({
+                personalAccessTokenByProviderId: {},
+                favoriteProviderId: null,
+                userProviders: []
+            });
+            expect(getView().providerCards).toStrictEqual([]);
+        });
+
+        it("migrates the former GitHub token to a github.com of the user", async () => {
+            const { core, getView } = await setup({
+                isWithoutAdminProviders: true,
+                githubPersonalAccessToken: "glpat_valid"
+            });
+
+            await core.functions.gitAccountUiController.load();
+
+            expect(
+                getView().providerCards.map(({ id, status }) => ({ id, status }))
+            ).toStrictEqual([{ id: "user:github.com", status: "connected" }]);
+        });
+
+        it("ignores them once the admin no longer lets the users add theirs", async () => {
+            const gitConfigStr = JSON.stringify({
+                personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
+                favoriteProviderId: null,
+                userProviders: [
+                    {
+                        id: "user:gitlab.com",
+                        type: "gitlab",
+                        url: "https://gitlab.com",
+                        displayName: "gitlab.com"
+                    }
+                ]
+            });
+
+            const { core } = await setup({ gitConfigStr, isIntegrationDisabled: true });
+
+            expect(core.functions.gitAccountUiController.isAvailable()).toBe(false);
+            expect(core.functions.gitAccountUiController.isLegacySectionVisible()).toBe(
+                true
+            );
+        });
+
+        it("walks through the add dialog", async () => {
+            const { core, getState } = await setup({ isWithoutAdminProviders: true });
+
+            const { gitAccountUiController } = core.functions;
+
+            const getDialog = () =>
+                (getState() as never as { gitAccountUiController: any })
+                    .gitAccountUiController.addProviderDialog;
+
+            await gitAccountUiController.load();
+
+            expect(
+                gitAccountUiController.getPersonalAccessTokenCreationUrl({
+                    type: "gitlab",
+                    url: "gitlab.com/"
+                })
+            ).toBe("https://gitlab.com/-/user_settings/personal_access_tokens");
+            expect(
+                gitAccountUiController.getPersonalAccessTokenCreationUrl({
+                    type: "gitlab",
+                    url: "not a url"
+                })
+            ).toBe(undefined);
+
+            gitAccountUiController.openAddProviderDialog();
+
+            const prAdd = gitAccountUiController.addProvider({
+                type: "gitlab",
+                url: "gitlab.com",
+                displayName: "",
+                personalAccessToken: "wrong"
+            });
+
+            expect(getDialog()).toStrictEqual({
+                isOpen: true,
+                isSubmitting: true,
+                error: undefined
+            });
+
+            await prAdd;
+
+            expect(getDialog()).toStrictEqual({
+                isOpen: true,
+                isSubmitting: false,
+                error: "personal access token rejected"
+            });
+
+            await gitAccountUiController.addProvider({
+                type: "gitlab",
+                url: "gitlab.com",
+                displayName: "",
+                personalAccessToken: "glpat_valid"
+            });
+
+            expect(getDialog()).toStrictEqual({
+                isOpen: false,
+                isSubmitting: false,
+                error: undefined
             });
         });
     });
