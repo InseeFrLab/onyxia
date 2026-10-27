@@ -12,8 +12,12 @@ import {
 
 const REPOSITORIES_PER_PAGE = 20;
 
+/** What Onyxia needs: the user and their repositories */
+const UI_SCOPES = ["read_api"];
 /** What git needs in a service (clone, pull, push) */
 const GIT_SCOPES = ["read_repository", "write_repository"];
+/** Creating a token is a write: instead of UI_SCOPES for scoped-access-token */
+const TOKEN_CREATION_SCOPES = ["api"];
 
 const zUser = z.object({
     username: z.string(),
@@ -22,7 +26,7 @@ const zUser = z.object({
     public_email: z.string().nullable().optional()
 });
 
-const zProjects = z.array(
+const zRepositories = z.array(
     z.object({
         id: z.number(),
         name: z.string(),
@@ -36,6 +40,10 @@ const zProjects = z.array(
 
 const zPersonalAccessToken = z.object({ token: z.string().min(1) });
 
+/**
+ * GitLab (gitlab.com and self-managed).
+ * - scoped-access-token: fine-grained personal access tokens, GitLab >= 19.2.
+ */
 export function createGitLabProvider(params: {
     config: GitProvidersConfig.Provider;
 }): GitProvider {
@@ -44,15 +52,31 @@ export function createGitLabProvider(params: {
 
     assert(config.type === "gitlab");
 
+    const uiScopes =
+        authentication.service.type === "scoped-access-token"
+            ? TOKEN_CREATION_SCOPES
+            : UI_SCOPES;
+
+    const apiUrl = `${url}/api/v4`;
     const authorizationUrl = `${url}/oauth/authorize`;
     const tokenUrl = `${url}/oauth/token`;
+    const deviceAuthorizationUrl = `${url}/oauth/authorize_device`;
+    const revocationUrl = `${url}/oauth/revoke`;
+    const authorizedApplicationsUrl = `${url}/-/user_settings/applications`;
+    const tokenCreationUrl = (() => {
+        // NOTE: The PAT is also the service's with personal-access-token.
+        const scopes =
+            authentication.service.type === "personal-access-token"
+                ? [...new Set([...uiScopes, ...GIT_SCOPES])]
+                : uiScopes;
 
-    /**
-     * NOTE: Creating a token is a write: "api" is needed for scoped-access-token,
-     * "read_api" is enough otherwise.
-     */
-    const uiScopes =
-        authentication.service.type === "scoped-access-token" ? ["api"] : ["read_api"];
+        const creationUrl = new URL(`${url}/-/user_settings/personal_access_tokens`);
+        creationUrl.search = new URLSearchParams({
+            name: "Onyxia",
+            scopes: scopes.join(",")
+        }).toString();
+        return creationUrl.href;
+    })();
 
     const userConnection: GitProvider["userConnection"] = (() => {
         switch (authentication.ui.type) {
@@ -67,7 +91,7 @@ export function createGitLabProvider(params: {
                         revokeTokens: async ({ refreshToken }) => {
                             assert(authentication.ui.type === "oauth");
 
-                            const response = await fetch(`${url}/oauth/revoke`, {
+                            const response = await fetch(revocationUrl, {
                                 method: "POST",
                                 credentials: "omit",
                                 cache: "no-store",
@@ -85,34 +109,11 @@ export function createGitLabProvider(params: {
                                 );
                             }
                         },
-                        authorizedApplicationsUrl: `${url}/-/user_settings/applications`
+                        authorizedApplicationsUrl
                     })
                 };
-            case "personal-access-token": {
-                const scopes = (() => {
-                    switch (authentication.service.type) {
-                        case "scoped-access-token":
-                            return ["api"];
-                        case "personal-access-token":
-                            return ["read_api", ...GIT_SCOPES];
-                        case "oauth":
-                            return ["read_api"];
-                    }
-                })();
-
-                const creationUrl = new URL(
-                    `${url}/-/user_settings/personal_access_tokens`
-                );
-                creationUrl.search = new URLSearchParams({
-                    name: "Onyxia",
-                    scopes: scopes.join(",")
-                }).toString();
-
-                return {
-                    method: "personal-access-token",
-                    tokenCreationUrl: creationUrl.href
-                };
-            }
+            case "personal-access-token":
+                return { method: "personal-access-token", tokenCreationUrl };
         }
     })();
 
@@ -129,7 +130,7 @@ export function createGitLabProvider(params: {
                         const permissions = ["download_code", "push_code"];
 
                         const response = await fetchProviderApi({
-                            url: `${url}/api/v4/user/personal_access_tokens`,
+                            url: `${apiUrl}/user/personal_access_tokens`,
                             method: "POST",
                             accessToken,
                             jsonBody: {
@@ -181,7 +182,7 @@ export function createGitLabProvider(params: {
                         scopes: GIT_SCOPES,
                         authorizationUrl,
                         tokenUrl,
-                        deviceAuthorizationUrl: `${url}/oauth/authorize_device`
+                        deviceAuthorizationUrl
                     },
                     authorizeAtLaunch: createServiceAuthorization({
                         authorizationUrl,
@@ -196,12 +197,9 @@ export function createGitLabProvider(params: {
 
     return {
         userConnection,
-        serviceCredentials,
-        // NOTE: Any non blank username is accepted with a personal access token.
-        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
-                url: `${url}/api/v4/user`,
+                url: `${apiUrl}/user`,
                 accessToken
             });
 
@@ -220,8 +218,8 @@ export function createGitLabProvider(params: {
             };
         },
         listRepositories: async ({ accessToken, search, page, signal }) => {
-            const apiUrl = new URL(`${url}/api/v4/projects`);
-            apiUrl.search = new URLSearchParams({
+            const listUrl = new URL(`${apiUrl}/projects`);
+            listUrl.search = new URLSearchParams({
                 membership: "true",
                 simple: "true",
                 order_by: "last_activity_at",
@@ -233,7 +231,7 @@ export function createGitLabProvider(params: {
             }).toString();
 
             const response = await fetchProviderApi({
-                url: apiUrl.href,
+                url: listUrl.href,
                 accessToken,
                 signal
             });
@@ -245,7 +243,7 @@ export function createGitLabProvider(params: {
             }
 
             const projects = parseOrThrow(
-                zProjects,
+                zRepositories,
                 await response.json(),
                 "GitLab projects"
             );
@@ -271,6 +269,9 @@ export function createGitLabProvider(params: {
                         ? projects.length === REPOSITORIES_PER_PAGE
                         : nextPage !== ""
             };
-        }
+        },
+        // NOTE: Any non blank username is accepted with a personal access token.
+        getGitUsername: ({ user }) => user.username,
+        serviceCredentials
     };
 }

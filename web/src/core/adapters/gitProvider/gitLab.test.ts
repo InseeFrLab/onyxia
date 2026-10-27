@@ -51,35 +51,6 @@ describe("createGitLabProvider", () => {
         }
     });
 
-    it("authorizes the services with their own application and git scopes", () => {
-        assert(gitLab_oauth_oauth.serviceCredentials.method === "oauth");
-
-        const { authorizeAtLaunch, helperConfig } = gitLab_oauth_oauth.serviceCredentials;
-
-        assert(authorizeAtLaunch !== undefined);
-
-        const authorizationUrl = new URL(
-            authorizeAtLaunch.getAuthorizationUrl({
-                redirectUri,
-                state: "s",
-                codeChallenge: "c"
-            })
-        );
-
-        expect(authorizationUrl.searchParams.get("client_id")).toBe("services-app");
-        expect(authorizationUrl.searchParams.get("scope")).toBe(
-            "read_repository write_repository"
-        );
-        expect(authorizationUrl.searchParams.get("code_challenge_method")).toBe("S256");
-        expect(helperConfig).toStrictEqual({
-            clientId: "services-app",
-            scopes: ["read_repository", "write_repository"],
-            authorizationUrl: "https://git.example.com/oauth/authorize",
-            tokenUrl: "https://git.example.com/oauth/token",
-            deviceAuthorizationUrl: "https://git.example.com/oauth/authorize_device"
-        });
-    });
-
     it("prefills the scopes of the personal access token", () => {
         const getScopes = (
             service: GitProvidersConfig.Provider["authentication"]["service"]
@@ -170,6 +141,14 @@ describe("createGitLabProvider", () => {
         expect(body.get("client_id")).toBe("onyxia-app");
     });
 
+    it("throws GitProviderUnauthorizedError on 401", async () => {
+        mockFetch(() => new Response("", { status: 401 }));
+
+        await expect(
+            gitLab_oauth_scoped.getUser({ accessToken: "t" })
+        ).rejects.toBeInstanceOf(GitProviderUnauthorizedError);
+    });
+
     it("lists repositories, never from another host", async () => {
         mockFetch(
             () =>
@@ -207,12 +186,33 @@ describe("createGitLabProvider", () => {
         expect(hasNextPage).toBe(false);
     });
 
-    it("throws GitProviderUnauthorizedError on 401", async () => {
-        mockFetch(() => new Response("", { status: 401 }));
+    it("authorizes the services with their own application and git scopes", () => {
+        assert(gitLab_oauth_oauth.serviceCredentials.method === "oauth");
 
-        await expect(
-            gitLab_oauth_scoped.getUser({ accessToken: "t" })
-        ).rejects.toBeInstanceOf(GitProviderUnauthorizedError);
+        const { authorizeAtLaunch, helperConfig } = gitLab_oauth_oauth.serviceCredentials;
+
+        assert(authorizeAtLaunch !== undefined);
+
+        const authorizationUrl = new URL(
+            authorizeAtLaunch.getAuthorizationUrl({
+                redirectUri,
+                state: "s",
+                codeChallenge: "c"
+            })
+        );
+
+        expect(authorizationUrl.searchParams.get("client_id")).toBe("services-app");
+        expect(authorizationUrl.searchParams.get("scope")).toBe(
+            "read_repository write_repository"
+        );
+        expect(authorizationUrl.searchParams.get("code_challenge_method")).toBe("S256");
+        expect(helperConfig).toStrictEqual({
+            clientId: "services-app",
+            scopes: ["read_repository", "write_repository"],
+            authorizationUrl: "https://git.example.com/oauth/authorize",
+            tokenUrl: "https://git.example.com/oauth/token",
+            deviceAuthorizationUrl: "https://git.example.com/oauth/authorize_device"
+        });
     });
 
     it("creates a fine-grained access token on all the repositories", async () => {

@@ -5,8 +5,6 @@ import type { GitProvider, GitRepository } from "core/ports/GitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { fetchProviderApi, getIsSameOrigin, parseOrThrow } from "./shared";
 
-const API_URL = "https://api.bitbucket.org/2.0";
-
 const REPOSITORIES_PER_PAGE = 20;
 
 /**
@@ -69,17 +67,24 @@ export function createBitbucketProvider(params: {
         "Bitbucket can only be accessed with an API token"
     );
 
+    const apiUrl = "https://api.bitbucket.org/2.0";
+    const tokenCreationUrl =
+        "https://id.atlassian.com/manage-profile/security/api-tokens";
+
+    const userConnection: GitProvider["userConnection"] = {
+        method: "personal-access-token",
+        tokenCreationUrl
+    };
+
+    const serviceCredentials: GitProvider["serviceCredentials"] = {
+        method: "user-token"
+    };
+
     return {
-        userConnection: {
-            method: "personal-access-token",
-            tokenCreationUrl:
-                "https://id.atlassian.com/manage-profile/security/api-tokens"
-        },
-        serviceCredentials: { method: "user-token" },
-        getGitUsername: () => API_TOKEN_GIT_USERNAME,
+        userConnection,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
-                url: `${API_URL}/user`,
+                url: `${apiUrl}/user`,
                 accessToken
             });
 
@@ -99,7 +104,7 @@ export function createBitbucketProvider(params: {
             // fails, the Onyxia account's email is used then.
             const email = await (async () => {
                 const response = await fetchProviderApi({
-                    url: `${API_URL}/user/emails`,
+                    url: `${apiUrl}/user/emails`,
                     accessToken
                 });
 
@@ -125,7 +130,7 @@ export function createBitbucketProvider(params: {
             };
         },
         listRepositories: async ({ accessToken, search, page, signal }) => {
-            const listUrl = new URL(`${API_URL}/repositories`);
+            const listUrl = new URL(`${apiUrl}/repositories`);
 
             const search_trimmed = search.trim();
 
@@ -186,6 +191,8 @@ export function createBitbucketProvider(params: {
                     .filter(exclude(undefined)),
                 hasNextPage: next !== undefined
             };
-        }
+        },
+        getGitUsername: () => API_TOKEN_GIT_USERNAME,
+        serviceCredentials
     };
 }

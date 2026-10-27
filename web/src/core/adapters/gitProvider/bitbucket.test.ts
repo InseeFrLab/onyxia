@@ -35,18 +35,12 @@ describe("createBitbucketProvider", () => {
         vi.unstubAllGlobals();
     });
 
-    it("pairs the API token with the static git username", () => {
+    it("links to the API token creation page", () => {
         assert(bitbucket.userConnection.method === "personal-access-token");
 
         expect(bitbucket.userConnection.tokenCreationUrl).toBe(
             "https://id.atlassian.com/manage-profile/security/api-tokens"
         );
-        expect(bitbucket.serviceCredentials).toStrictEqual({ method: "user-token" });
-        expect(
-            bitbucket.getGitUsername({
-                user: { username: "jdoe", name: "Jane Doe", email: undefined }
-            })
-        ).toBe("x-bitbucket-api-token-auth");
     });
 
     it("maps the user and its primary email, with the API token as a Bearer", async () => {
@@ -144,5 +138,14 @@ describe("createBitbucketProvider", () => {
 
         expect(searchParams.get("role")).toBe("member");
         expect(searchParams.get("q")).toBe('full_name ~ "alp"');
+    });
+
+    it("pairs the API token with the static git username", () => {
+        expect(bitbucket.serviceCredentials).toStrictEqual({ method: "user-token" });
+        expect(
+            bitbucket.getGitUsername({
+                user: { username: "jdoe", name: "Jane Doe", email: undefined }
+            })
+        ).toBe("x-bitbucket-api-token-auth");
     });
 });

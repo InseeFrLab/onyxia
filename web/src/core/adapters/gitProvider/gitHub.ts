@@ -6,6 +6,9 @@ import { fetchProviderApi, getIsSameOrigin, parseOrThrow } from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
 
+/** What Onyxia needs: the user and their repositories */
+const UI_SCOPES = ["repo"];
+/** What git needs in a service (clone, pull, push) */
 const GIT_SCOPES = ["repo"];
 
 const zUser = z.object({
@@ -64,34 +67,48 @@ export function createGitHubProvider(params: {
         authentication.ui.type === "personal-access-token",
         "GitHub can only be accessed with a personal access token"
     );
+    assert(
+        authentication.service.type !== "scoped-access-token",
+        "GitHub can't create access tokens for the services"
+    );
 
     const apiUrl = getGitHubApiUrl({ url });
-
+    const authorizationUrl = `${url}/login/oauth/authorize`;
+    const tokenUrl = `${url}/login/oauth/access_token`;
+    const deviceAuthorizationUrl = `${url}/login/device/code`;
     const tokenCreationUrl = (() => {
+        // NOTE: The PAT is also the service's with personal-access-token.
+        const scopes =
+            authentication.service.type === "personal-access-token"
+                ? [...new Set([...UI_SCOPES, ...GIT_SCOPES])]
+                : UI_SCOPES;
+
         const creationUrl = new URL(`${url}/settings/tokens/new`);
         creationUrl.search = new URLSearchParams({
             description: "Onyxia",
-            scopes: GIT_SCOPES.join(",")
+            scopes: scopes.join(",")
         }).toString();
         return creationUrl.href;
     })();
+
+    const userConnection: GitProvider["userConnection"] = {
+        method: "personal-access-token",
+        tokenCreationUrl
+    };
 
     const serviceCredentials: GitProvider["serviceCredentials"] = (() => {
         switch (authentication.service.type) {
             case "personal-access-token":
                 return { method: "user-token" };
-            case "scoped-access-token":
-                assert(false, "GitHub can't create access tokens for the services");
-            // eslint-disable-next-line no-fallthrough
             case "oauth":
                 return {
                     method: "oauth",
                     helperConfig: {
                         clientId: authentication.service.clientId,
                         scopes: GIT_SCOPES,
-                        authorizationUrl: `${url}/login/oauth/authorize`,
-                        tokenUrl: `${url}/login/oauth/access_token`,
-                        deviceAuthorizationUrl: `${url}/login/device/code`
+                        authorizationUrl,
+                        tokenUrl,
+                        deviceAuthorizationUrl
                     },
                     authorizeAtLaunch: undefined
                 };
@@ -99,9 +116,7 @@ export function createGitHubProvider(params: {
     })();
 
     return {
-        userConnection: { method: "personal-access-token", tokenCreationUrl },
-        serviceCredentials,
-        getGitUsername: ({ user }) => user.username,
+        userConnection,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
                 url: `${apiUrl}/user`,
@@ -174,6 +189,8 @@ export function createGitHubProvider(params: {
                     ),
                 hasNextPage: /rel="next"/.test(response.headers.get("link") ?? "")
             };
-        }
+        },
+        getGitUsername: ({ user }) => user.username,
+        serviceCredentials
     };
 }

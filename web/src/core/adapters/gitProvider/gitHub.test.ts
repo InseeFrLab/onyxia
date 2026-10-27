@@ -47,15 +47,6 @@ describe("createGitHubProvider", () => {
         ).toBe("repo");
     });
 
-    it("leaves the services to the device flow", () => {
-        assert(gitHub.serviceCredentials.method === "oauth");
-
-        expect(gitHub.serviceCredentials.authorizeAtLaunch).toBe(undefined);
-        expect(gitHub.serviceCredentials.helperConfig.deviceAuthorizationUrl).toBe(
-            "https://github.com/login/device/code"
-        );
-    });
-
     it("maps the user", async () => {
         const { calls } = mockFetch(
             () => new Response(JSON.stringify({ login: "jdoe", name: null, email: null }))
@@ -100,5 +91,14 @@ describe("createGitHubProvider", () => {
 
         expect(repositories.map(({ fullPath }) => fullPath)).toStrictEqual(["jdoe/beta"]);
         expect(hasNextPage).toBe(true);
+    });
+
+    it("leaves the services to the device flow", () => {
+        assert(gitHub.serviceCredentials.method === "oauth");
+
+        expect(gitHub.serviceCredentials.authorizeAtLaunch).toBe(undefined);
+        expect(gitHub.serviceCredentials.helperConfig.deviceAuthorizationUrl).toBe(
+            "https://github.com/login/device/code"
+        );
     });
 });
