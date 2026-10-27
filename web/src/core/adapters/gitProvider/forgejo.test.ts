@@ -28,52 +28,6 @@ describe("createForgejoProvider", () => {
         );
     });
 
-    it("authorizes the services with their own application, without device flow", () => {
-        assert(forgejo.serviceCredentials.method === "oauth");
-
-        const { authorizeAtLaunch, helperConfig } = forgejo.serviceCredentials;
-
-        assert(authorizeAtLaunch !== undefined);
-
-        expect(
-            new URL(
-                authorizeAtLaunch.getAuthorizationUrl({
-                    redirectUri,
-                    state: "s",
-                    codeChallenge: "c"
-                })
-            ).searchParams.get("client_id")
-        ).toBe("services-app");
-        expect(helperConfig.deviceAuthorizationUrl).toBe(undefined);
-        expect(helperConfig.tokenUrl).toBe(
-            "https://forgejo.example.com/login/oauth/access_token"
-        );
-    });
-
-    it("fails when the service gets no refresh token", async () => {
-        mockFetch(
-            () =>
-                new Response(
-                    JSON.stringify({
-                        access_token: "a",
-                        token_type: "bearer",
-                        expires_in: 3600
-                    })
-                )
-        );
-
-        assert(forgejo.serviceCredentials.method === "oauth");
-        assert(forgejo.serviceCredentials.authorizeAtLaunch !== undefined);
-
-        await expect(
-            forgejo.serviceCredentials.authorizeAtLaunch.exchangeAuthorizationCode({
-                code: "c",
-                codeVerifier: "v",
-                redirectUri
-            })
-        ).rejects.toThrow(/refresh token/);
-    });
-
     it("maps the user", async () => {
         mockFetch(
             () =>
@@ -118,5 +72,51 @@ describe("createForgejoProvider", () => {
             "https://forgejo.example.com/jdoe/r.git"
         );
         expect(hasNextPage).toBe(true);
+    });
+
+    it("authorizes the services with their own application, without device flow", () => {
+        assert(forgejo.serviceCredentials.method === "oauth");
+
+        const { authorizeAtLaunch, helperConfig } = forgejo.serviceCredentials;
+
+        assert(authorizeAtLaunch !== undefined);
+
+        expect(
+            new URL(
+                authorizeAtLaunch.getAuthorizationUrl({
+                    redirectUri,
+                    state: "s",
+                    codeChallenge: "c"
+                })
+            ).searchParams.get("client_id")
+        ).toBe("services-app");
+        expect(helperConfig.deviceAuthorizationUrl).toBe(undefined);
+        expect(helperConfig.tokenUrl).toBe(
+            "https://forgejo.example.com/login/oauth/access_token"
+        );
+    });
+
+    it("fails when the service gets no refresh token", async () => {
+        mockFetch(
+            () =>
+                new Response(
+                    JSON.stringify({
+                        access_token: "a",
+                        token_type: "bearer",
+                        expires_in: 3600
+                    })
+                )
+        );
+
+        assert(forgejo.serviceCredentials.method === "oauth");
+        assert(forgejo.serviceCredentials.authorizeAtLaunch !== undefined);
+
+        await expect(
+            forgejo.serviceCredentials.authorizeAtLaunch.exchangeAuthorizationCode({
+                code: "c",
+                codeVerifier: "v",
+                redirectUri
+            })
+        ).rejects.toThrow(/refresh token/);
     });
 });

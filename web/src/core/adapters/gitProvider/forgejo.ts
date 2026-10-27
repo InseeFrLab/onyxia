@@ -14,7 +14,9 @@ const REPOSITORIES_PER_PAGE = 20;
 
 // TODO(phase 1): Check that these scopes are enforced, older versions ignore them and
 // issue tokens with every right (minimal version to document).
+/** What Onyxia needs: the user and their repositories */
 const UI_SCOPES = ["read:user", "read:repository"];
+/** What git needs in a service (clone, pull, push) */
 const GIT_SCOPES = ["write:repository"];
 
 const zUser = z.object({
@@ -52,10 +54,18 @@ export function createForgejoProvider(params: {
     const { url, authentication } = config;
 
     assert(config.type === "forgejo");
+    assert(
+        authentication.service.type !== "scoped-access-token",
+        "Forgejo can't create access tokens for the services"
+    );
 
+    const apiUrl = `${url}/api/v1`;
     const authorizationUrl = `${url}/login/oauth/authorize`;
     const tokenUrl = `${url}/login/oauth/access_token`;
-    const applicationsUrl = `${url}/user/settings/applications`;
+    const deviceAuthorizationUrl = undefined;
+    const authorizedApplicationsUrl = `${url}/user/settings/applications`;
+    // NOTE: The token creation form can't be prefilled.
+    const tokenCreationUrl = authorizedApplicationsUrl;
 
     const userConnection: GitProvider["userConnection"] = (() => {
         switch (authentication.ui.type) {
@@ -68,15 +78,11 @@ export function createForgejoProvider(params: {
                         clientId: authentication.ui.clientId,
                         scopes: UI_SCOPES,
                         revokeTokens: undefined,
-                        authorizedApplicationsUrl: applicationsUrl
+                        authorizedApplicationsUrl
                     })
                 };
             case "personal-access-token":
-                // NOTE: The token creation form can't be prefilled.
-                return {
-                    method: "personal-access-token",
-                    tokenCreationUrl: applicationsUrl
-                };
+                return { method: "personal-access-token", tokenCreationUrl };
         }
     })();
 
@@ -84,9 +90,6 @@ export function createForgejoProvider(params: {
         switch (authentication.service.type) {
             case "personal-access-token":
                 return { method: "user-token" };
-            case "scoped-access-token":
-                assert(false, "Forgejo can't create access tokens for the services");
-            // eslint-disable-next-line no-fallthrough
             case "oauth": {
                 const { clientId } = authentication.service;
 
@@ -97,7 +100,7 @@ export function createForgejoProvider(params: {
                         scopes: GIT_SCOPES,
                         authorizationUrl,
                         tokenUrl,
-                        deviceAuthorizationUrl: undefined
+                        deviceAuthorizationUrl
                     },
                     authorizeAtLaunch: createServiceAuthorization({
                         authorizationUrl,
@@ -112,11 +115,9 @@ export function createForgejoProvider(params: {
 
     return {
         userConnection,
-        serviceCredentials,
-        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
-                url: `${url}/api/v1/user`,
+                url: `${apiUrl}/user`,
                 accessToken
             });
 
@@ -137,8 +138,8 @@ export function createForgejoProvider(params: {
         listRepositories: async ({ accessToken, search, page, signal }) => {
             // NOTE: Repositories visible to the user (their own, their organizations',
             // and the public ones), most recently updated first.
-            const apiUrl = new URL(`${url}/api/v1/repos/search`);
-            apiUrl.search = new URLSearchParams({
+            const listUrl = new URL(`${apiUrl}/repos/search`);
+            listUrl.search = new URLSearchParams({
                 q: search,
                 sort: "updated",
                 order: "desc",
@@ -147,7 +148,7 @@ export function createForgejoProvider(params: {
             }).toString();
 
             const response = await fetchProviderApi({
-                url: apiUrl.href,
+                url: listUrl.href,
                 accessToken,
                 signal
             });
@@ -185,6 +186,8 @@ export function createForgejoProvider(params: {
                         ? page * REPOSITORIES_PER_PAGE < totalCount
                         : data.length === REPOSITORIES_PER_PAGE
             };
-        }
+        },
+        getGitUsername: ({ user }) => user.username,
+        serviceCredentials
     };
 }
