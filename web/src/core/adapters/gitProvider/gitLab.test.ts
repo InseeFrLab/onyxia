@@ -37,11 +37,11 @@ describe("createGitLabProvider", () => {
             [gitLab_oauth_scoped, "api"],
             [gitLab_oauth_oauth, "read_api"]
         ] as const) {
-            assert(gitLab.ui.type === "oauth");
+            assert(gitLab.userConnection.method === "oauth");
 
             expect(
                 getScope(
-                    gitLab.ui.oauth.getAuthorizationUrl({
+                    gitLab.userConnection.getAuthorizationUrl({
                         redirectUri,
                         state: "s",
                         codeChallenge: "c"
@@ -52,14 +52,14 @@ describe("createGitLabProvider", () => {
     });
 
     it("authorizes the services with their own application and git scopes", () => {
-        assert(gitLab_oauth_oauth.service.type === "oauth");
+        assert(gitLab_oauth_oauth.serviceCredentials.method === "oauth");
 
-        const { authorization, helperConfig } = gitLab_oauth_oauth.service;
+        const { authorizeAtLaunch, helperConfig } = gitLab_oauth_oauth.serviceCredentials;
 
-        assert(authorization !== undefined);
+        assert(authorizeAtLaunch !== undefined);
 
         const authorizationUrl = new URL(
-            authorization.getAuthorizationUrl({
+            authorizeAtLaunch.getAuthorizationUrl({
                 redirectUri,
                 state: "s",
                 codeChallenge: "c"
@@ -89,9 +89,9 @@ describe("createGitLabProvider", () => {
                 service
             });
 
-            assert(gitLab.ui.type === "personal-access-token");
+            assert(gitLab.userConnection.method === "personal-access-token");
 
-            return new URL(gitLab.ui.personalAccessTokenCreationUrl).searchParams.get(
+            return new URL(gitLab.userConnection.tokenCreationUrl).searchParams.get(
                 "scopes"
             );
         };
@@ -106,13 +106,15 @@ describe("createGitLabProvider", () => {
     it("exchanges the code with PKCE", async () => {
         const { calls } = mockFetch(() => tokenResponse("1"));
 
-        assert(gitLab_oauth_scoped.ui.type === "oauth");
+        assert(gitLab_oauth_scoped.userConnection.method === "oauth");
 
-        const tokens = await gitLab_oauth_scoped.ui.oauth.exchangeAuthorizationCode({
-            code: "the-code",
-            codeVerifier: "the-verifier",
-            redirectUri
-        });
+        const tokens = await gitLab_oauth_scoped.userConnection.exchangeAuthorizationCode(
+            {
+                code: "the-code",
+                codeVerifier: "the-verifier",
+                redirectUri
+            }
+        );
 
         expect(tokens.accessToken).toBe("access-1");
         expect(tokens.refreshToken).toBe("refresh-1");
@@ -125,9 +127,9 @@ describe("createGitLabProvider", () => {
     it("sends the redirect URI again when refreshing", async () => {
         const { calls } = mockFetch(() => tokenResponse("2"));
 
-        assert(gitLab_oauth_scoped.ui.type === "oauth");
+        assert(gitLab_oauth_scoped.userConnection.method === "oauth");
 
-        await gitLab_oauth_scoped.ui.oauth.refreshTokens({
+        await gitLab_oauth_scoped.userConnection.refreshTokens({
             refreshToken: "r",
             redirectUri
         });
@@ -144,20 +146,23 @@ describe("createGitLabProvider", () => {
                 new Response(JSON.stringify({ error: "invalid_grant" }), { status: 400 })
         );
 
-        assert(gitLab_oauth_scoped.ui.type === "oauth");
+        assert(gitLab_oauth_scoped.userConnection.method === "oauth");
 
         await expect(
-            gitLab_oauth_scoped.ui.oauth.refreshTokens({ refreshToken: "r", redirectUri })
+            gitLab_oauth_scoped.userConnection.refreshTokens({
+                refreshToken: "r",
+                redirectUri
+            })
         ).rejects.toBeInstanceOf(GitProviderUnauthorizedError);
     });
 
     it("revokes the refresh token", async () => {
         const { calls } = mockFetch(() => new Response("{}"));
 
-        assert(gitLab_oauth_scoped.ui.type === "oauth");
-        assert(gitLab_oauth_scoped.ui.oauth.revokeTokens !== undefined);
+        assert(gitLab_oauth_scoped.userConnection.method === "oauth");
+        assert(gitLab_oauth_scoped.userConnection.revokeTokens !== undefined);
 
-        await gitLab_oauth_scoped.ui.oauth.revokeTokens({ refreshToken: "r" });
+        await gitLab_oauth_scoped.userConnection.revokeTokens({ refreshToken: "r" });
 
         expect(calls[0].url).toBe("https://git.example.com/oauth/revoke");
         const body = new URLSearchParams(calls[0].init!.body as string);
@@ -218,22 +223,15 @@ describe("createGitLabProvider", () => {
                 )
         );
 
-        assert(gitLab_oauth_scoped.service.type === "scoped-access-token");
+        assert(gitLab_oauth_scoped.serviceCredentials.method === "scoped-token");
 
-        const accessToken = await gitLab_oauth_scoped.service.createAccessToken({
+        const createdToken = await gitLab_oauth_scoped.serviceCredentials.createToken({
             accessToken: "t",
             name: "onyxia-vscode",
-            repositories: "all",
-            permission: "read-write",
             expirationTime: new Date("2026-11-14T12:00:00Z").getTime()
         });
 
-        expect(accessToken).toStrictEqual({
-            id: "42",
-            token: "glpat-x",
-            gitUsername: "oauth2",
-            expirationTime: new Date("2026-11-14").getTime()
-        });
+        expect(createdToken).toStrictEqual({ token: "glpat-x" });
         expect(JSON.parse(calls[0].init!.body as string)).toStrictEqual({
             name: "onyxia-vscode",
             expires_at: "2026-11-14",
@@ -247,44 +245,15 @@ describe("createGitLabProvider", () => {
         });
     });
 
-    it("resolves the projects for a token limited to repositories", async () => {
-        const { calls } = mockFetch(({ url }) =>
-            url.includes("/projects/")
-                ? new Response(JSON.stringify({ id: 7 }))
-                : new Response(JSON.stringify({ id: 1, token: "x", expires_at: null }))
-        );
-
-        assert(gitLab_oauth_scoped.service.type === "scoped-access-token");
-
-        await gitLab_oauth_scoped.service.createAccessToken({
-            accessToken: "t",
-            name: "n",
-            repositories: { urls: ["https://git.example.com/g/sub/p.git"] },
-            permission: "read",
-            expirationTime: Date.now()
-        });
-
-        expect(calls[0].url).toBe("https://git.example.com/api/v4/projects/g%2Fsub%2Fp");
-        expect(JSON.parse(calls[1].init!.body as string).granular_scopes).toStrictEqual([
-            {
-                access: "selected_memberships",
-                permissions: ["download_code"],
-                project_ids: [7]
-            }
-        ]);
-    });
-
     it("fails explicitly when fine-grained tokens are not available", async () => {
         mockFetch(() => new Response("", { status: 400 }));
 
-        assert(gitLab_oauth_scoped.service.type === "scoped-access-token");
+        assert(gitLab_oauth_scoped.serviceCredentials.method === "scoped-token");
 
         await expect(
-            gitLab_oauth_scoped.service.createAccessToken({
+            gitLab_oauth_scoped.serviceCredentials.createToken({
                 accessToken: "t",
                 name: "n",
-                repositories: "all",
-                permission: "read-write",
                 expirationTime: Date.now()
             })
         ).rejects.toThrow(/19\.2/);

@@ -60,7 +60,7 @@ export function createBitbucketProvider(params: {
     config: GitProvidersConfig.Provider;
 }): GitProvider {
     const { config } = params;
-    const { id, url, displayName, authentication } = config;
+    const { url, authentication } = config;
 
     assert(config.type === "bitbucket");
     assert(
@@ -70,15 +70,13 @@ export function createBitbucketProvider(params: {
     );
 
     return {
-        id,
-        displayName,
-        url,
-        ui: {
-            type: "personal-access-token",
-            personalAccessTokenCreationUrl:
+        userConnection: {
+            method: "personal-access-token",
+            tokenCreationUrl:
                 "https://id.atlassian.com/manage-profile/security/api-tokens"
         },
-        service: { type: "personal-access-token", gitUsername: API_TOKEN_GIT_USERNAME },
+        serviceCredentials: { method: "user-token" },
+        getGitUsername: () => API_TOKEN_GIT_USERNAME,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
                 url: `${API_URL}/user`,

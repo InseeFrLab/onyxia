@@ -49,7 +49,37 @@ const user_gitLab: GitUser = { username: "jdoe", name: "J. Doe", email: "j@lab" 
 const user_onyxia = { username: "kc-jdoe", email: "jdoe@insee.fr" };
 const user_gitHub: GitUser = { username: "jdoe-gh", name: "Jane", email: undefined };
 
-function createFakeOAuthProvider(params: { id: string; withRevoke: boolean }) {
+function createFakeConfig(params: {
+    id: string;
+    type: GitProvidersConfig.ProviderType;
+    url: string;
+    ui: GitProvidersConfig.Authentication.Ui;
+}): GitProvidersConfig.Provider {
+    const { id, type, url, ui } = params;
+
+    return {
+        id,
+        type,
+        url,
+        displayName: id,
+        logoUrl: undefined,
+        documentation: undefined,
+        authentication: { ui, service: { type: "personal-access-token" } }
+    };
+}
+
+function createFakeOAuthProvider(params: {
+    id: string;
+    type: GitProvidersConfig.ProviderType;
+    withRevoke: boolean;
+}) {
+    const config = createFakeConfig({
+        id: params.id,
+        type: params.type,
+        url: `https://${params.id}`,
+        ui: { type: "oauth", clientId: "x" }
+    });
+
     const calls = {
         refresh: vi.fn<(refreshToken: string) => void>(),
         revoke: vi.fn<(refreshToken: string) => void>(),
@@ -65,43 +95,38 @@ function createFakeOAuthProvider(params: { id: string; withRevoke: boolean }) {
     let refreshCount = 0;
 
     const gitProvider: GitProvider = {
-        id: params.id,
-        displayName: params.id,
-        url: `https://${params.id}`,
-        ui: {
-            type: "oauth",
-            oauth: {
-                getAuthorizationUrl: ({ state }) =>
-                    `https://${params.id}/authorize?${state}`,
-                exchangeAuthorizationCode: async ({ code }) => ({
-                    accessToken: `access-from-${code}`,
-                    refreshToken: `refresh-from-${code}`,
+        userConnection: {
+            method: "oauth",
+            getAuthorizationUrl: ({ state }) => `https://${params.id}/authorize?${state}`,
+            exchangeAuthorizationCode: async ({ code }) => ({
+                accessToken: `access-from-${code}`,
+                refreshToken: `refresh-from-${code}`,
+                expirationTime: Date.now() + 3600_000
+            }),
+            refreshTokens: async ({ refreshToken }) => {
+                calls.refresh(refreshToken);
+                if (behavior.isRefreshRejected) {
+                    throw new GitProviderUnauthorizedError();
+                }
+                refreshCount++;
+                return {
+                    accessToken: `access-${refreshCount}`,
+                    refreshToken: `refresh-${refreshCount}`,
                     expirationTime: Date.now() + 3600_000
-                }),
-                refreshTokens: async ({ refreshToken }) => {
-                    calls.refresh(refreshToken);
-                    if (behavior.isRefreshRejected) {
-                        throw new GitProviderUnauthorizedError();
-                    }
-                    refreshCount++;
-                    return {
-                        accessToken: `access-${refreshCount}`,
-                        refreshToken: `refresh-${refreshCount}`,
-                        expirationTime: Date.now() + 3600_000
-                    };
-                },
-                revokeTokens: params.withRevoke
-                    ? async ({ refreshToken }) => {
-                          calls.revoke(refreshToken);
-                          if (behavior.isRevocationFailing) {
-                              throw new Error("Network error");
-                          }
+                };
+            },
+            revokeTokens: params.withRevoke
+                ? async ({ refreshToken }) => {
+                      calls.revoke(refreshToken);
+                      if (behavior.isRevocationFailing) {
+                          throw new Error("Network error");
                       }
-                    : undefined,
-                authorizedApplicationsUrl: `https://${params.id}/applications`
-            }
+                  }
+                : undefined,
+            authorizedApplicationsUrl: `https://${params.id}/applications`
         },
-        service: { type: "personal-access-token" },
+        serviceCredentials: { method: "user-token" },
+        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             calls.getUser(accessToken);
             if (behavior.rejectedAccessTokens.has(accessToken)) {
@@ -117,19 +142,24 @@ function createFakeOAuthProvider(params: { id: string; withRevoke: boolean }) {
         }
     };
 
-    return { gitProvider, calls, behavior };
+    return { config, gitProvider, calls, behavior };
 }
 
 function createFakePatProvider(params: { id: string; validToken: string }) {
-    const gitProvider: GitProvider = {
+    const config = createFakeConfig({
         id: params.id,
-        displayName: params.id,
+        type: "github",
         url: "https://github.com",
-        ui: {
-            type: "personal-access-token",
-            personalAccessTokenCreationUrl: "https://github.com/settings/tokens/new"
+        ui: { type: "personal-access-token" }
+    });
+
+    const gitProvider: GitProvider = {
+        userConnection: {
+            method: "personal-access-token",
+            tokenCreationUrl: "https://github.com/settings/tokens/new"
         },
-        service: { type: "personal-access-token" },
+        serviceCredentials: { method: "user-token" },
+        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             if (accessToken !== params.validToken) {
                 throw new GitProviderUnauthorizedError();
@@ -139,7 +169,7 @@ function createFakePatProvider(params: { id: string; validToken: string }) {
         listRepositories: async () => ({ repositories: [], hasNextPage: false })
     };
 
-    return { gitProvider };
+    return { config, gitProvider };
 }
 
 function createMemorySessionStore(initial: Record<string, string>) {
@@ -158,28 +188,6 @@ function createMemorySessionStore(initial: Record<string, string>) {
 
     return { gitSessionStore, refreshTokenByProviderId };
 }
-
-const toConfig = (
-    gitProvider: GitProvider,
-    type: GitProvidersConfig.ProviderType
-): GitProvidersConfig.Provider => ({
-    id: gitProvider.id,
-    type,
-    url: gitProvider.url,
-    displayName: gitProvider.displayName,
-    logoUrl: undefined,
-    documentation: undefined,
-    authentication: {
-        ui:
-            gitProvider.ui.type === "oauth"
-                ? { type: "oauth", clientId: "x" }
-                : { type: "personal-access-token" },
-        service:
-            gitProvider.service.type === "personal-access-token"
-                ? { type: "personal-access-token" }
-                : { type: "scoped-access-token", lifetimeDays: 30 }
-    }
-});
 
 /** The usecase keeps its access tokens at module level: fresh modules for each test */
 async function setup(params?: {
@@ -245,8 +253,16 @@ async function setup(params?: {
         })
     };
 
-    const gitLab = createFakeOAuthProvider({ id: "gitlab", withRevoke: true });
-    const forgejo = createFakeOAuthProvider({ id: "forgejo", withRevoke: false });
+    const gitLab = createFakeOAuthProvider({
+        id: "gitlab",
+        type: "gitlab",
+        withRevoke: true
+    });
+    const forgejo = createFakeOAuthProvider({
+        id: "forgejo",
+        type: "forgejo",
+        withRevoke: false
+    });
     const gitHub = createFakePatProvider({ id: "github", validToken: "ghp_valid" });
 
     const { gitSessionStore, refreshTokenByProviderId } =
@@ -255,30 +271,26 @@ async function setup(params?: {
     const authorizeInPopupSpy = vi.fn(authorizeInPopup);
 
     const gitProviders_admin =
-        isIntegrationDisabled || isWithoutAdminProviders
-            ? []
-            : [gitLab.gitProvider, forgejo.gitProvider, gitHub.gitProvider];
+        isIntegrationDisabled || isWithoutAdminProviders ? [] : [gitLab, forgejo, gitHub];
 
     /** The user providers: a PAT provider at the url, unreachable on "down" hosts */
     const createGitProvider = vi.fn(
         ({ config }: { config: GitProvidersConfig.Provider }): GitProvider => {
             const gitProvider_admin = gitProviders_admin.find(
-                ({ id }) => id === config.id
+                fake => fake.config.id === config.id
             );
 
             if (gitProvider_admin !== undefined) {
-                return gitProvider_admin;
+                return gitProvider_admin.gitProvider;
             }
 
             return {
-                id: config.id,
-                displayName: config.displayName,
-                url: config.url,
-                ui: {
-                    type: "personal-access-token",
-                    personalAccessTokenCreationUrl: `${config.url}/-/user_settings/personal_access_tokens`
+                userConnection: {
+                    method: "personal-access-token",
+                    tokenCreationUrl: `${config.url}/-/user_settings/personal_access_tokens`
                 },
-                service: { type: "personal-access-token" },
+                serviceCredentials: { method: "user-token" },
+                getGitUsername: ({ user }) => user.username,
                 getUser: async ({ accessToken }) => {
                     if (config.url.includes("down")) {
                         throw new TypeError("Failed to fetch");
@@ -297,16 +309,7 @@ async function setup(params?: {
         oidc: { isUserLoggedIn: true },
         gitProvidersConfig: {
             description: undefined,
-            providers: gitProviders_admin.map(gitProvider =>
-                toConfig(
-                    gitProvider,
-                    gitProvider.id === "github"
-                        ? "github"
-                        : gitProvider.id === "forgejo"
-                          ? "forgejo"
-                          : "gitlab"
-                )
-            ),
+            providers: gitProviders_admin.map(({ config }) => config),
             disallowUserToAddProviders: isIntegrationDisabled
         },
         createGitProvider,
@@ -756,17 +759,17 @@ describe("gitProvidersManagement", () => {
                 deviceAuthorizationUrl: "https://gitlab/oauth/authorize_device"
             };
 
-            gitLab.gitProvider.service = {
-                type: "oauth",
+            gitLab.gitProvider.serviceCredentials = {
+                method: "oauth",
                 helperConfig,
-                authorization: undefined
+                authorizeAtLaunch: undefined
             };
 
             // NOTE: Neither a device flow nor a refresh token yet (phase 3): no credentials.
-            forgejo.gitProvider.service = {
-                type: "oauth",
+            forgejo.gitProvider.serviceCredentials = {
+                method: "oauth",
                 helperConfig: { ...helperConfig, deviceAuthorizationUrl: undefined },
-                authorization: undefined
+                authorizeAtLaunch: undefined
             };
 
             await core.functions.gitProvidersManagement.load();
@@ -1065,10 +1068,8 @@ describe("gitProvidersManagement", () => {
     });
 
     describe("getServiceGitCredentials", () => {
-        const marker = (
-            kind: "access-token" | "username" | "refresh-token",
-            providerId: string
-        ) => createServiceCredentialsMarker({ kind, providerId });
+        const marker = (kind: "access-token" | "refresh-token", providerId: string) =>
+            createServiceCredentialsMarker({ kind, providerId });
 
         const helperConfig = {
             clientId: "service-client",
@@ -1078,29 +1079,30 @@ describe("gitProvidersManagement", () => {
             deviceAuthorizationUrl: "https://gitlab/oauth/authorize_device"
         };
 
-        const setScopedAccessToken = (gitProvider: GitProvider) => {
-            const createAccessToken = vi.fn<
+        const setScopedAccessToken = (fake: {
+            config: GitProvidersConfig.Provider;
+            gitProvider: GitProvider;
+        }) => {
+            const createToken = vi.fn<
                 Extract<
-                    GitProvider["service"],
-                    { type: "scoped-access-token" }
-                >["createAccessToken"]
-            >(async ({ expirationTime }) => ({
-                id: "42",
-                token: "glpat-created",
-                gitUsername: "oauth2",
-                expirationTime
-            }));
+                    GitProvider["serviceCredentials"],
+                    { method: "scoped-token" }
+                >["createToken"]
+            >(async () => ({ token: "glpat-created" }));
 
-            gitProvider.service = {
+            fake.config.authentication.service = {
                 type: "scoped-access-token",
-                lifetimeDays: 30,
-                createAccessToken
+                lifetimeDays: 30
             };
+            fake.gitProvider.serviceCredentials = { method: "scoped-token", createToken };
 
-            return { createAccessToken };
+            return { createToken };
         };
 
-        const setServiceOAuth = (gitProvider: GitProvider) => {
+        const setServiceOAuth = (fake: {
+            config: GitProvidersConfig.Provider;
+            gitProvider: GitProvider;
+        }) => {
             const exchangeAuthorizationCode = vi.fn(
                 async ({ code }: { code: string }) => ({
                     accessToken: `service-access-from-${code}`,
@@ -1109,12 +1111,12 @@ describe("gitProvidersManagement", () => {
                 })
             );
 
-            gitProvider.service = {
-                type: "oauth",
+            fake.gitProvider.serviceCredentials = {
+                method: "oauth",
                 helperConfig,
-                authorization: {
+                authorizeAtLaunch: {
                     getAuthorizationUrl: ({ state }) =>
-                        `https://${gitProvider.id}/service-authorize?${state}`,
+                        `https://${fake.config.id}/service-authorize?${state}`,
                     exchangeAuthorizationCode
                 }
             };
@@ -1125,7 +1127,7 @@ describe("gitProvidersManagement", () => {
         it("puts markers for the token created at launch, then creates it", async () => {
             const { core, gitLab } = await setup({ sessions: { gitlab: "refresh-0" } });
 
-            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+            const { createToken } = setScopedAccessToken(gitLab);
 
             const gitContext =
                 await core.functions.gitProvidersManagement.getGitContext();
@@ -1137,32 +1139,26 @@ describe("gitProvidersManagement", () => {
             // GitLab comes first in the configuration: it is the favorite
             expect(gitContext.token).toBe(marker("access-token", "gitlab"));
             expect(credentials).toMatchObject({
-                username: marker("username", "gitlab"),
+                username: user_gitLab.username,
                 token: marker("access-token", "gitlab")
             });
-            expect(createAccessToken).not.toHaveBeenCalled();
+            expect(createToken).not.toHaveBeenCalled();
 
             const result =
                 await core.functions.gitProvidersManagement.getServiceGitCredentials({
                     serviceName: "vscode-123",
-                    markers: [
-                        marker("access-token", "gitlab"),
-                        marker("username", "gitlab")
-                    ]
+                    markers: [marker("access-token", "gitlab")]
                 });
 
-            expect(createAccessToken).toHaveBeenCalledWith({
+            expect(createToken).toHaveBeenCalledWith({
                 accessToken: "access-1",
                 name: "onyxia-vscode-123",
-                repositories: "all",
-                permission: "read-write",
                 expirationTime: credentials.expirationTime
             });
             expect(result).toStrictEqual({
                 isSuccess: true,
                 valueByMarker: {
-                    [marker("access-token", "gitlab")]: "glpat-created",
-                    [marker("username", "gitlab")]: "oauth2"
+                    [marker("access-token", "gitlab")]: "glpat-created"
                 }
             });
         });
@@ -1172,7 +1168,7 @@ describe("gitProvidersManagement", () => {
                 sessions: { gitlab: "refresh-0" }
             });
 
-            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+            const { createToken } = setScopedAccessToken(gitLab);
 
             await core.functions.gitProvidersManagement.getGitContext();
 
@@ -1182,7 +1178,7 @@ describe("gitProvidersManagement", () => {
                     markers: []
                 })
             ).toStrictEqual({ isSuccess: true, valueByMarker: {} });
-            expect(createAccessToken).not.toHaveBeenCalled();
+            expect(createToken).not.toHaveBeenCalled();
             expect(authorizeInPopupSpy).not.toHaveBeenCalled();
         });
 
@@ -1191,8 +1187,8 @@ describe("gitProvidersManagement", () => {
                 sessions: { gitlab: "refresh-0", forgejo: "refresh-0" }
             });
 
-            setServiceOAuth(gitLab.gitProvider);
-            setServiceOAuth(forgejo.gitProvider);
+            setServiceOAuth(gitLab);
+            setServiceOAuth(forgejo);
 
             const gitContext =
                 await core.functions.gitProvidersManagement.getGitContext();
@@ -1241,7 +1237,7 @@ describe("gitProvidersManagement", () => {
                     )
             });
 
-            const { exchangeAuthorizationCode } = setServiceOAuth(gitLab.gitProvider);
+            const { exchangeAuthorizationCode } = setServiceOAuth(gitLab);
 
             await core.functions.gitProvidersManagement.getGitContext();
 
@@ -1265,9 +1261,9 @@ describe("gitProvidersManagement", () => {
         it("reports a token GitLab refuses to create, with its message", async () => {
             const { core, gitLab } = await setup({ sessions: { gitlab: "refresh-0" } });
 
-            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+            const { createToken } = setScopedAccessToken(gitLab);
 
-            createAccessToken.mockRejectedValue(new Error("needs the api scope"));
+            createToken.mockRejectedValue(new Error("needs the api scope"));
 
             await core.functions.gitProvidersManagement.getGitContext();
 
@@ -1287,12 +1283,12 @@ describe("gitProvidersManagement", () => {
                 sessions: { gitlab: "refresh-0" }
             });
 
-            const { createAccessToken } = setScopedAccessToken(gitLab.gitProvider);
+            const { createToken } = setScopedAccessToken(gitLab);
 
             await core.functions.gitProvidersManagement.getGitContext();
 
             // NOTE: The access token is rejected, then the refresh token.
-            createAccessToken.mockRejectedValue(new GitProviderUnauthorizedError());
+            createToken.mockRejectedValue(new GitProviderUnauthorizedError());
             gitLab.behavior.isRefreshRejected = true;
 
             expect(

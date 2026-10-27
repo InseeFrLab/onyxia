@@ -34,19 +34,13 @@ const zProjects = z.array(
     })
 );
 
-const zProject = z.object({ id: z.number() });
-
-const zPersonalAccessToken = z.object({
-    id: z.number(),
-    token: z.string().min(1),
-    expires_at: z.string().nullable()
-});
+const zPersonalAccessToken = z.object({ token: z.string().min(1) });
 
 export function createGitLabProvider(params: {
     config: GitProvidersConfig.Provider;
 }): GitProvider {
     const { config } = params;
-    const { id, url, displayName, authentication } = config;
+    const { url, authentication } = config;
 
     assert(config.type === "gitlab");
 
@@ -60,36 +54,12 @@ export function createGitLabProvider(params: {
     const uiScopes =
         authentication.service.type === "scoped-access-token" ? ["api"] : ["read_api"];
 
-    const getProjectId = async (params: {
-        accessToken: string;
-        repositoryUrl: string;
-    }): Promise<number> => {
-        const { accessToken, repositoryUrl } = params;
-
-        const projectPath = new URL(repositoryUrl).pathname
-            .replace(/^\//, "")
-            .replace(/\.git$/, "");
-
-        const response = await fetchProviderApi({
-            url: `${url}/api/v4/projects/${encodeURIComponent(projectPath)}`,
-            accessToken
-        });
-
-        if (!response.ok) {
-            throw new Error(
-                `GitLab project ${projectPath} not found (${response.status})`
-            );
-        }
-
-        return parseOrThrow(zProject, await response.json(), "GitLab project").id;
-    };
-
-    const ui: GitProvider["ui"] = (() => {
+    const userConnection: GitProvider["userConnection"] = (() => {
         switch (authentication.ui.type) {
             case "oauth":
                 return {
-                    type: "oauth",
-                    oauth: createUiOAuth({
+                    method: "oauth",
+                    ...createUiOAuth({
                         authorizationUrl,
                         tokenUrl,
                         clientId: authentication.ui.clientId,
@@ -139,55 +109,24 @@ export function createGitLabProvider(params: {
                 }).toString();
 
                 return {
-                    type: "personal-access-token",
-                    personalAccessTokenCreationUrl: creationUrl.href
+                    method: "personal-access-token",
+                    tokenCreationUrl: creationUrl.href
                 };
             }
         }
     })();
 
-    const service: GitProvider["service"] = (() => {
+    const serviceCredentials: GitProvider["serviceCredentials"] = (() => {
         switch (authentication.service.type) {
             case "personal-access-token":
-                return { type: "personal-access-token" };
+                return { method: "user-token" };
             case "scoped-access-token":
                 return {
-                    type: "scoped-access-token",
-                    lifetimeDays: authentication.service.lifetimeDays,
+                    method: "scoped-token",
                     // NOTE: Fine-grained personal access token, GitLab >= 19.2.
                     // https://docs.gitlab.com/api/user_tokens/#create-a-personal-access-token
-                    createAccessToken: async ({
-                        accessToken,
-                        name,
-                        repositories,
-                        permission,
-                        expirationTime
-                    }) => {
-                        const permissions =
-                            permission === "read"
-                                ? ["download_code"]
-                                : ["download_code", "push_code"];
-
-                        const granular_scopes =
-                            repositories === "all"
-                                ? [
-                                      { access: "personal_projects", permissions },
-                                      { access: "all_memberships", permissions }
-                                  ]
-                                : [
-                                      {
-                                          access: "selected_memberships",
-                                          permissions,
-                                          project_ids: await Promise.all(
-                                              repositories.urls.map(repositoryUrl =>
-                                                  getProjectId({
-                                                      accessToken,
-                                                      repositoryUrl
-                                                  })
-                                              )
-                                          )
-                                      }
-                                  ];
+                    createToken: async ({ accessToken, name, expirationTime }) => {
+                        const permissions = ["download_code", "push_code"];
 
                         const response = await fetchProviderApi({
                             url: `${url}/api/v4/user/personal_access_tokens`,
@@ -198,7 +137,10 @@ export function createGitLabProvider(params: {
                                 expires_at: new Date(expirationTime)
                                     .toISOString()
                                     .slice(0, 10),
-                                granular_scopes
+                                granular_scopes: [
+                                    { access: "personal_projects", permissions },
+                                    { access: "all_memberships", permissions }
+                                ]
                             }
                         });
 
@@ -220,29 +162,20 @@ export function createGitLabProvider(params: {
                             );
                         }
 
-                        const token = parseOrThrow(
+                        const { token } = parseOrThrow(
                             zPersonalAccessToken,
                             await response.json(),
                             "GitLab personal access token"
                         );
 
-                        return {
-                            id: `${token.id}`,
-                            token: token.token,
-                            // NOTE: Any non blank username is accepted with a personal access token.
-                            gitUsername: "oauth2",
-                            expirationTime:
-                                token.expires_at === null
-                                    ? expirationTime
-                                    : new Date(token.expires_at).getTime()
-                        };
+                        return { token };
                     }
                 };
             case "oauth": {
                 const { clientId } = authentication.service;
 
                 return {
-                    type: "oauth",
+                    method: "oauth",
                     helperConfig: {
                         clientId,
                         scopes: GIT_SCOPES,
@@ -250,7 +183,7 @@ export function createGitLabProvider(params: {
                         tokenUrl,
                         deviceAuthorizationUrl: `${url}/oauth/authorize_device`
                     },
-                    authorization: createServiceAuthorization({
+                    authorizeAtLaunch: createServiceAuthorization({
                         authorizationUrl,
                         tokenUrl,
                         clientId,
@@ -262,11 +195,10 @@ export function createGitLabProvider(params: {
     })();
 
     return {
-        id,
-        displayName,
-        url,
-        ui,
-        service,
+        userConnection,
+        serviceCredentials,
+        // NOTE: Any non blank username is accepted with a personal access token.
+        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
                 url: `${url}/api/v4/user`,

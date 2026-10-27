@@ -119,15 +119,15 @@ export const thunks = {
                 return undefined;
             }
 
-            const { ui } = createGitProvider({
+            const { userConnection } = createGitProvider({
                 config: getUserProviderConfig({
                     userProvider: { id: url, type, url, displayName: url }
                 })
             });
 
-            assert(ui.type === "personal-access-token");
+            assert(userConnection.method === "personal-access-token");
 
-            return ui.personalAccessTokenCreationUrl;
+            return userConnection.tokenCreationUrl;
         },
     removeProvider:
         (params: { providerId: string }) =>
