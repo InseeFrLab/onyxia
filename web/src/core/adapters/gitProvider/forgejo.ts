@@ -12,8 +12,9 @@ import {
 
 const REPOSITORIES_PER_PAGE = 20;
 
-// TODO(phase 1): Check that these scopes are enforced, older versions ignore them and
-// issue tokens with every right (minimal version to document).
+// NOTE: Requested for when Forgejo enforces them: its OAuth tokens currently have every
+// right of the user ("OAuth2 scopes are not yet implemented"), like a PAT created with
+// every scope. Kept on purpose, see the GIT_PROVIDERS entry of the .env file.
 /** What Onyxia needs: the user and their repositories */
 const UI_SCOPES = ["read:user", "read:repository"];
 /** What git needs in a service (clone, pull, push) */
