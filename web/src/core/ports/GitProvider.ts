@@ -1,51 +1,20 @@
 /**
- * A Git hosting service (GitLab, Forgejo, GitHub), one instance per configured provider.
+ * A Git hosting service (GitLab, Forgejo, GitHub, Bitbucket), one instance per configured
+ * provider. What the use cases do with it: connect the user, act on their behalf, give
+ * the services their credentials at launch. The rest (id, url, displayName, lifetimes) is
+ * in the configuration.
  *
  * Stateless: tokens are passed in, an OAuth access token or a personal access token,
- * the API is the same. The provider type stays in the configuration, it selects the
- * adapter and never leaves it.
+ * the API is the same.
  */
 export type GitProvider = {
-    id: string;
-    displayName: string;
-    /** A repository belongs to this provider if its URL starts with `${url}/` */
-    url: string;
-
-    /** How Onyxia accesses the provider */
-    ui:
-        | { type: "oauth"; oauth: GitProvider.OAuth }
+    /** Account → Git: how the user connects Onyxia to the provider */
+    userConnection:
+        | ({ method: "oauth" } & GitProvider.OAuth)
         | {
-              type: "personal-access-token";
-              /** Derived by the adapter from url, scopes prefilled when the provider allows it */
-              personalAccessTokenCreationUrl: string;
-          };
-
-    /** What the services get to clone and push */
-    service:
-        | {
-              type: "personal-access-token";
-              /** Paired with the PAT for git over HTTPS. undefined: the user's username */
-              gitUsername?: string;
-          }
-        | {
-              type: "scoped-access-token";
-              /** Of the tokens created at launch, service.lifetimeDays of the configuration */
-              lifetimeDays: number;
-              /** accessToken: the user's OAuth access token or PAT (scope api) */
-              createAccessToken: (params: {
-                  accessToken: string;
-                  name: string;
-                  repositories: "all" | { urls: string[] };
-                  permission: "read" | "read-write";
-                  /** Unix time in ms */
-                  expirationTime: number;
-              }) => Promise<GitAccessToken>;
-          }
-        | {
-              type: "oauth";
-              helperConfig: GitProvider.CredentialHelperConfig;
-              /** Onyxia gets the first tokens at launch. undefined: device flow in the service (GitHub) */
-              authorization: GitProvider.ServiceAuthorization | undefined;
+              method: "personal-access-token";
+              /** Scopes prefilled when the provider allows it */
+              tokenCreationUrl: string;
           };
 
     // API on behalf of the user (OAuth access token or PAT).
@@ -58,6 +27,32 @@ export type GitProvider = {
         page: number;
         signal?: AbortSignal;
     }) => Promise<{ repositories: GitRepository[]; hasNextPage: boolean }>;
+    /** Paired with any of the user's tokens for git over HTTPS */
+    getGitUsername: (params: { user: GitUser }) => string;
+
+    /** Launch: what the service gets to clone and push */
+    serviceCredentials:
+        | {
+              /** The user's PAT, as is */
+              method: "user-token";
+          }
+        | {
+              /** A token created for the service, on all the user's repositories */
+              method: "scoped-token";
+              /** accessToken: the user's OAuth access token or PAT (scope api) */
+              createToken: (params: {
+                  accessToken: string;
+                  name: string;
+                  /** Unix time in ms */
+                  expirationTime: number;
+              }) => Promise<{ token: string }>;
+          }
+        | {
+              method: "oauth";
+              helperConfig: GitProvider.CredentialHelperConfig;
+              /** undefined: the service authorizes itself (device flow, GitHub) */
+              authorizeAtLaunch: GitProvider.ServiceAuthorization | undefined;
+          };
 };
 
 export namespace GitProvider {
@@ -127,7 +122,7 @@ export namespace GitProvider {
 
 /**
  * The user as the provider knows them: shown in Account → Git, prefills git.name /
- * git.email, git username paired with a PAT.
+ * git.email.
  */
 export type GitUser = { username: string; name: string; email: string | undefined };
 
@@ -140,15 +135,6 @@ export type GitRepository = {
     webUrl: string;
     httpCloneUrl: string;
     defaultBranch: string | undefined;
-};
-
-export type GitAccessToken = {
-    id: string;
-    token: string;
-    /** To pair with the token for git over HTTPS */
-    gitUsername: string;
-    /** Unix time in ms */
-    expirationTime: number;
 };
 
 export class GitProviderUnauthorizedError extends Error {

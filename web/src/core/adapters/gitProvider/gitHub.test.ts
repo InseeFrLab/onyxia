@@ -40,18 +40,18 @@ describe("createGitHubProvider", () => {
     });
 
     it("links to the token creation page with the scopes", () => {
-        assert(gitHub.ui.type === "personal-access-token");
+        assert(gitHub.userConnection.method === "personal-access-token");
 
         expect(
-            new URL(gitHub.ui.personalAccessTokenCreationUrl).searchParams.get("scopes")
+            new URL(gitHub.userConnection.tokenCreationUrl).searchParams.get("scopes")
         ).toBe("repo");
     });
 
     it("leaves the services to the device flow", () => {
-        assert(gitHub.service.type === "oauth");
+        assert(gitHub.serviceCredentials.method === "oauth");
 
-        expect(gitHub.service.authorization).toBe(undefined);
-        expect(gitHub.service.helperConfig.deviceAuthorizationUrl).toBe(
+        expect(gitHub.serviceCredentials.authorizeAtLaunch).toBe(undefined);
+        expect(gitHub.serviceCredentials.helperConfig.deviceAuthorizationUrl).toBe(
             "https://github.com/login/device/code"
         );
     });

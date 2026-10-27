@@ -49,7 +49,7 @@ export function createForgejoProvider(params: {
     config: GitProvidersConfig.Provider;
 }): GitProvider {
     const { config } = params;
-    const { id, url, displayName, authentication } = config;
+    const { url, authentication } = config;
 
     assert(config.type === "forgejo");
 
@@ -57,12 +57,12 @@ export function createForgejoProvider(params: {
     const tokenUrl = `${url}/login/oauth/access_token`;
     const applicationsUrl = `${url}/user/settings/applications`;
 
-    const ui: GitProvider["ui"] = (() => {
+    const userConnection: GitProvider["userConnection"] = (() => {
         switch (authentication.ui.type) {
             case "oauth":
                 return {
-                    type: "oauth",
-                    oauth: createUiOAuth({
+                    method: "oauth",
+                    ...createUiOAuth({
                         authorizationUrl,
                         tokenUrl,
                         clientId: authentication.ui.clientId,
@@ -74,16 +74,16 @@ export function createForgejoProvider(params: {
             case "personal-access-token":
                 // NOTE: The token creation form can't be prefilled.
                 return {
-                    type: "personal-access-token",
-                    personalAccessTokenCreationUrl: applicationsUrl
+                    method: "personal-access-token",
+                    tokenCreationUrl: applicationsUrl
                 };
         }
     })();
 
-    const service: GitProvider["service"] = (() => {
+    const serviceCredentials: GitProvider["serviceCredentials"] = (() => {
         switch (authentication.service.type) {
             case "personal-access-token":
-                return { type: "personal-access-token" };
+                return { method: "user-token" };
             case "scoped-access-token":
                 assert(false, "Forgejo can't create access tokens for the services");
             // eslint-disable-next-line no-fallthrough
@@ -91,7 +91,7 @@ export function createForgejoProvider(params: {
                 const { clientId } = authentication.service;
 
                 return {
-                    type: "oauth",
+                    method: "oauth",
                     helperConfig: {
                         clientId,
                         scopes: GIT_SCOPES,
@@ -99,7 +99,7 @@ export function createForgejoProvider(params: {
                         tokenUrl,
                         deviceAuthorizationUrl: undefined
                     },
-                    authorization: createServiceAuthorization({
+                    authorizeAtLaunch: createServiceAuthorization({
                         authorizationUrl,
                         tokenUrl,
                         clientId,
@@ -111,11 +111,9 @@ export function createForgejoProvider(params: {
     })();
 
     return {
-        id,
-        displayName,
-        url,
-        ui,
-        service,
+        userConnection,
+        serviceCredentials,
+        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
                 url: `${url}/api/v1/user`,

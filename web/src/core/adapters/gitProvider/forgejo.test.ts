@@ -20,24 +20,24 @@ describe("createForgejoProvider", () => {
     });
 
     it("has no revocation, the user is sent to their applications", () => {
-        assert(forgejo.ui.type === "oauth");
+        assert(forgejo.userConnection.method === "oauth");
 
-        expect(forgejo.ui.oauth.revokeTokens).toBe(undefined);
-        expect(forgejo.ui.oauth.authorizedApplicationsUrl).toBe(
+        expect(forgejo.userConnection.revokeTokens).toBe(undefined);
+        expect(forgejo.userConnection.authorizedApplicationsUrl).toBe(
             "https://forgejo.example.com/user/settings/applications"
         );
     });
 
     it("authorizes the services with their own application, without device flow", () => {
-        assert(forgejo.service.type === "oauth");
+        assert(forgejo.serviceCredentials.method === "oauth");
 
-        const { authorization, helperConfig } = forgejo.service;
+        const { authorizeAtLaunch, helperConfig } = forgejo.serviceCredentials;
 
-        assert(authorization !== undefined);
+        assert(authorizeAtLaunch !== undefined);
 
         expect(
             new URL(
-                authorization.getAuthorizationUrl({
+                authorizeAtLaunch.getAuthorizationUrl({
                     redirectUri,
                     state: "s",
                     codeChallenge: "c"
@@ -62,11 +62,11 @@ describe("createForgejoProvider", () => {
                 )
         );
 
-        assert(forgejo.service.type === "oauth");
-        assert(forgejo.service.authorization !== undefined);
+        assert(forgejo.serviceCredentials.method === "oauth");
+        assert(forgejo.serviceCredentials.authorizeAtLaunch !== undefined);
 
         await expect(
-            forgejo.service.authorization.exchangeAuthorizationCode({
+            forgejo.serviceCredentials.authorizeAtLaunch.exchangeAuthorizationCode({
                 code: "c",
                 codeVerifier: "v",
                 redirectUri

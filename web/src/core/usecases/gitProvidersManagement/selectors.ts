@@ -89,9 +89,9 @@ const connections = createSelector(
             return undefined;
         }
 
-        return gitProviders.map(({ gitProvider }) => ({
-            providerId: gitProvider.id,
-            connection: state.connectionByProviderId[gitProvider.id] ?? {
+        return gitProviders.map(({ config }) => ({
+            providerId: config.id,
+            connection: state.connectionByProviderId[config.id] ?? {
                 status: "not connected"
             }
         }));

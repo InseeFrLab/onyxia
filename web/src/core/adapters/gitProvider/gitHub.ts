@@ -57,7 +57,7 @@ export function createGitHubProvider(params: {
     config: GitProvidersConfig.Provider;
 }): GitProvider {
     const { config } = params;
-    const { id, url, displayName, authentication } = config;
+    const { url, authentication } = config;
 
     assert(config.type === "github");
     assert(
@@ -67,7 +67,7 @@ export function createGitHubProvider(params: {
 
     const apiUrl = getGitHubApiUrl({ url });
 
-    const personalAccessTokenCreationUrl = (() => {
+    const tokenCreationUrl = (() => {
         const creationUrl = new URL(`${url}/settings/tokens/new`);
         creationUrl.search = new URLSearchParams({
             description: "Onyxia",
@@ -76,16 +76,16 @@ export function createGitHubProvider(params: {
         return creationUrl.href;
     })();
 
-    const service: GitProvider["service"] = (() => {
+    const serviceCredentials: GitProvider["serviceCredentials"] = (() => {
         switch (authentication.service.type) {
             case "personal-access-token":
-                return { type: "personal-access-token" };
+                return { method: "user-token" };
             case "scoped-access-token":
                 assert(false, "GitHub can't create access tokens for the services");
             // eslint-disable-next-line no-fallthrough
             case "oauth":
                 return {
-                    type: "oauth",
+                    method: "oauth",
                     helperConfig: {
                         clientId: authentication.service.clientId,
                         scopes: GIT_SCOPES,
@@ -93,17 +93,15 @@ export function createGitHubProvider(params: {
                         tokenUrl: `${url}/login/oauth/access_token`,
                         deviceAuthorizationUrl: `${url}/login/device/code`
                     },
-                    authorization: undefined
+                    authorizeAtLaunch: undefined
                 };
         }
     })();
 
     return {
-        id,
-        displayName,
-        url,
-        ui: { type: "personal-access-token", personalAccessTokenCreationUrl },
-        service,
+        userConnection: { method: "personal-access-token", tokenCreationUrl },
+        serviceCredentials,
+        getGitUsername: ({ user }) => user.username,
         getUser: async ({ accessToken }) => {
             const response = await fetchProviderApi({
                 url: `${apiUrl}/user`,

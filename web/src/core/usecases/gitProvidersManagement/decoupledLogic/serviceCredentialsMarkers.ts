@@ -7,7 +7,6 @@ import type { Stringifyable } from "core/tools/Stringifyable";
  * no longer a marker and is kept.
  * - access-token: the token created for the service (scoped-access-token), or the
  *   access token of the service's OAuth authorization (git.token, first clone).
- * - username: the git username paired with the created token.
  * - refresh-token: the refresh token of the service's OAuth authorization.
  */
 export type ServiceCredentialsMarker = {
@@ -16,16 +15,12 @@ export type ServiceCredentialsMarker = {
 };
 
 export namespace ServiceCredentialsMarker {
-    export type Kind = "access-token" | "username" | "refresh-token";
+    export type Kind = "access-token" | "refresh-token";
 }
 
 const PREFIX = "onyxia-git-created-at-launch";
 
-const kinds: ServiceCredentialsMarker.Kind[] = [
-    "access-token",
-    "username",
-    "refresh-token"
-];
+const kinds: ServiceCredentialsMarker.Kind[] = ["access-token", "refresh-token"];
 
 export function createServiceCredentialsMarker(marker: ServiceCredentialsMarker): string {
     const { kind, providerId } = marker;

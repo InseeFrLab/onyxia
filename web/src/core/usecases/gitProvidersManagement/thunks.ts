@@ -6,7 +6,6 @@ import { Mutex } from "async-mutex";
 import { AccessError } from "clean-architecture";
 import {
     GitProviderUnauthorizedError,
-    type GitProvider,
     type GitRepository,
     type GitUser
 } from "core/ports/GitProvider";
@@ -16,7 +15,7 @@ import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { actions, type Connection } from "./state";
-import { protectedSelectors, selectors } from "./selectors";
+import { protectedSelectors, selectors, type GitProviderEntry } from "./selectors";
 import {
     createEmptyPersistedGitConfig,
     createMigratedPersistedGitConfig,
@@ -100,15 +99,15 @@ export const thunks = {
                 }
 
                 // NOTE: Read after the migration, it may have added github.com.
-                const gitProviders = protectedSelectors
+                const providerIds = protectedSelectors
                     .gitProviders(getState())
-                    .map(({ gitProvider }) => gitProvider);
+                    .map(({ config }) => config.id);
 
                 dispatch(
                     actions.loaded({
                         connectionByProviderId: Object.fromEntries(
-                            gitProviders.map(gitProvider => [
-                                gitProvider.id,
+                            providerIds.map(providerId => [
+                                providerId,
                                 id<Connection>({ status: "not connected" })
                             ])
                         )
@@ -116,12 +115,8 @@ export const thunks = {
                 );
 
                 await Promise.all(
-                    gitProviders.map(gitProvider =>
-                        dispatch(
-                            privateThunks.restoreConnection({
-                                providerId: gitProvider.id
-                            })
-                        )
+                    providerIds.map(providerId =>
+                        dispatch(privateThunks.restoreConnection({ providerId }))
                     )
                 );
             })();
@@ -190,7 +185,9 @@ export const thunks = {
 
             const [dispatch] = args;
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
             return dispatch(
                 privateThunks.callWithAccessToken({
@@ -217,17 +214,24 @@ export const thunks = {
 
             const [dispatch, getState, { oauthAuthorization, gitSessionStore }] = args;
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
-            assert(gitProvider.ui.type === "oauth");
+            const { userConnection } = gitProvider;
 
-            const { oauth } = gitProvider.ui;
+            assert(userConnection.method === "oauth");
+
             const { redirectUri } = oauthAuthorization;
 
             // NOTE: No await before this call, see OAuthAuthorization.authorizeInPopup.
             const prAuthorization = oauthAuthorization.authorizeInPopup({
                 getAuthorizationUrl: ({ state, codeChallenge }) =>
-                    oauth.getAuthorizationUrl({ redirectUri, state, codeChallenge })
+                    userConnection.getAuthorizationUrl({
+                        redirectUri,
+                        state,
+                        codeChallenge
+                    })
             });
 
             const connection_before = dispatch(
@@ -248,7 +252,7 @@ export const thunks = {
             try {
                 const { code, codeVerifier } = await prAuthorization;
 
-                const tokens = await oauth.exchangeAuthorizationCode({
+                const tokens = await userConnection.exchangeAuthorizationCode({
                     code,
                     codeVerifier,
                     redirectUri
@@ -300,9 +304,13 @@ export const thunks = {
 
             const [dispatch, , { gitSessionStore }] = args;
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
-            assert(gitProvider.ui.type === "oauth");
+            const { userConnection } = gitProvider;
+
+            assert(userConnection.method === "oauth");
 
             const session = gitSessionStore.get({ providerId });
 
@@ -316,7 +324,7 @@ export const thunks = {
                 })
             );
 
-            const { revokeTokens } = gitProvider.ui.oauth;
+            const { revokeTokens } = userConnection;
 
             if (revokeTokens === undefined || session === undefined) {
                 return { isGrantRevoked: false };
@@ -343,9 +351,11 @@ export const thunks = {
 
             const personalAccessToken = params.personalAccessToken.trim();
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
-            assert(gitProvider.ui.type === "personal-access-token");
+            assert(gitProvider.userConnection.method === "personal-access-token");
 
             let user: GitUser;
 
@@ -387,8 +397,8 @@ export const thunks = {
             const [dispatch] = args;
 
             assert(
-                dispatch(privateThunks.getGitProvider({ providerId })).ui.type ===
-                    "personal-access-token"
+                dispatch(privateThunks.getGitProvider({ providerId })).gitProvider
+                    .userConnection.method === "personal-access-token"
             );
 
             await dispatch(
@@ -685,7 +695,7 @@ export const thunks = {
                       }
                     | { isSuccess: false; error: ServiceGitCredentialsError }
                 > => {
-                    const gitProvider = dispatch(
+                    const { config, gitProvider } = dispatch(
                         privateThunks.getGitProvider({ providerId })
                     );
 
@@ -696,25 +706,25 @@ export const thunks = {
                         isSuccess: false as const,
                         error: {
                             providerId,
-                            providerDisplayName: gitProvider.displayName,
+                            providerDisplayName: config.displayName,
                             reason,
                             detail
                         }
                     });
 
-                    const { service } = gitProvider;
+                    const { serviceCredentials } = gitProvider;
 
-                    switch (service.type) {
+                    switch (serviceCredentials.method) {
                         case "oauth": {
-                            const { authorization } = service;
+                            const { authorizeAtLaunch } = serviceCredentials;
 
-                            assert(authorization !== undefined);
+                            assert(authorizeAtLaunch !== undefined);
 
                             const { redirectUri } = oauthAuthorization;
 
                             const prAuthorization = oauthAuthorization.authorizeInPopup({
                                 getAuthorizationUrl: ({ state, codeChallenge }) =>
-                                    authorization.getAuthorizationUrl({
+                                    authorizeAtLaunch.getAuthorizationUrl({
                                         redirectUri,
                                         state,
                                         codeChallenge
@@ -747,7 +757,7 @@ export const thunks = {
 
                             try {
                                 const tokens =
-                                    await authorization.exchangeAuthorizationCode({
+                                    await authorizeAtLaunch.exchangeAuthorizationCode({
                                         code,
                                         codeVerifier,
                                         redirectUri
@@ -764,25 +774,28 @@ export const thunks = {
                                 return createError("request failed", String(error));
                             }
                         }
-                        case "scoped-access-token": {
+                        case "scoped-token": {
+                            assert(
+                                config.authentication.service.type ===
+                                    "scoped-access-token"
+                            );
+
                             const expirationTime =
                                 globalContext.scopedAccessTokenExpirationTimeByProviderId.get(
                                     providerId
-                                ) ?? Date.now() + service.lifetimeDays * DAY_MS;
+                                ) ??
+                                Date.now() +
+                                    config.authentication.service.lifetimeDays * DAY_MS;
 
                             try {
                                 // NOTE: Refreshed and retried once when rejected.
-                                const { token, gitUsername } = await dispatch(
+                                const { token } = await dispatch(
                                     privateThunks.callWithAccessToken({
                                         providerId,
                                         call: accessToken =>
-                                            service.createAccessToken({
+                                            serviceCredentials.createToken({
                                                 accessToken,
                                                 name: `onyxia-${serviceName}`,
-                                                // NOTE: All the repositories for now, the
-                                                // port already allows { urls }.
-                                                repositories: "all",
-                                                permission: "read-write",
                                                 expirationTime
                                             })
                                     })
@@ -790,10 +803,7 @@ export const thunks = {
 
                                 return {
                                     isSuccess: true,
-                                    valueByKind: {
-                                        "access-token": token,
-                                        username: gitUsername
-                                    }
+                                    valueByKind: { "access-token": token }
                                 };
                             } catch (error) {
                                 if (
@@ -809,7 +819,7 @@ export const thunks = {
                                 );
                             }
                         }
-                        case "personal-access-token":
+                        case "user-token":
                             // NOTE: The PAT is in the context, never a marker.
                             assert(false);
                     }
@@ -921,14 +931,16 @@ const privateThunks = {
                             return undefined;
                         }
 
-                        const gitProvider = dispatch(
+                        const { config, gitProvider } = dispatch(
                             privateThunks.getGitProvider({ providerId })
                         );
 
                         const credentials =
                             ((): XOnyxiaContext["git"]["providers"][number]["credentials"] => {
-                                switch (gitProvider.service.type) {
-                                    case "personal-access-token": {
+                                const { serviceCredentials } = gitProvider;
+
+                                switch (serviceCredentials.method) {
+                                    case "user-token": {
                                         const personalAccessToken =
                                             protectedSelectors.persistedGitConfig(
                                                 getState()
@@ -940,19 +952,19 @@ const privateThunks = {
 
                                         return {
                                             type: "token",
-                                            username:
-                                                gitProvider.service.gitUsername ??
-                                                connection.user.username,
+                                            username: gitProvider.getGitUsername({
+                                                user: connection.user
+                                            }),
                                             token: personalAccessToken,
                                             expirationTime: undefined
                                         };
                                     }
                                     case "oauth": {
-                                        const { helperConfig, authorization } =
-                                            gitProvider.service;
+                                        const { helperConfig, authorizeAtLaunch } =
+                                            serviceCredentials;
 
                                         const refreshToken =
-                                            authorization !== undefined &&
+                                            authorizeAtLaunch !== undefined &&
                                             providerId === favoriteProviderId
                                                 ? createServiceCredentialsMarker({
                                                       kind: "refresh-token",
@@ -974,10 +986,16 @@ const privateThunks = {
                                             refreshToken
                                         };
                                     }
-                                    case "scoped-access-token": {
+                                    case "scoped-token": {
+                                        assert(
+                                            config.authentication.service.type ===
+                                                "scoped-access-token"
+                                        );
+
                                         const expirationTime =
                                             Date.now() +
-                                            gitProvider.service.lifetimeDays * DAY_MS;
+                                            config.authentication.service.lifetimeDays *
+                                                DAY_MS;
 
                                         globalContext.scopedAccessTokenExpirationTimeByProviderId.set(
                                             providerId,
@@ -986,9 +1004,8 @@ const privateThunks = {
 
                                         return {
                                             type: "token",
-                                            username: createServiceCredentialsMarker({
-                                                kind: "username",
-                                                providerId
+                                            username: gitProvider.getGitUsername({
+                                                user: connection.user
                                             }),
                                             token: createServiceCredentialsMarker({
                                                 kind: "access-token",
@@ -1002,7 +1019,7 @@ const privateThunks = {
 
                         return {
                             id: providerId,
-                            url: gitProvider.url,
+                            url: config.url,
                             user: {
                                 name: connection.user.name || identity_onyxia.name,
                                 email: connection.user.email || identity_onyxia.email
@@ -1015,14 +1032,14 @@ const privateThunks = {
         },
     getGitProvider:
         (params: { providerId: string }) =>
-        (...[, getState]): GitProvider => {
+        (...[, getState]): GitProviderEntry => {
             const entry = protectedSelectors
                 .gitProviders(getState())
                 .find(({ config }) => config.id === params.providerId);
 
             assert(entry !== undefined, `No git provider ${params.providerId}`);
 
-            return entry.gitProvider;
+            return entry;
         },
     getConnection:
         (params: { providerId: string }) =>
@@ -1070,10 +1087,12 @@ const privateThunks = {
 
             const [dispatch, getState, { gitSessionStore }] = args;
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
             const hasCredentials = (() => {
-                switch (gitProvider.ui.type) {
+                switch (gitProvider.userConnection.method) {
                     case "oauth":
                         return gitSessionStore.get({ providerId }) !== undefined;
                     case "personal-access-token":
@@ -1139,9 +1158,11 @@ const privateThunks = {
 
             const [dispatch, getState] = args;
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
-            switch (gitProvider.ui.type) {
+            switch (gitProvider.userConnection.method) {
                 case "personal-access-token": {
                     const personalAccessToken =
                         protectedSelectors.persistedGitConfig(getState())
@@ -1227,11 +1248,13 @@ const privateThunks = {
                 }
             }
 
-            const gitProvider = dispatch(privateThunks.getGitProvider({ providerId }));
+            const { gitProvider } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
 
-            assert(gitProvider.ui.type === "oauth");
+            const { userConnection } = gitProvider;
 
-            const { oauth } = gitProvider.ui;
+            assert(userConnection.method === "oauth");
 
             const prRefresh = gitSessionStore.runExclusive({
                 providerId,
@@ -1245,7 +1268,7 @@ const privateThunks = {
                         );
                     }
 
-                    const tokens = await oauth.refreshTokens({
+                    const tokens = await userConnection.refreshTokens({
                         refreshToken: session.refreshToken,
                         redirectUri: oauthAuthorization.redirectUri
                     });

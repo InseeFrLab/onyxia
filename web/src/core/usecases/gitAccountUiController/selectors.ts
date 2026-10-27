@@ -146,9 +146,9 @@ const main = createSelector(
 
                 return {
                     id: providerId,
-                    displayName: gitProvider.displayName,
+                    displayName: config.displayName,
                     type: config.type,
-                    url: gitProvider.url,
+                    url: config.url,
                     logoUrl: config.logoUrl,
                     documentation: config.documentation,
                     isAddedByUser,
@@ -187,22 +187,22 @@ const main = createSelector(
                     favorite: isFavorite ? "is favorite" : "can be set as favorite",
                     error: cardUiState.error,
                     authorizedApplications: (() => {
-                        if (gitProvider.ui.type !== "oauth") {
+                        const { userConnection } = gitProvider;
+
+                        if (userConnection.method !== "oauth") {
                             return undefined;
                         }
 
-                        const { oauth } = gitProvider.ui;
-
                         if (cardUiState.error?.type === "grant scope conflict") {
                             return {
-                                url: oauth.authorizedApplicationsUrl,
+                                url: userConnection.authorizedApplicationsUrl,
                                 reason: "grant scope conflict"
                             };
                         }
 
                         if (cardUiState.isRevocationHintShown) {
                             return {
-                                url: oauth.authorizedApplicationsUrl,
+                                url: userConnection.authorizedApplicationsUrl,
                                 reason: "signed out without revocation"
                             };
                         }
@@ -211,7 +211,7 @@ const main = createSelector(
                     })(),
                     pendingAction: cardUiState.pendingAction,
                     authentication: (() => {
-                        switch (gitProvider.ui.type) {
+                        switch (gitProvider.userConnection.method) {
                             case "oauth":
                                 return {
                                     type: "oauth",
@@ -233,7 +233,7 @@ const main = createSelector(
                                 return {
                                     type: "personal-access-token",
                                     personalAccessTokenCreationUrl:
-                                        gitProvider.ui.personalAccessTokenCreationUrl,
+                                        gitProvider.userConnection.tokenCreationUrl,
                                     isFormShown:
                                         !isConnected || isReplacingPersonalAccessToken,
                                     isReplaceButtonShown:
