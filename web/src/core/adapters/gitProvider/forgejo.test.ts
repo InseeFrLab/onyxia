@@ -54,6 +54,15 @@ describe("createForgejoProvider", () => {
                                 html_url: "https://forgejo.example.com/jdoe/r",
                                 clone_url: "https://forgejo.example.com/jdoe/r.git",
                                 default_branch: "main"
+                            },
+                            {
+                                id: 2,
+                                name: "empty",
+                                full_name: "jdoe/empty",
+                                html_url: "https://forgejo.example.com/jdoe/empty",
+                                clone_url: "https://forgejo.example.com/jdoe/empty.git",
+                                default_branch: "main",
+                                empty: true
                             }
                         ]
                     }),
@@ -72,6 +81,11 @@ describe("createForgejoProvider", () => {
             "https://forgejo.example.com/jdoe/r.git"
         );
         expect(hasNextPage).toBe(true);
+        // An empty repository has a default branch that doesn't exist yet
+        expect(repositories.map(({ defaultBranch }) => defaultBranch)).toStrictEqual([
+            "main",
+            undefined
+        ]);
     });
 
     it("authorizes the services with their own application, without device flow", () => {
@@ -118,5 +132,22 @@ describe("createForgejoProvider", () => {
                 redirectUri
             })
         ).rejects.toThrow(/refresh token/);
+    });
+
+    it("lists the branches, filtered on the search", async () => {
+        const { calls } = mockFetch(
+            () => new Response(JSON.stringify([{ name: "main" }, { name: "dev" }]))
+        );
+
+        expect(
+            await forgejo.listBranches({
+                accessToken: "t",
+                repositoryFullPath: "jdoe/alpha",
+                search: "ma",
+                signal: undefined
+            })
+        ).toStrictEqual({ branches: ["main"] });
+
+        expect(new URL(calls[0].url).pathname).toBe("/api/v1/repos/jdoe/alpha/branches");
     });
 });

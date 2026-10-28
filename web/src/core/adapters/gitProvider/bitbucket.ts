@@ -3,7 +3,14 @@ import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 import type { GitProvider, GitRepository } from "core/ports/GitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import { fetchProviderApi, getIsSameOrigin, parseOrThrow } from "./shared";
+import {
+    fetchProviderApi,
+    getIsSameOrigin,
+    parseOrThrow,
+    BRANCHES_LIMIT,
+    fetchBranchNames,
+    encodePathSegments
+} from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
 
@@ -241,6 +248,31 @@ export function createBitbucketProvider(params: {
                     .filter(exclude(undefined)),
                 hasNextPage: pages.some(({ next }) => next !== undefined)
             };
+        },
+        listBranches: ({ accessToken, repositoryFullPath, search, signal }) => {
+            const listUrl = new URL(
+                `${apiUrl}/repositories/${encodePathSegments(repositoryFullPath)}/refs/branches`
+            );
+
+            const search_trimmed = search.trim();
+
+            listUrl.search = new URLSearchParams({
+                pagelen: `${BRANCHES_LIMIT}`,
+                sort: "-target.date",
+                ...(search_trimmed === ""
+                    ? {}
+                    : { q: `name ~ ${JSON.stringify(search_trimmed)}` })
+            }).toString();
+
+            return fetchBranchNames({
+                url: listUrl.href,
+                accessToken,
+                search,
+                signal,
+                providerName: "Bitbucket",
+                getItems: body =>
+                    body instanceof Object && "values" in body ? body.values : body
+            });
         },
         getGitUsername: () => API_TOKEN_GIT_USERNAME,
         serviceCredentials

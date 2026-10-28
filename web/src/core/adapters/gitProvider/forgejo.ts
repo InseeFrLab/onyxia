@@ -7,7 +7,10 @@ import {
     createUiOAuth,
     fetchProviderApi,
     getIsSameOrigin,
-    parseOrThrow
+    parseOrThrow,
+    BRANCHES_LIMIT,
+    fetchBranchNames,
+    encodePathSegments
 } from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
@@ -35,7 +38,8 @@ const zRepositories = z.object({
             description: z.string().optional(),
             html_url: z.string(),
             clone_url: z.string(),
-            default_branch: z.string().optional()
+            default_branch: z.string().optional(),
+            empty: z.boolean().optional()
         })
     )
 });
@@ -179,7 +183,10 @@ export function createForgejoProvider(params: {
                             description: repository.description || undefined,
                             webUrl: repository.html_url,
                             httpCloneUrl: repository.clone_url,
-                            defaultBranch: repository.default_branch || undefined
+                            // NOTE: An empty repository still has one, that doesn't exist.
+                            defaultBranch: repository.empty
+                                ? undefined
+                                : repository.default_branch || undefined
                         })
                     ),
                 hasNextPage:
@@ -187,6 +194,24 @@ export function createForgejoProvider(params: {
                         ? page * REPOSITORIES_PER_PAGE < totalCount
                         : data.length === REPOSITORIES_PER_PAGE
             };
+        },
+        listBranches: ({ accessToken, repositoryFullPath, search, signal }) => {
+            // NOTE: No search parameter, filtered on the first page (the instance caps
+            // the limit, 50 by default).
+            const listUrl = new URL(
+                `${apiUrl}/repos/${encodePathSegments(repositoryFullPath)}/branches`
+            );
+            listUrl.search = new URLSearchParams({
+                limit: `${BRANCHES_LIMIT}`
+            }).toString();
+
+            return fetchBranchNames({
+                url: listUrl.href,
+                accessToken,
+                search,
+                signal,
+                providerName: "Forgejo"
+            });
         },
         getGitUsername: ({ user }) => user.username,
         serviceCredentials

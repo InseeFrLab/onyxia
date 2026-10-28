@@ -518,6 +518,7 @@ export const translations: Translations<"no"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "no branch found": "Fant ingen gren, den du skrev inn brukes",
         provider: "Git-leverandør",
         "repository placeholder": "Søk etter et repository eller lim inn URL-en",
         branch: "Gren",

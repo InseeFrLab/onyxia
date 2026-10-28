@@ -28,6 +28,7 @@ import {
     parseServiceCredentialsMarker,
     type ServiceCredentialsMarker
 } from "./decoupledLogic/serviceCredentialsMarkers";
+import { getRepositoryFullPath } from "./decoupledLogic/repositoryUrl";
 import {
     createUserProvider,
     getUserProviderConfig,
@@ -201,6 +202,50 @@ export const thunks = {
                         })
                 })
             );
+        },
+    /**
+     * The branches of a repository picked or pasted in the launcher, from its clone url.
+     * Empty when the url isn't one of this provider's repositories.
+     */
+    listBranches:
+        (params: {
+            providerId: string;
+            repositoryUrl: string;
+            search: string;
+            signal?: AbortSignal;
+        }) =>
+        async (...args): Promise<string[]> => {
+            const { providerId, repositoryUrl, search, signal } = params;
+
+            const [dispatch] = args;
+
+            const { gitProvider, config } = dispatch(
+                privateThunks.getGitProvider({ providerId })
+            );
+
+            const repositoryFullPath = getRepositoryFullPath({
+                providerUrl: config.url,
+                repositoryUrl
+            });
+
+            if (repositoryFullPath === undefined) {
+                return [];
+            }
+
+            const { branches } = await dispatch(
+                privateThunks.callWithAccessToken({
+                    providerId,
+                    call: accessToken =>
+                        gitProvider.listBranches({
+                            accessToken,
+                            repositoryFullPath,
+                            search,
+                            signal
+                        })
+                })
+            );
+
+            return branches;
         },
     /**
      * The connected provider a repository url belongs to (a url pasted in the launcher).

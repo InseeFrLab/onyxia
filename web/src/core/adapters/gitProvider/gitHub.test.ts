@@ -101,4 +101,28 @@ describe("createGitHubProvider", () => {
             "https://github.com/login/device/code"
         );
     });
+
+    it("lists the branches, filtered on the search", async () => {
+        const { calls } = mockFetch(
+            () =>
+                new Response(
+                    JSON.stringify([
+                        { name: "main" },
+                        { name: "feat/Git" },
+                        { name: "dev" }
+                    ])
+                )
+        );
+
+        expect(
+            await gitHub.listBranches({
+                accessToken: "t",
+                repositoryFullPath: "jdoe/alpha",
+                search: " git ",
+                signal: undefined
+            })
+        ).toStrictEqual({ branches: ["feat/Git"] });
+
+        expect(new URL(calls[0].url).pathname).toBe("/repos/jdoe/alpha/branches");
+    });
 });

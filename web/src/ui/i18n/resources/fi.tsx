@@ -519,6 +519,7 @@ export const translations: Translations<"fi"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
         provider: "Git-palveluntarjoaja",
         "repository placeholder": "Hae repositoriota tai liitä sen URL",
         branch: "Haara",

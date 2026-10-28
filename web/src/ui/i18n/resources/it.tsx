@@ -521,6 +521,7 @@ export const translations: Translations<"it"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "no branch found": "Nessun branch trovato, verrà usato quello digitato",
         provider: "Provider Git",
         "repository placeholder": "Cerca un repository o incolla il suo URL",
         branch: "Branch",

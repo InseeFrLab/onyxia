@@ -7,7 +7,9 @@ import {
     createUiOAuth,
     fetchProviderApi,
     getIsSameOrigin,
-    parseOrThrow
+    parseOrThrow,
+    BRANCHES_LIMIT,
+    fetchBranchNames
 } from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
@@ -271,6 +273,23 @@ export function createGitLabProvider(params: {
             };
         },
         // NOTE: Any non blank username is accepted with a personal access token.
+        listBranches: ({ accessToken, repositoryFullPath, search, signal }) => {
+            const listUrl = new URL(
+                `${apiUrl}/projects/${encodeURIComponent(repositoryFullPath)}/repository/branches`
+            );
+            listUrl.search = new URLSearchParams({
+                per_page: `${BRANCHES_LIMIT}`,
+                search: search.trim()
+            }).toString();
+
+            return fetchBranchNames({
+                url: listUrl.href,
+                accessToken,
+                search,
+                signal,
+                providerName: "GitLab"
+            });
+        },
         getGitUsername: ({ user }) => user.username,
         serviceCredentials
     };

@@ -32,6 +32,12 @@ type Props = {
         search: string;
         signal: AbortSignal;
     }) => Promise<GitRepository[]>;
+    listBranches: (params: {
+        providerId: string;
+        repositoryUrl: string;
+        search: string;
+        signal: AbortSignal;
+    }) => Promise<string[]>;
     getConnectedProviderIdOfRepositoryUrl: (params: {
         url: string;
     }) => string | undefined;
@@ -55,6 +61,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
         onChange,
         connectedProviders,
         searchRepositories,
+        listBranches,
         getConnectedProviderIdOfRepositoryUrl,
         accountGitHref
     } = props;
@@ -113,6 +120,56 @@ export const GitRepositoryFormField = memo((props: Props) => {
     }, [providerId, search, isReadonly]);
 
     const repositories = searchState.status === "loaded" ? searchState.repositories : [];
+
+    // NOTE: The provider of the repository, not the one selected for the next search.
+    const providerId_repository =
+        value.url === ""
+            ? undefined
+            : value.providerId !== ""
+              ? value.providerId
+              : getConnectedProviderIdOfRepositoryUrl({ url: value.url });
+
+    const [branchSearch, setBranchSearch] = useState("");
+    const [branchesState, setBranchesState] = useState<
+        | { status: "idle" }
+        | { status: "loading" }
+        | { status: "loaded"; branches: string[] }
+    >({ status: "idle" });
+
+    useEffect(() => {
+        if (providerId_repository === undefined || isReadonly) {
+            setBranchesState({ status: "idle" });
+            return;
+        }
+
+        const abortController = new AbortController();
+
+        setBranchesState({ status: "loading" });
+
+        const timer = setTimeout(() => {
+            listBranches({
+                providerId: providerId_repository,
+                repositoryUrl: value.url,
+                search: branchSearch,
+                signal: abortController.signal
+            }).then(
+                branches => setBranchesState({ status: "loaded", branches }),
+                // NOTE: The branch can still be typed.
+                () => {
+                    if (!abortController.signal.aborted) {
+                        setBranchesState({ status: "loaded", branches: [] });
+                    }
+                }
+            );
+        }, SEARCH_DEBOUNCE_MS);
+
+        return () => {
+            clearTimeout(timer);
+            abortController.abort();
+        };
+    }, [providerId_repository, value.url, branchSearch, isReadonly]);
+
+    const branches = branchesState.status === "loaded" ? branchesState.branches : [];
 
     const isProviderNotConnected =
         value.url !== "" &&
@@ -257,13 +314,44 @@ export const GitRepositoryFormField = memo((props: Props) => {
                         </div>
                     )}
                 />
-                <Input
+                <Autocomplete<string, false, false, true>
                     className={classes.branch}
-                    value={value.branch}
+                    freeSolo={true}
                     disabled={isReadonly || value.url === ""}
-                    placeholder={t("default branch")}
-                    inputProps={{ "aria-label": t("branch") }}
-                    onChange={event => onChange({ ...value, branch: event.target.value })}
+                    options={branches}
+                    // NOTE: The provider already filters on the search.
+                    filterOptions={options => options}
+                    loading={branchesState.status === "loading"}
+                    inputValue={value.branch}
+                    onInputChange={(_event, inputValue, reason) => {
+                        if (reason === "input") {
+                            setBranchSearch(inputValue);
+                        }
+
+                        if (inputValue !== value.branch) {
+                            onChange({ ...value, branch: inputValue });
+                        }
+                    }}
+                    // NOTE: Every branch when opened, the search only once typing.
+                    onOpen={() => setBranchSearch("")}
+                    noOptionsText={t("no branch found")}
+                    renderInput={params => (
+                        <div ref={params.InputProps.ref}>
+                            <Input
+                                inputProps={{
+                                    ...params.inputProps,
+                                    "aria-label": t("branch")
+                                }}
+                                fullWidth={true}
+                                placeholder={t("default branch")}
+                                endAdornment={
+                                    branchesState.status === "loading" ? (
+                                        <CircularProgress size={16} />
+                                    ) : undefined
+                                }
+                            />
+                        </div>
+                    )}
                 />
             </div>
         </FormFieldWrapper>
@@ -287,6 +375,7 @@ export function GitRepositoryFormFieldContainer(
         Props,
         | "connectedProviders"
         | "searchRepositories"
+        | "listBranches"
         | "getConnectedProviderIdOfRepositoryUrl"
         | "accountGitHref"
     >
@@ -314,6 +403,7 @@ export function GitRepositoryFormFieldContainer(
                     })
                 ).repositories
             }
+            listBranches={gitProvidersManagement.listBranches}
             getConnectedProviderIdOfRepositoryUrl={
                 gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl
             }
@@ -356,6 +446,7 @@ const { i18n } = declareComponentKeys<
     | "repository placeholder"
     | "branch"
     | "default branch"
+    | "no branch found"
     | "no repository found"
     | "search failed"
     | "provider not connected"

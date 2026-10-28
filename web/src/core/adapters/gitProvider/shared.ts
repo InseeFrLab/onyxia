@@ -176,6 +176,56 @@ export function createUiOAuth(params: {
     };
 }
 
+/** The branches listed for a repository, more is narrowed down by the search */
+export const BRANCHES_LIMIT = 100;
+
+const zBranchNames = z.array(z.object({ name: z.string() }));
+
+/** GET a list of branches ({ name }[]), filtered here when the provider can't search */
+export async function fetchBranchNames(params: {
+    url: string;
+    accessToken: string;
+    search: string;
+    signal: AbortSignal | undefined;
+    providerName: string;
+    getItems?: (body: unknown) => unknown;
+}): Promise<{ branches: string[] }> {
+    const {
+        url,
+        accessToken,
+        search,
+        signal,
+        providerName,
+        getItems = body => body
+    } = params;
+
+    const response = await fetchProviderApi({ url, accessToken, signal });
+
+    if (!response.ok) {
+        throw new Error(
+            `${providerName} branches request failed with status ${response.status}`
+        );
+    }
+
+    const search_lowerCase = search.trim().toLowerCase();
+
+    return {
+        branches: parseOrThrow(
+            zBranchNames,
+            getItems(await response.json()),
+            `${providerName} branches`
+        )
+            .map(({ name }) => name)
+            .filter(name => name.toLowerCase().includes(search_lowerCase))
+            .slice(0, BRANCHES_LIMIT)
+    };
+}
+
+/** "group/sub group/project" → "group/sub%20group/project", for a url path */
+export function encodePathSegments(path: string): string {
+    return path.split("/").map(encodeURIComponent).join("/");
+}
+
 /** Authenticated call to a provider REST API */
 export async function fetchProviderApi(params: {
     url: string;
