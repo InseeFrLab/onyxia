@@ -1443,7 +1443,6 @@ ${
         "add to bookmarks": "添加到书签",
         "delete from bookmarks": "从书签中删除",
         "pinned storage location": "已固定的存储位置",
-        bookmarked: "已添加书签",
         share: "共享",
         "request files": "请求文件",
         "make public": "公开",

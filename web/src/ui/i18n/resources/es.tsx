@@ -1529,7 +1529,6 @@ export const translations: Translations<"es"> = {
         "add to bookmarks": "Añadir a marcadores",
         "delete from bookmarks": "Eliminar de marcadores",
         "pinned storage location": "Ubicación de almacenamiento fijada",
-        bookmarked: "Marcado",
         share: "Compartir",
         "request files": "Solicitar archivos",
         "make public": "Hacer público",

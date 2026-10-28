@@ -1617,69 +1617,6 @@ export function S3UriBar(props: S3UriBarProps) {
                             </div>
                         </Tooltip>
                     )}
-                    {shouldShowShareAction && (
-                        <Tooltip title={t("share")}>
-                            <div data-s3-uri-ignore-edit="true">
-                                <IconButton
-                                    aria-label={t("share")}
-                                    icon={getIconUrlByName("Share")}
-                                    size="default"
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        assert(currentS3Uri !== undefined);
-                                        assert(currentS3Uri.isDelimiterTerminated);
-                                        onSharePrefix({ s3Uri: currentS3Uri });
-                                    }}
-                                    className={classes.actionButton}
-                                />
-                            </div>
-                        </Tooltip>
-                    )}
-                    {shouldShowRequestFilesAction &&
-                        currentS3Uri?.isDelimiterTerminated && (
-                            <Tooltip title={t("request files")}>
-                                <div data-s3-uri-ignore-edit="true">
-                                    <IconButton
-                                        aria-label={t("request files")}
-                                        icon={getIconUrlByName("DriveFolderUpload")}
-                                        size="default"
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            onRequestFiles({ s3Uri: currentS3Uri });
-                                        }}
-                                        className={classes.actionButton}
-                                    />
-                                </div>
-                            </Tooltip>
-                        )}
-                    {publicAccessAction !== undefined && (
-                        <Tooltip title={t(publicAccessAction)}>
-                            <div data-s3-uri-ignore-edit="true">
-                                <IconButton
-                                    aria-label={t(publicAccessAction)}
-                                    icon={getIconUrlByName(
-                                        publicAccessAction === "make public"
-                                            ? "Public"
-                                            : "PublicOff"
-                                    )}
-                                    size="default"
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        assert(currentS3Uri !== undefined);
-                                        assert(currentS3Uri.isDelimiterTerminated);
-                                        onChangePrefixPolicy({
-                                            action:
-                                                publicAccessAction === "make private"
-                                                    ? "undo make public"
-                                                    : "make public",
-                                            s3Uri: currentS3Uri
-                                        });
-                                    }}
-                                    className={classes.actionButton}
-                                />
-                            </div>
-                        </Tooltip>
-                    )}
                     {!isUndefinedPrefixMode && (
                         <Tooltip title={t("edit s3 uri")}>
                             <div data-s3-uri-ignore-edit="true">
@@ -2299,7 +2236,6 @@ const { i18n } = declareComponentKeys<
     | "add to bookmarks"
     | "delete from bookmarks"
     | "pinned storage location"
-    | "bookmarked"
     | "share"
     | "request files"
     | "make public"

@@ -1514,7 +1514,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "add to bookmarks": "Lisää kirjanmerkkeihin",
         "delete from bookmarks": "Poista kirjanmerkeistä",
         "pinned storage location": "Kiinnitetty tallennussijainti",
-        bookmarked: "Kirjanmerkitty",
         share: "Jaa",
         "request files": "Pyydä tiedostoja",
         "make public": "Tee julkiseksi",

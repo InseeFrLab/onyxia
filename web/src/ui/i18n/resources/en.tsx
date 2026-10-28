@@ -1523,7 +1523,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "add to bookmarks": "Add to bookmarks",
         "delete from bookmarks": "Delete from bookmarks",
         "pinned storage location": "Pinned storage location",
-        bookmarked: "Bookmarked",
         share: "Share",
         "request files": "Request files",
         "make public": "Make public",

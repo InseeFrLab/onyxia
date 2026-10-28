@@ -80,12 +80,14 @@ const baseArgs: S3UriBarProps = {
     areHintsLoading: false,
     isBookmarked: false,
     onToggleBookmark: action("toggleBookmark"),
-    publicAccessAction: undefined,
+    publicAccessAction: "make public",
     onChangePrefixPolicy: action("changePrefixPolicy"),
-    shouldShowShareAction: false,
+    shouldShowShareAction: true,
     onSharePrefix: action("sharePrefix"),
-    shouldShowRequestFilesAction: false,
+    shouldShowRequestFilesAction: true,
     onRequestFiles: action("requestFiles"),
+    uploadFiles: { callback: action("uploadFiles"), disabled: false },
+    createDirectory: { callback: action("createPrefix"), disabled: false },
     evtAction: Evt.create<{
         action: "display copy feedback";
         s3Uri: S3Uri;

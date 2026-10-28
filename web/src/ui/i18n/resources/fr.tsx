@@ -1550,7 +1550,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "add to bookmarks": "Ajouter aux favoris",
         "delete from bookmarks": "Supprimer des favoris",
         "pinned storage location": "Emplacement de stockage épinglé",
-        bookmarked: "Dans les favoris",
         share: "Partager",
         "request files": "Demander des fichiers",
         "make public": "Rendre public",

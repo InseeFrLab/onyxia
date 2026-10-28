@@ -1530,7 +1530,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "add to bookmarks": "Aan bladwijzers toevoegen",
         "delete from bookmarks": "Uit bladwijzers verwijderen",
         "pinned storage location": "Vastgezette opslaglocatie",
-        bookmarked: "Bladwijzer",
         share: "Delen",
         "request files": "Bestanden aanvragen",
         "make public": "Openbaar maken",

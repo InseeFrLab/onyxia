@@ -1548,7 +1548,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "add to bookmarks": "Zu Lesezeichen hinzufügen",
         "delete from bookmarks": "Aus Lesezeichen entfernen",
         "pinned storage location": "Angehefteter Speicherort",
-        bookmarked: "Als Lesezeichen gespeichert",
         share: "Teilen",
         "request files": "Dateien anfordern",
         "make public": "Öffentlich machen",

@@ -1522,7 +1522,6 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "add to bookmarks": "Legg til i bokmerker",
         "delete from bookmarks": "Slett fra bokmerker",
         "pinned storage location": "Festet lagringssted",
-        bookmarked: "Bokmerket",
         share: "Del",
         "request files": "Be om filer",
         "make public": "Gjør offentlig",

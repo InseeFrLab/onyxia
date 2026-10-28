@@ -184,7 +184,7 @@ export type S3UriBarProps = {
 
     onRequestFiles: (params: { s3Uri: S3Uri.TerminatedByDelimiter }) => void;
 
-    /** Existing external toolbar actions, also exposed in the directory menu. */
+    /** Directory-menu actions supplied by the parent. */
     uploadFiles?: { callback: () => void; disabled: boolean };
     createDirectory?: { callback: () => void; disabled: boolean };
 
@@ -212,9 +212,11 @@ export type S3UriBarProps = {
     - For `s3://bucket/a/b/c/` with public prefix `s3://bucket/a/b/`, the public marker starts on `b`, because `b/` is the last crumb of the public prefix.
     - For `s3://bucket/a/` with public prefix `s3://bucket/a/`, the public marker starts on `a`, because the current crumb is the public prefix itself.
     - Copy button click => stringify the current S3 URI and copy it with `copyToClipboard`.
-    - Show Share only when `shouldShowShareAction` is `true`.
-    - Show Request files only when `shouldShowRequestFilesAction` is `true` and the current URI is a delimiter-terminated prefix.
-    - Clicking Request files calls `onRequestFiles` with the current prefix.
+    - The trailing toolbar contains only Copy S3 path, Add/Delete bookmark (or the disabled pinned storage location), and Edit S3 URI.
+    - Share, Request files, access policy, upload, and create folder actions are available only in the current-directory menu.
+    - Show Share in the menu only when `shouldShowShareAction` is `true`.
+    - Show Request files in the menu only when `shouldShowRequestFilesAction` is `true` and the current URI is a delimiter-terminated prefix.
+    - Selecting Request files calls `onRequestFiles` with the current prefix.
     - Copied feedback is internal to the component and should reset after a short delay or when the current S3 URI changes.
     - `evtAction` `{ action: "display copy feedback", s3Uri }` => stringify the provided S3 URI and display copied feedback without calling `copyToClipboard`.
     - Home/root button short click => enter editing mode with `s3://` as the draft.
@@ -222,7 +224,7 @@ export type S3UriBarProps = {
     - Ancestor segment short click => request navigation (`onS3UriChange`).
     - Current directory segment short click => open `S3DirectoryMenu`, anchored below that segment, without requesting navigation or reloading the directory. This includes the bucket segment at bucket root and prefixes using a custom delimiter.
     - The current directory trigger shows a dropdown chevron and exposes `aria-haspopup`, `aria-expanded`, and the menu's `aria-controls`. Enter, Space, and ArrowDown open it; Escape dismisses it and restores focus.
-    - The menu duplicates the existing copy, bookmark, policy, upload, create folder, request files, and share actions, honoring exactly the same visibility and disabled states as the toolbar. The toolbar buttons remain unchanged.
+    - The menu provides copy path, bookmark, policy, upload, create folder, request files, and share actions, honoring their supplied visibility and disabled states. Copy path and bookmark remain available in the trailing toolbar too.
     - Upload/create actions are omitted when their optional props are absent; supplied disabled actions remain visible but disabled.
     - Copy from the menu shares the bar's existing clipboard write and copied feedback. The menu itself does not write to the clipboard.
     - The popup closes after an action, when the canonical URI changes, when editing starts, or when the copied-path feedback replaces the breadcrumbs.

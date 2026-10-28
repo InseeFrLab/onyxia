@@ -44,8 +44,10 @@ The Figma-only download, delete, copy/move/paste-prefix actions and an Organize
 submenu are outside this change. Create folder is shown directly because it is
 the only currently implemented organization action for the directory.
 
-The existing toolbar buttons remain available. `S3UriBar` owns the trigger and
-closes this menu when its URI, editing mode, or copy-feedback display changes.
+Only Copy S3 path, bookmark, and Edit S3 URI remain in the trailing toolbar.
+Access policy, create folder, upload, request files, and share are available in
+this menu. `S3UriBar` owns the trigger and closes this menu when its URI, editing
+mode, or copy-feedback display changes.
 
 ## Stories
 

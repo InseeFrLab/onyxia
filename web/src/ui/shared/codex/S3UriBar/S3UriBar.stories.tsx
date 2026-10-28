@@ -241,6 +241,19 @@ export const CurrentDirectoryMenu: Story = {
         const body = within(canvasElement.ownerDocument.body);
         const trigger = canvas.getByRole("button", { name: /Directory actions for/ });
 
+        for (const name of ["Copy S3 path", "Add to bookmarks", "Edit S3 URI"]) {
+            await expect(canvas.getByRole("button", { name })).toBeVisible();
+        }
+        for (const name of [
+            "Share",
+            "Request files",
+            "Make private",
+            "Upload files",
+            "Create new folder"
+        ]) {
+            await expect(canvas.queryByRole("button", { name })).not.toBeInTheDocument();
+        }
+
         await userEvent.click(trigger);
         const menuElement = await body.findByRole("menu");
         await waitFor(() => expect(menuElement).toBeVisible());
@@ -257,13 +270,23 @@ export const CurrentDirectoryMenu: Story = {
         await expect(
             menu.queryByRole("menuitem", { name: "Refresh" })
         ).not.toBeInTheDocument();
+        for (const name of [
+            "Request files",
+            "Make private",
+            "Upload files",
+            "Create new folder"
+        ]) {
+            await expect(menu.getByRole("menuitem", { name })).toBeEnabled();
+        }
         await userEvent.click(menu.getByRole("menuitem", { name: "Share" }));
         await expect(args.onSharePrefix).toHaveBeenCalledWith({
             s3Uri: args.s3Uri?.s3Uri
         });
         await expect(args.onS3UriChange).not.toHaveBeenCalled();
         await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
-        await expect(canvas.getByRole("button", { name: "Share" })).toBeVisible();
+        await expect(
+            canvas.queryByRole("button", { name: "Share" })
+        ).not.toBeInTheDocument();
 
         // Ancestor crumbs retain their existing navigation behavior.
         await userEvent.click(

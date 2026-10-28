@@ -1526,7 +1526,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "add to bookmarks": "Aggiungi ai segnalibri",
         "delete from bookmarks": "Elimina dai segnalibri",
         "pinned storage location": "Posizione di archiviazione fissata",
-        bookmarked: "Nei segnalibri",
         share: "Condividi",
         "request files": "Richiedi file",
         "make public": "Rendi pubblico",
