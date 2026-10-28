@@ -1,6 +1,7 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import { getRootContext } from "core/rootContext";
+import { assert } from "tsafe/assert";
 import * as userConfigs from "core/usecases/userConfigs";
 import { name, type Connection } from "./state";
 import {
@@ -114,11 +115,54 @@ const favoriteProviderId = createSelector(
               })
 );
 
+export type ConnectedProvider = {
+    providerId: string;
+    displayName: string;
+    type: GitProvidersConfig.ProviderType;
+    /** Without trailing slash, its repositories' urls start with `${url}/` */
+    url: string;
+    logoUrl: GitProvidersConfig.LogoUrl | undefined;
+    isFavorite: boolean;
+};
+
+/** Where a repository can be picked from (launcher), the favorite first. undefined until loaded. */
+const connectedProviders = createSelector(
+    connections,
+    gitProviders,
+    favoriteProviderId,
+    (connections, gitProviders, favoriteProviderId): ConnectedProvider[] | undefined => {
+        if (connections === undefined) {
+            return undefined;
+        }
+
+        return connections
+            .filter(({ connection }) => connection.status === "connected")
+            .map(({ providerId }): ConnectedProvider => {
+                const entry = gitProviders.find(({ config }) => config.id === providerId);
+
+                assert(entry !== undefined);
+
+                const { config } = entry;
+
+                return {
+                    providerId,
+                    displayName: config.displayName,
+                    type: config.type,
+                    url: config.url,
+                    logoUrl: config.logoUrl,
+                    isFavorite: providerId === favoriteProviderId
+                };
+            })
+            .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
+    }
+);
+
 export const selectors = {
     stateDescription,
     errorReason,
     connections,
-    favoriteProviderId
+    favoriteProviderId,
+    connectedProviders
 };
 
 export const protectedSelectors = {

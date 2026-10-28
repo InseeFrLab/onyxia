@@ -481,6 +481,18 @@ export const translations: Translations<"zh-CN"> = {
         "json schema": "JSON 架构",
         ok: "确定"
     },
+    GitRepositoryFormField: {
+        provider: "Git 托管平台",
+        "repository placeholder": "搜索仓库或粘贴其 URL",
+        branch: "分支",
+        "default branch": "默认分支",
+        "no repository found": "未找到仓库",
+        "search failed": "无法列出仓库，请在 我的账户 > Git 中检查连接。",
+        "provider not connected":
+            "此仓库位于您未连接的 Git 托管平台上：服务将没有它的凭据。",
+        "no provider connected": "未连接任何 Git 托管平台。",
+        "connect a provider": "在 我的账户 中连接"
+    },
     SelectFormField: {
         "empty string": "(空字符串)"
     },

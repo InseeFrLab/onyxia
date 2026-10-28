@@ -19,7 +19,8 @@ export type JSONSchema = {
     maxItems?: number;
     minimum?: number;
     pattern?: string;
-    render?: "textArea" | "password" | "list" | "slider";
+    /** gitRepository: on an object { providerId, url, branch }, picked among the connected Git providers */
+    render?: "textArea" | "password" | "list" | "slider" | "gitRepository";
     enum?: Stringifyable[];
     listEnum?: Stringifyable[];
     sliderMax?: number;
@@ -64,7 +65,9 @@ export const zJSONSchema = (() => {
             maxItems: z.number().nonnegative().int().optional(),
             minimum: z.number().optional(),
             pattern: z.string().optional(),
-            render: z.enum(["textArea", "password", "list", "slider"]).optional(),
+            render: z
+                .enum(["textArea", "password", "list", "slider", "gitRepository"])
+                .optional(),
             enum: z.array(zStringifyable).optional(),
             listEnum: z.array(zStringifyable).optional(),
             sliderMax: z.number().optional(),

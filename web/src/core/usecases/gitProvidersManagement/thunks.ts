@@ -203,6 +203,20 @@ export const thunks = {
             );
         },
     /**
+     * The connected provider a repository url belongs to (a url pasted in the launcher).
+     * Several providers on the same url (ui oauth and PAT, say): the favorite, then the
+     * first. undefined: none.
+     */
+    getConnectedProviderIdOfRepositoryUrl:
+        (params: { url: string }) =>
+        (...[, getState]): string | undefined => {
+            const url = params.url.trim();
+
+            return selectors
+                .connectedProviders(getState())
+                ?.find(provider => url.startsWith(`${provider.url}/`))?.providerId;
+        },
+    /**
      * OAuth providers only. Must be dispatched synchronously from the click handler:
      * the popup is opened before anything is awaited. Rejects with
      * OAuthAuthorizationError when the popup is blocked, closed or denied.
