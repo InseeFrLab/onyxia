@@ -89,7 +89,7 @@ export const translations: Translations<"en"> = {
         "bitbucket url hint":
             "Bitbucket Cloud only (https://bitbucket.org), Bitbucket Data Center isn't supported.",
         "bitbucket token hint":
-            "Create an API token with scopes for Bitbucket, with read:user:bitbucket, read:repository:bitbucket and write:repository:bitbucket.",
+            "Create an API token with scopes for Bitbucket, with read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket and write:repository:bitbucket.",
         title: "Add a Git provider",
         close: "Close",
         intro: "Connect an account of your own with a personal access token: it is used by Onyxia and handed over to your services so that they can clone and push.",

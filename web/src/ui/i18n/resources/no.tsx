@@ -89,7 +89,7 @@ export const translations: Translations<"no"> = {
         "bitbucket url hint":
             "Kun Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center støttes ikke.",
         "bitbucket token hint":
-            "Opprett et API-token med omfang for Bitbucket, med read:user:bitbucket, read:repository:bitbucket og write:repository:bitbucket.",
+            "Opprett et API-token med omfang for Bitbucket, med read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket og write:repository:bitbucket.",
         title: "Legg til en Git-leverandør",
         close: "Lukk",
         intro: "Koble til en egen konto med et personlig tilgangstoken: Onyxia bruker det og gir det videre til tjenestene dine slik at de kan klone og pushe.",
