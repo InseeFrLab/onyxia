@@ -33,7 +33,8 @@ export type FormField =
     | FormField.Select
     | FormField.TextField
     | FormField.Slider
-    | FormField.RangeSlider;
+    | FormField.RangeSlider
+    | FormField.GitRepository;
 
 export namespace FormField {
     type Common = {
@@ -114,6 +115,26 @@ export namespace FormField {
         highEndRange: RangeSlider.RangeEnd;
     };
 
+    /** render: "gitRepository", on an object. Other properties of the object are kept. */
+    export type GitRepository = Common & {
+        fieldType: "git repository";
+        isReadonly: boolean;
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
+        value: GitRepository.Value;
+    };
+
+    export namespace GitRepository {
+        export type Value = {
+            /** Of git.providers. Empty: matched by url, or a repository of a provider that isn't connected */
+            providerId: string;
+            /** HTTPS clone url */
+            url: string;
+            /** Empty: the default branch of the repository */
+            branch: string;
+        };
+    }
+
     export namespace RangeSlider {
         export type RangeEnd = {
             isReadonly: boolean;
@@ -142,7 +163,8 @@ export type FormFieldValue =
           fieldType: "range slider";
           lowEndRange: Pick<FormField.RangeSlider.RangeEnd, "helmValuesPath" | "value">;
           highEndRange: Pick<FormField.RangeSlider.RangeEnd, "helmValuesPath" | "value">;
-      };
+      }
+    | Pick<FormField.GitRepository, FormFieldValue.Name>;
 
 export namespace FormFieldValue {
     export type Name = "fieldType" | "helmValuesPath" | "value";

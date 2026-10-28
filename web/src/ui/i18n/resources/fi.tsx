@@ -518,6 +518,19 @@ export const translations: Translations<"fi"> = {
         "json schema": "JSON-skeema",
         ok: "Ok"
     },
+    GitRepositoryFormField: {
+        provider: "Git-palveluntarjoaja",
+        "repository placeholder": "Hae repositoriota tai liitä sen URL",
+        branch: "Haara",
+        "default branch": "Oletushaara",
+        "no repository found": "Repositoriota ei löytynyt",
+        "search failed":
+            "Repositorioita ei voitu listata, tarkista yhteys kohdassa Oma tili > Git.",
+        "provider not connected":
+            "Tämä repositorio on Git-palveluntarjoajalla, johon et ole yhteydessä: palvelu ei saa sille tunnuksia.",
+        "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
+        "connect a provider": "Yhdistä kohdassa Oma tili"
+    },
     SelectFormField: {
         "empty string": "(Tyhjä merkkijono)"
     },

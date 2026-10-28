@@ -1077,6 +1077,19 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "toggle password visibility": "Toggle password visibility",
         loading: "Loading..."
     },
+    GitRepositoryFormField: {
+        provider: "Git provider",
+        "repository placeholder": "Search a repository or paste its URL",
+        branch: "Branch",
+        "default branch": "Default branch",
+        "no repository found": "No repository found",
+        "search failed":
+            "The repositories could not be listed, check the connection in My account > Git.",
+        "provider not connected":
+            "This repository is on a Git provider you aren't connected to: the service won't have credentials for it.",
+        "no provider connected": "No Git provider connected.",
+        "connect a provider": "Connect one in My account"
+    },
     SelectFormField: {
         "empty string": "(Empty string)"
     },

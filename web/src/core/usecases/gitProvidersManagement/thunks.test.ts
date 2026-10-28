@@ -819,6 +819,58 @@ describe("gitProvidersManagement", () => {
         });
     });
 
+    describe("repository picking", () => {
+        it("lists the connected providers, the favorite first", async () => {
+            const { core, getState } = await setup({
+                sessions: { gitlab: "refresh-0" },
+                gitConfigStr: JSON.stringify({
+                    personalAccessTokenByProviderId: { github: "ghp_valid" },
+                    favoriteProviderId: "github",
+                    userProviders: []
+                })
+            });
+
+            await core.functions.gitProvidersManagement.load();
+
+            const { selectors } = await import("./selectors");
+
+            expect(
+                selectors
+                    .connectedProviders(getState() as never)
+                    ?.map(({ providerId, isFavorite }) => ({ providerId, isFavorite }))
+            ).toStrictEqual([
+                { providerId: "github", isFavorite: true },
+                { providerId: "gitlab", isFavorite: false }
+            ]);
+        });
+
+        it("finds the connected provider of a pasted url", async () => {
+            const { core } = await setup({ sessions: { gitlab: "refresh-0" } });
+
+            const { gitProvidersManagement } = core.functions;
+
+            await gitProvidersManagement.load();
+
+            expect(
+                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl({
+                    url: " https://gitlab/group/project.git "
+                })
+            ).toBe("gitlab");
+            // Not connected
+            expect(
+                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl({
+                    url: "https://forgejo/a/b.git"
+                })
+            ).toBe(undefined);
+            // Only a prefix of the host
+            expect(
+                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl({
+                    url: "https://gitlab.evil.com/a/b.git"
+                })
+            ).toBe(undefined);
+        });
+    });
+
     describe("user providers", () => {
         const addGitLabCom = (
             core: Awaited<ReturnType<typeof setup>>["core"],

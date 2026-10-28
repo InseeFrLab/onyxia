@@ -522,6 +522,19 @@ export const translations: Translations<"nl"> = {
         "json schema": "JSON-schema",
         ok: "Ok"
     },
+    GitRepositoryFormField: {
+        provider: "Git-provider",
+        "repository placeholder": "Zoek een repository of plak de URL",
+        branch: "Branch",
+        "default branch": "Standaardbranch",
+        "no repository found": "Geen repository gevonden",
+        "search failed":
+            "De repositories konden niet worden opgehaald, controleer de verbinding in Mijn account > Git.",
+        "provider not connected":
+            "Deze repository staat bij een Git-provider waarmee je niet verbonden bent: de service krijgt er geen inloggegevens voor.",
+        "no provider connected": "Geen Git-provider verbonden.",
+        "connect a provider": "Verbind er een in Mijn account"
+    },
     SelectFormField: {
         "empty string": "(Lege tekenreeks)"
     },

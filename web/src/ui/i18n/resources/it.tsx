@@ -520,6 +520,19 @@ export const translations: Translations<"it"> = {
         "json schema": "Schema JSON",
         ok: "Ok"
     },
+    GitRepositoryFormField: {
+        provider: "Provider Git",
+        "repository placeholder": "Cerca un repository o incolla il suo URL",
+        branch: "Branch",
+        "default branch": "Branch predefinito",
+        "no repository found": "Nessun repository trovato",
+        "search failed":
+            "Impossibile elencare i repository, verifica la connessione in Il mio account > Git.",
+        "provider not connected":
+            "Questo repository è su un provider Git a cui non sei connesso: il servizio non avrà credenziali per esso.",
+        "no provider connected": "Nessun provider Git connesso.",
+        "connect a provider": "Connettine uno in Il mio account"
+    },
     SelectFormField: {
         "empty string": "(Stringa vuota)"
     },

@@ -85,6 +85,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/RootFormComponent/formFields/YamlCodeBlockFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/TextFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/SelectFormField").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/GitRepositoryFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/NumberFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/FormFieldGroupComponent").I18n
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/AutoInjectSwitch").I18n

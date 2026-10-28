@@ -517,6 +517,19 @@ export const translations: Translations<"no"> = {
         "json schema": "JSON-skjema",
         ok: "Ok"
     },
+    GitRepositoryFormField: {
+        provider: "Git-leverandør",
+        "repository placeholder": "Søk etter et repository eller lim inn URL-en",
+        branch: "Gren",
+        "default branch": "Standardgren",
+        "no repository found": "Fant ingen repository",
+        "search failed":
+            "Repositoriene kunne ikke listes, sjekk tilkoblingen under Min konto > Git.",
+        "provider not connected":
+            "Dette repositoriet er hos en Git-leverandør du ikke er koblet til: tjenesten får ingen påloggingsinformasjon for det.",
+        "no provider connected": "Ingen Git-leverandør tilkoblet.",
+        "connect a provider": "Koble til en under Min konto"
+    },
     SelectFormField: {
         "empty string": "(Tom streng)"
     },

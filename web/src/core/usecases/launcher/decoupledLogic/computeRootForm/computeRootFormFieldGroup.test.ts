@@ -74,6 +74,79 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("renders an array of gitRepository objects as one field per item", () => {
+        const got = computeRootFormFieldGroup({
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    repositories: {
+                        type: "array",
+                        maxItems: 2,
+                        items: {
+                            type: "object",
+                            render: "gitRepository",
+                            properties: {
+                                providerId: { type: "string" },
+                                url: { type: "string" },
+                                branch: { type: "string" }
+                            }
+                        }
+                    }
+                }
+            },
+            helmValues: {
+                repositories: [
+                    {
+                        providerId: "gitlab",
+                        url: "https://git.example.com/a/b.git",
+                        branch: "main"
+                    }
+                ]
+            },
+            xOnyxiaContext: {},
+            autoInjectionDisabledFields: undefined,
+            autocompleteOptions: []
+        });
+
+        const expected: FormFieldGroup = {
+            type: "group",
+            helmValuesPath: [],
+            title: "<root>",
+            description: undefined,
+            nodes: [
+                {
+                    type: "group",
+                    helmValuesPath: ["repositories"],
+                    title: "repositories",
+                    description: undefined,
+                    nodes: [
+                        {
+                            type: "field",
+                            title: "repositories 1",
+                            isReadonly: false,
+                            fieldType: "git repository",
+                            helmValuesPath: ["repositories", 0],
+                            description: undefined,
+                            value: {
+                                providerId: "gitlab",
+                                url: "https://git.example.com/a/b.git",
+                                branch: "main"
+                            }
+                        }
+                    ],
+                    canAdd: true,
+                    canRemove: true,
+                    isAutoInjected: undefined
+                }
+            ],
+            canAdd: false,
+            canRemove: false,
+            isAutoInjected: undefined
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
     it("const should be readonly", () => {
         const got = computeRootFormFieldGroup({
             helmValuesSchema: {

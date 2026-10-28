@@ -111,6 +111,28 @@ export function mutateHelmValues_update(params: {
                 value: formFieldValue.value
             });
             return;
+        case "git repository": {
+            const value_current = getValueAtPath({
+                stringifyableObjectOrArray: helmValues,
+                path: formFieldValue.helmValuesPath,
+                doDeleteFromSource: false,
+                doFailOnUnresolved: false
+            });
+
+            // NOTE: The chart may declare other properties on the object, they are kept.
+            assignValueAtPath({
+                stringifyableObjectOrArray: helmValues,
+                path: formFieldValue.helmValuesPath,
+                value: {
+                    ...(value_current instanceof Object &&
+                    !(value_current instanceof Array)
+                        ? value_current
+                        : {}),
+                    ...formFieldValue.value
+                }
+            });
+            return;
+        }
         case "select": {
             const formField = findInRootForm({
                 rootForm,

@@ -522,6 +522,19 @@ export const translations: Translations<"fr"> = {
         "json schema": "Schéma JSON",
         ok: "Ok"
     },
+    GitRepositoryFormField: {
+        provider: "Forge Git",
+        "repository placeholder": "Rechercher un dépôt ou coller son URL",
+        branch: "Branche",
+        "default branch": "Branche par défaut",
+        "no repository found": "Aucun dépôt trouvé",
+        "search failed":
+            "Les dépôts n'ont pas pu être listés, vérifiez la connexion dans Mon compte > Git.",
+        "provider not connected":
+            "Ce dépôt est sur une forge à laquelle vous n'êtes pas connecté : le service n'aura pas d'identifiants pour lui.",
+        "no provider connected": "Aucune forge Git connectée.",
+        "connect a provider": "En connecter une dans Mon compte"
+    },
     SelectFormField: {
         "empty string": "(Chaîne vide)"
     },
